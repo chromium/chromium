@@ -41,6 +41,9 @@ class HTMLSelectMenuElement::SelectMutationCallback
   template <typename StringType>
   void PartRemoved(const StringType& part_name, Element* element);
 
+  template <typename StringType>
+  void SlotChanged(const StringType& slot_name);
+
   Member<HTMLSelectMenuElement> select_;
   Member<MutationObserver> observer_;
 };
@@ -52,7 +55,7 @@ HTMLSelectMenuElement::SelectMutationCallback::SelectMutationCallback(
   init->setAttributeOldValue(true);
   init->setAttributes(true);
   // TODO(crbug.com/1121840) There are more attributes that affect <selectmenu>.
-  init->setAttributeFilter({"part"});
+  init->setAttributeFilter({"part", "slot"});
   init->setChildList(true);
   init->setSubtree(true);
   observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
@@ -83,6 +86,12 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
           PartRemoved(record->oldValue(), target);
           PartInserted(target->getAttribute(html_names::kPartAttr), target);
         }
+      } else if (record->attributeName() == html_names::kSlotAttr) {
+        auto* target = DynamicTo<Element>(record->target());
+        if (target && record->oldValue() != target->SlotName()) {
+          SlotChanged(record->oldValue());
+          SlotChanged(target->SlotName());
+        }
       }
     } else if (record->type() == "childList") {
       for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
@@ -93,6 +102,7 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
 
         const AtomicString& part = element->getAttribute(html_names::kPartAttr);
         PartInserted(part, element);
+        SlotChanged(element->SlotName());
       }
 
       for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
@@ -103,6 +113,7 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
 
         const AtomicString& part = element->getAttribute(html_names::kPartAttr);
         PartRemoved(part, element);
+        SlotChanged(element->SlotName());
       }
     }
   }
@@ -135,6 +146,17 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartRemoved(
     select_->ListboxPartRemoved(element);
   } else if (part_name == kOptionPartName || IsA<HTMLOptionElement>(element)) {
     select_->OptionPartRemoved(element);
+  }
+}
+
+template <typename StringType>
+void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
+    const StringType& slot_name) {
+  if (slot_name == kListboxPartName) {
+    select_->UpdateListboxPart();
+  } else if (slot_name == kButtonPartName) {
+    select_->UpdateButtonPart();
+    select_->UpdateSelectedValuePart();
   }
 }
 

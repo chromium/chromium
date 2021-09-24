@@ -97,6 +97,19 @@
   </div>
 </selectmenu>
 
+<selectmenu id="selectMenu10">
+  <div slot="button" id="selectMenu10-div">Test 10</div>
+  <option>one</option>
+  <option id="selectMenu10-option2">two</option>
+</selectmenu>
+
+<selectmenu id="selectMenu11">
+  <popup slot="listbox" part="listbox">
+    <option>one</option>
+  </popup>
+  <div slot="button" part="listbox" id="selectMenu11-button">Test</div>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -260,4 +273,38 @@ promise_test(async () => {
     assert_false(selectMenu.open);
     assert_equals(selectMenu.value, "four", "New options should get controller code after listbox switch");
     }, "Ensure that option controller code is updated when listbox changes");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu10");
+    const selectMenu10Div = document.getElementById("selectMenu10-div");
+
+    await clickOn(selectMenu10Div);
+    assert_false(selectMenu.open, "Controller code not applied due to part attribute missing");
+    selectMenu10Div.part = "button";
+    await clickOn(selectMenu10Div);
+    assert_true(selectMenu.open);
+
+    const option2 = document.getElementById("selectMenu10-option2");
+    await clickOn(option2);
+    assert_equals(selectMenu.value, "two");
+
+    selectMenu10Div.slot = "";
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open, "Default button part should be used");
+    selectMenu10Div.part = "option";
+    await clickOn(selectMenu10Div);
+    assert_equals(selectMenu.value, "Test 10");
+  }, "Ensure that controller code is applied after updating the slot attribute");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu11");
+    const selectMenu11Button= document.getElementById("selectMenu11-button");
+
+    await clickOn(selectMenu11Button);
+    assert_false(selectMenu.open, "Controller code not applied due to part attribute not being button");
+    selectMenu11Button.remove();
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open, "Default button part should be used");
+  }, "Ensure that controller code is applied when slot and part attributes are different");
 </script>
