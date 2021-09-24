@@ -87,7 +87,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     // Delay constructing the compositor until after the feature is set.
     paint_artifact_compositor_ = std::make_unique<PaintArtifactCompositor>(
         scroll_callbacks_.GetWeakPtr());
-    // Prefer compositing to lcd-text by default for tests.
+    // Prefer lcd-text by default for tests.
     paint_artifact_compositor_->SetPrefersLCDText(true);
 
     // Uses a LayerTreeHostClient that will make a LayerTreeFrameSink to allow

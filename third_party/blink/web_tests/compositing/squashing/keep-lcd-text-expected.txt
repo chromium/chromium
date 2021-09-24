@@ -1,0 +1,21 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='composited'",
+      "bounds": [300, 300],
+      "drawsContent": false
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='non-opaque')",
+      "bounds": [220, 270],
+      "backgroundColor": "#FFFF00"
+    }
+  ]
+}
+
