@@ -3485,7 +3485,7 @@
   {
     "name": "ios-persist-crash-restore-infobar",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 98
   },
   {
     "name": "ios-shared-highlighting-color-change",
@@ -4580,7 +4580,7 @@
   {
     "name": "reading-list-messages",
     "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "record-snapshot-size",
