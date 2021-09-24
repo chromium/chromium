@@ -63,6 +63,7 @@ using UserSelectableOsTypeSet = base::EnumSet<UserSelectableOsType,
                                               UserSelectableOsType::kLastType>;
 
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type);
+std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types);
 ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type);
 ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type);
 

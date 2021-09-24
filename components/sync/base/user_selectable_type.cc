@@ -199,6 +199,17 @@ const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;
 }
 
+std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
+  std::string result;
+  for (UserSelectableOsType type : types) {
+    if (!result.empty()) {
+      result += ", ";
+    }
+    result += GetUserSelectableOsTypeName(type);
+  }
+  return result;
+}
+
 absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
   if (type == kOsAppsTypeName) {
