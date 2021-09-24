@@ -74,6 +74,10 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   // |source_map| is a weak pointer.
   ModuleSystem(ScriptContext* context, const SourceMap* source_map);
+
+  ModuleSystem(const ModuleSystem&) = delete;
+  ModuleSystem& operator=(const ModuleSystem&) = delete;
+
   ~ModuleSystem() override;
 
   // ObjectBackedNativeHandler:
@@ -272,8 +276,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   // The set of modules that we've attempted to load.
   std::set<std::string> loaded_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSystem);
 };
 
 }  // namespace extensions

@@ -44,6 +44,9 @@ constexpr bool IsSubset(unsigned sub, unsigned super) {
 // Helper class to parse the url filter of a Declarative Net Request API rule.
 class UrlFilterParser {
  public:
+  UrlFilterParser(const UrlFilterParser&) = delete;
+  UrlFilterParser& operator=(const UrlFilterParser&) = delete;
+
   // This sets the |url_pattern_type|, |anchor_left|, |anchor_right| and
   // |url_pattern| fields on the |indexed_rule_|.
   static void Parse(std::unique_ptr<std::string> url_filter,
@@ -125,8 +128,6 @@ class UrlFilterParser {
   const size_t url_filter_len_;
   size_t index_;
   IndexedRule* indexed_rule_;  // Must outlive this instance.
-
-  DISALLOW_COPY_AND_ASSIGN(UrlFilterParser);
 };
 
 bool IsCaseSensitive(const dnr_api::Rule& parsed_rule) {

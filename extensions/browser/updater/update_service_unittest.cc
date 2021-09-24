@@ -54,6 +54,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
  public:
   FakeUpdateClient();
 
+  FakeUpdateClient(const FakeUpdateClient&) = delete;
+  FakeUpdateClient& operator=(const FakeUpdateClient&) = delete;
+
   // Returns the data we've gotten from the CrxDataCallback for ids passed to
   // the Update function.
   std::vector<absl::optional<update_client::CrxComponent>>* data() {
@@ -159,9 +162,6 @@ class FakeUpdateClient : public update_client::UpdateClient {
   bool is_malware_update_item_ = false;
   extensions::AllowlistState allowlist_state = extensions::ALLOWLIST_UNDEFINED;
   std::vector<UpdateRequest> delayed_requests_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeUpdateClient);
 };
 
 FakeUpdateClient::FakeUpdateClient() : delay_update_(false) {}

@@ -86,6 +86,10 @@ class TestAppWindowClient : public ShellAppWindowClient {
 }  // namespace
 
 class ShellExtensionLoaderTest : public ExtensionsTest {
+ public:
+  ShellExtensionLoaderTest(const ShellExtensionLoaderTest&) = delete;
+  ShellExtensionLoaderTest& operator=(const ShellExtensionLoaderTest&) = delete;
+
  protected:
   ShellExtensionLoaderTest() = default;
   ~ShellExtensionLoaderTest() override = default;
@@ -140,8 +144,6 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
   MockExtensionSystemFactory<TestExtensionSystem> factory_;
 
   TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoaderTest);
 };
 
 // Tests with a non-existent directory.
@@ -215,6 +217,11 @@ TEST_F(ShellExtensionLoaderTest, LoadDisabledExtension) {
 
 #if defined(USE_AURA)
 class ShellExtensionLoaderTestAura : public ShellExtensionLoaderTest {
+ public:
+  ShellExtensionLoaderTestAura(const ShellExtensionLoaderTestAura&) = delete;
+  ShellExtensionLoaderTestAura& operator=(const ShellExtensionLoaderTestAura&) =
+      delete;
+
  protected:
   ShellExtensionLoaderTestAura() = default;
   ~ShellExtensionLoaderTestAura() override = default;
@@ -250,8 +257,6 @@ class ShellExtensionLoaderTestAura : public ShellExtensionLoaderTest {
  private:
   std::unique_ptr<ShellTestHelperAura> aura_helper_;
   TestAppWindowClient app_window_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoaderTestAura);
 };
 
 // Tests loading and launching a platform app.

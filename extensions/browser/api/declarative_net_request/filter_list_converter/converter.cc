@@ -37,6 +37,9 @@ using ElementTypeMap =
 // supported by Declarative Net Request.
 class ProtoToJSONRuleConverter {
  public:
+  ProtoToJSONRuleConverter(const ProtoToJSONRuleConverter&) = delete;
+  ProtoToJSONRuleConverter& operator=(const ProtoToJSONRuleConverter&) = delete;
+
   // Returns a dictionary value corresponding to a Declarative Net Request rule
   // on success. On error, returns an empty/null value and populates |error|.
   // |error| must be non-null.
@@ -449,8 +452,6 @@ class ProtoToJSONRuleConverter {
   int rule_id_;
   std::string error_;
   base::Value json_rule_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtoToJSONRuleConverter);
 };
 
 // Writes rules/extension to |output_path| in the format supported by
@@ -465,6 +466,9 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
         output_path_(output_path),
         write_type_(type),
         noisy_(noisy) {}
+
+  DNRJsonRuleOutputStream(const DNRJsonRuleOutputStream&) = delete;
+  DNRJsonRuleOutputStream& operator=(const DNRJsonRuleOutputStream&) = delete;
 
   bool PutUrlRule(const proto::UrlRule& rule) override {
     std::string error;
@@ -516,8 +520,6 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
   const base::FilePath output_path_;
   const filter_list_converter::WriteType write_type_;
   const bool noisy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRJsonRuleOutputStream);
 };
 
 }  // namespace

@@ -21,6 +21,9 @@ class ErrorBuilder {
  public:
   explicit ErrorBuilder(std::u16string* error) : error_(error) {}
 
+  ErrorBuilder(const ErrorBuilder&) = delete;
+  ErrorBuilder& operator=(const ErrorBuilder&) = delete;
+
   // Appends a literal string |error|.
   void Append(base::StringPiece error) {
     if (!error_->empty())
@@ -35,7 +38,6 @@ class ErrorBuilder {
 
  private:
   std::u16string* const error_;
-  DISALLOW_COPY_AND_ASSIGN(ErrorBuilder);
 };
 
 // Converts a rule defined in the manifest into a JSON internal format. The

@@ -59,6 +59,10 @@ void RemoveListener(v8::Local<v8::Context> context,
 }
 
 class APIEventHandlerTest : public APIBindingTest {
+ public:
+  APIEventHandlerTest(const APIEventHandlerTest&) = delete;
+  APIEventHandlerTest& operator=(const APIEventHandlerTest&) = delete;
+
  protected:
   APIEventHandlerTest() {}
   ~APIEventHandlerTest() override {}
@@ -88,8 +92,6 @@ class APIEventHandlerTest : public APIBindingTest {
 
  private:
   std::unique_ptr<APIEventHandler> handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIEventHandlerTest);
 };
 
 }  // namespace

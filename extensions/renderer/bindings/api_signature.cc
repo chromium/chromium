@@ -90,6 +90,9 @@ class ArgumentParser {
         type_refs_(type_refs),
         promises_allowed_(promises_allowed) {}
 
+  ArgumentParser(const ArgumentParser&) = delete;
+  ArgumentParser& operator=(const ArgumentParser&) = delete;
+
  protected:
   v8::Isolate* GetIsolate() { return context_->GetIsolate(); }
 
@@ -155,8 +158,6 @@ class ArgumentParser {
   // An error to pass while parsing arguments to avoid having to allocate a new
   // std::string on the stack multiple times.
   std::string parse_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArgumentParser);
 };
 
 class V8ArgumentParser : public ArgumentParser {
@@ -171,6 +172,9 @@ class V8ArgumentParser : public ArgumentParser {
                        arguments,
                        type_refs,
                        promises_allowed) {}
+
+  V8ArgumentParser(const V8ArgumentParser&) = delete;
+  V8ArgumentParser& operator=(const V8ArgumentParser&) = delete;
 
   APISignature::V8ParseResult ParseArguments(bool signature_has_callback);
 
@@ -190,8 +194,6 @@ class V8ArgumentParser : public ArgumentParser {
 
   v8::Local<v8::Value> last_arg_;
   std::vector<v8::Local<v8::Value>> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8ArgumentParser);
 };
 
 class BaseValueArgumentParser : public ArgumentParser {
@@ -208,6 +210,9 @@ class BaseValueArgumentParser : public ArgumentParser {
                        type_refs,
                        promises_allowed),
         list_value_(std::make_unique<base::ListValue>()) {}
+
+  BaseValueArgumentParser(const BaseValueArgumentParser&) = delete;
+  BaseValueArgumentParser& operator=(const BaseValueArgumentParser&) = delete;
 
   APISignature::JSONParseResult ParseArguments(bool signature_has_callback);
 
@@ -235,8 +240,6 @@ class BaseValueArgumentParser : public ArgumentParser {
   std::unique_ptr<base::ListValue> list_value_;
   std::unique_ptr<base::Value> last_arg_;
   v8::Local<v8::Function> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseValueArgumentParser);
 };
 
 bool ArgumentParser::ParseArgumentsImpl(bool signature_has_callback) {

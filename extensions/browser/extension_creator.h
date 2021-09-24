@@ -33,6 +33,9 @@ class ExtensionCreator {
  public:
   ExtensionCreator();
 
+  ExtensionCreator(const ExtensionCreator&) = delete;
+  ExtensionCreator& operator=(const ExtensionCreator&) = delete;
+
   // Settings to specify treatment of special or ignorable error conditions.
   enum RunFlags {
     kNoRunFlags = 0,
@@ -123,8 +126,6 @@ class ExtensionCreator {
 
   // Type of error that was raised, if any.
   ErrorType error_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCreator);
 };
 
 }  // namespace extensions

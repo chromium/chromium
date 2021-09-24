@@ -39,6 +39,9 @@ using ArgumentList = std::vector<v8::Local<v8::Value>>;
 
 class APIRequestHandlerTest : public APIBindingTest {
  public:
+  APIRequestHandlerTest(const APIRequestHandlerTest&) = delete;
+  APIRequestHandlerTest& operator=(const APIRequestHandlerTest&) = delete;
+
   std::unique_ptr<APIRequestHandler> CreateRequestHandler() {
     return std::make_unique<APIRequestHandler>(
         base::DoNothing(),
@@ -75,8 +78,6 @@ class APIRequestHandlerTest : public APIBindingTest {
 
   bool did_run_js_ = false;
   std::unique_ptr<TestInteractionProvider> interaction_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIRequestHandlerTest);
 };
 
 // Tests adding a request to the request handler, and then triggering the

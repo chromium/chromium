@@ -111,17 +111,19 @@ class RulesetManager {
     ExtensionRulesetData(const ExtensionId& extension_id,
                          const base::Time& extension_install_time,
                          std::unique_ptr<CompositeMatcher> matcher);
-    ~ExtensionRulesetData();
+    ExtensionRulesetData(const ExtensionRulesetData&) = delete;
     ExtensionRulesetData(ExtensionRulesetData&& other);
+
+    ExtensionRulesetData& operator=(const ExtensionRulesetData&) = delete;
     ExtensionRulesetData& operator=(ExtensionRulesetData&& other);
+
+    ~ExtensionRulesetData();
 
     ExtensionId extension_id;
     base::Time extension_install_time;
     std::unique_ptr<CompositeMatcher> matcher;
 
     bool operator<(const ExtensionRulesetData& other) const;
-
-    DISALLOW_COPY_AND_ASSIGN(ExtensionRulesetData);
   };
 
   using RulesetAndPageAccess =

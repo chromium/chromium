@@ -1145,6 +1145,12 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
       public testing::WithParamInterface<bool> {
  public:
   ResponseValidationNativeExtensionBindingsSystemUnittest() = default;
+
+  ResponseValidationNativeExtensionBindingsSystemUnittest(
+      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  ResponseValidationNativeExtensionBindingsSystemUnittest& operator=(
+      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+
   ~ResponseValidationNativeExtensionBindingsSystemUnittest() override = default;
 
   void SetUp() override {
@@ -1160,9 +1166,6 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
 
  private:
   std::unique_ptr<base::AutoReset<bool>> response_validation_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ResponseValidationNativeExtensionBindingsSystemUnittest);
 };
 
 TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,

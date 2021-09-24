@@ -24,6 +24,9 @@ struct ProcessMap::Item {
         process_id(process_id),
         site_instance_id(site_instance_id) {}
 
+  Item(const Item&) = delete;
+  Item& operator=(const Item&) = delete;
+
   ~Item() {
   }
 
@@ -39,9 +42,6 @@ struct ProcessMap::Item {
   std::string extension_id;
   int process_id = 0;
   content::SiteInstanceId site_instance_id;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Item);
 };
 
 

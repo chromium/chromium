@@ -52,6 +52,9 @@ class ContentHashFetcher {
 
   ContentHashFetcher(ContentHash::FetchKey fetch_key);
 
+  ContentHashFetcher(const ContentHashFetcher&) = delete;
+  ContentHashFetcher& operator=(const ContentHashFetcher&) = delete;
+
   // Note: |this| is deleted once OnSimpleLoaderComplete() completes.
   void Start(HashFetcherCallback hash_fetcher_callback);
 
@@ -72,8 +75,6 @@ class ContentHashFetcher {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHashFetcher);
 };
 
 }  // namespace internals

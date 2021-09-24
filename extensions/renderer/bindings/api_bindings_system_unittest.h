@@ -25,6 +25,10 @@ class APIBindingsSystem;
 // The base class to test the APIBindingsSystem. This allows subclasses to
 // retrieve API schemas differently.
 class APIBindingsSystemTest : public APIBindingTest {
+ public:
+  APIBindingsSystemTest(const APIBindingsSystemTest&) = delete;
+  APIBindingsSystemTest& operator=(const APIBindingsSystemTest&) = delete;
+
  protected:
   // A struct representing a "fake" API, including the name and specification.
   // The specification is expected to be a JSON-serializable string that
@@ -102,8 +106,6 @@ class APIBindingsSystemTest : public APIBindingTest {
   // The last request to be received from the APIBindingsSystem, or null if
   // there is none.
   std::unique_ptr<APIRequestHandler::Request> last_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingsSystemTest);
 };
 
 }  // namespace extensions

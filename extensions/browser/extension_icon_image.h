@@ -80,6 +80,10 @@ class IconImage : public content::NotificationObserver {
             int resource_size_in_dip,
             const gfx::ImageSkia& default_icon,
             Observer* observer);
+
+  IconImage(const IconImage&) = delete;
+  IconImage& operator=(const IconImage&) = delete;
+
   ~IconImage() override;
 
   gfx::Image image() const { return image_; }
@@ -134,8 +138,6 @@ class IconImage : public content::NotificationObserver {
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<IconImage> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconImage);
 };
 
 }  // namespace extensions

@@ -18,6 +18,10 @@ namespace extensions {
 class ScopedWebFrame {
 public:
   ScopedWebFrame();
+
+  ScopedWebFrame(const ScopedWebFrame&) = delete;
+  ScopedWebFrame& operator=(const ScopedWebFrame&) = delete;
+
   ~ScopedWebFrame();
 
   blink::WebLocalFrame* frame() { return frame_; }
@@ -32,8 +36,6 @@ private:
      agent_group_scheduler_;
  blink::WebView* view_;
  blink::WebLocalFrame* frame_;
-
- DISALLOW_COPY_AND_ASSIGN(ScopedWebFrame);
 };
 
 }  // namespace extensions

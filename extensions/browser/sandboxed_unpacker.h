@@ -157,6 +157,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
       const scoped_refptr<base::SequencedTaskRunner>& unpacker_io_task_runner,
       SandboxedUnpackerClient* client);
 
+  SandboxedUnpacker(const SandboxedUnpacker&) = delete;
+  SandboxedUnpacker& operator=(const SandboxedUnpacker&) = delete;
+
   // Start processing the extension, either from a CRX file or already unzipped
   // in a directory. The client is called with the results. The directory form
   // requires the id and base64-encoded public key (for insertion into the
@@ -337,8 +340,6 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Used during the message catalog rewriting phase to sanitize the extension
   // provided message catalogs.
   std::unique_ptr<JsonFileSanitizer> json_file_sanitizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedUnpacker);
 };
 
 }  // namespace extensions

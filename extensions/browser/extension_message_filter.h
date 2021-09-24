@@ -37,6 +37,9 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
   ExtensionMessageFilter(int render_process_id,
                          content::BrowserContext* context);
 
+  ExtensionMessageFilter(const ExtensionMessageFilter&) = delete;
+  ExtensionMessageFilter& operator=(const ExtensionMessageFilter&) = delete;
+
   int render_process_id() { return render_process_id_; }
 
   static void EnsureShutdownNotifierFactoryBuilt();
@@ -91,8 +94,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
 
   // Only access from the UI thread.
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageFilter);
 };
 
 }  // namespace extensions

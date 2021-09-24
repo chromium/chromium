@@ -84,6 +84,12 @@ void BrowserContextKeyedAPIFactory<WebcamPrivateAPI>
 class WebcamPrivateOpenSerialWebcamFunction : public ExtensionFunction {
  public:
   WebcamPrivateOpenSerialWebcamFunction();
+
+  WebcamPrivateOpenSerialWebcamFunction(
+      const WebcamPrivateOpenSerialWebcamFunction&) = delete;
+  WebcamPrivateOpenSerialWebcamFunction& operator=(
+      const WebcamPrivateOpenSerialWebcamFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.openSerialWebcam",
                              WEBCAMPRIVATE_OPENSERIALWEBCAM)
 
@@ -95,13 +101,17 @@ class WebcamPrivateOpenSerialWebcamFunction : public ExtensionFunction {
 
  private:
   void OnOpenWebcam(const std::string& webcam_id, bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateOpenSerialWebcamFunction);
 };
 
 class WebcamPrivateCloseWebcamFunction : public ExtensionFunction {
  public:
   WebcamPrivateCloseWebcamFunction();
+
+  WebcamPrivateCloseWebcamFunction(const WebcamPrivateCloseWebcamFunction&) =
+      delete;
+  WebcamPrivateCloseWebcamFunction& operator=(
+      const WebcamPrivateCloseWebcamFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.closeWebcam",
                              WEBCAMPRIVATE_CLOSEWEBCAM)
 
@@ -110,14 +120,15 @@ class WebcamPrivateCloseWebcamFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateCloseWebcamFunction);
 };
 
 class WebcamPrivateSetFunction : public ExtensionFunction {
  public:
   WebcamPrivateSetFunction();
+
+  WebcamPrivateSetFunction(const WebcamPrivateSetFunction&) = delete;
+  WebcamPrivateSetFunction& operator=(const WebcamPrivateSetFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.set", WEBCAMPRIVATE_SET)
 
  protected:
@@ -131,13 +142,15 @@ class WebcamPrivateSetFunction : public ExtensionFunction {
 
   int pending_num_set_webcam_param_requests_ = 0;
   bool failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateSetFunction);
 };
 
 class WebcamPrivateGetFunction : public ExtensionFunction {
  public:
   WebcamPrivateGetFunction();
+
+  WebcamPrivateGetFunction(const WebcamPrivateGetFunction&) = delete;
+  WebcamPrivateGetFunction& operator=(const WebcamPrivateGetFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.get", WEBCAMPRIVATE_GET)
 
  protected:
@@ -182,13 +195,16 @@ class WebcamPrivateGetFunction : public ExtensionFunction {
   bool got_zoom_;
   bool got_focus_;
   bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateGetFunction);
 };
 
 class WebcamPrivateResetFunction : public ExtensionFunction {
  public:
   WebcamPrivateResetFunction();
+
+  WebcamPrivateResetFunction(const WebcamPrivateResetFunction&) = delete;
+  WebcamPrivateResetFunction& operator=(const WebcamPrivateResetFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.reset", WEBCAMPRIVATE_RESET)
 
  protected:
@@ -199,13 +215,16 @@ class WebcamPrivateResetFunction : public ExtensionFunction {
 
  private:
   void OnResetWebcam(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateResetFunction);
 };
 
 class WebcamPrivateSetHomeFunction : public ExtensionFunction {
  public:
   WebcamPrivateSetHomeFunction();
+
+  WebcamPrivateSetHomeFunction(const WebcamPrivateSetHomeFunction&) = delete;
+  WebcamPrivateSetHomeFunction& operator=(const WebcamPrivateSetHomeFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.setHome", WEBCAMPRIVATE_SET_HOME)
 
  protected:
@@ -216,13 +235,17 @@ class WebcamPrivateSetHomeFunction : public ExtensionFunction {
 
  private:
   void OnSetHomeWebcam(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateSetHomeFunction);
 };
 
 class WebcamPrivateRestoreCameraPresetFunction : public ExtensionFunction {
  public:
   WebcamPrivateRestoreCameraPresetFunction();
+
+  WebcamPrivateRestoreCameraPresetFunction(
+      const WebcamPrivateRestoreCameraPresetFunction&) = delete;
+  WebcamPrivateRestoreCameraPresetFunction& operator=(
+      const WebcamPrivateRestoreCameraPresetFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.restoreCameraPreset",
                              WEBCAMPRIVATE_RESTORE_CAMERA_PRESET)
 
@@ -234,13 +257,17 @@ class WebcamPrivateRestoreCameraPresetFunction : public ExtensionFunction {
 
  private:
   void OnRestoreCameraPresetWebcam(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateRestoreCameraPresetFunction);
 };
 
 class WebcamPrivateSetCameraPresetFunction : public ExtensionFunction {
  public:
   WebcamPrivateSetCameraPresetFunction();
+
+  WebcamPrivateSetCameraPresetFunction(
+      const WebcamPrivateSetCameraPresetFunction&) = delete;
+  WebcamPrivateSetCameraPresetFunction& operator=(
+      const WebcamPrivateSetCameraPresetFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.setCameraPreset",
                              WEBCAMPRIVATE_SET_CAMERA_PRESET)
 
@@ -252,8 +279,6 @@ class WebcamPrivateSetCameraPresetFunction : public ExtensionFunction {
 
  private:
   void OnSetCameraPresetWebcam(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateSetCameraPresetFunction);
 };
 
 }  // namespace extensions

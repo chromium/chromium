@@ -185,8 +185,8 @@ struct MessageService::OpenChannelParams {
         channel_name(channel_name),
         include_guest_process_info(include_guest_process_info) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OpenChannelParams);
+  OpenChannelParams(const OpenChannelParams&) = delete;
+  OpenChannelParams& operator=(const OpenChannelParams&) = delete;
 };
 
 MessageService::MessageService(BrowserContext* context)

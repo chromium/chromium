@@ -84,6 +84,9 @@ class StreamContainer {
 class MimeHandlerViewGuest
     : public guest_view::GuestView<MimeHandlerViewGuest> {
  public:
+  MimeHandlerViewGuest(const MimeHandlerViewGuest&) = delete;
+  MimeHandlerViewGuest& operator=(const MimeHandlerViewGuest&) = delete;
+
   static guest_view::GuestViewBase* Create(
       content::WebContents* owner_web_contents);
 
@@ -212,8 +215,6 @@ class MimeHandlerViewGuest
       pending_before_unload_control_;
 
   base::WeakPtrFactory<MimeHandlerViewGuest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewGuest);
 };
 
 }  // namespace extensions

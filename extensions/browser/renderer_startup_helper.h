@@ -120,6 +120,10 @@ class RendererStartupHelper : public KeyedService,
 // compiler generate another object file.
 class RendererStartupHelperFactory : public BrowserContextKeyedServiceFactory {
  public:
+  RendererStartupHelperFactory(const RendererStartupHelperFactory&) = delete;
+  RendererStartupHelperFactory& operator=(const RendererStartupHelperFactory&) =
+      delete;
+
   static RendererStartupHelper* GetForBrowserContext(
       content::BrowserContext* context);
   static RendererStartupHelperFactory* GetInstance();
@@ -136,8 +140,6 @@ class RendererStartupHelperFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererStartupHelperFactory);
 };
 
 }  // namespace extensions

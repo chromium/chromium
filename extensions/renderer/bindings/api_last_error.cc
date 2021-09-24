@@ -26,6 +26,9 @@ class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
  public:
   explicit LastErrorObject(const std::string& error) : error_(error) {}
 
+  LastErrorObject(const LastErrorObject&) = delete;
+  LastErrorObject& operator=(const LastErrorObject&) = delete;
+
   static gin::WrapperInfo kWrapperInfo;
 
   // gin::Wrappable:
@@ -48,8 +51,6 @@ class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
  private:
   std::string error_;
   bool accessed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LastErrorObject);
 };
 
 gin::WrapperInfo LastErrorObject::kWrapperInfo = {gin::kEmbedderNativeGin};

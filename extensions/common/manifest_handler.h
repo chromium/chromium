@@ -122,6 +122,9 @@ class ManifestHandler {
 // The global registry for manifest handlers.
 class ManifestHandlerRegistry {
  public:
+  ManifestHandlerRegistry(const ManifestHandlerRegistry&) = delete;
+  ManifestHandlerRegistry& operator=(const ManifestHandlerRegistry&) = delete;
+
   // Get the one true instance.
   static ManifestHandlerRegistry* Get();
 
@@ -198,8 +201,6 @@ class ManifestHandlerRegistry {
   ManifestHandlerPriorityMap priority_map_;
 
   bool is_finalized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandlerRegistry);
 };
 
 }  // namespace extensions

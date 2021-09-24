@@ -31,6 +31,9 @@ class LoadWatcher : public content::RenderFrameObserver {
               base::OnceCallback<void(bool)> callback)
       : content::RenderFrameObserver(frame), callback_(std::move(callback)) {}
 
+  LoadWatcher(const LoadWatcher&) = delete;
+  LoadWatcher& operator=(const LoadWatcher&) = delete;
+
   void DidCreateDocumentElement() override {
     // Defer the callback instead of running it now to avoid re-entrancy caused
     // by the JavaScript callback.
@@ -51,8 +54,6 @@ class LoadWatcher : public content::RenderFrameObserver {
 
  private:
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadWatcher);
 };
 
 }  // namespace

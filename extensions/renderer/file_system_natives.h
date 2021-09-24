@@ -18,6 +18,9 @@ class FileSystemNatives : public ObjectBackedNativeHandler {
  public:
   explicit FileSystemNatives(ScriptContext* context);
 
+  FileSystemNatives(const FileSystemNatives&) = delete;
+  FileSystemNatives& operator=(const FileSystemNatives&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -26,8 +29,6 @@ class FileSystemNatives : public ObjectBackedNativeHandler {
   void GetIsolatedFileSystem(const v8::FunctionCallbackInfo<v8::Value>& args);
   void CrackIsolatedFileSystemName(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemNatives);
 };
 
 }  // namespace extensions

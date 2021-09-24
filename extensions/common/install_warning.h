@@ -21,6 +21,7 @@ struct InstallWarning {
   InstallWarning(const std::string& message,
                  const std::string& key,
                  const std::string& specific);
+  InstallWarning(const InstallWarning&) = delete;
   InstallWarning(InstallWarning&& other);
   InstallWarning& operator=(InstallWarning&& other);
   ~InstallWarning();
@@ -42,8 +43,6 @@ struct InstallWarning {
   // Optional - for specifying the incorrect portion of a key in the manifest
   // (e.g., an unrecognized permission "foo" in "permissions").
   std::string specific;
-
-  DISALLOW_COPY(InstallWarning);
 };
 
 // Let gtest print InstallWarnings.

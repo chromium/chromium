@@ -34,6 +34,9 @@ class GCCallback {
              base::OnceClosure callback,
              base::OnceClosure fallback);
 
+  GCCallback(const GCCallback&) = delete;
+  GCCallback& operator=(const GCCallback&) = delete;
+
  private:
   GCCallback(ScriptContext* context,
              const v8::Local<v8::Object>& object,
@@ -65,8 +68,6 @@ class GCCallback {
   base::OnceClosure fallback_;
 
   base::WeakPtrFactory<GCCallback> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCCallback);
 };
 
 }  // namespace extensions

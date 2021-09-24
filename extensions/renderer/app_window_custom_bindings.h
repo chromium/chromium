@@ -16,14 +16,15 @@ class AppWindowCustomBindings : public ObjectBackedNativeHandler {
  public:
   AppWindowCustomBindings(ScriptContext* context);
 
+  AppWindowCustomBindings(const AppWindowCustomBindings&) = delete;
+  AppWindowCustomBindings& operator=(const AppWindowCustomBindings&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
  private:
   void GetFrame(const v8::FunctionCallbackInfo<v8::Value>& args);
   void ResumeParser(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowCustomBindings);
 };
 
 }  // namespace extensions

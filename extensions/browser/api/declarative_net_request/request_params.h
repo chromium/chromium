@@ -34,6 +34,8 @@ struct RequestParams {
   explicit RequestParams(content::RenderFrameHost* host,
                          bool is_post_navigation);
   RequestParams();
+  RequestParams(const RequestParams&) = delete;
+  RequestParams& operator=(const RequestParams&) = delete;
   ~RequestParams();
 
   // This is a pointer to a GURL. Hence the GURL must outlive this struct.
@@ -68,8 +70,6 @@ struct RequestParams {
   // request. Cached for performance.
   mutable base::flat_map<const RegexRulesMatcher*, std::vector<RegexRuleInfo>>
       potential_regex_matches;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestParams);
 };
 
 }  // namespace declarative_net_request

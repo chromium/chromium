@@ -55,6 +55,10 @@ class ExtensionWebContentsObserver
     : public content::WebContentsObserver,
       public ExtensionFunctionDispatcher::Delegate {
  public:
+  ExtensionWebContentsObserver(const ExtensionWebContentsObserver&) = delete;
+  ExtensionWebContentsObserver& operator=(const ExtensionWebContentsObserver&) =
+      delete;
+
   // Returns the ExtensionWebContentsObserver for the given |web_contents|.
   static ExtensionWebContentsObserver* GetForWebContents(
       content::WebContents* web_contents);
@@ -142,8 +146,6 @@ class ExtensionWebContentsObserver
   // A map of render frame host to mojo remotes.
   std::map<content::RenderFrameHost*, mojo::AssociatedRemote<mojom::LocalFrame>>
       local_frame_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebContentsObserver);
 };
 
 }  // namespace extensions

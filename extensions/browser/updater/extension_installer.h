@@ -41,6 +41,9 @@ class ExtensionInstaller : public update_client::CrxInstaller {
                      bool install_immediately,
                      ExtensionInstallerCallback extension_installer_callback);
 
+  ExtensionInstaller(const ExtensionInstaller&) = delete;
+  ExtensionInstaller& operator=(const ExtensionInstaller&) = delete;
+
   // update_client::CrxInstaller::
   void OnUpdateError(int error) override;
 
@@ -67,8 +70,6 @@ class ExtensionInstaller : public update_client::CrxInstaller {
   base::FilePath extension_root_;
   bool install_immediately_;
   ExtensionInstallerCallback extension_installer_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstaller);
 };
 
 }  // namespace extensions

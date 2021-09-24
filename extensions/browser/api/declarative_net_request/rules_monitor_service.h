@@ -68,6 +68,9 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
     virtual ~TestObserver() = default;
   };
 
+  RulesMonitorService(const RulesMonitorService&) = delete;
+  RulesMonitorService& operator=(const RulesMonitorService&) = delete;
+
   // This is public so that it can be deleted by tests.
   ~RulesMonitorService() override;
 
@@ -257,8 +260,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.
   base::WeakPtrFactory<RulesMonitorService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RulesMonitorService);
 };
 
 }  // namespace declarative_net_request

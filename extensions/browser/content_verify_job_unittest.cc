@@ -723,6 +723,9 @@ class ContentMismatchUnittest
  public:
   ContentMismatchUnittest() {}
 
+  ContentMismatchUnittest(const ContentMismatchUnittest&) = delete;
+  ContentMismatchUnittest& operator=(const ContentMismatchUnittest&) = delete;
+
  protected:
   // Runs test to verify that a modified extension resource (background.js)
   // causes ContentVerifyJob to fail with HASH_MISMATCH. The string
@@ -751,9 +754,6 @@ class ContentMismatchUnittest
                                     modified_contents, run_mode));
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentMismatchUnittest);
 };
 
 INSTANTIATE_TEST_SUITE_P(ContentVerifyJobUnittest,
@@ -782,6 +782,11 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
       : hash_fetch_interceptor_(base::BindRepeating(
             &ContentVerifyJobWithHashFetchUnittest::InterceptHashFetch,
             base::Unretained(this))) {}
+
+  ContentVerifyJobWithHashFetchUnittest(
+      const ContentVerifyJobWithHashFetchUnittest&) = delete;
+  ContentVerifyJobWithHashFetchUnittest& operator=(
+      const ContentVerifyJobWithHashFetchUnittest&) = delete;
 
  protected:
   // Responds to hash fetch request.
@@ -840,8 +845,6 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
 
   // Copy of the contents of verified_contents.json.
   absl::optional<std::string> verified_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJobWithHashFetchUnittest);
 };
 
 // Regression test for https://crbug.com/995436.

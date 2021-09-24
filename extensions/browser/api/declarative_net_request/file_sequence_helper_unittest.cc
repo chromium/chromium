@@ -69,6 +69,9 @@ class FileSequenceHelperTest : public ExtensionsTest {
  public:
   FileSequenceHelperTest() = default;
 
+  FileSequenceHelperTest(const FileSequenceHelperTest&) = delete;
+  FileSequenceHelperTest& operator=(const FileSequenceHelperTest&) = delete;
+
   // ExtensionsTest overrides:
   void SetUp() override {
     ExtensionsTest::SetUp();
@@ -207,8 +210,6 @@ class FileSequenceHelperTest : public ExtensionsTest {
 
   // Required to use DataDecoder's JSON parsing for re-indexing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSequenceHelperTest);
 };
 
 TEST_F(FileSequenceHelperTest, NoRulesetsToLoad) {

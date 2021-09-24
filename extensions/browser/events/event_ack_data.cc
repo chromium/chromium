@@ -40,14 +40,15 @@ class EventAckData::CoreThreadEventInfo
  public:
   CoreThreadEventInfo() = default;
 
+  CoreThreadEventInfo(const CoreThreadEventInfo&) = delete;
+  CoreThreadEventInfo& operator=(const CoreThreadEventInfo&) = delete;
+
   // Map of event information keyed by event_id.
   std::map<int, EventInfo> event_map;
 
  private:
   friend class base::RefCountedThreadSafe<CoreThreadEventInfo>;
   ~CoreThreadEventInfo() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreThreadEventInfo);
 };
 
 EventAckData::EventAckData()

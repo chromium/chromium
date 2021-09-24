@@ -23,6 +23,9 @@ class TestRulesRegistry : public RulesRegistry {
                     RulesCacheDelegate* cache_delegate,
                     int rules_registry_id);
 
+  TestRulesRegistry(const TestRulesRegistry&) = delete;
+  TestRulesRegistry& operator=(const TestRulesRegistry&) = delete;
+
   // RulesRegistry implementation:
   std::string AddRulesImpl(
       const std::string& extension_id,
@@ -43,8 +46,6 @@ class TestRulesRegistry : public RulesRegistry {
   // The string that gets returned by the implementation functions of
   // RulesRegistry. Defaults to "".
   std::string result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesRegistry);
 };
 
 }  // namespace extensions

@@ -60,6 +60,8 @@ struct DetectedLanguage {
 // array of DetectedLanguage
 struct LanguageDetectionResult {
   LanguageDetectionResult() {}
+  LanguageDetectionResult(const LanguageDetectionResult&) = delete;
+  LanguageDetectionResult& operator=(const LanguageDetectionResult&) = delete;
   ~LanguageDetectionResult() {}
 
   // Returns a new v8::Local<v8::Value> representing the serialized form of
@@ -72,9 +74,6 @@ struct LanguageDetectionResult {
   // Array of detectedLanguage of size 1-3. The null is returned if
   // there were no languages detected
   std::vector<DetectedLanguage> languages;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionResult);
 };
 
 v8::Local<v8::Value> DetectedLanguage::ToV8(v8::Isolate* isolate) const {

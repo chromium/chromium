@@ -66,6 +66,7 @@ struct IndexAndPersistJSONRulesetResult {
       const IndexAndPersistJSONRulesetResult&) = delete;
 
   ~IndexAndPersistJSONRulesetResult();
+
   IndexAndPersistJSONRulesetResult(IndexAndPersistJSONRulesetResult&&);
   IndexAndPersistJSONRulesetResult& operator=(
       IndexAndPersistJSONRulesetResult&&);
@@ -121,9 +122,13 @@ struct ReadJSONRulesResult {
                                                std::string error);
 
   ReadJSONRulesResult();
-  ~ReadJSONRulesResult();
+  ReadJSONRulesResult(const ReadJSONRulesResult&) = delete;
   ReadJSONRulesResult(ReadJSONRulesResult&&);
+
+  ReadJSONRulesResult& operator=(const ReadJSONRulesResult&) = delete;
   ReadJSONRulesResult& operator=(ReadJSONRulesResult&&);
+
+  ~ReadJSONRulesResult();
 
   Status status = Status::kSuccess;
 
@@ -135,9 +140,6 @@ struct ReadJSONRulesResult {
 
   // Populated on error.
   std::string error;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadJSONRulesResult);
 };
 
 // A Ruleset source which is backed on disk. The indexed version of such a

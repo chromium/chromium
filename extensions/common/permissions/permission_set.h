@@ -40,6 +40,9 @@ class PermissionSet {
                 ManifestPermissionSet manifest_permissions,
                 URLPatternSet explicit_hosts,
                 URLPatternSet scriptable_hosts);
+
+  PermissionSet& operator=(const PermissionSet&) = delete;
+
   ~PermissionSet();
 
   PermissionSet(PermissionSet&& other);
@@ -177,8 +180,6 @@ class PermissionSet {
       UNINITIALIZED;
   mutable ShouldWarnAllHostsType api_permissions_should_warn_all_hosts_ =
       UNINITIALIZED;
-
-  DISALLOW_ASSIGN(PermissionSet);
 };
 
 }  // namespace extensions

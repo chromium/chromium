@@ -116,6 +116,9 @@ class WebViewFindHelper {
              blink::mojom::FindOptionsPtr options,
              scoped_refptr<WebViewInternalFindFunction> find_function);
 
+    FindInfo(const FindInfo&) = delete;
+    FindInfo& operator=(const FindInfo&) = delete;
+
     // Add another request to |find_next_requests_|.
     void AddFindNextRequest(const base::WeakPtr<FindInfo>& request) {
       find_next_requests_.push_back(request);
@@ -167,8 +170,6 @@ class WebViewFindHelper {
                                                   bool canceled);
 
     base::WeakPtrFactory<FindInfo> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(FindInfo);
   };
 
   // Pointer to the webview that is being helped.

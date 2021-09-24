@@ -99,6 +99,10 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
         hidden_callback_(std::move(hidden_callback)),
         hidden_observed_(false) {}
 
+  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
+  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
+      delete;
+
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
     if (visibility == content::Visibility::HIDDEN) {
@@ -112,8 +116,6 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
  private:
   base::RepeatingClosure hidden_callback_;
   bool hidden_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
 };
 
 // Handles |request| by serving a redirect response.

@@ -41,6 +41,9 @@ class DNRManifestTest : public testing::Test {
  public:
   DNRManifestTest() = default;
 
+  DNRManifestTest(const DNRManifestTest&) = delete;
+  DNRManifestTest& operator=(const DNRManifestTest&) = delete;
+
  protected:
   // Loads the extension and verifies the |expected_error|.
   void LoadAndExpectError(const std::string& expected_error) {
@@ -111,8 +114,6 @@ class DNRManifestTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRManifestTest);
 };
 
 TEST_F(DNRManifestTest, EmptyRuleset) {

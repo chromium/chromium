@@ -115,7 +115,10 @@ class DirectiveStatus {
   DirectiveStatus(std::initializer_list<const char*> directives)
       : directive_names_(directives.begin(), directives.end()) {}
 
+  DirectiveStatus(const DirectiveStatus&) = delete;
   DirectiveStatus(DirectiveStatus&&) = default;
+
+  DirectiveStatus& operator=(const DirectiveStatus&) = delete;
   DirectiveStatus& operator=(DirectiveStatus&&) = default;
 
   // Returns true if |directive_name| matches this DirectiveStatus.
@@ -140,8 +143,6 @@ class DirectiveStatus {
   std::vector<std::string> directive_names_;
   // Whether or not we've seen any directive name that matches |this|.
   bool seen_in_policy_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectiveStatus);
 };
 
 // Returns whether |url| starts with |scheme_and_separator| and does not have a
@@ -328,6 +329,9 @@ class CSPDirectiveToken {
   explicit CSPDirectiveToken(const Directive& directive)
       : directive_(directive) {}
 
+  CSPDirectiveToken(const CSPDirectiveToken&) = delete;
+  CSPDirectiveToken& operator=(const CSPDirectiveToken&) = delete;
+
   // Returns true if this token affects |status|. In that case, the token's
   // directive values are secured by |secure_function|.
   bool MatchAndUpdateStatus(DirectiveStatus* status,
@@ -360,8 +364,6 @@ class CSPDirectiveToken {
  private:
   const Directive& directive_;
   absl::optional<std::string> secure_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPDirectiveToken);
 };
 
 // Class responsible for parsing a given CSP string |policy|, and enforcing
@@ -483,6 +485,9 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
       secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
   }
 
+  ExtensionCSPEnforcer(const ExtensionCSPEnforcer&) = delete;
+  ExtensionCSPEnforcer& operator=(const ExtensionCSPEnforcer&) = delete;
+
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
     if (status.Matches(kObjectSrc))
@@ -490,9 +495,6 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCSPEnforcer);
 };
 
 class AppSandboxPageCSPEnforcer : public CSPEnforcer {
@@ -506,6 +508,10 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
   }
 
+  AppSandboxPageCSPEnforcer(const AppSandboxPageCSPEnforcer&) = delete;
+  AppSandboxPageCSPEnforcer& operator=(const AppSandboxPageCSPEnforcer&) =
+      delete;
+
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
     if (status.Matches(kChildSrc))
@@ -513,9 +519,6 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kAppSandboxScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSandboxPageCSPEnforcer);
 };
 
 }  //  namespace

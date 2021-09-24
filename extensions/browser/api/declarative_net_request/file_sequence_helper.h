@@ -34,13 +34,13 @@ struct RulesCountPair;
 class RulesetInfo {
  public:
   explicit RulesetInfo(FileBackedRulesetSource source);
-
   RulesetInfo(const RulesetInfo&) = delete;
+  RulesetInfo(RulesetInfo&&);
+
   RulesetInfo& operator=(const RulesetInfo&) = delete;
+  RulesetInfo& operator=(RulesetInfo&&);
 
   ~RulesetInfo();
-  RulesetInfo(RulesetInfo&&);
-  RulesetInfo& operator=(RulesetInfo&&);
 
   const FileBackedRulesetSource& source() const { return source_; }
 
@@ -97,15 +97,16 @@ class RulesetInfo {
 // Helper to pass information related to the ruleset being loaded.
 struct LoadRequestData {
   explicit LoadRequestData(ExtensionId extension_id);
-  ~LoadRequestData();
+  LoadRequestData(const LoadRequestData&) = delete;
   LoadRequestData(LoadRequestData&&);
+
+  LoadRequestData& operator=(const LoadRequestData&) = delete;
   LoadRequestData& operator=(LoadRequestData&&);
+
+  ~LoadRequestData();
 
   ExtensionId extension_id;
   std::vector<RulesetInfo> rulesets;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoadRequestData);
 };
 
 //  Helper class for file sequence operations for the declarative net request

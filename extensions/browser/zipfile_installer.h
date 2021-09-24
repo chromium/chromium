@@ -33,6 +33,9 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
                                                const base::FilePath& unzip_dir,
                                                const std::string& error)>;
 
+  ZipFileInstaller(const ZipFileInstaller&) = delete;
+  ZipFileInstaller& operator=(const ZipFileInstaller&) = delete;
+
   // Creates a ZipFileInstaller that invokes |done_callback| when done.
   static scoped_refptr<ZipFileInstaller> Create(
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
@@ -88,8 +91,6 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ZipFileInstaller);
 };
 
 }  // namespace extensions

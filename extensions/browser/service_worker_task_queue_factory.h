@@ -15,6 +15,10 @@ class ServiceWorkerTaskQueue;
 
 class ServiceWorkerTaskQueueFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ServiceWorkerTaskQueueFactory(const ServiceWorkerTaskQueueFactory&) = delete;
+  ServiceWorkerTaskQueueFactory& operator=(
+      const ServiceWorkerTaskQueueFactory&) = delete;
+
   static ServiceWorkerTaskQueue* GetForBrowserContext(
       content::BrowserContext* context);
   static ServiceWorkerTaskQueueFactory* GetInstance();
@@ -30,8 +34,6 @@ class ServiceWorkerTaskQueueFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerTaskQueueFactory);
 };
 
 }  // namespace extensions

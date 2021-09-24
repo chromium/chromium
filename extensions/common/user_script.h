@@ -110,6 +110,10 @@ class UserScript {
   // Constructor. Default the run location to document end, which is like
   // Greasemonkey and probably more useful for typical scripts.
   UserScript();
+
+  UserScript(const UserScript&) = delete;
+  UserScript& operator=(const UserScript&) = delete;
+
   ~UserScript();
 
   // Performs a copy of all fields except file contents.
@@ -314,8 +318,6 @@ class UserScript {
 
   // True if the script should be injected into an incognito tab.
   bool incognito_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScript);
 };
 
 using UserScriptList = std::vector<std::unique_ptr<UserScript>>;

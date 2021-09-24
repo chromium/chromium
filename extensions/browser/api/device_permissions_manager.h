@@ -140,6 +140,9 @@ class DevicePermissions {
 // Manages saved device permissions for all extensions.
 class DevicePermissionsManager : public KeyedService {
  public:
+  DevicePermissionsManager(const DevicePermissionsManager&) = delete;
+  DevicePermissionsManager& operator=(const DevicePermissionsManager&) = delete;
+
   static DevicePermissionsManager* Get(content::BrowserContext* context);
 
   static std::u16string GetPermissionMessage(
@@ -191,13 +194,16 @@ class DevicePermissionsManager : public KeyedService {
   base::ThreadChecker thread_checker_;
   content::BrowserContext* context_;
   std::map<std::string, DevicePermissions*> extension_id_to_device_permissions_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsManager);
 };
 
 class DevicePermissionsManagerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  DevicePermissionsManagerFactory(const DevicePermissionsManagerFactory&) =
+      delete;
+  DevicePermissionsManagerFactory& operator=(
+      const DevicePermissionsManagerFactory&) = delete;
+
   static DevicePermissionsManager* GetForBrowserContext(
       content::BrowserContext* context);
   static DevicePermissionsManagerFactory* GetInstance();
@@ -213,8 +219,6 @@ class DevicePermissionsManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsManagerFactory);
 };
 
 }  // namespace extensions

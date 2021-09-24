@@ -66,6 +66,9 @@ class FeatureSwitch {
                 const char* switch_name,
                 DefaultValue default_value);
 
+  FeatureSwitch(const FeatureSwitch&) = delete;
+  FeatureSwitch& operator=(const FeatureSwitch&) = delete;
+
   // Consider using ScopedOverride instead.
   void SetOverrideValue(OverrideValue value);
   OverrideValue GetOverrideValue() const;
@@ -83,8 +86,6 @@ class FeatureSwitch {
   bool default_value_;
   OverrideValue override_value_;
   mutable absl::optional<bool> cached_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureSwitch);
 };
 
 }  // namespace extensions

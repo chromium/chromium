@@ -227,6 +227,9 @@ class AppWindow : public content::WebContentsDelegate,
             AppDelegate* app_delegate,
             const Extension* extension);
 
+  AppWindow(const AppWindow&) = delete;
+  AppWindow& operator=(const AppWindow&) = delete;
+
   // Initializes the render interface, web contents, and native window.
   // |app_window_contents| will become owned by AppWindow.
   void Init(const GURL& url,
@@ -590,8 +593,6 @@ class AppWindow : public content::WebContentsDelegate,
   bool did_finish_first_navigation_ = false;
 
   base::WeakPtrFactory<AppWindow> image_loader_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindow);
 };
 
 }  // namespace extensions

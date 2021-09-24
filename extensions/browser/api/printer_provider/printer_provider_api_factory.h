@@ -24,6 +24,10 @@ namespace extensions {
 // Factory for PrinterProviderAPI.
 class PrinterProviderAPIFactory : public BrowserContextKeyedServiceFactory {
  public:
+  PrinterProviderAPIFactory(const PrinterProviderAPIFactory&) = delete;
+  PrinterProviderAPIFactory& operator=(const PrinterProviderAPIFactory&) =
+      delete;
+
   static PrinterProviderAPIFactory* GetInstance();
 
   PrinterProviderAPI* GetForBrowserContext(content::BrowserContext* context);
@@ -39,8 +43,6 @@ class PrinterProviderAPIFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderAPIFactory);
 };
 
 }  // namespace extensions

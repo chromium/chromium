@@ -391,6 +391,9 @@ class ExtensionFunction::RenderFrameHostTracker
             WebContents::FromRenderFrameHost(function->render_frame_host())),
         function_(function) {}
 
+  RenderFrameHostTracker(const RenderFrameHostTracker&) = delete;
+  RenderFrameHostTracker& operator=(const RenderFrameHostTracker&) = delete;
+
  private:
   // content::WebContentsObserver:
   void RenderFrameDeleted(
@@ -406,8 +409,6 @@ class ExtensionFunction::RenderFrameHostTracker
   }
 
   ExtensionFunction* function_;  // Owns us.
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostTracker);
 };
 
 ExtensionFunction::ExtensionFunction() {

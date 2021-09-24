@@ -532,6 +532,10 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
 
 class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
+  ExtensionURLLoaderFactory(const ExtensionURLLoaderFactory&) = delete;
+  ExtensionURLLoaderFactory& operator=(const ExtensionURLLoaderFactory&) =
+      delete;
+
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       content::BrowserContext* browser_context,
       ukm::SourceIdObj ukm_source_id,
@@ -877,8 +881,6 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   scoped_refptr<extensions::InfoMap> extension_info_map_;
 
   base::CallbackListSubscription browser_context_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionURLLoaderFactory);
 };
 
 }  // namespace

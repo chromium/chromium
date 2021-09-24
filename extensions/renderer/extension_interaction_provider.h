@@ -73,6 +73,11 @@ class ExtensionInteractionProvider : public InteractionProvider {
   };
 
   ExtensionInteractionProvider();
+
+  ExtensionInteractionProvider(const ExtensionInteractionProvider&) = delete;
+  ExtensionInteractionProvider& operator=(const ExtensionInteractionProvider&) =
+      delete;
+
   ~ExtensionInteractionProvider() override;
 
   // Returns true if |v8_context| has an active interaction.
@@ -85,9 +90,6 @@ class ExtensionInteractionProvider : public InteractionProvider {
       v8::Local<v8::Context> v8_context,
       std::unique_ptr<InteractionProvider::Token> token) const override;
   bool HasActiveInteraction(v8::Local<v8::Context> v8_context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInteractionProvider);
 };
 
 }  // namespace extensions

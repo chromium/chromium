@@ -179,6 +179,9 @@ class ExtensionPrefs : public KeyedService {
       const std::vector<EarlyExtensionPrefsObserver*>& early_observers,
       base::Clock* clock);
 
+  ExtensionPrefs(const ExtensionPrefs&) = delete;
+  ExtensionPrefs& operator=(const ExtensionPrefs&) = delete;
+
   ~ExtensionPrefs() override;
 
   // Convenience function to get the ExtensionPrefs for a BrowserContext.
@@ -933,8 +936,6 @@ class ExtensionPrefs : public KeyedService {
   bool extensions_disabled_;
 
   base::ObserverList<ExtensionPrefsObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefs);
 };
 
 }  // namespace extensions

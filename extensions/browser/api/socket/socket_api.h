@@ -515,6 +515,9 @@ class SocketSecureFunction : public SocketApiFunction {
   DECLARE_EXTENSION_FUNCTION("socket.secure", SOCKET_SECURE)
   SocketSecureFunction();
 
+  SocketSecureFunction(const SocketSecureFunction&) = delete;
+  SocketSecureFunction& operator=(const SocketSecureFunction&) = delete;
+
  protected:
   ~SocketSecureFunction() override;
 
@@ -531,8 +534,6 @@ class SocketSecureFunction : public SocketApiFunction {
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
   std::unique_ptr<api::socket::Secure::Params> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketSecureFunction);
 };
 
 }  // namespace extensions

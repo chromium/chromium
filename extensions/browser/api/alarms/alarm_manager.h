@@ -39,6 +39,10 @@ struct Alarm {
         const api::alarms::AlarmCreateInfo& create_info,
         base::TimeDelta min_granularity,
         base::Time now);
+
+  Alarm(const Alarm&) = delete;
+  Alarm& operator=(const Alarm&) = delete;
+
   ~Alarm();
 
   std::unique_ptr<api::alarms::Alarm> js_alarm;
@@ -51,9 +55,6 @@ struct Alarm {
   // The minimum granularity is the minimum allowed polling rate. This stops
   // alarms from polling too often.
   base::TimeDelta minimum_granularity;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Alarm);
 };
 
 // Manages the currently pending alarms for every extension in a profile.

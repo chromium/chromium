@@ -22,6 +22,10 @@ class LockScreenDataCreateFunction : public ExtensionFunction {
  public:
   LockScreenDataCreateFunction();
 
+  LockScreenDataCreateFunction(const LockScreenDataCreateFunction&) = delete;
+  LockScreenDataCreateFunction& operator=(const LockScreenDataCreateFunction&) =
+      delete;
+
  private:
   ~LockScreenDataCreateFunction() override;
 
@@ -31,12 +35,15 @@ class LockScreenDataCreateFunction : public ExtensionFunction {
               const lock_screen_data::DataItem* item);
 
   DECLARE_EXTENSION_FUNCTION("lockScreen.data.create", LOCKSCREENDATA_CREATE)
-  DISALLOW_COPY_AND_ASSIGN(LockScreenDataCreateFunction);
 };
 
 class LockScreenDataGetAllFunction : public ExtensionFunction {
  public:
   LockScreenDataGetAllFunction();
+
+  LockScreenDataGetAllFunction(const LockScreenDataGetAllFunction&) = delete;
+  LockScreenDataGetAllFunction& operator=(const LockScreenDataGetAllFunction&) =
+      delete;
 
  private:
   ~LockScreenDataGetAllFunction() override;
@@ -46,12 +53,16 @@ class LockScreenDataGetAllFunction : public ExtensionFunction {
   void OnDone(const std::vector<const lock_screen_data::DataItem*>& items);
 
   DECLARE_EXTENSION_FUNCTION("lockScreen.data.getAll", LOCKSCREENDATA_GETALL)
-  DISALLOW_COPY_AND_ASSIGN(LockScreenDataGetAllFunction);
 };
 
 class LockScreenDataGetContentFunction : public ExtensionFunction {
  public:
   LockScreenDataGetContentFunction();
+
+  LockScreenDataGetContentFunction(const LockScreenDataGetContentFunction&) =
+      delete;
+  LockScreenDataGetContentFunction& operator=(
+      const LockScreenDataGetContentFunction&) = delete;
 
  private:
   ~LockScreenDataGetContentFunction() override;
@@ -63,12 +74,16 @@ class LockScreenDataGetContentFunction : public ExtensionFunction {
 
   DECLARE_EXTENSION_FUNCTION("lockScreen.data.getContent",
                              LOCKSCREENDATA_GETCONTENT)
-  DISALLOW_COPY_AND_ASSIGN(LockScreenDataGetContentFunction);
 };
 
 class LockScreenDataSetContentFunction : public ExtensionFunction {
  public:
   LockScreenDataSetContentFunction();
+
+  LockScreenDataSetContentFunction(const LockScreenDataSetContentFunction&) =
+      delete;
+  LockScreenDataSetContentFunction& operator=(
+      const LockScreenDataSetContentFunction&) = delete;
 
  private:
   ~LockScreenDataSetContentFunction() override;
@@ -79,12 +94,15 @@ class LockScreenDataSetContentFunction : public ExtensionFunction {
 
   DECLARE_EXTENSION_FUNCTION("lockScreen.data.setContent",
                              LOCKSCREENDATA_SETCONTENT)
-  DISALLOW_COPY_AND_ASSIGN(LockScreenDataSetContentFunction);
 };
 
 class LockScreenDataDeleteFunction : public ExtensionFunction {
  public:
   LockScreenDataDeleteFunction();
+
+  LockScreenDataDeleteFunction(const LockScreenDataDeleteFunction&) = delete;
+  LockScreenDataDeleteFunction& operator=(const LockScreenDataDeleteFunction&) =
+      delete;
 
  private:
   ~LockScreenDataDeleteFunction() override;
@@ -94,8 +112,6 @@ class LockScreenDataDeleteFunction : public ExtensionFunction {
   void OnDone(lock_screen_data::OperationResult result);
 
   DECLARE_EXTENSION_FUNCTION("lockScreen.data.delete", LOCKSCREENDATA_DELETE)
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenDataDeleteFunction);
 };
 
 }  // namespace extensions

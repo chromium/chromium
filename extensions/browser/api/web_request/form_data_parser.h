@@ -49,6 +49,9 @@ class FormDataParser {
     base::Value value_;
   };
 
+  FormDataParser(const FormDataParser&) = delete;
+  FormDataParser& operator=(const FormDataParser&) = delete;
+
   virtual ~FormDataParser();
 
   // Creates a correct parser instance based on the |request_headers|. Returns
@@ -82,9 +85,6 @@ class FormDataParser {
 
  protected:
   FormDataParser();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormDataParser);
 };
 
 }  // namespace extensions

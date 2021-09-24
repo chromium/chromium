@@ -29,6 +29,10 @@ struct ScriptsRunInfo {
 
   ScriptsRunInfo(content::RenderFrame* render_frame,
                  mojom::RunLocation location);
+
+  ScriptsRunInfo(const ScriptsRunInfo&) = delete;
+  ScriptsRunInfo& operator=(const ScriptsRunInfo&) = delete;
+
   ~ScriptsRunInfo();
 
   // The number of CSS scripts injected.
@@ -62,8 +66,6 @@ struct ScriptsRunInfo {
 
   // The url of the frame, preserved for the same reason as the routing id.
   GURL frame_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptsRunInfo);
 };
 
 }  // namespace extensions

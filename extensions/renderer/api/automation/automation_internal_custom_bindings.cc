@@ -551,6 +551,9 @@ class AutomationMessageFilter : public IPC::MessageFilter {
     content::RenderThread::Get()->AddFilter(this);
   }
 
+  AutomationMessageFilter(const AutomationMessageFilter&) = delete;
+  AutomationMessageFilter& operator=(const AutomationMessageFilter&) = delete;
+
   void Detach() {
     owner_ = nullptr;
     Remove();
@@ -589,8 +592,6 @@ class AutomationMessageFilter : public IPC::MessageFilter {
   AutomationInternalCustomBindings* owner_;
   bool removed_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationMessageFilter);
 };
 
 AutomationInternalCustomBindings::AutomationInternalCustomBindings(

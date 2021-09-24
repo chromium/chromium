@@ -73,6 +73,9 @@ class FeatureProviderStatic {
     }
   }
 
+  FeatureProviderStatic(const FeatureProviderStatic&) = delete;
+  FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
+
   FeatureProvider* GetFeatures(const std::string& name) const {
     auto it = feature_providers_.find(name);
     if (it == feature_providers_.end())
@@ -82,8 +85,6 @@ class FeatureProviderStatic {
 
  private:
   std::map<std::string, std::unique_ptr<FeatureProvider>> feature_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureProviderStatic);
 };
 
 base::LazyInstance<FeatureProviderStatic>::Leaky g_feature_provider_static =

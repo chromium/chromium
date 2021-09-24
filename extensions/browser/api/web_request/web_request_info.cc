@@ -153,10 +153,6 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
 }  // namespace
 
 WebRequestInfoInitParams::WebRequestInfoInitParams() = default;
-WebRequestInfoInitParams::WebRequestInfoInitParams(
-    WebRequestInfoInitParams&& other) = default;
-WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
-    WebRequestInfoInitParams&& other) = default;
 
 WebRequestInfoInitParams::WebRequestInfoInitParams(
     uint64_t request_id,
@@ -195,6 +191,12 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
         CreateRequestBodyData(method, extra_request_headers, data_sources);
   }
 }
+
+WebRequestInfoInitParams::WebRequestInfoInitParams(
+    WebRequestInfoInitParams&& other) = default;
+
+WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
+    WebRequestInfoInitParams&& other) = default;
 
 WebRequestInfoInitParams::~WebRequestInfoInitParams() = default;
 

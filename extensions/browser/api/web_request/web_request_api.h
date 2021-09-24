@@ -180,6 +180,10 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   };
 
   explicit WebRequestAPI(content::BrowserContext* context);
+
+  WebRequestAPI(const WebRequestAPI&) = delete;
+  WebRequestAPI& operator=(const WebRequestAPI&) = delete;
+
   ~WebRequestAPI() override;
 
   // BrowserContextKeyedAPI support:
@@ -280,8 +284,6 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Stores the last result of |MayHaveProxies()|, so it can be used in
   // |UpdateMayHaveProxies()|.
   bool may_have_proxies_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestAPI);
 };
 
 // This class observes network events and routes them to the appropriate
@@ -590,6 +592,10 @@ class ExtensionWebRequestEventRouter {
     };
 
     EventListener(ID id);
+
+    EventListener(const EventListener&) = delete;
+    EventListener& operator=(const EventListener&) = delete;
+
     ~EventListener();
 
     const ID id;
@@ -598,9 +604,6 @@ class ExtensionWebRequestEventRouter {
     RequestFilter filter;
     int extra_info_spec = 0;
     std::unordered_set<uint64_t> blocked_requests;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EventListener);
   };
 
   using RawListeners = std::vector<EventListener*>;
@@ -622,6 +625,11 @@ class ExtensionWebRequestEventRouter {
   using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
   ExtensionWebRequestEventRouter();
+
+  ExtensionWebRequestEventRouter(const ExtensionWebRequestEventRouter&) =
+      delete;
+  ExtensionWebRequestEventRouter& operator=(
+      const ExtensionWebRequestEventRouter&) = delete;
 
   // This instance is leaked.
   ~ExtensionWebRequestEventRouter() = delete;
@@ -787,8 +795,6 @@ class ExtensionWebRequestEventRouter {
   // respective rules registry.
   std::map<RulesRegistryKey,
       scoped_refptr<extensions::WebRequestRulesRegistry> > rules_registries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebRequestEventRouter);
 };
 
 class WebRequestInternalFunction : public ExtensionFunction {

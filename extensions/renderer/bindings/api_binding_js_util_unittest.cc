@@ -31,6 +31,10 @@ const char kHandleException[] =
 }  // namespace
 
 class APIBindingJSUtilUnittest : public APIBindingsSystemTest {
+ public:
+  APIBindingJSUtilUnittest(const APIBindingJSUtilUnittest&) = delete;
+  APIBindingJSUtilUnittest& operator=(const APIBindingJSUtilUnittest&) = delete;
+
  protected:
   APIBindingJSUtilUnittest() {}
   ~APIBindingJSUtilUnittest() override {}
@@ -85,8 +89,6 @@ class APIBindingJSUtilUnittest : public APIBindingsSystemTest {
 
  private:
   std::vector<std::string> console_errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingJSUtilUnittest);
 };
 
 TEST_F(APIBindingJSUtilUnittest, TestSetLastError) {

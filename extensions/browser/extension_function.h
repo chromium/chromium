@@ -115,6 +115,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   ExtensionFunction();
 
+  ExtensionFunction(const ExtensionFunction&) = delete;
+  ExtensionFunction& operator=(const ExtensionFunction&) = delete;
+
   static void EnsureShutdownNotifierFactoryBuilt();
 
   // Returns true if the function has permission to run.
@@ -614,8 +617,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   std::vector<std::string> transferred_blob_uuids_;
 
   int worker_thread_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionFunction);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_FUNCTION_H_

@@ -41,6 +41,8 @@ class BaseClass : public base::RefCounted<BaseClass> {
 class Foo : public BaseClass {
  public:
   explicit Foo(int parameter) : BaseClass(FOO), parameter_(parameter) {}
+  Foo(const Foo&) = delete;
+  Foo& operator=(const Foo&) = delete;
   bool Equals(const BaseClass* other) const override {
     return other->type() == type() &&
            static_cast<const Foo*>(other)->parameter_ == parameter_;
@@ -55,7 +57,6 @@ class Foo : public BaseClass {
 
   // Note that this class must be immutable.
   const int parameter_;
-  DISALLOW_COPY_AND_ASSIGN(Foo);
 };
 
 scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,

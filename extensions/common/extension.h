@@ -156,6 +156,9 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // This is the highest bit index of the flags defined above.
   static const int kInitFromValueFlagBits;
 
+  Extension(const Extension&) = delete;
+  Extension& operator=(const Extension&) = delete;
+
   static scoped_refptr<Extension> Create(const base::FilePath& path,
                                          mojom::ManifestLocation location,
                                          const base::DictionaryValue& value,
@@ -471,8 +474,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // A dynamic ID that can be used when referencing extension resources via URL
   // instead of an extension ID.
   base::GUID guid_;
-
-  DISALLOW_COPY_AND_ASSIGN(Extension);
 };
 
 typedef std::vector<scoped_refptr<const Extension> > ExtensionList;
@@ -483,6 +484,8 @@ struct ExtensionInfo {
                 const ExtensionId& id,
                 const base::FilePath& path,
                 mojom::ManifestLocation location);
+  ExtensionInfo(const ExtensionInfo&) = delete;
+  ExtensionInfo& operator=(const ExtensionInfo&) = delete;
   ~ExtensionInfo();
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the
@@ -492,9 +495,6 @@ struct ExtensionInfo {
   ExtensionId extension_id;
   base::FilePath extension_path;
   mojom::ManifestLocation extension_location;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInfo);
 };
 
 // The details sent for EXTENSION_PERMISSIONS_UPDATED notifications.

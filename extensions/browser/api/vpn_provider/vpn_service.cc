@@ -161,6 +161,9 @@ class VpnService::VpnServiceProxyImpl : public content::VpnServiceProxy {
  public:
   explicit VpnServiceProxyImpl(base::WeakPtr<VpnService> vpn_service);
 
+  VpnServiceProxyImpl(const VpnServiceProxyImpl&) = delete;
+  VpnServiceProxyImpl& operator=(const VpnServiceProxyImpl&) = delete;
+
   void Bind(const std::string& extension_id,
             const std::string& configuration_id,
             const std::string& configuration_name,
@@ -175,8 +178,6 @@ class VpnService::VpnServiceProxyImpl : public content::VpnServiceProxy {
 
  private:
   base::WeakPtr<VpnService> vpn_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnServiceProxyImpl);
 };
 
 VpnService::VpnServiceProxyImpl::VpnServiceProxyImpl(

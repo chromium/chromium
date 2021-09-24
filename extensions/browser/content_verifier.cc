@@ -255,6 +255,9 @@ class ContentVerifier::HashHelper {
    public:
     IsCancelledChecker() {}
 
+    IsCancelledChecker(const IsCancelledChecker&) = delete;
+    IsCancelledChecker& operator=(const IsCancelledChecker&) = delete;
+
     // Safe to call from any thread.
     void Cancel() {
       base::AutoLock autolock(cancelled_lock_);
@@ -277,8 +280,6 @@ class ContentVerifier::HashHelper {
 
     // A lock for synchronizing access to |cancelled_|.
     base::Lock cancelled_lock_;
-
-    DISALLOW_COPY_AND_ASSIGN(IsCancelledChecker);
   };
 
   // Holds information about each call to HashHelper::GetContentHash(), for a

@@ -48,6 +48,9 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   IndexHelper(LoadRequestData data, IndexCallback callback)
       : data_(std::move(data)), callback_(std::move(callback)) {}
 
+  IndexHelper(const IndexHelper&) = delete;
+  IndexHelper& operator=(const IndexHelper&) = delete;
+
   // Starts indexing rulesets. Must be called on the extension file task runner.
   void Start(uint8_t parse_flags) {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
@@ -137,8 +140,6 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   // We use a single shared Data Decoder service instance to process all of the
   // rulesets for this IndexHelper.
   data_decoder::DataDecoder decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexHelper);
 };
 
 UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {

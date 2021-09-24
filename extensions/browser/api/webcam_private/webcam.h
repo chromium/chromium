@@ -36,6 +36,9 @@ class Webcam : public base::RefCounted<Webcam> {
 
   Webcam();
 
+  Webcam(const Webcam&) = delete;
+  Webcam& operator=(const Webcam&) = delete;
+
   using GetPTZCompleteCallback = base::RepeatingCallback<
       void(bool success, int value, int min_value, int max_value)>;
   using SetPTZCompleteCallback = base::RepeatingCallback<void(bool success)>;
@@ -75,9 +78,6 @@ class Webcam : public base::RefCounted<Webcam> {
  protected:
   friend class base::RefCounted<Webcam>;
   virtual ~Webcam();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Webcam);
 };
 
 class WebcamResource : public ApiResource {

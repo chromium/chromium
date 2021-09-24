@@ -118,6 +118,9 @@ class Handler : public content::WebContentsObserver {
       Finish();
   }
 
+  Handler(const Handler&) = delete;
+  Handler& operator=(const Handler&) = delete;
+
  private:
   // This class manages its own lifetime.
   ~Handler() override {}
@@ -260,8 +263,6 @@ class Handler : public content::WebContentsObserver {
   ScriptExecutor::ScriptFinishedCallback callback_;
 
   base::WeakPtrFactory<Handler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Handler);
 };
 
 }  // namespace

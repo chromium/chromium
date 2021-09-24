@@ -17,6 +17,9 @@ class SetIconNatives : public ObjectBackedNativeHandler {
  public:
   explicit SetIconNatives(ScriptContext* context);
 
+  SetIconNatives(const SetIconNatives&) = delete;
+  SetIconNatives& operator=(const SetIconNatives&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -30,8 +33,6 @@ class SetIconNatives : public ObjectBackedNativeHandler {
 
   // Determines if the associated script context is for a ServiceWorker.
   void IsInServiceWorker(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(SetIconNatives);
 };
 
 }  // namespace extensions

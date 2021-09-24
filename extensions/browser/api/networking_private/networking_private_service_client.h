@@ -41,6 +41,11 @@ class NetworkingPrivateServiceClient
   explicit NetworkingPrivateServiceClient(
       std::unique_ptr<wifi::WiFiService> wifi_service);
 
+  NetworkingPrivateServiceClient(const NetworkingPrivateServiceClient&) =
+      delete;
+  NetworkingPrivateServiceClient& operator=(
+      const NetworkingPrivateServiceClient&) = delete;
+
   // KeyedService
   void Shutdown() override;
 
@@ -173,8 +178,6 @@ class NetworkingPrivateServiceClient
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Use WeakPtrs for callbacks from |wifi_service_|.
   base::WeakPtrFactory<NetworkingPrivateServiceClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateServiceClient);
 };
 
 }  // namespace extensions

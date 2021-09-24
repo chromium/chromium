@@ -19,8 +19,9 @@ class BluetoothSocketApiUnittest : public ApiUnitTest {
  public:
   BluetoothSocketApiUnittest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketApiUnittest);
+  BluetoothSocketApiUnittest(const BluetoothSocketApiUnittest&) = delete;
+  BluetoothSocketApiUnittest& operator=(const BluetoothSocketApiUnittest&) =
+      delete;
 };
 
 // Tests that bluetoothSocket.create fails as expected when extension does not

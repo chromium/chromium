@@ -152,6 +152,9 @@ void OnEventListenersChanged(const std::string& event_name,
 
 class APIBindingUnittest : public APIBindingTest {
  public:
+  APIBindingUnittest(const APIBindingUnittest&) = delete;
+  APIBindingUnittest& operator=(const APIBindingUnittest&) = delete;
+
   void OnFunctionCall(std::unique_ptr<APIRequestHandler::Request> request,
                       v8::Local<v8::Context> context) {
     last_request_ = std::move(request);
@@ -358,8 +361,6 @@ class APIBindingUnittest : public APIBindingTest {
   BindingAccessChecker::APIAvailabilityCallback api_availability_callback_;
   BindingAccessChecker::PromiseAvailabilityCallback
       promise_availability_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingUnittest);
 };
 
 v8::Local<v8::Value> APIBindingUnittest::RunTest(

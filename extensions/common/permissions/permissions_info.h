@@ -30,6 +30,9 @@ struct Alias;
 // methods for accessing them.
 class PermissionsInfo {
  public:
+  PermissionsInfo(const PermissionsInfo&) = delete;
+  PermissionsInfo& operator=(const PermissionsInfo&) = delete;
+
   static PermissionsInfo* GetInstance();
 
   // Registers the permissions specified by |infos| along with the
@@ -83,8 +86,6 @@ class PermissionsInfo {
   NameMap name_map_;
 
   size_t permission_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsInfo);
 };
 
 }  // namespace extensions

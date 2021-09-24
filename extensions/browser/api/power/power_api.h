@@ -59,6 +59,9 @@ class PowerAPI : public BrowserContextKeyedAPI,
       base::RepeatingCallback<void(device::mojom::WakeLockType)>;
   using CancelWakeLockFunction = base::RepeatingCallback<void()>;
 
+  PowerAPI(const PowerAPI&) = delete;
+  PowerAPI& operator=(const PowerAPI&) = delete;
+
   static PowerAPI* Get(content::BrowserContext* context);
 
   // BrowserContextKeyedAPI implementation.
@@ -135,8 +138,6 @@ class PowerAPI : public BrowserContextKeyedAPI,
 
   // Outstanding requests.
   ExtensionLevelMap extension_levels_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerAPI);
 };
 
 }  // namespace extensions

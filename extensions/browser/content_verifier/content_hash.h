@@ -99,6 +99,9 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
     HASH_MISMATCH
   };
 
+  ContentHash(const ContentHash&) = delete;
+  ContentHash& operator=(const ContentHash&) = delete;
+
   // Factory:
   // Returns ContentHash through |created_callback|, the returned values are:
   //   - |hash| The content hash. This will never be nullptr, but
@@ -261,8 +264,6 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   // TODO(asargent) - use the value from verified_contents.json for each
   // file, instead of using a constant.
   int block_size_ = extension_misc::kContentVerificationDefaultBlockSize;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHash);
 };
 
 }  // namespace extensions

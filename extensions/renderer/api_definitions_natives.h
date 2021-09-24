@@ -18,6 +18,9 @@ class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
  public:
   ApiDefinitionsNatives(Dispatcher* dispatcher, ScriptContext* context);
 
+  ApiDefinitionsNatives(const ApiDefinitionsNatives&) = delete;
+  ApiDefinitionsNatives& operator=(const ApiDefinitionsNatives&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
@@ -28,8 +31,6 @@ class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
 
   // Not owned.
   Dispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiDefinitionsNatives);
 };
 
 }  // namespace extensions

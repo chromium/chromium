@@ -126,6 +126,10 @@ class QuotaLimitHeuristic {
   class Bucket {
    public:
     Bucket() : num_tokens_(0) {}
+
+    Bucket(const Bucket&) = delete;
+    Bucket& operator=(const Bucket&) = delete;
+
     // Removes a token from this bucket, and returns true if the bucket had
     // any tokens in the first place.
     bool DeductToken() { return num_tokens_-- > 0; }
@@ -145,7 +149,6 @@ class QuotaLimitHeuristic {
    private:
     base::TimeTicks expiration_;
     int64_t num_tokens_;
-    DISALLOW_COPY_AND_ASSIGN(Bucket);
   };
   using BucketList = std::list<Bucket*>;
 
@@ -185,6 +188,10 @@ class QuotaLimitHeuristic {
   QuotaLimitHeuristic(const Config& config,
                       std::unique_ptr<BucketMapper> map,
                       const std::string& name);
+
+  QuotaLimitHeuristic(const QuotaLimitHeuristic&) = delete;
+  QuotaLimitHeuristic& operator=(const QuotaLimitHeuristic&) = delete;
+
   virtual ~QuotaLimitHeuristic();
 
   // Determines if sufficient quota exists (according to the Apply
@@ -214,8 +221,6 @@ class QuotaLimitHeuristic {
 
   // The name of the heuristic for formatting error messages.
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaLimitHeuristic);
 };
 
 // A simple per-item heuristic to limit the number of events that can occur in

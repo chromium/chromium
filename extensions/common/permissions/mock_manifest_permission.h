@@ -24,6 +24,9 @@ class MockManifestPermission : public ManifestPermission {
   explicit MockManifestPermission(const std::string& name,
                                   const std::string& value);
 
+  MockManifestPermission(const MockManifestPermission&) = delete;
+  MockManifestPermission& operator=(const MockManifestPermission&) = delete;
+
   std::string name() const override;
   std::string id() const override;
 
@@ -44,8 +47,6 @@ class MockManifestPermission : public ManifestPermission {
   std::string name_;
   // value_ is ignored for the Diff, Union and Intersect operations
   std::string value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockManifestPermission);
 };
 
 }  // namespace extensions

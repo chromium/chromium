@@ -35,6 +35,9 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
 
   NetworkingPrivateLinux();
 
+  NetworkingPrivateLinux(const NetworkingPrivateLinux&) = delete;
+  NetworkingPrivateLinux& operator=(const NetworkingPrivateLinux&) = delete;
+
   // NetworkingPrivateDelegate
   void GetProperties(const std::string& guid,
                      PropertiesCallback callback) override;
@@ -264,8 +267,6 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Observers to Network Events.
   base::ObserverList<NetworkingPrivateDelegateObserver>::Unchecked
       network_events_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateLinux);
 };
 
 }  // namespace extensions

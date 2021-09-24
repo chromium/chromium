@@ -39,6 +39,11 @@ class ExtensionServiceWorkerMessageFilter
       content::BrowserContext* context,
       content::ServiceWorkerContext* service_worker_context);
 
+  ExtensionServiceWorkerMessageFilter(
+      const ExtensionServiceWorkerMessageFilter&) = delete;
+  ExtensionServiceWorkerMessageFilter& operator=(
+      const ExtensionServiceWorkerMessageFilter&) = delete;
+
   // content::BrowserMessageFilter:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OverrideThreadForMessage(const IPC::Message& message,
@@ -96,8 +101,6 @@ class ExtensionServiceWorkerMessageFilter
       dispatcher_;
 
   std::unordered_set<std::string> active_request_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionServiceWorkerMessageFilter);
 };
 
 }  // namespace extensions

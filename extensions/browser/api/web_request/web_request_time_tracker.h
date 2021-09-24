@@ -61,10 +61,9 @@ class ExtensionWebRequestTimeTracker {
     bool has_extra_headers_listener = false;
 
     RequestTimeLog();
+    RequestTimeLog(const RequestTimeLog&) = delete;
+    RequestTimeLog& operator=(const RequestTimeLog&) = delete;
     ~RequestTimeLog();
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RequestTimeLog);
   };
 
   // Records UMA metrics for the given request and its end time.

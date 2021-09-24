@@ -239,13 +239,13 @@ class WebRequestProxyingURLLoaderFactory
     // extensions made to headers in their callbacks.
     struct FollowRedirectParams {
       FollowRedirectParams();
+      FollowRedirectParams(const FollowRedirectParams&) = delete;
+      FollowRedirectParams& operator=(const FollowRedirectParams&) = delete;
       ~FollowRedirectParams();
       std::vector<std::string> removed_headers;
       net::HttpRequestHeaders modified_headers;
       net::HttpRequestHeaders modified_cors_exempt_headers;
       absl::optional<GURL> new_url;
-
-      DISALLOW_COPY_AND_ASSIGN(FollowRedirectParams);
     };
     std::unique_ptr<FollowRedirectParams> pending_follow_redirect_params_;
     State state_ = State::kInProgress;
@@ -269,6 +269,11 @@ class WebRequestProxyingURLLoaderFactory
           header_client_receiver,
       WebRequestAPI::ProxySet* proxies,
       content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type);
+
+  WebRequestProxyingURLLoaderFactory(
+      const WebRequestProxyingURLLoaderFactory&) = delete;
+  WebRequestProxyingURLLoaderFactory& operator=(
+      const WebRequestProxyingURLLoaderFactory&) = delete;
 
   ~WebRequestProxyingURLLoaderFactory() override;
 
@@ -363,8 +368,6 @@ class WebRequestProxyingURLLoaderFactory
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   base::WeakPtrFactory<WebRequestProxyingURLLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestProxyingURLLoaderFactory);
 };
 
 }  // namespace extensions

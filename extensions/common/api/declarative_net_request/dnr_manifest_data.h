@@ -52,6 +52,10 @@ struct DNRManifestData : Extension::ManifestData {
   using ManifestIDToRulesetMap = std::map<std::string, const RulesetInfo*>;
 
   explicit DNRManifestData(std::vector<RulesetInfo> ruleset);
+
+  DNRManifestData(const DNRManifestData&) = delete;
+  DNRManifestData& operator=(const DNRManifestData&) = delete;
+
   ~DNRManifestData() override;
 
   // Returns the RulesetInfo for the |extension|. For an extension, which didn't
@@ -73,8 +77,6 @@ struct DNRManifestData : Extension::ManifestData {
 
   // Map from the manifest ID to the corresponding RulesetInfo.
   ManifestIDToRulesetMap manifest_id_to_ruleset_map;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRManifestData);
 };
 
 }  // namespace declarative_net_request

@@ -28,6 +28,9 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
   explicit JSHookInterface(const std::string& api_name)
       : api_name_(api_name) {}
 
+  JSHookInterface(const JSHookInterface&) = delete;
+  JSHookInterface& operator=(const JSHookInterface&) = delete;
+
   static gin::WrapperInfo kWrapperInfo;
 
   // gin::Wrappable:
@@ -127,8 +130,6 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
   JSHooks pre_validation_hooks_;
   JSHooks post_validation_hooks_;
   JSHooks custom_callback_hooks_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSHookInterface);
 };
 
 const char kExtensionAPIHooksPerContextKey[] = "extension_api_hooks";

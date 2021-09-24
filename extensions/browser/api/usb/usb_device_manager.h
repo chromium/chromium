@@ -32,6 +32,9 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
                          public EventRouter::Observer,
                          public device::mojom::UsbDeviceManagerClient {
  public:
+  UsbDeviceManager(const UsbDeviceManager&) = delete;
+  UsbDeviceManager& operator=(const UsbDeviceManager&) = delete;
+
   static UsbDeviceManager* Get(content::BrowserContext* browser_context);
 
   // BrowserContextKeyedAPI implementation.
@@ -130,7 +133,6 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<UsbDeviceManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceManager);
 };
 
 template <>

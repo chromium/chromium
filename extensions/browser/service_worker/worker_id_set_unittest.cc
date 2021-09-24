@@ -89,6 +89,9 @@ class WorkerIdSetTest : public testing::Test {
  public:
   WorkerIdSetTest() = default;
 
+  WorkerIdSetTest(const WorkerIdSetTest&) = delete;
+  WorkerIdSetTest& operator=(const WorkerIdSetTest&) = delete;
+
   bool AreWorkerIdsEqual(const std::vector<WorkerId>& expected,
                          const std::vector<WorkerId>& actual) {
     if (expected.size() != actual.size())
@@ -100,9 +103,6 @@ class WorkerIdSetTest : public testing::Test {
     std::sort(actual_copy.begin(), actual_copy.end());
     return expected_copy == actual_copy;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerIdSetTest);
 };
 
 TEST_F(WorkerIdSetTest, GetAllForExtension) {
