@@ -867,9 +867,9 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   // Emulate a "quick" wl_pointer.button release event being processed by the
-  // compositor, which leads to a no-op subsequent wl_data_device.start_drag.
-  // In this case, the client is expected to gracefully reset state and quit
-  // drag loop as if the drag session was cancelled as usual.
+  // compositor, which leads to a no-op subsequent WaylandWindow::StartDrag. In
+  // this case, the client is expected to gracefully reset state and quit drag
+  // loop as if the drag session was cancelled as usual.
   SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
   Sync();
 
@@ -883,6 +883,8 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   EXPECT_FALSE(result);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_FALSE(drag_controller()->origin_window_);
 
   window_->SetPointerFocus(restored_focus);
 }
