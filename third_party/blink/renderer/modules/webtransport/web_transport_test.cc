@@ -568,7 +568,7 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
                                     web_transport->closed());
 
   WebTransportCloseInfo close_info;
-  close_info.setErrorCode(42);
+  close_info.setCloseCode(42);
   close_info.setReason("because");
   web_transport->close(&close_info);
 
@@ -583,6 +583,44 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
 
   // Calling close again does nothing.
   web_transport->close(nullptr);
+}
+
+TEST_F(WebTransportTest, CloseWithNull) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  ScriptPromiseTester ready_tester(scope.GetScriptState(),
+                                   web_transport->ready());
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
+
+  web_transport->close(nullptr);
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(web_transport->HasPendingActivity());
+  EXPECT_TRUE(ready_tester.IsFulfilled());
+  EXPECT_TRUE(closed_tester.IsFulfilled());
+
+  // TODO(yhirano): Make sure Close() is called.
+}
+
+TEST_F(WebTransportTest, CloseWithReasonOnly) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  ScriptPromiseTester ready_tester(scope.GetScriptState(),
+                                   web_transport->ready());
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
+
+  WebTransportCloseInfo close_info;
+  close_info.setReason("because");
+  web_transport->close(&close_info);
+
+  test::RunPendingTasks();
+
+  // TODO(yhirano): Make sure Close() is called.
 }
 
 // A live connection will be kept alive even if there is no explicit reference.
@@ -1701,7 +1739,7 @@ TEST_F(WebTransportTest, OnClosed) {
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
   absl::optional<WebTransportCloseInfo> input_close_info(absl::in_place);
-  input_close_info->setErrorCode(99);
+  input_close_info->setCloseCode(99);
   input_close_info->setReason("reason");
 
   web_transport->OnClosed(input_close_info);
@@ -1714,9 +1752,9 @@ TEST_F(WebTransportTest, OnClosed) {
   ASSERT_TRUE(value.IsObject());
   WebTransportCloseInfo* close_info = WebTransportCloseInfo::Create(
       isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
-  EXPECT_TRUE(close_info->hasErrorCode());
+  EXPECT_TRUE(close_info->hasCloseCode());
   EXPECT_TRUE(close_info->hasReason());
-  EXPECT_EQ(close_info->errorCode(), 99);
+  EXPECT_EQ(close_info->closeCode(), 99u);
   EXPECT_EQ(close_info->reason(), "reason");
 }
 
@@ -1740,9 +1778,8 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   ASSERT_TRUE(value.IsObject());
   WebTransportCloseInfo* close_info = WebTransportCloseInfo::Create(
       isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
-  // TODO(yhirano): `close_info` should be empty but actually not because of the
-  // IDL definition for WebTransportCloseInfo. Fix that.
-  DCHECK(close_info);
+  EXPECT_FALSE(close_info->hasCloseCode());
+  EXPECT_FALSE(close_info->hasReason());
 }
 
 }  // namespace
