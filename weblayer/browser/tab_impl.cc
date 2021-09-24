@@ -594,6 +594,16 @@ std::unique_ptr<FaviconFetcher> TabImpl::CreateFaviconFetcher(
   return std::make_unique<FaviconFetcherImpl>(web_contents_.get(), delegate);
 }
 
+void TabImpl::SetTranslateTargetLanguage(
+    const std::string& translate_target_lang) {
+  translate::TranslateManager* translate_manager =
+      TranslateClientImpl::FromWebContents(web_contents())
+          ->GetTranslateManager();
+  translate_manager->SetPredefinedTargetLanguage(
+      translate_target_lang,
+      /*should_auto_translate=*/true);
+}
+
 #if !defined(OS_ANDROID)
 void TabImpl::AttachToView(views::WebView* web_view) {
   web_view->SetWebContents(web_contents_.get());
@@ -862,10 +872,7 @@ void TabImpl::RemoveTabFromBrowserBeforeDestroying(JNIEnv* env) {
 void TabImpl::SetTranslateTargetLanguage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& translate_target_lang) {
-  translate::TranslateManager* translate_manager =
-      TranslateClientImpl::FromWebContents(web_contents())
-          ->GetTranslateManager();
-  translate_manager->SetPredefinedTargetLanguage(
+  SetTranslateTargetLanguage(
       base::android::ConvertJavaStringToUTF8(env, translate_target_lang));
 }
 

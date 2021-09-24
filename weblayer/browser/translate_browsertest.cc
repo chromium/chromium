@@ -553,6 +553,136 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
 #endif
 
 #if defined(OS_ANDROID)
+// Test that translation occurs when a target language is set.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       TranslationViaPredefinedTargetLanguage) {
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TranslateClientImpl* translate_client = GetTranslateClient(shell());
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_manager->AddObserver(&infobar_observer);
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  tab->SetTranslateTargetLanguage("ru");
+
+  // Navigate to a page in French and wait for the infobar to be added and
+  // autotranslation to occur.
+  ResetPageTranslationWaiter();
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
+
+  run_loop.Run();
+
+  page_translation_waiter_->Wait();
+
+  EXPECT_EQ("fr", translate_client->GetLanguageState().source_language());
+  EXPECT_FALSE(translate_client->GetLanguageState().translation_error());
+  EXPECT_EQ(translate::TranslateErrors::NONE, GetPageTranslatedResult());
+  EXPECT_EQ("ru", translate_client->GetLanguageState().current_language());
+
+  // The translate infobar should still be present.
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  infobar_manager->RemoveObserver(&infobar_observer);
+}
+#endif
+
+#if defined(OS_ANDROID)
+// Test that the infobar appears on pages in the user's locale iff a target
+// language is set.
+IN_PROC_BROWSER_TEST_F(
+    TranslateBrowserTest,
+    InfoBarAppearsForDefaultLanguageWhenPredefinedTargetLanguageIsSet) {
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_manager->AddObserver(&infobar_observer);
+
+  // Navigate to a page in English: the infobar should not appear.
+  ResetPageTranslationWaiter();
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/english_page.html")), shell());
+
+  // NOTE: There is no notification to wait for for the event of the infobar not
+  // showing. However, in practice the infobar is added synchronously, so if it
+  // were to be shown, this check would fail.
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
+
+  // Set a target language, navigate again, and verify that the infobar now
+  // appears.
+  tab->SetTranslateTargetLanguage("ru");
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/english_page.html")), shell());
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  infobar_manager->RemoveObserver(&infobar_observer);
+}
+#endif
+
+#if defined(OS_ANDROID)
+// Test that when a predefined target language is set, the infobar does not
+// appear on pages in that language.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       InfoBarDoesNotAppearForPageInPredefinedTargetLanguage) {
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_manager->AddObserver(&infobar_observer);
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  // Navigate to a page in French: the infobar should appear.
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  // Set the target language to French.
+  tab->SetTranslateTargetLanguage("fr");
+
+  // Navigate again to a page in French: the infobar should not appear.
+  ResetPageTranslationWaiter();
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
+
+  // NOTE: There is no notification to wait for for the event of the infobar not
+  // showing. However, in practice the infobar is added synchronously, so if it
+  // were to be shown, this check would fail.
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
+
+  infobar_manager->RemoveObserver(&infobar_observer);
+}
+#endif
+
+#if defined(OS_ANDROID)
 // Test that the translation infobar stays present when the "never translate
 // language" item is clicked. Note that this behavior is intentionally different
 // from that of Chrome, where the infobar is removed in this case and a snackbar
@@ -624,6 +754,61 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   infobar_manager->RemoveObserver(&infobar_observer);
 }
 
+#if defined(OS_ANDROID)
+// Test that the infobar shows when a predefined target language is set even if
+// the source language is in the "never translate" set.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       PredefinedTargetLanguageOverridesLanguageBlocklist) {
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TranslateClientImpl* translate_client = GetTranslateClient(shell());
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_manager->AddObserver(&infobar_observer);
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  tab->SetTranslateTargetLanguage("ru");
+
+  // Navigate to a page in French and wait for the infobar to be added.
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  auto* infobar =
+      static_cast<TranslateCompactInfoBar*>(infobar_manager->infobar_at(0));
+  TranslateTestBridge::ClickOverflowMenuItem(
+      infobar,
+      TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_LANGUAGE);
+
+  // Since a predefined target language is set, the infobar should still be
+  // shown on a new navigation to a page in French even though it's blocklisted.
+  ResetLanguageDeterminationWaiter();
+  base::RunLoop run_loop2;
+  infobar_observer.set_on_infobar_added_callback(run_loop2.QuitClosure());
+
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page2.html")), shell());
+  language_determination_waiter_->Wait();
+  EXPECT_EQ("fr", translate_client->GetLanguageState().source_language());
+
+  run_loop2.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  infobar_manager->RemoveObserver(&infobar_observer);
+}
+#endif
+
 // Test that the translation infobar stays present when the "never translate
 // site" item is clicked. Note that this behavior is intentionally different
 // from that of Chrome, where the infobar is removed in this case and a snackbar
@@ -685,6 +870,74 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
+
+#if defined(OS_ANDROID)
+// Test that the infobar shows when a predefined target language is set even if
+// the site is in the "never translate" set.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       PredefinedTargetLanguageOverridesSiteBlocklist) {
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TranslateClientImpl* translate_client = GetTranslateClient(shell());
+
+  TestInfoBarManagerObserver infobar_observer;
+  infobar_manager->AddObserver(&infobar_observer);
+
+  base::RunLoop run_loop;
+  infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
+
+  tab->SetTranslateTargetLanguage("ru");
+
+  // Navigate and wait for the infobar to be added.
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
+
+  run_loop.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  // Blocklist the site.
+  auto* infobar =
+      static_cast<TranslateCompactInfoBar*>(infobar_manager->infobar_at(0));
+  TranslateTestBridge::ClickOverflowMenuItem(
+      infobar, TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_SITE);
+
+  // Since a predefined target language is set, the infobar should still be
+  // shown on new navigations to this site even though the site is blocklisted.
+  ResetLanguageDeterminationWaiter();
+  base::RunLoop run_loop2;
+  infobar_observer.set_on_infobar_added_callback(run_loop2.QuitClosure());
+
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page2.html")), shell());
+  language_determination_waiter_->Wait();
+  EXPECT_EQ("fr", translate_client->GetLanguageState().source_language());
+
+  run_loop2.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  ResetLanguageDeterminationWaiter();
+  base::RunLoop run_loop3;
+  infobar_observer.set_on_infobar_added_callback(run_loop3.QuitClosure());
+
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/german_page.html")), shell());
+  language_determination_waiter_->Wait();
+  EXPECT_EQ("de", translate_client->GetLanguageState().source_language());
+
+  run_loop3.Run();
+
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
+
+  infobar_manager->RemoveObserver(&infobar_observer);
+}
+#endif
 
 // Parameterized to run tests on the "never translate language" and "never
 // translate site" menu items.

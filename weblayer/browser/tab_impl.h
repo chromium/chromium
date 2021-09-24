@@ -230,6 +230,8 @@ class TabImpl : public Tab,
       const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
+  void SetTranslateTargetLanguage(
+      const std::string& translate_target_lang) override;
 #if !defined(OS_ANDROID)
   void AttachToView(views::WebView* web_view) override;
 #endif
