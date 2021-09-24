@@ -427,9 +427,10 @@ class ASH_EXPORT WallpaperControllerImpl
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::FilePath& file_path);
 
-  // Initializes wallpaper info for the user to default and saves it to local
-  // state the user is not ephemeral. Returns false if initialization fails.
-  bool InitializeUserWallpaperInfo(const AccountId& account_id);
+  // Sets wallpaper info for the user to default and saves it to local
+  // state the user is not ephemeral. Returns false if this fails.
+  bool SetDefaultWallpaperInfo(const AccountId& account_id,
+                               const base::Time& date);
 
   // Used as the callback of checking `WallpaperType::kOnline` wallpaper
   // existence in `SetOnlineWallpaperIfExists`. Initiates reading and decoding
