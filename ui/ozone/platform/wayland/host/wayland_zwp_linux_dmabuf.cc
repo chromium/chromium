@@ -59,7 +59,7 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
 
 WaylandZwpLinuxDmabuf::~WaylandZwpLinuxDmabuf() = default;
 
-void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
+void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
                                          const gfx::Size& size,
                                          const std::vector<uint32_t>& strides,
                                          const std::vector<uint32_t>& offsets,

@@ -48,7 +48,7 @@ class WaylandZwpLinuxDmabuf
   // The result is sent back via the |callback|. If buffer creation failed,
   // nullptr is sent back via the callback. Otherwise, a pointer to the
   // |wl_buffer| is sent.
-  void CreateBuffer(base::ScopedFD fd,
+  void CreateBuffer(const base::ScopedFD& fd,
                     const gfx::Size& size,
                     const std::vector<uint32_t>& strides,
                     const std::vector<uint32_t>& offsets,

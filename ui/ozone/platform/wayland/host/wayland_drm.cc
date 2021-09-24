@@ -63,7 +63,7 @@ bool WaylandDrm::SupportsDrmPrime() const {
   return authenticated_ && !!wl_drm_;
 }
 
-void WaylandDrm::CreateBuffer(base::ScopedFD fd,
+void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
                               const gfx::Size& size,
                               const std::vector<uint32_t>& strides,
                               const std::vector<uint32_t>& offsets,

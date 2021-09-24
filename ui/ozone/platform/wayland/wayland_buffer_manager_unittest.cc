@@ -373,8 +373,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
                                             kBufferId1, true /*fail*/);
   }
 
-  // ... impossible to try to destroy an attached buffer if the widget is not
-  // specified.
+  // Can destroy the buffer without specifying the widget.
   {
     EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
@@ -384,7 +383,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
                                       kDefaultScale, window_->GetBounds());
 
     DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId1, true /*fail*/);
+                                            kBufferId1, false /*fail*/);
   }
 
   // Still can destroy the buffer even if it has not been attached to any
@@ -464,6 +463,40 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
 
+  Sync();
+}
+
+TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
+
+  // Re-using the same buffer id across multiple surfaces is allowed.
+  SetTerminateCallbackExpectationAndDestroyChannel(&callback_, false /*fail*/);
+
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
+      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
+      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
+
+  buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                      std::move(overlay_configs));
+
+  Sync();
+  ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
+                                               false /* fail */);
+
+  // Destroying the buffer causes all wl_buffer objects to be destroyed.
+  DestroyBufferAndSetTerminateExpectation(window_->GetWidget(), 1u,
+                                          false /*fail*/);
+  SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+  buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u,
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
   Sync();
 }
 
@@ -1674,7 +1707,6 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   Sync();
 
   // Ack creation for only the first 2 wl_buffers.
-  LOG(ERROR) << linux_dmabuf->buffer_params().size();
   zwp_linux_buffer_params_v1_send_created(
       linux_dmabuf->buffer_params()[0]->resource(),
       linux_dmabuf->buffer_params()[0]->buffer_resource());

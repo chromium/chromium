@@ -41,7 +41,7 @@ WaylandShm::WaylandShm(wl_shm* shm, WaylandConnection* connection)
 
 WaylandShm::~WaylandShm() = default;
 
-wl::Object<wl_buffer> WaylandShm::CreateBuffer(base::ScopedFD fd,
+wl::Object<wl_buffer> WaylandShm::CreateBuffer(const base::ScopedFD& fd,
                                                size_t length,
                                                const gfx::Size& size) {
   if (!fd.is_valid() || length == 0 || size.IsEmpty())

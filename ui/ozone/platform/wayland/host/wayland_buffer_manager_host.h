@@ -28,51 +28,12 @@
 
 namespace ui {
 
+class WaylandBufferBacking;
+class WaylandBufferHandle;
 class WaylandConnection;
 class WaylandSubsurface;
 class WaylandWindow;
 class WaylandSurface;
-
-// This is an internal helper representation of a wayland buffer object, which
-// the GPU process creates when CreateBuffer is called. It's used for
-// asynchronous buffer creation and stores |params| parameter to find out,
-// which Buffer the wl_buffer corresponds to when CreateSucceeded is called.
-// What is more, the Buffer stores such information as a widget it is attached
-// to, its buffer id for simpler buffer management and other members specific
-// to this Buffer object on run-time.
-struct WaylandBuffer {
-  WaylandBuffer() = delete;
-  WaylandBuffer(const gfx::Size& size, uint32_t buffer_id);
-  ~WaylandBuffer();
-
-  // Actual buffer size.
-  const gfx::Size size;
-
-  // Damage region this buffer describes. Must be emptied once buffer is
-  // submitted.
-  gfx::Rect damage_region;
-
-  // The id of this buffer.
-  const uint32_t buffer_id;
-
-  // A wl_buffer backed by a dmabuf created on the GPU side.
-  wl::Object<struct wl_buffer> wl_buffer;
-
-  // Tells if the buffer has the wl_buffer attached. This can be used to
-  // identify potential problems, when the Wayland compositor fails to create
-  // wl_buffers.
-  bool attached = false;
-
-  // Tells if the buffer has already been released aka not busy, and the
-  // surface can tell the gpu about successful swap.
-  bool released = true;
-
-  // Optional release fence. This may be set if the buffer is released
-  // via the explicit synchronization Wayland protocol.
-  gfx::GpuFenceHandle release_fence;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandBuffer);
-};
 
 // This is the buffer manager which creates wl_buffers based on dmabuf (hw
 // accelerated compositing) or shared memory (software compositing) and uses
@@ -192,8 +153,13 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // surface on their screens.
   void ResetSurfaceContents(WaylandSurface* wayland_surface);
 
-  // Returns the anonymously created WaylandBuffer.
-  std::unique_ptr<WaylandBuffer> PassAnonymousWlBuffer(uint32_t buffer_id);
+  // Ensures a WaylandBufferHandle of |buffer_id| is created for the
+  // |requestor|, with its wl_buffer object requested via Wayland.
+  bool EnsureBufferHandle(WaylandSurface* requestor, uint32_t buffer_id);
+
+  // Gets the WaylandBufferHandle of |buffer_id| used for |requestor|.
+  WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor,
+                                       uint32_t buffer_id);
 
  private:
   // This is an internal representation of a real surface, which holds a pointer
@@ -205,8 +171,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // synchronized wl_surfaces that are in the same hierarchy. It defers
   // committing the root surface until all child surfaces' states are ready.
   struct Frame;
-
-  bool CreateBuffer(const gfx::Size& size, uint32_t buffer_id);
 
   Surface* GetSurface(WaylandSurface* wayland_surface) const;
 
@@ -275,15 +239,9 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // data sent by the GPU to the browser process.
   base::OnceCallback<void(std::string)> terminate_gpu_cb_;
 
-  // Contains anonymous buffers aka buffers that are not attached to any of the
-  // existing surfaces and that will be mapped to surfaces later.
-  // Typically created when CreateAnonymousImage is called on the gpu process
-  // side.
-  // We assume that a buffer_id/wl_buffer will never be used on multiple
-  // wl_surfaces so we never re-map buffers to surfaces. If we ever need to use
-  // the same buffer for 2 surfaces at the same time, create multiple wl_buffers
-  // referencing the same dmabuf or underlying storage.
-  base::flat_map<uint32_t, std::unique_ptr<WaylandBuffer>> anonymous_buffers_;
+  // Maps buffer_id's to corresponding WaylandBufferBacking objects.
+  base::flat_map<uint32_t, std::unique_ptr<WaylandBufferBacking>>
+      buffer_backings_;
 
   base::WeakPtrFactory<WaylandBufferManagerHost> weak_factory_;
 };

@@ -37,7 +37,7 @@ class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
 
   // Creates a wl_buffer based on shared memory handle for the specified
   // |widget|.
-  wl::Object<struct wl_buffer> CreateBuffer(base::ScopedFD fd,
+  wl::Object<struct wl_buffer> CreateBuffer(const base::ScopedFD& fd,
                                             size_t length,
                                             const gfx::Size& size);
 
