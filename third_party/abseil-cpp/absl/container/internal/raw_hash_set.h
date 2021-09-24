@@ -87,6 +87,17 @@
 //
 // This probing function guarantees that after N probes, all the groups of the
 // table will be probed exactly once.
+//
+// The control state and slot array are stored contiguously in a shared heap
+// allocation. The layout of this allocation is: `capacity()` control bytes,
+// one sentinel control byte, `Group::kWidth - 1` cloned control bytes,
+// <possible padding>, `capacity()` slots. The sentinel control byte is used in
+// iteration so we know when we reach the end of the table. The cloned control
+// bytes at the end of the table are cloned from the beginning of the table so
+// groups that begin near the end of the table can see a full group. In cases in
+// which there are more than `capacity()` cloned control bytes, the extra bytes
+// are `kEmpty`, and these ensure that we always see at least one empty slot and
+// can stop an unsuccessful search.
 
 #ifndef ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 #define ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_

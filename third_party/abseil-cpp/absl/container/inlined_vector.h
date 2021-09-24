@@ -207,8 +207,8 @@ class InlinedVector {
 
       other.storage_.SetInlinedSize(0);
     } else if (other.storage_.GetIsAllocated()) {
-      storage_.SetAllocatedData(other.storage_.GetAllocatedData(),
-                                other.storage_.GetAllocatedCapacity());
+      storage_.SetAllocation({other.storage_.GetAllocatedData(),
+                              other.storage_.GetAllocatedCapacity()});
       storage_.SetAllocatedSize(other.storage_.GetSize());
 
       other.storage_.SetInlinedSize(0);
@@ -242,8 +242,8 @@ class InlinedVector {
       other.storage_.SetInlinedSize(0);
     } else if ((storage_.GetAllocator() == other.storage_.GetAllocator()) &&
                other.storage_.GetIsAllocated()) {
-      storage_.SetAllocatedData(other.storage_.GetAllocatedData(),
-                                other.storage_.GetAllocatedCapacity());
+      storage_.SetAllocation({other.storage_.GetAllocatedData(),
+                              other.storage_.GetAllocatedCapacity()});
       storage_.SetAllocatedSize(other.storage_.GetSize());
 
       other.storage_.SetInlinedSize(0);
@@ -735,15 +735,12 @@ class InlinedVector {
 
   // `InlinedVector::shrink_to_fit()`
   //
-  // Reduces memory usage by freeing unused memory. After being called, calls to
-  // `capacity()` will be equal to `max(N, size())`.
+  // Attempts to reduce memory usage by moving elements to (or keeping elements
+  // in) the smallest available buffer sufficient for containing `size()`
+  // elements.
   //
-  // If `size() <= N` and the inlined vector contains allocated memory, the
-  // elements will all be moved to the inlined space and the allocated memory
-  // will be deallocated.
-  //
-  // If `size() > N` and `size() < capacity()`, the elements will be moved to a
-  // smaller allocation.
+  // If `size()` is sufficiently small, the elements will be moved into (or kept
+  // in) the inlined space.
   void shrink_to_fit() {
     if (storage_.GetIsAllocated()) {
       storage_.ShrinkToFit();

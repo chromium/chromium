@@ -27,7 +27,9 @@ cc_library(
     hdrs = ["internal/sample_recorder.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//absl:__subpackages__"],
+    visibility = [
+        "//absl:__subpackages__",
+    ],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",

@@ -693,9 +693,8 @@ class btree_multimap
 
   // btree_multimap::merge()
   //
-  // Extracts elements from a given `source` btree_multimap into this
-  // `btree_multimap`. If the destination `btree_multimap` already contains an
-  // element with an equivalent key, that element is not extracted.
+  // Extracts all elements from a given `source` btree_multimap into this
+  // `btree_multimap`.
   using Base::merge;
 
   // btree_multimap::swap(btree_multimap& other)

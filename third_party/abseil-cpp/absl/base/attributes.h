@@ -318,7 +318,15 @@
 // `__start_ ## name` and `__stop_ ## name` symbols to bracket the section.
 // This functionality is supported by GNU linker.
 #ifndef ABSL_ATTRIBUTE_SECTION_VARIABLE
+#ifdef _AIX
+// __attribute__((section(#name))) on AIX is achived by using the `.csect` psudo
+// op which includes an additional integer as part of its syntax indcating
+// alignment. If data fall under different alignments then you might get a
+// compilation error indicating a `Section type conflict`.
+#define ABSL_ATTRIBUTE_SECTION_VARIABLE(name)
+#else
 #define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
+#endif
 #endif
 
 // ABSL_DECLARE_ATTRIBUTE_SECTION_VARS

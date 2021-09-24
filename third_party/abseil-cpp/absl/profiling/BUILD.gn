@@ -12,4 +12,7 @@ absl_source_set("sample_recorder") {
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/time",
   ]
+  visibility = [
+    "//third_party/abseil-cpp/absl/*",
+  ]
 }

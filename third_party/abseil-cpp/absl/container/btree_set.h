@@ -604,9 +604,8 @@ class btree_multiset
 
   // btree_multiset::merge()
   //
-  // Extracts elements from a given `source` btree_multiset into this
-  // `btree_multiset`. If the destination `btree_multiset` already contains an
-  // element with an equivalent key, that element is not extracted.
+  // Extracts all elements from a given `source` btree_multiset into this
+  // `btree_multiset`.
   using Base::merge;
 
   // btree_multiset::swap(btree_multiset& other)

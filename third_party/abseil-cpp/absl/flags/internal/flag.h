@@ -290,7 +290,7 @@ constexpr T InitDefaultValue(EmptyBraces) {
 
 template <typename ValueT, typename GenT,
           typename std::enable_if<std::is_integral<ValueT>::value, int>::type =
-              (GenT{}, 0)>
+              ((void)GenT{}, 0)>
 constexpr FlagDefaultArg DefaultArg(int) {
   return {FlagDefaultSrc(GenT{}.value), FlagDefaultKind::kOneWord};
 }
