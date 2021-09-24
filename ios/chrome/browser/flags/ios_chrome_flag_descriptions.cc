@@ -489,6 +489,10 @@ const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
 
+const char kEnableNewDownloadAPIName[] = "Enable new download API";
+const char kEnableNewDownloadAPIDescription[] =
+    "Enable new download API (restricted to iOS 15.0+).";
+
 const char kWebPageDefaultZoomFromDynamicTypeName[] =
     "Use dynamic type size for default text zoom level";
 const char kWebPageDefaultZoomFromDynamicTypeDescription[] =

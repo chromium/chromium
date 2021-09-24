@@ -2305,6 +2305,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-new-download-api",
+    "owners": [ "sdefresne", "bling-flags@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-new-download-backend",
     "owners": [ "shaktisahu", "dtrainor" ],
     "expiry_milestone": 97

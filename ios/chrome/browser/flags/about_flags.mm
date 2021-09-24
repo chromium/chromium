@@ -757,13 +757,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfManageDevicesLinkDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfManageDevicesLink)},
-    {
-        "new-overflow-menu",
-        flag_descriptions::kNewOverflowMenuName,
-        flag_descriptions::kNewOverflowMenuDescription,
-        flags_ui::kOsIos,
-        FEATURE_VALUE_TYPE(kNewOverflowMenu),
-    }};
+    {"new-overflow-menu", flag_descriptions::kNewOverflowMenuName,
+     flag_descriptions::kNewOverflowMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNewOverflowMenu)},
+    {"enable-new-download-api", flag_descriptions::kEnableNewDownloadAPIName,
+     flag_descriptions::kEnableNewDownloadAPIDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kEnableNewDownloadAPI)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

@@ -55,6 +55,16 @@ const base::Feature kDefaultWebViewContextMenu{
 const base::Feature kDisableNonHTMLScreenshotOnIOS15{
     "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kIOSSharedHighlightingColorChange{
+    "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCreatePendingItemForPostFormSubmission{
+    "CreatePendingItemForPostFormSubmission",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableNewDownloadAPI{"EnableNewDownloadAPI",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebClientDefaultUserAgent() {
   return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
 }
@@ -75,12 +85,12 @@ bool ShouldTakeScreenshotOnNonHTMLContent() {
   return true;
 }
 
-const base::Feature kIOSSharedHighlightingColorChange{
-    "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kCreatePendingItemForPostFormSubmission{
-    "CreatePendingItemForPostFormSubmission",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+bool IsNewDownloadAPIEnabled() {
+  if (@available(iOS 15, *)) {
+    return base::FeatureList::IsEnabled(kEnableNewDownloadAPI);
+  }
+  return false;
+}
 
 }  // namespace features
 }  // namespace web

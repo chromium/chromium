@@ -425,6 +425,10 @@ extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
+// Title and description for the flag to enable the new download API.
+extern const char kEnableNewDownloadAPIName[];
+extern const char kEnableNewDownloadAPIDescription[];
+
 // Title and description for the flag to tie the default text zoom level to
 // the dynamic type setting.
 extern const char kWebPageDefaultZoomFromDynamicTypeName[];
