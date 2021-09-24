@@ -20,6 +20,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/controls/scroll_view.h"
@@ -178,6 +180,11 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
 
   StackedNotificationBar* GetNotificationBar() {
     return message_center_view()->notification_bar_;
+  }
+
+  views::View* GetNotificationBarIconsContainer() {
+    return message_center_view()
+        ->notification_bar_->notification_icons_container_;
   }
 
   views::View* GetNotificationBarLabel() {
@@ -481,12 +488,12 @@ TEST_F(UnifiedMessageCenterViewTest, ScrollPositionWhenResized) {
             GetScroller()->GetVisibleRect().bottom());
 }
 
-TEST_F(UnifiedMessageCenterViewTest, StackingCounterLayout) {
+// Tests basic layout of the StackingNotificationBar.
+TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelLayout) {
   AddManyNotifications();
 
   // MessageCenterView is maxed out.
   CreateMessageCenterView();
-  EXPECT_TRUE(message_center_view()->GetVisible());
 
   EXPECT_GT(GetMessageListView()->bounds().height(),
             message_center_view()->bounds().height());
@@ -497,32 +504,26 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterLayout) {
             GetScroller()->bounds().y());
   EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
+}
 
-  // Scroll to the top, making the counter label invisible.
+// Tests that the NotificationBarLabel is invisible when scrolled to the top.
+TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelInvisible) {
+  AddManyNotifications();
+  CreateMessageCenterView();
+
+  // Scroll to the top, the counter label should be invisible.
   GetScroller()->ScrollToPosition(GetScrollBar(), 0);
   message_center_view()->OnMessageCenterScrolled();
-  EXPECT_TRUE(GetNotificationBar()->GetVisible());
+
   EXPECT_FALSE(GetNotificationBarLabel()->GetVisible());
+  // ClearAll label should always be visible.
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 
-TEST_F(UnifiedMessageCenterViewTest, StackingCounterMessageListScrolled) {
+// Tests that the NotificationBarLabel is visible when scrolling down.
+TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelVisible) {
   AddManyNotifications();
   CreateMessageCenterView();
-  EXPECT_TRUE(message_center_view()->GetVisible());
-  EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
-  EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
-
-  // MessageCenterView is maxed out.
-  EXPECT_GT(GetMessageListView()->bounds().height(),
-            message_center_view()->bounds().height());
-
-  // Scroll to the top, making the counter label invisible.
-  GetScroller()->ScrollToPosition(GetScrollBar(), 0);
-  message_center_view()->OnMessageCenterScrolled();
-  EXPECT_TRUE(GetNotificationBar()->GetVisible());
-  EXPECT_FALSE(GetNotificationBarLabel()->GetVisible());
-  EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 
   // Scrolling past 5 notifications should make the counter label visible.
   const int scroll_amount = (GetMessageViewVisibleBounds(0).height() * 5) + 1;
@@ -530,14 +531,70 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterMessageListScrolled) {
   message_center_view()->OnMessageCenterScrolled();
 
   EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
+  // ClearAll label should always be visible.
+  EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
+}
+
+// Tests that the +n notifications label hides after being shown.
+TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelHidesAfterShown) {
+  AddManyNotifications();
+  CreateMessageCenterView();
+
+  // Scroll to the top, making the counter label invisible.
+  GetScroller()->ScrollToPosition(GetScrollBar(), 0);
+  message_center_view()->OnMessageCenterScrolled();
+
+  // Scrolling past 5 notifications should make the counter label visible.
+  const int scroll_amount = (GetMessageViewVisibleBounds(0).height() * 5) + 1;
+  GetScroller()->ScrollToPosition(GetScrollBar(), scroll_amount);
+  message_center_view()->OnMessageCenterScrolled();
+
+  ASSERT_TRUE(GetNotificationBarLabel()->GetVisible());
 
   // Scrolling back to the top should make the
   // counter label invisible again.
   GetScroller()->ScrollToPosition(GetScrollBar(), 0);
   message_center_view()->OnMessageCenterScrolled();
-  EXPECT_TRUE(GetNotificationBar()->GetVisible());
+
   EXPECT_FALSE(GetNotificationBarLabel()->GetVisible());
+  // ClearAll label should always be visible.
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
+}
+
+// Tests that there are never more than 3 stacked icons in the
+// StackedNotificationBar. Also verifies that only one animation happens at a
+// time (this prevents the user from over-scrolling and showing multiple
+// animations when they scroll very quickly). Before, users could scroll fast
+// and have a large amount of icons, instead of keeping it to 3.
+TEST_F(UnifiedMessageCenterViewTest, StackingIconsNeverMoreThanThree) {
+  for (int i = 0; i < 20; ++i)
+    AddNotification(false);
+  CreateMessageCenterView();
+
+  // Force animations to happen, so we can see if multiple animations trigger.
+  ui::ScopedAnimationDurationScaleMode scoped_duration_modifier(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  // Scroll past 20 notifications, so we can scroll back up quickly.
+  for (int i = 20; i >= 0; --i) {
+    const int scroll_amount = (GetMessageViewVisibleBounds(0).height() * i) + 1;
+    GetScroller()->ScrollToPosition(GetScrollBar(), scroll_amount);
+    message_center_view()->OnMessageCenterScrolled();
+
+    auto icons_container_children =
+        GetNotificationBarIconsContainer()->children();
+    int animating_count = 0;
+    for (auto* child : icons_container_children) {
+      // Verify that no more than one icon is animating at any one time.
+      if (child->layer()->GetAnimator()->is_animating())
+        animating_count++;
+    }
+    EXPECT_GE(1, animating_count);
+    // Verify that no more than 3 icons are added to the bar at any one time,
+    // regardless of how fast the user scrolls. This test scrolls faster than
+    // the icons can animate away, and animating icons should be removed prior
+    // to starting a new animation.
+    EXPECT_GE(3u, icons_container_children.size());
+  }
 }
 
 // Flaky: crbug.com/1163575
