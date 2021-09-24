@@ -31,6 +31,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "array_util.js",
     "automation_predicate.js",
     "automation_util.js",
+    "chrome_event_handler.js",
     "closure_shim.js",
     "constants.js",
     "cursors/cursor.js",
@@ -92,6 +93,10 @@ js_library("automation_util") {
     "$externs_path/automation.js",
     "$externs_path/chrome_extensions.js",
   ]
+}
+
+js_library("chrome_event_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
 }
 
 js_library("event_generator") {

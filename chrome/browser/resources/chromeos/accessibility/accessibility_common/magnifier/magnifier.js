@@ -48,12 +48,15 @@ export class Magnifier {
         [], chrome.automation.EventType.CARET_BOUNDS_CHANGED,
         event => this.onCaretBoundsChanged(event));
 
-    /** @private {function(!chrome.accessibilityPrivate.ScreenRect)} */
-    this.onMagnifierBoundsChangedListener_ = bounds =>
-        this.onMagnifierBoundsChanged_(bounds);
+    /** @private {!ChromeEventHandler} */
+    this.onMagnifierBoundsChangedHandler_ = new ChromeEventHandler(
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged,
+        bounds => this.onMagnifierBoundsChanged_(bounds));
 
-    /** @private {function(!Array<!chrome.settingsPrivate.PrefObject>)} */
-    this.updateFromPrefsListener_ = prefs => this.updateFromPrefs_(prefs);
+    /** @private {ChromeEventHandler} */
+    this.updateFromPrefsHandler_ = new ChromeEventHandler(
+        chrome.settingsPrivate.onPrefsChanged,
+        prefs => this.updateFromPrefs_(prefs));
 
     this.init_();
   }
@@ -63,12 +66,8 @@ export class Magnifier {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
     this.onCaretBoundsChangedHandler.stop();
-
-    chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
-        this.onMagnifierBoundsChangedListener_);
-
-    chrome.settingsPrivate.onPrefsChanged.removeListener(
-        this.updateFromPrefsListener_);
+    this.onMagnifierBoundsChangedHandler_.stop();
+    this.updateFromPrefsHandler_.stop();
   }
 
   /**
@@ -77,8 +76,7 @@ export class Magnifier {
    */
   init_() {
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
-    chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.updateFromPrefsListener_);
+    this.updateFromPrefsHandler_.start();
 
     chrome.automation.getDesktop(desktop => {
       this.focusHandler_.setNodes(desktop);
@@ -89,8 +87,7 @@ export class Magnifier {
       this.onCaretBoundsChangedHandler.start();
     });
 
-    chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
-        this.onMagnifierBoundsChangedListener_);
+    this.onMagnifierBoundsChangedHandler_.start();
 
     this.isInitializing_ = true;
 

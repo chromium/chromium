@@ -103,6 +103,7 @@ js_library("accessibility_common") {
     ":autoclick",
     ":dictation",
     ":magnifier",
+    "../common:chrome_event_handler",
     "../common:event_generator",
     "../common:event_handler",
     "../common:instance_checker",
