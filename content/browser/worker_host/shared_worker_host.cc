@@ -320,13 +320,8 @@ void SharedWorkerHost::Start(
   // request endpoint was sent, it can be used, so add it to
   // ServiceWorkerObjectHost.
   if (service_worker_remote_object.is_valid()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(
-            &ServiceWorkerObjectHost::AddRemoteObjectPtrAndUpdateState,
-            controller_service_worker_object_host,
-            std::move(service_worker_remote_object),
-            service_worker_sent_state));
+    controller_service_worker_object_host->AddRemoteObjectPtrAndUpdateState(
+        std::move(service_worker_remote_object), service_worker_sent_state);
   }
 
   // Monitor the lifetime of the worker.

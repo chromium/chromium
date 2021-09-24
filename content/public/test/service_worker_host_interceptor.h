@@ -61,14 +61,11 @@ class ServiceWorkerHostInterceptor
       const GURL& url,
       OpenPaymentHandlerWindowCallback callback) override;
 
-  void FindRegistrationOnServiceWorkerCoreThread(
-      scoped_refptr<ServiceWorkerContextWrapper> context,
-      const GURL& scope,
-      BrowserThread::ID run_done_thread,
-      base::OnceClosure done);
+  void FindRegistration(scoped_refptr<ServiceWorkerContextWrapper> context,
+                        const GURL& scope,
+                        base::OnceClosure done);
 
-  void OnFoundRegistrationOnServiceWorkerCoreThread(
-      BrowserThread::ID run_done_thread,
+  void OnFoundRegistration(
       base::OnceClosure done,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);

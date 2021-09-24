@@ -71,9 +71,13 @@ FieldTrialSynchronizer::FieldTrialSynchronizer() {
 void FieldTrialSynchronizer::OnFieldTrialGroupFinalized(
     const std::string& field_trial_name,
     const std::string& group_name) {
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(&NotifyAllRenderersOfFieldTrial,
-                                       field_trial_name, group_name));
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    NotifyAllRenderersOfFieldTrial(field_trial_name, group_name);
+  } else {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&NotifyAllRenderersOfFieldTrial,
+                                  field_trial_name, group_name));
+  }
 }
 
 // static

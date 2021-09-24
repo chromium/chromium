@@ -35,8 +35,7 @@ void RunPushEventCallback(
     PushMessagingRouter::PushEventCallback deliver_message_callback,
     blink::mojom::PushEventStatus push_event_status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  // Use PostTask() instead of RunOrPostTaskOnThread() to ensure the callback
-  // is called asynchronously.
+  // PostTask() to ensure the callback is called asynchronously.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(deliver_message_callback), push_event_status));
@@ -109,12 +108,10 @@ void StartServiceWorkerForDispatch(ServiceWorkerMetrics::EventType event_type,
           service_worker_context->storage_partition()
               ->GetDevToolsBackgroundServicesContext());
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&FindServiceWorkerRegistration, event_type,
-                     std::move(service_worker_context),
-                     std::move(devtools_context), url::Origin::Create(origin),
-                     service_worker_registration_id, std::move(callback)));
+  FindServiceWorkerRegistration(
+      event_type, std::move(service_worker_context),
+      std::move(devtools_context), url::Origin::Create(origin),
+      service_worker_registration_id, std::move(callback));
 }
 
 }  // namespace

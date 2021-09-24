@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
@@ -96,13 +97,21 @@ bool ContentSettingsManagerDelegate::AllowStorageAccess(
                           StorageType::FILE_SYSTEM &&
       extensions::WebViewRendererState::GetInstance()->IsGuest(
           render_process_id)) {
-    content::RunOrPostTaskOnThread(
-        FROM_HERE, content::BrowserThread::UI,
+    base::OnceClosure task =
         base::BindOnce(&OnFileSystemAccessedInGuestView, render_process_id,
                        render_frame_id, url, allowed,
                        base::BindOnce(&RunOrPostTaskOnSequence,
                                       base::SequencedTaskRunnerHandle::Get(),
-                                      std::move(*callback))));
+                                      std::move(*callback)));
+    // We may or may not be on the UI thread depending on whether the
+    // NavigationThreadingOptimizations feature is enabled.
+    // TODO(https://crbug.com/1187753): Clean this up once the feature is
+    // shipped and the code path is removed.
+    if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
+      std::move(task).Run();
+    else
+      content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+
     return true;
   }
 #endif

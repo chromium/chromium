@@ -10,6 +10,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -124,6 +125,17 @@ void OnContentBlockedOnUI(int render_process_id,
     settings->OnContentBlocked(type);
 }
 
+// We may or may not be on the UI thread depending on whether the
+// NavigationThreadingOptimizations feature is enabled.
+// TODO(https://crbug.com/1187753): Clean this up once the feature is
+// shipped and the code path is removed.
+void RunOrPostTaskOnUI(const base::Location& location, base::OnceClosure task) {
+  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
+    std::move(task).Run();
+  else
+    content::GetUIThreadTaskRunner({})->PostTask(location, std::move(task));
+}
+
 }  // namespace
 
 ContentSettingsManagerImpl::~ContentSettingsManagerImpl() = default;
@@ -177,8 +189,8 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     return;
   }
 
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, content::BrowserThread::UI,
+  RunOrPostTaskOnUI(
+      FROM_HERE,
       base::BindOnce(&NotifyStorageAccess, render_process_id_, render_frame_id,
                      storage_type, url, top_frame_origin, allowed));
 
@@ -188,10 +200,9 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
 void ContentSettingsManagerImpl::OnContentBlocked(int32_t render_frame_id,
                                                   ContentSettingsType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, content::BrowserThread::UI,
-      base::BindOnce(&OnContentBlockedOnUI, render_process_id_, render_frame_id,
-                     type));
+  RunOrPostTaskOnUI(FROM_HERE,
+                    base::BindOnce(&OnContentBlockedOnUI, render_process_id_,
+                                   render_frame_id, type));
 }
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(

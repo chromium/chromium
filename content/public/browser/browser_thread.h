@@ -213,15 +213,6 @@ class CONTENT_EXPORT BrowserThread {
   DISALLOW_COPY_AND_ASSIGN(BrowserThread);
 };
 
-// Runs |task| on the thread specified by |thread_id| if already on that thread,
-// otherwise posts a task to that thread.
-//
-// This is intended to be a temporary helper function for the IO/UI thread
-// simplification effort.
-CONTENT_EXPORT void RunOrPostTaskOnThread(const base::Location& location,
-                                          BrowserThread::ID thread_id,
-                                          base::OnceClosure task);
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_BROWSER_THREAD_H_
