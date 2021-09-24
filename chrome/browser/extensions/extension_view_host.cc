@@ -6,7 +6,6 @@
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -20,7 +19,6 @@
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -136,9 +134,8 @@ void ExtensionViewHost::LoadInitialURL() {
   if (!ExtensionSystem::Get(browser_context())->
           runtime_data()->IsBackgroundPageReady(extension())) {
     // Make sure the background page loads before any others.
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-                   content::Source<Extension>(extension()));
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context()));
     return;
   }
 
@@ -292,13 +289,22 @@ content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
              : nullptr;
 }
 
-void ExtensionViewHost::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY);
+void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
+    content::BrowserContext* host_browser_context,
+    ExtensionHost* extension_host) {
+  DCHECK(extension_host->extension());
+  if (host_browser_context != browser_context() ||
+      extension_host->extension() != extension() ||
+      extension_host->extension_host_type() !=
+          mojom::ViewType::kExtensionBackgroundPage) {
+    return;
+  }
+
   DCHECK(ExtensionSystem::Get(browser_context())
              ->runtime_data()
              ->IsBackgroundPageReady(extension()));
+  // We only needed to wait for the background page to load, so stop observing.
+  host_registry_observation_.Reset();
   LoadInitialURL();
 }
 

@@ -272,6 +272,9 @@ void ExtensionHost::DocumentAvailableInMainFrame(
     return;
   document_element_available_ = true;
 
+  ExtensionHostRegistry::Get(browser_context_)
+      ->ExtensionHostDocumentElementAvailable(this);
+
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     ExtensionSystem::Get(browser_context_)
         ->runtime_data()

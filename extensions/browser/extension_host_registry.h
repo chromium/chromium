@@ -51,6 +51,16 @@ class ExtensionHostRegistry : public KeyedService {
     virtual void OnExtensionHostCompletedFirstLoad(
         content::BrowserContext* browser_context,
         ExtensionHost* host) {}
+
+    // Called when a document element is first available in an ExtensionHost.
+    // `browser_context` is the context associated with that host (which might
+    // be an incognito version of ExtensionHostRegistry::browser_context_).
+    // TODO(devlin): Do we really need both first load completed and document
+    // element available notifications? This matches previous implementations,
+    // but I'm not sure the distinction is relevant.
+    virtual void OnExtensionHostDocumentElementAvailable(
+        content::BrowserContext* browser_context,
+        ExtensionHost* extension_host) {}
   };
 
   ExtensionHostRegistry();
@@ -75,6 +85,9 @@ class ExtensionHostRegistry : public KeyedService {
   void ExtensionHostDestroyed(ExtensionHost* extension_host);
   // Called when an ExtensionHost completes its first load.
   void ExtensionHostCompletedFirstLoad(ExtensionHost* extension_host);
+  // Called when an ExtensionHost has created a document element for its first
+  // time.
+  void ExtensionHostDocumentElementAvailable(ExtensionHost* extension_host);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

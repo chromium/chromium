@@ -138,6 +138,17 @@ void ExtensionHostRegistry::ExtensionHostCompletedFirstLoad(
   }
 }
 
+void ExtensionHostRegistry::ExtensionHostDocumentElementAvailable(
+    ExtensionHost* extension_host) {
+  // See note in ExtensionHostCompletedFirstLoad().
+  extension_hosts_.insert(extension_host);
+
+  for (Observer& observer : observers_) {
+    observer.OnExtensionHostDocumentElementAvailable(
+        extension_host->browser_context(), extension_host);
+  }
+}
+
 void ExtensionHostRegistry::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
