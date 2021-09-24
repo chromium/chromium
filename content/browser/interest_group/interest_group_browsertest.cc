@@ -139,7 +139,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(embedded_test_server()->Start());
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
@@ -515,38 +514,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
               testing::UnorderedElementsAreArray(expected_groups));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionBasic) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  EXPECT_EQ(
-      nullptr,
-      RunAuctionAndWait(JsReplace(
-          R"({
-    seller: $1,
-    decisionLogicUrl: $2
-  })",
-          test_url.GetOrigin().spec(),
-          https_server_->GetURL("b.test", "/interest_group/decision_logic.js")
-              .spec())));
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionFull) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
-
-  EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
-    seller: 'https://test.com',
-    decisionLogicUrl: 'https://test.com/decision_logic',
-    interestGroupBuyers: ['https://www.buyer1.com', 'https://www.buyer2.com'],
-    auctionSignals: {more: 'json', stuff: {}},
-    sellerSignals: {yet: 'more', info: 1},
-    perBuyerSignals: {
-      'https://www.buyer1.com': {even: 'more', x: 4.5},
-      'https://www.buyer2.com': {the: 'end'}
-    }
-  })"));
-}
-
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionStarInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
@@ -560,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidOwner) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
@@ -768,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        LeaveInterestGroupInvalidOwner) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'leaveAdInterestGroup' on 'Navigator': "
@@ -791,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': seller "
@@ -803,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionHttpSeller) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': seller "
@@ -816,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionHttpSeller) {
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDecisionLogicUrl) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -866,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidInterestGroupBuyers) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -881,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidInterestGroupBuyersStr) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -918,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAuctionSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -933,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidSellerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -948,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignalsOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -1000,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -2173,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 // implement important security checks (Blink may also perform its own
 // checking, but the render process is untrusted).
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionBasicBypassBlink) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   mojo::Remote<blink::mojom::AdAuctionService> auction_service;
   AdAuctionServiceImpl::CreateMojoService(
@@ -2277,9 +2244,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
                        SellerNotHttps) {
-  // Running an ad auction on a non-https origin isn't allowed.
-  GURL test_url_b = embedded_test_server()->GetURL("b.test", "/echo");
-  ASSERT_TRUE(test_url_b.SchemeIs(url::kHttpScheme));
+  GURL test_url_b = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin_b = url::Origin::Create(test_url_b);
   ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
 
@@ -2287,6 +2252,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url = embedded_test_server()->GetURL(
       "b.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(config->decision_logic_url.SchemeIs(url::kHttpScheme));
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_});
 
