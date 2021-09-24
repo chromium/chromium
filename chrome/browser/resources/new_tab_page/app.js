@@ -291,6 +291,16 @@ class AppElement extends mixinBehaviors
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
     /** @private {number} */
     this.backgroundImageLoadStart_ = 0;
+
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Height',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 1,
+          max: 1000,
+          buckets: 200,
+        },
+        Math.floor(document.documentElement.clientHeight));
   }
 
   /** @override */

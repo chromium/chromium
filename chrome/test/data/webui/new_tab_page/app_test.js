@@ -459,6 +459,16 @@ suite('NewTabPageAppTest', () => {
     assertTrue(commandExecuted);
   });
 
+  test('logs height', async () => {
+    // Assert.
+    assertEquals(1, metrics.count('NewTabPage.Height'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Height',
+            Math.floor(document.documentElement.clientHeight)));
+  });
+
   suite('click recording', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
