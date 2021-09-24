@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
@@ -111,12 +112,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_LANGUAGE_SETTINGS_TITLE);
-  self.shouldHideDoneButton = YES;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.shouldDisableDoneButtonOnEdit = YES;
+    self.shouldShowDeleteButtonInToolbar = NO;
+  } else {
+    self.shouldHideDoneButton = YES;
+  }
   self.tableView.accessibilityIdentifier =
       kLanguageSettingsTableViewAccessibilityIdentifier;
 
   [self loadModel];
   [self updateUIForEditState];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.navigationController.toolbarHidden = NO;
+  }
 }
 
 #pragma mark - ChromeTableViewController
@@ -169,12 +184,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
-  return YES;
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (BOOL)editButtonEnabled {
   return [self.tableViewModel hasItemForItemType:ItemTypeLanguage
                                sectionIdentifier:SectionIdentifierLanguages];
+}
+
+- (BOOL)shouldHideToolbar {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (void)updateUIForEditState {
@@ -190,11 +216,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_translateSwitchItem) {
     [self setTranslateSwitchItemEnabled:!self.isEditing];
   }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    return;
+  }
   // Language Settings screen does not have Done button.
   NOTREACHED();
 }

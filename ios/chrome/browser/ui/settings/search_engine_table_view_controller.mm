@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -93,6 +94,10 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      self.shouldDisableDoneButtonOnEdit = YES;
+    }
     [self updateUIForEditState];
   }
   return self;
@@ -175,6 +180,14 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.navigationController.toolbarHidden = NO;
+  }
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   if (editing) {
     base::RecordAction(
@@ -247,11 +260,21 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 // Hide toolbar for non-editing mode or when no items are selected.
 - (BOOL)shouldHideToolbar {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    return NO;
+  }
   return !self.editing || self.tableView.indexPathsForSelectedRows.count == 0;
 }
 
 - (BOOL)shouldShowEditButton {
-  return YES;
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (BOOL)editButtonEnabled {
@@ -259,6 +282,14 @@ const char kUmaSelectDefaultSearchEngine[] =
                                sectionIdentifier:SectionIdentifierFirstList] ||
          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
                                sectionIdentifier:SectionIdentifierSecondList];
+}
+
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -269,6 +300,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Keep selection in editing mode.
   if (self.editing) {
+    self.deleteButton.enabled = YES;
     return;
   }
 
@@ -338,6 +370,16 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
   [self recordUmaOfDefaultSearchEngine];
   self.updatingBackend = NO;
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
+  if (!self.tableView.editing)
+    return;
+
+  if (self.tableView.indexPathsForSelectedRows.count == 0)
+    self.deleteButton.enabled = NO;
 }
 
 #pragma mark - UITableViewDataSource

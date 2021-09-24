@@ -108,7 +108,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                            action:nil];
 
   UIBarButtonItem* toolbarLeftButton = nil;
-  if (self.tableView.editing) {
+  if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
     toolbarLeftButton = self.deleteButton;
   } else if (self.shouldShowAddButtonInToolbar) {
     toolbarLeftButton = self.addButtonInToolbar;
@@ -192,6 +192,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
       UINavigationItemLargeTitleDisplayModeNever;
 
   self.backButtonItem = self.navigationItem.leftBarButtonItem;
+  self.shouldShowDeleteButtonInToolbar = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

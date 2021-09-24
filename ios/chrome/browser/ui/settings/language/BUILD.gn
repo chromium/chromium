@@ -42,6 +42,7 @@ source_set("language_ui") {
     "language_settings_table_view_controller.mm",
   ]
   deps = [
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/app/strings:ios_strings_grit",

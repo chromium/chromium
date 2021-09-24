@@ -37,6 +37,10 @@
 // toolbar(bottom left). Default is NO.
 @property(nonatomic, assign) BOOL shouldShowAddButtonInToolbar;
 
+// Whether this table view controller should show the "Delete" button in the
+// toolbar(bottom left). Default is YES. Set in |viewDidLoad|.
+@property(nonatomic, assign) BOOL shouldShowDeleteButtonInToolbar;
+
 // Updates the edit or done button to reflect editing state.  If the
 // tableView is not in edit mode (and thus showing the 'Done' button) it is
 // using shouldHideDoneButton to know if it should display the edit button.
