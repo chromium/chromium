@@ -745,10 +745,10 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
   EXPECT_EQ(logged_message->severity,
             static_cast<int32_t>(fuchsia::logger::LogLevelFilter::ERROR));
   ASSERT_EQ(logged_message->tags.size(), 1u);
-  EXPECT_EQ(logged_message->tags[0], base::CommandLine::ForCurrentProcess()
-                                         ->GetProgram()
-                                         .BaseName()
-                                         .AsUTF8Unsafe());
+
+  // If no tags are explicitly set then the LogSink will add one based on the
+  // component name.
+  EXPECT_EQ(logged_message->tags[0], "base_unittests.cmx");
 }
 
 TEST_F(LoggingTest, FuchsiaLogging) {

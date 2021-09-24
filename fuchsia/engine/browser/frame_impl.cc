@@ -126,46 +126,46 @@ bool IsUrlMatchedByOriginList(const GURL& url,
   return false;
 }
 
-fx_log_severity_t FuchsiaWebConsoleLogLevelToFxLogSeverity(
+FuchsiaLogSeverity FuchsiaWebConsoleLogLevelToFxLogSeverity(
     fuchsia::web::ConsoleLogLevel level) {
   switch (level) {
     case fuchsia::web::ConsoleLogLevel::DEBUG:
-      return FX_LOG_DEBUG;
+      return FUCHSIA_LOG_DEBUG;
     case fuchsia::web::ConsoleLogLevel::INFO:
-      return FX_LOG_INFO;
+      return FUCHSIA_LOG_INFO;
     case fuchsia::web::ConsoleLogLevel::WARN:
-      return FX_LOG_WARNING;
+      return FUCHSIA_LOG_WARNING;
     case fuchsia::web::ConsoleLogLevel::ERROR:
-      return FX_LOG_ERROR;
+      return FUCHSIA_LOG_ERROR;
     case fuchsia::web::ConsoleLogLevel::NONE:
-      return FX_LOG_NONE;
+      return FUCHSIA_LOG_NONE;
     default:
       // Cope gracefully with callers setting undefined levels.
       DLOG(ERROR) << "Unknown log level:"
                   << static_cast<std::underlying_type<decltype(level)>::type>(
                          level);
-      return FX_LOG_NONE;
+      return FUCHSIA_LOG_NONE;
   }
 }
 
-fx_log_severity_t BlinkConsoleMessageLevelToFxLogSeverity(
+FuchsiaLogSeverity BlinkConsoleMessageLevelToFxLogSeverity(
     blink::mojom::ConsoleMessageLevel level) {
   switch (level) {
     case blink::mojom::ConsoleMessageLevel::kVerbose:
-      return FX_LOG_DEBUG;
+      return FUCHSIA_LOG_DEBUG;
     case blink::mojom::ConsoleMessageLevel::kInfo:
-      return FX_LOG_INFO;
+      return FUCHSIA_LOG_INFO;
     case blink::mojom::ConsoleMessageLevel::kWarning:
-      return FX_LOG_WARNING;
+      return FUCHSIA_LOG_WARNING;
     case blink::mojom::ConsoleMessageLevel::kError:
-      return FX_LOG_ERROR;
+      return FUCHSIA_LOG_ERROR;
   }
 
   // Cope gracefully with callers setting undefined levels.
   DLOG(ERROR) << "Unknown log level:"
               << static_cast<std::underlying_type<decltype(level)>::type>(
                      level);
-  return FX_LOG_NONE;
+  return FUCHSIA_LOG_NONE;
 }
 
 bool IsHeadless() {
@@ -808,10 +808,10 @@ void FrameImpl::SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) {
 
 void FrameImpl::SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) {
   if (sink) {
-    console_logger_ = base::CreateFxLoggerFromLogSinkWithTag(std::move(sink),
-                                                             console_log_tag_);
+    console_logger_ = base::ScopedFxLogger::CreateFromLogSinkWithTag(
+        std::move(sink), console_log_tag_);
   } else {
-    console_logger_ = nullptr;
+    console_logger_ = {};
   }
 }
 
@@ -1056,29 +1056,31 @@ bool FrameImpl::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id) {
-  fx_log_severity_t severity =
+  FuchsiaLogSeverity severity =
       BlinkConsoleMessageLevelToFxLogSeverity(log_level);
   if (severity < log_level_) {
     // Prevent the default logging mechanism from logging the message.
     return true;
   }
 
-  if (!console_logger_) {
+  if (!console_logger_.is_valid()) {
     // Log via the process' LogSink service if none was set on the Frame.
     // Connect on-demand, so that embedders need not provide a LogSink in the
     // CreateContextParams services, unless they actually enable logging.
-    console_logger_ = base::CreateFxLoggerFromLogSinkWithTag(
+    console_logger_ = base::ScopedFxLogger::CreateFromLogSinkWithTag(
         base::ComponentContextForProcess()
             ->svc()
             ->Connect<fuchsia::logger::LogSink>(),
         console_log_tag_);
+
+    if (!console_logger_.is_valid())
+      return false;
   }
 
-  std::string formatted_message =
-      base::StringPrintf("%s:%d : %s", base::UTF16ToUTF8(source_id).data(),
-                         line_no, base::UTF16ToUTF8(message).data());
-  fx_logger_log(console_logger_.get(), severity, nullptr,
-                formatted_message.data());
+  std::string source_id_utf8 = base::UTF16ToUTF8(source_id);
+  std::string message_utf8 = base::UTF16ToUTF8(message);
+  console_logger_.LogMessage(source_id_utf8, line_no, message_utf8, severity);
+
   return true;
 }
 
