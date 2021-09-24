@@ -89684,6 +89684,11 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="Not connected (Wake On WiFi disabled)"/>
 </enum>
 
+<enum name="WiFiCQMNotificationType">
+  <int value="0" label="Packet loss"/>
+  <int value="1" label="Beacon loss"/>
+</enum>
+
 <enum name="WiFiPCIStatus">
   <int value="0" label="(Bad status) NIC not detected in lspci"/>
   <int value="1"
