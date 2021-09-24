@@ -183,7 +183,6 @@ HighlightPseudoStyleWithOriginatingInheritance(
 // Returns highlight styles for the given node, inheriting through the “tree” of
 // highlight pseudo styles mirroring the originating element tree. None of the
 // returned styles are influenced by originating elements or pseudo-elements.
-// TODO(crbug.com/1024156): return const ComputedStyle& when dropping old impl?
 scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
     Node* node,
     const ComputedStyle& style,
@@ -193,6 +192,9 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
     return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
                                                           pseudo_argument);
   }
+
+  if (!style.HighlightData())
+    return nullptr;
 
   switch (pseudo) {
     case kPseudoIdSelection:

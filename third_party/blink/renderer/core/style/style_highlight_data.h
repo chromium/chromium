@@ -20,25 +20,20 @@ class ComputedStyle;
 class CORE_EXPORT StyleHighlightData final
     : public RefCounted<StyleHighlightData> {
  public:
-  using PassKey = base::PassKey<StyleHighlightData>;
-  using PkComputedStyle = base::PassKey<ComputedStyle>;
-
   StyleHighlightData(StyleHighlightData&& other) = delete;
   StyleHighlightData& operator=(const StyleHighlightData& other) = delete;
   StyleHighlightData& operator=(StyleHighlightData&& other) = delete;
 
-  explicit StyleHighlightData(PkComputedStyle);
-  StyleHighlightData(PkComputedStyle, const StyleHighlightData& other);
-  static scoped_refptr<StyleHighlightData> Create(PkComputedStyle);
-  scoped_refptr<StyleHighlightData> Copy(PkComputedStyle) const;
+  static scoped_refptr<StyleHighlightData> Create();
+  scoped_refptr<StyleHighlightData> Copy() const;
 
   bool operator==(const StyleHighlightData&) const;
 
   // TODO(crbug.com/1024156): add methods for ::highlight()
-  const scoped_refptr<ComputedStyle>& Selection() const;
-  const scoped_refptr<ComputedStyle>& TargetText() const;
-  const scoped_refptr<ComputedStyle>& SpellingError() const;
-  const scoped_refptr<ComputedStyle>& GrammarError() const;
+  const scoped_refptr<const ComputedStyle>& Selection() const;
+  const scoped_refptr<const ComputedStyle>& TargetText() const;
+  const scoped_refptr<const ComputedStyle>& SpellingError() const;
+  const scoped_refptr<const ComputedStyle>& GrammarError() const;
   void SetSelection(scoped_refptr<ComputedStyle>&&);
   void SetTargetText(scoped_refptr<ComputedStyle>&&);
   void SetSpellingError(scoped_refptr<ComputedStyle>&&);
@@ -49,10 +44,10 @@ class CORE_EXPORT StyleHighlightData final
   StyleHighlightData(const StyleHighlightData& other);
 
   // TODO(crbug.com/1024156): add field for ::highlight()
-  scoped_refptr<ComputedStyle> selection_;
-  scoped_refptr<ComputedStyle> target_text_;
-  scoped_refptr<ComputedStyle> spelling_error_;
-  scoped_refptr<ComputedStyle> grammar_error_;
+  scoped_refptr<const ComputedStyle> selection_;
+  scoped_refptr<const ComputedStyle> target_text_;
+  scoped_refptr<const ComputedStyle> spelling_error_;
+  scoped_refptr<const ComputedStyle> grammar_error_;
 };
 
 }  // namespace blink

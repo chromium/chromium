@@ -8,27 +8,14 @@
 
 namespace blink {
 
-StyleHighlightData::StyleHighlightData(PkComputedStyle)
-    : StyleHighlightData() {}
-StyleHighlightData::StyleHighlightData(PkComputedStyle,
-                                       const StyleHighlightData& other)
-    : StyleHighlightData(other) {}
-scoped_refptr<StyleHighlightData> StyleHighlightData::Create(PkComputedStyle) {
+scoped_refptr<StyleHighlightData> StyleHighlightData::Create() {
   return base::AdoptRef(new StyleHighlightData);
 }
-scoped_refptr<StyleHighlightData> StyleHighlightData::Copy(
-    PkComputedStyle) const {
+scoped_refptr<StyleHighlightData> StyleHighlightData::Copy() const {
   return base::AdoptRef(new StyleHighlightData(*this));
 }
 
-StyleHighlightData::StyleHighlightData() {
-  // Call the internal ctor, *not* CreateInitialStyleSingleton or similar, to
-  // avoid an infinite tree of StyleHighlightData under each highlight style.
-  selection_ = ComputedStyle::Create(PassKey());
-  target_text_ = ComputedStyle::Create(PassKey());
-  spelling_error_ = ComputedStyle::Create(PassKey());
-  grammar_error_ = ComputedStyle::Create(PassKey());
-}
+StyleHighlightData::StyleHighlightData() = default;
 
 StyleHighlightData::StyleHighlightData(const StyleHighlightData& other)
     // TODO(crbug.com/1024156): init field for ::highlight()
@@ -44,19 +31,23 @@ bool StyleHighlightData::operator==(const StyleHighlightData& other) const {
          grammar_error_ == other.grammar_error_;
 }
 
-const scoped_refptr<ComputedStyle>& StyleHighlightData::Selection() const {
+const scoped_refptr<const ComputedStyle>& StyleHighlightData::Selection()
+    const {
   return selection_;
 }
 
-const scoped_refptr<ComputedStyle>& StyleHighlightData::TargetText() const {
+const scoped_refptr<const ComputedStyle>& StyleHighlightData::TargetText()
+    const {
   return target_text_;
 }
 
-const scoped_refptr<ComputedStyle>& StyleHighlightData::SpellingError() const {
+const scoped_refptr<const ComputedStyle>& StyleHighlightData::SpellingError()
+    const {
   return spelling_error_;
 }
 
-const scoped_refptr<ComputedStyle>& StyleHighlightData::GrammarError() const {
+const scoped_refptr<const ComputedStyle>& StyleHighlightData::GrammarError()
+    const {
   return grammar_error_;
 }
 

@@ -298,12 +298,9 @@ class ComputedStyle : public ComputedStyleBase,
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
-  using PkStyleHighlightData = base::PassKey<StyleHighlightData>;
 
   ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
-  static scoped_refptr<ComputedStyle> Create(PkStyleHighlightData);
-  scoped_refptr<ComputedStyle> Copy(PkStyleHighlightData) const;
 
   // Create the per-document/context singleton that is used for shallow-copying
   // into new instances.
@@ -419,8 +416,7 @@ class ComputedStyle : public ComputedStyleBase,
     return this;
   }
 
-  const scoped_refptr<StyleHighlightData>& HighlightData() const;
-  scoped_refptr<StyleHighlightData> MutableHighlightData();
+  StyleHighlightData& MutableHighlightData();
 
   /**
    * ComputedStyle properties

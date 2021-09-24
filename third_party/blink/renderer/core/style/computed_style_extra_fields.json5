@@ -502,7 +502,7 @@
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "InitialData",
