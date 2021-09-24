@@ -2843,6 +2843,10 @@ std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
   return result.str();
 }
 
+size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
+  return shutdown_delay_ref_count_;
+}
+
 void RenderProcessHostImpl::IncrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!are_ref_counts_disabled_);

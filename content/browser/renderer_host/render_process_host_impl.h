@@ -248,6 +248,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void IncrementKeepAliveRefCount(uint64_t handle_id_) override;
   void DecrementKeepAliveRefCount(uint64_t handle_id_) override;
   std::string GetKeepAliveDurations() const override;
+  size_t GetShutdownDelayRefCount() const override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
   void DisableRefCounts() override;

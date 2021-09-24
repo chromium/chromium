@@ -401,6 +401,10 @@ std::string MockRenderProcessHost::GetKeepAliveDurations() const {
   return std::string("MockRenderProcessHost: durations not tracked.");
 }
 
+size_t MockRenderProcessHost::GetShutdownDelayRefCount() const {
+  return 0;
+}
+
 void MockRenderProcessHost::IncrementWorkerRefCount() {
   ++worker_ref_count_;
 }
