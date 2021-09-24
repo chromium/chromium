@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "base/json/json_reader.h"
+#include "base/test/bind.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/same_party_context.h"
@@ -202,6 +203,30 @@ TEST(FirstPartySets, SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
   sets.SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test..");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
+}
+
+TEST(FirstPartySets, SetsManuallySpecified_Valid_EmptyValue) {
+  FirstPartySets sets;
+  sets.SetManuallySpecifiedSet("");
+
+  // Set non-empty existing sets to distinguish the failure case from the no-op
+  // case when processing the manually-specified sets.
+  const std::string existing_sets = R"(
+  [
+    {
+      "owner": "https://example.test",
+      "members": ["https://member.test"]
+    }
+  ]
+  )";
+  ASSERT_TRUE(base::JSONReader::Read(existing_sets));
+
+  EXPECT_THAT(sets.ParseAndSet(existing_sets),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(FirstPartySets, SetsManuallySpecified_Valid_SingleMember) {
@@ -467,6 +492,311 @@ TEST(FirstPartySets, SetsManuallySpecified_PrunesInducedSingletons) {
                        SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://member1.test"),
                        SerializesTo("https://example.test")))));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_SitesJoined) {
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test", "https://member3.test"]
+      }
+    ]
+  )"),
+              Pointee(old_sets));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test", "https://member3.test"]
+      },
+      {
+        "owner": "https://foo.test",
+        "members": ["https://member2.test"]
+      }
+    ]
+  )");
+  // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
+  // site data upon joining, so the computed diff should be empty set.
+  EXPECT_THAT(sets.ComputeSetsDiff(old_sets), IsEmpty());
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_SitesLeft) {
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test", "https://member3.test"]
+      },
+      {
+        "owner": "https://foo.test",
+        "members": ["https://member2.test"]
+      },
+    ]
+  )"),
+              Pointee(old_sets));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test"]
+      },
+    ]
+  )");
+  // Expected diff: "https://foo.test", "https://member2.test" and
+  // "https://member3.test" left FPSs.
+  EXPECT_THAT(sets.ComputeSetsDiff(old_sets),
+              UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                   SerializesTo("https://member2.test"),
+                                   SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerChanged) {
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test"]
+      },
+      {
+        "owner": "https://foo.test",
+        "members": ["https://member2.test", "https://member3.test"]
+      },
+    ]
+  )"),
+              Pointee(old_sets));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test", "https://member3.test"]
+      },
+      {
+        "owner": "https://foo.test",
+        "members": ["https://member2.test"]
+      }
+    ]
+  )");
+  // Expected diff: "https://member3.test" changed owner.
+  EXPECT_THAT(sets.ComputeSetsDiff(old_sets),
+              UnorderedElementsAre(SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerLeft) {
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://foo.test", "https://bar.test"]
+      }
+    ]
+  )"),
+              Pointee(old_sets));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://foo.test",
+        "members": ["https://bar.test"]
+      }
+    ]
+  )");
+  // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
+  // "https://bar.test" changed owner.
+  // It would be valid to only have example.test in the diff, but our logic
+  // isn't sophisticated enough yet to know that foo.test and bar.test don't
+  // need to be included in the result.
+  EXPECT_THAT(sets.ComputeSetsDiff(old_sets),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://foo.test"),
+                                   SerializesTo("https://bar.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerMemberRotate) {
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://foo.test"]
+      }
+    ]
+  )"),
+              Pointee(old_sets));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://foo.test",
+        "members": ["https://example.test"]
+      }
+    ]
+  )");
+  // Expected diff: "https://example.test" and "https://foo.test" changed owner.
+  // It would be valid to not include example.test and foo.test in the result,
+  // but our logic isn't sophisticated enough yet to know that.ß
+  EXPECT_THAT(sets.ComputeSetsDiff(old_sets),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://foo.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_EmptySets) {
+  // Empty old_sets.
+  FirstPartySets sets;
+  sets.ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test"]
+      },
+    ]
+  )");
+  EXPECT_THAT(sets.ComputeSetsDiff({}), IsEmpty());
+
+  // Empty current sets.
+  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly JSON format matches the input.
+  ASSERT_THAT(FirstPartySets().ParseAndSet(R"(
+    [
+      {
+        "owner": "https://example.test",
+        "members": ["https://member1.test"]
+      }
+    ]
+  )"),
+              Pointee(old_sets));
+  EXPECT_THAT(FirstPartySets().ComputeSetsDiff(old_sets),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://member1.test")));
+}
+
+TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_NotReady) {
+  int callback_calls = 0;
+  auto callback = base::BindLambdaForTesting(
+      [&](const std::string& got) { callback_calls++; });
+  // component sets not ready.
+  {
+    FirstPartySets sets;
+    callback_calls = 0;
+    sets.SetPersistedSets("{}");
+    sets.SetManuallySpecifiedSet("");
+    sets.SetOnSiteDataCleared(callback);
+    EXPECT_EQ(callback_calls, 0);
+  }
+  // manual sets not ready.
+  {
+    FirstPartySets sets;
+    callback_calls = 0;
+    sets.ParseAndSet("[]");
+    sets.SetPersistedSets("{}");
+    sets.SetOnSiteDataCleared(callback);
+    EXPECT_EQ(callback_calls, 0);
+  }
+  // persisted sets not ready.
+  {
+    FirstPartySets sets;
+    callback_calls = 0;
+    sets.ParseAndSet("[]");
+    sets.SetManuallySpecifiedSet("");
+    sets.SetOnSiteDataCleared(callback);
+    EXPECT_EQ(callback_calls, 0);
+  }
+  // callback not set.
+  {
+    FirstPartySets sets;
+    callback_calls = 0;
+    sets.ParseAndSet("[]");
+    sets.SetManuallySpecifiedSet("");
+    sets.SetPersistedSets("{}");
+    EXPECT_EQ(callback_calls, 0);
+  }
+}
+
+// The callback only runs when `old_sets` is generated and `sets` has merged the
+// inputs from Component Updater and command line flag.
+TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_Ready) {
+  FirstPartySets sets;
+  int callback_calls = 0;
+  sets.ParseAndSet(R"([
+       {
+         "owner": "https://example.test",
+         "members": ["https://member1.test"]
+       }
+     ])");
+  sets.SetManuallySpecifiedSet("https://example2.test,https://member2.test");
+  sets.SetPersistedSets(
+      R"({"https://example.test":"https://example.test",
+            "https://member1.test":"https://example.test"})");
+  sets.SetOnSiteDataCleared(base::BindLambdaForTesting([&](const std::string&
+                                                               got) {
+    EXPECT_EQ(
+        got,
+        R"({"https://member1.test":"https://example.test","https://member2.test":"https://example2.test"})");
+    callback_calls++;
+  }));
+  EXPECT_EQ(callback_calls, 1);
 }
 
 class FirstPartySetsTest : public ::testing::Test {

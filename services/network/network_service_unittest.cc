@@ -930,6 +930,7 @@ class NetworkServiceTestWithService : public testing::Test {
   void SetUp() override {
     test_server_.AddDefaultHandlers(base::FilePath(kServicesTestData));
     ASSERT_TRUE(test_server_.Start());
+    scoped_features_.InitAndEnableFeature(net::features::kFirstPartySets);
     service_ = NetworkService::CreateForTesting();
     service_->Bind(network_service_.BindNewPipeAndPassReceiver());
   }
@@ -993,6 +994,8 @@ class NetworkServiceTestWithService : public testing::Test {
   mojo::Remote<mojom::NetworkService> network_service_;
   mojo::Remote<mojom::NetworkContext> network_context_;
   mojo::Remote<mojom::URLLoader> loader_;
+
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Verifies that loading a URL through the network service's mojo interface
@@ -1169,6 +1172,18 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
             }
             run_loop.Quit();
           }));
+  run_loop.Run();
+}
+
+TEST_F(NetworkServiceTestWithService,
+       SetPersistedFirstPartySetsAndGetCurrentSets) {
+  base::RunLoop run_loop;
+  network_service_->SetPersistedFirstPartySetsAndGetCurrentSets(
+      "", base::BindLambdaForTesting([&](const std::string& got) {
+        EXPECT_EQ(got, "{}");
+        run_loop.Quit();
+      }));
+  network_service_->SetFirstPartySets("");
   run_loop.Run();
 }
 

@@ -373,6 +373,14 @@ interface NetworkService {
   // cleared (except for the manually-specified set, if one exists).
   SetFirstPartySets(string raw_sets);
 
+  // Sets the First-Party Sets data that was persisted to compare it with the
+  // current First-Party Sets data set by `SetFirstPartySets()`, which is
+  // considered more up-to-date, and returns a serialized version of the current
+  // one. Both input and output are in format of the JSON-encoded string
+  // representation of a map of site -> site.
+  SetPersistedFirstPartySetsAndGetCurrentSets(string persisted_sets)
+      => (string up_to_date_sets);
+
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.
   SetExplicitlyAllowedPorts(array<uint16> ports);
