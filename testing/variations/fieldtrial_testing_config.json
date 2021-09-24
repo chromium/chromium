@@ -170,27 +170,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpContextualSearchPromoteLongpress": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "PromoteLongpressExperiment",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:longpress_bubble_shown;comparator:<6;window:90;storage:90",
-                        "event_used": "name:contextual_search_panel_opened_after_longpress;comparator:==0;window:365;storage:365",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ContextualSearchTappedButShouldLongpress"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpContextualSearchPromotePanelOpen": [
         {
             "platforms": [
@@ -3373,27 +3352,6 @@
                     },
                     "enable_features": [
                         "EnterpriseRealtimeExtensionRequest"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EphemeralTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:ephemeral_tab_triggered;comparator:<2;window:90;storage:90",
-                        "event_used": "name:ephemeral_tab_used;comparator:==0;window:90;storage:90",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "IPH_EphemeralTab"
                     ]
                 }
             ]
