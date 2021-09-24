@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_CHROME_UNWIND_TABLE_ANDROID_H_
-#define BASE_PROFILER_CHROME_UNWIND_TABLE_ANDROID_H_
+#ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_
+#define BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_
 
 #include <stdint.h>
 
@@ -83,4 +83,4 @@ GetFunctionTableIndexFromInstructionOffset(
 
 }  // namespace base
 
-#endif  // BASE_PROFILER_CHROME_UNWIND_TABLE_ANDROID_H_
+#endif  // BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_

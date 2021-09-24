@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/chrome_unwind_table_android.h"
+#include "base/profiler/chrome_unwinder_android_v2.h"
 
 #include "base/profiler/chrome_unwind_info_android.h"
 #include "base/test/gtest_util.h"
@@ -656,7 +656,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
   EXPECT_EQ(0xfffffffful, thread_context.arm_sp);
 }
 
-TEST(ChromeUnwindTableAndroidTest,
+TEST(ChromeUnwinderAndroidV2Test,
      TestFunctionOffsetTableLookupExactMatchingOffset) {
   const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
@@ -684,7 +684,7 @@ TEST(ChromeUnwindTableAndroidTest,
                  /* function_offset_table_byte_index */ 0x0}));
 }
 
-TEST(ChromeUnwindTableAndroidTest,
+TEST(ChromeUnwinderAndroidV2Test,
      TestFunctionOffsetTableLookupNonExactMatchingOffset) {
   const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
@@ -712,7 +712,7 @@ TEST(ChromeUnwindTableAndroidTest,
                  /* function_offset_table_byte_index */ 0x0}));
 }
 
-TEST(ChromeUnwindTableAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
+TEST(ChromeUnwinderAndroidV2Test, TestFunctionOffsetTableLookupZeroOffset) {
   const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
@@ -739,7 +739,7 @@ TEST(ChromeUnwindTableAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
                  /* function_offset_table_byte_index */ 0x0}));
 }
 
-TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEntryInPage) {
+TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEntryInPage) {
   const uint32_t page_start_instructions[] = {0, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -797,7 +797,7 @@ TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEntryInPage) {
   }
 }
 
-TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEmptyPage) {
+TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEmptyPage) {
   const uint32_t page_start_instructions[] = {0, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -824,7 +824,7 @@ TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEmptyPage) {
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwindTableAndroidTest,
+TEST(ChromeUnwinderAndroidV2Test,
      TestAddressTableLookupInvalidIntructionOffset) {
   const uint32_t page_start_instructions[] = {0, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -862,7 +862,7 @@ TEST(ChromeUnwindTableAndroidTest,
   }
 }
 
-TEST(ChromeUnwindTableAndroidTest,
+TEST(ChromeUnwinderAndroidV2Test,
      TestAddressTableLookupOnSecondPageOfFunctionSpanningPageBoundary) {
   const uint32_t page_start_instructions[] = {0, 1, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -893,7 +893,7 @@ TEST(ChromeUnwindTableAndroidTest,
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwindTableAndroidTest,
+TEST(ChromeUnwinderAndroidV2Test,
      TestAddressTableLookupWithinFunctionSpanningMultiplePages) {
   const uint32_t page_start_instructions[] = {0, 1, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {

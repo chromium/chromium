@@ -1607,10 +1607,10 @@ component("base") {
       sources += [
         "profiler/chrome_unwind_info_android.cc",
         "profiler/chrome_unwind_info_android.h",
-        "profiler/chrome_unwind_table_android.cc",
-        "profiler/chrome_unwind_table_android.h",
         "profiler/chrome_unwinder_android.cc",
         "profiler/chrome_unwinder_android.h",
+        "profiler/chrome_unwinder_android_v2.cc",
+        "profiler/chrome_unwinder_android_v2.h",
       ]
     }
 
@@ -3418,8 +3418,8 @@ test("base_unittests") {
     if (current_cpu == "arm") {
       sources += [
         "profiler/chrome_unwind_info_android_unittest.cc",
-        "profiler/chrome_unwind_table_android_unittest.cc",
         "profiler/chrome_unwinder_android_unittest.cc",
+        "profiler/chrome_unwinder_android_v2_unittest.cc",
       ]
     }
     if (!exclude_unwind_tables &&

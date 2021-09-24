@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/chrome_unwind_table_android.h"
+#include "base/profiler/chrome_unwinder_android_v2.h"
 
 #include <algorithm>
 
