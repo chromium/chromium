@@ -12,7 +12,6 @@ namespace policy {
 namespace policy_prefs {
 
 POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
-POLICY_EXPORT extern const char kCloudPolicyOverridesPlatformPolicy[];
 POLICY_EXPORT extern const char kDlpClipboardCheckSizeLimit[];
 POLICY_EXPORT extern const char kDlpReportingEnabled[];
 POLICY_EXPORT extern const char kDlpRulesList[];

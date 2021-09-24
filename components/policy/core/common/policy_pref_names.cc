@@ -39,10 +39,6 @@ const char kUserPolicyRefreshRate[] = "policy.user_refresh_rate";
 const char kCloudManagementEnrollmentMandatory[] =
     "policy.cloud_management_enrollment_mandatory";
 
-// Boolean that specifies whether the cloud policy will override conflicting
-// machine policy.
-const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
-
 // Integer that sets the minimal limit on the data size in the clipboard to be
 // checked against Data Leak Prevention rules.
 const char kDlpClipboardCheckSizeLimit[] =

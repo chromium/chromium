@@ -1870,7 +1870,7 @@ message Policy {
 
     // A policy is set by Google's cloud management tool but has higher
     // priority.
-    SOURCE_PRIORITY_CLOUD = 6;
+    SOURCE_PRIORITY_CLOUD_DEPRECATED = 6;
 
     // A policy is set by multiple sources and value has been merged.
     SOURCE_MERGED = 7;

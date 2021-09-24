@@ -53,8 +53,9 @@ enum PolicySource {
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,
 
-  // The policy was set by a cloud source that has higher priority.
-  POLICY_SOURCE_PRIORITY_CLOUD,
+  // The policy was set by a cloud source that has higher priroity.
+  // TODO(crbug.com/1249611): Remove deprecated policy source.
+  POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
 
   // The policy coming from multiple sources and its value has been merged.
   POLICY_SOURCE_MERGED,

@@ -470,19 +470,6 @@ const char kLocalDiscoveryNotificationsEnabled[] =
     "local_discovery.notifications_enabled";
 #endif
 
-// Deprecated 9/2020
-const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
-
-// Deprecated 9/2020
-const char kPluginsDeprecationInfobarLastShown[] =
-    "plugins.deprecation_infobar_last_shown";
-
-const char kPasswordManagerOnboardingState[] =
-    "profile.password_manager_onboarding_state";
-
-const char kWasOnboardingFeatureCheckedBefore[] =
-    "profile.was_pwm_onboarding_feature_checked_before";
-
 // Deprecated 10/2020
 const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
 
@@ -672,6 +659,7 @@ const char kAutofillAcceptSaveCreditCardPromptState[] =
 const char kPrivacyBudgetActiveSurfaces[] = "privacy_budget.active_surfaces";
 const char kPrivacyBudgetRetiredSurfaces[] = "privacy_budget.retired_surfaces";
 const char kPrivacyBudgetSeed[] = "privacy_budget.randomizer_seed";
+const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -706,6 +694,8 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(kUserAgentClientHintsEnabled, true);
 
+  registry->RegisterBooleanPref(kCloudPolicyOverridesPlatformPolicy, false);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(kPinnedExtensionsMigrationComplete, false);
 #endif
@@ -727,13 +717,6 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
-
-  registry->RegisterTimePref(kPluginsDeprecationInfobarLastShown, base::Time());
-
-  registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
-  registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
 
   registry->RegisterBooleanPref(prefs::kWebAppsUserDisplayModeCleanedUp, false);
 
@@ -1483,6 +1466,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kPrivacyBudgetRetiredSurfaces);
   local_state->ClearPref(kPrivacyBudgetSeed);
 
+  // Added 09/2021.
+  local_state->ClearPref(kCloudPolicyOverridesPlatformPolicy);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 }
@@ -1507,14 +1493,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-  // Added 9/2020
-  profile_prefs->ClearPref(kBlockThirdPartyCookies);
-
-  // Added 9/2020
-  profile_prefs->ClearPref(kPluginsDeprecationInfobarLastShown);
-  profile_prefs->ClearPref(kPasswordManagerOnboardingState);
-  profile_prefs->ClearPref(kWasOnboardingFeatureCheckedBefore);
 
   // Added 10/2020
   profile_prefs->ClearPref(kHistoryMenuPromoShown);

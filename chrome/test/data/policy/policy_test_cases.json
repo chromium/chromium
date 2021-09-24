@@ -10107,23 +10107,7 @@
     ]
   },
   "CloudPolicyOverridesPlatformPolicy": {
-    "os": [
-      "win",
-      "linux",
-      "mac"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CloudPolicyOverridesPlatformPolicy": false
-        },
-        "prefs": {
-          "policy.cloud_override": {
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
   "CloudUserPolicyOverridesCloudMachinePolicy": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
