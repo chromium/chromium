@@ -17,7 +17,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/ios/browser/active_state_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
