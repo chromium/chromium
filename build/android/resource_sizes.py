@@ -33,8 +33,9 @@ from pylib import constants
 from pylib.constants import host_paths
 
 _AAPT_PATH = lazy.WeakConstant(lambda: build_tools.GetPath('aapt'))
-_BUILD_UTILS_PATH = os.path.join(
-    host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'gyp')
+_ANDROID_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build',
+                                   'android', 'gyp')
+_BUILD_UTILS_PATH = os.path.join(host_paths.BUILD_PATH, 'util')
 
 with host_paths.SysPath(os.path.join(host_paths.DIR_SOURCE_ROOT, 'build')):
   import gn_helpers  # pylint: disable=import-error
@@ -45,10 +46,13 @@ with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
 with host_paths.SysPath(host_paths.TRACING_PATH):
   from tracing.value import convert_chart_json  # pylint: disable=import-error
 
-with host_paths.SysPath(_BUILD_UTILS_PATH, 0):
+with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
   from util import build_utils  # pylint: disable=import-error
   from util import zipalign  # pylint: disable=import-error
 
+with host_paths.SysPath(_BUILD_UTILS_PATH, 0):
+  from lib.results import result_sink
+  from lib.results import result_types
 
 zipalign.ApplyZipFileZipAlignFix()
 
@@ -883,6 +887,7 @@ def main():
   if args.chartjson:
     args.output_format = 'chartjson'
 
+  result_sink_client = result_sink.TryInitClient()
   isolated_script_output = {'valid': False, 'failures': []}
 
   test_name = 'resource_sizes (%s)' % os.path.basename(args.input)
@@ -906,6 +911,13 @@ def main():
         json.dump(isolated_script_output, output_file)
       with open(args.isolated_script_test_output, 'w') as output_file:
         json.dump(isolated_script_output, output_file)
+    if result_sink_client:
+      status = result_types.PASS
+      if not isolated_script_output['valid']:
+        status = result_types.UNKNOWN
+      elif isolated_script_output['failures']:
+        status = result_types.FAIL
+      result_sink_client.Post(test_name, status, None, None, None)
 
 
 if __name__ == '__main__':
