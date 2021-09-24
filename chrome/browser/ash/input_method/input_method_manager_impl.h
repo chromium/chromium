@@ -111,6 +111,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     // ------------------------- Data members.
     Profile* const profile;
 
+    InputMethodDescriptor current_input_method;
+
     // All input methods that have been registered by InputMethodEngines.
     // The key is the input method ID.
     std::map<std::string, InputMethodDescriptor> available_input_methods;
@@ -152,8 +154,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodManagerImpl* const manager_;
 
     std::string last_used_input_method_id_;
-
-    InputMethodDescriptor current_input_method_;
 
     std::vector<std::string> enabled_input_method_ids_;
 
