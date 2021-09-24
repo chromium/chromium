@@ -22,9 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_provider.h"
-#include "extensions/common/hashed_extension_id.h"
 
 namespace extensions {
 
@@ -72,14 +69,6 @@ void ActivityLogAPI::Shutdown() {
   }
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
   activity_log_->RemoveObserver(this);
-}
-
-// static
-bool ActivityLogAPI::IsExtensionAllowlisted(const std::string& extension_id) {
-  // TODO(devlin): Pass in a HashedExtensionId to avoid this conversion.
-  return FeatureProvider::GetPermissionFeatures()
-      ->GetFeature("activityLogPrivate")
-      ->IsIdInAllowlist(HashedExtensionId(extension_id));
 }
 
 void ActivityLogAPI::OnListenerAdded(const EventListenerInfo& details) {
