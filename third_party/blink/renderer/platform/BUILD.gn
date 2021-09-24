@@ -1670,7 +1670,6 @@ component("platform") {
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
     "//third_party/fdlibm",
     "//third_party/pffft:pffft",
     "//ui/gfx",
@@ -1985,7 +1984,7 @@ static_library("test_support") {
 test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
-  if (is_fuchsia && enable_blink_heap_use_v8_oilpan) {
+  if (is_fuchsia) {
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
     additional_manifest_fragments =

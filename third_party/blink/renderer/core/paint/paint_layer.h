@@ -250,19 +250,6 @@ struct CORE_EXPORT PaintLayerRareData final
 class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                public DisplayItemClient {
  public:
-#if !BUILDFLAG(USE_V8_OILPAN)
-  // Use a type specific arena
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<PaintLayer>::kAffinity>::GetState();
-    const char* type_name = "blink::PaintLayer";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kLayoutObjectArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<PaintLayer>>::Index(), type_name);
-  }
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
-
   explicit PaintLayer(LayoutBoxModelObject*);
   PaintLayer(const PaintLayer&) = delete;
   PaintLayer& operator=(const PaintLayer&) = delete;
@@ -1558,7 +1545,6 @@ CORE_EXPORT void showLayerTree(const blink::PaintLayer*);
 CORE_EXPORT void showLayerTree(const blink::LayoutObject*);
 #endif
 
-#if BUILDFLAG(USE_V8_OILPAN)
 namespace cppgc {
 // Assign PaintLayer to be allocated on custom LayoutObjectSpace.
 template <typename T>
@@ -1568,6 +1554,5 @@ struct SpaceTrait<
   using Space = blink::LayoutObjectSpace;
 };
 }  // namespace cppgc
-#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_

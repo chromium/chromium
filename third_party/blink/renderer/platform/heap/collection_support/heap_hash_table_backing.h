@@ -7,13 +7,8 @@
 
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/collection_support/heap_hash_table_backing.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/collection_support/heap_hash_table_backing.h"
-#endif  // !USE_V8_OILPAN
 
 namespace blink {
 

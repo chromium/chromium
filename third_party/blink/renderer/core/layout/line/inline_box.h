@@ -45,19 +45,6 @@ enum MarkLineBoxes { kMarkLineBoxesDirty, kDontMarkLineBoxes };
 class CORE_EXPORT InlineBox : public GarbageCollected<InlineBox>,
                               public DisplayItemClient {
  public:
-#if !BUILDFLAG(USE_V8_OILPAN)
-  // Use a type specific arena
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<InlineBox>::kAffinity>::GetState();
-    const char* type_name = "blink::InlineBox";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kLayoutObjectArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<InlineBox>>::Index(), type_name);
-  }
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
-
   explicit InlineBox(LineLayoutItem obj)
       : next_(nullptr),
         prev_(nullptr),
@@ -531,7 +518,6 @@ void showTree(const blink::InlineBox*);
 void showLineTree(const blink::InlineBox*);
 #endif
 
-#if BUILDFLAG(USE_V8_OILPAN)
 namespace cppgc {
 // Assign InlineBox to be allocated on custom LayoutObjectSpace.
 template <typename T>
@@ -541,6 +527,5 @@ struct SpaceTrait<
   using Space = blink::LayoutObjectSpace;
 };
 }  // namespace cppgc
-#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_INLINE_BOX_H_

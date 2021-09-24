@@ -5,12 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_UTILITIES_H_
 
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/heap_test_utilities.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/heap_test_utilities.h"
-#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_UTILITIES_H_

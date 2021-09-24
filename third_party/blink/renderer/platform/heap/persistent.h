@@ -6,16 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/persistent.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/persistent.h"
-#endif  // !USE_V8_OILPAN
 
 namespace blink {
 
@@ -85,19 +80,11 @@ struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
   static PeekOutType Peek(const PersistentType& value) { return value; }
 
   static void ConstructDeletedValue(PersistentType& slot, bool) {
-#if BUILDFLAG(USE_V8_OILPAN)
     new (&slot) PersistentType(cppgc::kSentinelPointer);
-#else   // !USE_V8_OILPAN
-    new (&slot) PersistentType(WTF::kHashTableDeletedValue);
-#endif  // !USE_V8_OILPAN
   }
 
   static bool IsDeletedValue(const PersistentType& value) {
-#if BUILDFLAG(USE_V8_OILPAN)
     return value.Get() == cppgc::kSentinelPointer;
-#else   // !USE_V8_OILPAN
-    return value.IsHashTableDeletedValue();
-#endif  // !USE_V8_OILPAN
   }
 };
 

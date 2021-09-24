@@ -10,14 +10,10 @@
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "v8/include/v8.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "v8/include/cppgc/trace-trait.h"
-#endif  // USE_V8_OILPAN
 
 namespace blink {
 
@@ -121,30 +117,18 @@ class TraceWrapperV8Reference {
  protected:
   ALWAYS_INLINE void InternalSet(v8::Isolate* isolate, v8::Local<T> handle) {
     handle_.Reset(isolate, handle);
-#if BUILDFLAG(USE_V8_OILPAN)
     UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>().Get());
-#else   // !USE_V8_OILPAN
-    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
-#endif  // !USE_V8_OILPAN
   }
 
   ALWAYS_INLINE void WriteBarrier() const {
-#if BUILDFLAG(USE_V8_OILPAN)
     UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>().Get());
-#else   // !USE_V8_OILPAN
-    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
-#endif  // !USE_V8_OILPAN
   }
 
   v8::TracedReference<T> handle_;
 
-#if BUILDFLAG(USE_V8_OILPAN)
   friend struct cppgc::TraceTrait<TraceWrapperV8Reference<T>>;
-#endif  // USE_V8_OILPAN
 };
 }  // namespace blink
-
-#if BUILDFLAG(USE_V8_OILPAN)
 
 namespace cppgc {
 template <typename T>
@@ -162,26 +146,6 @@ struct TraceTrait<blink::TraceWrapperV8Reference<T>> {
   }
 };
 }  // namespace cppgc
-
-#else  // !USE_V8_OILPAN
-
-namespace blink {
-template <typename T>
-struct TraceTrait<TraceWrapperV8Reference<T>> {
-  STATIC_ONLY(TraceTrait);
-
-  static TraceDescriptor GetTraceDescriptor(
-      const TraceWrapperV8Reference<T>* ref) {
-    return {ref, TraceTrait<TraceWrapperV8Reference<T>>::Trace};
-  }
-
-  static void Trace(Visitor* visitor, const void* ref) {
-    visitor->Trace(*static_cast<const TraceWrapperV8Reference<T>*>(ref));
-  }
-};
-}  // namespace blink
-
-#endif  // !USE_V8_OILPAN
 
 namespace WTF {
 

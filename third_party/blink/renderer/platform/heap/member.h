@@ -5,16 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/member.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/member.h"
-#endif  // !USE_V8_OILPAN
 
 namespace blink {
 
@@ -102,19 +97,11 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   }
 
   static void ConstructDeletedValue(MemberType& slot, bool) {
-#if BUILDFLAG(USE_V8_OILPAN)
     slot = cppgc::kSentinelPointer;
-#else   // !USE_V8_OILPAN
-    slot = WTF::kHashTableDeletedValue;
-#endif  // !USE_V8_OILPAN
   }
 
   static bool IsDeletedValue(const MemberType& value) {
-#if BUILDFLAG(USE_V8_OILPAN)
     return value.Get() == cppgc::kSentinelPointer;
-#else   // !USE_V8_OILPAN
-    return value.IsHashTableDeletedValue();
-#endif  // !USE_V8_OILPAN
   }
 };
 

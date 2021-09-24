@@ -25,10 +25,8 @@ class TinyObject final : public GarbageCollected<TinyObject> {
 };
 
 class LargeObject final : public GarbageCollected<LargeObject> {
-#if BUILDFLAG(USE_V8_OILPAN)
   static constexpr size_t kLargeObjectSizeThreshold =
       cppgc::internal::api_constants::kLargeObjectSizeThreshold;
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
  public:
   void Trace(Visitor*) const {}
   char padding[kLargeObjectSizeThreshold + 1];

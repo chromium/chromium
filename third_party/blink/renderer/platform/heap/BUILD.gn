@@ -33,14 +33,7 @@ source_set("heap_unsanitized") {
     configs -= [ "//build/config/compiler:afdo_optimize_size" ]
   }
 
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources = [
-      "impl/unsanitized_atomic.cc",
-      "impl/unsanitized_atomic.h",
-    ]
-  } else {
-    sources = []
-  }
+  sources = []
 
   deps = [
     "//base",
@@ -90,100 +83,41 @@ blink_platform_sources("heap") {
     "//base",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/heap:heap_unsanitized",
-    "//third_party/blink/renderer/platform/heap/asm",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
     "//third_party/icu",
     "//v8",
   ]
 
-  if (enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "v8_wrapper/blink_gc.h",
-      "v8_wrapper/blink_gc_memory_dump_provider.cc",
-      "v8_wrapper/blink_gc_memory_dump_provider.h",
-      "v8_wrapper/collection_support/heap_hash_table_backing.h",
-      "v8_wrapper/collection_support/heap_vector_backing.h",
-      "v8_wrapper/custom_spaces.cc",
-      "v8_wrapper/custom_spaces.h",
-      "v8_wrapper/garbage_collected.h",
-      "v8_wrapper/heap.h",
-      "v8_wrapper/heap_allocator_impl.h",
-      "v8_wrapper/member.h",
-      "v8_wrapper/persistent.h",
-      "v8_wrapper/process_heap.h",
-      "v8_wrapper/thread_local.h",
-      "v8_wrapper/thread_state.cc",
-      "v8_wrapper/thread_state.h",
-      "v8_wrapper/thread_state_scopes.h",
-      "v8_wrapper/trace_traits.h",
-      "v8_wrapper/unified_heap_marking_visitor.h",
-      "v8_wrapper/visitor.h",
-      "v8_wrapper/write_barrier.h",
-    ]
+  sources += [
+    "v8_wrapper/blink_gc.h",
+    "v8_wrapper/blink_gc_memory_dump_provider.cc",
+    "v8_wrapper/blink_gc_memory_dump_provider.h",
+    "v8_wrapper/collection_support/heap_hash_table_backing.h",
+    "v8_wrapper/collection_support/heap_vector_backing.h",
+    "v8_wrapper/custom_spaces.cc",
+    "v8_wrapper/custom_spaces.h",
+    "v8_wrapper/garbage_collected.h",
+    "v8_wrapper/heap.h",
+    "v8_wrapper/heap_allocator_impl.h",
+    "v8_wrapper/member.h",
+    "v8_wrapper/persistent.h",
+    "v8_wrapper/process_heap.h",
+    "v8_wrapper/thread_local.h",
+    "v8_wrapper/thread_state.cc",
+    "v8_wrapper/thread_state.h",
+    "v8_wrapper/thread_state_scopes.h",
+    "v8_wrapper/trace_traits.h",
+    "v8_wrapper/unified_heap_marking_visitor.h",
+    "v8_wrapper/visitor.h",
+    "v8_wrapper/write_barrier.h",
+  ]
 
-    deps += [
-      "//gin:gin",
+  deps += [
+    "//gin:gin",
 
-      # Dependency on V8 which transitively depends on cppgc but exposes
-      # JS-related C++ heap through V8's Isolate.
-      "//v8",
-    ]
-  } else {
-    sources += [
-      "impl/atomic_entry_flag.h",
-      "impl/blink_gc.cc",
-      "impl/blink_gc.h",
-      "impl/blink_gc_memory_dump_provider.cc",
-      "impl/blink_gc_memory_dump_provider.h",
-      "impl/collection_support/heap_hash_table_backing.h",
-      "impl/collection_support/heap_vector_backing.h",
-      "impl/finalizer_traits.h",
-      "impl/garbage_collected.h",
-      "impl/gc_info.cc",
-      "impl/gc_info.h",
-      "impl/heap.cc",
-      "impl/heap.h",
-      "impl/heap_allocator_impl.cc",
-      "impl/heap_allocator_impl.h",
-      "impl/heap_compact.cc",
-      "impl/heap_compact.h",
-      "impl/heap_page.cc",
-      "impl/heap_page.h",
-      "impl/heap_stats_collector.cc",
-      "impl/heap_stats_collector.h",
-      "impl/marking_scheduling_oracle.cc",
-      "impl/marking_scheduling_oracle.h",
-      "impl/marking_verifier.cc",
-      "impl/marking_verifier.h",
-      "impl/marking_visitor.cc",
-      "impl/marking_visitor.h",
-      "impl/member.h",
-      "impl/name_traits.h",
-      "impl/page_bloom_filter.h",
-      "impl/page_memory.cc",
-      "impl/page_memory.h",
-      "impl/page_pool.cc",
-      "impl/page_pool.h",
-      "impl/persistent.h",
-      "impl/persistent_node.cc",
-      "impl/persistent_node.h",
-      "impl/process_heap.cc",
-      "impl/process_heap.h",
-      "impl/thread_state.cc",
-      "impl/thread_state.h",
-      "impl/thread_state_scopes.h",
-      "impl/thread_state_statistics.cc",
-      "impl/thread_state_statistics.h",
-      "impl/threading_traits.h",
-      "impl/trace_traits.h",
-      "impl/unified_heap_controller.cc",
-      "impl/unified_heap_controller.h",
-      "impl/unified_heap_marking_visitor.cc",
-      "impl/unified_heap_marking_visitor.h",
-      "impl/visitor.h",
-      "impl/worklist.h",
-    ]
-  }
+    # Dependency on V8 which transitively depends on cppgc but exposes
+    # JS-related C++ heap through V8's Isolate.
+    "//v8",
+  ]
 
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -210,17 +144,10 @@ source_set("test_support") {
     "heap_test_utilities.h",
   ]
 
-  if (enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "v8_wrapper/heap_test_utilities.cc",
-      "v8_wrapper/heap_test_utilities.h",
-    ]
-  } else {
-    sources += [
-      "impl/heap_test_utilities.cc",
-      "impl/heap_test_utilities.h",
-    ]
-  }
+  sources += [
+    "v8_wrapper/heap_test_utilities.cc",
+    "v8_wrapper/heap_test_utilities.h",
+  ]
 
   deps = [
     ":blink_heap_buildflags",
@@ -228,15 +155,12 @@ source_set("test_support") {
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
     "//third_party/blink/renderer/platform:bindings_buildflags",
     "//third_party/blink/renderer/platform:platform",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
   ]
 
   # TODO(v8:11952): Switch to `//v8:v8_for_testing` as target once it properly
   # depends on v8 without duplicating the whole library which causes ODR
   # violations when `//v8:v8` is also pulled in otherwise.
-  if (enable_blink_heap_use_v8_oilpan) {
-    deps += [ "//v8:v8" ]
-  }
+  deps += [ "//v8:v8" ]
 
   public_deps = [ "//base/test:test_support" ]
 }
@@ -253,7 +177,7 @@ test("blink_heap_unittests") {
     ]
   }
 
-  if (is_fuchsia && enable_blink_heap_use_v8_oilpan) {
+  if (is_fuchsia) {
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
     additional_manifest_fragments =
@@ -279,23 +203,6 @@ source_set("blink_heap_unittests_sources") {
     "test/weakness_marking_test.cc",
     "test/write_barrier_perftest.cc",
   ]
-
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "impl/test/card_table_test.cc",
-      "impl/test/gc_info_test.cc",
-      "impl/test/heap_internals_test.cc",
-      "impl/test/heap_stats_collector_test.cc",
-      "impl/test/heap_thread_test.cc",
-      "impl/test/incremental_marking_internals_test.cc",
-      "impl/test/marking_scheduling_oracle_test.cc",
-      "impl/test/marking_verifier_test.cc",
-      "impl/test/name_trait_test.cc",
-      "impl/test/object_start_bitmap_test.cc",
-      "impl/test/thread_state_scheduling_test.cc",
-      "impl/test/worklist_test.cc",
-    ]
-  }
 
   if (enable_blink_heap_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]

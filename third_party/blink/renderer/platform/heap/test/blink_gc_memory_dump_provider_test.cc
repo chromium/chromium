@@ -10,10 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
-#endif  // !USE_V8_OILPAN
 
 namespace blink {
 
@@ -52,7 +49,6 @@ void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
 
 void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
                        const std::string dump_prefix) {
-#if BUILDFLAG(USE_V8_OILPAN)
   size_t custom_space_count = 0;
   IterateMemoryDumps(
       dump, dump_prefix + "CustomSpace",
@@ -60,14 +56,6 @@ void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
         custom_space_count++;
       });
   EXPECT_EQ(CustomSpaces::CreateCustomSpaces().size(), custom_space_count);
-#else  // !USE_V8_OILPAN
-#define CheckArena(name)                  \
-  EXPECT_NE(dump.allocator_dumps().end(), \
-            dump.allocator_dumps().find(dump_prefix + #name "Arena"));
-
-  FOR_EACH_ARENA(CheckArena)
-#undef CheckArena
-#endif  // !USE_V8_OILPAN
 }
 
 }  // namespace
@@ -137,13 +125,8 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
           BlinkGCMemoryDumpProvider::HeapType::kBlinkWorkerThread));
   dump_provider->OnMemoryDump(args, dump.get());
 
-#if BUILDFLAG(USE_V8_OILPAN)
   const std::string worker_path_prefix = "blink_gc/workers";
   const std::string worker_path_suffix = "/heap";
-#else   // !USE_V8_OILPAN
-  const std::string worker_path_prefix = "blink_gc/workers/heap";
-  const std::string worker_path_suffix = "";
-#endif  // !USE_V8_OILPAN
 
   // Find worker suffix.
   std::string worker_suffix;

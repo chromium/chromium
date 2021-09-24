@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 // This needs to be here because element.cc also depends on it.
 #define DUMP_NODE_STATISTICS 0
@@ -178,18 +177,6 @@ class CORE_EXPORT Node : public EventTarget {
     kDocumentPositionContainedBy = 0x10,
     kDocumentPositionImplementationSpecific = 0x20,
   };
-
-#if !BUILDFLAG(USE_V8_OILPAN)
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<Node>::kAffinity>::GetState();
-    const char* type_name = "blink::Node";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kNodeArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<T>>::Index(), type_name);
-  }
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
   static void DumpStatistics();
 
@@ -1197,7 +1184,6 @@ void showTree(const blink::Node*);
 void showNodePath(const blink::Node*);
 #endif
 
-#if BUILDFLAG(USE_V8_OILPAN)
 namespace cppgc {
 // Assign Node to be allocated on custom NodeSpace.
 template <typename T>
@@ -1214,7 +1200,5 @@ struct ThreadingTrait<
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 }  // namespace blink
-
-#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_

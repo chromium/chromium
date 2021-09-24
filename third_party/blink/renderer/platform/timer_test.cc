@@ -11,12 +11,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 using base::sequence_manager::TaskQueue;
@@ -641,8 +641,7 @@ TEST_F(TimerTest, DestructOnHeapTimer) {
 }
 
 // TODO(1056170): Re-enable test.
-#if !BUILDFLAG(USE_V8_OILPAN)
-TEST_F(TimerTest, MarkOnHeapTimerAsUnreachable) {
+TEST_F(TimerTest, DISABLED_MarkOnHeapTimerAsUnreachable) {
   scoped_refptr<OnHeapTimerOwner::Record> record =
       OnHeapTimerOwner::Record::Create();
   Persistent<OnHeapTimerOwner> owner =
@@ -653,10 +652,12 @@ TEST_F(TimerTest, MarkOnHeapTimerAsUnreachable) {
 
   owner = nullptr;
   // Explicit regular GC call to allow lazy sweeping.
-  ThreadState::Current()->CollectGarbageForTesting(
-      BlinkGC::CollectionType::kMajor, BlinkGC::kNoHeapPointersOnStack,
-      BlinkGC::kAtomicMarking, BlinkGC::kConcurrentAndLazySweeping,
-      BlinkGC::GCReason::kForcedGCForTesting);
+  // TODO(1056170): Needs a specific forced GC call to be able to test the
+  // scenario below.
+  // ThreadState::Current()->CollectGarbageForTesting(
+  //     BlinkGC::CollectionType::kMajor, BlinkGC::kNoHeapPointersOnStack,
+  //     BlinkGC::kAtomicMarking, BlinkGC::kConcurrentAndLazySweeping,
+  //     BlinkGC::GCReason::kForcedGCForTesting);
   // Since the heap is laziy swept, owner is not yet destructed.
   EXPECT_FALSE(record->OwnerIsDestructed());
 
@@ -666,10 +667,9 @@ TEST_F(TimerTest, MarkOnHeapTimerAsUnreachable) {
     platform_->RunUntilIdle();
     EXPECT_FALSE(record->TimerHasFired());
     EXPECT_FALSE(record->OwnerIsDestructed());
-    ThreadState::Current()->CompleteSweep();
+    // ThreadState::Current()->CompleteSweep();
   }
 }
-#endif  // !USE_V8_OILPAN
 
 namespace {
 

@@ -85,7 +85,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
 namespace {
 
-#if BUILDFLAG(USE_V8_OILPAN)
 // Helper function to convert a byte count to a KB count, capping at
 // INT_MAX if the number is larger than that.
 constexpr int32_t CappedSizeInKB(int64_t size_in_bytes) {
@@ -120,15 +119,12 @@ void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_NE(-1, event.main_thread_efficiency_cpp_in_bytes_per_us);
   DCHECK_NE(-1, event.collection_rate_cpp_in_percent);
 }
-#endif  // USE_V8_OILPAN
 
 }  // namespace
 
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullCycle& event,
     ContextId context_id) {
-#if BUILDFLAG(USE_V8_OILPAN)
-  // Cpp events should always be populated when building with USE_V8_OILPAN.
   CheckCppEvents(event);
   // Report throughput metrics:
   UMA_HISTOGRAM_TIMES("V8.GC.Cycle.Full.Cpp",
@@ -245,7 +241,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
                       ("V8.GC.Cycle.CollectionRate.Full.Cpp", 0, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_cpp_in_percent));
-#endif  // USE_V8_OILPAN
 }
 
 namespace {

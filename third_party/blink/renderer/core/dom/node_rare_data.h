@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -262,14 +261,12 @@ class NodeRareData : public NodeData {
   Member<HeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
 };
 
-#if BUILDFLAG(USE_V8_OILPAN)
 template <typename T>
 struct ThreadingTrait<
     T,
     std::enable_if_t<std::is_base_of<blink::NodeRareData, T>::value>> {
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
-#endif  // USE_V8_OILPAN
 
 }  // namespace blink
 

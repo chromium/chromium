@@ -33,18 +33,6 @@ class Length;
 
 class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
  public:
-#if !BUILDFLAG(USE_V8_OILPAN)
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<CSSValue>::kAffinity>::GetState();
-    const char* type_name = "blink::CSSValue";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kCSSValueArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<CSSValue>>::Index(), type_name);
-  }
-#endif  // !USE_V8_OILPAN
-
   // TODO(sashab): Remove this method and move logic to the caller.
   static CSSValue* Create(const Length& value, float zoom);
 
@@ -351,7 +339,6 @@ inline bool CompareCSSValueVector(
 
 }  // namespace blink
 
-#if BUILDFLAG(USE_V8_OILPAN)
 namespace cppgc {
 // Assign CSSValue to be allocated on custom CSSValueSpace.
 template <typename T>
@@ -361,6 +348,5 @@ struct SpaceTrait<
   using Space = blink::CSSValueSpace;
 };
 }  // namespace cppgc
-#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_
