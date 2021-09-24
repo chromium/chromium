@@ -17,7 +17,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
-#include "ui/display/display_list.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/ca_layer_params.h"
 
 namespace ui {
@@ -35,7 +35,7 @@ class BrowserCompositorMacClient {
   virtual void DestroyCompositorForShutdown() = 0;
   virtual bool OnBrowserCompositorSurfaceIdChanged() = 0;
   virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
-  virtual const display::DisplayList& GetDisplayList() const = 0;
+  virtual display::ScreenInfo GetCurrentScreenInfo() const = 0;
   virtual void SetCurrentDeviceScaleFactor(float device_scale_factor) = 0;
 };
 

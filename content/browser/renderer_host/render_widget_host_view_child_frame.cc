@@ -131,11 +131,8 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(parent_view->GetFrameSinkId());
   }
 
-  // TODO(crbug.com/1182855): Use the parent_view's entire display::DisplayList.
-  display::Display display = display_list_.GetCurrentDisplay();
-  display.set_device_scale_factor(
-      frame_connector_->screen_info().device_scale_factor);
-  display_list_.UpdateDisplay(display);
+  // TODO(crbug.com/1182855): Use the parent_view's entire display::ScreenInfos.
+  screen_infos_ = display::ScreenInfos(frame_connector_->screen_info());
 
   auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
   if (root_view) {

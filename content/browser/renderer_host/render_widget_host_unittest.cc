@@ -155,6 +155,9 @@ class TestView : public TestRenderWidgetHostView {
   void GetScreenInfo(display::ScreenInfo* screen_info) override {
     *screen_info = screen_info_;
   }
+  display::ScreenInfos GetScreenInfos() override {
+    return display::ScreenInfos(screen_info_);
+  }
 
   const WebTouchEvent& acked_event() const { return acked_event_; }
   int acked_event_count() const { return acked_event_count_; }

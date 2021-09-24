@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
-#include "ui/display/display_list.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -110,15 +110,12 @@ class DISPLAY_EXPORT Screen {
   // Sets the suggested display to use when creating a new window.
   void SetDisplayForNewWindows(int64_t display_id);
 
-  // Returns a DisplayList with its `current` display set to the display nearest
-  // the specified window or view. These functions perform fallback to ensure
-  // the list is non-empty and has coherent primary and current display ids.
-  // This is useful to cache a sensible multi-display snapshot for clients that
-  // otherwise relied on fallback Displays from Screen::GetDisplayNearestView.
-  DisplayList GetDisplayListNearestViewWithFallbacks(
-      gfx::NativeView view) const;
-  DisplayList GetDisplayListNearestWindowWithFallbacks(
-      gfx::NativeWindow window) const;
+  // Returns ScreenInfos, attempting to set the current ScreenInfo to the
+  // display corresponding to `nearest_id`.  The returned result is guaranteed
+  // to be non-empty.  This function also performs fallback to ensure the result
+  // also has a valid current ScreenInfo and exactly one primary ScreenInfo
+  // (both of which may or may not be `nearest_id`).
+  display::ScreenInfos GetScreenInfosNearestDisplay(int64_t nearest_id) const;
 
   // Suspends the platform-specific screensaver, if applicable.
   virtual void SetScreenSaverSuspended(bool suspend);
@@ -174,9 +171,6 @@ class DISPLAY_EXPORT Screen {
   void SetScopedDisplayForNewWindows(int64_t display_id);
 
   static gfx::NativeWindow GetWindowForView(gfx::NativeView view);
-
-  // A shared helper for GetDisplayListNearest[Window|View]WithFallbacks().
-  DisplayList GetDisplayListNearestDisplayWithFallbacks(Display nearest) const;
 
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;

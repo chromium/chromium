@@ -943,6 +943,17 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   visual_properties.screen_infos = GetScreenInfos();
   auto& current_screen_info = visual_properties.screen_infos.mutable_current();
 
+  // For testing, override the raster color profile.
+  // Note: this needs to be done here and not earlier in the pipeline because
+  // Mac uses the display color space to update an NSSurface and this setting
+  // is only for "raster" color space.
+  if (display::Display::HasForceRasterColorProfile()) {
+    for (auto& screen_info : visual_properties.screen_infos.screen_infos) {
+      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
+          display::Display::GetForcedRasterColorProfile());
+    }
+  }
+
   visual_properties.is_fullscreen_granted = delegate_->IsFullscreen();
   visual_properties.window_controls_overlay_rect =
       delegate_->GetWindowsControlsOverlayRect();
@@ -2114,65 +2125,7 @@ display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
     return display::ScreenInfos(current_screen_info);
   }
 
-  // Get displays from RenderWidgetHostView, not directly from display::Screen.
-  // This helps maintain consistency with the legacy singular GetScreenInfo().
-  // For example, Mac may cache display info from a remote process NSWindow.
-  const std::vector<display::Display>& displays = view_->GetDisplays();
-
-  // Just return the legacy singular ScreenInfo, if its id is invalid or if the
-  // display::Screen is not initialized; each of which occurs in various tests.
-  // When there are no valid displays, some platforms can also create a
-  // fake default Display as well (e.g. Display::GetDefaultDisplay).
-  if (current_screen_info.display_id == display::kInvalidDisplayId ||
-      current_screen_info.display_id == display::kDefaultDisplayId ||
-      displays.empty()) {
-    return display::ScreenInfos(current_screen_info);
-  }
-
-  // Build multi-screen info from the displays returned by RenderWidgetHostView,
-  // ensure its legacy singular screen info struct is included in this set.
-  display::ScreenInfos result;
-  bool current_display_added = false;
-  for (const auto& display : displays) {
-    if (display.id() == current_screen_info.display_id) {
-      DCHECK(!current_display_added);
-      result.screen_infos.push_back(current_screen_info);
-      result.current_display_id = current_screen_info.display_id;
-      current_display_added = true;
-      continue;
-    }
-    display::ScreenInfo screen_info;
-    display::DisplayUtil::DisplayToScreenInfo(&screen_info, display);
-    result.screen_infos.push_back(screen_info);
-  }
-
-  if (current_display_added)
-    return result;
-
-  // TODO(enne): temporary debugging logic.  GetScreens() is called during
-  // frequent visual property updates, and so will crash even when the
-  // multi-screen window placement api is not enabled.  Instead of CHECK, do a
-  // dump here so we can check if this is happening without having a full-on
-  // browser crash.
-  static bool have_crash_dumped = false;
-  if (!have_crash_dumped) {
-    have_crash_dumped = true;
-
-    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "display_id",
-                            current_screen_info.display_id);
-    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "num_displays", displays.size());
-
-    std::string display_ids;
-    for (const auto& display : displays) {
-      base::StringAppendF(&display_ids, "%" PRId64 ",", display.id());
-    }
-    SCOPED_CRASH_KEY_STRING256("GetScreenInfos", "displays", display_ids);
-
-    base::debug::DumpWithoutCrashing();
-  }
-
-  // Fall back to legacy screen info, if we are in a bad state.
-  return display::ScreenInfos(current_screen_info);
+  return view_->GetScreenInfos();
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(

@@ -46,6 +46,13 @@ base::LazyInstance<RenderWidgetHostViewBaseAllocMap>::DestructorAtExit
     g_alloc_dealloc_tracker_map = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+const display::ScreenInfo MakeDefaultScreenInfo() {
+  // Construct a fake ScreenInfo with a valid display id.
+  display::ScreenInfo screen_info;
+  screen_info.display_id = display::kDefaultDisplayId;
+  return screen_info;
+}
+
 namespace content {
 
 // static
@@ -60,14 +67,10 @@ int RenderWidgetHostViewBase::IsValidRWHVBPointer(
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
     : host_(RenderWidgetHostImpl::From(host)),
-      display_list_({display::Display(display::kDefaultDisplayId)},
-                    /*primary_id=*/display::kDefaultDisplayId,
-                    /*current_id=*/display::kDefaultDisplayId) {
-  // `display_list_` must be initialized, to permit unconditional access to its
-  // current Display object. A placeholder Display is used here, so the first
-  // call to UpdateScreenInfo will trigger the expected updates.
-  CHECK(display_list_.IsValidAndHasPrimaryAndCurrentDisplays());
-
+      // `screen_infos_` must be initialized, to permit unconditional access to
+      // its current display. A placeholder ScreenInfo is used here, so the
+      // first call to UpdateScreenInfo will trigger the expected updates.
+      screen_infos_({MakeDefaultScreenInfo()}) {
   g_alloc_dealloc_tracker_map.Get()[this]++;
 }
 
@@ -510,14 +513,24 @@ void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
   NOTREACHED();
 }
 
-const std::vector<display::Display>& RenderWidgetHostViewBase::GetDisplays()
-    const {
+display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() {
   // Get the latest info directly from display::Screen, like GetScreenInfo().
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
-  if (auto* screen = display::Screen::GetScreen())
-    return screen->GetAllDisplays();
-  static const base::NoDestructor<std::vector<display::Display>> kEmptyDisplays;
-  return *kEmptyDisplays;
+  // GetScreenInfos should be made non-virtual to just return screen_infos_.
+  // GetScreenInfo should go away and callers should use GetScreenInfos.
+  // UpdateScreenInfo should be the only updater of screen_infos.
+  if (auto* screen = display::Screen::GetScreen()) {
+    gfx::NativeView native_view = GetNativeView();
+    const auto& display = native_view
+                              ? screen->GetDisplayNearestView(native_view)
+                              : screen->GetPrimaryDisplay();
+    return screen->GetScreenInfosNearestDisplay(display.id());
+  }
+
+  // If there is no screen, create fake ScreenInfos (for tests).
+  display::ScreenInfo screen_info;
+  screen_info.display_id = display::kDefaultDisplayId;
+  return display::ScreenInfos(screen_info);
 }
 
 void RenderWidgetHostViewBase::UpdateScreenInfo() {
@@ -540,31 +553,30 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
       host()->delegate()->SendScreenRects();
   }
 
-  const display::DisplayList new_display_list =
-      display::Screen::GetScreen()->GetDisplayListNearestViewWithFallbacks(
-          GetNativeView());
-
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
-  const bool has_display_property_changed = display_list_ != new_display_list;
+  auto new_screen_infos = GetScreenInfos();
+
+  if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
+    return;
+
   const bool has_rotation_changed =
-      display_list_.GetCurrentDisplay().rotation() !=
-      new_display_list.GetCurrentDisplay().rotation();
+      screen_infos_.current().orientation_angle !=
+      new_screen_infos.current().orientation_angle;
+  screen_infos_ = std::move(new_screen_infos);
 
-  if (has_display_property_changed || force_sync_visual_properties) {
-    display_list_ = new_display_list;
-
-    // Notify the associated RenderWidgetHostImpl when screen info has changed.
-    // That will synchronize visual properties needed for frame tree rendering
-    // and for web platform APIs that expose screen and window info and events.
-    if (host()) {
-      OnSynchronizedDisplayPropertiesChanged(has_rotation_changed);
-      host()->NotifyScreenInfoChanged();
-    }
+  // Notify the associated RenderWidgetHostImpl when screen info has changed.
+  // That will synchronize visual properties needed for frame tree rendering
+  // and for web platform APIs that expose screen and window info and events.
+  if (host()) {
+    OnSynchronizedDisplayPropertiesChanged(has_rotation_changed);
+    host()->NotifyScreenInfoChanged();
   }
 }
 
 float RenderWidgetHostViewBase::GetCurrentDeviceScaleFactor() const {
-  return display_list_.GetCurrentDisplay().device_scale_factor();
+  // TODO(enne): consolidate this GetCurrentDeviceScaleFactor() function with
+  // GetDeviceScaleFactor().
+  return screen_infos_.current().device_scale_factor;
 }
 
 void RenderWidgetHostViewBase::DidUnregisterFromTextInputManager(
@@ -609,7 +621,7 @@ base::WeakPtr<RenderWidgetHostViewBase> RenderWidgetHostViewBase::GetWeakPtr() {
 }
 
 void RenderWidgetHostViewBase::GetScreenInfo(display::ScreenInfo* screen_info) {
-  display::DisplayUtil::GetNativeViewScreenInfo(screen_info, GetNativeView());
+  *screen_info = GetScreenInfos().current();
 }
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() {

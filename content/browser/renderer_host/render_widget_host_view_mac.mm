@@ -111,15 +111,13 @@ RenderWidgetHostViewMac::CollectSurfaceIdsForEviction() {
   return host()->CollectSurfaceIdsForEviction();
 }
 
-const display::DisplayList& RenderWidgetHostViewMac::GetDisplayList() const {
-  return display_list_;
+display::ScreenInfo RenderWidgetHostViewMac::GetCurrentScreenInfo() const {
+  return screen_infos_.current();
 }
 
 void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
     float device_scale_factor) {
-  display::Display display = display_list_.GetCurrentDisplay();
-  display.set_device_scale_factor(device_scale_factor);
-  display_list_.UpdateDisplay(display);
+  screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,9 +197,9 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   // Guess that the initial screen we will be on is the screen of the current
   // window (since that's the best guess that we have, and is usually right).
   // https://crbug.com/357443
-  display_list_ =
-      display::Screen::GetScreen()->GetDisplayListNearestWindowWithFallbacks(
-          [NSApp keyWindow]);
+  auto* screen = display::Screen::GetScreen();
+  screen_infos_ = screen->GetScreenInfosNearestDisplay(
+      screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
@@ -426,18 +424,7 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
 }
 
 void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
-  const display::Display& display = display_list_.GetCurrentDisplay();
-  display::DisplayUtil::DisplayToScreenInfo(screen_info, display);
-  // Recalculate some ScreenInfo properties from the cached screen info, which
-  // may originate from a remote process that hosts the associated NSWindow.
-  // DisplayToScreenInfo derives some properties from the latest display::Screen
-  // info observed directly in this process, which may be intermittently
-  // out-of-sync with remote info. Also, RenderWidgetHostViewMac does not
-  // update its cached screen info during auto-resize.
-  // TODO(crbug.com/1194700): Pass cached remote process screen info to
-  // DisplayToScreenInfo; it should not use local process info internally.
-  screen_info->is_extended = display_list_.displays().size() > 1;
-  screen_info->is_primary = display.id() == display_list_.primary_id();
+  *screen_info = screen_infos_.current();
 }
 
 void RenderWidgetHostViewMac::Show() {
@@ -746,14 +733,13 @@ void RenderWidgetHostViewMac::UpdateTooltip(
   SetTooltipText(tooltip_text);
 }
 
-const std::vector<display::Display>& RenderWidgetHostViewMac::GetDisplays()
-    const {
-  // Return cached screen info, which may originate from a remote process that
+display::ScreenInfos RenderWidgetHostViewMac::GetScreenInfos() {
+  // Return cached screen infos, which may originate from a remote process that
   // hosts the associated NSWindow. The latest display::Screen info observed
   // directly in this process may be intermittently out-of-sync with that info.
   // Also, RenderWidgetHostViewMac does not update its cached screen info
   // during auto-resize.
-  return display_list_.displays();
+  return screen_infos_;
 }
 
 void RenderWidgetHostViewMac::UpdateScreenInfo() {
@@ -761,7 +747,8 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   // other properties of the NSView or pertinent NSScreens. Propagate these to
   // the RenderWidgetHostImpl as well.
 
-  display_link_ = ui::DisplayLinkMac::GetForDisplay(display_list_.current_id());
+  display_link_ =
+      ui::DisplayLinkMac::GetForDisplay(screen_infos_.current().display_id);
   if (!display_link_) {
     // Note that on some headless systems, the display link will fail to be
     // created, so this should not be a fatal error.
@@ -781,14 +768,13 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   // Update with the latest display list from the remote process if needed.
   bool current_display_changed = false;
   bool any_display_changed = false;
-  if (new_display_list_from_shim_.has_value()) {
+  if (new_screen_infos_from_shim_.has_value()) {
     current_display_changed =
-        new_display_list_from_shim_->GetCurrentDisplay() !=
-        display_list_.GetCurrentDisplay();
-    any_display_changed = new_display_list_from_shim_.value() != display_list_;
+        new_screen_infos_from_shim_->current() != screen_infos_.current();
+    any_display_changed = new_screen_infos_from_shim_.value() != screen_infos_;
 
-    display_list_ = new_display_list_from_shim_.value();
-    new_display_list_from_shim_.reset();
+    screen_infos_ = new_screen_infos_from_shim_.value();
+    new_screen_infos_from_shim_.reset();
   }
   bool dip_size_changed = view_bounds_in_window_dip_.size() !=
                           browser_compositor_->GetRendererSize();
@@ -1595,14 +1581,14 @@ void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
     host()->SendScreenRects();
 }
 
-void RenderWidgetHostViewMac::OnDisplaysChanged(
-    const display::DisplayList& display_list) {
-  // Cache this screen info, which may originate from a remote process that
+void RenderWidgetHostViewMac::OnScreenInfosChanged(
+    const display::ScreenInfos& screen_infos) {
+  // Cache the screen infos, which may originate from a remote process that
   // hosts the associated NSWindow. The latest display::Screen info observed
   // directly in this process may be intermittently out-of-sync with that info.
   // Also, BrowserCompositorMac and RenderWidgetHostViewMac do not update their
   // cached screen info during auto-resize.
-  new_display_list_from_shim_ = display_list;
+  new_screen_infos_from_shim_ = screen_infos;
   UpdateScreenInfo();
 }
 

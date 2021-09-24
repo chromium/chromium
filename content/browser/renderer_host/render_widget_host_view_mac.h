@@ -155,7 +155,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
-  const std::vector<display::Display>& GetDisplays() const override;
+  display::ScreenInfos GetScreenInfos() override;
   void UpdateScreenInfo() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
@@ -334,7 +334,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                                bool attached_to_window) override;
   void OnWindowFrameInScreenChanged(
       const gfx::Rect& window_frame_in_screen_dip) override;
-  void OnDisplaysChanged(const display::DisplayList& display_list) override;
+  void OnScreenInfosChanged(const display::ScreenInfos& screen_infos) override;
   void BeginKeyboardEvent() override;
   void EndKeyboardEvent() override;
   void ForwardKeyboardEventWithCommands(
@@ -410,7 +410,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void DestroyCompositorForShutdown() override;
   bool OnBrowserCompositorSurfaceIdChanged() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
-  const display::DisplayList& GetDisplayList() const override;
+  display::ScreenInfo GetCurrentScreenInfo() const override;
   void SetCurrentDeviceScaleFactor(float device_scale_factor) override;
 
   // AcceleratedWidgetMacNSView implementation.
@@ -667,13 +667,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // this is focused.
   ui::AccessibilityFocusOverrider accessibility_focus_overrider_;
 
-  // Holds the latest display list sent from the remote process to be used
+  // Holds the latest ScreenInfos sent from the remote process to be used
   // in UpdateScreenInfo.  Other platforms check display::Screen for the current
   // set of displays, but Mac has this info delivered explicitly and so can't do
   // that.  This is therefore an out-of-band parameter to UpdateScreenInfo.
-  // This also allows the display_list_ to only be updated outside of resize by
+  // This also allows the screen_infos_ to only be updated outside of resize by
   // holding any updates temporarily in this variable.
-  absl::optional<display::DisplayList> new_display_list_from_shim_;
+  absl::optional<display::ScreenInfos> new_screen_infos_from_shim_;
 
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more

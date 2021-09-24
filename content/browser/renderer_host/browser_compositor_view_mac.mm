@@ -114,21 +114,20 @@ void BrowserCompositorMac::SetBackgroundColor(SkColor background_color) {
 
 void BrowserCompositorMac::UpdateSurfaceFromNSView(
     const gfx::Size& new_size_dip) {
-  const display::Display& display =
-      client_->GetDisplayList().GetCurrentDisplay();
+  display::ScreenInfo current = client_->GetCurrentScreenInfo();
 
   bool is_resize = !dfh_size_dip_.IsEmpty() && new_size_dip != dfh_size_dip_;
   bool needs_new_surface_id =
       new_size_dip != dfh_size_dip_ ||
-      display.device_scale_factor() != dfh_device_scale_factor_;
+      current.device_scale_factor != dfh_device_scale_factor_;
 
   dfh_size_dip_ = new_size_dip;
-  dfh_device_scale_factor_ = display.device_scale_factor();
+  dfh_device_scale_factor_ = current.device_scale_factor;
 
   // The device scale factor is always an integer, so the result here is also
   // an integer.
   dfh_size_pixels_ = gfx::ToRoundedSize(
-      gfx::ConvertSizeToPixels(dfh_size_dip_, display.device_scale_factor()));
+      gfx::ConvertSizeToPixels(dfh_size_dip_, current.device_scale_factor));
   root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
 
   if (needs_new_surface_id) {
@@ -140,8 +139,8 @@ void BrowserCompositorMac::UpdateSurfaceFromNSView(
 
   if (recyclable_compositor_) {
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          display.device_scale_factor(),
-                                          display.color_spaces());
+                                          current.device_scale_factor,
+                                          current.display_color_spaces);
   }
 }
 
@@ -153,18 +152,17 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
   if (dfh_local_surface_id_allocator_.UpdateFromChild(child_local_surface_id)) {
     if (auto_resize_enabled) {
       client_->SetCurrentDeviceScaleFactor(new_device_scale_factor);
-      const display::Display& display =
-          client_->GetDisplayList().GetCurrentDisplay();
+      display::ScreenInfo current = client_->GetCurrentScreenInfo();
       // TODO(danakj): We should avoid lossy conversions to integer DIPs.
       dfh_size_dip_ = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
-          new_size_in_pixels, display.device_scale_factor()));
+          new_size_in_pixels, current.device_scale_factor));
       dfh_size_pixels_ = new_size_in_pixels;
       dfh_device_scale_factor_ = new_device_scale_factor;
       root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
       if (recyclable_compositor_) {
         recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                              display.device_scale_factor(),
-                                              display.color_spaces());
+                                              current.device_scale_factor,
+                                              current.display_color_spaces);
       }
     }
     delegated_frame_host_->EmbedSurface(
@@ -266,11 +264,10 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     recyclable_compositor_ =
         ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
             content::GetContextFactory());
-    const display::DisplayList& display_list = client_->GetDisplayList();
-    const display::Display& display = display_list.GetCurrentDisplay();
+    display::ScreenInfo current = client_->GetCurrentScreenInfo();
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          display.device_scale_factor(),
-                                          display.color_spaces());
+                                          current.device_scale_factor,
+                                          current.display_color_spaces);
     recyclable_compositor_->compositor()->SetRootLayer(root_layer_.get());
     recyclable_compositor_->compositor()->SetBackgroundColor(background_color_);
     recyclable_compositor_->widget()->SetNSView(
@@ -381,7 +378,7 @@ void BrowserCompositorMac::SetParentUiLayer(ui::Layer* new_parent_ui_layer) {
 
 void BrowserCompositorMac::ForceNewSurfaceForTesting() {
   float current_device_scale_factor =
-      client_->GetDisplayList().GetCurrentDisplay().device_scale_factor();
+      client_->GetCurrentScreenInfo().device_scale_factor;
   client_->SetCurrentDeviceScaleFactor(current_device_scale_factor * 2.0f);
   UpdateSurfaceFromNSView(dfh_size_dip_);
 }

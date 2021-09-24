@@ -42,7 +42,7 @@
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/display/display.h"
-#include "ui/display/display_list.h"
+#include "ui/display/screen_infos.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -169,8 +169,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual void SendInitialPropertiesIfNeeded() {}
 
-  // Get display info known to this view; must be consistent with GetScreenInfo.
-  virtual const std::vector<display::Display>& GetDisplays() const;
+  // Get ScreenInfos known to this view.
+  virtual display::ScreenInfos GetScreenInfos();
 
   // Called when screen information or native widget bounds change.
   virtual void UpdateScreenInfo();
@@ -596,7 +596,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   WidgetType widget_type_ = WidgetType::kFrame;
 
   // Cached information about the renderer's display environment.
-  display::DisplayList display_list_;
+  display::ScreenInfos screen_infos_;
 
   // Indicates whether keyboard lock is active for this view.
   bool keyboard_locked_ = false;
