@@ -33,7 +33,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="HangWatcher.IsThreadHung.{ProcessType}.{ThreadType}"
-    enum="BooleanHung" expires_after="2021-10-23">
+    enum="BooleanHung" expires_after="2022-10-23">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
