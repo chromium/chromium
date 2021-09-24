@@ -147,20 +147,20 @@ scoped_refptr<InputMethodManager::State>
 InputMethodManagerImpl::StateImpl::Clone() const {
   scoped_refptr<StateImpl> new_state(new StateImpl(this->manager_, profile));
 
-  new_state->last_used_input_method_id = last_used_input_method_id;
+  new_state->last_used_input_method_id_ = last_used_input_method_id_;
   new_state->current_input_method = current_input_method;
 
   new_state->enabled_input_method_ids = enabled_input_method_ids;
-  new_state->allowed_keyboard_layout_input_method_ids =
-      allowed_keyboard_layout_input_method_ids;
+  new_state->allowed_keyboard_layout_input_method_ids_ =
+      allowed_keyboard_layout_input_method_ids_;
 
-  new_state->pending_input_method_id = pending_input_method_id;
+  new_state->pending_input_method_id_ = pending_input_method_id_;
 
-  new_state->enabled_extension_imes = enabled_extension_imes;
+  new_state->enabled_extension_imes_ = enabled_extension_imes_;
   new_state->available_input_methods = available_input_methods;
   new_state->menu_activated = menu_activated;
-  new_state->input_view_url = input_view_url;
-  new_state->input_view_url_overridden = input_view_url_overridden;
+  new_state->input_view_url_ = input_view_url_;
+  new_state->input_view_url_overridden_ = input_view_url_overridden_;
   new_state->ui_style_ = ui_style_;
 
   return scoped_refptr<InputMethodManager::State>(new_state.get());
@@ -398,16 +398,16 @@ bool InputMethodManagerImpl::StateImpl::ReplaceEnabledInputMethods(
 bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
     const std::vector<std::string>& new_allowed_input_method_ids,
     bool enable_allowed_input_methods) {
-  allowed_keyboard_layout_input_method_ids.clear();
+  allowed_keyboard_layout_input_method_ids_.clear();
   for (auto input_method_id : new_allowed_input_method_ids) {
     std::string migrated_id =
         manager_->util_.MigrateInputMethod(input_method_id);
     if (manager_->util_.IsValidInputMethodId(migrated_id)) {
-      allowed_keyboard_layout_input_method_ids.push_back(migrated_id);
+      allowed_keyboard_layout_input_method_ids_.push_back(migrated_id);
     }
   }
 
-  if (allowed_keyboard_layout_input_method_ids.empty()) {
+  if (allowed_keyboard_layout_input_method_ids_.empty()) {
     // None of the passed input methods were valid, so allow everything.
     return false;
   }
@@ -415,7 +415,7 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
   std::vector<std::string> new_enabled_input_method_ids;
   if (enable_allowed_input_methods) {
     // Enable all allowed input methods.
-    new_enabled_input_method_ids = allowed_keyboard_layout_input_method_ids;
+    new_enabled_input_method_ids = allowed_keyboard_layout_input_method_ids_;
   } else {
     // Filter all currently enabled input methods and leave only non-keyboard or
     // allowed keyboard layouts. If no input method remains, take a fallback
@@ -437,19 +437,19 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
 
 const std::vector<std::string>&
 InputMethodManagerImpl::StateImpl::GetAllowedInputMethods() {
-  return allowed_keyboard_layout_input_method_ids;
+  return allowed_keyboard_layout_input_method_ids_;
 }
 
 bool InputMethodManagerImpl::StateImpl::IsInputMethodAllowed(
     const std::string& input_method_id) const {
   // Every input method is allowed if SetAllowedKeyboardLayoutInputMethods has
   // not been called.
-  if (allowed_keyboard_layout_input_method_ids.empty())
+  if (allowed_keyboard_layout_input_method_ids_.empty())
     return true;
 
-  return base::Contains(allowed_keyboard_layout_input_method_ids,
+  return base::Contains(allowed_keyboard_layout_input_method_ids_,
                         input_method_id) ||
-         base::Contains(allowed_keyboard_layout_input_method_ids,
+         base::Contains(allowed_keyboard_layout_input_method_ids_,
                         manager_->util_.MigrateInputMethod(input_method_id));
 }
 
@@ -460,7 +460,7 @@ InputMethodManagerImpl::StateImpl::GetAllowedFallBackKeyboardLayout() const {
     if (IsInputMethodAllowed(hardware_id))
       return hardware_id;
   }
-  return allowed_keyboard_layout_input_method_ids[0];
+  return allowed_keyboard_layout_input_method_ids_[0];
 }
 
 void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
@@ -492,10 +492,10 @@ void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
   // So here to record the 3rd party IME to be activated, and activate it
   // when SetEnabledExtensionImes happens later.
   if (MethodAwaitsExtensionLoad(input_method_id))
-    pending_input_method_id = input_method_id;
+    pending_input_method_id_ = input_method_id;
 
   if (descriptor->id() != current_input_method.id()) {
-    last_used_input_method_id = current_input_method.id();
+    last_used_input_method_id_ = current_input_method.id();
     current_input_method = *descriptor;
     notify_menu = true;
   }
@@ -556,7 +556,7 @@ void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
   for (const auto& descriptor : descriptors) {
     const std::string& id = descriptor.id();
     available_input_methods[id] = descriptor;
-    if (base::Contains(enabled_extension_imes, id)) {
+    if (base::Contains(enabled_extension_imes_, id)) {
       if (!base::Contains(enabled_input_method_ids, id)) {
         enabled_input_method_ids.push_back(id);
       } else {
@@ -632,9 +632,9 @@ void InputMethodManagerImpl::StateImpl::GetInputMethodExtensions(
 
 void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
     std::vector<std::string>* ids) {
-  enabled_extension_imes.clear();
-  enabled_extension_imes.insert(
-      enabled_extension_imes.end(), ids->begin(), ids->end());
+  enabled_extension_imes_.clear();
+  enabled_extension_imes_.insert(enabled_extension_imes_.end(), ids->begin(),
+                                 ids->end());
   bool enabled_imes_changed = false;
   bool switch_to_pending = false;
 
@@ -642,7 +642,7 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
     if (extension_ime_util::IsComponentExtensionIME(entry.first))
       continue;  // Do not filter component extension.
 
-    if (pending_input_method_id == entry.first)
+    if (pending_input_method_id_ == entry.first)
       switch_to_pending = true;
 
     const auto currently_enabled_iter =
@@ -651,7 +651,7 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
 
     bool currently_enabled =
         currently_enabled_iter != enabled_input_method_ids.end();
-    bool enabled = base::Contains(enabled_extension_imes, entry.first);
+    bool enabled = base::Contains(enabled_extension_imes_, entry.first);
 
     if (currently_enabled && !enabled)
       enabled_input_method_ids.erase(currently_enabled_iter);
@@ -667,8 +667,8 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
     manager_->MaybeInitializeCandidateWindowController();
 
     if (switch_to_pending) {
-      ChangeInputMethod(pending_input_method_id, false);
-      pending_input_method_id.clear();
+      ChangeInputMethod(pending_input_method_id_, false);
+      pending_input_method_id_.clear();
     } else {
       // If |current_input_method| is no longer in |enabled_input_method_ids_|,
       // switch to the first one in |enabled_input_method_ids_|.
@@ -781,17 +781,17 @@ void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
   if (!CanCycleInputMethod())
     return;
 
-  if (last_used_input_method_id.empty() ||
-      last_used_input_method_id == current_input_method.id()) {
+  if (last_used_input_method_id_.empty() ||
+      last_used_input_method_id_ == current_input_method.id()) {
     SwitchToNextInputMethod();
     return;
   }
 
   const auto iter =
       std::find(enabled_input_method_ids.begin(),
-                enabled_input_method_ids.end(), last_used_input_method_id);
+                enabled_input_method_ids.end(), last_used_input_method_id_);
   if (iter == enabled_input_method_ids.end()) {
-    // last_used_input_method_id is not supported.
+    // last_used_input_method_id_ is not supported.
     SwitchToNextInputMethod();
     return;
   }
@@ -812,17 +812,17 @@ bool InputMethodManagerImpl::StateImpl::InputMethodIsEnabled(
 }
 
 void InputMethodManagerImpl::StateImpl::EnableInputView() {
-  if (!input_view_url_overridden) {
-    input_view_url = current_input_method.input_view_url();
+  if (!input_view_url_overridden_) {
+    input_view_url_ = current_input_method.input_view_url();
   }
 }
 
 void InputMethodManagerImpl::StateImpl::DisableInputView() {
-  input_view_url = GURL();
+  input_view_url_ = GURL();
 }
 
 const GURL& InputMethodManagerImpl::StateImpl::GetInputViewUrl() const {
-  return input_view_url;
+  return input_view_url_;
 }
 
 InputMethodManager::UIStyle InputMethodManagerImpl::StateImpl::GetUIStyle()
@@ -836,13 +836,13 @@ void InputMethodManagerImpl::StateImpl::SetUIStyle(
 }
 
 void InputMethodManagerImpl::StateImpl::OverrideInputViewUrl(const GURL& url) {
-  input_view_url = url;
-  input_view_url_overridden = true;
+  input_view_url_ = url;
+  input_view_url_overridden_ = true;
 }
 
 void InputMethodManagerImpl::StateImpl::ResetInputViewUrl() {
-  input_view_url = current_input_method.input_view_url();
-  input_view_url_overridden = false;
+  input_view_url_ = current_input_method.input_view_url();
+  input_view_url_overridden_ = false;
 }
 
 // ------------------------ InputMethodManagerImpl
