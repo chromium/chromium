@@ -4934,31 +4934,52 @@
           'sync_integration_tests'
         ]
       },
+      'Linux Ozone Tester (Headless)': {
+        'mixins': [
+          'linux-bionic',
+         ],
+        'test_suites': {
+         'gtest_tests': 'linux_ozone_headless_tests',
+        },
+      },
       'Linux Ozone Tester (Wayland)': {
-        'args': [
-          '--no-xvfb',
-          '--use-weston',
-          '--ozone-platform=wayland',
-        ],
         'mixins': [
           'linux-bionic',
          ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_wayland_tests',
         },
-
       },
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--no-xvfb',
-          '--use-weston',
-          '--ozone-platform=wayland',
+      'Linux Ozone Tester (X11)': {
+        'mixins': [
+          'linux-bionic',
         ],
+        'test_suites': {
+         'gtest_tests': 'linux_ozone_x11_tests',
+        },
+      },
+      'Linux Tester (Ozone Headless)': {
         'mixins': [
           'linux-bionic',
          ],
         'test_suites': {
-         'gtest_tests': 'chromium_linux_gtests',
+         'gtest_tests': 'linux_ozone_headless_tests',
+        },
+      },
+      'Linux Tester (Ozone Wayland)': {
+        'mixins': [
+          'linux-bionic',
+         ],
+        'test_suites': {
+         'gtest_tests': 'linux_ozone_wayland_ci_tests',
+        },
+      },
+      'Linux Tester (Ozone X11)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+         'gtest_tests': 'linux_ozone_x11_ci_tests',
         },
       },
       'Linux Tests': {

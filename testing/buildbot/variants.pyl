@@ -9,6 +9,30 @@
 # * trailing commas are allowed.
 
 {
+  'OZONE_HEADLESS': {
+    'args': [
+      '--no-xvfb',
+      '--ozone-platform=headless',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'headless',
+  },
+  'OZONE_WAYLAND': {
+    'args': [
+      '--no-xvfb',
+      '--use-weston',
+      '--ozone-platform=wayland',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'wayland',
+  },
+  'OZONE_X11': {
+    'args': [
+      '--ozone-platform=x11',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'x11',
+  },
   'IPHONE_6S_12_3_1': {
     'swarming': {
       'dimension_sets': [
