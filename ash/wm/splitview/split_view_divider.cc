@@ -250,6 +250,14 @@ SplitViewDivider::SplitViewDivider(SplitViewController* controller)
   split_view_window_targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
       always_on_top_container, std::make_unique<AlwaysOnTopWindowTargeter>(
                                    divider_widget_->GetNativeWindow()));
+
+  // Observe currently snapped windows.
+  for (auto snap_pos : {SplitViewController::SnapPosition::LEFT,
+                        SplitViewController::SnapPosition::RIGHT}) {
+    auto* window = controller_->GetSnappedWindow(snap_pos);
+    if (window)
+      AddObservedWindow(window);
+  }
 }
 
 SplitViewDivider::~SplitViewDivider() {
