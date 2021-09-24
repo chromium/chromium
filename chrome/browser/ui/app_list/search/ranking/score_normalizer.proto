@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// The storage proto for the ScoreNormalizer class, see its header comment for
+// more information.
+message ScoreNormalizerProto {
+  // Versioning information for the ScoreNormalizer itself, which is used to
+  // discard on-disk state if an incompatible change is made to the score
+  // normalizer's algorithm.
+  optional int32 model_version = 1;
+
+  // Versioning information for the user-settable parameters of each instance
+  // of a ScoreNormalizer. This is set with the |version| member of the Params
+  // passed to a ScoreNormalizer. On initialization, if the versions don't
+  // match, the on-disk state is wiped.
+  optional int32 parameter_version = 2;
+
+  // TODO(crbug.com/1199206): Add model state.
+}

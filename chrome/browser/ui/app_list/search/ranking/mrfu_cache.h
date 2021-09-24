@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.pb.h"

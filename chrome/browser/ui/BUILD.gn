@@ -1903,6 +1903,8 @@ static_library("ui") {
       "app_list/search/ranking/ranker.h",
       "app_list/search/ranking/ranker_delegate.cc",
       "app_list/search/ranking/ranker_delegate.h",
+      "app_list/search/ranking/score_normalizer.cc",
+      "app_list/search/ranking/score_normalizer.h",
       "app_list/search/ranking/score_normalizing_ranker.cc",
       "app_list/search/ranking/score_normalizing_ranker.h",
       "app_list/search/ranking/top_match_ranker.cc",

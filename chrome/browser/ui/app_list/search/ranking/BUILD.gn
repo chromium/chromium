@@ -8,5 +8,6 @@ proto_library("proto") {
   sources = [
     "mrfu_cache.proto",
     "persistent_proto_test.proto",
+    "score_normalizer.proto",
   ]
 }
