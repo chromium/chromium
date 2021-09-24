@@ -114,16 +114,18 @@ template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
   PartitionFreelistEntry* freelist_head = nullptr;
   SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
-  PartitionBucket<thread_safe>* const bucket;
+  PartitionBucket<thread_safe>* const bucket = nullptr;
 
   // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
   // slot spans:
   int16_t num_allocated_slots = 0;
   uint16_t num_unprovisioned_slots = 0;
-  int8_t empty_cache_index = 0;  // -1 if not in the empty cache.
-                                 // < kMaxFreeableSpans.
-  static_assert(kMaxFreeableSpans < std::numeric_limits<int8_t>::max(), "");
-  const bool can_store_raw_size;
+  // -1 if not in the empty cache. < kMaxFreeableSpans.
+  int16_t empty_cache_index : kEmptyCacheIndexBits;
+  uint16_t can_store_raw_size : 1;
+  uint16_t unused : (16 - kEmptyCacheIndexBits - 1);
+  // Cannot use the full 64 bits in this bitfield, as this structure is embedded
+  // in PartitionPage, which has other fields as well, and must fit in 32 bytes.
 
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
@@ -237,7 +239,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
-      : bucket(nullptr), can_store_raw_size(false) {}
+      : empty_cache_index(0), can_store_raw_size(false), unused(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
@@ -262,7 +264,7 @@ struct SubsequentPageMetadata {
 // more than 1 page, the page metadata may contain rudimentary additional
 // information.
 template <bool thread_safe>
-struct PartitionPage {
+struct __attribute__((packed)) PartitionPage {
   // "Pack" the union so that common page metadata still fits within
   // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
   union __attribute__((packed)) {
@@ -289,7 +291,7 @@ struct PartitionPage {
   static constexpr uint16_t kMaxSlotSpanMetadataBits = 6;
   static constexpr uint16_t kMaxSlotSpanMetadataOffset =
       (1 << kMaxSlotSpanMetadataBits) - 1;
-  uint8_t slot_span_metadata_offset;
+  uint8_t slot_span_metadata_offset : kMaxSlotSpanMetadataBits;
 
   // |is_valid| tells whether the page is part of a slot span. If |false|,
   // |has_valid_span_after_this| tells whether it's an unused region in between
@@ -299,6 +301,7 @@ struct PartitionPage {
   //   |!slot_span_metadata_offset && slot_span_metadata->bucket|.
   bool is_valid : 1;
   bool has_valid_span_after_this : 1;
+  uint8_t unused;
 
   ALWAYS_INLINE static PartitionPage* FromPtr(void* slot_start);
 

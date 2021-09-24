@@ -412,8 +412,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 // TODO(ajwong): The waste calculation seems wrong. The PTE usage should cover
 // both used and unsed pages.
 // http://crbug.com/776537
+// static
 template <bool thread_safe>
-uint8_t PartitionBucket<thread_safe>::get_system_pages_per_slot_span() {
+uint8_t PartitionBucket<thread_safe>::ComputeSystemPagesPerSlotSpan(
+    size_t slot_size) {
   // This works out reasonably for the current bucket sizes of the generic
   // allocator, and the current values of partition page size and constants.
   // Specifically, we have enough room to always pack the slots perfectly into
@@ -474,7 +476,7 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   empty_slot_spans_head = nullptr;
   decommitted_slot_spans_head = nullptr;
   num_full_slot_spans = 0;
-  num_system_pages_per_slot_span = get_system_pages_per_slot_span();
+  num_system_pages_per_slot_span = ComputeSystemPagesPerSlotSpan(slot_size);
 }
 
 template <bool thread_safe>

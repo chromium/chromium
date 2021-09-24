@@ -308,6 +308,10 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 
 // Constant for the memory reclaim logic.
 constexpr size_t kMaxFreeableSpans = 16;
+// Constant for the memory reclaim logic.
+constexpr int kEmptyCacheIndexBits = 8;
+// Has to fit into SlotSpanMetadata::empty_cache_index.
+static_assert(kMaxFreeableSpans < (1 << (kEmptyCacheIndexBits - 1)), "");
 
 // If the total size in bytes of allocated but not committed pages exceeds this
 // value (probably it is a "out of virtual address space" crash), a special
