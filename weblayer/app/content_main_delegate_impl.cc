@@ -198,10 +198,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 #endif
   };
 
-  // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
-  if (!BackgroundFetchDelegateFactory::IsEnabled())
-    disabled_features.push_back(::features::kBackgroundFetch);
-
 #if defined(OS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_OREO) {
