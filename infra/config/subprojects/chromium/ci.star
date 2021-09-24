@@ -5701,19 +5701,6 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
-    name = "Linux Ozone Tester (Headless)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        console_view = "chromium.fyi",
-        category = "linux",
-        short_name = "loh",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = main_console_if_on_branch(),
-    triggered_by = ["ci/linux-ozone-rel"],
-)
-
-ci.linux_builder(
     name = "Linux Ozone Tester (Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -5727,53 +5714,12 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
-    name = "Linux Ozone Tester (X11)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        console_view = "chromium.fyi",
-        category = "linux",
-        short_name = "lox",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = main_console_if_on_branch(),
-    triggered_by = ["ci/linux-ozone-rel"],
-)
-
-ci.linux_builder(
-    # CI tester for Ozone/Headless
-    name = "Linux Tester (Ozone Headless)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|ozone",
-        short_name = "ltoh",
-    ),
-    main_console_view = "main",
-    cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/linux-ozone-rel"],
-    tree_closing = False,
-)
-
-ci.linux_builder(
     # CI tester for Ozone/Wayland
     name = "Linux Tester (Ozone Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "release|ozone",
         short_name = "ltow",
-    ),
-    main_console_view = "main",
-    cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/linux-ozone-rel"],
-    tree_closing = False,
-)
-
-ci.linux_builder(
-    # CI tester for Ozone/X11
-    name = "Linux Tester (Ozone X11)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|ozone",
-        short_name = "ltox",
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",

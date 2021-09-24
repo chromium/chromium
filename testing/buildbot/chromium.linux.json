@@ -4692,116 +4692,18 @@
       "sync_integration_tests"
     ]
   },
-  "Linux Ozone Tester (Headless)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_unittests",
-        "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "events_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "events_unittests",
-        "test_id_prefix": "ninja://ui/events:events_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ozone_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "services_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/"
-      }
-    ]
-  },
   "Linux Ozone Tester (Wayland)": {
     "gtest_tests": [
       {
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4818,14 +4720,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4843,14 +4743,12 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.browser_tests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "browser_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4868,14 +4766,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4893,14 +4789,12 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.content_browsertests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_browsertests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4918,14 +4812,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4942,14 +4834,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4966,14 +4856,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4991,14 +4879,12 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.interactive_ui_tests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "interactive_ui_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5016,14 +4902,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5041,14 +4925,12 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.views_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5065,14 +4947,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5084,417 +4964,6 @@
         },
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
-      }
-    ]
-  },
-  "Linux Ozone Tester (X11)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "accessibility_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "accessibility_unittests",
-        "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "aura_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "aura_unittests",
-        "test_id_prefix": "ninja://ui/aura:aura_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "browser_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "compositor_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "compositor_unittests",
-        "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_browsertests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_unittests",
-        "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "events_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "events_unittests",
-        "test_id_prefix": "ninja://ui/events:events_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gpu_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gpu_unittests",
-        "test_id_prefix": "ninja://gpu:gpu_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "interactive_ui_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
-        },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ozone_x11_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ozone_x11_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_x11_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ui_touch_selection_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ui_touch_selection_unittests",
-        "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "views_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "views_unittests",
-        "test_id_prefix": "ninja://ui/views:views_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "viz_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "x11_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "x11_unittests",
-        "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
-      }
-    ]
-  },
-  "Linux Tester (Ozone Headless)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_unittests",
-        "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "events_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "events_unittests",
-        "test_id_prefix": "ninja://ui/events:events_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ozone_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--ozone-platform=headless",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "services_unittests_headless",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/"
       }
     ]
   },
@@ -5504,14 +4973,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "absl_hardening_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5528,14 +4995,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5553,14 +5018,12 @@
           "angle_unittests",
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5578,14 +5041,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "app_shell_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5602,14 +5063,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5626,14 +5085,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "base_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5650,14 +5107,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_common_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5674,14 +5129,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_fuzzer_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5698,14 +5151,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_heap_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5722,14 +5173,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_platform_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5746,14 +5195,13 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "webkit_unit_tests_wayland",
+        "name": "webkit_unit_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5770,14 +5218,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_crypto_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5794,14 +5240,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_ssl_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5819,14 +5263,12 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.browser_tests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "browser_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5845,14 +5287,12 @@
           "--gtest_filter=-*UsingRealWebcam*",
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "capture_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5869,14 +5309,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5893,14 +5331,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cc_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5917,14 +5353,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "chrome_app_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5941,14 +5375,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "chromedriver_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5965,14 +5397,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "color_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5989,14 +5419,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "components_browsertests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6013,14 +5441,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "components_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6037,14 +5463,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6061,14 +5485,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_browsertests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6086,14 +5508,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6110,14 +5530,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crashpad_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6134,14 +5552,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6158,14 +5574,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6182,14 +5596,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crypto_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6206,14 +5618,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dbus_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6230,14 +5640,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "device_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6254,14 +5662,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "display_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6278,14 +5684,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6302,14 +5706,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_browsertests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6326,14 +5728,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6350,14 +5750,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "filesystem_service_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6374,14 +5772,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gcm_unit_tests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6398,14 +5794,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gfx_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6422,14 +5816,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gin_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6446,14 +5838,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "google_apis_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6470,14 +5860,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_wayland",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6494,2055 +5882,12 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gwp_asan_unittests",
-        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "headless_browsertests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "headless_browsertests",
-        "test_id_prefix": "ninja://headless:headless_browsertests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "headless_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "headless_unittests",
-        "test_id_prefix": "ninja://headless:headless_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "interactive_ui_tests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
-        },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ipc_tests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ipc_tests",
-        "test_id_prefix": "ninja://ipc:ipc_tests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "jingle_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "jingle_unittests",
-        "test_id_prefix": "ninja://jingle:jingle_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "latency_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "latency_unittests",
-        "test_id_prefix": "ninja://ui/latency:latency_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "libjingle_xmpp_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "libjingle_xmpp_unittests",
-        "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "liburlpattern_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "liburlpattern_unittests",
-        "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "media_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "media_unittests",
-        "test_id_prefix": "ninja://media:media_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "message_center_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "message_center_unittests",
-        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "midi_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "midi_unittests",
-        "test_id_prefix": "ninja://media/midi:midi_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "mojo_core_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "mojo_core_unittests",
-        "test_id_prefix": "ninja://mojo/core:mojo_core_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "mojo_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "mojo_unittests",
-        "test_id_prefix": "ninja://mojo:mojo_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "nacl_helper_nonsfi_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "nacl_helper_nonsfi_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_helper_nonsfi_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "nacl_loader_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "nacl_loader_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "native_theme_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "native_theme_unittests",
-        "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "net_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "openscreen_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "openscreen_unittests",
-        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "pdf_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "pdf_unittests",
-        "test_id_prefix": "ninja://pdf:pdf_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "perfetto_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "perfetto_unittests",
-        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ppapi_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ppapi_unittests",
-        "test_id_prefix": "ninja://ppapi:ppapi_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "printing_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "printing_unittests",
-        "test_id_prefix": "ninja://printing:printing_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "remoting_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "remoting_unittests",
-        "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "sandbox_linux_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "service_manager_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "services_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "shell_dialogs_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "shell_dialogs_unittests",
-        "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "skia_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "skia_unittests",
-        "test_id_prefix": "ninja://skia:skia_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "snapshot_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "snapshot_unittests",
-        "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "sql_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "sql_unittests",
-        "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "storage_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "storage_unittests",
-        "test_id_prefix": "ninja://storage:storage_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "sync_integration_tests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "sync_integration_tests",
-        "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ui_base_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ui_base_unittests",
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ui_touch_selection_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ui_touch_selection_unittests",
-        "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "unit_tests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "unit_tests",
-        "test_id_prefix": "ninja://chrome/test:unit_tests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "url_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "url_unittests",
-        "test_id_prefix": "ninja://url:url_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "views_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "views_unittests",
-        "test_id_prefix": "ninja://ui/views:views_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "viz_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "vr_common_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vr_common_unittests",
-        "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "vr_pixeltests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vr_pixeltests",
-        "test_id_prefix": "ninja://chrome/browser/vr:vr_pixeltests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "weblayer_browsertests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "weblayer_browsertests",
-        "test_id_prefix": "ninja://weblayer/test:weblayer_browsertests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "weblayer_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "weblayer_unittests",
-        "test_id_prefix": "ninja://weblayer/test:weblayer_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "wm_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "wm_unittests",
-        "test_id_prefix": "ninja://ui/wm:wm_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "wtf_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "wtf_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "xr_browser_tests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "xr_browser_tests",
-        "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
-      },
-      {
-        "args": [
-          "--no-xvfb",
-          "--use-weston",
-          "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "zlib_unittests_wayland",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "zlib_unittests",
-        "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
-      }
-    ]
-  },
-  "Linux Tester (Ozone X11)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "absl_hardening_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "absl_hardening_tests",
-        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "accessibility_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "accessibility_unittests",
-        "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
-      },
-      {
-        "args": [
-          "angle_unittests",
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "app_shell_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "app_shell_unittests",
-        "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "aura_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "aura_unittests",
-        "test_id_prefix": "ninja://ui/aura:aura_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "base_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "blink_common_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_common_unittests",
-        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "blink_fuzzer_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_fuzzer_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "blink_heap_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_heap_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "blink_platform_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_platform_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "webkit_unit_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "boringssl_crypto_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "boringssl_crypto_tests",
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "boringssl_ssl_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "boringssl_ssl_tests",
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "browser_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=-*UsingRealWebcam*",
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "capture_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "capture_unittests",
-        "test_id_prefix": "ninja://media/capture:capture_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "cast_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_unittests",
-        "test_id_prefix": "ninja://media/cast:cast_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "cc_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cc_unittests",
-        "test_id_prefix": "ninja://cc:cc_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "chrome_app_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_app_unittests",
-        "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "chromedriver_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chromedriver_unittests",
-        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "color_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "color_unittests",
-        "test_id_prefix": "ninja://ui/color:color_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "components_browsertests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_browsertests",
-        "test_id_prefix": "ninja://components:components_browsertests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "components_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "compositor_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "compositor_unittests",
-        "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_browsertests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "content_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_unittests",
-        "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "crashpad_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "crashpad_tests",
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "cronet_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cronet_tests",
-        "test_id_prefix": "ninja://components/cronet:cronet_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "cronet_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cronet_unittests",
-        "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "crypto_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "crypto_unittests",
-        "test_id_prefix": "ninja://crypto:crypto_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "dbus_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "dbus_unittests",
-        "test_id_prefix": "ninja://dbus:dbus_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "device_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "device_unittests",
-        "test_id_prefix": "ninja://device:device_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "display_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "display_unittests",
-        "test_id_prefix": "ninja://ui/display:display_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "events_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "events_unittests",
-        "test_id_prefix": "ninja://ui/events:events_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "extensions_browsertests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "extensions_browsertests",
-        "test_id_prefix": "ninja://extensions:extensions_browsertests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "extensions_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "extensions_unittests",
-        "test_id_prefix": "ninja://extensions:extensions_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "filesystem_service_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "filesystem_service_unittests",
-        "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gcm_unit_tests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gcm_unit_tests",
-        "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gfx_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gfx_unittests",
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gin_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gin_unittests",
-        "test_id_prefix": "ninja://gin:gin_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "google_apis_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "google_apis_unittests",
-        "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gpu_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gpu_unittests",
-        "test_id_prefix": "ninja://gpu:gpu_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gtk_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8557,14 +5902,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8579,14 +5924,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_browsertests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8601,14 +5946,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8623,14 +5968,15 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.interactive_ui_tests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "interactive_ui_tests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8646,14 +5992,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ipc_tests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8668,14 +6014,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "jingle_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8690,14 +6036,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "latency_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8712,14 +6058,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "libjingle_xmpp_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8734,14 +6080,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "liburlpattern_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8756,14 +6102,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "media_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8778,14 +6124,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "message_center_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8800,14 +6146,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "midi_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8822,14 +6168,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_core_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8844,14 +6190,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8866,14 +6212,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "nacl_helper_nonsfi_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8888,14 +6234,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "nacl_loader_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8910,14 +6256,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "native_theme_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8932,14 +6278,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "net_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8954,14 +6300,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "openscreen_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8976,36 +6322,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_x11_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ozone_x11_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_x11_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "pdf_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9020,14 +6344,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "perfetto_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9042,14 +6366,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ppapi_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9064,14 +6388,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "printing_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9086,14 +6410,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "remoting_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9108,14 +6432,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sandbox_linux_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9130,14 +6454,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9152,14 +6476,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "services_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9174,14 +6498,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "shell_dialogs_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9196,14 +6520,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "skia_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9218,14 +6542,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "snapshot_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9240,14 +6564,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sql_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9262,14 +6586,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "storage_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9284,14 +6608,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sync_integration_tests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9306,14 +6630,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_base_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9328,14 +6652,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9350,14 +6674,15 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.unit_tests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "unit_tests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9372,14 +6697,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "url_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9394,14 +6719,15 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-wayland.views_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9416,14 +6742,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9438,14 +6764,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "vr_common_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9460,14 +6786,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "vr_pixeltests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9482,14 +6808,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "weblayer_browsertests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9504,14 +6830,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "weblayer_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9526,14 +6852,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wm_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9548,14 +6874,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wtf_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9570,36 +6896,15 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "x11_unittests_x11",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "x11_unittests",
-        "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
-      },
-      {
-        "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "xr_browser_tests_x11",
+        "name": "xr_browser_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9614,14 +6919,14 @@
       },
       {
         "args": [
-          "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform"
+          "--no-xvfb",
+          "--use-weston",
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "zlib_unittests_x11",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
