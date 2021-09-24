@@ -72,7 +72,7 @@ external/wpt/fetch/metadata/favicon.https.sub.html [ Skip ]
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Skip Timeout ]
 
-# The following tests need to remove the assumption that user activation isvirtual/text-antialias/firstline/capitalize-transform.html
+# The following tests need to remove the assumption that user activation is
 # available in child/sibling frames.  This assumption doesn't hold with User
 # Activation v2 (UAv2).
 crbug.com/906791 external/wpt/fullscreen/api/element-ready-check-allowed-cross-origin-manual.sub.html [ Timeout ]
@@ -330,9 +330,6 @@ crbug.com/791941 virtual/gpu-rasterization/images/color-profile-border-fade.html
 crbug.com/1098369 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
 crbug.com/1106590 virtual/gpu/fast/canvas/canvas-path-non-invertible-transform.html [ Crash Pass ]
-
-crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform-2.html [ Crash Pass ]
-crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform.html [ Crash Pass ]
 
 crbug.com/1237275 fast/canvas/layers-lonebeginlayer.html [ Failure Pass ]
 crbug.com/1237275 fast/canvas/layers-unmatched-beginlayer.html [ Failure Pass ]
