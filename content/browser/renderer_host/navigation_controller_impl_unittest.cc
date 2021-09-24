@@ -427,8 +427,8 @@ TEST_F(NavigationControllerTest, GoToOffset) {
 
   for (int test = 0; test < NUM_TESTS; ++test) {
     int offset = test_offsets[test];
-    auto navigation =
-        NavigationSimulator::CreateHistoryNavigation(offset, contents());
+    auto navigation = NavigationSimulator::CreateHistoryNavigation(
+        offset, contents(), false /* is_renderer_initiated */);
     navigation->Start();
     url_index += offset;
     // Check that the GoToOffset will land on the expected page.
@@ -959,8 +959,8 @@ TEST_F(NavigationControllerTest, LoadURL_PrivilegedPending) {
 
   // Now make a pending back/forward navigation to a privileged entry.
   // The zeroth entry should be pending.
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->ReadyToCommit();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
@@ -1008,8 +1008,8 @@ TEST_F(NavigationControllerTest, LoadURL_BackPreemptsPending) {
   navigation_entry_committed_counter_ = 0;
 
   // A back navigation comes in from the renderer...
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->ReadyToCommit();
 
   // ...while the user tries to navigate to a new page...
@@ -1473,8 +1473,8 @@ TEST_F(NavigationControllerTest, MAYBE_GoBackWithUserAgentOverrideChange) {
   int change_counter = 0;
   contents()->set_web_preferences_changed_counter(&change_counter);
 
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->Start();
   EXPECT_FALSE(controller.GetPendingEntry()->GetIsOverridingUserAgent());
   back_navigation->Commit();
@@ -1496,8 +1496,8 @@ TEST_F(NavigationControllerTest, Back) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->Start();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
@@ -1561,8 +1561,8 @@ TEST_F(NavigationControllerTest, Back_GeneratesNewPage) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  auto navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   navigation->Start();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
@@ -1653,8 +1653,8 @@ TEST_F(NavigationControllerTest, Forward) {
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
 
-  auto forward_navigation =
-      NavigationSimulator::CreateHistoryNavigation(1, contents());
+  auto forward_navigation = NavigationSimulator::CreateHistoryNavigation(
+      1, contents(), false /* is_renderer_initiated */);
   forward_navigation->Start();
   // We should now have a pending navigation to go forward.
   EXPECT_EQ(controller.GetEntryCount(), 2);
@@ -1722,8 +1722,8 @@ TEST_F(NavigationControllerTest, Forward_GeneratesNewPage) {
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
 
-  auto forward_navigation =
-      NavigationSimulator::CreateHistoryNavigation(1, contents());
+  auto forward_navigation = NavigationSimulator::CreateHistoryNavigation(
+      1, contents(), false /* is_renderer_initiated */);
   forward_navigation->Start();
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
@@ -2473,8 +2473,8 @@ TEST_F(NavigationControllerTest, RemoveEntry) {
 
   // Go back, but don't commit yet. Check that we can't delete the current
   // and pending entries.
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->Start();
   EXPECT_FALSE(controller.RemoveEntryAtIndex(controller.GetEntryCount() - 1));
   EXPECT_FALSE(controller.RemoveEntryAtIndex(controller.GetEntryCount() - 2));
@@ -2514,8 +2514,8 @@ TEST_F(NavigationControllerTest, RemoveEntryWithPending) {
 
   // Go back, but don't commit yet. Check that we can't delete the current
   // and pending entries.
-  auto back_navigation =
-      NavigationSimulator::CreateHistoryNavigation(-1, contents());
+  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation->Start();
   EXPECT_FALSE(controller.RemoveEntryAtIndex(2));
   EXPECT_FALSE(controller.RemoveEntryAtIndex(1));
@@ -4029,8 +4029,8 @@ TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   EXPECT_EQ(0, controller.GetCurrentEntryIndex());
 
   // Start going forward to page B.
-  auto forward_navigation =
-      NavigationSimulator::CreateHistoryNavigation(1, contents());
+  auto forward_navigation = NavigationSimulator::CreateHistoryNavigation(
+      1, contents(), false /* is_renderer_initiated */);
   forward_navigation->ReadyToCommit();
 
   // But the renderer unilaterally navigates to page C, pruning B.

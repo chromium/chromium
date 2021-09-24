@@ -436,7 +436,8 @@ class NavigationController {
   virtual void GoBack() = 0;
   virtual void GoForward() = 0;
 
-  // Navigates to the specified absolute index.
+  // Navigates to the specified absolute index. Should only be used for
+  // browser-initiated navigations.
   virtual void GoToIndex(int index) = 0;
 
   // Navigates to the specified offset from the "current entry". Does nothing if

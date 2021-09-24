@@ -163,12 +163,20 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Navigates to a specified offset from the "current entry". Currently records
   // a histogram indicating whether the session history navigation would only
   // affect frames within the subtree of |sandbox_frame_tree_node_id|, which
-  // initiated the navigation.
+  // initiated the navigation. Navigating via this function is considered
+  // renderer-initiated, since it is only invoked when the renderer requests a
+  // history traversal.
   void GoToOffsetInSandboxedFrame(int offset, int sandbox_frame_tree_node_id);
+
+  // Navigates to the specified offset from the "current entry" and marks the
+  // navigations as initiated by the renderer.
+  void GoToOffsetFromRenderer(int offset);
+
 #if defined(OS_ANDROID)
-  // The difference with (Can)GoToOffset/(Can)GoToOffsetInSandboxedFrame is that
-  // this respect the history manipulation intervention and will excludes the
-  // skippable entries.
+  // The difference between (Can)GoToOffsetWithSkipping and
+  // (Can)GoToOffset/(Can)GoToOffsetInSandboxedFrame is that this respects the
+  // history manipulation intervention and will exclude skippable entries.
+  // These should only be used for browser-initiated navigaitons.
   bool CanGoToOffsetWithSkipping(int offset);
   void GoToOffsetWithSkipping(int offset);
 #endif
@@ -443,14 +451,17 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |sandbox_frame_tree_node_id| is valid, then this request came
   // from a sandboxed iframe with top level navigation disallowed. This
   // is currently only used for tracking metrics.
-  void GoToIndex(int index, int sandbox_frame_tree_node_id);
+  void GoToIndex(int index,
+                 int sandbox_frame_tree_node_id,
+                 bool is_browser_initiated);
 
   // Starts a navigation to an already existing pending NavigationEntry.
   // Currently records a histogram indicating whether the session history
   // navigation would only affect frames within the subtree of
   // |sandbox_frame_tree_node_id|, which initiated the navigation.
   void NavigateToExistingPendingEntry(ReloadType reload_type,
-                                      int sandboxed_source_frame_tree_node_id);
+                                      int sandboxed_source_frame_tree_node_id,
+                                      bool is_browser_initiated);
 
   // Helper function used by FindFramesToNavigate to determine the appropriate
   // action to take for a particular frame while navigating to
@@ -466,6 +477,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void FindFramesToNavigate(
       FrameTreeNode* frame,
       ReloadType reload_type,
+      bool is_browser_initiated,
       std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
       std::vector<std::unique_ptr<NavigationRequest>>*
           different_document_loads);
@@ -521,7 +533,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameNavigationEntry* frame_entry,
       ReloadType reload_type,
       bool is_same_document_history_load,
-      bool is_history_navigation_in_new_child_frame);
+      bool is_history_navigation_in_new_child_frame,
+      bool is_browser_initiated);
 
   // Returns whether there is a pending NavigationEntry whose unique ID matches
   // the given NavigationRequest's pending_nav_entry_id.

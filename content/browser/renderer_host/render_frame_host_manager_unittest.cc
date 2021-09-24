@@ -1139,8 +1139,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateAfterMissingUnloadACK) {
   // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame isn't received.  This
   // shouldn't happen, but we have seen it when going back quickly across many
   // entries (http://crbug.com/93427).
-  auto back_navigation1 =
-      NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents());
+  auto back_navigation1 = NavigationSimulatorImpl::CreateHistoryNavigation(
+      -1, contents(), false /* is_renderer_initiated */);
   back_navigation1->ReadyToCommit();
   EXPECT_FALSE(rfh2->is_waiting_for_beforeunload_completion());
 

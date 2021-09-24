@@ -340,14 +340,20 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 }
 
 // A renderer-initiated navigation should be ignored iff a) there is an ongoing
-// request b) which is browser initiated and c) the renderer request is not
-// user-initiated.
+// request b) which is browser initiated or a history traversal and c) the
+// renderer request is not user-initiated.
+// Renderer-initiated history traversals cause navigations to be ignored for
+// compatibility reasons - this behavior is asserted by several web platform
+// tests.
 // static
 bool Navigator::ShouldIgnoreIncomingRendererRequest(
     const NavigationRequest* ongoing_navigation_request,
     bool has_user_gesture) {
   return ongoing_navigation_request &&
-         ongoing_navigation_request->browser_initiated() && !has_user_gesture;
+         (ongoing_navigation_request->browser_initiated() ||
+          NavigationTypeUtils::IsHistory(
+              ongoing_navigation_request->common_params().navigation_type)) &&
+         !has_user_gesture;
 }
 
 NavigatorDelegate* Navigator::GetDelegate() {
