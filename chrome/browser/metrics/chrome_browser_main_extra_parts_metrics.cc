@@ -630,7 +630,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // misrepresent it as enabled here (and later ignored when analyzing results),
   // in order to keep each population at 33%.
   //
-  // Alsto note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
+  // Also note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
   // feature is enabled for the purpose of this Finch setting, while in fact
   // there are no behavior changes.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
@@ -642,6 +642,22 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
           base::features::kPartitionAllocPCScanBrowserOnly)
           ? "PCScanEnabled"
           : "Disabled"
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+  );
+
+  // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
+  // which simply compiles in the BackupRefPtr support, but keeps it disabled at
+  // run-time (which can be further enabled via Finch).
+  //
+  // Also note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
+  // feature is enabled for the purpose of this Finch setting, while in fact
+  // there are no behavior changes.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "BackupRefPtrSupport",
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+      "CompiledIn"
+#else
+      "Disabled"
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
   );
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
