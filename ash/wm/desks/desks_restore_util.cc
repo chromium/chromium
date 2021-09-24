@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -137,6 +138,9 @@ void RestorePrimaryUserDesks() {
     // Can be null in tests.
     return;
   }
+
+  if (primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently))
+    UMA_HISTOGRAM_BOOLEAN("Ash.Desks.UserHasUsedDesksRecently", true);
 
   const base::ListValue* desks_names =
       primary_user_prefs->GetList(prefs::kDesksNamesList);

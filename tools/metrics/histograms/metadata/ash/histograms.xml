@@ -1047,6 +1047,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.UserHasUsedDesksRecently" enum="Boolean"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted true when first session started and detected user pref
+    `kUserHasUsedDesksRecently` has been set to true for the user. Will not emit
+    false otherwise. This will be used to count the number of users that
+    `kUserHasUsedDesksRecently` has been set to true.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.WeeklyActiveDesks" units="active desks"
     expires_after="2022-03-24">
   <owner>chinsenj@chromium.org</owner>
