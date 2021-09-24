@@ -31,18 +31,13 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
        "PROXY foopy:10"},
 
       // IPv6 HTTP proxy URIs:
-      {"[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10",  // No scheme.
-       "[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10", ProxyServer::SCHEME_HTTP,
-       "FEDC:BA98:7654:3210:FEDC:BA98:7654:3210", 10,
-       "PROXY [FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10"},
+      {"[fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10",  // No scheme.
+       "[fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10", ProxyServer::SCHEME_HTTP,
+       "fedc:ba98:7654:3210:fedc:ba98:7654:3210", 10,
+       "PROXY [fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10"},
       {"http://[3ffe:2a00:100:7031::1]",  // No port.
        "[3ffe:2a00:100:7031::1]:80", ProxyServer::SCHEME_HTTP,
        "3ffe:2a00:100:7031::1", 80, "PROXY [3ffe:2a00:100:7031::1]:80"},
-      {"http://[::192.9.5.5]", "[::192.9.5.5]:80", ProxyServer::SCHEME_HTTP,
-       "::192.9.5.5", 80, "PROXY [::192.9.5.5]:80"},
-      {"http://[::FFFF:129.144.52.38]:80", "[::FFFF:129.144.52.38]:80",
-       ProxyServer::SCHEME_HTTP, "::FFFF:129.144.52.38", 80,
-       "PROXY [::FFFF:129.144.52.38]:80"},
 
       // SOCKS4 proxy URIs:
       {"socks4://foopy",  // No port.
@@ -51,7 +46,7 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
       {"socks4://foopy:10", "socks4://foopy:10", ProxyServer::SCHEME_SOCKS4,
        "foopy", 10, "SOCKS foopy:10"},
 
-      // SOCKS5 proxy URIs
+      // SOCKS5 proxy URIs:
       {"socks5://foopy",  // No port.
        "socks5://foopy:1080", ProxyServer::SCHEME_SOCKS5, "foopy", 1080,
        "SOCKS5 foopy:1080"},
@@ -75,6 +70,23 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
       {"https://1.2.3.4:10",  // IP Address
        "https://1.2.3.4:10", ProxyServer::SCHEME_HTTPS, "1.2.3.4", 10,
        "HTTPS 1.2.3.4:10"},
+
+      // Hostname canonicalization:
+      {"[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10",  // No scheme.
+       "[fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10", ProxyServer::SCHEME_HTTP,
+       "fedc:ba98:7654:3210:fedc:ba98:7654:3210", 10,
+       "PROXY [fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10"},
+      {"http://[::192.9.5.5]", "[::c009:505]:80", ProxyServer::SCHEME_HTTP,
+       "::c009:505", 80, "PROXY [::c009:505]:80"},
+      {"http://[::FFFF:129.144.52.38]:80", "[::ffff:8190:3426]:80",
+       ProxyServer::SCHEME_HTTP, "::ffff:8190:3426", 80,
+       "PROXY [::ffff:8190:3426]:80"},
+      {"http://f\u00fcpy:85", "xn--fpy-hoa:85", ProxyServer::SCHEME_HTTP,
+       "xn--fpy-hoa", 85, "PROXY xn--fpy-hoa:85"},
+      {"https://0xA.020.3.4:443", "https://10.16.3.4:443",
+       ProxyServer::SCHEME_HTTPS, "10.16.3.4", 443, "HTTPS 10.16.3.4:443"},
+      {"http://FoO.tEsT:80", "foo.test:80", ProxyServer::SCHEME_HTTP,
+       "foo.test", 80, "PROXY foo.test:80"},
   };
 
   for (const auto& test : tests) {
@@ -112,9 +124,14 @@ TEST(ProxySpecificationUtilTest, InvalidProxyUriToProxyServer) {
       "direct://xyz",  // direct is not allowed a host/port.
       "http:/",        // ambiguous, but will fail because of bad port.
       "http:",         // ambiguous, but will fail because of bad port.
+      "foopy.111",     // Interpreted as invalid IPv4 address.
+      "foo.test/"      // Paths disallowed.
+      "foo.test:123/"  // Paths disallowed.
+      "foo.test/foo"   // Paths disallowed.
   };
 
   for (const char* test : tests) {
+    SCOPED_TRACE(test);
     ProxyServer uri = ProxyUriToProxyServer(test, ProxyServer::SCHEME_HTTP);
     EXPECT_FALSE(uri.is_valid());
     EXPECT_FALSE(uri.is_direct());
@@ -187,6 +204,9 @@ TEST(ProxySpecificationUtilTest, PacResultElementToProxyServer) {
           "https foopy:10",
           "https://foopy:10",
       },
+      {"PROXY [FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10",
+       "[fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10"},
+      {"PROXY f\u00fcpy:85", "xn--fpy-hoa:85"},
   };
 
   for (const auto& test : tests) {

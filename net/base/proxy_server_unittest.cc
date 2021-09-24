@@ -100,6 +100,7 @@ TEST(ProxyServerTest, InvalidHostname) {
       "http://foo",
       "3ffe:2a00:100:7031::1]",
       "[3ffe:2a00:100:7031::1",
+      "foo.80",
   };
 
   for (size_t i = 0; i < base::size(tests); ++i) {

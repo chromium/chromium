@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   base::Value default_proxy_config(base::Value::Type::DICTIONARY);
   default_proxy_config.SetKey(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  default_proxy_config.SetKey("server", base::Value("default/proxy:8080"));
+  default_proxy_config.SetKey("server", base::Value("default.proxy.test:8080"));
   SetProxyConfigForNetworkService(kDefaultServicePath,
                                   std::move(default_proxy_config));
   RunUntilIdle();
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   base::Value wifi_proxy_config(base::Value::Type::DICTIONARY);
   wifi_proxy_config.SetKey("mode",
                            base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  wifi_proxy_config.SetKey("server", base::Value("wifi/proxy:8080"));
+  wifi_proxy_config.SetKey("server", base::Value("wifi.proxy.test:8080"));
   SetProxyConfigForNetworkService(kWifi0ServicePath,
                                   std::move(wifi_proxy_config));
   RunUntilIdle();
@@ -730,7 +730,8 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   base::Value expected_default_proxy_config(base::Value::Type::DICTIONARY);
   expected_default_proxy_config.SetKey(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_default_proxy_config.SetKey("host", base::Value("default/proxy"));
+  expected_default_proxy_config.SetKey("host",
+                                       base::Value("default.proxy.test"));
   expected_default_proxy_config.SetKey("port", base::Value(8080));
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_default_proxy_config}),
@@ -744,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   base::Value expected_wifi_proxy_config(base::Value::Type::DICTIONARY);
   expected_wifi_proxy_config.SetKey(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_wifi_proxy_config.SetKey("host", base::Value("wifi/proxy"));
+  expected_wifi_proxy_config.SetKey("host", base::Value("wifi.proxy.test"));
   expected_wifi_proxy_config.SetKey("port", base::Value(8080));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),

@@ -1997,7 +1997,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyBypassList) {
 TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   ProxyConfig config;
   config.proxy_rules().ParseFromString(
-      "http=foopy1:8080;http=foopy2:8080;http=foopy3.8080;http=foopy4:8080");
+      "http=foopy1:8080;http=foopy2:8080;http=foopy3:8080;http=foopy4:8080");
   config.set_auto_detect(false);
 
   ProxyList proxy_list;

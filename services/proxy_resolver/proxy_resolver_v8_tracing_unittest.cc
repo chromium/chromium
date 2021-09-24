@@ -349,7 +349,7 @@ TEST_F(ProxyResolverV8TracingTest, Dns) {
       "-"                 // dnsResolveEx('host6')
       "133.122.100.200-"  // myIpAddressEx()
       "166.155.144.44"    // dnsResolve('host1')
-      ":99";
+      ".test:99";
 
   EXPECT_EQ(kExpectedResult, ProxyServerToProxyUri(proxy_info.proxy_server()));
 
@@ -392,7 +392,7 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous1) {
   // invocation.
   EXPECT_EQ(3u, host_resolver.num_resolve());
 
-  EXPECT_EQ("166.155.144.11-133.199.111.4:100",
+  EXPECT_EQ("166.155.144.11-133.199.111.4.test:100",
             ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors.
@@ -436,7 +436,7 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous2) {
 
   EXPECT_EQ(3u, host_resolver.num_resolve());
 
-  EXPECT_EQ("166.155.144.44:100",
+  EXPECT_EQ("166.155.144.44.test:100",
             ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // There were no alerts or errors.
@@ -569,7 +569,7 @@ void DnsDuringInitHelper(bool synchronous_host_resolver) {
   // should not have been cached.
   EXPECT_EQ(4u, host_resolver.num_resolve());
 
-  EXPECT_EQ("91.13.12.1-91.13.12.2-145.88.13.3-137.89.8.45:99",
+  EXPECT_EQ("91.13.12.1-91.13.12.2-145.88.13.3-137.89.8.45.test:99",
             ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // 2 alerts.
@@ -987,7 +987,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
       "-"                 // dnsResolveEx('host6')
       "133.122.100.200-"  // myIpAddressEx()
       "166.155.144.44"    // dnsResolve('host1')
-      ":99";
+      ".test:99";
 
   for (size_t i = 0; i < kNumResults; ++i) {
     size_t resolver_i = i % kNumResolvers;
@@ -1000,7 +1000,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
     } else if (resolver_i == 2) {
       EXPECT_EQ("foo:99", proxy_uri);
     } else if (resolver_i == 3) {
-      EXPECT_EQ("166.155.144.33:",
+      EXPECT_EQ("166.155.144.33.test:",
                 proxy_uri.substr(0, proxy_uri.find(':') + 1));
     } else {
       NOTREACHED();
@@ -1044,7 +1044,7 @@ TEST_F(ProxyResolverV8TracingTest, NetworkIsolationKey) {
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ(2u, host_resolver.num_resolve());
-  EXPECT_EQ(kIPAddress1.ToString(),
+  EXPECT_EQ(kIPAddress1.ToString() + ".test",
             proxy_info1.proxy_server().host_port_pair().host());
 
   net::ProxyInfo proxy_info2;
@@ -1053,7 +1053,7 @@ TEST_F(ProxyResolverV8TracingTest, NetworkIsolationKey) {
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ(4u, host_resolver.num_resolve());
-  EXPECT_EQ(kIPAddress2.ToString(),
+  EXPECT_EQ(kIPAddress2.ToString() + ".test",
             proxy_info2.proxy_server().host_port_pair().host());
 }
 
@@ -1096,7 +1096,7 @@ TEST_F(ProxyResolverV8TracingTest, MyIPAddressWithNetworkIsolationKey) {
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ(2u, host_resolver.num_resolve());
-  EXPECT_EQ("1.2.3.4-5.6.7.8",
+  EXPECT_EQ("1.2.3.4-5.6.7.8.test",
             proxy_info.proxy_server().host_port_pair().host());
 }
 

@@ -7,12 +7,13 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace net {
 
@@ -49,28 +50,50 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
   // Trim leading/trailing space.
   host_and_port = HttpUtil::TrimLWS(host_and_port);
 
-  if (scheme == ProxyServer::SCHEME_DIRECT && !host_and_port.empty())
-    return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
+  if (scheme == ProxyServer::SCHEME_INVALID)
+    return ProxyServer();
 
-  HostPortPair host_port_pair;
-
-  if (scheme != ProxyServer::SCHEME_INVALID &&
-      scheme != ProxyServer::SCHEME_DIRECT) {
-    std::string host;
-    int port = -1;
-    // If the scheme has a host/port, parse it.
-    bool ok = ParseHostAndPort(host_and_port, &host, &port);
-    if (!ok)
-      return ProxyServer();  // Invalid -- failed parsing <host>[":"<port>]
-
-    // Choose a default port number if none was given.
-    if (port == -1)
-      port = ProxyServer::GetDefaultPortForScheme(scheme);
-
-    host_port_pair = HostPortPair(host, static_cast<uint16_t>(port));
+  if (scheme == ProxyServer::SCHEME_DIRECT) {
+    if (!host_and_port.empty())
+      return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
+    return ProxyServer::Direct();
   }
 
-  return ProxyServer(scheme, host_port_pair);
+  url::Component username_component;
+  url::Component password_component;
+  url::Component hostname_component;
+  url::Component port_component;
+  url::ParseAuthority(host_and_port.data(),
+                      url::Component(0, host_and_port.size()),
+                      &username_component, &password_component,
+                      &hostname_component, &port_component);
+  if (username_component.is_valid() || password_component.is_valid() ||
+      !hostname_component.is_nonempty()) {
+    return ProxyServer();
+  }
+
+  base::StringPiece hostname =
+      host_and_port.substr(hostname_component.begin, hostname_component.len);
+
+  // Reject inputs like "foo:". /url parsing and canonicalization code generally
+  // allows it and treats it the same as a URL without a specified port, but
+  // Chrome has traditionally disallowed it in proxy specifications.
+  if (port_component.is_valid() && !port_component.is_nonempty())
+    return ProxyServer();
+  base::StringPiece port =
+      port_component.is_nonempty()
+          ? host_and_port.substr(port_component.begin, port_component.len)
+          : "";
+
+  return ProxyServer::FromSchemeHostAndPort(scheme, hostname, port);
+}
+
+std::string ConstructHostPortString(base::StringPiece hostname, uint16_t port) {
+  DCHECK(!hostname.empty());
+  DCHECK((hostname.front() == '[' && hostname.back() == ']') ||
+         hostname.find(":") == base::StringPiece::npos);
+
+  return base::StrCat({hostname, ":", base::NumberToString(port)});
 }
 
 }  // namespace
@@ -105,16 +128,26 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
     case ProxyServer::SCHEME_DIRECT:
       return "DIRECT";
     case ProxyServer::SCHEME_HTTP:
-      return std::string("PROXY ") + proxy_server.host_port_pair().ToString();
+      return std::string("PROXY ") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_SOCKS4:
       // For compatibility send SOCKS instead of SOCKS4.
-      return std::string("SOCKS ") + proxy_server.host_port_pair().ToString();
+      return std::string("SOCKS ") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_SOCKS5:
-      return std::string("SOCKS5 ") + proxy_server.host_port_pair().ToString();
+      return std::string("SOCKS5 ") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_HTTPS:
-      return std::string("HTTPS ") + proxy_server.host_port_pair().ToString();
+      return std::string("HTTPS ") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_QUIC:
-      return std::string("QUIC ") + proxy_server.host_port_pair().ToString();
+      return std::string("QUIC ") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
       NOTREACHED();
@@ -148,17 +181,24 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
       return "direct://";
     case ProxyServer::SCHEME_HTTP:
       // Leave off "http://" since it is our default scheme.
-      return proxy_server.host_port_pair().ToString();
+      return ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_SOCKS4:
       return std::string("socks4://") +
-             proxy_server.host_port_pair().ToString();
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_SOCKS5:
       return std::string("socks5://") +
-             proxy_server.host_port_pair().ToString();
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_HTTPS:
-      return std::string("https://") + proxy_server.host_port_pair().ToString();
+      return std::string("https://") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     case ProxyServer::SCHEME_QUIC:
-      return std::string("quic://") + proxy_server.host_port_pair().ToString();
+      return std::string("quic://") +
+             ConstructHostPortString(proxy_server.GetHost(),
+                                     proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
       NOTREACHED();
