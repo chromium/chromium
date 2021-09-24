@@ -49,11 +49,13 @@ public class ModalDialogProperties {
         void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause);
     }
 
-    @IntDef({ModalDialogProperties.ButtonType.POSITIVE, ModalDialogProperties.ButtonType.NEGATIVE})
+    @IntDef({ModalDialogProperties.ButtonType.POSITIVE, ModalDialogProperties.ButtonType.NEGATIVE,
+            ModalDialogProperties.ButtonType.TITLE_ICON})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
         int POSITIVE = 0;
         int NEGATIVE = 1;
+        int TITLE_ICON = 2;
     }
 
     /**

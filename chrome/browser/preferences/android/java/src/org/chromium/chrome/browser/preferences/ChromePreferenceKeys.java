@@ -608,6 +608,8 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix MULTI_INSTANCE_TASK_MAP =
             new KeyPrefix("Chrome.MultiInstance.TaskMap.*");
     public static final String MULTI_WINDOW_START_TIME = "Chrome.MultiWindow.StartTime";
+    public static final String MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM =
+            "Chrome.MultiWindow.CloseWindowSkipConfirm";
 
     // Information on each instance.
     public static final KeyPrefix MULTI_INSTANCE_INCOGNITO_TAB_COUNT =
@@ -1086,6 +1088,7 @@ public final class ChromePreferenceKeys {
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
                 MULTI_WINDOW_START_TIME,
+                MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),

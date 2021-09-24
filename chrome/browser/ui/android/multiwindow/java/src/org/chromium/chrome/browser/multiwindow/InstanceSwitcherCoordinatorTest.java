@@ -15,10 +15,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +31,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -67,13 +73,19 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         };
     }
 
+    @After
+    public void tearDown() throws Exception {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
+    }
+
     @Test
     @SmallTest
     public void testOpenWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
                 new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
@@ -91,7 +103,7 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
                 new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -122,8 +134,7 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         });
 
         // Verify that we have only [cancel] button.
-        onView(withId(org.chromium.components.browser_ui.modaldialog.R.id.positive_button))
-                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.positive_button)).check(matches(withEffectiveVisibility(GONE)));
         onView(withText(R.string.cancel)).check(matches(withEffectiveVisibility(VISIBLE)));
 
         final int itemIndex = 2; // Index of the instance entry to close
@@ -162,5 +173,57 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
                 .atPosition(5)
                 .onChildView(withText(R.string.max_number_of_windows))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSkipCloseConfirmation() throws Exception {
+        InstanceInfo[] instances = new InstanceInfo[] {
+                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
+        final CallbackHelper closeCallbackHelper = new CallbackHelper();
+        int itemClickCount = closeCallbackHelper.getCallCount();
+        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        InstanceSwitcherCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstanceSwitcherCoordinator ic = new InstanceSwitcherCoordinator(
+                    getActivity(), mModalDialogManager, mIconBridge, null, closeCallback, null);
+            ic.show(Arrays.asList(instances), true);
+            return ic;
+        });
+
+        // Closing a hidden, tab-less instance skips the confirmation.
+        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.clickMoreMenuItemForTesting(2, 0));
+        closeCallbackHelper.waitForCallback(itemClickCount);
+
+        // Verify that the close callback skips the confirmation when the skip checkbox
+        // was ticked on.
+        InstanceSwitcherCoordinator.setSkipCloseConfirmation();
+        itemClickCount = closeCallbackHelper.getCallCount();
+        onData(anything()).atPosition(1).onChildView(withId(R.id.more)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.clickMoreMenuItemForTesting(1, 0));
+        closeCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testBackOnConfirmDialog() throws Exception {
+        InstanceInfo[] instances = new InstanceInfo[] {
+                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+        InstanceSwitcherCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstanceSwitcherCoordinator ic = new InstanceSwitcherCoordinator(
+                    getActivity(), mModalDialogManager, mIconBridge, null, null, null);
+            ic.show(Arrays.asList(instances), true);
+            return ic;
+        });
+
+        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.clickMoreMenuItemForTesting(2, 0));
+        assertTrue(coordinator.isShowingConfirmationDialogForTesting());
+        onView(allOf(withId(R.id.title_icon), withEffectiveVisibility(VISIBLE))).perform(click());
+        assertFalse(coordinator.isShowingConfirmationDialogForTesting());
     }
 }

@@ -112,6 +112,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.POSITIVE);
         } else if (view == mNegativeButton) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.NEGATIVE);
+        } else if (view == mTitleIcon) {
+            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
         }
     }
 
@@ -150,6 +152,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
+        if (drawable != null) mTitleIcon.setOnClickListener(this);
     }
 
     /** @param titleScrollable Whether the title is scrollable with the message. */
