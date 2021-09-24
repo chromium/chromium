@@ -77,10 +77,6 @@
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
 #include "ui/wm/core/ime_util_chromeos.h"
@@ -183,16 +179,10 @@ bool IsValidCharToInsert(const char16_t& ch) {
 
 bool CanUseTransparentBackgroundForDragImage() {
 #if defined(USE_OZONE)
-  if (::features::IsUsingOzonePlatform()) {
     const auto* const egl_utility =
         ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
     return egl_utility ? egl_utility->IsTransparentBackgroundSupported()
                        : false;
-  }
-#endif
-#if defined(USE_X11)
-  // Fallback on the background color if the system doesn't support compositing.
-  return ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
 #else
   // Other platforms allow this.
   return true;

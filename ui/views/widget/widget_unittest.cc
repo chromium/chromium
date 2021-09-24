@@ -69,7 +69,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
@@ -1229,7 +1228,7 @@ TEST_F(WidgetObserverTest, ClosingOnHiddenParent) {
 }
 
 // Test behavior of NativeWidget*::GetWindowPlacement on the native desktop.
-#if defined(USE_X11)
+#if defined(OS_LINUX)
 // On desktop-Linux cheat and use non-desktop widgets. On X11, minimize is
 // asynchronous. Also (harder) showing a window doesn't activate it without
 // user interaction (or extra steps only done for interactive ui tests).
@@ -1239,13 +1238,6 @@ TEST_F(WidgetTest, GetWindowPlacement) {
 #else
 TEST_F(DesktopWidgetTest, GetWindowPlacement) {
 #endif
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
-    GTEST_SKIP() << "This test is X11-only";
-  }
-#endif
-
   WidgetAutoclosePtr widget;
   widget.reset(CreateTopLevelNativeWidget());
 
@@ -4189,14 +4181,9 @@ namespace {
 
 bool CanHaveCompositingManager() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    auto* const egl_utility =
-        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    return (egl_utility != nullptr) && egl_utility->HasVisualManager();
-  }
-#endif
-#if defined(USE_X11)
-  return true;
+  auto* const egl_utility =
+      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+  return (egl_utility != nullptr) && egl_utility->HasVisualManager();
 #else
   return false;
 #endif

@@ -67,7 +67,7 @@
 #endif
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
 #include "ui/events/test/events_test_utils_x11.h"
 #endif
 
@@ -941,7 +941,7 @@ TEST_F(MenuControllerTest, EventTargeter) {
 }
 #endif  // defined(USE_AURA)
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
 // Tests that touch event ids are released correctly. See crbug.com/439051 for
 // details. When the ids aren't managed correctly, we get stuck down touches.
 TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
@@ -973,7 +973,7 @@ TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
 
   GetRootWindow(owner())->RemovePreTargetHandler(&test_event_handler);
 }
-#endif  // defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#endif  // defined(USE_OZONE_PLATFORM_X11)
 
 // Tests that initial selected menu items are correct when items are enabled or
 // disabled.

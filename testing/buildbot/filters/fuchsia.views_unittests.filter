@@ -25,6 +25,7 @@
 -DesktopNativeWidgetAuraTest.DesktopAuraWindowSizeTest
 -DesktopWidgetObserverTest.OnWidgetMovedWhenOriginChangesNative
 -DesktopWidgetTest.GetRestoredBounds
+-DesktopWidgetTest.GetWindowPlacement
 -DesktopWidgetTest.MinimumSizeConstraints
 -DesktopWindowTreeHostPlatformTest.SetBoundsWithUnchangedSize
 -NativeWidgetAuraTest.CenterWindowLargeParent

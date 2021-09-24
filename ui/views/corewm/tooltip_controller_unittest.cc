@@ -765,10 +765,10 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
   EXPECT_TRUE(helper_->GetTooltipParentWindow() == nullptr);
 }
 
-// Disabled on X11 as DesktopScreenX11::GetWindowAtScreenPoint() doesn't
-// consider z-order.
+// Disabled on Linux as X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint
+// and WaylandScreen::GetAcceleratedWidgetAtScreenPoint don't consider z-order.
 // Disabled on Windows due to failing bots. http://crbug.com/604479
-#if defined(USE_X11) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_Capture DISABLED_Capture
 #else
 #define MAYBE_Capture Capture
