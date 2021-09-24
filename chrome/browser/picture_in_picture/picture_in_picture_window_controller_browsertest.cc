@@ -46,6 +46,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1548,6 +1549,53 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   // Check that the video is still in Picture-in-Picture and playing.
   EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
   EXPECT_EQ(false, EvalJs(active_web_contents, "isPaused();"));
+}
+
+class PictureInPictureWindowControllerPrerenderBrowserTest
+    : public PictureInPictureWindowControllerBrowserTest {
+ public:
+  PictureInPictureWindowControllerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PictureInPictureWindowControllerPrerenderBrowserTest::
+                GetWebContents,
+            base::Unretained(this))) {}
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerPrerenderBrowserTest,
+                       EnterPipThenNavigateAwayCloseWindow) {
+  GURL test_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture-in-picture/window-size.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+
+  ASSERT_TRUE(GetWebContents());
+
+  SetUpWindowController(GetWebContents());
+  ASSERT_TRUE(window_controller());
+
+  // Open Picture-in-Picture window
+  ASSERT_EQ(true, EvalJs(GetWebContents(), "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Navigation to prerendered page should not close Picture-in-Picture window.
+  GURL prerendering_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture-in-picture/window-size.html?prerender");
+  prerender_test_helper().AddPrerender(prerendering_page_url);
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Picture-in-Picture window should be closed after navigating away.
+  prerender_test_helper().NavigatePrimaryPage(prerendering_page_url);
+  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
 class MediaSessionPictureInPictureWindowControllerBrowserTest
