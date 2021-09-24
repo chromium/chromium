@@ -1817,7 +1817,7 @@
     },
     {
       name: "PriorityHints",
-      origin_trial_feature_name: "PriorityHints",
+      origin_trial_feature_name: "PriorityHintsAPI",
       status: "experimental",
     },
     {
