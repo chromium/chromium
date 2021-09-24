@@ -265,6 +265,12 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS Ash, use only for SHARED_MEMORY gmb
+  if (gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+    return false;
+  }
+#endif
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
       ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
@@ -283,6 +289,7 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
     // return false if it needs interop factory
     return false;
   }
+
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #endif
