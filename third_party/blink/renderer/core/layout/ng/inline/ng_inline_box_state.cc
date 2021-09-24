@@ -1061,13 +1061,17 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
 
 LayoutUnit NGInlineLayoutStateStack::ComputeAlignmentBaselineShift(
     const NGInlineBoxState* box) {
-  const FontMetrics& metrics = box->font->PrimaryFont()->GetFontMetrics();
-  LayoutUnit result = metrics.FixedAscent(box->style->GetFontBaseline()) -
-                      metrics.FixedAscent(box->alignment_type);
+  LayoutUnit result;
+  if (const auto* font_data = box->font->PrimaryFont()) {
+    const FontMetrics& metrics = font_data->GetFontMetrics();
+    result = metrics.FixedAscent(box->style->GetFontBaseline()) -
+             metrics.FixedAscent(box->alignment_type);
+  }
 
-  if (box != stack_.begin()) {
-    const FontMetrics& parent_metrics =
-        box[-1].font->PrimaryFont()->GetFontMetrics();
+  if (box == stack_.begin())
+    return result;
+  if (const auto* font_data = box[-1].font->PrimaryFont()) {
+    const FontMetrics& parent_metrics = font_data->GetFontMetrics();
     result -= parent_metrics.FixedAscent(box[-1].style->GetFontBaseline()) -
               parent_metrics.FixedAscent(box[-1].alignment_type);
   }
