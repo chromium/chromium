@@ -693,9 +693,6 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // https://github.com/AOMediaCodec/libavif/issues/636.
     decoder_->maxThreads = 2;
 
-    // TODO(wtc): Currently libavif always prioritizes the animation, but that's
-    // not correct. It should instead select animation or still image based on
-    // the preferred and major brands listed in the file.
     if (animation_option_ != AnimationOption::kUnspecified &&
         avifDecoderSetSource(
             decoder_.get(),
