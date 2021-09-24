@@ -34,6 +34,10 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
       RootFrameSinkProxyClient* client,
       viz::BeginFrameSource* begin_frame_source);
+
+  RootFrameSinkProxy(const RootFrameSinkProxy&) = delete;
+  RootFrameSinkProxy& operator=(const RootFrameSinkProxy&) = delete;
+
   ~RootFrameSinkProxy() override;
 
   void AddChildFrameSinkId(const viz::FrameSinkId& frame_sink_id);
@@ -86,8 +90,6 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
 
   base::WeakPtrFactory<RootFrameSinkProxy> weak_ptr_factory_{this};
   base::WeakPtrFactory<RootFrameSinkProxy> weak_ptr_factory_on_viz_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RootFrameSinkProxy);
 };
 
 }  // namespace android_webview

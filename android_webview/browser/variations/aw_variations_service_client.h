@@ -22,6 +22,11 @@ namespace android_webview {
 class AwVariationsServiceClient : public variations::VariationsServiceClient {
  public:
   AwVariationsServiceClient();
+
+  AwVariationsServiceClient(const AwVariationsServiceClient&) = delete;
+  AwVariationsServiceClient& operator=(const AwVariationsServiceClient&) =
+      delete;
+
   ~AwVariationsServiceClient() override;
 
  private:
@@ -31,8 +36,6 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwVariationsServiceClient);
 };
 
 }  // namespace android_webview

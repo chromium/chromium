@@ -46,6 +46,10 @@ class WindowHooks {
 class FakeWindow {
  public:
   FakeWindow(BrowserViewRenderer* view, WindowHooks* hooks, gfx::Rect location);
+
+  FakeWindow(const FakeWindow&) = delete;
+  FakeWindow& operator=(const FakeWindow&) = delete;
+
   ~FakeWindow();
 
   void Detach();
@@ -94,8 +98,6 @@ class FakeWindow {
   bool context_current_;
 
   base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindow);
 };
 
 class FakeFunctor {

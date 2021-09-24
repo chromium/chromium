@@ -23,6 +23,10 @@ class AwDrawFnImpl {
   static bool IsUsingVulkan();
 
   AwDrawFnImpl();
+
+  AwDrawFnImpl(const AwDrawFnImpl&) = delete;
+  AwDrawFnImpl& operator=(const AwDrawFnImpl&) = delete;
+
   ~AwDrawFnImpl();
 
   void ReleaseHandle(JNIEnv* env,
@@ -67,8 +71,6 @@ class AwDrawFnImpl {
       scoped_secondary_cb_draw_;
 
   absl::optional<VulkanGLInterop> interop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwDrawFnImpl);
 };
 
 }  // namespace android_webview

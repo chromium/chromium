@@ -23,6 +23,10 @@ namespace android_webview {
 class AwFeatureListCreator {
  public:
   AwFeatureListCreator();
+
+  AwFeatureListCreator(const AwFeatureListCreator&) = delete;
+  AwFeatureListCreator& operator=(const AwFeatureListCreator&) = delete;
+
   ~AwFeatureListCreator();
 
   // Initializes all necessary parameters to create the feature list and setup
@@ -67,8 +71,6 @@ class AwFeatureListCreator {
   std::unique_ptr<AwVariationsServiceClient> client_;
 
   std::unique_ptr<AwBrowserPolicyConnector> browser_policy_connector_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwFeatureListCreator);
 };
 
 }  // namespace android_webview

@@ -59,6 +59,12 @@ class AwSafeBrowsingAllowlistManager {
   AwSafeBrowsingAllowlistManager(
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
+
+  AwSafeBrowsingAllowlistManager(const AwSafeBrowsingAllowlistManager&) =
+      delete;
+  AwSafeBrowsingAllowlistManager& operator=(
+      const AwSafeBrowsingAllowlistManager&) = delete;
+
   virtual ~AwSafeBrowsingAllowlistManager();
 
   // Returns true if |url| is allowed by the current allowlist. Must be
@@ -81,8 +87,6 @@ class AwSafeBrowsingAllowlistManager {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   std::unique_ptr<TrieNode> allowlist_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSafeBrowsingAllowlistManager);
 };
 
 }  // namespace android_webview

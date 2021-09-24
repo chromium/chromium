@@ -35,6 +35,11 @@ class AwProxyingRestrictedCookieManager
       int frame_id,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
+  AwProxyingRestrictedCookieManager(const AwProxyingRestrictedCookieManager&) =
+      delete;
+  AwProxyingRestrictedCookieManager& operator=(
+      const AwProxyingRestrictedCookieManager&) = delete;
+
   ~AwProxyingRestrictedCookieManager() override;
 
   // network::mojom::RestrictedCookieManager interface:
@@ -98,8 +103,6 @@ class AwProxyingRestrictedCookieManager
   int frame_id_;
 
   base::WeakPtrFactory<AwProxyingRestrictedCookieManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwProxyingRestrictedCookieManager);
 };
 
 }  // namespace android_webview

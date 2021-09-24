@@ -72,6 +72,10 @@ class AwContentsIoThreadClient {
   // Java object.
   AwContentsIoThreadClient(bool pending_associate,
                            const base::android::JavaRef<jobject>& jclient);
+
+  AwContentsIoThreadClient(const AwContentsIoThreadClient&) = delete;
+  AwContentsIoThreadClient& operator=(const AwContentsIoThreadClient&) = delete;
+
   ~AwContentsIoThreadClient();
 
   // Implementation of AwContentsIoThreadClient.
@@ -137,8 +141,6 @@ class AwContentsIoThreadClient {
   base::android::ScopedJavaGlobalRef<jobject> bg_thread_client_object_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-
-  DISALLOW_COPY_AND_ASSIGN(AwContentsIoThreadClient);
 };
 
 }  // namespace android_webview

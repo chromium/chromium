@@ -14,6 +14,12 @@ class AwPrintRenderFrameHelperDelegate
     : public printing::PrintRenderFrameHelper::Delegate {
  public:
   AwPrintRenderFrameHelperDelegate();
+
+  AwPrintRenderFrameHelperDelegate(const AwPrintRenderFrameHelperDelegate&) =
+      delete;
+  AwPrintRenderFrameHelperDelegate& operator=(
+      const AwPrintRenderFrameHelperDelegate&) = delete;
+
   ~AwPrintRenderFrameHelperDelegate() override;
 
  private:
@@ -22,8 +28,6 @@ class AwPrintRenderFrameHelperDelegate
   bool IsPrintPreviewEnabled() override;
   bool IsScriptedPrintEnabled() override;
   bool OverridePrint(blink::WebLocalFrame* frame) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwPrintRenderFrameHelperDelegate);
 };
 
 }  // namespace android_webview

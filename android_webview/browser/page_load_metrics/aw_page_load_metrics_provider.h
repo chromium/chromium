@@ -14,13 +14,15 @@ namespace android_webview {
 class AwPageLoadMetricsProvider : public metrics::MetricsProvider {
  public:
   AwPageLoadMetricsProvider();
+
+  AwPageLoadMetricsProvider(const AwPageLoadMetricsProvider&) = delete;
+  AwPageLoadMetricsProvider& operator=(const AwPageLoadMetricsProvider&) =
+      delete;
+
   ~AwPageLoadMetricsProvider() override;
 
   // metrics:MetricsProvider:
   void OnAppEnterBackground() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwPageLoadMetricsProvider);
 };
 
 }  // namespace android_webview

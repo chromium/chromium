@@ -86,6 +86,9 @@ class CookieManager {
  public:
   static CookieManager* GetInstance();
 
+  CookieManager(const CookieManager&) = delete;
+  CookieManager& operator=(const CookieManager&) = delete;
+
   // Passes a |cookie_manager_remote|, which this will use for CookieManager
   // APIs going forward. Only called in the Network Service path, with the
   // intention this is called once during content initialization (when we create
@@ -271,8 +274,6 @@ class CookieManager {
 
   // The CookieManager shared with the NetworkContext.
   mojo::Remote<network::mojom::CookieManager> mojo_cookie_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManager);
 };
 
 }  // namespace android_webview

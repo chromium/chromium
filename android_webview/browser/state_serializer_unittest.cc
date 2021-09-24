@@ -68,6 +68,11 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
     content::SetBrowserClientForTesting(&browser_client_);
   }
 
+  AndroidWebViewStateSerializerTest(const AndroidWebViewStateSerializerTest&) =
+      delete;
+  AndroidWebViewStateSerializerTest& operator=(
+      const AndroidWebViewStateSerializerTest&) = delete;
+
   ~AndroidWebViewStateSerializerTest() override {
     content::SetBrowserClientForTesting(nullptr);
     content::SetContentClient(nullptr);
@@ -76,8 +81,6 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
  private:
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidWebViewStateSerializerTest);
 };
 
 }  // namespace

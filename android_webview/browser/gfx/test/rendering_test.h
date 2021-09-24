@@ -45,6 +45,9 @@ class RenderingTest : public testing::Test,
                       public BrowserViewRendererClient,
                       public WindowHooks {
  public:
+  RenderingTest(const RenderingTest&) = delete;
+  RenderingTest& operator=(const RenderingTest&) = delete;
+
   // BrowserViewRendererClient overrides.
   void OnNewPicture() override;
   void PostInvalidate() override;
@@ -100,8 +103,6 @@ class RenderingTest : public testing::Test,
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingTest);
 };
 
 #define RENDERING_TEST_F(TEST_FIXTURE_NAME)         \

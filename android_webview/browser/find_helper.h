@@ -25,6 +25,10 @@ class FindHelper : public content::WebContentsObserver {
   };
 
   explicit FindHelper(content::WebContents* web_contents);
+
+  FindHelper(const FindHelper&) = delete;
+  FindHelper& operator=(const FindHelper&) = delete;
+
   ~FindHelper() override;
 
   // Sets the listener to receive find result updates.
@@ -66,8 +70,6 @@ class FindHelper : public content::WebContentsObserver {
   std::u16string last_search_string_;
   int last_match_count_;
   int last_active_ordinal_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindHelper);
 };
 
 }  // namespace android_webview

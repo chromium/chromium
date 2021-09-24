@@ -34,6 +34,10 @@ class AwContentRendererClient;
 class AwMainDelegate : public content::ContentMainDelegate {
  public:
   AwMainDelegate();
+
+  AwMainDelegate(const AwMainDelegate&) = delete;
+  AwMainDelegate& operator=(const AwMainDelegate&) = delete;
+
   ~AwMainDelegate() override;
 
  private:
@@ -63,8 +67,6 @@ class AwMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<AwContentRendererClient> content_renderer_client_;
   std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
       safe_browsing_api_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMainDelegate);
 };
 
 }  // namespace android_webview

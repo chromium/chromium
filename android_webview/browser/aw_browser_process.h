@@ -38,6 +38,10 @@ class VisibilityMetricsLogger;
 class AwBrowserProcess {
  public:
   AwBrowserProcess(AwFeatureListCreator* aw_feature_list_creator);
+
+  AwBrowserProcess(const AwBrowserProcess&) = delete;
+  AwBrowserProcess& operator=(const AwBrowserProcess&) = delete;
+
   ~AwBrowserProcess();
 
   static AwBrowserProcess* GetInstance();
@@ -113,8 +117,6 @@ class AwBrowserProcess {
 
   std::unique_ptr<VisibilityMetricsLogger> visibility_metrics_logger_;
   std::unique_ptr<AwContentsLifecycleNotifier> aw_contents_lifecycle_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserProcess);
 };
 
 }  // namespace android_webview

@@ -143,6 +143,9 @@ class AwContentsMessageFilter
  public:
   explicit AwContentsMessageFilter(int process_id);
 
+  AwContentsMessageFilter(const AwContentsMessageFilter&) = delete;
+  AwContentsMessageFilter& operator=(const AwContentsMessageFilter&) = delete;
+
   // BrowserMessageFilter methods.
   bool OnMessageReceived(const IPC::Message& message) override;
 
@@ -154,8 +157,6 @@ class AwContentsMessageFilter
   ~AwContentsMessageFilter() override;
 
   int process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwContentsMessageFilter);
 };
 
 AwContentsMessageFilter::AwContentsMessageFilter(int process_id)

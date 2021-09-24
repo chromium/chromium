@@ -22,6 +22,11 @@ class AwSafeBrowsingSubresourceHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AwSafeBrowsingSubresourceHelper> {
  public:
+  AwSafeBrowsingSubresourceHelper(const AwSafeBrowsingSubresourceHelper&) =
+      delete;
+  AwSafeBrowsingSubresourceHelper& operator=(
+      const AwSafeBrowsingSubresourceHelper&) = delete;
+
   ~AwSafeBrowsingSubresourceHelper() override;
 
   // WebContentsObserver::
@@ -33,7 +38,6 @@ class AwSafeBrowsingSubresourceHelper
   friend class content::WebContentsUserData<AwSafeBrowsingSubresourceHelper>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(AwSafeBrowsingSubresourceHelper);
 };
 
 }  // namespace android_webview

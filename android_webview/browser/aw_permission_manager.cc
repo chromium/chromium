@@ -44,6 +44,9 @@ class LastRequestResultCache {
  public:
   LastRequestResultCache() = default;
 
+  LastRequestResultCache(const LastRequestResultCache&) = delete;
+  LastRequestResultCache& operator=(const LastRequestResultCache&) = delete;
+
   void SetResult(PermissionType permission,
                  const GURL& requesting_origin,
                  const GURL& embedding_origin,
@@ -147,8 +150,6 @@ class LastRequestResultCache {
 
   using StatusMap = std::unordered_map<std::string, PermissionStatus>;
   StatusMap pmi_result_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(LastRequestResultCache);
 };
 
 class AwPermissionManager::PendingRequest {

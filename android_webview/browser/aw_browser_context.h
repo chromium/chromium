@@ -51,6 +51,10 @@ class AwBrowserContext : public content::BrowserContext,
                          public visitedlink::VisitedLinkDelegate {
  public:
   AwBrowserContext();
+
+  AwBrowserContext(const AwBrowserContext&) = delete;
+  AwBrowserContext& operator=(const AwBrowserContext&) = delete;
+
   ~AwBrowserContext() override;
 
   // Currently only one instance per process is supported.
@@ -146,8 +150,6 @@ class AwBrowserContext : public content::BrowserContext,
   SimpleFactoryKey simple_factory_key_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserContext);
 };
 
 }  // namespace android_webview

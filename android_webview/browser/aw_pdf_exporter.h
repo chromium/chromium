@@ -27,6 +27,9 @@ class AwPdfExporter {
                 const base::android::JavaRef<jobject>& obj,
                 content::WebContents* web_contents);
 
+  AwPdfExporter(const AwPdfExporter&) = delete;
+  AwPdfExporter& operator=(const AwPdfExporter&) = delete;
+
   ~AwPdfExporter();
 
   void ExportToPdf(JNIEnv* env,
@@ -44,8 +47,6 @@ class AwPdfExporter {
 
   JavaObjectWeakGlobalRef java_ref_;
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwPdfExporter);
 };
 
 }  // namespace android_webview

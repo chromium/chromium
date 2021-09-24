@@ -20,6 +20,9 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   explicit AwGLSurface(bool is_angle);
   explicit AwGLSurface(scoped_refptr<gl::GLSurface> surface);
 
+  AwGLSurface(const AwGLSurface&) = delete;
+  AwGLSurface& operator=(const AwGLSurface&) = delete;
+
   // Implement GLSurface.
   bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
@@ -62,7 +65,6 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   PresentationCallback pending_presentation_callback_;
   gfx::Size size_{1, 1};
   EGLSurface surface_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(AwGLSurface);
 };
 
 }  // namespace android_webview

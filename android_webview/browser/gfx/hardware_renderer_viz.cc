@@ -67,6 +67,10 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
   OnViz(OutputSurfaceProviderWebView* output_surface_provider,
         const scoped_refptr<RootFrameSink>& root_frame_sink);
+
+  OnViz(const OnViz&) = delete;
+  OnViz& operator=(const OnViz&) = delete;
+
   ~OnViz() override;
 
   void DrawAndSwapOnViz(const gfx::Size& viewport,
@@ -120,8 +124,6 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   OverlayProcessorWebView* overlay_processor_webview_ = nullptr;
 
   THREAD_CHECKER(viz_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OnViz);
 };
 
 HardwareRendererViz::OnViz::OnViz(

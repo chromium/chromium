@@ -42,6 +42,10 @@ class ScopedAppGLStateRestore {
   static ScopedAppGLStateRestore* Current();
 
   ScopedAppGLStateRestore(CallMode mode, bool save_restore);
+
+  ScopedAppGLStateRestore(const ScopedAppGLStateRestore&) = delete;
+  ScopedAppGLStateRestore& operator=(const ScopedAppGLStateRestore&) = delete;
+
   ~ScopedAppGLStateRestore();
 
   StencilState stencil_state() const;
@@ -62,8 +66,6 @@ class ScopedAppGLStateRestore {
 
  private:
   std::unique_ptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAppGLStateRestore);
 };
 
 }  // namespace android_webview

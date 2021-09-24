@@ -57,6 +57,9 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       BrowserViewRendererClient* client,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
 
+  BrowserViewRenderer(const BrowserViewRenderer&) = delete;
+  BrowserViewRenderer& operator=(const BrowserViewRenderer&) = delete;
+
   ~BrowserViewRenderer() override;
 
   void RegisterWithWebContents(content::WebContents* web_contents);
@@ -278,8 +281,6 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
 
   base::WeakPtrFactory<CompositorFrameProducer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewRenderer);
 };
 
 }  // namespace android_webview

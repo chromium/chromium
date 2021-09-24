@@ -15,15 +15,16 @@ namespace android_webview {
 class AwBrowserPolicyConnector : public policy::BrowserPolicyConnectorBase {
  public:
   AwBrowserPolicyConnector();
+
+  AwBrowserPolicyConnector(const AwBrowserPolicyConnector&) = delete;
+  AwBrowserPolicyConnector& operator=(const AwBrowserPolicyConnector&) = delete;
+
   ~AwBrowserPolicyConnector() override;
 
  protected:
   // policy::BrowserPolicyConnectorBase:
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
   CreatePolicyProviders() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserPolicyConnector);
 };
 
 }  // namespace android_webview

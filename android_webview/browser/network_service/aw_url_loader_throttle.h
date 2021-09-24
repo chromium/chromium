@@ -24,6 +24,10 @@ class AwResourceContext;
 class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   explicit AwURLLoaderThrottle(AwResourceContext* aw_resource_context);
+
+  AwURLLoaderThrottle(const AwURLLoaderThrottle&) = delete;
+  AwURLLoaderThrottle& operator=(const AwURLLoaderThrottle&) = delete;
+
   ~AwURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle implementation:
@@ -44,8 +48,6 @@ class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
   AwResourceContext* aw_resource_context_;
   std::vector<std::string> added_headers_;
   url::Origin original_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwURLLoaderThrottle);
 };
 
 }  // namespace android_webview

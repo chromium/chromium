@@ -20,6 +20,12 @@ class AwSpeechRecognitionManagerDelegate
       public content::SpeechRecognitionEventListener {
  public:
   AwSpeechRecognitionManagerDelegate();
+
+  AwSpeechRecognitionManagerDelegate(
+      const AwSpeechRecognitionManagerDelegate&) = delete;
+  AwSpeechRecognitionManagerDelegate& operator=(
+      const AwSpeechRecognitionManagerDelegate&) = delete;
+
   ~AwSpeechRecognitionManagerDelegate() override;
 
  protected:
@@ -57,8 +63,6 @@ class AwSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,
       int render_frame_id);
-
-  DISALLOW_COPY_AND_ASSIGN(AwSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace android_webview

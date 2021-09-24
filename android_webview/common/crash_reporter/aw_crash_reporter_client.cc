@@ -39,6 +39,9 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   AwCrashReporterClient() = default;
 
+  AwCrashReporterClient(const AwCrashReporterClient&) = delete;
+  AwCrashReporterClient& operator=(const AwCrashReporterClient&) = delete;
+
   // crash_reporter::CrashReporterClient implementation.
   bool IsRunningUnattended() override { return false; }
   bool GetCollectStatsConsent() override {
@@ -104,9 +107,6 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
     static base::NoDestructor<AwCrashReporterClient> crash_reporter_client;
     return crash_reporter_client.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwCrashReporterClient);
 };
 
 #if defined(ARCH_CPU_X86_FAMILY)

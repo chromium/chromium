@@ -15,14 +15,15 @@ class AwQuotaPermissionContext : public content::QuotaPermissionContext {
  public:
   AwQuotaPermissionContext();
 
+  AwQuotaPermissionContext(const AwQuotaPermissionContext&) = delete;
+  AwQuotaPermissionContext& operator=(const AwQuotaPermissionContext&) = delete;
+
   void RequestQuotaPermission(const content::StorageQuotaParams& params,
                               int render_process_id,
                               PermissionCallback callback) override;
 
  private:
   ~AwQuotaPermissionContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwQuotaPermissionContext);
 };
 
 }  // namespace android_webview

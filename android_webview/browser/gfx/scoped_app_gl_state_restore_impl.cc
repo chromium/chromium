@@ -43,14 +43,16 @@ class AppContextSurface {
         context_(gl::init::CreateGLContext(nullptr,
                                            surface_.get(),
                                            gl::GLContextAttribs())) {}
+
+  AppContextSurface(const AppContextSurface&) = delete;
+  AppContextSurface& operator=(const AppContextSurface&) = delete;
+
   void MakeCurrent() { context_->MakeCurrent(surface_.get()); }
   void ReleaseCurrent() { context_->ReleaseCurrent(surface_.get()); }
 
  private:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContextSurface);
 };
 
 base::LazyInstance<AppContextSurface>::DestructorAtExit g_app_context_surface =

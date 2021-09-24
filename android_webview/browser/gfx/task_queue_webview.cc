@@ -33,6 +33,10 @@ namespace {
 class TaskQueueViz : public TaskQueueWebView {
  public:
   TaskQueueViz();
+
+  TaskQueueViz(const TaskQueueViz&) = delete;
+  TaskQueueViz& operator=(const TaskQueueViz&) = delete;
+
   ~TaskQueueViz() override;
 
   // TaskQueueWebView overrides.
@@ -62,8 +66,6 @@ class TaskQueueViz : public TaskQueueWebView {
   base::ConditionVariable condvar_{&lock_};
   bool done_ GUARDED_BY(lock_) = true;
   base::circular_deque<base::OnceClosure> tasks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueueViz);
 };
 
 TaskQueueViz::TaskQueueViz() {

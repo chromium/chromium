@@ -66,6 +66,10 @@ class InterceptedRequest : public network::mojom::URLLoader,
       bool intercept_only,
       absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options);
+
+  InterceptedRequest(const InterceptedRequest&) = delete;
+  InterceptedRequest& operator=(const InterceptedRequest&) = delete;
+
   ~InterceptedRequest() override;
 
   void Restart();
@@ -162,8 +166,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 
   base::WeakPtrFactory<InterceptedRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptedRequest);
 };
 
 // A ResponseDelegate for responses returned by shouldInterceptRequest.

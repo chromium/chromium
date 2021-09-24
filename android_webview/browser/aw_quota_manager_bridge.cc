@@ -46,6 +46,9 @@ class GetStorageKeysTask
   GetStorageKeysTask(AwQuotaManagerBridge::GetOriginsCallback callback,
                      QuotaManager* quota_manager);
 
+  GetStorageKeysTask(const GetStorageKeysTask&) = delete;
+  GetStorageKeysTask& operator=(const GetStorageKeysTask&) = delete;
+
   void Run();
 
  private:
@@ -72,8 +75,6 @@ class GetStorageKeysTask
 
   size_t num_callbacks_to_wait_;
   size_t num_callbacks_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetStorageKeysTask);
 };
 
 GetStorageKeysTask::GetStorageKeysTask(

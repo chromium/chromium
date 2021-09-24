@@ -150,6 +150,10 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
 
   AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
+
+  AwMetricsServiceClient(const AwMetricsServiceClient&) = delete;
+  AwMetricsServiceClient& operator=(const AwMetricsServiceClient&) = delete;
+
   ~AwMetricsServiceClient() override;
 
   // Initializes, but does not necessarily start, the MetricsService.
@@ -207,8 +211,6 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
   AppPackageNameLoggingRuleStatus package_name_record_status_ =
       AppPackageNameLoggingRuleStatus::kNotLoadedNoCache;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);
 };
 
 }  // namespace android_webview

@@ -70,6 +70,10 @@ class AwContents : public FindHelper::Listener,
   static std::string GetLocaleList();
 
   AwContents(std::unique_ptr<content::WebContents> web_contents);
+
+  AwContents(const AwContents&) = delete;
+  AwContents& operator=(const AwContents&) = delete;
+
   ~AwContents() override;
 
   AwRenderViewHostExt* render_view_host_ext() {
@@ -432,8 +436,6 @@ class AwContents : public FindHelper::Listener,
   typedef std::pair<const GURL, PermissionCallback> OriginCallback;
   // The first element in the list is always the currently pending request.
   std::list<OriginCallback> pending_geolocation_prompts_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwContents);
 };
 
 }  // namespace android_webview

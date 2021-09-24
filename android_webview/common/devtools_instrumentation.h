@@ -27,12 +27,14 @@ class ScopedEmbedderCallbackTask {
     TRACE_EVENT_BEGIN1(internal::Category(), internal::kEmbedderCallback,
                        internal::kCallbackNameArgument, callback_name);
   }
+
+  ScopedEmbedderCallbackTask(const ScopedEmbedderCallbackTask&) = delete;
+  ScopedEmbedderCallbackTask& operator=(const ScopedEmbedderCallbackTask&) =
+      delete;
+
   ~ScopedEmbedderCallbackTask() {
     TRACE_EVENT_END0(internal::Category(), internal::kEmbedderCallback);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedEmbedderCallbackTask);
 };
 
 }  // namespace devtools_instrumentation
