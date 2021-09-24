@@ -52,6 +52,10 @@ extern const base::Feature kIOSLegacyTLSInterstitial;
 // generate PDF when Page Snapshot is taken just to record PDF size.
 extern const base::Feature kRecordSnapshotSize;
 
+// When enabled, the |attribution| property of NSMutableURLRequests passed to
+// WKWebView is set as NSURLRequestAttributionUser on iOS 15.
+extern const base::Feature kSetRequestAttribution;
+
 // When enabled, use the native context menu in web content.
 extern const base::Feature kWebViewNativeContextMenu;
 
