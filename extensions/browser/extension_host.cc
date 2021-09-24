@@ -248,10 +248,6 @@ void ExtensionHost::DidStopLoading() {
   if (first_load) {
     RecordStopLoadingUMA();
     OnDidStopFirstLoad();
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-        content::Source<BrowserContext>(browser_context_),
-        content::Details<ExtensionHost>(this));
     ExtensionHostRegistry::Get(browser_context_)
         ->ExtensionHostCompletedFirstLoad(this);
     for (auto& observer : observer_list_)

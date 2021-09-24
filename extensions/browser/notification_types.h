@@ -60,15 +60,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174736): Remove.
   NOTIFICATION_EXTENSION_REMOVED,
 
-  // Sent by an ExtensionHost* when it has finished its initial page load,
-  // including any external resources.
-  // The details are an ExtensionHost* and the source is a BrowserContext*.
-  //
-  // DEPRECATED: Use extensions::DeferredStartRenderHostObserver::
-  // OnDeferredStartRenderHostDidStopFirstLoad()
-  // TODO(https://crbug.com/1174741): Remove.
-  NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-
   // Sent when extension render process ends (whether it crashes or closes). The
   // details are an ExtensionHost* and the source is a BrowserContext*. Not sent
   // during browser shutdown.
