@@ -975,7 +975,7 @@
   {
     "name": "debug-chime-notification",
     "owners": [ "xingliu" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "debug-history-intervention-no-user-activation",
@@ -3929,12 +3929,12 @@
   {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "notification-scheduler-debug-options",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-cache-one-google-bar",
