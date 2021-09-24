@@ -128,6 +128,7 @@
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"  // nogncheck
 #include "components/navigation_interception/intercept_navigation_delegate.h"
+#include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"  // nogncheck
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"  // nogncheck
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -139,6 +140,7 @@
 #include "weblayer/browser/android/metrics/weblayer_metrics_navigation_throttle.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/android_descriptors.h"
+#include "weblayer/browser/bluetooth/weblayer_bluetooth_delegate_impl_client.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/devtools_manager_delegate_android.h"
 #include "weblayer/browser/http_auth_handler_impl.h"
@@ -1173,6 +1175,14 @@ bool ContentBrowserClientImpl::
   // embedded in a scrollable container and we need to update the position of
   // any DialogOverlays.
   return true;
+}
+
+content::BluetoothDelegate* ContentBrowserClientImpl::GetBluetoothDelegate() {
+  if (!bluetooth_delegate_) {
+    bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
+        std::make_unique<WebLayerBluetoothDelegateImplClient>());
+  }
+  return bluetooth_delegate_.get();
 }
 
 #endif  // OS_ANDROID

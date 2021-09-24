@@ -28,6 +28,10 @@ namespace net {
 class SiteForCookies;
 }  // namespace net
 
+namespace permissions {
+class BluetoothDelegateImpl;
+}
+
 namespace weblayer {
 
 class FeatureListCreator;
@@ -214,6 +218,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   std::unique_ptr<content::TtsEnvironmentAndroid> CreateTtsEnvironmentAndroid()
       override;
   bool ShouldObserveContainerViewLocationForDialogOverlays() override;
+  content::BluetoothDelegate* GetBluetoothDelegate() override;
 #endif  // OS_ANDROID
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
@@ -232,6 +237,8 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 
 #if defined(OS_ANDROID)
   SafeBrowsingService* GetSafeBrowsingService();
+
+  std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
 #endif
 
   MainParams* params_;

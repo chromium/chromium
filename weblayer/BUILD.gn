@@ -84,6 +84,7 @@ if (is_android) {
     output_locales = locales
     source_patterns = [
       "${root_gen_dir}/components/strings/components_locale_settings_",
+      "${root_gen_dir}/device/bluetooth/strings/bluetooth_strings_",
       "${root_gen_dir}/weblayer/components_chromium_strings_",
       "${root_gen_dir}/weblayer/components_strings_",
     ]
@@ -91,6 +92,7 @@ if (is_android) {
       ":generate_components_chromium_strings",
       ":generate_components_strings",
       "//components/strings:components_locale_settings",
+      "//device/bluetooth/strings",
     ]
     output_dir = "$root_out_dir/weblayer/locales"
   }
