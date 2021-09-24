@@ -826,19 +826,19 @@ TEST(BackupRefPtrImpl, QuarantinedBytes) {
   raw_ptr<uint64_t> wrapped_ptr1 = raw_ptr1;
   EXPECT_EQ(allocator.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
-            0);
+            0U);
   EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
-            0);
+            0U);
 
   // Memory should get quarantined.
   allocator.root()->Free(raw_ptr1);
   EXPECT_GT(allocator.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
-            0);
+            0U);
   EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
-            1);
+            1U);
 
   // Non quarantined free should not effect total_size_of_brp_quarantined_bytes
   void* raw_ptr2 = allocator.root()->Alloc(sizeof(uint64_t), "");
@@ -848,10 +848,10 @@ TEST(BackupRefPtrImpl, QuarantinedBytes) {
   wrapped_ptr1 = nullptr;
   EXPECT_EQ(allocator.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
-            0);
+            0U);
   EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
-            0);
+            0U);
 }
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
