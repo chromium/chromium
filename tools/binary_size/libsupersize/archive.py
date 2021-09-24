@@ -31,6 +31,7 @@ import ar
 import data_quality
 import demangle
 import describe
+import dwarfdump
 import file_format
 import function_signature
 import linker_map_parser
@@ -291,38 +292,51 @@ def _NormalizeSourcePath(path):
   return True, path
 
 
-def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper):
+def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
+                                               object_source_mapper,
+                                               address_source_mapper):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
-  logging.info('Normalizing dex symbol paths')
-  dex_and_other = models.DEX_SECTIONS + (models.SECTION_OTHER, )
-  for symbol in raw_symbols:
-    if symbol.source_path and symbol.section_name in dex_and_other:
-      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-          symbol.source_path)
-
-  if source_mapper:
+  if object_source_mapper:
     logging.info('Looking up source paths from ninja files')
     for symbol in raw_symbols:
       if symbol.IsDex() or symbol.IsOther():
         continue
       # Native symbols and pak symbols use object paths.
       object_path = symbol.object_path
-      if object_path:
-        # We don't have source info for prebuilt .a files.
-        if not os.path.isabs(object_path) and not object_path.startswith('..'):
-          source_path = source_mapper.FindSourceForPath(object_path)
-          if source_path:
-            symbol.generated_source, symbol.source_path = (
-                _NormalizeSourcePath(source_path))
-        symbol.object_path = _NormalizeObjectPath(object_path)
-    assert source_mapper.unmatched_paths_count == 0, (
+      if not object_path:
+        continue
+
+      # We don't have source info for prebuilt .a files.
+      if not os.path.isabs(object_path) and not object_path.startswith('..'):
+        symbol.source_path = object_source_mapper.FindSourceForPath(object_path)
+    assert object_source_mapper.unmatched_paths_count == 0, (
         'One or more source file paths could not be found. Likely caused by '
         '.ninja files being generated at a different time than the .map file.')
-  else:
-    logging.info('Normalizing object paths')
+  if address_source_mapper:
+    logging.info('Looking up source paths from dwarfdump')
     for symbol in raw_symbols:
-      if symbol.object_path:
-        symbol.object_path = _NormalizeObjectPath(symbol.object_path)
+
+      if symbol.section_name != models.SECTION_TEXT:
+        continue
+      source_path = address_source_mapper.FindSourceForTextAddress(
+          symbol.address)
+      if source_path and not os.path.isabs(source_path):
+        symbol.source_path = source_path
+    # Majority of unmatched queries are for assembly source files (ex libav1d)
+    # and v8 builtins.
+    assert address_source_mapper.unmatched_queries_ratio < 0.03, (
+        'Percentage of failing |address_source_mapper| queries ' +
+        '({}%) >= 3% '.format(
+            address_source_mapper.unmatched_queries_ratio * 100) +
+        'FindSourceForTextAddress() likely has a bug.')
+
+  logging.info('Normalizing source and object paths')
+  for symbol in raw_symbols:
+    if symbol.object_path:
+      symbol.object_path = _NormalizeObjectPath(symbol.object_path)
+    if symbol.source_path:
+      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
+          symbol.source_path)
 
 
 def _ComputeAncestorPath(path_list, symbol_count):
@@ -969,7 +983,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
     # single path for these symbols.
     # Rather than record all paths for each symbol, set the paths to be the
     # common ancestor of all paths.
-    if outdir_context:
+    if outdir_context and map_path:
       bulk_analyzer = obj_analyzer.BulkObjectFileAnalyzer(
           tool_prefix, outdir_context.output_directory,
           track_string_literals=track_string_literals)
@@ -988,7 +1002,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
     raw_symbols = nm.CreateUniqueSymbols(elf_path, tool_prefix,
                                          elf_section_ranges)
 
-  if map_path and elf_path:
+  if elf_path and map_path:
     logging.debug('Validating section sizes')
     differing_elf_section_sizes = {}
     differing_map_section_sizes = {}
@@ -1005,14 +1019,14 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
       logging.error('.map file: %r', differing_map_section_sizes)
       sys.exit(1)
 
-  if elf_path and outdir_context:
+  if elf_path and map_path and outdir_context:
     missed_object_paths = _DiscoverMissedObjectPaths(
         raw_symbols, outdir_context.known_inputs)
     missed_object_paths = ar.ExpandThinArchives(
         missed_object_paths, outdir_context.output_directory)[0]
     bulk_analyzer.AnalyzePaths(missed_object_paths)
     bulk_analyzer.SortPaths()
-    if track_string_literals and map_path:
+    if track_string_literals:
       merge_string_syms = [s for s in raw_symbols if
                            s.full_name == '** merge strings' or
                            s.full_name == '** lld merge strings']
@@ -1036,7 +1050,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
 
     raw_symbols = _AddNmAliases(raw_symbols, names_by_address)
 
-    if outdir_context:
+    if map_path and outdir_context:
       object_paths_by_name = bulk_analyzer.GetSymbolNames()
       logging.debug(
           'Fetched path information for %d symbols from %d files',
@@ -1596,13 +1610,20 @@ def CreateContainerAndSymbols(knobs=None,
     apk_elf_result = None
 
   outdir_context = None
-  source_mapper = None
+  object_source_mapper = None
+  address_source_mapper = None
   section_ranges = {}
   raw_symbols = []
   if opts.analyze_native and output_directory:
-    # Finds all objects passed to the linker and creates a map of .o -> .cc.
-    source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-        output_directory, elf_path)
+    if map_path:
+      # Finds all objects passed to the linker and creates a map of .o -> .cc.
+      object_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
+          output_directory, elf_path)
+    else:
+      ninja_elf_object_paths = None
+      logging.info('Parsing source path info via dwarfdump')
+      address_source_mapper = dwarfdump.CreateAddressSourceMapper(
+          elf_path, tool_prefix)
 
     # Start by finding elf_object_paths so that nm can run on them while the
     # linker .map is being parsed.
@@ -1612,12 +1633,12 @@ def CreateContainerAndSymbols(knobs=None,
       known_inputs = set(elf_object_paths)
       known_inputs.update(ninja_elf_object_paths)
     else:
-      elf_object_paths = None
+      elf_object_paths = []
       known_inputs = None
       # When we don't know which elf file is used, just search all paths.
-      if opts.analyze_native:
+      if opts.analyze_native and object_source_mapper:
         thin_archives = set(
-            p for p in source_mapper.IterAllPaths() if p.endswith('.a')
+            p for p in object_source_mapper.IterAllPaths() if p.endswith('.a')
             and ar.IsThinArchive(os.path.join(output_directory, p)))
       else:
         thin_archives = None
@@ -1723,7 +1744,8 @@ def CreateContainerAndSymbols(knobs=None,
       '**'), s.address, s.full_name))
   raw_symbols.extend(other_symbols)
 
-  _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper)
+  _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, object_source_mapper,
+                                             address_source_mapper)
   _PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)

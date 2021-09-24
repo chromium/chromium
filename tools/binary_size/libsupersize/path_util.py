@@ -193,6 +193,10 @@ def GetCppFiltPath(tool_prefix):
   return tool_prefix + 'c++filt'
 
 
+def GetDwarfdumpPath(tool_prefix):
+  return tool_prefix + 'dwarfdump'
+
+
 def GetStripPath(tool_prefix):
   # Chromium's toolchain uses //buildtools/third_party/eu-strip, but first
   # look for the test-only "fakestrip" for the sake of tests.
