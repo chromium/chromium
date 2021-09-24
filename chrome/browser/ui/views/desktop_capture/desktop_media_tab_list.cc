@@ -233,6 +233,9 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
       views::CreateSolidBackground(gfx::kGoogleGrey300));
   empty_preview_label->SetPreferredSize(desktopcapture::kPreviewSize);
   empty_preview_label->SetSize(desktopcapture::kPreviewSize);
+  // Tell the label the background colour it's over. This just forces the text
+  // colour to one that's readable, notably in dark mode.
+  empty_preview_label->SetBackgroundColor(gfx::kGoogleGrey300);
   empty_preview_ =
       preview_wrapper->AddChildView(std::move(empty_preview_label));
 
