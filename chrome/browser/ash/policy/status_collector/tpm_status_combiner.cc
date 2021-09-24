@@ -22,14 +22,14 @@ void TpmStatusCombiner::OnGetTpmStatus(
     const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
   has_tpm_status_ = true;
   if (reply.status() == ::tpm_manager::STATUS_SUCCESS) {
-    tpm_status_info_.enabled = reply.is_enabled();
-    tpm_status_info_.owned = reply.is_owned();
+    tpm_status_info_.set_enabled(reply.is_enabled());
+    tpm_status_info_.set_owned(reply.is_owned());
     // Wiped owner password means the TPm initialization is done and no any
     // further operations needed.
-    tpm_status_info_.initialized =
-        reply.is_owned() && !reply.is_owner_password_present();
-    tpm_status_info_.owner_password_is_present =
-        reply.is_owner_password_present();
+    tpm_status_info_.set_tpm_initialized(reply.is_owned() &&
+                                         !reply.is_owner_password_present());
+    tpm_status_info_.set_owner_password_is_present(
+        reply.is_owner_password_present());
   } else {
     LOG(WARNING) << "Failed to get tpm status.";
   }
@@ -40,8 +40,8 @@ void TpmStatusCombiner::OnGetEnrollmentStatus(
     const ::attestation::GetStatusReply& reply) {
   has_enrollment_status_ = true;
   if (reply.status() == ::attestation::STATUS_SUCCESS) {
-    tpm_status_info_.attestation_prepared = reply.prepared_for_enrollment();
-    tpm_status_info_.attestation_enrolled = reply.enrolled();
+    tpm_status_info_.set_attestation_prepared(reply.prepared_for_enrollment());
+    tpm_status_info_.set_attestation_enrolled(reply.enrolled());
   } else {
     LOG(WARNING) << "Failed to get enrollment info.";
   }
@@ -53,14 +53,14 @@ void TpmStatusCombiner::OnGetDictionaryAttackInfo(
     const ::tpm_manager::GetDictionaryAttackInfoReply& reply) {
   has_dictionary_attack_info_ = true;
   if (reply.status() == ::tpm_manager::STATUS_SUCCESS) {
-    tpm_status_info_.dictionary_attack_counter =
-        reply.dictionary_attack_counter();
-    tpm_status_info_.dictionary_attack_threshold =
-        reply.dictionary_attack_threshold();
-    tpm_status_info_.dictionary_attack_lockout_in_effect =
-        reply.dictionary_attack_lockout_in_effect();
-    tpm_status_info_.dictionary_attack_lockout_seconds_remaining =
-        reply.dictionary_attack_lockout_seconds_remaining();
+    tpm_status_info_.set_dictionary_attack_counter(
+        reply.dictionary_attack_counter());
+    tpm_status_info_.set_dictionary_attack_threshold(
+        reply.dictionary_attack_threshold());
+    tpm_status_info_.set_dictionary_attack_lockout_in_effect(
+        reply.dictionary_attack_lockout_in_effect());
+    tpm_status_info_.set_dictionary_attack_lockout_seconds_remaining(
+        reply.dictionary_attack_lockout_seconds_remaining());
   } else {
     LOG(WARNING) << "Failed to get dictionary attack info.";
   }

@@ -88,7 +88,7 @@ class LegacyDeviceStatusCollector
   // Format of the function that asynchronously receives
   // ::cryptohome::TpmStatusInfo.
   using TpmStatusReceiver =
-      base::OnceCallback<void(const policy::TpmStatusInfo&)>;
+      base::OnceCallback<void(const enterprise_management::TpmStatusInfo&)>;
   // Gets the ::crypthome::TpmStatusInfo and passes it to TpmStatusReceiver.
   using TpmStatusFetcher = base::RepeatingCallback<void(TpmStatusReceiver)>;
 
@@ -452,4 +452,4 @@ class LegacyDeviceStatusCollector
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_STATUS_LEGACY_COLLECTOR_DEVICE_STATUS_COLLECTOR_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_LEGACY_DEVICE_STATUS_COLLECTOR_H_

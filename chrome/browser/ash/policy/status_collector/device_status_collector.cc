@@ -820,30 +820,14 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     android_status->set_droid_guard_info(droid_guard_info);
   }
 
-  void OnTpmStatusReceived(const TpmStatusInfo& tpm_status_struct) {
+  void OnTpmStatusReceived(
+      const enterprise_management::TpmStatusInfo& tpm_status_info) {
     // Make sure we edit the state on the right thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    em::TpmStatusInfo* const tpm_status_proto =
-        response_params_.device_status->mutable_tpm_status_info();
-
-    LOG(WARNING) << "tpm_status_struct.attestation_prepared: " << tpm_status_struct.attestation_prepared;
-    tpm_status_proto->set_enabled(tpm_status_struct.enabled);
-    tpm_status_proto->set_owned(tpm_status_struct.owned);
-    tpm_status_proto->set_tpm_initialized(tpm_status_struct.initialized);
-    tpm_status_proto->set_attestation_prepared(
-        tpm_status_struct.attestation_prepared);
-    tpm_status_proto->set_attestation_enrolled(
-        tpm_status_struct.attestation_enrolled);
-    tpm_status_proto->set_dictionary_attack_counter(
-        tpm_status_struct.dictionary_attack_counter);
-    tpm_status_proto->set_dictionary_attack_threshold(
-        tpm_status_struct.dictionary_attack_threshold);
-    tpm_status_proto->set_dictionary_attack_lockout_in_effect(
-        tpm_status_struct.dictionary_attack_lockout_in_effect);
-    tpm_status_proto->set_dictionary_attack_lockout_seconds_remaining(
-        tpm_status_struct.dictionary_attack_lockout_seconds_remaining);
-    tpm_status_proto->set_boot_lockbox_finalized(
-        tpm_status_struct.boot_lockbox_finalized);
+    response_params_.device_status->mutable_tpm_status_info()->MergeFrom(
+        tpm_status_info);
+    LOG(WARNING) << "tpm_status_info.attestation_prepared: "
+                 << tpm_status_info.attestation_prepared();
     SetDeviceStatusReported();
   }
 
@@ -1439,34 +1423,6 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   // generated only if this is true.
   bool device_status_reported_ = false;
 };
-
-TpmStatusInfo::TpmStatusInfo() = default;
-TpmStatusInfo::TpmStatusInfo(const TpmStatusInfo&) = default;
-TpmStatusInfo::TpmStatusInfo(
-    bool enabled,
-    bool owned,
-    bool initialized,
-    bool attestation_prepared,
-    bool attestation_enrolled,
-    int32_t dictionary_attack_counter,
-    int32_t dictionary_attack_threshold,
-    bool dictionary_attack_lockout_in_effect,
-    int32_t dictionary_attack_lockout_seconds_remaining,
-    bool boot_lockbox_finalized,
-    bool owner_password_is_present)
-    : enabled(enabled),
-      owned(owned),
-      initialized(initialized),
-      attestation_prepared(attestation_prepared),
-      attestation_enrolled(attestation_enrolled),
-      dictionary_attack_counter(dictionary_attack_counter),
-      dictionary_attack_threshold(dictionary_attack_threshold),
-      dictionary_attack_lockout_in_effect(dictionary_attack_lockout_in_effect),
-      dictionary_attack_lockout_seconds_remaining(
-          dictionary_attack_lockout_seconds_remaining),
-      boot_lockbox_finalized(boot_lockbox_finalized),
-      owner_password_is_present(owner_password_is_present) {}
-TpmStatusInfo::~TpmStatusInfo() = default;
 
 SampledData::SampledData() = default;
 SampledData::~SampledData() = default;

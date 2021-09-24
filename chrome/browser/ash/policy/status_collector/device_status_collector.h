@@ -40,10 +40,6 @@ class StatisticsProvider;
 }
 }  // namespace chromeos
 
-namespace cryptohome {
-struct TpmStatusInfo;
-}
-
 namespace power_manager {
 class PowerSupplyProperties;
 }
@@ -64,36 +60,6 @@ class DeviceStatusCollectorState;
 
 // Enum used to define which data the CrosHealthdDataFetcher should collect.
 enum class CrosHealthdCollectionMode { kFull, kBattery };
-
-// Holds TPM status info.  Cf. TpmStatusInfo in device_management_backend.proto.
-struct TpmStatusInfo {
-  TpmStatusInfo();
-  TpmStatusInfo(const TpmStatusInfo&);
-  TpmStatusInfo(bool enabled,
-                bool owned,
-                bool initialized,
-                bool attestation_prepared,
-                bool attestation_enrolled,
-                int32_t dictionary_attack_counter,
-                int32_t dictionary_attack_threshold,
-                bool dictionary_attack_lockout_in_effect,
-                int32_t dictionary_attack_lockout_seconds_remaining,
-                bool boot_lockbox_finalized,
-                bool owner_password_is_present);
-  ~TpmStatusInfo();
-
-  bool enabled = false;
-  bool owned = false;
-  bool initialized = false;
-  bool attestation_prepared = false;
-  bool attestation_enrolled = false;
-  int32_t dictionary_attack_counter = 0;
-  int32_t dictionary_attack_threshold = 0;
-  bool dictionary_attack_lockout_in_effect = false;
-  int32_t dictionary_attack_lockout_seconds_remaining = 0;
-  bool boot_lockbox_finalized = false;
-  bool owner_password_is_present = false;
-};
 
 // Sampled hardware measurement data for single time point.
 class SampledData {
@@ -137,7 +103,8 @@ class DeviceStatusCollector : public StatusCollector,
       std::vector<enterprise_management::CPUTempInfo>()>;
 
   // Format of the function that asynchronously receives TpmStatusInfo.
-  using TpmStatusReceiver = base::OnceCallback<void(const TpmStatusInfo&)>;
+  using TpmStatusReceiver =
+      base::OnceCallback<void(const enterprise_management::TpmStatusInfo&)>;
   // Gets the TpmStatusInfo and passes it to TpmStatusReceiver.
   using TpmStatusFetcher = base::RepeatingCallback<void(TpmStatusReceiver)>;
 
