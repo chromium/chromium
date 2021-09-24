@@ -1677,16 +1677,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 assert mStartSurfaceSupplier.get() != null;
                 assert getToolbarManager().getTabGroupUi() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
+
                 ToolbarManager toolbarManager = getToolbarManager();
                 TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
-                Supplier<Boolean> tabGroupUiDialogVisibilitySupplier =
-                        tabGroupUi.getTabGridDialogVisibilitySupplier();
+                boolean isDialogVisible = tabGroupUi.isTabGridDialogVisible();
+
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
                         mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
-                boolean isDialogVisible = false;
-                if (tabGroupUiDialogVisibilitySupplier != null) {
-                    isDialogVisible = tabGroupUiDialogVisibilitySupplier.get();
-                }
+
                 if (tabSwitcherDialogVisibilitySupplier != null) {
                     isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
                 }
