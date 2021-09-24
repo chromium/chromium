@@ -56,6 +56,11 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
       std::unique_ptr<ScopedKeepAlive,
                       content::BrowserThread::DeleteOnUIThread>;
 
+  NativeMessagingHostErrorReporter(const NativeMessagingHostErrorReporter&) =
+      delete;
+  NativeMessagingHostErrorReporter& operator=(
+      const NativeMessagingHostErrorReporter&) = delete;
+
   static void Report(const std::string& extension_id,
                      const std::string& host_id,
                      const std::string& connection_id,
@@ -116,8 +121,6 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   MovableScopedKeepAlive keep_alive_;
   std::unique_ptr<NativeMessageHost> process_;
   base::OneShotTimer timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingHostErrorReporter);
 };
 
 }  // namespace

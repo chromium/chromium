@@ -119,6 +119,12 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
 
 class DeclarativeContentCssConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentCssConditionTrackerTest(
+      const DeclarativeContentCssConditionTrackerTest&) = delete;
+  DeclarativeContentCssConditionTrackerTest& operator=(
+      const DeclarativeContentCssConditionTrackerTest&) = delete;
+
  protected:
   DeclarativeContentCssConditionTrackerTest() : tracker_(&delegate_) {}
 
@@ -141,6 +147,9 @@ class DeclarativeContentCssConditionTrackerTest
    public:
     Delegate() : evaluation_requests_(0) {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     int evaluation_requests() { return evaluation_requests_; }
 
     // ContentPredicateEvaluator::Delegate:
@@ -155,8 +164,6 @@ class DeclarativeContentCssConditionTrackerTest
 
    private:
     int evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Creates a predicate with appropriate expectations of success.
@@ -221,8 +228,6 @@ class DeclarativeContentCssConditionTrackerTest
     EXPECT_EQ("", error);
     ASSERT_TRUE(*predicate);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentCssConditionTrackerTest);
 };
 
 TEST(DeclarativeContentCssPredicateTest, WrongCssDatatype) {

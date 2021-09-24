@@ -92,6 +92,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // installation.
   enum WithholdingBehavior { kWithholdPermissions, kDontWithholdPermissions };
 
+  CrxInstaller(const CrxInstaller&) = delete;
+  CrxInstaller& operator=(const CrxInstaller&) = delete;
+
   // Extensions will be installed into service->install_directory(), then
   // registered with |service|. This does a silent install - see below for
   // other options.
@@ -538,8 +541,6 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Invoked when the expectations from CRXFileInfo match with the crx file
   // after unpack success.
   ExpectationsVerifiedCallback expectations_verified_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrxInstaller);
 };
 
 }  // namespace extensions

@@ -81,6 +81,9 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
             profile),
         load_callback_(std::move(load_callback)) {}
 
+  TestExternalPrefLoader(const TestExternalPrefLoader&) = delete;
+  TestExternalPrefLoader& operator=(const TestExternalPrefLoader&) = delete;
+
   void LoadOnFileThread() override {
     content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                  std::move(load_callback_));
@@ -89,8 +92,6 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
  private:
   ~TestExternalPrefLoader() override {}
   base::OnceClosure load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExternalPrefLoader);
 };
 
 class ExternalPrefLoaderTestBase : public ::testing::Test {

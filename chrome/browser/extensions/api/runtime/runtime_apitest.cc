@@ -104,6 +104,9 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
  public:
   RuntimeAPIUpdateTest() {}
 
+  RuntimeAPIUpdateTest(const RuntimeAPIUpdateTest&) = delete;
+  RuntimeAPIUpdateTest& operator=(const RuntimeAPIUpdateTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -143,8 +146,6 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeAPIUpdateTest);
 };
 
 }  // namespace

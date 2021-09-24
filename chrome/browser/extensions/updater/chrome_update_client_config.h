@@ -47,6 +47,9 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   ChromeUpdateClientConfig(content::BrowserContext* context,
                            absl::optional<GURL> url_override);
 
+  ChromeUpdateClientConfig(const ChromeUpdateClientConfig&) = delete;
+  ChromeUpdateClientConfig& operator=(const ChromeUpdateClientConfig&) = delete;
+
   double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
@@ -98,8 +101,6 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
   absl::optional<GURL> url_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdateClientConfig);
 };
 
 }  // namespace extensions

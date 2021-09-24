@@ -25,6 +25,11 @@ namespace {
 #define LOCAL_TEST(TestName) DISABLED_ ## TestName
 
 class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
+ public:
+  APIBindingPerfBrowserTest(const APIBindingPerfBrowserTest&) = delete;
+  APIBindingPerfBrowserTest& operator=(const APIBindingPerfBrowserTest&) =
+      delete;
+
  protected:
   APIBindingPerfBrowserTest() {}
   ~APIBindingPerfBrowserTest() override {}
@@ -42,9 +47,6 @@ class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
         &time_elapsed_ms));
     return base::TimeDelta::FromMillisecondsD(time_elapsed_ms);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(APIBindingPerfBrowserTest);
 };
 
 constexpr char kSimpleContentScriptManifest[] =

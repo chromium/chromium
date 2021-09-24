@@ -132,6 +132,12 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   };
 
   ExtensionMessageBubbleController(Delegate* delegate, Browser* browser);
+
+  ExtensionMessageBubbleController(const ExtensionMessageBubbleController&) =
+      delete;
+  ExtensionMessageBubbleController& operator=(
+      const ExtensionMessageBubbleController&) = delete;
+
   ~ExtensionMessageBubbleController() override;
 
   Delegate* delegate() const { return delegate_.get(); }
@@ -224,8 +230,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };
 
 }  // namespace extensions

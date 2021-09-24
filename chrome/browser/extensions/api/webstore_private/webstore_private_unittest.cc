@@ -154,6 +154,11 @@ class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
       : ExtensionApiUnittest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  WebstorePrivateExtensionInstallRequestBase(
+      const WebstorePrivateExtensionInstallRequestBase&) = delete;
+  WebstorePrivateExtensionInstallRequestBase& operator=(
+      const WebstorePrivateExtensionInstallRequestBase&) = delete;
+
   std::string GenerateArgs(const char* id) {
     return base::StringPrintf(R"(["%s"])", id);
   }
@@ -171,9 +176,6 @@ class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
     ASSERT_TRUE(actual_response->is_string());
     EXPECT_EQ(ToString(expected_response), actual_response->GetString());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateExtensionInstallRequestBase);
 };
 
 class WebstorePrivateGetExtensionStatusTest

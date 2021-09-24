@@ -46,6 +46,11 @@ class NetworkingPrivateServiceClientApiTest
  public:
   NetworkingPrivateServiceClientApiTest() {}
 
+  NetworkingPrivateServiceClientApiTest(
+      const NetworkingPrivateServiceClientApiTest&) = delete;
+  NetworkingPrivateServiceClientApiTest& operator=(
+      const NetworkingPrivateServiceClientApiTest&) = delete;
+
   bool RunNetworkingSubtest(const std::string& subtest) {
     const std::string page_url = "main.html?" + subtest;
     return RunExtensionTest("networking_private/service_client",
@@ -80,9 +85,6 @@ class NetworkingPrivateServiceClientApiTest
     content::RunAllPendingInMessageLoop();
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateServiceClientApiTest);
 };
 
 // Place each subtest into a separate browser test so that the stub networking

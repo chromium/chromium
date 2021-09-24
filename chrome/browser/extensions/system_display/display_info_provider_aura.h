@@ -14,8 +14,8 @@ class DisplayInfoProviderAura : public DisplayInfoProvider {
  public:
   DisplayInfoProviderAura();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderAura);
+  DisplayInfoProviderAura(const DisplayInfoProviderAura&) = delete;
+  DisplayInfoProviderAura& operator=(const DisplayInfoProviderAura&) = delete;
 };
 
 }  // namespace extensions

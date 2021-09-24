@@ -43,6 +43,9 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
  public:
   ExtensionActiveTabTest() = default;
 
+  ExtensionActiveTabTest(const ExtensionActiveTabTest&) = delete;
+  ExtensionActiveTabTest& operator=(const ExtensionActiveTabTest&) = delete;
+
   // ExtensionApiTest override:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -50,9 +53,6 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
     // Map all hosts to localhost.
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActiveTabTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {

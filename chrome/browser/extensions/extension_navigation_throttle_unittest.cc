@@ -59,6 +59,12 @@ class ExtensionNavigationThrottleUnitTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ExtensionNavigationThrottleUnitTest() {}
+
+  ExtensionNavigationThrottleUnitTest(
+      const ExtensionNavigationThrottleUnitTest&) = delete;
+  ExtensionNavigationThrottleUnitTest& operator=(
+      const ExtensionNavigationThrottleUnitTest&) = delete;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     original_client_ = content::SetBrowserClientForTesting(&client_);
@@ -187,8 +193,6 @@ class ExtensionNavigationThrottleUnitTest
   scoped_refptr<const Extension> extension_;
   MockBrowserClient client_;
   content::ContentBrowserClient* original_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationThrottleUnitTest);
 };
 
 // Tests the basic case of an external web page embedding an extension resource.

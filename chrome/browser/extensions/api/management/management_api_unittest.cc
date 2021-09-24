@@ -73,6 +73,10 @@ namespace constants = extension_management_api_constants;
 // TODO(devlin): Unittests are awesome. Test more with unittests and less with
 // heavy api/browser tests.
 class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
+ public:
+  ManagementApiUnitTest(const ManagementApiUnitTest&) = delete;
+  ManagementApiUnitTest& operator=(const ManagementApiUnitTest&) = delete;
+
  protected:
   ManagementApiUnitTest() {}
   ~ManagementApiUnitTest() override {}
@@ -118,8 +122,6 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementApiUnitTest);
 };
 
 bool ManagementApiUnitTest::RunFunction(

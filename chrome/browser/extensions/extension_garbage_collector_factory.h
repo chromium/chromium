@@ -20,6 +20,11 @@ class ExtensionGarbageCollector;
 class ExtensionGarbageCollectorFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionGarbageCollectorFactory(const ExtensionGarbageCollectorFactory&) =
+      delete;
+  ExtensionGarbageCollectorFactory& operator=(
+      const ExtensionGarbageCollectorFactory&) = delete;
+
   static ExtensionGarbageCollector* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -40,8 +45,6 @@ class ExtensionGarbageCollectorFactory
 
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollectorFactory);
 };
 
 }  // namespace extensions

@@ -18,6 +18,9 @@ class InstallTracker;
 
 class InstallTrackerFactory : public BrowserContextKeyedServiceFactory {
  public:
+  InstallTrackerFactory(const InstallTrackerFactory&) = delete;
+  InstallTrackerFactory& operator=(const InstallTrackerFactory&) = delete;
+
   static InstallTracker* GetForBrowserContext(content::BrowserContext* context);
   static InstallTrackerFactory* GetInstance();
 
@@ -32,8 +35,6 @@ class InstallTrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallTrackerFactory);
 };
 
 }  // namespace extensions

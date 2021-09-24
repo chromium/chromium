@@ -92,6 +92,10 @@ content::WebContents* CreateAndAppendWebContentsWithHistory(
 }  // namespace
 
 class TabsApiUnitTest : public ExtensionServiceTestBase {
+ public:
+  TabsApiUnitTest(const TabsApiUnitTest&) = delete;
+  TabsApiUnitTest& operator=(const TabsApiUnitTest&) = delete;
+
  protected:
   TabsApiUnitTest() {}
   ~TabsApiUnitTest() override {}
@@ -113,8 +117,6 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   display::test::TestScreen test_screen_;
 
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsApiUnitTest);
 };
 
 void TabsApiUnitTest::SetUp() {

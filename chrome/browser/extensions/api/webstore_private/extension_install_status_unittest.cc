@@ -52,6 +52,10 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
  public:
   ExtensionInstallStatusTest() = default;
 
+  ExtensionInstallStatusTest(const ExtensionInstallStatusTest&) = delete;
+  ExtensionInstallStatusTest& operator=(const ExtensionInstallStatusTest&) =
+      delete;
+
   std::string GenerateArgs(const char* id) {
     return base::StringPrintf(R"(["%s"])", id);
   }
@@ -86,9 +90,6 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallStatusTest);
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {

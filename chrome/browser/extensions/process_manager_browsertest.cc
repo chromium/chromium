@@ -162,6 +162,10 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
         base::BindRepeating(&AddFrameToSet, base::Unretained(&frames_)));
   }
 
+  NavigationCompletedObserver(const NavigationCompletedObserver&) = delete;
+  NavigationCompletedObserver& operator=(const NavigationCompletedObserver&) =
+      delete;
+
   void Wait() {
     if (!AreAllFramesInTab())
       message_loop_runner_->Run();
@@ -190,8 +194,6 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
 
   std::set<content::RenderFrameHost*> frames_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationCompletedObserver);
 };
 
 // Exists as a browser test because ExtensionHosts are hard to create without

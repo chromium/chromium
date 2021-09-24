@@ -15,6 +15,10 @@ class ChromeExtensionCookies;
 
 class ChromeExtensionCookiesFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ChromeExtensionCookiesFactory(const ChromeExtensionCookiesFactory&) = delete;
+  ChromeExtensionCookiesFactory& operator=(
+      const ChromeExtensionCookiesFactory&) = delete;
+
   static ChromeExtensionCookies* GetForBrowserContext(
       content::BrowserContext* context);
   static ChromeExtensionCookiesFactory* GetInstance();
@@ -30,8 +34,6 @@ class ChromeExtensionCookiesFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionCookiesFactory);
 };
 
 }  // namespace extensions

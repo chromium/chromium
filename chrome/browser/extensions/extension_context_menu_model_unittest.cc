@@ -242,6 +242,10 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
 
   ExtensionContextMenuModelTest();
 
+  ExtensionContextMenuModelTest(const ExtensionContextMenuModelTest&) = delete;
+  ExtensionContextMenuModelTest& operator=(
+      const ExtensionContextMenuModelTest&) = delete;
+
   // Build an extension to pass to the menu constructor, with the action
   // specified by |action_key|.
   const Extension* AddExtension(const std::string& name,
@@ -282,8 +286,6 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   std::unique_ptr<Browser> browser_;
   display::test::TestScreen test_screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModelTest);
 };
 
 ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() {}

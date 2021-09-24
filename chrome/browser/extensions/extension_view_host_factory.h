@@ -21,6 +21,9 @@ class ExtensionViewHost;
 // by extensions.
 class ExtensionViewHostFactory {
  public:
+  ExtensionViewHostFactory(const ExtensionViewHostFactory&) = delete;
+  ExtensionViewHostFactory& operator=(const ExtensionViewHostFactory&) = delete;
+
   // Creates a new ExtensionHost with its associated view, grouping it in the
   // appropriate SiteInstance (and therefore process) based on the URL and
   // profile.
@@ -31,9 +34,6 @@ class ExtensionViewHostFactory {
   // hence only require a |profile|.
   static std::unique_ptr<ExtensionViewHost> CreateDialogHost(const GURL& url,
                                                              Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionViewHostFactory);
 };
 
 }  // namespace extensions

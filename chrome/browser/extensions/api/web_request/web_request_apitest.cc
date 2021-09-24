@@ -1939,6 +1939,11 @@ class NTPInterceptionWebRequestAPITest : public ExtensionApiTest {
   NTPInterceptionWebRequestAPITest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  NTPInterceptionWebRequestAPITest(const NTPInterceptionWebRequestAPITest&) =
+      delete;
+  NTPInterceptionWebRequestAPITest& operator=(
+      const NTPInterceptionWebRequestAPITest&) = delete;
+
   // ExtensionApiTest override:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -1958,7 +1963,6 @@ class NTPInterceptionWebRequestAPITest : public ExtensionApiTest {
 
  private:
   net::EmbeddedTestServer https_test_server_;
-  DISALLOW_COPY_AND_ASSIGN(NTPInterceptionWebRequestAPITest);
 };
 
 // Ensures that requests made by the NTP Instant renderer are hidden from the
@@ -2029,6 +2033,11 @@ class WebUiNtpInterceptionWebRequestAPITest
   WebUiNtpInterceptionWebRequestAPITest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  WebUiNtpInterceptionWebRequestAPITest(
+      const WebUiNtpInterceptionWebRequestAPITest&) = delete;
+  WebUiNtpInterceptionWebRequestAPITest& operator=(
+      const WebUiNtpInterceptionWebRequestAPITest&) = delete;
+
   // ExtensionApiTest override:
   void SetUp() override {
     https_test_server_.RegisterRequestMonitor(base::BindRepeating(
@@ -2098,8 +2107,6 @@ class WebUiNtpInterceptionWebRequestAPITest
   bool one_google_bar_request_seen_ = false;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUiNtpInterceptionWebRequestAPITest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebUiNtpInterceptionWebRequestAPITest,
@@ -2364,6 +2371,11 @@ class ExtensionWebRequestMockedClockTest : public ExtensionWebRequestApiTest {
                                     nullptr,
                                     nullptr) {}
 
+  ExtensionWebRequestMockedClockTest(
+      const ExtensionWebRequestMockedClockTest&) = delete;
+  ExtensionWebRequestMockedClockTest& operator=(
+      const ExtensionWebRequestMockedClockTest&) = delete;
+
  private:
   static base::Time Now() {
     static base::Time now_time = base::Time::UnixEpoch();
@@ -2372,7 +2384,6 @@ class ExtensionWebRequestMockedClockTest : public ExtensionWebRequestApiTest {
   }
 
   base::subtle::ScopedTimeClockOverrides scoped_time_clock_override_;
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebRequestMockedClockTest);
 };
 
 // Tests that we correctly dispatch the OnActionIgnored event on an extension

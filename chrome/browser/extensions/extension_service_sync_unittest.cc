@@ -1847,6 +1847,11 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
  public:
   BlocklistedExtensionSyncServiceTest() {}
 
+  BlocklistedExtensionSyncServiceTest(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+  BlocklistedExtensionSyncServiceTest& operator=(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+
   void SetUp() override {
     ExtensionServiceSyncTest::SetUp();
 
@@ -1897,8 +1902,6 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistedExtensionSyncServiceTest);
 };
 
 // Test that sync cannot enable blocklisted extensions.

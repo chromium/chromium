@@ -34,6 +34,9 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
  public:
   ExtensionCSPBypassTest() {}
 
+  ExtensionCSPBypassTest(const ExtensionCSPBypassTest&) = delete;
+  ExtensionCSPBypassTest& operator=(const ExtensionCSPBypassTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("same-origin.com", "127.0.0.1");
     host_resolver()->AddRule("cross-origin.com", "127.0.0.1");
@@ -110,8 +113,6 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCSPBypassTest);
 };
 
 }  // namespace

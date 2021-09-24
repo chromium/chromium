@@ -19,9 +19,12 @@ class ChromeExtensionsAPIClientTest : public testing::Test {
  public:
   ChromeExtensionsAPIClientTest() = default;
 
+  ChromeExtensionsAPIClientTest(const ChromeExtensionsAPIClientTest&) = delete;
+  ChromeExtensionsAPIClientTest& operator=(
+      const ChromeExtensionsAPIClientTest&) = delete;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClientTest);
 };
 
 TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {

@@ -16,6 +16,9 @@ class ExternalRegistryLoader : public ExternalLoader {
  public:
   ExternalRegistryLoader();
 
+  ExternalRegistryLoader(const ExternalRegistryLoader&) = delete;
+  ExternalRegistryLoader& operator=(const ExternalRegistryLoader&) = delete;
+
  protected:
   ~ExternalRegistryLoader() override;  // protected for unit test.
 
@@ -43,8 +46,6 @@ class ExternalRegistryLoader : public ExternalLoader {
 
   // Task runner where registry keys are read.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalRegistryLoader);
 };
 
 }  // namespace extensions

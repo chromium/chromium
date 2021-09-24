@@ -163,6 +163,11 @@ class InputMethodPrivateNotifyImeMenuItemActivatedFunction
  public:
   InputMethodPrivateNotifyImeMenuItemActivatedFunction() = default;
 
+  InputMethodPrivateNotifyImeMenuItemActivatedFunction(
+      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
+  InputMethodPrivateNotifyImeMenuItemActivatedFunction& operator=(
+      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
+
  protected:
   ~InputMethodPrivateNotifyImeMenuItemActivatedFunction() override = default;
 
@@ -172,8 +177,6 @@ class InputMethodPrivateNotifyImeMenuItemActivatedFunction
  private:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.notifyImeMenuItemActivated",
                              INPUTMETHODPRIVATE_NOTIFYIMEMENUITEMACTIVATED)
-  DISALLOW_COPY_AND_ASSIGN(
-      InputMethodPrivateNotifyImeMenuItemActivatedFunction);
 };
 
 class InputMethodPrivateGetCompositionBoundsFunction

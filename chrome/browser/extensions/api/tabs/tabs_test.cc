@@ -86,6 +86,9 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
  public:
   ExtensionTabsTest() {}
 
+  ExtensionTabsTest(const ExtensionTabsTest&) = delete;
+  ExtensionTabsTest& operator=(const ExtensionTabsTest&) = delete;
+
   std::string GetWindowType(Browser* test_browser,
                             scoped_refptr<const Extension> extension) {
     scoped_refptr<WindowsGetFunction> function = new WindowsGetFunction();
@@ -98,9 +101,6 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
             function.get(), args, browser())));
     return api_test_utils::GetString(result.get(), "type");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTabsTest);
 };
 
 class ExtensionWindowCreateTest : public InProcessBrowserTest {

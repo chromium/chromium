@@ -79,6 +79,9 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
  public:
   DownloaderTestDelegate() {}
 
+  DownloaderTestDelegate(const DownloaderTestDelegate&) = delete;
+  DownloaderTestDelegate& operator=(const DownloaderTestDelegate&) = delete;
+
   // On the next update check for extension |id|, we'll respond that no update
   // is available.
   void AddNoUpdateResponse(const std::string& id) {
@@ -157,14 +160,15 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // other.
   std::set<std::string> no_updates_;
   std::map<std::string, DownloadFinishedArgs> updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloaderTestDelegate);
 };
 
 // Helper to let test code wait for and return an update check result.
 class UpdateCheckResultCatcher {
  public:
   UpdateCheckResultCatcher() {}
+
+  UpdateCheckResultCatcher(const UpdateCheckResultCatcher&) = delete;
+  UpdateCheckResultCatcher& operator=(const UpdateCheckResultCatcher&) = delete;
 
   void OnResult(const RuntimeAPIDelegate::UpdateCheckResult& result) {
     EXPECT_EQ(nullptr, result_.get());
@@ -185,13 +189,15 @@ class UpdateCheckResultCatcher {
  private:
   std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> result_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateCheckResultCatcher);
 };
 
 class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
  public:
   ChromeRuntimeAPIDelegateTest() {}
+
+  ChromeRuntimeAPIDelegateTest(const ChromeRuntimeAPIDelegateTest&) = delete;
+  ChromeRuntimeAPIDelegateTest& operator=(const ChromeRuntimeAPIDelegateTest&) =
+      delete;
 
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
@@ -255,9 +261,6 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
 
   // For preventing extensions from being updated immediately.
   std::unique_ptr<UpdateInstallGate> update_install_gate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegateTest);
 };
 
 TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
@@ -342,6 +345,9 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
     extension_registry_observation_.Observe(ExtensionRegistry::Get(context_));
   }
 
+  ExtensionLoadWaiter(const ExtensionLoadWaiter&) = delete;
+  ExtensionLoadWaiter& operator=(const ExtensionLoadWaiter&) = delete;
+
   void WaitForReload() { run_loop_.Run(); }
 
  protected:
@@ -371,13 +377,16 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
   content::BrowserContext* context_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionLoadWaiter);
 };
 
 class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
  public:
   ChromeRuntimeAPIDelegateReloadTest() {}
+
+  ChromeRuntimeAPIDelegateReloadTest(
+      const ChromeRuntimeAPIDelegateReloadTest&) = delete;
+  ChromeRuntimeAPIDelegateReloadTest& operator=(
+      const ChromeRuntimeAPIDelegateReloadTest&) = delete;
 
   void SetUp() override {
     ChromeRuntimeAPIDelegateTest::SetUp();
@@ -400,8 +409,6 @@ class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
 
  private:
   ExtensionId extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegateReloadTest);
 };
 
 TEST_F(ChromeRuntimeAPIDelegateReloadTest,

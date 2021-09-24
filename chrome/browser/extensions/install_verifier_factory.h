@@ -15,6 +15,9 @@ class InstallVerifier;
 
 class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
  public:
+  InstallVerifierFactory(const InstallVerifierFactory&) = delete;
+  InstallVerifierFactory& operator=(const InstallVerifierFactory&) = delete;
+
   static InstallVerifier* GetForBrowserContext(
       content::BrowserContext* context);
   static InstallVerifierFactory* GetInstance();
@@ -30,8 +33,6 @@ class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallVerifierFactory);
 };
 
 }  // namespace extensions

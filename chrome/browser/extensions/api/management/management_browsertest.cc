@@ -81,6 +81,11 @@ class ExtensionHostDestructionObserver
     extension_host_observation_.Observe(host_);
   }
 
+  ExtensionHostDestructionObserver(const ExtensionHostDestructionObserver&) =
+      delete;
+  ExtensionHostDestructionObserver& operator=(
+      const ExtensionHostDestructionObserver&) = delete;
+
   void WaitForDestructionThenWaitForFirstLoad() {
     run_loop_.Run();
 
@@ -106,8 +111,6 @@ class ExtensionHostDestructionObserver
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>
       extension_host_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHostDestructionObserver);
 };
 
 }  // namespace

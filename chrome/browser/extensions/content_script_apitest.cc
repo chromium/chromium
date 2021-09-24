@@ -1730,6 +1730,9 @@ class NTPInterceptionTest : public ExtensionApiTest {
   NTPInterceptionTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  NTPInterceptionTest(const NTPInterceptionTest&) = delete;
+  NTPInterceptionTest& operator=(const NTPInterceptionTest&) = delete;
+
   // ExtensionApiTest override:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -1748,7 +1751,6 @@ class NTPInterceptionTest : public ExtensionApiTest {
 
  private:
   net::EmbeddedTestServer https_test_server_;
-  DISALLOW_COPY_AND_ASSIGN(NTPInterceptionTest);
 };
 
 // Ensure extensions can't inject a content script into the New Tab page.

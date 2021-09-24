@@ -56,6 +56,10 @@ class PermissionsRequestFunction : public ExtensionFunction {
 
   PermissionsRequestFunction();
 
+  PermissionsRequestFunction(const PermissionsRequestFunction&) = delete;
+  PermissionsRequestFunction& operator=(const PermissionsRequestFunction&) =
+      delete;
+
   // FOR TESTS ONLY to bypass the confirmation UI.
   static void SetAutoConfirmForTests(bool should_proceed);
   static void ResetAutoConfirmForTests();
@@ -90,8 +94,6 @@ class PermissionsRequestFunction : public ExtensionFunction {
   // be recorded if and only if the prompt is being bypassed for a test (see
   // also SetAutoConfirmForTests()).
   std::unique_ptr<const PermissionSet> prompted_permissions_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsRequestFunction);
 };
 
 }  // namespace extensions

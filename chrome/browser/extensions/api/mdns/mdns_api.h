@@ -123,6 +123,9 @@ class MDnsAPI : public BrowserContextKeyedAPI,
 class MdnsForceDiscoveryFunction : public ExtensionFunction {
  public:
   MdnsForceDiscoveryFunction();
+  MdnsForceDiscoveryFunction(const MdnsForceDiscoveryFunction&) = delete;
+  MdnsForceDiscoveryFunction& operator=(const MdnsForceDiscoveryFunction&) =
+      delete;
 
  protected:
   ~MdnsForceDiscoveryFunction() override;
@@ -132,7 +135,6 @@ class MdnsForceDiscoveryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   DECLARE_EXTENSION_FUNCTION("mdns.forceDiscovery", MDNS_FORCEDISCOVERY)
-  DISALLOW_COPY_AND_ASSIGN(MdnsForceDiscoveryFunction);
 };
 
 }  // namespace extensions

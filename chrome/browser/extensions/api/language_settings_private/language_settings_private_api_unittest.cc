@@ -475,6 +475,9 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
       input_methods_ = {extension_ime, component_extension_ime, arc_ime};
     }
 
+    TestState(const TestState&) = delete;
+    TestState& operator=(const TestState&) = delete;
+
     void GetInputMethodExtensions(
         input_method::InputMethodDescriptors* descriptors) override {
       for (const auto& descriptor : input_methods_)
@@ -486,8 +489,6 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
    protected:
     friend base::RefCounted<InputMethodManager::State>;
     ~TestState() override = default;
-
-    DISALLOW_COPY_AND_ASSIGN(TestState);
   };
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {
@@ -495,6 +496,9 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
     component_ext_mgr_ = std::make_unique<ash::ComponentExtensionIMEManager>(
         std::make_unique<MockComponentExtensionIMEManagerDelegate>());
   }
+
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
     return state_;
@@ -514,8 +518,6 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_;
   std::unique_ptr<ash::ComponentExtensionIMEManager> component_ext_mgr_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 }  // namespace

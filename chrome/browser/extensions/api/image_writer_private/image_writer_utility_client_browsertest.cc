@@ -37,6 +37,10 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
+  ImageWriterUtilityClientTest(const ImageWriterUtilityClientTest&) = delete;
+  ImageWriterUtilityClientTest& operator=(const ImageWriterUtilityClientTest&) =
+      delete;
+
   void FillImageFileWithPattern(char pattern) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &image_));
@@ -250,8 +254,6 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
   bool cancel_ = false;
   std::string error_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterUtilityClientTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteNoImage) {

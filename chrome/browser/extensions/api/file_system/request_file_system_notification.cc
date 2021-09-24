@@ -40,6 +40,9 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   // This class owns and deletes itself after showing the notification.
   AppNotificationLauncher() = default;
 
+  AppNotificationLauncher(const AppNotificationLauncher&) = delete;
+  AppNotificationLauncher& operator=(const AppNotificationLauncher&) = delete;
+
   void InitAndShow(Profile* profile,
                    const Extension& extension,
                    std::unique_ptr<message_center::Notification> notification) {
@@ -72,8 +75,6 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   std::unique_ptr<AppIconLoader> icon_loader_;
   gfx::Image extension_icon_;
   std::unique_ptr<message_center::Notification> pending_notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppNotificationLauncher);
 };
 
 }  // namespace

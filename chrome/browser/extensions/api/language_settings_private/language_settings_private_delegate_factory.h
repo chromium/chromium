@@ -20,6 +20,11 @@ class LanguageSettingsPrivateDelegate;
 class LanguageSettingsPrivateDelegateFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  LanguageSettingsPrivateDelegateFactory(
+      const LanguageSettingsPrivateDelegateFactory&) = delete;
+  LanguageSettingsPrivateDelegateFactory& operator=(
+      const LanguageSettingsPrivateDelegateFactory&) = delete;
+
   // Returns the LanguageSettingsPrivateDelegate for |context|, creating it
   // if it is not yet created.
   static LanguageSettingsPrivateDelegate* GetForBrowserContext(
@@ -44,8 +49,6 @@ class LanguageSettingsPrivateDelegateFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDelegateFactory);
 };
 
 }  // namespace extensions

@@ -32,6 +32,13 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
 
   DashboardPrivateShowPermissionPromptForDelegatedInstallFunction();
 
+  DashboardPrivateShowPermissionPromptForDelegatedInstallFunction(
+      const DashboardPrivateShowPermissionPromptForDelegatedInstallFunction&) =
+      delete;
+  DashboardPrivateShowPermissionPromptForDelegatedInstallFunction& operator=(
+      const DashboardPrivateShowPermissionPromptForDelegatedInstallFunction&) =
+      delete;
+
  private:
   using Params =
      api::dashboard_private::ShowPermissionPromptForDelegatedInstall::Params;
@@ -65,9 +72,6 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
   scoped_refptr<Extension> dummy_extension_;
 
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      DashboardPrivateShowPermissionPromptForDelegatedInstallFunction);
 };
 
 }  // namespace extensions

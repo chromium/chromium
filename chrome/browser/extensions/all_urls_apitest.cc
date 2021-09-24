@@ -29,6 +29,10 @@ const char kAllUrlsTarget[] = "/extensions/api_test/all_urls/index.html";
 }  // namespace
 
 class AllUrlsApiTest : public ExtensionApiTest {
+ public:
+  AllUrlsApiTest(const AllUrlsApiTest&) = delete;
+  AllUrlsApiTest& operator=(const AllUrlsApiTest&) = delete;
+
  protected:
   AllUrlsApiTest() {}
   ~AllUrlsApiTest() override {}
@@ -76,8 +80,6 @@ class AllUrlsApiTest : public ExtensionApiTest {
 
   scoped_refptr<const Extension> content_script_;
   scoped_refptr<const Extension> execute_script_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllUrlsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {

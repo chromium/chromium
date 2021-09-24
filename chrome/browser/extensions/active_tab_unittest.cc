@@ -660,10 +660,10 @@ class ActiveTabWithServiceTest : public ExtensionServiceTestBase {
  public:
   ActiveTabWithServiceTest() {}
 
-  void SetUp() override;
+  ActiveTabWithServiceTest(const ActiveTabWithServiceTest&) = delete;
+  ActiveTabWithServiceTest& operator=(const ActiveTabWithServiceTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabWithServiceTest);
+  void SetUp() override;
 };
 
 void ActiveTabWithServiceTest::SetUp() {

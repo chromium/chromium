@@ -61,6 +61,10 @@ class ExtensionAssetsManagerHelper {
   };
   typedef std::vector<PendingInstallInfo> PendingInstallList;
 
+  ExtensionAssetsManagerHelper(const ExtensionAssetsManagerHelper&) = delete;
+  ExtensionAssetsManagerHelper& operator=(const ExtensionAssetsManagerHelper&) =
+      delete;
+
   static ExtensionAssetsManagerHelper* GetInstance() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return base::Singleton<ExtensionAssetsManagerHelper>::get();
@@ -113,8 +117,6 @@ class ExtensionAssetsManagerHelper {
   typedef std::map<InstallItem, std::vector<PendingInstallInfo> > InstallQueue;
 
   InstallQueue install_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerHelper);
 };
 
 }  // namespace

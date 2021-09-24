@@ -105,6 +105,11 @@ PermissionsUpdater::Delegate* GetDelegate() {
 class PermissionsUpdaterShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  PermissionsUpdaterShutdownNotifierFactory(
+      const PermissionsUpdaterShutdownNotifierFactory&) = delete;
+  PermissionsUpdaterShutdownNotifierFactory& operator=(
+      const PermissionsUpdaterShutdownNotifierFactory&) = delete;
+
   static PermissionsUpdaterShutdownNotifierFactory* GetInstance() {
     static base::NoDestructor<PermissionsUpdaterShutdownNotifierFactory>
         factory;
@@ -121,8 +126,6 @@ class PermissionsUpdaterShutdownNotifierFactory
     DependsOn(ExtensionSystemFactory::GetInstance());
   }
   ~PermissionsUpdaterShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdaterShutdownNotifierFactory);
 };
 
 void SetCorsOriginAccessListForAllRelatedProfiles(
@@ -148,6 +151,11 @@ void SetCorsOriginAccessListForAllRelatedProfiles(
 // (whichever happens first).
 class PermissionsUpdater::NetworkPermissionsUpdateHelper {
  public:
+  NetworkPermissionsUpdateHelper(const NetworkPermissionsUpdateHelper&) =
+      delete;
+  NetworkPermissionsUpdateHelper& operator=(
+      const NetworkPermissionsUpdateHelper&) = delete;
+
   static void UpdatePermissions(content::BrowserContext* browser_context,
                                 EventType event_type,
                                 scoped_refptr<const Extension> extension,
@@ -171,8 +179,6 @@ class PermissionsUpdater::NetworkPermissionsUpdateHelper {
   base::OnceClosure dispatch_event_;
   base::CallbackListSubscription shutdown_subscription_;
   base::WeakPtrFactory<NetworkPermissionsUpdateHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPermissionsUpdateHelper);
 };
 
 // static

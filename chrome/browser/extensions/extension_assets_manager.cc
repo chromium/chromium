@@ -20,6 +20,10 @@ namespace {
 
 class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
  public:
+  ExtensionAssetsManagerImpl(const ExtensionAssetsManagerImpl&) = delete;
+  ExtensionAssetsManagerImpl& operator=(const ExtensionAssetsManagerImpl&) =
+      delete;
+
   static ExtensionAssetsManagerImpl* GetInstance() {
     return base::Singleton<ExtensionAssetsManagerImpl>::get();
   }
@@ -49,8 +53,6 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
 
   ExtensionAssetsManagerImpl() {}
   ~ExtensionAssetsManagerImpl() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerImpl);
 };
 
 }  // namespace

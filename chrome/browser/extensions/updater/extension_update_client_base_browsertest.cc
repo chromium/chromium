@@ -38,6 +38,10 @@ class TestChromeUpdateClientConfig
         update_url_(update_url),
         ping_url_(ping_url) {}
 
+  TestChromeUpdateClientConfig(const TestChromeUpdateClientConfig&) = delete;
+  TestChromeUpdateClientConfig& operator=(const TestChromeUpdateClientConfig&) =
+      delete;
+
   // Overrides for update_client::Configurator.
   std::vector<GURL> UpdateUrl() const final { return update_url_; }
 
@@ -56,8 +60,6 @@ class TestChromeUpdateClientConfig
  private:
   std::vector<GURL> update_url_;
   std::vector<GURL> ping_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeUpdateClientConfig);
 };
 
 // This class implements a simple Chrome extra part that is used to

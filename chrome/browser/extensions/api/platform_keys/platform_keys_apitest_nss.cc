@@ -51,6 +51,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
         key_permission_policy_(key_permission_policy),
         user_client_cert_slot_(user_client_cert_slot) {}
 
+  PlatformKeysTest(const PlatformKeysTest&) = delete;
+  PlatformKeysTest& operator=(const PlatformKeysTest&) = delete;
+
   void SetUpOnMainThread() override {
     if (!IsPreTest()) {
       // Set up the private slot before
@@ -234,8 +237,6 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   const bool key_permission_policy_;
   const UserClientCertSlot user_client_cert_slot_;
   crypto::ScopedTestNSSDB user_private_slot_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysTest);
 };
 
 class TestSelectDelegate

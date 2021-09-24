@@ -46,6 +46,9 @@ class ContextMenuMatcher {
                      ui::SimpleMenuModel* menu_model,
                      base::RepeatingCallback<bool(const MenuItem*)> filter);
 
+  ContextMenuMatcher(const ContextMenuMatcher&) = delete;
+  ContextMenuMatcher& operator=(const ContextMenuMatcher&) = delete;
+
   // This is a helper function to append items for one particular extension.
   // The |index| parameter is used for assigning id's, and is incremented for
   // each item actually added. |is_action_menu| is used for browser and page
@@ -122,8 +125,6 @@ class ContextMenuMatcher {
 
   // Keep track of and clean up menu models for submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> extension_menu_models_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuMatcher);
 };
 
 }  // namespace extensions

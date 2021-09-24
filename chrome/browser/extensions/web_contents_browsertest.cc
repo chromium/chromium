@@ -42,6 +42,11 @@ class ExtensionNavigationUIDataObserver : public content::WebContentsObserver {
   explicit ExtensionNavigationUIDataObserver(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  ExtensionNavigationUIDataObserver(const ExtensionNavigationUIDataObserver&) =
+      delete;
+  ExtensionNavigationUIDataObserver& operator=(
+      const ExtensionNavigationUIDataObserver&) = delete;
+
   const ExtensionNavigationUIData* GetExtensionNavigationUIData(
       content::RenderFrameHost* rfh) const {
     auto iter = navigation_ui_data_map_.find(rfh);
@@ -66,8 +71,6 @@ class ExtensionNavigationUIDataObserver : public content::WebContentsObserver {
   std::map<content::RenderFrameHost*,
            std::unique_ptr<ExtensionNavigationUIData>>
       navigation_ui_data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationUIDataObserver);
 };
 
 }  // namespace

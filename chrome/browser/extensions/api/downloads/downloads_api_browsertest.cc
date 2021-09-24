@@ -138,6 +138,9 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
           args_(args.Clone()),
           caught_(caught) {}
 
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     const base::Time& caught() { return caught_; }
 
     bool Satisfies(const Event& other) const {
@@ -189,8 +192,6 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     std::string json_args_;
     base::Value args_;
     base::Time caught_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   // extensions::EventRouter::TestObserver:
@@ -305,6 +306,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
       : extension_(nullptr),
         incognito_browser_(nullptr),
         current_browser_(nullptr) {}
+
+  DownloadExtensionTest(const DownloadExtensionTest&) = delete;
+  DownloadExtensionTest& operator=(const DownloadExtensionTest&) = delete;
 
  protected:
   // Used with CreateHistoryDownloads
@@ -691,8 +695,6 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;
   std::unique_ptr<net::test_server::ControllableHttpResponse> second_download_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadExtensionTest);
 };
 
 namespace {

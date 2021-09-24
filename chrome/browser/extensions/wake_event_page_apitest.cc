@@ -64,6 +64,9 @@ class WakeEventPageTest : public ExtensionBrowserTest {
  public:
   WakeEventPageTest() {}
 
+  WakeEventPageTest(const WakeEventPageTest&) = delete;
+  WakeEventPageTest& operator=(const WakeEventPageTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -155,8 +158,6 @@ class WakeEventPageTest : public ExtensionBrowserTest {
   }
 
   ProcessManager* process_manager() { return ProcessManager::Get(profile()); }
-
-  DISALLOW_COPY_AND_ASSIGN(WakeEventPageTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WakeEventPageTest, ClosedEventPage) {

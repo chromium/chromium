@@ -186,6 +186,11 @@ class DeclarativeNetRequestBrowserTest
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 
+  DeclarativeNetRequestBrowserTest(const DeclarativeNetRequestBrowserTest&) =
+      delete;
+  DeclarativeNetRequestBrowserTest& operator=(
+      const DeclarativeNetRequestBrowserTest&) = delete;
+
   // Returns the path of the files served by the EmbeddedTestServer.
   static base::FilePath GetHttpServerPath() {
     base::FilePath test_root_path;
@@ -813,8 +818,6 @@ class DeclarativeNetRequestBrowserTest
 
   // Path to the PEM file for the last installed packed extension.
   base::FilePath last_pem_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeNetRequestBrowserTest);
 };
 
 using DeclarativeNetRequestBrowserTest_Packed =
@@ -5042,6 +5045,11 @@ class DeclarativeNetRequestHostPermissionsBrowserTest
  public:
   DeclarativeNetRequestHostPermissionsBrowserTest() {}
 
+  DeclarativeNetRequestHostPermissionsBrowserTest(
+      const DeclarativeNetRequestHostPermissionsBrowserTest&) = delete;
+  DeclarativeNetRequestHostPermissionsBrowserTest& operator=(
+      const DeclarativeNetRequestHostPermissionsBrowserTest&) = delete;
+
  protected:
   struct FrameRedirectResult {
     std::string child_frame_name;
@@ -5085,9 +5093,6 @@ class DeclarativeNetRequestHostPermissionsBrowserTest
   std::string GetMatchPatternForDomain(const std::string& domain) const {
     return "*://*." + domain + ".com/*";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeNetRequestHostPermissionsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestHostPermissionsBrowserTest,
@@ -5131,6 +5136,11 @@ class DeclarativeNetRequestResourceTypeBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
   DeclarativeNetRequestResourceTypeBrowserTest() {}
+
+  DeclarativeNetRequestResourceTypeBrowserTest(
+      const DeclarativeNetRequestResourceTypeBrowserTest&) = delete;
+  DeclarativeNetRequestResourceTypeBrowserTest& operator=(
+      const DeclarativeNetRequestResourceTypeBrowserTest&) = delete;
 
  protected:
   // TODO(crbug.com/696822): Add tests for "object", "ping", "other", "font",
@@ -5259,9 +5269,6 @@ class DeclarativeNetRequestResourceTypeBrowserTest
     }
     LoadExtensionWithRules(rules);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeNetRequestResourceTypeBrowserTest);
 };
 
 // These are split into two tests to prevent a timeout. See crbug.com/787957.

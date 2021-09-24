@@ -15,13 +15,16 @@ class DownloadsInternalDetermineFilenameFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("downloadsInternal.determineFilename",
                              DOWNLOADSINTERNAL_DETERMINEFILENAME)
   DownloadsInternalDetermineFilenameFunction();
+
+  DownloadsInternalDetermineFilenameFunction(
+      const DownloadsInternalDetermineFilenameFunction&) = delete;
+  DownloadsInternalDetermineFilenameFunction& operator=(
+      const DownloadsInternalDetermineFilenameFunction&) = delete;
+
   ResponseAction Run() override;
 
  protected:
   ~DownloadsInternalDetermineFilenameFunction() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadsInternalDetermineFilenameFunction);
 };
 
 }  // namespace extensions

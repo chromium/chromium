@@ -34,6 +34,9 @@ class UserScriptListener::Throttle
   explicit Throttle(content::NavigationHandle* navigation_handle)
       : NavigationThrottle(navigation_handle) {}
 
+  Throttle(const Throttle&) = delete;
+  Throttle& operator=(const Throttle&) = delete;
+
   void ResumeIfDeferred() {
     DCHECK(should_defer_);
     should_defer_ = false;
@@ -64,8 +67,6 @@ class UserScriptListener::Throttle
   bool should_defer_ = true;
   bool did_defer_ = false;
   std::unique_ptr<base::ElapsedTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
 struct UserScriptListener::ProfileData {

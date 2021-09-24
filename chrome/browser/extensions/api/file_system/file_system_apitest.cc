@@ -41,6 +41,9 @@ class AppLoadObserver : public ExtensionRegistryObserver {
         ExtensionRegistry::Get(browser_context));
   }
 
+  AppLoadObserver(const AppLoadObserver&) = delete;
+  AppLoadObserver& operator=(const AppLoadObserver&) = delete;
+
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override {
     callback_.Run(extension);
@@ -50,7 +53,6 @@ class AppLoadObserver : public ExtensionRegistryObserver {
   base::RepeatingCallback<void(const Extension*)> callback_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppLoadObserver);
 };
 
 void SetLastChooseEntryDirectory(const base::FilePath& choose_entry_directory,

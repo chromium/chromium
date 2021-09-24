@@ -48,6 +48,10 @@ class ExtensionUserScriptLoaderTest : public testing::Test {
  public:
   ExtensionUserScriptLoaderTest() = default;
 
+  ExtensionUserScriptLoaderTest(const ExtensionUserScriptLoaderTest&) = delete;
+  ExtensionUserScriptLoaderTest& operator=(
+      const ExtensionUserScriptLoaderTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
@@ -57,8 +61,6 @@ class ExtensionUserScriptLoaderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUserScriptLoaderTest);
 };
 
 // Test that a callback passed in will get called once scripts are loaded.

@@ -208,6 +208,10 @@ class EnterprisePlatformKeysTest
                              GetParam().enrollment_status_,
                              GetParam().user_status_) {}
 
+  EnterprisePlatformKeysTest(const EnterprisePlatformKeysTest&) = delete;
+  EnterprisePlatformKeysTest& operator=(const EnterprisePlatformKeysTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformKeysTestBase::SetUpCommandLine(command_line);
 
@@ -251,8 +255,6 @@ class EnterprisePlatformKeysTest
                                 base::size(privateKeyPkcs8System),
                                 system_slot->slot());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EnterprisePlatformKeysTest);
 };
 
 }  // namespace

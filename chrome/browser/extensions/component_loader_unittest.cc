@@ -34,6 +34,10 @@ class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
     observation_.Observe(registry);
   }
 
+  ExtensionUnloadedObserver(const ExtensionUnloadedObserver&) = delete;
+  ExtensionUnloadedObserver& operator=(const ExtensionUnloadedObserver&) =
+      delete;
+
   size_t unloaded_count() const { return unloaded_count_; }
 
  protected:
@@ -48,8 +52,6 @@ class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
   size_t unloaded_count_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUnloadedObserver);
 };
 
 class ComponentLoaderTest : public testing::Test {

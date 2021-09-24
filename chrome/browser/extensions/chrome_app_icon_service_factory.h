@@ -17,6 +17,10 @@ class ChromeAppIconService;
 // ChromeAppIconService::Get(context) to access the service.
 class ChromeAppIconServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ChromeAppIconServiceFactory(const ChromeAppIconServiceFactory&) = delete;
+  ChromeAppIconServiceFactory& operator=(const ChromeAppIconServiceFactory&) =
+      delete;
+
   static ChromeAppIconService* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -32,8 +36,6 @@ class ChromeAppIconServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconServiceFactory);
 };
 
 }  // namespace extensions

@@ -72,6 +72,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
         ExtensionHostRegistry::Get(browser_context));
   }
 
+  PopupHostWatcher(const PopupHostWatcher&) = delete;
+  PopupHostWatcher& operator=(const PopupHostWatcher&) = delete;
+
   void Wait() {
     if (created_ == destroyed_)
       return;
@@ -119,8 +122,6 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>
       host_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopupHostWatcher);
 };
 
 // chrome.browserAction API tests that interact with the UI in such a way that

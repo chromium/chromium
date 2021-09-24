@@ -22,13 +22,16 @@ class ExtensionUpdateClientCommandLineConfigPolicy final
   explicit ExtensionUpdateClientCommandLineConfigPolicy(
       const base::CommandLine* cmdline);
 
+  ExtensionUpdateClientCommandLineConfigPolicy(
+      const ExtensionUpdateClientCommandLineConfigPolicy&) = delete;
+  ExtensionUpdateClientCommandLineConfigPolicy& operator=(
+      const ExtensionUpdateClientCommandLineConfigPolicy&) = delete;
+
   // update_client::CommandLineConfigPolicy overrides.
   bool TestRequest() const override;
 
  private:
   bool test_request_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUpdateClientCommandLineConfigPolicy);
 };
 
 }  // namespace extensions

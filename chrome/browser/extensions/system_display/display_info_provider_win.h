@@ -14,13 +14,13 @@ class DisplayInfoProviderWin : public DisplayInfoProvider {
  public:
   DisplayInfoProviderWin();
 
+  DisplayInfoProviderWin(const DisplayInfoProviderWin&) = delete;
+  DisplayInfoProviderWin& operator=(const DisplayInfoProviderWin&) = delete;
+
   // DisplayInfoProvider implementation.
   void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
       api::system_display::DisplayUnitInfo* unit) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderWin);
 };
 
 }  // namespace extensions

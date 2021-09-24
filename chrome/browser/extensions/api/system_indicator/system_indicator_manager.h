@@ -57,6 +57,10 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
   // A structure representing the system indicator for an extension.
   struct SystemIndicator {
     SystemIndicator();
+
+    SystemIndicator(const SystemIndicator&) = delete;
+    SystemIndicator& operator=(const SystemIndicator&) = delete;
+
     ~SystemIndicator();
 
     // A dynamically-set icon (through systemIndicator.setIcon()). Takes
@@ -67,8 +71,6 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
     // The system tray indicator. This is only non-null if the system indicator
     // is enabled.
     std::unique_ptr<ExtensionIndicatorIcon> system_tray_indicator;
-
-    DISALLOW_COPY_AND_ASSIGN(SystemIndicator);
   };
 
   // ExtensionRegistryObserver:

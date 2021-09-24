@@ -33,6 +33,9 @@ class ImageWriterUtilityClient
   using ImageWriterUtilityClientFactory =
       base::RepeatingCallback<scoped_refptr<ImageWriterUtilityClient>()>;
 
+  ImageWriterUtilityClient(const ImageWriterUtilityClient&) = delete;
+  ImageWriterUtilityClient& operator=(const ImageWriterUtilityClient&) = delete;
+
   static scoped_refptr<ImageWriterUtilityClient> Create(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
@@ -102,8 +105,6 @@ class ImageWriterUtilityClient
       removable_storage_writer_client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterUtilityClient);
 };
 
 }  // namespace image_writer

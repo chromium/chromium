@@ -99,6 +99,9 @@ class ActivityDatabase {
   // reads/writes.
   explicit ActivityDatabase(Delegate* delegate);
 
+  ActivityDatabase(const ActivityDatabase&) = delete;
+  ActivityDatabase& operator=(const ActivityDatabase&) = delete;
+
   // Opens the DB.  This invokes OnDatabaseInit in the delegate to create or
   // update the database schema if needed.
   void Init(const base::FilePath& db_name);
@@ -190,7 +193,6 @@ class ActivityDatabase {
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeOff);
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeOn);
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeFlush);
-  DISALLOW_COPY_AND_ASSIGN(ActivityDatabase);
 };
 
 }  // namespace extensions

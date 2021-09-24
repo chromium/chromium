@@ -26,6 +26,10 @@ class Extension;
 // install-prompt style dialog.
 class ShowPermissionsDialogHelper {
  public:
+  ShowPermissionsDialogHelper(const ShowPermissionsDialogHelper&) = delete;
+  ShowPermissionsDialogHelper& operator=(const ShowPermissionsDialogHelper&) =
+      delete;
+
   static void Show(content::BrowserContext* browser_context,
                    content::WebContents* web_contents,
                    const Extension* extension,
@@ -48,8 +52,6 @@ class ShowPermissionsDialogHelper {
   base::OnceClosure on_complete_;
 
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShowPermissionsDialogHelper);
 };
 
 }  // namespace extensions

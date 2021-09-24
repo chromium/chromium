@@ -28,6 +28,9 @@ class ExternalComponentLoader : public ExternalLoader {
  public:
   explicit ExternalComponentLoader(Profile* profile);
 
+  ExternalComponentLoader(const ExternalComponentLoader&) = delete;
+  ExternalComponentLoader& operator=(const ExternalComponentLoader&) = delete;
+
  protected:
   void StartLoading() override;
 
@@ -41,7 +44,6 @@ class ExternalComponentLoader : public ExternalLoader {
   // The profile that this loader is associated with. It listens for
   // preference changes for that profile.
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(ExternalComponentLoader);
 };
 
 }  // namespace extensions

@@ -82,6 +82,9 @@ class WebAuthFlow : public content::WebContentsObserver,
               Mode mode,
               Partition partition);
 
+  WebAuthFlow(const WebAuthFlow&) = delete;
+  WebAuthFlow& operator=(const WebAuthFlow&) = delete;
+
   ~WebAuthFlow() override;
 
   // Starts the flow.
@@ -135,8 +138,6 @@ class WebAuthFlow : public content::WebContentsObserver,
   AppWindow* app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthFlow);
 };
 
 }  // namespace extensions

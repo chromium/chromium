@@ -39,6 +39,9 @@ class LoadErrorReporter {
                                const std::string& error) = 0;
   };
 
+  LoadErrorReporter(const LoadErrorReporter&) = delete;
+  LoadErrorReporter& operator=(const LoadErrorReporter&) = delete;
+
   // Initializes the error reporter. Must be called before any other methods
   // and on the UI thread.
   static void Init(bool enable_noisy_errors);
@@ -81,8 +84,6 @@ class LoadErrorReporter {
   bool enable_noisy_errors_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadErrorReporter);
 };
 
 }  // namespace extensions

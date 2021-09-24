@@ -19,6 +19,10 @@
 class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
  public:
   FileIFrameAPITest() {}
+
+  FileIFrameAPITest(const FileIFrameAPITest&) = delete;
+  FileIFrameAPITest& operator=(const FileIFrameAPITest&) = delete;
+
   void set_has_all_urls(bool val) { has_all_urls_ = val; }
   void set_has_file_access(bool val) { has_file_access_ = val; }
 
@@ -80,8 +84,6 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
   bool has_all_urls_ = false;
   bool has_file_access_ = false;
   extensions::TestExtensionDir extension_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIFrameAPITest);
 };
 
 // Tests that an extension frame can embed a file iframe if it has file access

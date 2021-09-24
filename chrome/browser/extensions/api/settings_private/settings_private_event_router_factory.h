@@ -19,6 +19,11 @@ class SettingsPrivateEventRouter;
 class SettingsPrivateEventRouterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  SettingsPrivateEventRouterFactory(const SettingsPrivateEventRouterFactory&) =
+      delete;
+  SettingsPrivateEventRouterFactory& operator=(
+      const SettingsPrivateEventRouterFactory&) = delete;
+
   // Returns the SettingsPrivateEventRouter for |profile|, creating it if
   // it is not yet created.
   static SettingsPrivateEventRouter* GetForProfile(
@@ -43,8 +48,6 @@ class SettingsPrivateEventRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateEventRouterFactory);
 };
 
 }  // namespace extensions

@@ -104,6 +104,11 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
  public:
   ChromeWebStoreInIsolatedOriginTest() {}
 
+  ChromeWebStoreInIsolatedOriginTest(
+      const ChromeWebStoreInIsolatedOriginTest&) = delete;
+  ChromeWebStoreInIsolatedOriginTest& operator=(
+      const ChromeWebStoreInIsolatedOriginTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeWebStoreProcessTest::SetUpCommandLine(command_line);
 
@@ -111,9 +116,6 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
     command_line->AppendSwitchASCII(::switches::kIsolateOrigins,
                                     gallery_url().spec());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebStoreInIsolatedOriginTest);
 };
 
 }  // namespace

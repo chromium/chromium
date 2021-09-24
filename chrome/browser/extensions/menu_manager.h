@@ -169,6 +169,10 @@ class MenuItem {
            bool enabled,
            Type type,
            const ContextList& contexts);
+
+  MenuItem(const MenuItem&) = delete;
+  MenuItem& operator=(const MenuItem&) = delete;
+
   virtual ~MenuItem();
 
   // Simple accessor methods.
@@ -279,8 +283,6 @@ class MenuItem {
 
   // Any children this item may have.
   OwnedList children_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItem);
 };
 
 // This class keeps track of menu items added by extensions.

@@ -174,6 +174,11 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
  public:
   CorbAndCorsExtensionBrowserTest() = default;
 
+  CorbAndCorsExtensionBrowserTest(const CorbAndCorsExtensionBrowserTest&) =
+      delete;
+  CorbAndCorsExtensionBrowserTest& operator=(
+      const CorbAndCorsExtensionBrowserTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -535,8 +540,6 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   }
 
   const Extension* extension_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CorbAndCorsExtensionBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,

@@ -46,6 +46,11 @@ class MockExternalPolicyProviderVisitor
   MockExternalPolicyProviderVisitor() {
   }
 
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
+
   // Initialize a provider with |policy_forcelist|, and check that it installs
   // exactly the extensions specified in |expected_extensions|.
   void Visit(const base::DictionaryValue& policy_forcelist,
@@ -114,8 +119,6 @@ class MockExternalPolicyProviderVisitor
   std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<ExternalProviderImpl> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {

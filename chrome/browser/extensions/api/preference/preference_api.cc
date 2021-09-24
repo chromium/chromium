@@ -282,6 +282,9 @@ class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
 
 class PrefMapping {
  public:
+  PrefMapping(const PrefMapping&) = delete;
+  PrefMapping& operator=(const PrefMapping&) = delete;
+
   static PrefMapping* GetInstance() {
     return base::Singleton<PrefMapping>::get();
   }
@@ -392,8 +395,6 @@ class PrefMapping {
       transformers_;
 
   std::unique_ptr<PrefTransformerInterface> identity_transformer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefMapping);
 };
 
 }  // namespace

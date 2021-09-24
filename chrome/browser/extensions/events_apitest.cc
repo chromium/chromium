@@ -110,6 +110,9 @@ class EventsApiTest : public ExtensionApiTest {
  public:
   EventsApiTest() {}
 
+  EventsApiTest(const EventsApiTest&) = delete;
+  EventsApiTest& operator=(const EventsApiTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -139,8 +142,6 @@ class EventsApiTest : public ExtensionApiTest {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventsApiTest);
 };
 
 // Tests that updating an extension sends runtime.onInstalled event to the
@@ -263,6 +264,10 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
     ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(true);
   }
 
+  ChromeUpdatesEventsApiTest(const ChromeUpdatesEventsApiTest&) = delete;
+  ChromeUpdatesEventsApiTest& operator=(const ChromeUpdatesEventsApiTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     EventsApiTest::SetUpOnMainThread();
     ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -293,8 +298,6 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
 
  private:
   std::set<std::string> observed_extension_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdatesEventsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, PRE_ChromeUpdates) {

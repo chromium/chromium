@@ -116,6 +116,11 @@ bool WasItemChangedEventDispatched(
 }  // namespace
 
 class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
+ public:
+  DeveloperPrivateApiUnitTest(const DeveloperPrivateApiUnitTest&) = delete;
+  DeveloperPrivateApiUnitTest& operator=(const DeveloperPrivateApiUnitTest&) =
+      delete;
+
  protected:
   DeveloperPrivateApiUnitTest() {}
   ~DeveloperPrivateApiUnitTest() override {}
@@ -179,8 +184,6 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   std::unique_ptr<Browser> browser_;
 
   std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateApiUnitTest);
 };
 
 bool DeveloperPrivateApiUnitTest::RunFunction(
@@ -838,6 +841,10 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
         observation_.Observe(registry);
       }
 
+      UnloadedRegistryObserver(const UnloadedRegistryObserver&) = delete;
+      UnloadedRegistryObserver& operator=(const UnloadedRegistryObserver&) =
+          delete;
+
       void OnExtensionUnloaded(content::BrowserContext* browser_context,
                                const Extension* extension,
                                UnloadedExtensionReason reason) override {
@@ -852,8 +859,6 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
       base::FilePath expected_path_;
       base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
           observation_{this};
-
-      DISALLOW_COPY_AND_ASSIGN(UnloadedRegistryObserver);
     };
 
     UnloadedRegistryObserver unload_observer(path, registry());

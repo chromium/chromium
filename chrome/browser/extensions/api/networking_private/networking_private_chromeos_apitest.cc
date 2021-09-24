@@ -117,6 +117,11 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
  public:
   NetworkingPrivateChromeOSApiTest() {}
 
+  NetworkingPrivateChromeOSApiTest(const NetworkingPrivateChromeOSApiTest&) =
+      delete;
+  NetworkingPrivateChromeOSApiTest& operator=(
+      const NetworkingPrivateChromeOSApiTest&) = delete;
+
   bool RunNetworkingSubtest(const std::string& test) {
     const std::string arg =
         base::StringPrintf("{\"test\": \"%s\"}", test.c_str());
@@ -425,9 +430,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
   std::string userhash_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateChromeOSApiTest);
 };
 
 // Place each subtest into a separate browser test so that the stub networking

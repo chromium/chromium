@@ -29,11 +29,12 @@ class InstanceIDApiTest : public ExtensionApiTest {
  public:
   InstanceIDApiTest();
 
+  InstanceIDApiTest(const InstanceIDApiTest&) = delete;
+  InstanceIDApiTest& operator=(const InstanceIDApiTest&) = delete;
+
  private:
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDApiTest);
 };
 
 InstanceIDApiTest::InstanceIDApiTest()

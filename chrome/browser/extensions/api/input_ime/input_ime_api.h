@@ -117,6 +117,10 @@ class ExtensionRegistry;
 
 class InputImeEventRouterFactory {
  public:
+  InputImeEventRouterFactory(const InputImeEventRouterFactory&) = delete;
+  InputImeEventRouterFactory& operator=(const InputImeEventRouterFactory&) =
+      delete;
+
   static InputImeEventRouterFactory* GetInstance();
   InputImeEventRouter* GetRouter(Profile* profile);
   void RemoveProfile(Profile* profile);
@@ -127,8 +131,6 @@ class InputImeEventRouterFactory {
   ~InputImeEventRouterFactory();
 
   std::map<Profile*, InputImeEventRouter*, ProfileCompare> router_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImeEventRouterFactory);
 };
 
 class InputImeKeyEventHandledFunction : public ExtensionFunction {

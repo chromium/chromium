@@ -101,6 +101,10 @@ class WebContentsLoadStopObserver : content::WebContentsObserver {
       : content::WebContentsObserver(web_contents),
         load_stop_observed_(false) {}
 
+  WebContentsLoadStopObserver(const WebContentsLoadStopObserver&) = delete;
+  WebContentsLoadStopObserver& operator=(const WebContentsLoadStopObserver&) =
+      delete;
+
   void WaitForLoadStop() {
     if (load_stop_observed_)
       return;
@@ -117,8 +121,6 @@ class WebContentsLoadStopObserver : content::WebContentsObserver {
 
   bool load_stop_observed_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsLoadStopObserver);
 };
 
 // Extension ID for tests that use
@@ -161,6 +163,10 @@ class ErrorObserver : public ErrorConsole::Observer {
 };
 
 class ServiceWorkerTest : public ExtensionApiTest {
+ public:
+  ServiceWorkerTest(const ServiceWorkerTest&) = delete;
+  ServiceWorkerTest& operator=(const ServiceWorkerTest&) = delete;
+
  protected:
   ServiceWorkerTest() = default;
   ~ServiceWorkerTest() override = default;
@@ -245,9 +251,6 @@ class ServiceWorkerTest : public ExtensionApiTest {
             ->GetServiceWorkerContext();
     return sw_context->CountExternalRequestsForTest(key);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerTest);
 };
 
 class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {

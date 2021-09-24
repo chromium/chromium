@@ -310,6 +310,10 @@ class ExtensionManagement : public KeyedService {
 
 class ExtensionManagementFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionManagementFactory(const ExtensionManagementFactory&) = delete;
+  ExtensionManagementFactory& operator=(const ExtensionManagementFactory&) =
+      delete;
+
   static ExtensionManagement* GetForBrowserContext(
       content::BrowserContext* context);
   static ExtensionManagementFactory* GetInstance();
@@ -327,8 +331,6 @@ class ExtensionManagementFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionManagementFactory);
 };
 
 }  // namespace extensions

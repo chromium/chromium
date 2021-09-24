@@ -16,6 +16,9 @@ class UpdateInstallGate : public InstallGate {
  public:
   explicit UpdateInstallGate(Profile* profile);
 
+  UpdateInstallGate(const UpdateInstallGate&) = delete;
+  UpdateInstallGate& operator=(const UpdateInstallGate&) = delete;
+
   // InstallGate:
   Action ShouldDelay(const Extension* extension,
                      bool install_immediately) override;
@@ -23,8 +26,6 @@ class UpdateInstallGate : public InstallGate {
  private:
   // Not owned.
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateInstallGate);
 };
 
 }  // namespace extensions

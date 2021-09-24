@@ -62,6 +62,9 @@ class MenuManagerTest : public testing::Test {
         prefs_(base::ThreadTaskRunnerHandle::Get()),
         next_id_(1) {}
 
+  MenuManagerTest(const MenuManagerTest&) = delete;
+  MenuManagerTest& operator=(const MenuManagerTest&) = delete;
+
   void TearDown() override {
     prefs_.pref_service()->CommitPendingWrite();
     base::RunLoop().RunUntilIdle();
@@ -107,9 +110,6 @@ class MenuManagerTest : public testing::Test {
   ExtensionList extensions_;
   TestExtensionPrefs prefs_;
   int next_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuManagerTest);
 };
 
 // Tests adding, getting, and removing items.
@@ -489,6 +489,9 @@ class MockEventRouter : public EventRouter {
  public:
   explicit MockEventRouter(Profile* profile) : EventRouter(profile, NULL) {}
 
+  MockEventRouter(const MockEventRouter&) = delete;
+  MockEventRouter& operator=(const MockEventRouter&) = delete;
+
   MOCK_METHOD6(DispatchEventToExtensionMock,
                void(const std::string& extension_id,
                     const std::string& event_name,
@@ -506,9 +509,6 @@ class MockEventRouter : public EventRouter {
                                  event->event_url,
                                  event->user_gesture);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventRouter);
 };
 
 // MockEventRouter factory function

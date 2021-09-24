@@ -39,6 +39,10 @@ namespace extensions {
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
  public:
+  ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
+  ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =
+      delete;
+
   // The user has just typed the omnibox keyword. This is sent exactly once in
   // a given input session, before any OnInputChanged events.
   static void OnInputStarted(
@@ -68,9 +72,6 @@ class ExtensionOmniboxEventRouter {
   static void OnDeleteSuggestion(Profile* profile,
                                  const std::string& extension_id,
                                  const std::string& suggestion_text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionOmniboxEventRouter);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {

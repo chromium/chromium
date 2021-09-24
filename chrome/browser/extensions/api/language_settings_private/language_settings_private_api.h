@@ -17,6 +17,12 @@ class LanguageSettingsPrivateGetLanguageListFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetLanguageListFunction();
+
+  LanguageSettingsPrivateGetLanguageListFunction(
+      const LanguageSettingsPrivateGetLanguageListFunction&) = delete;
+  LanguageSettingsPrivateGetLanguageListFunction& operator=(
+      const LanguageSettingsPrivateGetLanguageListFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.getLanguageList",
                              LANGUAGESETTINGSPRIVATE_GETLANGUAGELIST)
 
@@ -33,14 +39,18 @@ class LanguageSettingsPrivateGetLanguageListFunction
 
  private:
   std::unique_ptr<base::ListValue> language_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateGetLanguageListFunction);
 };
 
 // Implements the languageSettingsPrivate.enableLanguage method.
 class LanguageSettingsPrivateEnableLanguageFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateEnableLanguageFunction();
+
+  LanguageSettingsPrivateEnableLanguageFunction(
+      const LanguageSettingsPrivateEnableLanguageFunction&) = delete;
+  LanguageSettingsPrivateEnableLanguageFunction& operator=(
+      const LanguageSettingsPrivateEnableLanguageFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.enableLanguage",
                              LANGUAGESETTINGSPRIVATE_ENABLELANGUAGE)
 
@@ -49,9 +59,6 @@ class LanguageSettingsPrivateEnableLanguageFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateEnableLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.disableLanguage method.
@@ -59,6 +66,12 @@ class LanguageSettingsPrivateDisableLanguageFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateDisableLanguageFunction();
+
+  LanguageSettingsPrivateDisableLanguageFunction(
+      const LanguageSettingsPrivateDisableLanguageFunction&) = delete;
+  LanguageSettingsPrivateDisableLanguageFunction& operator=(
+      const LanguageSettingsPrivateDisableLanguageFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.disableLanguage",
                              LANGUAGESETTINGSPRIVATE_DISABLELANGUAGE)
 
@@ -67,9 +80,6 @@ class LanguageSettingsPrivateDisableLanguageFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDisableLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.setEnableTranslationForLanguage
@@ -78,6 +88,14 @@ class LanguageSettingsPrivateSetEnableTranslationForLanguageFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateSetEnableTranslationForLanguageFunction();
+
+  LanguageSettingsPrivateSetEnableTranslationForLanguageFunction(
+      const LanguageSettingsPrivateSetEnableTranslationForLanguageFunction&) =
+      delete;
+  LanguageSettingsPrivateSetEnableTranslationForLanguageFunction& operator=(
+      const LanguageSettingsPrivateSetEnableTranslationForLanguageFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.setEnableTranslationForLanguage",
       LANGUAGESETTINGSPRIVATE_SETENABLETRANSLATIONFORLANGUAGE)
@@ -87,16 +105,18 @@ class LanguageSettingsPrivateSetEnableTranslationForLanguageFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateSetEnableTranslationForLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.moveLanguage method.
 class LanguageSettingsPrivateMoveLanguageFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateMoveLanguageFunction();
+
+  LanguageSettingsPrivateMoveLanguageFunction(
+      const LanguageSettingsPrivateMoveLanguageFunction&) = delete;
+  LanguageSettingsPrivateMoveLanguageFunction& operator=(
+      const LanguageSettingsPrivateMoveLanguageFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.moveLanguage",
                              LANGUAGESETTINGSPRIVATE_MOVELANGUAGE)
 
@@ -105,9 +125,6 @@ class LanguageSettingsPrivateMoveLanguageFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateMoveLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.getAlwaysTranslateLanguages method.
@@ -115,6 +132,14 @@ class LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction();
+
+  LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction(
+      const LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction&) =
+      delete;
+  LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction& operator=(
+      const LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.getAlwaysTranslateLanguages",
       LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES)
@@ -124,10 +149,6 @@ class LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction);
 };
 
 // Implements the languageSettingsPrivate.setLanguageAlwaysTranslateState
@@ -136,6 +157,14 @@ class LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction();
+
+  LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction(
+      const LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction&) =
+      delete;
+  LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction& operator=(
+      const LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.setLanguageAlwaysTranslateState",
       LANGUAGESETTINGSPRIVATE_SETLANGUAGEALWAYSTRANSLATESTATE)
@@ -145,10 +174,6 @@ class LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction);
 };
 
 // Implements the languageSettingsPrivate.getNeverTranslateLanguages method.
@@ -156,6 +181,14 @@ class LanguageSettingsPrivateGetNeverTranslateLanguagesFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetNeverTranslateLanguagesFunction();
+
+  LanguageSettingsPrivateGetNeverTranslateLanguagesFunction(
+      const LanguageSettingsPrivateGetNeverTranslateLanguagesFunction&) =
+      delete;
+  LanguageSettingsPrivateGetNeverTranslateLanguagesFunction& operator=(
+      const LanguageSettingsPrivateGetNeverTranslateLanguagesFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.getNeverTranslateLanguages",
       LANGUAGESETTINGSPRIVATE_GETNEVERTRANSLATELANGUAGES)
@@ -165,10 +198,6 @@ class LanguageSettingsPrivateGetNeverTranslateLanguagesFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateGetNeverTranslateLanguagesFunction);
 };
 
 // Implements the languageSettingsPrivate.getSpellcheckDictionaryStatuses
@@ -177,6 +206,14 @@ class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction();
+
+  LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction(
+      const LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction&) =
+      delete;
+  LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction& operator=(
+      const LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.getSpellcheckDictionaryStatuses",
       LANGUAGESETTINGSPRIVATE_GETSPELLCHECKDICTIONARYSTATUS)
@@ -186,10 +223,6 @@ class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction);
 };
 
 // Implements the languageSettingsPrivate.getSpellcheckWords method.
@@ -198,6 +231,12 @@ class LanguageSettingsPrivateGetSpellcheckWordsFunction
       public SpellcheckCustomDictionary::Observer {
  public:
   LanguageSettingsPrivateGetSpellcheckWordsFunction();
+
+  LanguageSettingsPrivateGetSpellcheckWordsFunction(
+      const LanguageSettingsPrivateGetSpellcheckWordsFunction&) = delete;
+  LanguageSettingsPrivateGetSpellcheckWordsFunction& operator=(
+      const LanguageSettingsPrivateGetSpellcheckWordsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.getSpellcheckWords",
                              LANGUAGESETTINGSPRIVATE_GETSPELLCHECKWORDS)
 
@@ -214,9 +253,6 @@ class LanguageSettingsPrivateGetSpellcheckWordsFunction
 
   // Returns the list of words from the loaded custom dictionary.
   std::unique_ptr<base::ListValue> GetSpellcheckWords() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateGetSpellcheckWordsFunction);
 };
 
 // Implements the languageSettingsPrivate.addSpellcheckWord method.
@@ -224,6 +260,12 @@ class LanguageSettingsPrivateAddSpellcheckWordFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateAddSpellcheckWordFunction();
+
+  LanguageSettingsPrivateAddSpellcheckWordFunction(
+      const LanguageSettingsPrivateAddSpellcheckWordFunction&) = delete;
+  LanguageSettingsPrivateAddSpellcheckWordFunction& operator=(
+      const LanguageSettingsPrivateAddSpellcheckWordFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.addSpellcheckWord",
                              LANGUAGESETTINGSPRIVATE_ADDSPELLCHECKWORD)
 
@@ -232,9 +274,6 @@ class LanguageSettingsPrivateAddSpellcheckWordFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateAddSpellcheckWordFunction);
 };
 
 // Implements the languageSettingsPrivate.removeSpellcheckWord method.
@@ -242,6 +281,12 @@ class LanguageSettingsPrivateRemoveSpellcheckWordFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRemoveSpellcheckWordFunction();
+
+  LanguageSettingsPrivateRemoveSpellcheckWordFunction(
+      const LanguageSettingsPrivateRemoveSpellcheckWordFunction&) = delete;
+  LanguageSettingsPrivateRemoveSpellcheckWordFunction& operator=(
+      const LanguageSettingsPrivateRemoveSpellcheckWordFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.removeSpellcheckWord",
                              LANGUAGESETTINGSPRIVATE_REMOVESPELLCHECKWORD)
 
@@ -250,9 +295,6 @@ class LanguageSettingsPrivateRemoveSpellcheckWordFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateRemoveSpellcheckWordFunction);
 };
 
 // Implements the languageSettingsPrivate.getTranslateTargetLanguage method.
@@ -260,6 +302,14 @@ class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetTranslateTargetLanguageFunction();
+
+  LanguageSettingsPrivateGetTranslateTargetLanguageFunction(
+      const LanguageSettingsPrivateGetTranslateTargetLanguageFunction&) =
+      delete;
+  LanguageSettingsPrivateGetTranslateTargetLanguageFunction& operator=(
+      const LanguageSettingsPrivateGetTranslateTargetLanguageFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.getTranslateTargetLanguage",
       LANGUAGESETTINGSPRIVATE_GETTRANSLATETARGETLANGUAGE)
@@ -269,10 +319,6 @@ class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateGetTranslateTargetLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.setTranslateTargetLanguage method.
@@ -280,6 +326,14 @@ class LanguageSettingsPrivateSetTranslateTargetLanguageFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateSetTranslateTargetLanguageFunction();
+
+  LanguageSettingsPrivateSetTranslateTargetLanguageFunction(
+      const LanguageSettingsPrivateSetTranslateTargetLanguageFunction&) =
+      delete;
+  LanguageSettingsPrivateSetTranslateTargetLanguageFunction& operator=(
+      const LanguageSettingsPrivateSetTranslateTargetLanguageFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION(
       "languageSettingsPrivate.setTranslateTargetLanguage",
       LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE)
@@ -289,10 +343,6 @@ class LanguageSettingsPrivateSetTranslateTargetLanguageFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateSetTranslateTargetLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.getInputMethodLists method.
@@ -300,6 +350,12 @@ class LanguageSettingsPrivateGetInputMethodListsFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetInputMethodListsFunction();
+
+  LanguageSettingsPrivateGetInputMethodListsFunction(
+      const LanguageSettingsPrivateGetInputMethodListsFunction&) = delete;
+  LanguageSettingsPrivateGetInputMethodListsFunction& operator=(
+      const LanguageSettingsPrivateGetInputMethodListsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.getInputMethodLists",
                              LANGUAGESETTINGSPRIVATE_GETINPUTMETHODLISTS)
 
@@ -308,15 +364,18 @@ class LanguageSettingsPrivateGetInputMethodListsFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateGetInputMethodListsFunction);
 };
 
 // Implements the languageSettingsPrivate.addInputMethod method.
 class LanguageSettingsPrivateAddInputMethodFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateAddInputMethodFunction();
+
+  LanguageSettingsPrivateAddInputMethodFunction(
+      const LanguageSettingsPrivateAddInputMethodFunction&) = delete;
+  LanguageSettingsPrivateAddInputMethodFunction& operator=(
+      const LanguageSettingsPrivateAddInputMethodFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.addInputMethod",
                              LANGUAGESETTINGSPRIVATE_ADDINPUTMETHOD)
 
@@ -325,9 +384,6 @@ class LanguageSettingsPrivateAddInputMethodFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateAddInputMethodFunction);
 };
 
 // Implements the languageSettingsPrivate.removeInputMethod method.
@@ -335,6 +391,12 @@ class LanguageSettingsPrivateRemoveInputMethodFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRemoveInputMethodFunction();
+
+  LanguageSettingsPrivateRemoveInputMethodFunction(
+      const LanguageSettingsPrivateRemoveInputMethodFunction&) = delete;
+  LanguageSettingsPrivateRemoveInputMethodFunction& operator=(
+      const LanguageSettingsPrivateRemoveInputMethodFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.removeInputMethod",
                              LANGUAGESETTINGSPRIVATE_REMOVEINPUTMETHOD)
 
@@ -343,9 +405,6 @@ class LanguageSettingsPrivateRemoveInputMethodFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateRemoveInputMethodFunction);
 };
 
 // Implements the languageSettingsPrivate.retryDownloadDictionary method.
@@ -353,6 +412,12 @@ class LanguageSettingsPrivateRetryDownloadDictionaryFunction
     : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRetryDownloadDictionaryFunction();
+
+  LanguageSettingsPrivateRetryDownloadDictionaryFunction(
+      const LanguageSettingsPrivateRetryDownloadDictionaryFunction&) = delete;
+  LanguageSettingsPrivateRetryDownloadDictionaryFunction& operator=(
+      const LanguageSettingsPrivateRetryDownloadDictionaryFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.retryDownloadDictionary",
                              LANGUAGESETTINGSPRIVATE_RETRYDOWNLOADDICTIONARY)
 
@@ -361,10 +426,6 @@ class LanguageSettingsPrivateRetryDownloadDictionaryFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      LanguageSettingsPrivateRetryDownloadDictionaryFunction);
 };
 
 }  // namespace extensions

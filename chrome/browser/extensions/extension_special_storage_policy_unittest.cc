@@ -45,6 +45,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
           expected_change_flags_(0) {
     }
 
+    PolicyChangeObserver(const PolicyChangeObserver&) = delete;
+    PolicyChangeObserver& operator=(const PolicyChangeObserver&) = delete;
+
     void OnGranted(const url::Origin& origin, int change_flags) override {
       EXPECT_EQ(expected_type_, NOTIFICATION_TYPE_GRANT);
       EXPECT_EQ(expected_origin_, origin.GetURL());
@@ -96,8 +99,6 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 
     GURL expected_origin_;
     int expected_change_flags_;
-
-    DISALLOW_COPY_AND_ASSIGN(PolicyChangeObserver);
   };
 
   void SetUp() override {

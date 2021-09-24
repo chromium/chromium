@@ -70,6 +70,9 @@ class ActivityLogPolicy {
   // cleaner to pass thread_id as a param of ReadData directly.
   explicit ActivityLogPolicy(Profile* profile);
 
+  ActivityLogPolicy(const ActivityLogPolicy&) = delete;
+  ActivityLogPolicy& operator=(const ActivityLogPolicy&) = delete;
+
   // Instead of a public destructor, ActivityLogPolicy objects have a Close()
   // method which will cause the object to be deleted (but may do so on another
   // thread or in a deferred fashion).
@@ -89,6 +92,10 @@ class ActivityLogPolicy {
   // these methods more convenient from within a policy, but they are public.
   class Util {
    public:
+    Util() = delete;
+    Util(const Util&) = delete;
+    Util& operator=(const Util&) = delete;
+
     // A collection of API calls, used to specify allowlists for argument
     // filtering.
     typedef std::set<std::pair<Action::ActionType, std::string> > ApiSet;
@@ -120,9 +127,6 @@ class ActivityLogPolicy {
                                           int days_ago,
                                           int64_t* early_bound,
                                           int64_t* late_bound);
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Util);
   };
 
  protected:
@@ -140,8 +144,6 @@ class ActivityLogPolicy {
   // to determine the date for "today" when when interpreting date ranges to
   // fetch.  This has no effect on batching of writes to the database.
   base::Clock* testing_clock_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityLogPolicy);
 };
 
 // A subclass of ActivityLogPolicy which is designed for policies that use

@@ -15,6 +15,10 @@ class WarningBadgeService;
 
 class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  WarningBadgeServiceFactory(const WarningBadgeServiceFactory&) = delete;
+  WarningBadgeServiceFactory& operator=(const WarningBadgeServiceFactory&) =
+      delete;
+
   static WarningBadgeService* GetForBrowserContext(
       content::BrowserContext* context);
   static WarningBadgeServiceFactory* GetInstance();
@@ -31,8 +35,6 @@ class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningBadgeServiceFactory);
 };
 
 }  // namespace extensions

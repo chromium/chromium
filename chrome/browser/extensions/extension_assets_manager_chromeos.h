@@ -26,6 +26,11 @@ namespace extensions {
 // between all users on the machine.
 class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
  public:
+  ExtensionAssetsManagerChromeOS(const ExtensionAssetsManagerChromeOS&) =
+      delete;
+  ExtensionAssetsManagerChromeOS& operator=(
+      const ExtensionAssetsManagerChromeOS&) = delete;
+
   static ExtensionAssetsManagerChromeOS* GetInstance();
 
   // A dictionary that maps shared extension IDs to version/paths/users.
@@ -123,8 +128,6 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
       const std::string& id,
       base::DictionaryValue* extension_info,
       std::multimap<std::string, base::FilePath>* live_extension_paths);
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerChromeOS);
 };
 
 }  // namespace extensions

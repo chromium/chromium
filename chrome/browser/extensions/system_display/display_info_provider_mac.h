@@ -14,13 +14,13 @@ class DisplayInfoProviderMac : public DisplayInfoProvider {
  public:
   DisplayInfoProviderMac();
 
+  DisplayInfoProviderMac(const DisplayInfoProviderMac&) = delete;
+  DisplayInfoProviderMac& operator=(const DisplayInfoProviderMac&) = delete;
+
   // DisplayInfoProvider implementation.
   void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
       api::system_display::DisplayUnitInfo* unit) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderMac);
 };
 
 }  // namespace extensions

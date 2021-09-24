@@ -75,6 +75,9 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
   explicit Blocklist(ExtensionPrefs* prefs);
 
+  Blocklist(const Blocklist&) = delete;
+  Blocklist& operator=(const Blocklist&) = delete;
+
   ~Blocklist() override;
 
   static Blocklist* Get(content::BrowserContext* context);
@@ -162,8 +165,6 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   // is a pair of [vector of string ids to check, response closure].
   std::list<std::pair<std::vector<std::string>, base::OnceClosure>>
       state_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(Blocklist);
 };
 
 }  // namespace extensions

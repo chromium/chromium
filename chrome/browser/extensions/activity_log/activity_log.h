@@ -54,6 +54,9 @@ class ActivityLog : public BrowserContextKeyedAPI,
     virtual void OnExtensionActivity(scoped_refptr<Action> activity) = 0;
   };
 
+  ActivityLog(const ActivityLog&) = delete;
+  ActivityLog& operator=(const ActivityLog&) = delete;
+
   static BrowserContextKeyedAPIFactory<ActivityLog>* GetFactoryInstance();
 
   // ActivityLog is a KeyedService, so don't instantiate it with
@@ -240,7 +243,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, NoSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, PrefSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, WatchdogSwitch);
-  DISALLOW_COPY_AND_ASSIGN(ActivityLog);
 };
 
 template <>

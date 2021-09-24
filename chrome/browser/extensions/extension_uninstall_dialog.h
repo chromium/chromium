@@ -73,6 +73,9 @@ class ExtensionUninstallDialog
   static std::unique_ptr<ExtensionUninstallDialog>
   CreateViews(Profile* profile, gfx::NativeWindow parent, Delegate* delegate);
 
+  ExtensionUninstallDialog(const ExtensionUninstallDialog&) = delete;
+  ExtensionUninstallDialog& operator=(const ExtensionUninstallDialog&) = delete;
+
   ~ExtensionUninstallDialog() override;
 
   // This is called to verify whether the uninstallation should proceed.
@@ -191,8 +194,6 @@ class ExtensionUninstallDialog
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUninstallDialog);
 };
 
 }  // namespace extensions

@@ -68,10 +68,19 @@ using testing::UnorderedElementsAreArray;
 
 class DeclarativeContentIsBookmarkedConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentIsBookmarkedConditionTrackerTest(
+      const DeclarativeContentIsBookmarkedConditionTrackerTest&) = delete;
+  DeclarativeContentIsBookmarkedConditionTrackerTest& operator=(
+      const DeclarativeContentIsBookmarkedConditionTrackerTest&) = delete;
+
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     std::set<content::WebContents*>& evaluation_requests() {
       return evaluation_requests_;
@@ -90,8 +99,6 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
 
    private:
     std::set<content::WebContents*> evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DeclarativeContentIsBookmarkedConditionTrackerTest() {
@@ -153,9 +160,6 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
       is_bookmarked_predicate_;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>
       is_not_bookmarked_predicate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentIsBookmarkedConditionTrackerTest);
 };
 
 

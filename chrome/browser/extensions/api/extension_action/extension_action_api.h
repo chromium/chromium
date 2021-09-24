@@ -56,6 +56,10 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   };
 
   explicit ExtensionActionAPI(content::BrowserContext* context);
+
+  ExtensionActionAPI(const ExtensionActionAPI&) = delete;
+  ExtensionActionAPI& operator=(const ExtensionActionAPI&) = delete;
+
   ~ExtensionActionAPI() override;
 
   // Convenience method to get the instance for a profile.
@@ -113,8 +117,6 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   content::BrowserContext* browser_context_;
 
   ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionAPI);
 };
 
 // Implementation of the browserAction and pageAction APIs.
@@ -461,6 +463,11 @@ class BrowserActionOpenPopupFunction : public ExtensionFunction,
                              BROWSERACTION_OPEN_POPUP)
   BrowserActionOpenPopupFunction();
 
+  BrowserActionOpenPopupFunction(const BrowserActionOpenPopupFunction&) =
+      delete;
+  BrowserActionOpenPopupFunction& operator=(
+      const BrowserActionOpenPopupFunction&) = delete;
+
  private:
   ~BrowserActionOpenPopupFunction() override;
 
@@ -478,8 +485,6 @@ class BrowserActionOpenPopupFunction : public ExtensionFunction,
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>
       host_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionOpenPopupFunction);
 };
 
 }  // namespace extensions

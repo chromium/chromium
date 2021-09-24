@@ -16,6 +16,10 @@ class Blocklist;
 class BlocklistFactory : public BrowserContextKeyedServiceFactory {
  public:
   static Blocklist* GetForBrowserContext(content::BrowserContext* context);
+
+  BlocklistFactory(const BlocklistFactory&) = delete;
+  BlocklistFactory& operator=(const BlocklistFactory&) = delete;
+
   static BlocklistFactory* GetInstance();
 
  private:
@@ -29,8 +33,6 @@ class BlocklistFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistFactory);
 };
 
 }  // namespace extensions

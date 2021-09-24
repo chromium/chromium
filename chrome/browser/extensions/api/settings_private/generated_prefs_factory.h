@@ -17,6 +17,9 @@ class GeneratedPrefs;
 // BrowserContextKeyedServiceFactory for GeneratedPrefs.
 class GeneratedPrefsFactory : public BrowserContextKeyedServiceFactory {
  public:
+  GeneratedPrefsFactory(const GeneratedPrefsFactory&) = delete;
+  GeneratedPrefsFactory& operator=(const GeneratedPrefsFactory&) = delete;
+
   static GeneratedPrefs* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
@@ -34,8 +37,6 @@ class GeneratedPrefsFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPrefsFactory);
 };
 
 }  // namespace settings_private

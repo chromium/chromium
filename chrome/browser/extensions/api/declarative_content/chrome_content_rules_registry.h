@@ -59,6 +59,10 @@ class ChromeContentRulesRegistry
                              RulesCacheDelegate* cache_delegate,
                              PredicateEvaluatorsFactory evaluators_factory);
 
+  ChromeContentRulesRegistry(const ChromeContentRulesRegistry&) = delete;
+  ChromeContentRulesRegistry& operator=(const ChromeContentRulesRegistry&) =
+      delete;
+
   // ContentRulesRegistry:
   void MonitorWebContentsForRuleEvaluation(
       content::WebContents* contents) override;
@@ -174,8 +178,6 @@ class ChromeContentRulesRegistry
   // Contains WebContents which require rule evaluation. Only used while
   // |evaluation_disposition_| is DEFER.
   std::set<content::WebContents*> evaluation_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentRulesRegistry);
 };
 
 }  // namespace extensions

@@ -338,6 +338,9 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
     profile_ = std::make_unique<TestingProfile>();
   }
 
+  MockProviderVisitor(const MockProviderVisitor&) = delete;
+  MockProviderVisitor& operator=(const MockProviderVisitor&) = delete;
+
   int Visit(const std::string& json_data) {
     return Visit(json_data, ManifestLocation::kExternalPref,
                  ManifestLocation::kExternalPrefDownload);
@@ -485,8 +488,6 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   ManifestLocation crx_location_;
   std::unique_ptr<base::DictionaryValue> prefs_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProviderVisitor);
 };
 
 // Mock provider that can simulate incremental update like
@@ -498,6 +499,10 @@ class MockUpdateProviderVisitor : public MockProviderVisitor {
   // and without an empty path using this parameter.
   explicit MockUpdateProviderVisitor(base::FilePath fake_base_path)
       : MockProviderVisitor(fake_base_path) {}
+
+  MockUpdateProviderVisitor(const MockUpdateProviderVisitor&) = delete;
+  MockUpdateProviderVisitor& operator=(const MockUpdateProviderVisitor&) =
+      delete;
 
   void VisitDueToUpdate(const std::string& json_data) {
     update_url_extension_ids_.clear();
@@ -548,12 +553,15 @@ class MockUpdateProviderVisitor : public MockProviderVisitor {
   std::set<std::string> update_url_extension_ids_;
   std::set<std::string> file_extension_ids_;
   std::set<std::string> removed_extension_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUpdateProviderVisitor);
 };
 
 struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
   MockExtensionRegistryObserver() = default;
+
+  MockExtensionRegistryObserver(const MockExtensionRegistryObserver&) = delete;
+  MockExtensionRegistryObserver& operator=(
+      const MockExtensionRegistryObserver&) = delete;
+
   ~MockExtensionRegistryObserver() override = default;
 
   // ExtensionRegistryObserver:
@@ -582,9 +590,6 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
   std::string last_extension_unloaded;
   std::string last_extension_installed;
   std::string last_extension_uninstalled;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionRegistryObserver);
 };
 
 class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
@@ -799,6 +804,10 @@ class PackExtensionTestClient : public PackExtensionJob::Client {
  public:
   PackExtensionTestClient(const base::FilePath& expected_crx_path,
                           const base::FilePath& expected_private_key_path);
+
+  PackExtensionTestClient(const PackExtensionTestClient&) = delete;
+  PackExtensionTestClient& operator=(const PackExtensionTestClient&) = delete;
+
   void OnPackSuccess(const base::FilePath& crx_path,
                      const base::FilePath& private_key_path) override;
   void OnPackFailure(const std::string& error_message,
@@ -807,7 +816,6 @@ class PackExtensionTestClient : public PackExtensionJob::Client {
  private:
   const base::FilePath expected_crx_path_;
   const base::FilePath expected_private_key_path_;
-  DISALLOW_COPY_AND_ASSIGN(PackExtensionTestClient);
 };
 
 PackExtensionTestClient::PackExtensionTestClient(

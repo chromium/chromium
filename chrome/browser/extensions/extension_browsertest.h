@@ -67,6 +67,9 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     kFromManifest,
   };
 
+  ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
+  ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
+
  protected:
   struct LoadOptions {
     // Allows the extension to run in incognito mode.
@@ -443,8 +446,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       verifier_format_override_;
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserTest);
 };
 
 }  // namespace extensions

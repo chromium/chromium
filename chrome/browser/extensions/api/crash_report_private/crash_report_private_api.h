@@ -15,6 +15,12 @@ namespace api {
 class CrashReportPrivateReportErrorFunction : public ExtensionFunction {
  public:
   CrashReportPrivateReportErrorFunction();
+
+  CrashReportPrivateReportErrorFunction(
+      const CrashReportPrivateReportErrorFunction&) = delete;
+  CrashReportPrivateReportErrorFunction& operator=(
+      const CrashReportPrivateReportErrorFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("crashReportPrivate.reportError",
                              CRASHREPORTPRIVATE_REPORTERROR)
 
@@ -24,8 +30,6 @@ class CrashReportPrivateReportErrorFunction : public ExtensionFunction {
 
  private:
   void OnReportComplete();
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateReportErrorFunction);
 };
 
 }  // namespace api

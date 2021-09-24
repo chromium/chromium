@@ -36,6 +36,9 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
  public:
   GetUpdateStatusApiTest() : fake_update_engine_client_(NULL) {}
 
+  GetUpdateStatusApiTest(const GetUpdateStatusApiTest&) = delete;
+  GetUpdateStatusApiTest& operator=(const GetUpdateStatusApiTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
     fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient;
@@ -49,9 +52,6 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
 
  protected:
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetUpdateStatusApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {

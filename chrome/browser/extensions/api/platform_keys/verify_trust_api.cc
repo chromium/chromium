@@ -60,10 +60,10 @@ class VerifyTrustAPI::IOPart {
   struct RequestState {
     RequestState() {}
 
-    std::unique_ptr<net::CertVerifier::Request> request;
+    RequestState(const RequestState&) = delete;
+    RequestState& operator=(const RequestState&) = delete;
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RequestState);
+    std::unique_ptr<net::CertVerifier::Request> request;
   };
 
   // Calls back |callback| with the result and no error.

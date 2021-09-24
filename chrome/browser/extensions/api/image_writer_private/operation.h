@@ -68,6 +68,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
             const std::string& device_path,
             const base::FilePath& download_folder);
 
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
+
   // Starts the operation.
   void Start();
 
@@ -245,8 +248,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Sequenced task runner where all I/O operation will be performed.
   // Most of the methods of this class run in this task runner.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Operation);
 };
 
 }  // namespace image_writer

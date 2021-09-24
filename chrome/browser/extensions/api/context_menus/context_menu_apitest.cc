@@ -125,6 +125,11 @@ class ExtensionContextMenuVisibilityApiTest
   ExtensionContextMenuVisibilityApiTest()
       : top_level_model_(nullptr), menu_(nullptr), top_level_index_(-1) {}
 
+  ExtensionContextMenuVisibilityApiTest(
+      const ExtensionContextMenuVisibilityApiTest&) = delete;
+  ExtensionContextMenuVisibilityApiTest& operator=(
+      const ExtensionContextMenuVisibilityApiTest&) = delete;
+
   void SetUpTestExtension() {
     extension_ = LoadExtension(
         test_data_dir_.AppendASCII("context_menus/item_visibility/"));
@@ -216,8 +221,6 @@ class ExtensionContextMenuVisibilityApiTest
   const Extension* extension_;
   std::unique_ptr<TestRenderViewContextMenu> menu_;
   int top_level_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuVisibilityApiTest);
 };
 
 // Tests showing a single visible menu item in the top-level menu model, which

@@ -16,6 +16,13 @@ class EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction
  public:
   EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction();
 
+  EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction(
+      const EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction&) =
+      delete;
+  EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction& operator=(
+      const EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction&) =
+      delete;
+
  protected:
   ~EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction() override;
 
@@ -27,9 +34,6 @@ class EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction
       ENTERPRISE_HARDWAREPLATFORM_GETHARDWAREPLATFORMINFO)
 
   void OnHardwarePlatformInfo(base::SysInfo::HardwareInfo info);
-
-  DISALLOW_COPY_AND_ASSIGN(
-      EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction);
 };
 
 }  //  namespace extensions

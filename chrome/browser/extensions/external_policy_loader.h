@@ -38,6 +38,9 @@ class ExternalPolicyLoader : public ExternalLoader,
                        ExtensionManagement* settings,
                        InstallationType type);
 
+  ExternalPolicyLoader(const ExternalPolicyLoader&) = delete;
+  ExternalPolicyLoader& operator=(const ExternalPolicyLoader&) = delete;
+
   // ExtensionManagement::Observer implementation
   void OnExtensionManagementSettingsChanged() override;
 
@@ -57,8 +60,6 @@ class ExternalPolicyLoader : public ExternalLoader,
   Profile* profile_;
   ExtensionManagement* settings_;
   InstallationType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyLoader);
 };
 
 }  // namespace extensions

@@ -88,6 +88,10 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
                             const std::string& frame_name)
       : WebContentsObserver(web_contents), frame_name_(frame_name) {}
 
+  NamedFrameCreatedObserver(const NamedFrameCreatedObserver&) = delete;
+  NamedFrameCreatedObserver& operator=(const NamedFrameCreatedObserver&) =
+      delete;
+
   content::RenderFrameHost* Wait() {
     if (!frame_) {
       run_loop_.Run();
@@ -109,8 +113,6 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   content::RenderFrameHost* frame_ = nullptr;
   std::string frame_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedFrameCreatedObserver);
 };
 
 bool ValidatePageElement(content::RenderFrameHost* frame,

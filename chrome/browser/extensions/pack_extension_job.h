@@ -38,6 +38,10 @@ class PackExtensionJob {
                    const base::FilePath& root_directory,
                    const base::FilePath& key_file,
                    int run_flags);
+
+  PackExtensionJob(const PackExtensionJob&) = delete;
+  PackExtensionJob& operator=(const PackExtensionJob&) = delete;
+
   ~PackExtensionJob();
 
   // Starts the packing job.
@@ -69,8 +73,6 @@ class PackExtensionJob {
 
   // Used to check methods that run on |client_|'s sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PackExtensionJob);
 };
 
 }  // namespace extensions

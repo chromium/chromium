@@ -19,6 +19,11 @@ class ImageWriterPrivateBaseFunction : public ExtensionFunction {
  public:
   ImageWriterPrivateBaseFunction();
 
+  ImageWriterPrivateBaseFunction(const ImageWriterPrivateBaseFunction&) =
+      delete;
+  ImageWriterPrivateBaseFunction& operator=(
+      const ImageWriterPrivateBaseFunction&) = delete;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   virtual void OnComplete(const absl::optional<std::string>& error);
 #else
@@ -27,9 +32,6 @@ class ImageWriterPrivateBaseFunction : public ExtensionFunction {
 
  protected:
   ~ImageWriterPrivateBaseFunction() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterPrivateBaseFunction);
 };
 
 class ImageWriterPrivateWriteFromUrlFunction

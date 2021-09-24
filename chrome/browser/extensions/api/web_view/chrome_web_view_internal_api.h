@@ -23,14 +23,16 @@ class ChromeWebViewInternalContextMenusCreateFunction
                              WEBVIEWINTERNAL_CONTEXTMENUSCREATE)
   ChromeWebViewInternalContextMenusCreateFunction() {}
 
+  ChromeWebViewInternalContextMenusCreateFunction(
+      const ChromeWebViewInternalContextMenusCreateFunction&) = delete;
+  ChromeWebViewInternalContextMenusCreateFunction& operator=(
+      const ChromeWebViewInternalContextMenusCreateFunction&) = delete;
+
  protected:
   ~ChromeWebViewInternalContextMenusCreateFunction() override {}
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewInternalContextMenusCreateFunction);
 };
 
 class ChromeWebViewInternalContextMenusUpdateFunction
@@ -40,14 +42,16 @@ class ChromeWebViewInternalContextMenusUpdateFunction
                              WEBVIEWINTERNAL_CONTEXTMENUSUPDATE)
   ChromeWebViewInternalContextMenusUpdateFunction() {}
 
+  ChromeWebViewInternalContextMenusUpdateFunction(
+      const ChromeWebViewInternalContextMenusUpdateFunction&) = delete;
+  ChromeWebViewInternalContextMenusUpdateFunction& operator=(
+      const ChromeWebViewInternalContextMenusUpdateFunction&) = delete;
+
  protected:
   ~ChromeWebViewInternalContextMenusUpdateFunction() override {}
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewInternalContextMenusUpdateFunction);
 };
 
 class ChromeWebViewInternalContextMenusRemoveFunction
@@ -57,14 +61,16 @@ class ChromeWebViewInternalContextMenusRemoveFunction
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVE)
   ChromeWebViewInternalContextMenusRemoveFunction() {}
 
+  ChromeWebViewInternalContextMenusRemoveFunction(
+      const ChromeWebViewInternalContextMenusRemoveFunction&) = delete;
+  ChromeWebViewInternalContextMenusRemoveFunction& operator=(
+      const ChromeWebViewInternalContextMenusRemoveFunction&) = delete;
+
  protected:
   ~ChromeWebViewInternalContextMenusRemoveFunction() override {}
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewInternalContextMenusRemoveFunction);
 };
 
 class ChromeWebViewInternalContextMenusRemoveAllFunction
@@ -74,14 +80,16 @@ class ChromeWebViewInternalContextMenusRemoveAllFunction
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVEALL)
   ChromeWebViewInternalContextMenusRemoveAllFunction() {}
 
+  ChromeWebViewInternalContextMenusRemoveAllFunction(
+      const ChromeWebViewInternalContextMenusRemoveAllFunction&) = delete;
+  ChromeWebViewInternalContextMenusRemoveAllFunction& operator=(
+      const ChromeWebViewInternalContextMenusRemoveAllFunction&) = delete;
+
  protected:
   ~ChromeWebViewInternalContextMenusRemoveAllFunction() override {}
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewInternalContextMenusRemoveAllFunction);
 };
 
 class ChromeWebViewInternalShowContextMenuFunction
@@ -92,11 +100,14 @@ class ChromeWebViewInternalShowContextMenuFunction
 
   ChromeWebViewInternalShowContextMenuFunction();
 
+  ChromeWebViewInternalShowContextMenuFunction(
+      const ChromeWebViewInternalShowContextMenuFunction&) = delete;
+  ChromeWebViewInternalShowContextMenuFunction& operator=(
+      const ChromeWebViewInternalShowContextMenuFunction&) = delete;
+
  protected:
   ~ChromeWebViewInternalShowContextMenuFunction() override;
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewInternalShowContextMenuFunction);
 };
 
 }  // namespace extensions

@@ -45,6 +45,9 @@ class ChromeExtensionCookies
       public content_settings::Observer,
       public content_settings::CookieSettings::Observer {
  public:
+  ChromeExtensionCookies(const ChromeExtensionCookies&) = delete;
+  ChromeExtensionCookies& operator=(const ChromeExtensionCookies&) = delete;
+
   // Gets (or creates) an appropriate instance for given |context| from
   // ChromeExtensionCookiesFactory.
   static ChromeExtensionCookies* Get(content::BrowserContext* context);
@@ -139,8 +142,6 @@ class ChromeExtensionCookies
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>
       cookie_settings_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionCookies);
 };
 
 }  // namespace extensions

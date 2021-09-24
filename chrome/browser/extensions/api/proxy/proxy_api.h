@@ -49,6 +49,9 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
 // thread unless otherwise specified.
 class ProxyEventRouter {
  public:
+  ProxyEventRouter(const ProxyEventRouter&) = delete;
+  ProxyEventRouter& operator=(const ProxyEventRouter&) = delete;
+
   static ProxyEventRouter* GetInstance();
 
   void OnProxyError(EventRouterForwarder* event_router,
@@ -65,8 +68,6 @@ class ProxyEventRouter {
 
   ProxyEventRouter();
   ~ProxyEventRouter();
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyEventRouter);
 };
 
 }  // namespace extensions

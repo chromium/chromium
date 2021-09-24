@@ -40,6 +40,9 @@ class UnpackedInstaller
                                                      const base::FilePath&,
                                                      const std::string&)>;
 
+  UnpackedInstaller(const UnpackedInstaller&) = delete;
+  UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
+
   static scoped_refptr<UnpackedInstaller> Create(
       ExtensionService* extension_service);
 
@@ -181,8 +184,6 @@ class UnpackedInstaller
 
   // Specify an install param.
   absl::optional<std::string> install_param_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnpackedInstaller);
 };
 
 }  // namespace extensions

@@ -243,6 +243,10 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
  public:
   TestKeepAliveStateObserver() = default;
 
+  TestKeepAliveStateObserver(const TestKeepAliveStateObserver&) = delete;
+  TestKeepAliveStateObserver& operator=(const TestKeepAliveStateObserver&) =
+      delete;
+
   void WaitForNoKeepAlive() {
     ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
     base::ScopedObservation<KeepAliveRegistry, KeepAliveStateObserver> observer(
@@ -284,8 +288,6 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 #endif
 
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeepAliveStateObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {

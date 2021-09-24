@@ -168,6 +168,9 @@ static const ApiInfo kApiInfoTable[] = {
 // structure.  It inserts all data into a map on first lookup.
 class ApiInfoDatabase {
  public:
+  ApiInfoDatabase(const ApiInfoDatabase&) = delete;
+  ApiInfoDatabase& operator=(const ApiInfoDatabase&) = delete;
+
   static ApiInfoDatabase* GetInstance() {
     return base::Singleton<ApiInfoDatabase>::get();
   }
@@ -199,7 +202,6 @@ class ApiInfoDatabase {
   std::map<std::string, const ApiInfo*> api_database_;
 
   friend struct base::DefaultSingletonTraits<ApiInfoDatabase>;
-  DISALLOW_COPY_AND_ASSIGN(ApiInfoDatabase);
 };
 
 // Gets the URL for a given tab ID.  Helper method for ExtractUrls.  Returns

@@ -52,6 +52,9 @@ class ContentSettingsStore
 
   ContentSettingsStore();
 
+  ContentSettingsStore(const ContentSettingsStore&) = delete;
+  ContentSettingsStore& operator=(const ContentSettingsStore&) = delete;
+
   // //////////////////////////////////////////////////////////////////////////
 
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
@@ -148,8 +151,6 @@ class ContentSettingsStore
   base::ObserverList<Observer, false>::Unchecked observers_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsStore);
 };
 
 }  // namespace extensions

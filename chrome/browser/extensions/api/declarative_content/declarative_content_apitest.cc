@@ -121,6 +121,10 @@ class DeclarativeContentApiTest : public ExtensionApiTest {
  public:
   DeclarativeContentApiTest() {}
 
+  DeclarativeContentApiTest(const DeclarativeContentApiTest&) = delete;
+  DeclarativeContentApiTest& operator=(const DeclarativeContentApiTest&) =
+      delete;
+
  protected:
   enum IncognitoMode { SPANNING, SPLIT };
 
@@ -134,9 +138,6 @@ class DeclarativeContentApiTest : public ExtensionApiTest {
   void CheckBookmarkEvents(bool is_bookmarked);
 
   TestExtensionDir ext_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentApiTest);
 };
 
 void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,

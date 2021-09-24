@@ -15,6 +15,9 @@ class ErrorConsole;
 
 class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ErrorConsoleFactory(const ErrorConsoleFactory&) = delete;
+  ErrorConsoleFactory& operator=(const ErrorConsoleFactory&) = delete;
+
   static ErrorConsole* GetForBrowserContext(content::BrowserContext* context);
   static ErrorConsoleFactory* GetInstance();
 
@@ -29,8 +32,6 @@ class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorConsoleFactory);
 };
 
 }  // namespace extensions

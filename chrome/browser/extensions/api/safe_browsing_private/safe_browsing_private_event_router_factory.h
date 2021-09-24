@@ -19,6 +19,11 @@ class SafeBrowsingPrivateEventRouter;
 class SafeBrowsingPrivateEventRouterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  SafeBrowsingPrivateEventRouterFactory(
+      const SafeBrowsingPrivateEventRouterFactory&) = delete;
+  SafeBrowsingPrivateEventRouterFactory& operator=(
+      const SafeBrowsingPrivateEventRouterFactory&) = delete;
+
   // Returns the SafeBrowsingPrivateEventRouter for |profile|, creating it if
   // it is not yet created.
   static SafeBrowsingPrivateEventRouter* GetForProfile(
@@ -44,8 +49,6 @@ class SafeBrowsingPrivateEventRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouterFactory);
 };
 
 }  // namespace extensions

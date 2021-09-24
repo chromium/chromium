@@ -60,14 +60,17 @@ class EnterpriseReportingPrivateGetDeviceIdTest : public ExtensionApiUnittest {
  public:
   EnterpriseReportingPrivateGetDeviceIdTest() = default;
 
+  EnterpriseReportingPrivateGetDeviceIdTest(
+      const EnterpriseReportingPrivateGetDeviceIdTest&) = delete;
+  EnterpriseReportingPrivateGetDeviceIdTest& operator=(
+      const EnterpriseReportingPrivateGetDeviceIdTest&) = delete;
+
   void SetClientId(const std::string& client_id) {
     storage_.SetClientId(client_id);
   }
 
  private:
   policy::FakeBrowserDMTokenStorage storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseReportingPrivateGetDeviceIdTest);
 };
 
 TEST_F(EnterpriseReportingPrivateGetDeviceIdTest, GetDeviceId) {
@@ -95,6 +98,11 @@ class EnterpriseReportingPrivateDeviceDataFunctionsTest
  public:
   EnterpriseReportingPrivateDeviceDataFunctionsTest() = default;
 
+  EnterpriseReportingPrivateDeviceDataFunctionsTest(
+      const EnterpriseReportingPrivateDeviceDataFunctionsTest&) = delete;
+  EnterpriseReportingPrivateDeviceDataFunctionsTest& operator=(
+      const EnterpriseReportingPrivateDeviceDataFunctionsTest&) = delete;
+
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
     ASSERT_TRUE(fake_appdata_dir_.CreateUniqueTempDir());
@@ -103,8 +111,6 @@ class EnterpriseReportingPrivateDeviceDataFunctionsTest
 
  private:
   base::ScopedTempDir fake_appdata_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseReportingPrivateDeviceDataFunctionsTest);
 };
 
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
@@ -233,6 +239,13 @@ class EnterpriseReportingPrivateGetPersistentSecretFunctionTest
  public:
   EnterpriseReportingPrivateGetPersistentSecretFunctionTest() = default;
 
+  EnterpriseReportingPrivateGetPersistentSecretFunctionTest(
+      const EnterpriseReportingPrivateGetPersistentSecretFunctionTest&) =
+      delete;
+  EnterpriseReportingPrivateGetPersistentSecretFunctionTest& operator=(
+      const EnterpriseReportingPrivateGetPersistentSecretFunctionTest&) =
+      delete;
+
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
 #if defined(OS_WIN)
@@ -245,9 +258,6 @@ class EnterpriseReportingPrivateGetPersistentSecretFunctionTest
 #if defined(OS_WIN)
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(
-      EnterpriseReportingPrivateGetPersistentSecretFunctionTest);
 };
 
 TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {

@@ -139,6 +139,10 @@ class FakeExtensionMessageBubble {
         action_(BUBBLE_ACTION_CLICK_ACTION_BUTTON),
         controller_(nullptr) {}
 
+  FakeExtensionMessageBubble(const FakeExtensionMessageBubble&) = delete;
+  FakeExtensionMessageBubble& operator=(const FakeExtensionMessageBubble&) =
+      delete;
+
   void set_action_on_show(ExtensionBubbleAction action) {
     action_ = action;
   }
@@ -185,8 +189,6 @@ class FakeExtensionMessageBubble {
   bool is_closed_;
   ExtensionBubbleAction action_;
   ExtensionMessageBubbleController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtensionMessageBubble);
 };
 
 class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {

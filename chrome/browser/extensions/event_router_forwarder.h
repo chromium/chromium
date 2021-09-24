@@ -31,6 +31,9 @@ class EventRouterForwarder
  public:
   EventRouterForwarder();
 
+  EventRouterForwarder(const EventRouterForwarder&) = delete;
+  EventRouterForwarder& operator=(const EventRouterForwarder&) = delete;
+
   // Calls
   //   DispatchEventToRenderers(event_name, event_args, profile, event_url)
   // on all (original) profiles' EventRouters.
@@ -82,8 +85,6 @@ class EventRouterForwarder
 
  private:
   friend class base::RefCountedThreadSafe<EventRouterForwarder>;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRouterForwarder);
 };
 
 }  // namespace extensions

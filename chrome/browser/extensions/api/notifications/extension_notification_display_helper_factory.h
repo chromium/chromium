@@ -18,6 +18,11 @@ class ExtensionNotificationDisplayHelper;
 class ExtensionNotificationDisplayHelperFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionNotificationDisplayHelperFactory(
+      const ExtensionNotificationDisplayHelperFactory&) = delete;
+  ExtensionNotificationDisplayHelperFactory& operator=(
+      const ExtensionNotificationDisplayHelperFactory&) = delete;
+
   // Get the singleton instance of the factory.
   static ExtensionNotificationDisplayHelperFactory* GetInstance();
 
@@ -37,8 +42,6 @@ class ExtensionNotificationDisplayHelperFactory
 
   ExtensionNotificationDisplayHelperFactory();
   ~ExtensionNotificationDisplayHelperFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNotificationDisplayHelperFactory);
 };
 
 }  // namespace extensions

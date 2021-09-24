@@ -46,6 +46,11 @@ const char kAllHostsPermission[] = "*://*/*";
 // ExtensionActionRunner correctly interfaces in the system) is done in the
 // ExtensionActionRunnerBrowserTests.
 class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
+ public:
+  ExtensionActionRunnerUnitTest(const ExtensionActionRunnerUnitTest&) = delete;
+  ExtensionActionRunnerUnitTest& operator=(
+      const ExtensionActionRunnerUnitTest&) = delete;
+
  protected:
   ExtensionActionRunnerUnitTest();
   ~ExtensionActionRunnerUnitTest() override;
@@ -87,8 +92,6 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   std::map<std::string, int> extension_executions_;
 
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionRunnerUnitTest);
 };
 
 ExtensionActionRunnerUnitTest::ExtensionActionRunnerUnitTest() = default;

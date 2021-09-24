@@ -128,6 +128,9 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
       ExtensionInstallPrompt(web_contents),
       proxy_(proxy) {}
 
+  MockInstallPrompt(const MockInstallPrompt&) = delete;
+  MockInstallPrompt& operator=(const MockInstallPrompt&) = delete;
+
   // Overriding some of the ExtensionInstallUI API.
   void OnInstallSuccess(scoped_refptr<const Extension> extension,
                         SkBitmap* icon) override {
@@ -141,8 +144,6 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
 
  private:
   MockPromptProxy* proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInstallPrompt);
 };
 
 MockPromptProxy::MockPromptProxy(

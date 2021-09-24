@@ -20,6 +20,11 @@ class SettingsPrivateDelegate;
 class SettingsPrivateDelegateFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  SettingsPrivateDelegateFactory(const SettingsPrivateDelegateFactory&) =
+      delete;
+  SettingsPrivateDelegateFactory& operator=(
+      const SettingsPrivateDelegateFactory&) = delete;
+
   static SettingsPrivateDelegate* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
@@ -36,8 +41,6 @@ class SettingsPrivateDelegateFactory
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
     content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateDelegateFactory);
 };
 
 }  // namespace extensions

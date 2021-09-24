@@ -300,6 +300,9 @@ class ExtensionInstallPrompt {
   // windows) is used if a new tab needs to be opened.
   ExtensionInstallPrompt(Profile* profile, gfx::NativeWindow native_window);
 
+  ExtensionInstallPrompt(const ExtensionInstallPrompt&) = delete;
+  ExtensionInstallPrompt& operator=(const ExtensionInstallPrompt&) = delete;
+
   virtual ~ExtensionInstallPrompt();
 
   extensions::ExtensionInstallUI* install_ui() const {
@@ -403,8 +406,6 @@ class ExtensionInstallPrompt {
   bool did_call_show_dialog_;
 
   base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPrompt);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_H_

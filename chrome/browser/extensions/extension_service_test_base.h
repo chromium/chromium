@@ -79,6 +79,9 @@ class ExtensionServiceTestBase : public testing::Test {
     ExtensionServiceInitParams(const ExtensionServiceInitParams& other);
   };
 
+  ExtensionServiceTestBase(const ExtensionServiceTestBase&) = delete;
+  ExtensionServiceTestBase& operator=(const ExtensionServiceTestBase&) = delete;
+
   // Public because parameterized test cases need it to be, or else the compiler
   // barfs.
   static void SetUpTestCase();  // faux-verride (static override).
@@ -226,8 +229,6 @@ class ExtensionServiceTestBase : public testing::Test {
   // An override that ignores CRX3 publisher signatures.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestBase);
 };
 
 }  // namespace extensions

@@ -277,6 +277,9 @@ class DeveloperPrivateAPI::WebContentsTracker
                      content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents), api_(api) {}
 
+  WebContentsTracker(const WebContentsTracker&) = delete;
+  WebContentsTracker& operator=(const WebContentsTracker&) = delete;
+
  private:
   ~WebContentsTracker() override = default;
 
@@ -287,8 +290,6 @@ class DeveloperPrivateAPI::WebContentsTracker
   }
 
   base::WeakPtr<DeveloperPrivateAPI> api_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTracker);
 };
 
 DeveloperPrivateAPI::WebContentsData::WebContentsData() = default;
