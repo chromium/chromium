@@ -48,10 +48,15 @@ class InputMethodManagerImpl : public InputMethodManager,
  public:
   class StateImpl : public InputMethodManager::State {
    public:
-    StateImpl(InputMethodManagerImpl* manager, Profile* profile);
+    StateImpl(InputMethodManagerImpl* manager,
+              Profile* profile,
+              const InputMethodDescriptor* initial_input_method = nullptr);
 
-    // Returns true if |input_method_id| is in |enabled_input_method_ids|.
+    // Returns true if |input_method_id| is in |enabled_input_method_ids_|.
     bool InputMethodIsEnabled(const std::string& input_method_id) const;
+
+    // TODO(nona): Support dynamical unloading.
+    void LoadNecessaryComponentExtensions();
 
     // InputMethodManager::State overrides.
     scoped_refptr<InputMethodManager::State> Clone() const override;
@@ -108,9 +113,6 @@ class InputMethodManagerImpl : public InputMethodManager,
 
     InputMethodDescriptor current_input_method;
 
-    // The enabled input method ids cache.
-    std::vector<std::string> enabled_input_method_ids;
-
     // All input methods that have been registered by InputMethodEngines.
     // The key is the input method ID.
     std::map<std::string, InputMethodDescriptor> available_input_methods;
@@ -152,6 +154,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodManagerImpl* const manager_;
 
     std::string last_used_input_method_id_;
+
+    std::vector<std::string> enabled_input_method_ids_;
 
     // The allowed keyboard layout input methods (e.g. by policy).
     std::vector<std::string> allowed_keyboard_layout_input_method_ids_;
@@ -262,10 +266,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Change system input method to the one specified in the active state.
   void ChangeInputMethodInternalFromActiveState(bool show_message,
                                                 bool notify_menu);
-
-  // Loads necessary component extensions.
-  // TODO(nona): Support dynamical unloading.
-  void LoadNecessaryComponentExtensions(StateImpl* state);
 
   // Starts or stops the system input method framework as needed.
   // (after list of enabled input methods has been updated).
