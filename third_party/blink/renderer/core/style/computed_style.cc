@@ -2230,6 +2230,14 @@ void ComputedStyle::ApplyTextDecorations(
       GetTextDecorationThickness(), TextUnderlineOffset()));
 }
 
+void ComputedStyle::ApplySvgTextDecorations() {
+  if (GetTextDecoration() == TextDecoration::kNone)
+    return;
+  AddAppliedTextDecoration(AppliedTextDecoration(
+      GetTextDecoration(), TextDecorationStyle(), FillPaint(), StrokePaint(),
+      GetTextDecorationThickness(), TextUnderlineOffset()));
+}
+
 void ComputedStyle::ClearAppliedTextDecorations() {
   SetHasSimpleUnderlineInternal(false);
 

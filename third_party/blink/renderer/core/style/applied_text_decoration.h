@@ -24,6 +24,12 @@ class CORE_EXPORT AppliedTextDecoration {
                         Color,
                         TextDecorationThickness,
                         Length);
+  AppliedTextDecoration(TextDecoration line,
+                        ETextDecorationStyle style,
+                        const SVGPaint& fill,
+                        const SVGPaint& stroke,
+                        TextDecorationThickness thickness,
+                        Length underline_offset);
   AppliedTextDecoration(const AppliedTextDecoration& other);
   ~AppliedTextDecoration();
   AppliedTextDecoration& operator=(const AppliedTextDecoration& other);

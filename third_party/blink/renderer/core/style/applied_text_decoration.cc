@@ -38,6 +38,19 @@ AppliedTextDecoration::AppliedTextDecoration(TextDecoration line,
       thickness_(thickness),
       underline_offset_(underline_offset) {}
 
+AppliedTextDecoration::AppliedTextDecoration(TextDecoration line,
+                                             ETextDecorationStyle style,
+                                             const SVGPaint& fill,
+                                             const SVGPaint& stroke,
+                                             TextDecorationThickness thickness,
+                                             Length underline_offset)
+
+    : lines_(static_cast<unsigned>(line)),
+      style_(static_cast<unsigned>(style)),
+      thickness_(thickness),
+      underline_offset_(underline_offset),
+      svg_paints_(std::make_unique<TextDecorationSvgPaints>(fill, stroke)) {}
+
 AppliedTextDecoration::AppliedTextDecoration(const AppliedTextDecoration& other)
     : lines_(other.lines_),
       style_(other.style_),
