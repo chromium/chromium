@@ -36,12 +36,6 @@ extern NSString* const kLastHTTPURLOpenTime;
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 
-// Indicates the timeout duration for the non-modal promo.
-extern const char kDefaultPromoNonModalTimeoutParam[];
-
-// Indicates if the instructions for the non-modal promo are enabled.
-extern const char kDefaultPromoNonModalInstructionsParam[];
-
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
@@ -72,12 +66,6 @@ bool IsInCTASwitchGroup();
 
 // Returns true if non modals default browser promos are enabled.
 bool NonModalPromosEnabled();
-
-// Returns the timeout for non modals.
-double NonModalPromosTimeout();
-
-// Returns true if instructions for non modals should be shown.
-bool NonModalPromosInstructionsEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.

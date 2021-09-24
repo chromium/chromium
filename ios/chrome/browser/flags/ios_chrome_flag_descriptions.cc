@@ -99,10 +99,6 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-const char kDefaultPromoNonModalName[] = "Default Browser Non-Modal Promo";
-const char kDefaultPromoNonModalDescription[] =
-    "When enabled non-modal default browser promos can be triggered.";
-
 const char kUseDefaultUserAgentInWebClientName[] =
     "[Refactoring] Let the client choose default mode";
 const char kUseDefaultUserAgentInWebClientDescription[] =

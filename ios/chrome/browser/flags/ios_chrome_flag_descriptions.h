@@ -92,10 +92,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-// Title and description for the flag to show non modal default browser promos.
-extern const char kDefaultPromoNonModalName[];
-extern const char kDefaultPromoNonModalDescription[];
-
 // Title and description for the flag to have the web client choosing the
 // default user agent.
 extern const char kUseDefaultUserAgentInWebClientName[];

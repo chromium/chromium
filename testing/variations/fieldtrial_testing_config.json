@@ -4044,53 +4044,6 @@
             ]
         }
     ],
-    "IOSDefaultBrowserNonModalPromoExperiment": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "ShortTimeout",
-                    "params": {
-                        "timeout": "15"
-                    },
-                    "enable_features": [
-                        "DefaultPromoNonModal"
-                    ]
-                },
-                {
-                    "name": "ShortTimeoutInstructions",
-                    "params": {
-                        "instructions_enabled": "true",
-                        "timeout": "15"
-                    },
-                    "enable_features": [
-                        "DefaultPromoNonModal"
-                    ]
-                },
-                {
-                    "name": "LongTimeout",
-                    "params": {
-                        "timeout": "45"
-                    },
-                    "enable_features": [
-                        "DefaultPromoNonModal"
-                    ]
-                },
-                {
-                    "name": "LongTimeoutInstructions",
-                    "params": {
-                        "instructions_enabled": "true",
-                        "timeout": "45"
-                    },
-                    "enable_features": [
-                        "DefaultPromoNonModal"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDiscoverNoticeCardAutoDismiss": [
         {
             "platforms": [

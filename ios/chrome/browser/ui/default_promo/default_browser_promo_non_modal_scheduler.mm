@@ -39,6 +39,9 @@ const int64_t kShowPromoPostShareWaitTime = 1;
 // Number of times to show the promo to a user.
 const int kPromoShownTimesLimit = 2;
 
+// Timeout before the promo is dismissed.
+const double kPromoTimeout = 45;
+
 bool PromoCanBeDisplayed() {
   return !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
          UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
@@ -191,17 +194,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   self.promoShownTime = base::TimeTicks();
   LogUserInteractionWithNonModalPromo();
 
-  if (NonModalPromosInstructionsEnabled()) {
-    id<ApplicationSettingsCommands> handler =
-        HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
-    [handler showDefaultBrowserSettingsFromViewController:nil];
-  } else {
-    NSURL* settingsURL =
-        [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-    [[UIApplication sharedApplication] openURL:settingsURL
-                                       options:{}
-                             completionHandler:nil];
-  }
+  NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  [[UIApplication sharedApplication] openURL:settingsURL
+                                     options:@{}
+                           completionHandler:nil];
 }
 
 - (void)logUserDismissedPromo {
@@ -404,8 +400,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   __weak __typeof(self) weakSelf = self;
   _dismissPromoTimer = std::make_unique<base::OneShotTimer>();
   _dismissPromoTimer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(NonModalPromosTimeout()),
-      base::BindOnce(^{
+      FROM_HERE, base::TimeDelta::FromSeconds(kPromoTimeout), base::BindOnce(^{
         [weakSelf dismissPromoTimerFinished];
       }));
 }

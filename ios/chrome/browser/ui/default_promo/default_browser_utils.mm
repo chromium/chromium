@@ -133,10 +133,6 @@ NSDate* MostRecentDateForType(DefaultPromoType type) {
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 
-const char kDefaultPromoNonModalTimeoutParam[] = "timeout";
-
-const char kDefaultPromoNonModalInstructionsParam[] = "instructions_enabled";
-
 const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
     "show_remind_me_later";
 
@@ -192,18 +188,7 @@ bool IsInModifiedStringsGroup() {
 
 bool NonModalPromosEnabled() {
   // Default browser isn't enabled until iOS 14.0.1, regardless of flag state.
-  return base::ios::IsRunningOnOrLater(14, 0, 1) &&
-         base::FeatureList::IsEnabled(kDefaultPromoNonModal);
-}
-
-double NonModalPromosTimeout() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kDefaultPromoNonModal, kDefaultPromoNonModalTimeoutParam, 15);
-}
-
-bool NonModalPromosInstructionsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoNonModal, kDefaultPromoNonModalInstructionsParam, false);
+  return base::ios::IsRunningOnOrLater(14, 0, 1);
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {

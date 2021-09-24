@@ -58,12 +58,6 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 @implementation NonModalEGTest
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kDefaultPromoNonModal);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];

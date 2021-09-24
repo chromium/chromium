@@ -48,13 +48,6 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
   DefaultBrowserPromoNonModalSchedulerTest()
       : web_state_list_(&web_state_list_delegate_) {}
   void SetUp() override {
-    // Turn on instructions because that is easier to unittest.
-    const std::map<std::string, std::string> feature_params = {
-        {"instructions_enabled", "true"},
-    };
-    feature_list_.InitAndEnableFeatureWithParameters(kDefaultPromoNonModal,
-                                                     feature_params);
-
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
         test_cbs_builder.Build();
@@ -88,7 +81,16 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
     scheduler_ = [[DefaultBrowserPromoNonModalScheduler alloc] init];
     scheduler_.browser = browser_.get();
     scheduler_.dispatcher = browser_->GetCommandDispatcher();
+
+    // Stub application so the settings panel doesn't actually open.
+    application_ = OCMClassMock([UIApplication class]);
+    OCMStub([application_ sharedApplication]).andReturn(application_);
   }
+
+  ~DefaultBrowserPromoNonModalSchedulerTest() override {
+    [application_ stopMocking];
+  }
+
   void TearDown() override {
     ClearUserDefaults();
     OverlayPresenter::FromBrowser(browser_.get(),
@@ -119,6 +121,7 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
   DefaultBrowserPromoNonModalScheduler* scheduler_;
+  id application_ = nil;
 };
 
 // Tests that the omnibox paste event triggers the promo to show.
@@ -221,7 +224,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
   // promo.
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:YES];
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
   [promo_commands_handler_ verify];
 
   // Check that NSUserDefaults has been updated.
@@ -248,15 +251,13 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
 
   [promo_commands_handler_ verify];
 
-  id settings_commands_handler =
-      OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:settings_commands_handler
-                   forProtocol:@protocol(ApplicationSettingsCommands)];
-  [[settings_commands_handler expect]
-      showDefaultBrowserSettingsFromViewController:nil];
+  [[application_ expect]
+                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                options:@{}
+      completionHandler:nil];
   [scheduler_ logUserPerformedPromoAction];
-  [settings_commands_handler verify];
+
+  [application_ verify];
 
   // Check that NSUserDefaults has been updated.
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
