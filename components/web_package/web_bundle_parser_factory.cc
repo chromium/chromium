@@ -69,8 +69,11 @@ void WebBundleParserFactory::GetParserForFile(
 void WebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
     mojo::PendingRemote<mojom::BundleDataSource> data_source) {
+  // TODO(crbug.com/1247939): WebBundleParserFactory doesn't support |base_url|.
+  // For features::kWebBundlesFromNetwork should support |base_url|.
   auto parser = std::make_unique<WebBundleParser>(std::move(receiver),
-                                                  std::move(data_source));
+                                                  std::move(data_source),
+                                                  /*base_url=*/GURL());
 
   // |parser| will be destructed on remote mojo ends' disconnection.
   parser.release();

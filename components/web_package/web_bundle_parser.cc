@@ -278,11 +278,13 @@ class InputReader {
   DISALLOW_COPY_AND_ASSIGN(InputReader);
 };
 
-GURL ParseExchangeURL(base::StringPiece str) {
+GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
+  DCHECK(base_url.is_empty() || base_url.is_valid());
+
   if (!base::IsStringUTF8(str))
     return GURL();
 
-  GURL url(str);
+  GURL url = base_url.is_valid() ? base_url.Resolve(str) : GURL(str);
   if (!url.is_valid())
     return GURL();
 
@@ -318,8 +320,12 @@ class WebBundleParser::MetadataParser
     : WebBundleParser::SharedBundleDataSource::Observer {
  public:
   MetadataParser(scoped_refptr<SharedBundleDataSource> data_source,
+                 const GURL& base_url,
                  ParseMetadataCallback callback)
-      : data_source_(data_source), callback_(std::move(callback)) {
+      : data_source_(data_source),
+        base_url_(base_url),
+        callback_(std::move(callback)) {
+    DCHECK(base_url_.is_empty() || base_url_.is_valid());
     data_source_->AddObserver(this);
   }
 
@@ -455,7 +461,7 @@ class WebBundleParser::MetadataParser
 
     // TODO(crbug.com/966753): Revisit URL requirements here once
     // https://github.com/WICG/webpackage/issues/469 is resolved.
-    GURL primary_url = ParseExchangeURL(*primary_url_string);
+    GURL primary_url = ParseExchangeURL(*primary_url_string, base_url_);
     if (!primary_url.is_valid()) {
       RunErrorCallbackAndDestroy("Cannot parse primary URL.");
       return;
@@ -698,7 +704,7 @@ class WebBundleParser::MetadataParser
       const std::string& url = item.first.GetString();
       const cbor::Value::ArrayValue& responses_array = item.second.GetArray();
 
-      GURL parsed_url = ParseExchangeURL(url);
+      GURL parsed_url = ParseExchangeURL(url, base_url_);
 
       if (!parsed_url.is_valid()) {
         RunErrorCallbackAndDestroy("Index section: exchange URL is not valid.");
@@ -792,7 +798,7 @@ class WebBundleParser::MetadataParser
       RunErrorCallbackAndDestroy("Manifest section must be a string.");
       return false;
     }
-    GURL parsed_url = ParseExchangeURL(section_value.GetString());
+    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
 
     if (!parsed_url.is_valid()) {
       RunErrorCallbackAndDestroy("Manifest URL is not a valid exchange URL.");
@@ -945,7 +951,8 @@ class WebBundleParser::MetadataParser
       RunErrorCallbackAndDestroy("Primary section must be a string.");
       return false;
     }
-    GURL parsed_url = ParseExchangeURL(section_value.GetString());
+
+    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
 
     if (!parsed_url.is_valid()) {
       RunErrorCallbackAndDestroy("Primary URL is not a valid exchange URL.");
@@ -1020,6 +1027,7 @@ class WebBundleParser::MetadataParser
     }
     // TODO(crbug.com/966753): Revisit this once requirements for validity URL
     // are speced.
+    // TODO(crbug.com/1247939): Consider supporting relative validity URL.
     GURL validity_url(validity_url_value->GetString());
     if (!validity_url.is_valid()) {
       RunErrorCallbackAndDestroy("Cannot parse validity-url.");
@@ -1070,7 +1078,9 @@ class WebBundleParser::MetadataParser
       const std::string& url = item.first.GetString();
       const cbor::Value::ArrayValue& value_array = item.second.GetArray();
 
-      GURL parsed_url = ParseExchangeURL(url);
+      // TODO(crbug.com/1247939): Consider supporting relative URL in the
+      // signature section.
+      GURL parsed_url = ParseExchangeURL(url, /*base_url=*/GURL());
       if (!parsed_url.is_valid()) {
         RunErrorCallbackAndDestroy("subset-hashes: exchange URL is not valid.");
         return nullptr;
@@ -1141,6 +1151,7 @@ class WebBundleParser::MetadataParser
   }
 
   scoped_refptr<SharedBundleDataSource> data_source_;
+  const GURL base_url_;
   ParseMetadataCallback callback_;
   GURL primary_url_;
   SectionOffsets section_offsets_;
@@ -1354,10 +1365,13 @@ void WebBundleParser::SharedBundleDataSource::Read(
 
 WebBundleParser::WebBundleParser(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    mojo::PendingRemote<mojom::BundleDataSource> data_source)
+    mojo::PendingRemote<mojom::BundleDataSource> data_source,
+    const GURL& base_url)
     : receiver_(this, std::move(receiver)),
-      data_source_(base::MakeRefCounted<SharedBundleDataSource>(
-          std::move(data_source))) {
+      data_source_(
+          base::MakeRefCounted<SharedBundleDataSource>(std::move(data_source))),
+      base_url_(base_url) {
+  DCHECK(base_url_.is_empty() || base_url_.is_valid());
   receiver_.set_disconnect_handler(base::BindOnce(
       &base::DeletePointer<WebBundleParser>, base::Unretained(this)));
 }
@@ -1366,7 +1380,7 @@ WebBundleParser::~WebBundleParser() = default;
 
 void WebBundleParser::ParseMetadata(ParseMetadataCallback callback) {
   MetadataParser* parser =
-      new MetadataParser(data_source_, std::move(callback));
+      new MetadataParser(data_source_, base_url_, std::move(callback));
   parser->Start();
 }
 

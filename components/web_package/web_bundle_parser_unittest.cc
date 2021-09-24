@@ -73,13 +73,14 @@ class TestDataSource : public mojom::BundleDataSource {
 using ParseBundleResult =
     std::pair<mojom::BundleMetadataPtr, mojom::BundleMetadataParseErrorPtr>;
 
-ParseBundleResult ParseBundle(TestDataSource* data_source) {
+ParseBundleResult ParseBundle(TestDataSource* data_source,
+                              const GURL& base_url = GURL()) {
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
   mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
   WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                              std::move(source_remote));
+                              std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
   base::RunLoop run_loop;
@@ -121,13 +122,14 @@ mojom::BundleResponseLocationPtr FindResponse(
 
 mojom::BundleResponsePtr ParseResponse(
     TestDataSource* data_source,
-    const mojom::BundleResponseLocationPtr& location) {
+    const mojom::BundleResponseLocationPtr& location,
+    const GURL& base_url = GURL()) {
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
   mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
   WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
-                              std::move(source_remote));
+                              std::move(source_remote), base_url);
   mojom::WebBundleParser& parser = parser_impl;
 
   base::RunLoop run_loop;
@@ -797,6 +799,37 @@ TEST_F(WebBundleParserTest, B2BundleNoPrimaryUrlSingleEntry) {
   EXPECT_TRUE(metadata->primary_url.is_empty());
 }
 
+TEST_F(WebBundleParserTest, RelativeURL) {
+  constexpr BundleVersion kVersions[] = {BundleVersion::kB1,
+                                         BundleVersion::kB2};
+  for (const auto& version : kVersions) {
+    test::WebBundleBuilder builder("path/to/primary_url", "path/to/manifest",
+                                   version);
+    builder.AddExchange("path/to/file.txt",
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "payload");
+    TestDataSource data_source(builder.CreateBundle());
+
+    const GURL base_url("https://test.example.com/dir/test.wbn");
+    mojom::BundleMetadataPtr metadata =
+        ParseBundle(&data_source, base_url).first;
+    EXPECT_EQ(metadata->primary_url,
+              "https://test.example.com/dir/path/to/primary_url");
+    EXPECT_EQ(metadata->manifest_url,
+              "https://test.example.com/dir/path/to/manifest");
+    ASSERT_TRUE(metadata);
+    ASSERT_EQ(metadata->requests.size(), 1u);
+    auto location = FindResponse(
+        metadata, GURL("https://test.example.com/dir/path/to/file.txt"));
+    ASSERT_TRUE(location);
+    auto response = ParseResponse(&data_source, location, base_url);
+    ASSERT_TRUE(response);
+    EXPECT_EQ(response->response_code, 200);
+    EXPECT_EQ(response->response_headers.size(), 1u);
+    EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+    EXPECT_EQ(data_source.GetPayload(response), "payload");
+  }
+}
 // TODO(crbug.com/969596): Add a test case that loads a wbn file with variants,
 // once gen-bundle supports variants.
 

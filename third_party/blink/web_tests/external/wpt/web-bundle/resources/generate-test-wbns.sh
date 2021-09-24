@@ -95,3 +95,9 @@ gen-bundle \
   -har non-utf8-query-encoding.har \
   -primaryURL $wpt_test_origin/web-bundle/resources/wbn/static-element/resources/script.js?x=%A4%A2 \
   -o wbn/non-utf8-query-encoding.wbn
+
+gen-bundle \
+  -version b2 \
+  -har relative-url.har \
+  -o wbn/relative-url.wbn
+

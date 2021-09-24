@@ -11,13 +11,15 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace web_package {
 
 class WebBundleParser : public mojom::WebBundleParser {
  public:
   WebBundleParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-                  mojo::PendingRemote<mojom::BundleDataSource> data_source);
+                  mojo::PendingRemote<mojom::BundleDataSource> data_source,
+                  const GURL& base_url);
 
   WebBundleParser(const WebBundleParser&) = delete;
   WebBundleParser& operator=(const WebBundleParser&) = delete;
@@ -64,6 +66,7 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   mojo::Receiver<mojom::WebBundleParser> receiver_;
   scoped_refptr<SharedBundleDataSource> data_source_;
+  const GURL base_url_;
 };
 
 }  // namespace web_package
