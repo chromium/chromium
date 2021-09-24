@@ -1962,7 +1962,7 @@
     },
     {
       name: "ScriptElementSupports",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollbarGutter",
