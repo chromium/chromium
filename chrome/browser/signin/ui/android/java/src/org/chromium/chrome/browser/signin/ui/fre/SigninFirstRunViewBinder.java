@@ -74,11 +74,12 @@ class SigninFirstRunViewBinder {
                     .setVisibility(model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) == null
                                     ? View.GONE
                                     : View.VISIBLE);
+            final boolean isSelectedAccountSupervised =
+                    model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.findViewById(R.id.signin_fre_dismiss_button)
-                    .setVisibility(
-                            model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
-                                    ? View.GONE
-                                    : View.VISIBLE);
+                    .setVisibility(isSelectedAccountSupervised ? View.GONE : View.VISIBLE);
+            view.findViewById(R.id.signin_fre_selected_account_expand_icon)
+                    .setVisibility(isSelectedAccountSupervised ? View.INVISIBLE : View.VISIBLE);
         } else {
             view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.GONE);
             view.findViewById(R.id.signin_fre_dismiss_button).setVisibility(View.GONE);

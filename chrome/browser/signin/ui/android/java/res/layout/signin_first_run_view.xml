@@ -71,6 +71,7 @@
             <include layout="@layout/account_row" />
 
             <ImageView
+                android:id="@+id/signin_fre_selected_account_expand_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"

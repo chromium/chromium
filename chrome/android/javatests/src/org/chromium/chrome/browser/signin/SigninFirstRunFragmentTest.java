@@ -443,6 +443,7 @@ public class SigninFirstRunFragmentTest {
         if (fullName != null) {
             onView(withText(fullName)).check(matches(isDisplayed()));
         }
+        onView(withId(R.id.signin_fre_selected_account_expand_icon)).check(matches(isDisplayed()));
         final String continueAsText = mFragment.getString(
                 R.string.signin_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
@@ -465,6 +466,8 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));
         onView(withText(FULL_NAME1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_selected_account_expand_icon))
+                .check(matches(not(isDisplayed())));
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
                 R.string.signin_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).check(matches(not(isDisplayed())));
@@ -481,6 +484,8 @@ public class SigninFirstRunFragmentTest {
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
         onView(withText(CHILD_EMAIL)).check(matches(isDisplayed()));
         onView(withText(CHILD_FULL_NAME)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_selected_account_expand_icon))
+                .check(matches(not(isDisplayed())));
         final String continueAsText =
                 mFragment.getString(R.string.signin_promo_continue_as, CHILD_FULL_NAME);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
