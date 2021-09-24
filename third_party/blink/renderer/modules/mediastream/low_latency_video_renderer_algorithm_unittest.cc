@@ -17,6 +17,11 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
         current_render_time_(base::TimeTicks() + base::TimeDelta::FromDays(1)) {
   }
 
+  LowLatencyVideoRendererAlgorithmTest(
+      const LowLatencyVideoRendererAlgorithmTest&) = delete;
+  LowLatencyVideoRendererAlgorithmTest& operator=(
+      const LowLatencyVideoRendererAlgorithmTest&) = delete;
+
   ~LowLatencyVideoRendererAlgorithmTest() override = default;
 
   scoped_refptr<media::VideoFrame> CreateFrame(
@@ -83,9 +88,6 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
   media::VideoFramePool frame_pool_;
   LowLatencyVideoRendererAlgorithm algorithm_;
   base::TimeTicks current_render_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LowLatencyVideoRendererAlgorithmTest);
 };
 
 TEST_F(LowLatencyVideoRendererAlgorithmTest, Empty) {

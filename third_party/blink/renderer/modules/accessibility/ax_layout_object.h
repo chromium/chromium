@@ -44,6 +44,10 @@ class Node;
 class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  public:
   AXLayoutObject(LayoutObject*, AXObjectCacheImpl&);
+
+  AXLayoutObject(const AXLayoutObject&) = delete;
+  AXLayoutObject& operator=(const AXLayoutObject&) = delete;
+
   ~AXLayoutObject() override;
   void Trace(Visitor*) const override;
 
@@ -140,8 +144,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   LayoutRect ComputeElementRect() const;
   bool IsPlaceholder() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXLayoutObject);
 };
 
 template <>

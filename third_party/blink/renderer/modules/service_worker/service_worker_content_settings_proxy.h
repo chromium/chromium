@@ -23,6 +23,12 @@ class ServiceWorkerContentSettingsProxy final
  public:
   explicit ServiceWorkerContentSettingsProxy(
       mojo::PendingRemote<mojom::blink::WorkerContentSettingsProxy> host_info);
+
+  ServiceWorkerContentSettingsProxy(const ServiceWorkerContentSettingsProxy&) =
+      delete;
+  ServiceWorkerContentSettingsProxy& operator=(
+      const ServiceWorkerContentSettingsProxy&) = delete;
+
   ~ServiceWorkerContentSettingsProxy() override;
 
   void SetSecurityOrigin(scoped_refptr<const blink::SecurityOrigin>);
@@ -41,8 +47,6 @@ class ServiceWorkerContentSettingsProxy final
   // local storage on the service worker thread when GetService() is called for
   // the first time.
   mojo::PendingRemote<mojom::blink::WorkerContentSettingsProxy> host_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContentSettingsProxy);
 };
 
 }  // namespace blink

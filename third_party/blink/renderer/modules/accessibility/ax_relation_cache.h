@@ -20,6 +20,10 @@ class AXRelationCache {
 
  public:
   explicit AXRelationCache(AXObjectCacheImpl*);
+
+  AXRelationCache(const AXRelationCache&) = delete;
+  AXRelationCache& operator=(const AXRelationCache&) = delete;
+
   virtual ~AXRelationCache();
 
   //
@@ -178,8 +182,6 @@ class AXRelationCache {
   // Do an initial scan of the document to find any relationships.
   // We'll catch any subsequent ones when attributes change.
   void DoInitialDocumentScan();
-
-  DISALLOW_COPY_AND_ASSIGN(AXRelationCache);
 };
 
 }  // namespace blink

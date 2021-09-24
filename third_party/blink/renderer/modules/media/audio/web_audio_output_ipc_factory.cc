@@ -28,6 +28,10 @@ class WebAudioOutputIPCFactory::Impl {
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : io_task_runner_(std::move(io_task_runner)) {}
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() { DCHECK(factory_remotes_.IsEmpty()); }
 
   mojom::blink::RendererAudioOutputStreamFactory* GetRemoteFactory(
@@ -44,9 +48,6 @@ class WebAudioOutputIPCFactory::Impl {
   // Maps frame id to the corresponding factory.
   StreamFactoryMap factory_remotes_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 // static

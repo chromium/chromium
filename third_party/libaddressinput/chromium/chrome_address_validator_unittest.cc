@@ -850,15 +850,15 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
                            std::move(storage),
                            load_rules_listener) {}
 
+    TestAddressValidator(const TestAddressValidator&) = delete;
+    TestAddressValidator& operator=(const TestAddressValidator&) = delete;
+
     virtual ~TestAddressValidator() {}
 
    protected:
     base::TimeDelta GetBaseRetryPeriod() const override {
       return base::TimeDelta::FromSeconds(0);
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestAddressValidator);
   };
 
   // A source that always fails |failures_number| times before downloading
@@ -867,6 +867,10 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
    public:
     FailingSource()
         : failures_number_(0), attempts_number_(0), actual_source_(true) {}
+
+    FailingSource(const FailingSource&) = delete;
+    FailingSource& operator=(const FailingSource&) = delete;
+
     virtual ~FailingSource() {}
 
     // Sets the number of times to fail before downloading data.
@@ -897,8 +901,6 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
 
     // The source to use for successful downloads.
     TestdataSource actual_source_;
-
-    DISALLOW_COPY_AND_ASSIGN(FailingSource);
   };
 
   FailingAddressValidatorTest()

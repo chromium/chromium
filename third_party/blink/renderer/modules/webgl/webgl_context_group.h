@@ -37,6 +37,10 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
                                 public NameClient {
  public:
   WebGLContextGroup();
+
+  WebGLContextGroup(const WebGLContextGroup&) = delete;
+  WebGLContextGroup& operator=(const WebGLContextGroup&) = delete;
+
   ~WebGLContextGroup() final = default;
 
   void AddContext(WebGLRenderingContextBase*);
@@ -70,8 +74,6 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
   uint32_t number_of_context_losses_;
 
   HeapHashSet<Member<WebGLRenderingContextBase>> contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLContextGroup);
 };
 
 }  // namespace blink

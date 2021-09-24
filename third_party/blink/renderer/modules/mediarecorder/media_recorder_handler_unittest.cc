@@ -128,6 +128,10 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     registry_.Init();
   }
 
+  MediaRecorderHandlerFixture(const MediaRecorderHandlerFixture&) = delete;
+  MediaRecorderHandlerFixture& operator=(const MediaRecorderHandlerFixture&) =
+      delete;
+
   ~MediaRecorderHandlerFixture() {
     registry_.reset();
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -203,9 +207,6 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   media::SineWaveAudioSource audio_source_;
 
   MockMediaStreamVideoSource* video_source_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerFixture);
 };
 
 class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
@@ -698,6 +699,11 @@ class MediaRecorderHandlerPassthroughTest
     EXPECT_FALSE(media_recorder_handler_->recording_);
   }
 
+  MediaRecorderHandlerPassthroughTest(
+      const MediaRecorderHandlerPassthroughTest&) = delete;
+  MediaRecorderHandlerPassthroughTest& operator=(
+      const MediaRecorderHandlerPassthroughTest&) = delete;
+
   ~MediaRecorderHandlerPassthroughTest() {
     registry_.reset();
     media_recorder_handler_ = nullptr;
@@ -713,9 +719,6 @@ class MediaRecorderHandlerPassthroughTest
   MockMediaStreamRegistry registry_;
   MockMediaStreamVideoSource* video_source_ = nullptr;
   Persistent<MediaRecorderHandler> media_recorder_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerPassthroughTest);
 };
 
 TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {

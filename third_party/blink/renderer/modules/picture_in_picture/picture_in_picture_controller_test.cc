@@ -78,6 +78,11 @@ class MockPictureInPictureService
         .WillByDefault(testing::Invoke(
             this, &MockPictureInPictureService::StartSessionInternal));
   }
+
+  MockPictureInPictureService(const MockPictureInPictureService&) = delete;
+  MockPictureInPictureService& operator=(const MockPictureInPictureService&) =
+      delete;
+
   ~MockPictureInPictureService() override = default;
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
@@ -116,8 +121,6 @@ class MockPictureInPictureService
   mojo::Receiver<mojom::blink::PictureInPictureService> receiver_{this};
   std::unique_ptr<MockPictureInPictureSession> session_;
   mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPictureInPictureService);
 };
 
 class PictureInPictureControllerFrameClient
@@ -140,6 +143,12 @@ class PictureInPictureControllerFrameClient
 class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
  public:
   PictureInPictureControllerPlayer() = default;
+
+  PictureInPictureControllerPlayer(const PictureInPictureControllerPlayer&) =
+      delete;
+  PictureInPictureControllerPlayer& operator=(
+      const PictureInPictureControllerPlayer&) = delete;
+
   ~PictureInPictureControllerPlayer() override = default;
 
   double Duration() const override {
@@ -157,8 +166,6 @@ class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
  private:
   bool infinity_duration_ = false;
   absl::optional<viz::SurfaceId> surface_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerPlayer);
 };
 
 class PictureInPictureTestWebFrameClient

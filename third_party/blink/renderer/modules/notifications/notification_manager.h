@@ -34,6 +34,10 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   static NotificationManager* From(ExecutionContext* context);
 
   explicit NotificationManager(ExecutionContext& context);
+
+  NotificationManager(const NotificationManager&) = delete;
+  NotificationManager& operator=(const NotificationManager&) = delete;
+
   ~NotificationManager();
 
   // Returns the notification permission status of the current origin. This
@@ -104,8 +108,6 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
 
   HeapMojoRemote<mojom::blink::NotificationService> notification_service_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationManager);
 };
 
 }  // namespace blink

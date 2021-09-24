@@ -102,10 +102,11 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
     identifiability_study_helper_.SetExecutionContext(context);
     BuildPathFromString(path_data, path_);
   }
-  ~Path2D() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Path2D);
+  Path2D(const Path2D&) = delete;
+  Path2D& operator=(const Path2D&) = delete;
+
+  ~Path2D() override = default;
 };
 
 }  // namespace blink

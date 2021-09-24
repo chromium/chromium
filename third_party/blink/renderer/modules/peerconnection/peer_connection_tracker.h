@@ -55,6 +55,10 @@ class MODULES_EXPORT PeerConnectionTracker
       LocalDOMWindow& window,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       base::PassKey<PeerConnectionTracker>);
+
+  PeerConnectionTracker(const PeerConnectionTracker&) = delete;
+  PeerConnectionTracker& operator=(const PeerConnectionTracker&) = delete;
+
   ~PeerConnectionTracker() override;
 
   // Ctors for tests.
@@ -313,8 +317,6 @@ class MODULES_EXPORT PeerConnectionTracker
   mojo::Receiver<blink::mojom::blink::PeerConnectionManager> receiver_{this};
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionTracker);
 };
 
 }  // namespace blink

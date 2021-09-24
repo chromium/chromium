@@ -20,6 +20,10 @@ class CONTROLLER_EXPORT BlinkLeakDetector : public mojom::blink::LeakDetector {
   static void Bind(mojo::PendingReceiver<mojom::blink::LeakDetector>);
 
   BlinkLeakDetector();
+
+  BlinkLeakDetector(const BlinkLeakDetector&) = delete;
+  BlinkLeakDetector& operator=(const BlinkLeakDetector&) = delete;
+
   ~BlinkLeakDetector() override;
 
  private:
@@ -35,8 +39,6 @@ class CONTROLLER_EXPORT BlinkLeakDetector : public mojom::blink::LeakDetector {
   PerformLeakDetectionCallback callback_;
 
   mojo::Receiver<mojom::blink::LeakDetector> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkLeakDetector);
 };
 
 }  // namespace blink

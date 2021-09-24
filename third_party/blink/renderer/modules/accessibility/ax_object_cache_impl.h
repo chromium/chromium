@@ -69,6 +69,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   static AXObjectCache* Create(Document&, const ui::AXMode&);
 
   AXObjectCacheImpl(Document&, const ui::AXMode&);
+
+  AXObjectCacheImpl(const AXObjectCacheImpl&) = delete;
+  AXObjectCacheImpl& operator=(const AXObjectCacheImpl&) = delete;
+
   ~AXObjectCacheImpl() override;
   void Trace(Visitor*) const override;
 
@@ -686,8 +690,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.
   static bool use_ax_menu_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXObjectCacheImpl);
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
 };

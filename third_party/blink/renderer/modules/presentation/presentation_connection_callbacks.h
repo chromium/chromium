@@ -33,6 +33,12 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
   PresentationConnectionCallbacks(ScriptPromiseResolver*, PresentationRequest*);
   PresentationConnectionCallbacks(ScriptPromiseResolver*,
                                   ControllerPresentationConnection*);
+
+  PresentationConnectionCallbacks(const PresentationConnectionCallbacks&) =
+      delete;
+  PresentationConnectionCallbacks& operator=(
+      const PresentationConnectionCallbacks&) = delete;
+
   ~PresentationConnectionCallbacks() = default;
 
   void HandlePresentationResponse(mojom::blink::PresentationConnectionResultPtr,
@@ -54,8 +60,6 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
   Persistent<ScriptPromiseResolver> resolver_;
   Persistent<PresentationRequest> request_;
   WeakPersistent<ControllerPresentationConnection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationConnectionCallbacks);
 };
 
 }  // namespace blink

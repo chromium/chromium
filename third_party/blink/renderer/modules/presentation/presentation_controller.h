@@ -35,6 +35,10 @@ class MODULES_EXPORT PresentationController
   static const char kSupplementName[];
 
   explicit PresentationController(LocalDOMWindow&);
+
+  PresentationController(const PresentationController&) = delete;
+  PresentationController& operator=(const PresentationController&) = delete;
+
   ~PresentationController() override;
 
   static PresentationController* From(LocalDOMWindow&);
@@ -105,8 +109,6 @@ class MODULES_EXPORT PresentationController
   // to |presentation_service_|'s implementation.
   HeapMojoReceiver<mojom::blink::PresentationController, PresentationController>
       presentation_controller_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationController);
 };
 
 }  // namespace blink

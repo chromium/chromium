@@ -67,6 +67,10 @@ class MODULES_EXPORT PaymentRequest final
                  mojo::PendingRemote<payments::mojom::blink::PaymentRequest>
                      mock_payment_provider,
                  ExceptionState&);
+
+  PaymentRequest(const PaymentRequest&) = delete;
+  PaymentRequest& operator=(const PaymentRequest&) = delete;
+
   ~PaymentRequest() override;
 
   ScriptPromise show(ScriptState*, ExceptionState&);
@@ -187,8 +191,6 @@ class MODULES_EXPORT PaymentRequest final
   HeapTaskRunnerTimer<PaymentRequest> update_payment_details_timer_;
   bool is_waiting_for_show_promise_to_resolve_;
   bool ignore_total_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequest);
 };
 
 }  // namespace blink

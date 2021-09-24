@@ -56,6 +56,10 @@ class MODULES_EXPORT UserMediaProcessor
   UserMediaProcessor(LocalFrame* frame,
                      MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  UserMediaProcessor(const UserMediaProcessor&) = delete;
+  UserMediaProcessor& operator=(const UserMediaProcessor&) = delete;
+
   virtual ~UserMediaProcessor();
 
   // It can be assumed that the output of CurrentRequest() remains the same
@@ -305,8 +309,6 @@ class MODULES_EXPORT UserMediaProcessor
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(UserMediaProcessor);
 };
 
 }  // namespace blink

@@ -51,12 +51,16 @@ class MediaElementAudioSourceHandlerLocker final {
       : lockable_(lockable) {
     lockable_.lock();
   }
+
+  MediaElementAudioSourceHandlerLocker(
+      const MediaElementAudioSourceHandlerLocker&) = delete;
+  MediaElementAudioSourceHandlerLocker& operator=(
+      const MediaElementAudioSourceHandlerLocker&) = delete;
+
   ~MediaElementAudioSourceHandlerLocker() { lockable_.unlock(); }
 
  private:
   MediaElementAudioSourceHandler& lockable_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaElementAudioSourceHandlerLocker);
 };
 
 MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(

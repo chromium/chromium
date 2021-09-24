@@ -35,6 +35,11 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   ApplyConstraintsProcessor(
       MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  ApplyConstraintsProcessor(const ApplyConstraintsProcessor&) = delete;
+  ApplyConstraintsProcessor& operator=(const ApplyConstraintsProcessor&) =
+      delete;
+
   ~ApplyConstraintsProcessor();
 
   // Starts processing of |request|. When processing of |request| is complete,
@@ -92,8 +97,6 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   THREAD_CHECKER(thread_checker_);
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplyConstraintsProcessor);
 };
 
 }  // namespace blink

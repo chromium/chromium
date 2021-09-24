@@ -137,6 +137,9 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         0 /* bits_per_second */, GetParam().bitrateMode);
   }
 
+  AudioTrackRecorderTest(const AudioTrackRecorderTest&) = delete;
+  AudioTrackRecorderTest& operator=(const AudioTrackRecorderTest&) = delete;
+
   ~AudioTrackRecorderTest() {
     opus_decoder_destroy(opus_decoder_);
     opus_decoder_ = nullptr;
@@ -267,8 +270,6 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     CHECK(MediaStreamAudioSource::From(source)->ConnectToTrack(
         media_stream_component_));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackRecorderTest);
 };
 
 TEST_P(AudioTrackRecorderTest, OnDataOpus) {

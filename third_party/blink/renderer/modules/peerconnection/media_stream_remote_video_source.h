@@ -27,6 +27,11 @@ class MODULES_EXPORT MediaStreamRemoteVideoSource
   explicit MediaStreamRemoteVideoSource(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<TrackObserver> observer);
+
+  MediaStreamRemoteVideoSource(const MediaStreamRemoteVideoSource&) = delete;
+  MediaStreamRemoteVideoSource& operator=(const MediaStreamRemoteVideoSource&) =
+      delete;
+
   ~MediaStreamRemoteVideoSource() override;
 
   // Should be called when the remote video track this source originates from is
@@ -63,8 +68,6 @@ class MODULES_EXPORT MediaStreamRemoteVideoSource
   std::unique_ptr<TrackObserver> observer_;
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamRemoteVideoSource);
 };
 
 }  // namespace blink

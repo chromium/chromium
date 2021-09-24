@@ -69,6 +69,10 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
@@ -80,9 +84,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
       return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
     }
     void OnError(HTMLCanvasElement*, const String& error) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   WebGLRenderingContext(CanvasRenderingContextHost*,

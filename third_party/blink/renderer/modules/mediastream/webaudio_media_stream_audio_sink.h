@@ -50,6 +50,11 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                         int context_sample_rate);
+
+  WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
+  WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =
+      delete;
+
   ~WebAudioMediaStreamAudioSink() override;
 
   // WebMediaStreamAudioSink implementation.
@@ -111,8 +116,6 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   // Used to assert that OnReadyStateChanged() is not accessed concurrently.
   REENTRANCY_CHECKER(ready_state_reentrancy_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioMediaStreamAudioSink);
 };
 
 }  // namespace blink

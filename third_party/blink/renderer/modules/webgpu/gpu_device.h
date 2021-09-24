@@ -66,6 +66,10 @@ class GPUDevice final : public EventTargetWithInlineData,
                      WGPUDevice dawn_device,
                      const WGPUSupportedLimits* limits,
                      const GPUDeviceDescriptor* descriptor);
+
+  GPUDevice(const GPUDevice&) = delete;
+  GPUDevice& operator=(const GPUDevice&) = delete;
+
   ~GPUDevice() override;
 
   void Trace(Visitor* visitor) const override;
@@ -178,8 +182,6 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   bool has_pending_microtask_ = false;
   HeapVector<Member<GPUExternalTexture>> external_textures_pending_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUDevice);
 };
 
 }  // namespace blink

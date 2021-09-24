@@ -35,6 +35,10 @@ class MODULES_EXPORT MerchantValidationEvent final : public Event {
                           const AtomicString& type,
                           const MerchantValidationEventInit*,
                           ExceptionState&);
+
+  MerchantValidationEvent(const MerchantValidationEvent&) = delete;
+  MerchantValidationEvent& operator=(const MerchantValidationEvent&) = delete;
+
   ~MerchantValidationEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -49,8 +53,6 @@ class MODULES_EXPORT MerchantValidationEvent final : public Event {
 
   // Set to true after .complete() is called.
   bool wait_for_update_;
-
-  DISALLOW_COPY_AND_ASSIGN(MerchantValidationEvent);
 };
 
 }  // namespace blink

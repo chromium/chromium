@@ -39,6 +39,10 @@ class MODULES_EXPORT PaymentResponse final
                   PaymentAddress* shipping_address,
                   PaymentStateResolver* payment_state_resolver,
                   const String& request_id);
+
+  PaymentResponse(const PaymentResponse&) = delete;
+  PaymentResponse& operator=(const PaymentResponse&) = delete;
+
   ~PaymentResponse() override;
 
   void Update(ScriptState* script_state,
@@ -81,8 +85,6 @@ class MODULES_EXPORT PaymentResponse final
   String payer_email_;
   String payer_phone_;
   Member<PaymentStateResolver> payment_state_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentResponse);
 };
 
 }  // namespace blink

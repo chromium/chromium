@@ -52,6 +52,10 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       ConstraintsOnceCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  ProcessedLocalAudioSource(const ProcessedLocalAudioSource&) = delete;
+  ProcessedLocalAudioSource& operator=(const ProcessedLocalAudioSource&) =
+      delete;
+
   ~ProcessedLocalAudioSource() final;
 
   // If |source| is an instance of ProcessedLocalAudioSource, return a
@@ -162,8 +166,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   // Provides weak pointers for tasks posted by this instance.
   base::WeakPtrFactory<ProcessedLocalAudioSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessedLocalAudioSource);
 };
 
 }  // namespace blink

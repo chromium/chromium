@@ -75,6 +75,10 @@ class CORE_EXPORT ScriptStreamer final
       mojo::ScopedDataPipeConsumerHandle data_pipe,
       ResponseBodyLoaderClient* response_body_loader_client,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
+
+  ScriptStreamer(const ScriptStreamer&) = delete;
+  ScriptStreamer& operator=(const ScriptStreamer&) = delete;
+
   ~ScriptStreamer();
   void Trace(Visitor*) const;
 
@@ -234,8 +238,6 @@ class CORE_EXPORT ScriptStreamer final
   v8::ScriptType script_type_;
 
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptStreamer);
 };
 
 }  // namespace blink

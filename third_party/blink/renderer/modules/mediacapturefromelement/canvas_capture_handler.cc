@@ -132,6 +132,11 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
       : new_frame_callback_(new_frame_callback) {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
+
+  CanvasCaptureHandlerDelegate(const CanvasCaptureHandlerDelegate&) = delete;
+  CanvasCaptureHandlerDelegate& operator=(const CanvasCaptureHandlerDelegate&) =
+      delete;
+
   ~CanvasCaptureHandlerDelegate() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   }
@@ -152,8 +157,6 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
   // Bound to IO thread.
   THREAD_CHECKER(io_thread_checker_);
   base::WeakPtrFactory<CanvasCaptureHandlerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasCaptureHandlerDelegate);
 };
 
 CanvasCaptureHandler::CanvasCaptureHandler(

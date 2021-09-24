@@ -37,6 +37,12 @@ class MODULES_EXPORT PictureInPictureControllerImpl
       public blink::mojom::blink::PictureInPictureSessionObserver {
  public:
   explicit PictureInPictureControllerImpl(Document&);
+
+  PictureInPictureControllerImpl(const PictureInPictureControllerImpl&) =
+      delete;
+  PictureInPictureControllerImpl& operator=(
+      const PictureInPictureControllerImpl&) = delete;
+
   ~PictureInPictureControllerImpl() override = default;
 
   // Gets, or creates, PictureInPictureControllerImpl supplement on Document.
@@ -152,8 +158,6 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // Instance of the Picture-in-Picture session sent back by the service.
   HeapMojoRemote<mojom::blink::PictureInPictureSession>
       picture_in_picture_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerImpl);
 };
 
 }  // namespace blink

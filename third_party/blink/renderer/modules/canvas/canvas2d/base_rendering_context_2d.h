@@ -32,6 +32,9 @@ using cc::UsePaintCache;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
+  BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
+  BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
+
   ~BaseRenderingContext2D() override;
 
   V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* strokeStyle()
@@ -632,8 +635,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasImageSource*);
 
   bool origin_tainted_by_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseRenderingContext2D);
 };
 
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(

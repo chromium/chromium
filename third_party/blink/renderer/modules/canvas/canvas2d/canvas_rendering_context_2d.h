@@ -73,6 +73,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
@@ -83,9 +87,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
         const override {
       return CanvasRenderingContext::CanvasRenderingAPI::k2D;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   CanvasRenderingContext2D(HTMLCanvasElement*,

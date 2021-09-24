@@ -231,6 +231,10 @@ class MediaControlsImpl::BatchedControlUpdate {
     DCHECK_GE(batch_depth_, 0);
     ++batch_depth_;
   }
+
+  BatchedControlUpdate(const BatchedControlUpdate&) = delete;
+  BatchedControlUpdate& operator=(const BatchedControlUpdate&) = delete;
+
   ~BatchedControlUpdate() {
     DCHECK(IsMainThread());
     DCHECK_GT(batch_depth_, 0);
@@ -241,8 +245,6 @@ class MediaControlsImpl::BatchedControlUpdate {
  private:
   MediaControlsImpl* controls_;
   static int batch_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatchedControlUpdate);
 };
 
 // Count of number open batches for controls visibility.

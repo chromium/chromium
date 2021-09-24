@@ -31,6 +31,9 @@ class MODULES_EXPORT XRRigidTransform : public ScriptWrappable {
                                   DOMPointInit*,
                                   ExceptionState&);
 
+  XRRigidTransform(const XRRigidTransform&) = delete;
+  XRRigidTransform& operator=(const XRRigidTransform&) = delete;
+
   ~XRRigidTransform() override = default;
 
   DOMPointReadOnly* position() const { return position_; }
@@ -53,8 +56,6 @@ class MODULES_EXPORT XRRigidTransform : public ScriptWrappable {
   Member<XRRigidTransform> inverse_;
   Member<DOMFloat32Array> matrix_array_;
   std::unique_ptr<TransformationMatrix> matrix_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRRigidTransform);
 };
 
 }  // namespace blink

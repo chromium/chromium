@@ -35,6 +35,10 @@ class PushProvider final : public GarbageCollected<PushProvider>,
   static const char kSupplementName[];
 
   explicit PushProvider(ServiceWorkerRegistration& registration);
+
+  PushProvider(const PushProvider&) = delete;
+  PushProvider& operator=(const PushProvider&) = delete;
+
   ~PushProvider() = default;
 
   static PushProvider* From(ServiceWorkerRegistration* registration);
@@ -66,8 +70,6 @@ class PushProvider final : public GarbageCollected<PushProvider>,
                           mojom::blink::PushSubscriptionPtr subscription);
 
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushProvider);
 };
 
 }  // namespace blink

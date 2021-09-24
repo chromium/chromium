@@ -128,6 +128,10 @@ using ImageCaptureGrabFrameCallbacks =
 class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
  public:
   ImageCaptureFrameGrabber();
+
+  ImageCaptureFrameGrabber(const ImageCaptureFrameGrabber&) = delete;
+  ImageCaptureFrameGrabber& operator=(const ImageCaptureFrameGrabber&) = delete;
+
   ~ImageCaptureFrameGrabber() override;
 
   void GrabFrame(MediaStreamComponent* component,
@@ -146,8 +150,6 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ImageCaptureFrameGrabber> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageCaptureFrameGrabber);
 };
 
 }  // namespace blink

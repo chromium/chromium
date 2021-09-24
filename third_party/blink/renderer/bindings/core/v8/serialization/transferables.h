@@ -36,6 +36,10 @@ class CORE_EXPORT Transferables final {
 
  public:
   Transferables() = default;
+
+  Transferables(const Transferables&) = delete;
+  Transferables& operator=(const Transferables&) = delete;
+
   ~Transferables();
 
   ArrayBufferArray array_buffers;
@@ -70,9 +74,6 @@ class CORE_EXPORT Transferables final {
       return nullptr;
     return static_cast<T*>(it->value.Get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Transferables);
 };
 
 // Along with extending |Transferables| to hold a new kind of transferable

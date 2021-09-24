@@ -139,6 +139,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                                  public DrawingBuffer::Client,
                                                  public NoAllocDirectCallHost {
  public:
+  WebGLRenderingContextBase(const WebGLRenderingContextBase&) = delete;
+  WebGLRenderingContextBase& operator=(const WebGLRenderingContextBase&) =
+      delete;
+
   ~WebGLRenderingContextBase() override;
 
   HTMLCanvasElement* canvas() const {
@@ -1907,8 +1911,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool has_been_drawn_to_ = false;
 
   CanvasColorParams color_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLRenderingContextBase);
 };
 
 template <>

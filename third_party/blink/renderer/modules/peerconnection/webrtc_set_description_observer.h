@@ -52,6 +52,10 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
   struct MODULES_EXPORT States {
     States();
     States(States&& other);
+
+    States(const States&) = delete;
+    States& operator=(const States&) = delete;
+
     ~States();
 
     States& operator=(States&& other);
@@ -67,8 +71,6 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
         pending_remote_description;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         current_remote_description;
-
-    DISALLOW_COPY_AND_ASSIGN(States);
   };
 
   WebRtcSetDescriptionObserver();

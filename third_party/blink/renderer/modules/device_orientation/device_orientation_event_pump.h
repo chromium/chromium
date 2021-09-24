@@ -25,6 +25,11 @@ class MODULES_EXPORT DeviceOrientationEventPump
   static const double kOrientationThreshold;
 
   explicit DeviceOrientationEventPump(LocalFrame&, bool absolute);
+
+  DeviceOrientationEventPump(const DeviceOrientationEventPump&) = delete;
+  DeviceOrientationEventPump& operator=(const DeviceOrientationEventPump&) =
+      delete;
+
   ~DeviceOrientationEventPump() override;
 
   void SetController(PlatformEventController*);
@@ -66,8 +71,6 @@ class MODULES_EXPORT DeviceOrientationEventPump
   bool attempted_to_fall_back_to_absolute_orientation_sensor_;
   Member<DeviceOrientationData> data_;
   Member<PlatformEventController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOrientationEventPump);
 };
 
 }  // namespace blink

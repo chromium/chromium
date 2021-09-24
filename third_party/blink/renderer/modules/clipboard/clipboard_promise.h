@@ -42,6 +42,10 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                           const String&);
 
   ClipboardPromise(ExecutionContext*, ScriptState*);
+
+  ClipboardPromise(const ClipboardPromise&) = delete;
+  ClipboardPromise& operator=(const ClipboardPromise&) = delete;
+
   ~ClipboardPromise() override;
 
   // Completes current write and starts next write.
@@ -107,8 +111,6 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // Because v8 is thread-hostile, ensures that all interactions with
   // ScriptState and ScriptPromiseResolver occur on the main thread.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardPromise);
 };
 
 }  // namespace blink

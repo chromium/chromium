@@ -37,6 +37,12 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
       const base::WeakPtr<blink::WebMediaPlayer>& player,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  HtmlVideoElementCapturerSource(const HtmlVideoElementCapturerSource&) =
+      delete;
+  HtmlVideoElementCapturerSource& operator=(
+      const HtmlVideoElementCapturerSource&) = delete;
+
   ~HtmlVideoElementCapturerSource() override;
 
   // media::VideoCapturerSource Implementation.
@@ -75,8 +81,6 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
 
   // Used on main render thread to schedule future capture events.
   base::WeakPtrFactory<HtmlVideoElementCapturerSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HtmlVideoElementCapturerSource);
 };
 
 }  // namespace blink

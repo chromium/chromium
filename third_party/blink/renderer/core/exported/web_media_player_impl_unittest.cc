@@ -343,6 +343,9 @@ class WebMediaPlayerImplTest
     InitializeWebMediaPlayerImplInternal(nullptr);
   }
 
+  WebMediaPlayerImplTest(const WebMediaPlayerImplTest&) = delete;
+  WebMediaPlayerImplTest& operator=(const WebMediaPlayerImplTest&) = delete;
+
   ~WebMediaPlayerImplTest() override {
     if (!wmpi_)
       return;
@@ -874,9 +877,6 @@ class WebMediaPlayerImplTest
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
 
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerImplTest);
 };
 
 TEST_F(WebMediaPlayerImplTest, ConstructAndDestroy) {

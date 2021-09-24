@@ -18,6 +18,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   explicit MockMediaStreamVideoSource(bool respond_to_request_refresh_frame);
   MockMediaStreamVideoSource(const media::VideoCaptureFormat& format,
                              bool respond_to_request_refresh_frame);
+
+  MockMediaStreamVideoSource(const MockMediaStreamVideoSource&) = delete;
+  MockMediaStreamVideoSource& operator=(const MockMediaStreamVideoSource&) =
+      delete;
+
   ~MockMediaStreamVideoSource() override;
 
   MOCK_METHOD1(DoSetMutedState, void(bool muted_state));
@@ -103,8 +108,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   EncodedVideoFrameCB encoded_frame_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaStreamVideoSource);
 };
 
 }  // namespace blink

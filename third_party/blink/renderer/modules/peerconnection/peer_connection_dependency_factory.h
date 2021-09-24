@@ -67,6 +67,12 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   PeerConnectionDependencyFactory(
       ExecutionContext& context,
       base::PassKey<PeerConnectionDependencyFactory>);
+
+  PeerConnectionDependencyFactory(const PeerConnectionDependencyFactory&) =
+      delete;
+  PeerConnectionDependencyFactory& operator=(
+      const PeerConnectionDependencyFactory&) = delete;
+
   ~PeerConnectionDependencyFactory() override;
 
   // Create a RTCPeerConnectionHandler object.
@@ -189,8 +195,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionDependencyFactory);
 };
 
 }  // namespace blink

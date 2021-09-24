@@ -46,6 +46,10 @@ class Node;
 class MODULES_EXPORT AXNodeObject : public AXObject {
  public:
   AXNodeObject(Node*, AXObjectCacheImpl&);
+
+  AXNodeObject(const AXNodeObject&) = delete;
+  AXNodeObject& operator=(const AXNodeObject&) = delete;
+
   ~AXNodeObject() override;
 
   static absl::optional<String> GetCSSAltText(const Node*);
@@ -322,8 +326,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   static bool IsRedundantLabel(HTMLLabelElement* label);
 
   Member<Node> node_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXNodeObject);
 };
 
 }  // namespace blink

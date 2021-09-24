@@ -87,6 +87,11 @@ class FakeWebMediaPlayerDelegate
       public base::SupportsWeakPtr<FakeWebMediaPlayerDelegate> {
  public:
   FakeWebMediaPlayerDelegate() {}
+
+  FakeWebMediaPlayerDelegate(const FakeWebMediaPlayerDelegate&) = delete;
+  FakeWebMediaPlayerDelegate& operator=(const FakeWebMediaPlayerDelegate&) =
+      delete;
+
   ~FakeWebMediaPlayerDelegate() override {
     DCHECK(!observer_);
     DCHECK(is_gone_);
@@ -156,8 +161,6 @@ class FakeWebMediaPlayerDelegate
   bool is_hidden_ = false;
   bool is_gone_ = true;
   bool is_idle_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebMediaPlayerDelegate);
 };
 
 class ReusableMessageLoopEvent {

@@ -18,6 +18,11 @@ class AccessibilityMediaElement : public AXLayoutObject {
   static AXObject* Create(LayoutObject*, AXObjectCacheImpl&);
 
   AccessibilityMediaElement(LayoutObject*, AXObjectCacheImpl&);
+
+  AccessibilityMediaElement(const AccessibilityMediaElement&) = delete;
+  AccessibilityMediaElement& operator=(const AccessibilityMediaElement&) =
+      delete;
+
   ~AccessibilityMediaElement() override = default;
 
   // AXLayoutObject overrides.
@@ -35,8 +40,6 @@ class AccessibilityMediaElement : public AXLayoutObject {
 
  protected:
   bool IsUnplayable() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityMediaElement);
 };
 
 }  // namespace blink

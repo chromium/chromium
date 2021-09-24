@@ -38,6 +38,10 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
                       const CanMakePaymentEventInit*,
                       CanMakePaymentRespondWithObserver*,
                       WaitUntilObserver*);
+
+  CanMakePaymentEvent(const CanMakePaymentEvent&) = delete;
+  CanMakePaymentEvent& operator=(const CanMakePaymentEvent&) = delete;
+
   ~CanMakePaymentEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -58,8 +62,6 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
   HeapVector<Member<PaymentDetailsModifier>> modifiers_;
 
   Member<CanMakePaymentRespondWithObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanMakePaymentEvent);
 };
 
 }  // namespace blink

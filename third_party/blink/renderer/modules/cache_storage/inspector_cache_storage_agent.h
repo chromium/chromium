@@ -25,6 +25,11 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   using CachesMap = HashMap<String, mojo::Remote<mojom::blink::CacheStorage>>;
 
   explicit InspectorCacheStorageAgent(InspectedFrames*);
+
+  InspectorCacheStorageAgent(const InspectorCacheStorageAgent&) = delete;
+  InspectorCacheStorageAgent& operator=(const InspectorCacheStorageAgent&) =
+      delete;
+
   ~InspectorCacheStorageAgent() override;
   void Trace(Visitor*) const override;
 
@@ -51,8 +56,6 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   Member<InspectedFrames> frames_;
 
   CachesMap caches_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorCacheStorageAgent);
 };
 
 }  // namespace blink

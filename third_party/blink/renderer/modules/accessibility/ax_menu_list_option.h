@@ -37,6 +37,10 @@ class AXObjectCacheImpl;
 class AXMenuListOption final : public AXNodeObject {
  public:
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
+
+  AXMenuListOption(const AXMenuListOption&) = delete;
+  AXMenuListOption& operator=(const AXMenuListOption&) = delete;
+
   ~AXMenuListOption() override = default;
 
   // For an <option>/<optgroup>, return an AXObject* for its popup, if any,
@@ -67,8 +71,6 @@ class AXMenuListOption final : public AXNodeObject {
                          AXRelatedObjectVector*,
                          NameSources*) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuListOption);
 };
 
 template <>

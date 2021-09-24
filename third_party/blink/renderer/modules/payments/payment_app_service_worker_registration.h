@@ -23,6 +23,12 @@ class PaymentAppServiceWorkerRegistration final
   static const char kSupplementName[];
 
   explicit PaymentAppServiceWorkerRegistration(ServiceWorkerRegistration*);
+
+  PaymentAppServiceWorkerRegistration(
+      const PaymentAppServiceWorkerRegistration&) = delete;
+  PaymentAppServiceWorkerRegistration& operator=(
+      const PaymentAppServiceWorkerRegistration&) = delete;
+
   virtual ~PaymentAppServiceWorkerRegistration();
 
   static PaymentAppServiceWorkerRegistration& From(ServiceWorkerRegistration&);
@@ -35,8 +41,6 @@ class PaymentAppServiceWorkerRegistration final
 
  private:
   Member<PaymentManager> payment_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppServiceWorkerRegistration);
 };
 
 }  // namespace blink

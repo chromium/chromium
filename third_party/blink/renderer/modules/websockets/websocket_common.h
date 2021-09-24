@@ -28,6 +28,10 @@ class MODULES_EXPORT WebSocketCommon {
 
  public:
   WebSocketCommon() = default;
+
+  WebSocketCommon(const WebSocketCommon&) = delete;
+  WebSocketCommon& operator=(const WebSocketCommon&) = delete;
+
   ~WebSocketCommon() = default;
 
   enum State { kConnecting = 0, kOpen = 1, kClosing = 2, kClosed = 3 };
@@ -71,8 +75,6 @@ class MODULES_EXPORT WebSocketCommon {
 
   KURL url_;
   State state_ = kConnecting;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketCommon);
 };
 
 }  // namespace blink

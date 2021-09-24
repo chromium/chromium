@@ -63,6 +63,9 @@ class WebGLObject : public ScriptWrappable {
   USING_PRE_FINALIZER(WebGLObject, Dispose);
 
  public:
+  WebGLObject(const WebGLObject&) = delete;
+  WebGLObject& operator=(const WebGLObject&) = delete;
+
   // We can't call virtual functions like deleteObjectImpl in this class's
   // destructor; doing so results in a pure virtual function call. Further,
   // making this destructor non-virtual is complicated with respect to
@@ -135,8 +138,6 @@ class WebGLObject : public ScriptWrappable {
   // Indicates whether the destructor has been entered and we therefore
   // need to be careful in subclasses to not touch other on-heap objects.
   bool destruction_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLObject);
 };
 
 }  // namespace blink

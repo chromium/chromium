@@ -43,6 +43,11 @@ class AudioRendererSinkCacheTest : public testing::Test {
             base::BindRepeating(&AudioRendererSinkCacheTest::CreateSink,
                                 base::Unretained(this)),
             kDeleteTimeout)) {}
+
+  AudioRendererSinkCacheTest(const AudioRendererSinkCacheTest&) = delete;
+  AudioRendererSinkCacheTest& operator=(const AudioRendererSinkCacheTest&) =
+      delete;
+
   ~AudioRendererSinkCacheTest() override {
     task_runner_->FastForwardUntilNoTasksRemain();
   }
@@ -100,9 +105,6 @@ class AudioRendererSinkCacheTest : public testing::Test {
       task_runner_context_;
 
   std::unique_ptr<AudioRendererSinkCache> cache_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCacheTest);
 };
 
 // Verify that normal get/release sink sequence works.

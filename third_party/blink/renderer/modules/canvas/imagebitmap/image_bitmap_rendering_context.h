@@ -25,6 +25,10 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
@@ -34,9 +38,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
         const override {
       return CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   ImageBitmapRenderingContext(CanvasRenderingContextHost*,

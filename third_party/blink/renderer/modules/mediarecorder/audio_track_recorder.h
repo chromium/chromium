@@ -56,6 +56,10 @@ class MODULES_EXPORT AudioTrackRecorder
                      base::OnceClosure on_track_source_ended_cb,
                      int32_t bits_per_second,
                      BitrateMode bitrate_mode);
+
+  AudioTrackRecorder(const AudioTrackRecorder&) = delete;
+  AudioTrackRecorder& operator=(const AudioTrackRecorder&) = delete;
+
   ~AudioTrackRecorder() override;
 
   // Implement MediaStreamAudioSink.
@@ -102,8 +106,6 @@ class MODULES_EXPORT AudioTrackRecorder
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackRecorder);
 };
 
 }  // namespace blink

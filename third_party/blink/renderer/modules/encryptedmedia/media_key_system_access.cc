@@ -48,6 +48,9 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
       : ContentDecryptionModuleResultPromise(script_state, type),
         supported_session_types_(supported_session_types) {}
 
+  NewCdmResultPromise(const NewCdmResultPromise&) = delete;
+  NewCdmResultPromise& operator=(const NewCdmResultPromise&) = delete;
+
   ~NewCdmResultPromise() override = default;
 
   // ContentDecryptionModuleResult implementation.
@@ -68,8 +71,6 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 
  private:
   WebVector<WebEncryptedMediaSessionType> supported_session_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewCdmResultPromise);
 };
 
 // These methods are the inverses of those with the same names in

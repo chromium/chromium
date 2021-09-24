@@ -27,10 +27,13 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
  public:
   class Factory : public CanvasRenderingContextFactory {
-    DISALLOW_COPY_AND_ASSIGN(Factory);
 
    public:
     Factory();
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override;
 
     CanvasRenderingContext* Create(
@@ -41,6 +44,10 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
   GPUCanvasContext(CanvasRenderingContextHost*,
                    const CanvasContextCreationAttributesCore&);
+
+  GPUCanvasContext(const GPUCanvasContext&) = delete;
+  GPUCanvasContext& operator=(const GPUCanvasContext&) = delete;
+
   ~GPUCanvasContext() override;
 
   void Trace(Visitor*) const override;
@@ -83,8 +90,6 @@ class GPUCanvasContext : public CanvasRenderingContext {
   GPUTexture* getCurrentTexture(ExceptionState&);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(GPUCanvasContext);
-
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   Member<GPUSwapChain> swapchain_;

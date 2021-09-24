@@ -43,6 +43,10 @@ class CORE_EXPORT ScriptPromiseResolver
 
  public:
   explicit ScriptPromiseResolver(ScriptState*);
+
+  ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
+  ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
+
   ~ScriptPromiseResolver() override;
 
   void Dispose();
@@ -171,8 +175,6 @@ class CORE_EXPORT ScriptPromiseResolver
 
   base::debug::StackTrace create_stack_trace_{8};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseResolver);
 };
 
 }  // namespace blink

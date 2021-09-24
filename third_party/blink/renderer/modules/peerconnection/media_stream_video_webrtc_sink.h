@@ -37,6 +37,11 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
       MediaStreamComponent* component,
       PeerConnectionDependencyFactory* factory,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  MediaStreamVideoWebRtcSink(const MediaStreamVideoWebRtcSink&) = delete;
+  MediaStreamVideoWebRtcSink& operator=(const MediaStreamVideoWebRtcSink&) =
+      delete;
+
   ~MediaStreamVideoWebRtcSink() override;
 
   webrtc::VideoTrackInterface* webrtc_video_track() {
@@ -74,8 +79,6 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
   // TODO(crbug.com/787254): Make this object Oilpan-able, and get
   // rid of this weak prt factory use.
   base::WeakPtrFactory<MediaStreamVideoWebRtcSink> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoWebRtcSink);
 };
 
 }  // namespace blink

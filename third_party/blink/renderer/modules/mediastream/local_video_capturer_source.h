@@ -45,6 +45,10 @@ class MODULES_EXPORT LocalVideoCapturerSource
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       LocalFrame* frame,
       const base::UnguessableToken& session_id);
+
+  LocalVideoCapturerSource(const LocalVideoCapturerSource&) = delete;
+  LocalVideoCapturerSource& operator=(const LocalVideoCapturerSource&) = delete;
+
   ~LocalVideoCapturerSource() override;
 
   // VideoCaptureSource Implementation.
@@ -83,8 +87,6 @@ class MODULES_EXPORT LocalVideoCapturerSource
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<LocalVideoCapturerSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalVideoCapturerSource);
 };
 
 }  // namespace blink

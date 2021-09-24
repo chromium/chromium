@@ -138,6 +138,9 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
     Globals::GetInstance()->DidCreateChromeMemEnv(this);
   }
 
+  ChromeMemEnv(const ChromeMemEnv&) = delete;
+  ChromeMemEnv& operator=(const ChromeMemEnv&) = delete;
+
   ~ChromeMemEnv() override {
     Globals::GetInstance()->WillDestroyChromeMemEnv(this);
   }
@@ -241,7 +244,6 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
   const std::string name_;
   base::Lock files_lock_;
   std::set<std::string> file_names_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeMemEnv);
 };
 
 void Globals::DumpAllTrackedEnvs(const MemoryDumpArgs& dump_args,

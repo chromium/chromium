@@ -41,6 +41,12 @@ class MockDeviceOrientationController final
       : PlatformEventController(window),
         did_change_device_orientation_(false),
         orientation_pump_(orientation_pump) {}
+
+  MockDeviceOrientationController(const MockDeviceOrientationController&) =
+      delete;
+  MockDeviceOrientationController& operator=(
+      const MockDeviceOrientationController&) = delete;
+
   ~MockDeviceOrientationController() override {}
 
   void Trace(Visitor* visitor) const override {
@@ -80,8 +86,6 @@ class MockDeviceOrientationController final
  private:
   bool did_change_device_orientation_;
   Member<DeviceOrientationEventPump> orientation_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceOrientationController);
 };
 
 class DeviceOrientationEventPumpTest : public testing::Test {

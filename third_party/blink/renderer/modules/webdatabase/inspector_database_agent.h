@@ -47,6 +47,10 @@ class MODULES_EXPORT InspectorDatabaseAgent final
     : public InspectorBaseAgent<protocol::Database::Metainfo> {
  public:
   explicit InspectorDatabaseAgent(Page*);
+
+  InspectorDatabaseAgent(const InspectorDatabaseAgent&) = delete;
+  InspectorDatabaseAgent& operator=(const InspectorDatabaseAgent&) = delete;
+
   ~InspectorDatabaseAgent() override;
   void Trace(Visitor*) const override;
 
@@ -80,8 +84,6 @@ class MODULES_EXPORT InspectorDatabaseAgent final
       DatabaseResourcesHeapMap;
   DatabaseResourcesHeapMap resources_;
   InspectorAgentState::Boolean enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorDatabaseAgent);
 };
 
 }  // namespace blink

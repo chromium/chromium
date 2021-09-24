@@ -32,6 +32,11 @@ class MODULES_EXPORT PresentationAvailabilityState final
     : public GarbageCollected<PresentationAvailabilityState> {
  public:
   explicit PresentationAvailabilityState(mojom::blink::PresentationService*);
+
+  PresentationAvailabilityState(const PresentationAvailabilityState&) = delete;
+  PresentationAvailabilityState& operator=(
+      const PresentationAvailabilityState&) = delete;
+
   ~PresentationAvailabilityState();
 
   // Requests availability for the given URLs and invokes the given callbacks
@@ -64,6 +69,10 @@ class MODULES_EXPORT PresentationAvailabilityState final
       : public GarbageCollected<AvailabilityListener> {
    public:
     explicit AvailabilityListener(const Vector<KURL>& availability_urls);
+
+    AvailabilityListener(const AvailabilityListener&) = delete;
+    AvailabilityListener& operator=(const AvailabilityListener&) = delete;
+
     ~AvailabilityListener();
 
     const Vector<KURL> urls;
@@ -72,9 +81,6 @@ class MODULES_EXPORT PresentationAvailabilityState final
     HeapVector<Member<PresentationAvailabilityObserver>> availability_observers;
 
     void Trace(Visitor*) const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AvailabilityListener);
   };
 
   // Tracks listening status and screen availability of |availability_url|.
@@ -125,8 +131,6 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
   // A pointer to PresentationService owned by PresentationController.
   mojom::blink::PresentationService* const presentation_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationAvailabilityState);
 };
 
 }  // namespace blink

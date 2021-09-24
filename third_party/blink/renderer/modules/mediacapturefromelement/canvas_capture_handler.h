@@ -49,6 +49,9 @@ class WebGraphicsContext3DVideoFramePool;
 // used to send back frames to |io_task_runner_|, i.e. IO thread.
 class MODULES_EXPORT CanvasCaptureHandler {
  public:
+  CanvasCaptureHandler(const CanvasCaptureHandler&) = delete;
+  CanvasCaptureHandler& operator=(const CanvasCaptureHandler&) = delete;
+
   ~CanvasCaptureHandler();
 
   // Creates a CanvasCaptureHandler instance and updates UMA histogram.
@@ -150,8 +153,6 @@ class MODULES_EXPORT CanvasCaptureHandler {
   // Bound to Main Render thread.
   THREAD_CHECKER(main_render_thread_checker_);
   base::WeakPtrFactory<CanvasCaptureHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasCaptureHandler);
 };
 
 }  // namespace blink

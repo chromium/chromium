@@ -49,6 +49,10 @@ class MODULES_EXPORT MediaRecorderHandler final
  public:
   explicit MediaRecorderHandler(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  MediaRecorderHandler(const MediaRecorderHandler&) = delete;
+  MediaRecorderHandler& operator=(const MediaRecorderHandler&) = delete;
+
   ~MediaRecorderHandler();
 
   // MediaRecorder API isTypeSupported(), which boils down to
@@ -170,8 +174,6 @@ class MODULES_EXPORT MediaRecorderHandler final
   std::unique_ptr<media::WebmMuxer> webm_muxer_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandler);
 };
 
 }  // namespace blink

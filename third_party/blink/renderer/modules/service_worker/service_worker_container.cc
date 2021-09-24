@@ -108,6 +108,10 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
  public:
   explicit GetRegistrationCallback(ScriptPromiseResolver* resolver)
       : resolver_(resolver) {}
+
+  GetRegistrationCallback(const GetRegistrationCallback&) = delete;
+  GetRegistrationCallback& operator=(const GetRegistrationCallback&) = delete;
+
   ~GetRegistrationCallback() override = default;
 
   void OnSuccess(WebServiceWorkerRegistrationObjectInfo info) override {
@@ -133,7 +137,6 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
 
  private:
   Persistent<ScriptPromiseResolver> resolver_;
-  DISALLOW_COPY_AND_ASSIGN(GetRegistrationCallback);
 };
 
 }  // namespace

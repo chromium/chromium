@@ -36,6 +36,10 @@ class MODULES_EXPORT ManifestParser {
                  const KURL& manifest_url,
                  const KURL& document_url,
                  const FeatureContext* feature_context);
+
+  ManifestParser(const ManifestParser&) = delete;
+  ManifestParser& operator=(const ManifestParser&) = delete;
+
   ~ManifestParser();
 
   // Parse the Manifest from a string using following:
@@ -445,8 +449,6 @@ class MODULES_EXPORT ManifestParser {
   bool failed_;
   mojom::blink::ManifestPtr manifest_;
   Vector<mojom::blink::ManifestErrorPtr> errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestParser);
 };
 
 }  // namespace blink

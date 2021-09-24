@@ -138,6 +138,9 @@ class VideoTrackRecorderTest
     ON_CALL(*platform_, GetGpuFactories()).WillByDefault(Return(nullptr));
   }
 
+  VideoTrackRecorderTest(const VideoTrackRecorderTest&) = delete;
+  VideoTrackRecorderTest& operator=(const VideoTrackRecorderTest&) = delete;
+
   ~VideoTrackRecorderTest() override {
     component_ = nullptr;
     source_ = nullptr;
@@ -238,9 +241,6 @@ class VideoTrackRecorderTest
       return video_frame;
     return video_frame2;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoTrackRecorderTest);
 };
 
 // Construct and destruct all objects, in particular |video_track_recorder_| and
@@ -722,6 +722,10 @@ class CodecEnumeratorTest : public ::testing::Test {
   using CodecId = VideoTrackRecorder::CodecId;
 
   CodecEnumeratorTest() = default;
+
+  CodecEnumeratorTest(const CodecEnumeratorTest&) = delete;
+  CodecEnumeratorTest& operator=(const CodecEnumeratorTest&) = delete;
+
   ~CodecEnumeratorTest() override = default;
 
   media::VideoEncodeAccelerator::SupportedProfiles MakeVp8Profiles() {
@@ -758,9 +762,6 @@ class CodecEnumeratorTest : public ::testing::Test {
                           1);
     return profiles;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodecEnumeratorTest);
 };
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdDefault) {

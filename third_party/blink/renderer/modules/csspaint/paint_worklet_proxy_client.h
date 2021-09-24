@@ -36,7 +36,6 @@ class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
       public Supplement<WorkerClients>,
       public PaintWorkletPainter {
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletProxyClient);
 
  public:
   // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
@@ -53,6 +52,10 @@ class MODULES_EXPORT PaintWorkletProxyClient
       PaintWorklet*,
       base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paintee,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue);
+
+  PaintWorkletProxyClient(const PaintWorkletProxyClient&) = delete;
+  PaintWorkletProxyClient& operator=(const PaintWorkletProxyClient&) = delete;
+
   ~PaintWorkletProxyClient() override = default;
 
   // PaintWorkletPainter implementation.

@@ -44,6 +44,9 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
 
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
+
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
     DCHECK(state_ == STARTED || state_ == PAUSED) << state_;
@@ -132,8 +135,6 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
   THREAD_CHECKER(io_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(

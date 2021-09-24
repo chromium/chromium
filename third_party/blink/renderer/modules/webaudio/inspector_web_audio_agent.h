@@ -24,6 +24,10 @@ class MODULES_EXPORT InspectorWebAudioAgent final
     : public InspectorBaseAgent<protocol::WebAudio::Metainfo> {
  public:
   explicit InspectorWebAudioAgent(Page*);
+
+  InspectorWebAudioAgent(const InspectorWebAudioAgent&) = delete;
+  InspectorWebAudioAgent& operator=(const InspectorWebAudioAgent&) = delete;
+
   ~InspectorWebAudioAgent() override;
 
   // Base Agent methods.
@@ -69,7 +73,6 @@ class MODULES_EXPORT InspectorWebAudioAgent final
 
   Member<Page> page_;
   InspectorAgentState::Boolean enabled_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorWebAudioAgent);
 };
 
 }  // namespace blink

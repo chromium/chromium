@@ -164,6 +164,9 @@ class WebMediaPlayerMS::FrameDeliverer {
     }
   }
 
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
+
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
     if (gpu_memory_buffer_pool_) {
@@ -299,8 +302,6 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   base::WeakPtrFactory<FrameDeliverer> weak_factory_for_pool_{this};
   base::WeakPtrFactory<FrameDeliverer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 WebMediaPlayerMS::WebMediaPlayerMS(

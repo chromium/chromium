@@ -32,6 +32,10 @@ class BroadcastChannel final : public EventTargetWithInlineData,
                                   ExceptionState&);
 
   BroadcastChannel(ExecutionContext*, const String& name);
+
+  BroadcastChannel(const BroadcastChannel&) = delete;
+  BroadcastChannel& operator=(const BroadcastChannel&) = delete;
+
   ~BroadcastChannel() override;
   void Dispose();
 
@@ -73,8 +77,6 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   // Notifies the scheduler that a broadcast channel is active.
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(BroadcastChannel);
 };
 
 }  // namespace blink

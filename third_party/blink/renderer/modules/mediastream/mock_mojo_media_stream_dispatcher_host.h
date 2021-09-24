@@ -20,6 +20,12 @@ class MockMojoMediaStreamDispatcherHost
     : public mojom::blink::MediaStreamDispatcherHost {
  public:
   MockMojoMediaStreamDispatcherHost();
+
+  MockMojoMediaStreamDispatcherHost(const MockMojoMediaStreamDispatcherHost&) =
+      delete;
+  MockMojoMediaStreamDispatcherHost& operator=(
+      const MockMojoMediaStreamDispatcherHost&) = delete;
+
   ~MockMojoMediaStreamDispatcherHost() override;
 
   mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
@@ -76,8 +82,6 @@ class MockMojoMediaStreamDispatcherHost
   WTF::Vector<MediaStreamDevice> video_devices_;
   GenerateStreamCallback generate_stream_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoMediaStreamDispatcherHost);
 };
 
 }  // namespace blink

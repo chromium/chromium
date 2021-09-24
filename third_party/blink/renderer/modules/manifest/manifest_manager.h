@@ -40,6 +40,10 @@ class MODULES_EXPORT ManifestManager
   static ManifestManager* From(LocalDOMWindow&);
 
   explicit ManifestManager(LocalDOMWindow&);
+
+  ManifestManager(const ManifestManager&) = delete;
+  ManifestManager& operator=(const ManifestManager&) = delete;
+
   ~ManifestManager() override;
 
   void DidChangeManifest();
@@ -110,8 +114,6 @@ class MODULES_EXPORT ManifestManager
 
   HeapMojoReceiverSet<mojom::blink::ManifestManager, ManifestManager>
       receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestManager);
 };
 
 }  // namespace blink

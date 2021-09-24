@@ -27,6 +27,10 @@ class MODULES_EXPORT MediaStreamDeviceObserver
  public:
   explicit MediaStreamDeviceObserver(LocalFrame* frame);
 
+  MediaStreamDeviceObserver(const MediaStreamDeviceObserver&) = delete;
+  MediaStreamDeviceObserver& operator=(const MediaStreamDeviceObserver&) =
+      delete;
+
   ~MediaStreamDeviceObserver() override;
 
   // Get all the media devices of video capture, e.g. webcam. This is the set
@@ -103,8 +107,6 @@ class MODULES_EXPORT MediaStreamDeviceObserver
 
   using LabelStreamMap = HashMap<String, Stream>;
   LabelStreamMap label_stream_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDeviceObserver);
 };
 
 }  // namespace blink

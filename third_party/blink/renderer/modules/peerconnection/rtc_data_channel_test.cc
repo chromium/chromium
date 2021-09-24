@@ -214,6 +214,10 @@ class MockDataChannel : public webrtc::DataChannelInterface {
 class RTCDataChannelTest : public ::testing::Test {
  public:
   RTCDataChannelTest() : signaling_thread_(new base::TestSimpleTaskRunner()) {}
+
+  RTCDataChannelTest(const RTCDataChannelTest&) = delete;
+  RTCDataChannelTest& operator=(const RTCDataChannelTest&) = delete;
+
   ~RTCDataChannelTest() override {
     execution_context_->NotifyContextDestroyed();
   }
@@ -228,8 +232,6 @@ class RTCDataChannelTest : public ::testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> signaling_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCDataChannelTest);
 };
 
 }  // namespace

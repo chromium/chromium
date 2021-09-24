@@ -168,6 +168,10 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool force_encoded_audio_insertable_streams,
       bool force_encoded_video_insertable_streams);
+
+  RTCPeerConnectionHandler(const RTCPeerConnectionHandler&) = delete;
+  RTCPeerConnectionHandler& operator=(const RTCPeerConnectionHandler&) = delete;
+
   virtual ~RTCPeerConnectionHandler();
 
   // Initialize method only used for unit test.
@@ -537,8 +541,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<RTCPeerConnectionHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RTCPeerConnectionHandler);
 };
 
 }  // namespace blink

@@ -47,6 +47,10 @@ namespace {
 class MockCredentialManager : public mojom::blink::CredentialManager {
  public:
   MockCredentialManager() {}
+
+  MockCredentialManager(const MockCredentialManager&) = delete;
+  MockCredentialManager& operator=(const MockCredentialManager&) = delete;
+
   ~MockCredentialManager() override {}
 
   void Bind(mojo::PendingReceiver<::blink::mojom::blink::CredentialManager>
@@ -96,8 +100,6 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   mojo::Receiver<::blink::mojom::blink::CredentialManager> receiver_{this};
 
   GetCallback get_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialManager);
 };
 
 class CredentialManagerTestingContext {

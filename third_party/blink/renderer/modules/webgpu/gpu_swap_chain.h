@@ -31,6 +31,10 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
                         WGPUTextureFormat,
                         cc::PaintFlags::FilterQuality,
                         IntSize);
+
+  GPUSwapChain(const GPUSwapChain&) = delete;
+  GPUSwapChain& operator=(const GPUSwapChain&) = delete;
+
   virtual ~GPUSwapChain();
 
   void Trace(Visitor* visitor) const;
@@ -61,9 +65,6 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUSwapChain);
 
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 

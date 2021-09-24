@@ -24,6 +24,12 @@ class MODULES_EXPORT PresentationAvailabilityCallbacks
  public:
   PresentationAvailabilityCallbacks(PresentationAvailabilityProperty*,
                                     const WTF::Vector<KURL>&);
+
+  PresentationAvailabilityCallbacks(const PresentationAvailabilityCallbacks&) =
+      delete;
+  PresentationAvailabilityCallbacks& operator=(
+      const PresentationAvailabilityCallbacks&) = delete;
+
   virtual ~PresentationAvailabilityCallbacks();
 
   virtual void Resolve(bool value);
@@ -34,8 +40,6 @@ class MODULES_EXPORT PresentationAvailabilityCallbacks
  private:
   Member<PresentationAvailabilityProperty> resolver_;
   const WTF::Vector<KURL> urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationAvailabilityCallbacks);
 };
 
 }  // namespace blink

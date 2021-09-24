@@ -262,6 +262,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 #endif
 
  public:
+  AXObject(const AXObject&) = delete;
+  AXObject& operator=(const AXObject&) = delete;
+
   virtual ~AXObject();
   virtual void Trace(Visitor*) const;
 
@@ -1436,8 +1439,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       uint32_t max_len = kMaxStringAttributeLength) const;
 
   static unsigned number_of_live_ax_objects_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXObject);
 };
 
 MODULES_EXPORT bool operator==(const AXObject& first, const AXObject& second);

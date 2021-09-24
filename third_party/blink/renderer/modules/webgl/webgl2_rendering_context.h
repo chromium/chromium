@@ -41,6 +41,10 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
@@ -51,9 +55,6 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
       return CanvasRenderingContext::CanvasRenderingAPI::kWebgl2;
     }
     void OnError(HTMLCanvasElement*, const String& error) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   WebGL2RenderingContext(

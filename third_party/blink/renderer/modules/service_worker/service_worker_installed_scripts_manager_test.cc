@@ -27,6 +27,10 @@ class BrowserSideSender
     : mojom::blink::ServiceWorkerInstalledScriptsManagerHost {
  public:
   BrowserSideSender() = default;
+
+  BrowserSideSender(const BrowserSideSender&) = delete;
+  BrowserSideSender& operator=(const BrowserSideSender&) = delete;
+
   ~BrowserSideSender() override = default;
 
   mojom::blink::ServiceWorkerInstalledScriptsInfoPtr CreateAndBind(
@@ -110,8 +114,6 @@ class BrowserSideSender
 
   mojo::ScopedDataPipeProducerHandle body_handle_;
   mojo::ScopedDataPipeProducerHandle meta_data_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSideSender);
 };
 
 CrossThreadHTTPHeaderMapData ToCrossThreadHTTPHeaderMapData(

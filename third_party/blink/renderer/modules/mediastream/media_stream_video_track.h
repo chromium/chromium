@@ -77,6 +77,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       bool pan_tilt_zoom_allowed,
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
       bool enabled);
+
+  MediaStreamVideoTrack(const MediaStreamVideoTrack&) = delete;
+  MediaStreamVideoTrack& operator=(const MediaStreamVideoTrack&) = delete;
+
   ~MediaStreamVideoTrack() override;
 
   // MediaStreamTrack overrides.
@@ -234,8 +238,6 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   WeakPersistent<MediaStreamVideoTrackSignalObserver> signal_observer_;
 
   base::WeakPtrFactory<MediaStreamVideoTrack> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoTrack);
 };
 
 }  // namespace blink

@@ -192,6 +192,11 @@ class MediaCapabilitiesKeySystemAccessInitializer final
                                             supported_configurations),
         get_perf_callback_(std::move(get_perf_callback)) {}
 
+  MediaCapabilitiesKeySystemAccessInitializer(
+      const MediaCapabilitiesKeySystemAccessInitializer&) = delete;
+  MediaCapabilitiesKeySystemAccessInitializer& operator=(
+      const MediaCapabilitiesKeySystemAccessInitializer&) = delete;
+
   ~MediaCapabilitiesKeySystemAccessInitializer() override = default;
 
   void RequestSucceeded(
@@ -226,8 +231,6 @@ class MediaCapabilitiesKeySystemAccessInitializer final
 
  private:
   GetPerfCallback get_perf_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCapabilitiesKeySystemAccessInitializer);
 };
 
 bool IsValidFrameRate(double framerate) {

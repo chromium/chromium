@@ -17,6 +17,10 @@ class PaintSize : public ScriptWrappable {
 
  public:
   explicit PaintSize(FloatSize size) : size_(size) {}
+
+  PaintSize(const PaintSize&) = delete;
+  PaintSize& operator=(const PaintSize&) = delete;
+
   ~PaintSize() override = default;
 
   float width() const { return size_.Width(); }
@@ -24,8 +28,6 @@ class PaintSize : public ScriptWrappable {
 
  private:
   FloatSize size_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintSize);
 };
 
 }  // namespace blink

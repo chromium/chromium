@@ -37,6 +37,11 @@ class MockDeviceMotionController final
       : PlatformEventController(window),
         did_change_device_motion_(false),
         motion_pump_(motion_pump) {}
+
+  MockDeviceMotionController(const MockDeviceMotionController&) = delete;
+  MockDeviceMotionController& operator=(const MockDeviceMotionController&) =
+      delete;
+
   ~MockDeviceMotionController() override {}
 
   void Trace(Visitor* visitor) const override {
@@ -69,8 +74,6 @@ class MockDeviceMotionController final
   bool did_change_device_motion_;
   int number_of_events_;
   Member<DeviceMotionEventPump> motion_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceMotionController);
 };
 
 class DeviceMotionEventPumpTest : public testing::Test {

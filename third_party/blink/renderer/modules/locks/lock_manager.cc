@@ -86,6 +86,9 @@ class LockManager::LockRequestImpl final
         manager->GetExecutionContext()->GetTaskRunner(TaskType::kWebLocks));
   }
 
+  LockRequestImpl(const LockRequestImpl&) = delete;
+  LockRequestImpl& operator=(const LockRequestImpl&) = delete;
+
   ~LockRequestImpl() override = default;
 
   void Trace(Visitor* visitor) const {
@@ -203,8 +206,6 @@ class LockManager::LockRequestImpl final
   // registered. If the context is destroyed then |manager_| will dispose of
   // |this| which terminates the request on the service side.
   Member<LockManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockRequestImpl);
 };
 
 const char LockManager::kSupplementName[] = "LockManager";
