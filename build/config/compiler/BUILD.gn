@@ -222,7 +222,7 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
 
 assert(!(llvm_force_head_revision && use_goma),
        "can't use goma with trunk clang")
-assert(!(llvm_force_head_revision && use_rbe), "can't use rbe with trunk clang")
+assert(!(llvm_force_head_revision && use_remoteexec), "can't use rbe with trunk clang")
 
 # default_include_dirs ---------------------------------------------------------
 #

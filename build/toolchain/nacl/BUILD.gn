@@ -53,7 +53,7 @@ if (host_os == "win") {
 # When the compilers are run via goma, rbe or ccache rather than directly by
 # GN/Ninja, the rbe/goma/ccache wrapper handles .bat files but gets confused
 # by being given the scriptprefix.
-if (host_os == "win" && !use_goma && !use_rbe && cc_wrapper == "") {
+if (host_os == "win" && !use_goma && !use_remoteexec && cc_wrapper == "") {
   compiler_scriptprefix = scriptprefix
 } else {
   compiler_scriptprefix = ""
@@ -159,7 +159,7 @@ template("nacl_glibc_toolchain") {
       current_cpu = toolchain_cpu
 
       # reclient does not support gcc.
-      use_rbe = false
+      use_remoteexec = false
       is_clang = false
       is_nacl_glibc = true
       use_lld = false

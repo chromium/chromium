@@ -24,7 +24,7 @@ assert(is_win)
 # This tool will is used as a wrapper for various commands below.
 tool_wrapper_path = rebase_path("tool_wrapper.py", root_build_dir)
 
-if (use_rbe) {
+if (use_remoteexec) {
   goma_prefix = ""
   rbe_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
   clang_prefix = rbe_prefix
