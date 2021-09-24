@@ -92,8 +92,8 @@
       debug: "#00ffff",
     },
     icon_color_disabled: {
-      light: "rgba($google_grey_700_rgb, $disabled_opacity)",
-      dark: "rgba($google_grey_200_rgb, $disabled_opacity)",
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
     },
     icon_color_alert: {
       light: "$google_red_600",
