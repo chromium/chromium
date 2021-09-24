@@ -507,6 +507,18 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for the button that contains the card information in the virtual card manual fallback bubble on Desktop. This message is shown when the button is hovered over and if the button has been recently clicked.">
       Copied
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+      Your bank wants to confirm it's you.
+    </message>
+    <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE_LABEL" desc="The label for the text message authentication mode text shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+      Text message
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+      Not seeing your current info? Please contact your bank to update it.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL" desc="The ok button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+      Send
+    </message>
   </if>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
     Virtual card

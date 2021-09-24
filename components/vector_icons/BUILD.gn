@@ -92,6 +92,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sensors.icon",
     "serial_port.icon",
     "settings.icon",
+    "sms.icon",
     "submenu_arrow.icon",
     "sync.icon",
     "troubleshoot.icon",
