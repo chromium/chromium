@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -369,8 +370,15 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
 
   IntRect anchor_rect_in_screen = RoundedIntRect(
       owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate());
-  IntRect avail_rect =
-      IntRect(0, 0, window->innerWidth(), window->innerHeight());
+  // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
+  // trigger a re-entrant style and layout update.
+  int zoomAdjustedWidth =
+      AdjustForAbsoluteZoom::AdjustInt(GetDocument().View()->Size().Width(),
+                                       window->GetFrame()->PageZoomFactor());
+  int zoomAdjustedHeight =
+      AdjustForAbsoluteZoom::AdjustInt(GetDocument().View()->Size().Height(),
+                                       window->GetFrame()->PageZoomFactor());
+  IntRect avail_rect = IntRect(0, 0, zoomAdjustedWidth, zoomAdjustedHeight);
 
   // Position the listbox part where is more space available.
   const int available_space_above = anchor_rect_in_screen.Y() - avail_rect.Y();
