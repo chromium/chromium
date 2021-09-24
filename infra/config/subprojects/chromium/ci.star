@@ -1539,6 +1539,7 @@ ci.chromium_builder(
     os = os.LINUX_BIONIC_REMOVE,
     tree_closing = False,
     schedule = "triggered",
+    triggered_by = [],
 )
 
 ci.chromium_builder(
