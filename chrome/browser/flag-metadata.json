@@ -674,11 +674,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "chrome-sharing-hub",
-    "owners": [ "kmilka", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "chrome-sharing-hub-launch-adjacent",
     "owners": [ "skare", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 97

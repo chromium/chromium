@@ -3018,10 +3018,6 @@ const char kChromeShareScreenshotName[] = "Chrome Share Screenshots";
 const char kChromeShareScreenshotDescription[] =
     "Enables UI to edit and share screenshots";
 
-const char kChromeSharingHubName[] = "Chrome Sharing Hub";
-const char kChromeSharingHubDescription[] =
-    "Enables the Chrome Sharing Hub/custom share sheet for Android.";
-
 const char kChromeSharingHubLaunchAdjacentName[] =
     "Launch new share hub actions in adjacent window";
 const char kChromeSharingHubLaunchAdjacentDescription[] =
