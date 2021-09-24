@@ -22,6 +22,7 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "v8/include/v8-object.h"
 
 namespace extensions {
 

@@ -12,6 +12,7 @@
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"
 #include "gin/handle.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;

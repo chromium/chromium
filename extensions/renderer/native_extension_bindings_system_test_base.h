@@ -23,6 +23,7 @@
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionHostMsg_APIActionOrEvent_Params;
 

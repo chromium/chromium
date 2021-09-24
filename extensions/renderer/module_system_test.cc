@@ -34,6 +34,13 @@
 #include "extensions/renderer/utils_native_handler.h"
 #include "gin/converter.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-statistics.h"
 
 namespace extensions {
 namespace {

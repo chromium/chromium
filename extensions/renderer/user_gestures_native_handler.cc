@@ -9,6 +9,9 @@
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;

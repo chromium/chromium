@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/wrappable.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class DictionaryValue;

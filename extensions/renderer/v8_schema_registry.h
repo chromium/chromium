@@ -12,8 +12,8 @@
 
 #include "base/macros.h"
 #include "gin/public/context_holder.h"
+#include "v8/include/v8-forward.h"
 #include "v8/include/v8-util.h"
-#include "v8/include/v8.h"
 
 namespace extensions {
 class NativeHandler;

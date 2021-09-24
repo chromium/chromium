@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "v8/include/v8-function-callback.h"
 
 namespace extensions {
 

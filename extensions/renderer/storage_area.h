@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class ListValue;

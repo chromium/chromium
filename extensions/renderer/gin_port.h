@@ -14,7 +14,7 @@
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/wrappable.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 class Arguments;

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 

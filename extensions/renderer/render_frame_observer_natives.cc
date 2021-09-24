@@ -16,6 +16,9 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

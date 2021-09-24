@@ -20,14 +20,10 @@
 #include "extensions/renderer/script_injector.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 class RenderFrame;
-}
-
-namespace v8 {
-class Value;
-template <class T> class Local;
 }
 
 namespace extensions {

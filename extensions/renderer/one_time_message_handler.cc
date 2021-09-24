@@ -29,6 +29,15 @@
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
 #include "ipc/ipc_message.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

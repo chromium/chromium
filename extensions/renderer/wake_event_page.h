@@ -16,7 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "ipc/ipc_sync_message_filter.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 class RenderThread;

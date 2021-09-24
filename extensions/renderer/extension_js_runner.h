@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;

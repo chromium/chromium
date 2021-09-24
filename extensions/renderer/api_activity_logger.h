@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class ListValue;

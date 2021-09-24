@@ -36,7 +36,7 @@
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 class ChromeRenderViewTest;
 class GURL;

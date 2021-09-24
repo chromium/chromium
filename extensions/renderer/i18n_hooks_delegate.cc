@@ -22,6 +22,12 @@
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

@@ -14,6 +14,9 @@
 #include "extensions/common/view_type_util.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

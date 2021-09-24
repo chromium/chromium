@@ -9,6 +9,8 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-function-callback.h"
 
 namespace extensions {
 

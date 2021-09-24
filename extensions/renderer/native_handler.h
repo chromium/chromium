@@ -6,7 +6,7 @@
 #define EXTENSIONS_RENDERER_NATIVE_HANDLER_H_
 
 #include "base/macros.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 

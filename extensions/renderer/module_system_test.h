@@ -16,7 +16,7 @@
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "gin/public/context_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class Extension;
