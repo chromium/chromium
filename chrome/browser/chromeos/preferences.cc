@@ -290,12 +290,15 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kLanguageRemapAssistantKeyTo,
       static_cast<int>(ui::chromeos::ModifierKey::kAssistantKey),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
-  // We don't sync the CapsLock remapping pref, since the UI hides this pref
-  // on certain devices, so syncing a non-default value to a device that
-  // doesn't allow changing the pref would be odd. http://crbug.com/167237
+
+  // Even though most of the Chrome OS devices don't have the CapsLock key - the
+  // user always could plug in an external keyboard with the CapsLock. So we're
+  // syncing the pref to support this case.
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapCapsLockKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kCapsLockKey));
+      static_cast<int>(ui::chromeos::ModifierKey::kCapsLockKey),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapEscapeKeyTo,
       static_cast<int>(ui::chromeos::ModifierKey::kEscapeKey),
