@@ -24,7 +24,7 @@
 <translation id="6697947395630195233">Pārlūkam Chrome ir nepieciešama piekļuve jūsu atrašanās vietas datiem, lai varētu tos kopīgot ar šo vietni.</translation>
 <translation id="7134415045456331657">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Saņemiet palīdzību<ph name="END_LINK1" /> vai <ph name="BEGIN_LINK2" />meklējiet ierīces atkārtoti<ph name="END_LINK2" />.</translation>
-<translation id="7884346424584885269">Pārlūkā Chrome tiek pieprasīta atļauja meklēt ierīces tuvumā. <ph name="BEGIN_LINK" />Atjaunināt atļaujas<ph name="END_LINK" />.</translation>
+<translation id="7884346424584885269">Pārlūkā Chrome tiek pieprasīta atļauja meklēt tuvumā esošas ierīces. <ph name="BEGIN_LINK" />Atjaunināt atļaujas<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Nezināma vai neatbalstīta ierīce (<ph name="DEVICE_ID" />)</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signāla stipruma līmenis: # josla}zero{Signāla stipruma līmenis: # joslu}one{Signāla stipruma līmenis: # josla}other{Signāla stipruma līmenis: # joslas}}</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
