@@ -110,7 +110,8 @@ PolicyBase::PolicyBase()
       policy_(nullptr),
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
-      effective_token_(nullptr) {
+      effective_token_(nullptr),
+      allow_no_sandbox_job_(false) {
   ::InitializeCriticalSection(&lock_);
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
@@ -799,6 +800,14 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
 std::unique_ptr<PolicyInfo> PolicyBase::GetPolicyInfo() {
   auto diagnostic = std::make_unique<PolicyDiagnostic>(this);
   return diagnostic;
+}
+
+void PolicyBase::SetAllowNoSandboxJob() {
+  allow_no_sandbox_job_ = true;
+}
+
+bool PolicyBase::GetAllowNoSandboxJob() {
+  return allow_no_sandbox_job_;
 }
 
 }  // namespace sandbox

@@ -80,6 +80,8 @@ class PolicyBase final : public TargetPolicy {
   scoped_refptr<AppContainer> GetAppContainer() override;
   void SetEffectiveToken(HANDLE token) override;
   std::unique_ptr<PolicyInfo> GetPolicyInfo() override;
+  void SetAllowNoSandboxJob() override;
+  bool GetAllowNoSandboxJob() override;
 
   // Get the AppContainer profile as its internal type.
   scoped_refptr<AppContainerBase> GetAppContainerBase();
@@ -192,6 +194,7 @@ class PolicyBase final : public TargetPolicy {
   scoped_refptr<AppContainerBase> app_container_;
 
   HANDLE effective_token_;
+  bool allow_no_sandbox_job_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyBase);
 };

@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -140,6 +141,8 @@ class TestTargetPolicy : public TargetPolicy {
   }
 
   std::unique_ptr<PolicyInfo> GetPolicyInfo() override { return nullptr; }
+  void SetAllowNoSandboxJob() override { NOTREACHED(); }
+  bool GetAllowNoSandboxJob() override { return false; }
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;

@@ -305,7 +305,7 @@ std::wstring PrependWindowsSessionPath(const wchar_t* object) {
 // Checks if the sandbox can be let to run without a job object assigned.
 // Returns true if the job object has to be applied to the sandbox and false
 // otherwise.
-bool ShouldSetJobLevel(const base::CommandLine& cmd_line) {
+bool ShouldSetJobLevel(bool allow_no_sandbox_job) {
   // Windows 8 allows nested jobs so we don't need to check if we are in other
   // job.
   if (base::win::GetVersion() >= base::win::Version::WIN8)
@@ -337,7 +337,7 @@ bool ShouldSetJobLevel(const base::CommandLine& cmd_line) {
     // TODO(pastarmovj): Even though the number are low, this flag is still
     // necessary in some limited set of cases. Remove it once Windows 7 is no
     // longer supported together with the rest of the checks in this function.
-    return !cmd_line.HasSwitch(switches::kAllowNoSandboxJob);
+    return !allow_no_sandbox_job;
   }
 
   // Allow running without the sandbox in this case. This slightly reduces the
@@ -817,7 +817,7 @@ ResultCode SandboxWin::SetJobLevel(const base::CommandLine& cmd_line,
                                    JobLevel job_level,
                                    uint32_t ui_exceptions,
                                    TargetPolicy* policy) {
-  if (!ShouldSetJobLevel(cmd_line))
+  if (!ShouldSetJobLevel(policy->GetAllowNoSandboxJob()))
     return policy->SetJobLevel(JOB_NONE, 0);
 
   ResultCode ret = policy->SetJobLevel(job_level, ui_exceptions);
@@ -986,12 +986,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
   const base::CommandLine& launcher_process_command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  // Propagate the --allow-no-job flag if present.
-  if (launcher_process_command_line.HasSwitch(switches::kAllowNoSandboxJob) &&
-      !cmd_line->HasSwitch(switches::kAllowNoSandboxJob)) {
-    cmd_line->AppendSwitch(switches::kAllowNoSandboxJob);
-  }
-
   SandboxType sandbox_type = delegate->GetSandboxType();
   // --no-sandbox and kNoSandbox are launched without creating a Policy.
   if (IsUnsandboxedSandboxType(sandbox_type) ||
@@ -1002,6 +996,10 @@ ResultCode SandboxWin::StartSandboxedProcess(
   }
 
   scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
+
+  // Allow no sandbox job if the --allow-no-sandbox-job switch is present.
+  if (launcher_process_command_line.HasSwitch(switches::kAllowNoSandboxJob))
+    policy->SetAllowNoSandboxJob();
 
   // Add any handles to be inherited to the policy.
   for (HANDLE handle : handles_to_inherit)

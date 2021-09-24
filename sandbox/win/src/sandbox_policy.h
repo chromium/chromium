@@ -274,6 +274,13 @@ class TargetPolicy {
   // Returns a snapshot of the policy configuration.
   virtual std::unique_ptr<PolicyInfo> GetPolicyInfo() = 0;
 
+  // Allows the launch of the the target process to proceed even if no job can
+  // be created.
+  virtual void SetAllowNoSandboxJob() = 0;
+
+  // Returns true if target process launch should proceed if job creation fails.
+  virtual bool GetAllowNoSandboxJob() = 0;
+
  protected:
   ~TargetPolicy() {}
 };
