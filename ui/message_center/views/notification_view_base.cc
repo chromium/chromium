@@ -688,10 +688,6 @@ std::unique_ptr<views::View> NotificationViewBase::CreateImageContainerView() {
   image_container_view->SetLayoutManager(std::make_unique<views::FillLayout>());
   image_container_view->SetBorder(
       views::CreateEmptyBorder(kLargeImageContainerPadding));
-  int max_width = kNotificationWidth - kLargeImageContainerPadding.width() -
-                  GetInsets().width();
-  image_container_view->AddChildView(std::make_unique<LargeImageView>(
-      gfx::Size(max_width, kLargeImageMaxHeight)));
   image_container_view_ = image_container_view.get();
   return image_container_view;
 }
@@ -969,6 +965,7 @@ void NotificationViewBase::CreateOrUpdateImageView(
                     GetInsets().width();
     image_container_view_->AddChildView(std::make_unique<LargeImageView>(
         gfx::Size(max_width, kLargeImageMaxHeight)));
+    image_container_view_->SetVisible(true);
   }
 
   static_cast<LargeImageView*>(image_container_view_->children().front())
@@ -986,8 +983,6 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
     action_buttons_.clear();
     actions_row_->SetVisible(expanded_ && !buttons.empty());
   }
-
-  // DCHECK_EQ(this, actions_row_->parent());
 
   // Hide inline reply field if it doesn't exist anymore.
   if (inline_reply_->GetVisible()) {

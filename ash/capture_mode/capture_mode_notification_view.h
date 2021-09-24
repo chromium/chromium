@@ -42,10 +42,8 @@ class ASH_EXPORT CaptureModeNotificationView
   void Layout() override;
 
   // views::ViewObserver:
-  void OnChildViewAdded(views::View* observed_view,
-                        views::View* child) override;
-  void OnChildViewRemoved(views::View* observed_view,
-                          views::View* child) override;
+  void OnViewVisibilityChanged(View* observed_view,
+                               View* starting_view) override;
   void OnViewIsDeleting(View* observed_view) override;
 
  private:

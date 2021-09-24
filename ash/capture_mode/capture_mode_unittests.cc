@@ -3029,8 +3029,7 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   histogram_tester.ExpectBucketCount(kTabletHistogram, 0, 1);
 }
 
-// Disabled due to excessive flakiness. https://crbug.com/1245273
-TEST_F(CaptureModeTest, DISABLED_FullscreenCapture) {
+TEST_F(CaptureModeTest, FullscreenCapture) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   CaptureModeController* controller = StartCaptureSession(

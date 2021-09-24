@@ -143,10 +143,8 @@ CaptureModeNotificationView::CaptureModeNotificationView(
   if (!notification.image().IsEmpty())
     CreateExtraView();
 
-  // We need to observe this view as |this| view will be re-used for
-  // notifications for with/without image scenarios if |this| is not destroyed
-  // by the user or by the timeout before the next notification shows up.
-  views::View::AddObserver(this);
+  // Observes image container to make changes to the extra view if necessary.
+  image_container_view()->AddObserver(this);
 }
 
 CaptureModeNotificationView::~CaptureModeNotificationView() = default;
@@ -188,20 +186,20 @@ void CaptureModeNotificationView::Layout() {
   extra_view_->SetBoundsRect(extra_view_bounds);
 }
 
-void CaptureModeNotificationView::OnChildViewAdded(views::View* observed_view,
-                                                   views::View* child) {
-  if (observed_view == this && child == image_container_view())
-    CreateExtraView();
-}
-
-void CaptureModeNotificationView::OnChildViewRemoved(views::View* observed_view,
-                                                     views::View* child) {
-  if (observed_view == this && child == image_container_view())
-    extra_view_ = nullptr;
+void CaptureModeNotificationView::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  if (observed_view == image_container_view() &&
+      starting_view == image_container_view()) {
+    if (!image_container_view()->GetVisible())
+      extra_view_ = nullptr;
+    else if (image_container_view()->children().empty())
+      CreateExtraView();
+  }
 }
 
 void CaptureModeNotificationView::OnViewIsDeleting(View* observed_view) {
-  DCHECK_EQ(observed_view, this);
+  DCHECK_EQ(observed_view, image_container_view());
   views::View::RemoveObserver(this);
 }
 
