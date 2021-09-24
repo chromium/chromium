@@ -56,10 +56,10 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Adds new input method to given list if possible
     bool EnableInputMethodImpl(
         const std::string& input_method_id,
-        std::vector<std::string>* new_active_input_method_ids) const;
+        std::vector<std::string>* new_enabled_input_method_ids) const;
 
-    // Returns true if |input_method_id| is in |active_input_method_ids|.
-    bool InputMethodIsActivated(const std::string& input_method_id) const;
+    // Returns true if |input_method_id| is in |enabled_input_method_ids|.
+    bool InputMethodIsEnabled(const std::string& input_method_id) const;
 
     // Returns true if given input method requires pending extension.
     bool MethodAwaitsExtensionLoad(const std::string& input_method_id) const;
@@ -82,18 +82,18 @@ class InputMethodManagerImpl : public InputMethodManager,
     void ChangeInputMethodToJpIme() override;
     void ToggleInputMethodForJpIme() override;
     bool EnableInputMethod(
-        const std::string& new_active_input_method_id) override;
+        const std::string& new_enabled_input_method_id) override;
     void EnableLoginLayouts(
         const std::string& language_code,
         const std::vector<std::string>& initial_layouts) override;
     void EnableLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;
-    std::unique_ptr<InputMethodDescriptors> GetActiveInputMethods()
+    std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const override;
-    const std::vector<std::string>& GetActiveInputMethodIds() const override;
+    const std::vector<std::string>& GetEnabledInputMethodIds() const override;
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
-    size_t GetNumActiveInputMethods() const override;
+    size_t GetNumEnabledInputMethods() const override;
     void SetEnabledExtensionImes(std::vector<std::string>* ids) override;
     void SetInputMethodLoginDefault() override;
     void SetInputMethodLoginDefaultFromVPD(const std::string& locale,
@@ -102,7 +102,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     void SwitchToLastUsedInputMethod() override;
     InputMethodDescriptor GetCurrentInputMethod() const override;
     bool ReplaceEnabledInputMethods(
-        const std::vector<std::string>& new_active_input_method_ids) override;
+        const std::vector<std::string>& new_enabled_input_method_ids) override;
     bool SetAllowedInputMethods(
         const std::vector<std::string>& new_allowed_input_method_ids,
         bool enable_allowed_input_methods) override;
@@ -125,8 +125,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     std::string last_used_input_method_id;
     InputMethodDescriptor current_input_method;
 
-    // The active input method ids cache.
-    std::vector<std::string> active_input_method_ids;
+    // The enabled input method ids cache.
+    std::vector<std::string> enabled_input_method_ids;
 
     // The allowed keyboard layout input methods (e.g. by policy).
     std::vector<std::string> allowed_keyboard_layout_input_method_ids;
@@ -161,8 +161,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     // allowed input method, if no hardware input method is allowed.
     std::string GetAllowedFallBackKeyboardLayout() const;
 
-    // The URL of the input view of the active ime with parameters (e.g. layout,
-    // keyset).
+    // The URL of the input view of the current (active) ime with parameters
+    // (e.g. layout, keyset).
     GURL input_view_url;
 
     // Whether the input view URL has been forcibly overridden e.g. to show a
@@ -274,13 +274,13 @@ class InputMethodManagerImpl : public InputMethodManager,
 
   // Starts or stops the system input method framework as needed.
   // (after list of enabled input methods has been updated).
-  // If state is active, active input method is updated.
+  // If state is active, current (active) input method is updated.
   void ReconfigureIMFramework(StateImpl* state);
 
   // Record input method usage histograms.
   void RecordInputMethodUsage(const std::string& input_method_id);
 
-  // Notifies the current input method or the list of active input method IDs
+  // Notifies the current input method or the list of enabled input method IDs
   // changed.
   void NotifyImeMenuListChanged();
 

@@ -147,18 +147,18 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   // lock_screen_utils::SetUserInputMethod
   user_ime_state->ChangeInputMethod(valid_lock_screen_method_, false);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
   auto lock_screen_ime_state = input_manager->GetActiveIMEState();
   EXPECT_NE(user_ime_state, lock_screen_ime_state);
   // Not valid method should be filtered out.
-  EXPECT_EQ(lock_screen_ime_state->GetNumActiveInputMethods(), 2u);
+  EXPECT_EQ(lock_screen_ime_state->GetNumEnabledInputMethods(), 2u);
 
-  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                               not_valid_lock_screen_method_));
 
   // Check that input methods are restored in the session.
@@ -166,10 +166,10 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   locker_tester.WaitForUnlock();
   EXPECT_EQ(input_manager->GetActiveIMEState(), user_ime_state);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              not_valid_lock_screen_method_));
 }
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   input_method::InputMethodManager* input_manager =
       input_method::InputMethodManager::Get();
   // Check that policy applies on the login screen.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
             allowed_input_method);
 
   LoginUser(test_account_id);
@@ -226,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   locker_tester.Lock();
 
   // Inputs should stay the same as inside the session.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
-            user_ime_state->GetActiveInputMethodIds());
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
+            user_ime_state->GetEnabledInputMethodIds());
 
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetAllowedInputMethods().size(),
             0u);

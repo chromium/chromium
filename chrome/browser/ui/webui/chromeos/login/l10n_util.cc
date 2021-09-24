@@ -516,7 +516,7 @@ base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
   }
 
   std::unique_ptr<input_method::InputMethodDescriptors> input_methods(
-      manager->GetActiveIMEState()->GetActiveInputMethods());
+      manager->GetActiveIMEState()->GetEnabledInputMethods());
   std::set<std::string> input_methods_added;
 
   for (std::vector<std::string>::const_iterator i =

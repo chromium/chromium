@@ -488,9 +488,9 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
   if (IsAuthError(error)) {
     input_method::InputMethodManager* ime_manager =
         input_method::InputMethodManager::Get();
-    // Display a hint to switch keyboards if there are other active input
+    // Display a hint to switch keyboards if there are other enabled input
     // methods.
-    if (ime_manager->GetActiveIMEState()->GetNumActiveInputMethods() > 1) {
+    if (ime_manager->GetActiveIMEState()->GetNumEnabledInputMethods() > 1) {
       keyboard_hint =
           l10n_util::GetStringUTF8(IDS_LOGIN_ERROR_KEYBOARD_SWITCH_HINT);
     }

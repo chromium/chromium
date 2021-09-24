@@ -132,15 +132,15 @@ class TestInputMethodManager : public im::MockInputMethodManager {
   class TestState : public im::MockInputMethodManager::State {
    public:
     TestState()
-        : added_input_method_extensions_(), active_input_method_ids_() {}
+        : added_input_method_extensions_(), enabled_input_method_ids_() {}
 
-    const std::vector<std::string>& GetActiveInputMethodIds() const override {
-      return active_input_method_ids_;
+    const std::vector<std::string>& GetEnabledInputMethodIds() const override {
+      return enabled_input_method_ids_;
     }
 
     im::InputMethodDescriptor GetCurrentInputMethod() const override {
       im::InputMethodDescriptor descriptor(
-          active_ime_id_, "", "", "", std::vector<std::string>(),
+          current_ime_id_, "", "", "", std::vector<std::string>(),
           false /* is_login_keyboard */, GURL(), GURL());
       return descriptor;
     }
@@ -158,30 +158,30 @@ class TestInputMethodManager : public im::MockInputMethodManager {
     }
 
     bool EnableInputMethod(
-        const std::string& new_active_input_method_id) override {
-      enabled_input_methods_.push_back(new_active_input_method_id);
+        const std::string& new_enabled_input_method_id) override {
+      enabled_input_methods_.push_back(new_enabled_input_method_id);
       return true;
     }
 
-    void AddActiveInputMethodId(const std::string& ime_id) {
-      if (!std::count(active_input_method_ids_.begin(),
-                      active_input_method_ids_.end(), ime_id)) {
-        active_input_method_ids_.push_back(ime_id);
+    void AddEnabledInputMethodId(const std::string& ime_id) {
+      if (!std::count(enabled_input_method_ids_.begin(),
+                      enabled_input_method_ids_.end(), ime_id)) {
+        enabled_input_method_ids_.push_back(ime_id);
       }
     }
 
-    void RemoveActiveInputMethodId(const std::string& ime_id) {
-      base::EraseIf(active_input_method_ids_,
+    void RemoveEnabledInputMethodId(const std::string& ime_id) {
+      base::EraseIf(enabled_input_method_ids_,
                     [&ime_id](const std::string& id) { return id == ime_id; });
     }
 
-    void SetActiveInputMethod(const std::string& ime_id) {
-      active_ime_id_ = ime_id;
+    void SetCurrentInputMethod(const std::string& ime_id) {
+      current_ime_id_ = ime_id;
     }
 
     void GetInputMethodExtensions(
         im::InputMethodDescriptors* descriptors) override {
-      for (const auto& id : active_input_method_ids_) {
+      for (const auto& id : enabled_input_method_ids_) {
         descriptors->push_back(im::InputMethodDescriptor(
             id, "", "", {}, {}, false, GURL(), GURL()));
       }
@@ -205,8 +205,8 @@ class TestInputMethodManager : public im::MockInputMethodManager {
     ~TestState() override = default;
 
    private:
-    std::vector<std::string> active_input_method_ids_;
-    std::string active_ime_id_;
+    std::vector<std::string> enabled_input_method_ids_;
+    std::string current_ime_id_;
   };
 
   TestInputMethodManager() {
@@ -335,16 +335,16 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme) {
       aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
 
   // EnableIme is called only when ARC IME is enable or disabled.
-  imm()->state()->AddActiveInputMethodId(extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(extension_ime_id);
   service()->ImeMenuListChanged();
   EXPECT_EQ(0u, bridge()->enable_ime_calls_.size());
 
-  imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   service()->ImeMenuListChanged();
   EXPECT_EQ(0u, bridge()->enable_ime_calls_.size());
 
   // Enable the ARC IME and verify that EnableIme is called.
-  imm()->state()->AddActiveInputMethodId(arc_ime_id);
+  imm()->state()->AddEnabledInputMethodId(arc_ime_id);
   service()->ImeMenuListChanged();
   ASSERT_EQ(1u, bridge()->enable_ime_calls_.size());
   EXPECT_EQ(aeiu::GetComponentIDByInputMethodID(arc_ime_id),
@@ -352,7 +352,7 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme) {
   EXPECT_TRUE(std::get<bool>(bridge()->enable_ime_calls_[0]));
 
   // Disable the ARC IME and verify that EnableIme is called with false.
-  imm()->state()->RemoveActiveInputMethodId(arc_ime_id);
+  imm()->state()->RemoveEnabledInputMethodId(arc_ime_id);
   service()->ImeMenuListChanged();
   ASSERT_EQ(2u, bridge()->enable_ime_calls_.size());
   EXPECT_EQ(aeiu::GetComponentIDByInputMethodID(arc_ime_id),
@@ -360,7 +360,7 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme) {
   EXPECT_FALSE(std::get<bool>(bridge()->enable_ime_calls_[1]));
 
   // EnableIme is not called when non ARC IME is disabled.
-  imm()->state()->RemoveActiveInputMethodId(extension_ime_id);
+  imm()->state()->RemoveEnabledInputMethodId(extension_ime_id);
   service()->ImeMenuListChanged();
   EXPECT_EQ(2u, bridge()->enable_ime_calls_.size());
 }
@@ -379,11 +379,11 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme_WithPrefs) {
   const std::string arc_ime_id =
       aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
 
-  imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   service()->ImeMenuListChanged();
   EXPECT_EQ(0u, bridge()->enable_ime_calls_.size());
 
-  imm()->state()->AddActiveInputMethodId(arc_ime_id);
+  imm()->state()->AddEnabledInputMethodId(arc_ime_id);
   service()->ImeMenuListChanged();
   ASSERT_EQ(1u, bridge()->enable_ime_calls_.size());
 
@@ -394,7 +394,7 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme_WithPrefs) {
       prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", component_extension_ime_id.c_str(),
                          arc_ime_id.c_str()));
-  imm()->state()->RemoveActiveInputMethodId(arc_ime_id);
+  imm()->state()->RemoveEnabledInputMethodId(arc_ime_id);
   service()->ImeMenuListChanged();
   // Verify that EnableIme(id, false) is NOT called.
   EXPECT_EQ(1u, bridge()->enable_ime_calls_.size());  // still 1u, not 2u.
@@ -419,22 +419,22 @@ TEST_F(ArcInputMethodManagerServiceTest, SwitchImeTo) {
   const std::string arc_ime_id = aeiu::GetArcInputMethodID(
       GenerateId("test.arc.ime"), "ime.id.in.arc.container");
 
-  // Set active input method to the extension ime.
-  imm()->state()->SetActiveInputMethod(extension_ime_id);
+  // Set current (active) input method to the extension ime.
+  imm()->state()->SetCurrentInputMethod(extension_ime_id);
   service()->InputMethodChanged(imm(), nullptr, false /* show_message */);
   // ArcImeService should be selected.
   ASSERT_EQ(1u, bridge()->switch_ime_to_calls_.size());
   EXPECT_EQ(arc_ime_service_id, bridge()->switch_ime_to_calls_[0]);
 
-  // Set active input method to the component extension ime.
-  imm()->state()->SetActiveInputMethod(component_extension_ime_id);
+  // Set current (active) input method to the component extension ime.
+  imm()->state()->SetCurrentInputMethod(component_extension_ime_id);
   service()->InputMethodChanged(imm(), nullptr, false /* show_message */);
   // ArcImeService should be selected.
   ASSERT_EQ(2u, bridge()->switch_ime_to_calls_.size());
   EXPECT_EQ(arc_ime_service_id, bridge()->switch_ime_to_calls_[1]);
 
-  // Set active input method to the arc ime.
-  imm()->state()->SetActiveInputMethod(arc_ime_id);
+  // Set current (active) input method to the arc ime.
+  imm()->state()->SetCurrentInputMethod(arc_ime_id);
   service()->InputMethodChanged(imm(), nullptr, false /* show_message */);
   ASSERT_EQ(3u, bridge()->switch_ime_to_calls_.size());
   EXPECT_EQ("ime.id.in.arc.container", bridge()->switch_ime_to_calls_[2]);
@@ -619,8 +619,8 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableArcIMEsOnlyInTabletMode) {
   ToggleTabletMode(true);
 
   // Activate the extension IME and the component extension IME.
-  imm()->state()->AddActiveInputMethodId(extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
@@ -728,8 +728,8 @@ TEST_F(ArcInputMethodManagerServiceTest,
   ToggleTabletMode(true);
 
   // Activate the extension IME and the component extension IME.
-  imm()->state()->AddActiveInputMethodId(extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
@@ -829,8 +829,8 @@ TEST_F(ArcInputMethodManagerServiceTest,
   ToggleTabletMode(true);
 
   // Activate the extension IME and the component extension IME.
-  imm()->state()->AddActiveInputMethodId(extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(extension_ime_id);
+  imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
@@ -942,8 +942,8 @@ TEST_F(ArcInputMethodManagerServiceTest, DisableFallbackVirtualKeyboard) {
   const std::string arc_ime_id = aeiu::GetArcInputMethodID(
       GenerateId("test.arc.ime"), "ime.id.in.arc.container");
 
-  // Set active input method to the extension ime.
-  imm()->state()->SetActiveInputMethod(extension_ime_id);
+  // Set current (active) input method to the extension ime.
+  imm()->state()->SetCurrentInputMethod(extension_ime_id);
   service()->InputMethodChanged(imm(), profile(), false /* show_message */);
 
   // Enable Chrome OS virtual keyboard
@@ -955,13 +955,13 @@ TEST_F(ArcInputMethodManagerServiceTest, DisableFallbackVirtualKeyboard) {
       client->IsEnableFlagSet(keyboard::KeyboardEnableFlag::kAndroidDisabled));
 
   // It's disabled when the ARC IME is activated.
-  imm()->state()->SetActiveInputMethod(arc_ime_id);
+  imm()->state()->SetCurrentInputMethod(arc_ime_id);
   service()->InputMethodChanged(imm(), profile(), false);
   EXPECT_TRUE(
       client->IsEnableFlagSet(keyboard::KeyboardEnableFlag::kAndroidDisabled));
 
   // It's re-enabled when the ARC IME is deactivated.
-  imm()->state()->SetActiveInputMethod(component_extension_ime_id);
+  imm()->state()->SetCurrentInputMethod(component_extension_ime_id);
   service()->InputMethodChanged(imm(), profile(), false);
   EXPECT_FALSE(
       client->IsEnableFlagSet(keyboard::KeyboardEnableFlag::kAndroidDisabled));

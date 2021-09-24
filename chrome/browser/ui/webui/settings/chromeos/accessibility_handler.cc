@@ -245,7 +245,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
   input_method::InputMethodManager* ime_manager =
       input_method::InputMethodManager::Get();
   std::vector<std::string> input_method_ids =
-      ime_manager->GetActiveIMEState()->GetActiveInputMethodIds();
+      ime_manager->GetActiveIMEState()->GetEnabledInputMethodIds();
   std::vector<std::string> ime_languages;
   ime_manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
       input_method_ids, &ime_languages);

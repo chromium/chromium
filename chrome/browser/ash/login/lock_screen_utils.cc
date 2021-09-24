@@ -34,7 +34,7 @@ bool SetUserInputMethodImpl(
                  << " (entry dropped). Use hardware default instead.";
     return false;
   }
-  if (!base::Contains(ime_state->GetActiveInputMethodIds(),
+  if (!base::Contains(ime_state->GetEnabledInputMethodIds(),
                       user_input_method)) {
     if (!ime_state->EnableInputMethod(user_input_method)) {
       DLOG(ERROR) << "SetUserInputMethod: user input method '"

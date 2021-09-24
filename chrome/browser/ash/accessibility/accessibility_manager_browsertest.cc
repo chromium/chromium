@@ -254,10 +254,10 @@ void SetSelectToSpeakEnabledPref(bool enabled) {
                                    enabled);
 }
 
-bool IsBrailleImeActive() {
+bool IsBrailleImeEnabled() {
   InputMethodManager* imm = InputMethodManager::Get();
   std::unique_ptr<InputMethodDescriptors> descriptors =
-      imm->GetActiveIMEState()->GetActiveInputMethods();
+      imm->GetActiveIMEState()->GetEnabledInputMethods();
   for (const auto& descriptor : *descriptors) {
     if (descriptor.id() == extension_ime_util::kBrailleImeEngineId)
       return true;
@@ -1423,7 +1423,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
           GetActiveUserProfile()));
 
   // Make sure we start in the expected state.
-  EXPECT_FALSE(IsBrailleImeActive());
+  EXPECT_FALSE(IsBrailleImeEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
 
   // Signal the accessibility manager that a braille display was connected.
@@ -1431,10 +1431,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
 
   // Now, both spoken feedback and the Braille IME should be enabled.
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
-  EXPECT_TRUE(IsBrailleImeActive());
+  EXPECT_TRUE(IsBrailleImeEnabled());
 
   // Send a braille dots key event and make sure that the braille IME is
-  // enabled.
+  // activated.
   KeyEvent event;
   event.command = extensions::api::braille_display_private::KEY_COMMAND_DOTS;
   event.braille_dots = std::make_unique<int>(0);
@@ -1442,17 +1442,17 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   EXPECT_TRUE(IsBrailleImeCurrent());
 
   // Unplug the display.  Spoken feedback remains on, but the Braille IME
-  // should get deactivated.
+  // should get disabled and deactivated.
   SetBrailleDisplayAvailability(false);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsBrailleImeActive());
+  EXPECT_FALSE(IsBrailleImeEnabled());
   EXPECT_FALSE(IsBrailleImeCurrent());
 
-  // Plugging in a display while spoken feedback is enabled should activate
+  // Plugging in a display while spoken feedback is enabled should enable
   // the Braille IME.
   SetBrailleDisplayAvailability(true);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
-  EXPECT_TRUE(IsBrailleImeActive());
+  EXPECT_TRUE(IsBrailleImeEnabled());
 }
 
 }  // namespace ash

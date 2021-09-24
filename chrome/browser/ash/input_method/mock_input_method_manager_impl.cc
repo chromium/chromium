@@ -14,7 +14,7 @@ namespace input_method {
 
 MockInputMethodManagerImpl::State::State(MockInputMethodManagerImpl* manager)
     : manager_(manager) {
-  active_input_method_ids.emplace_back("xkb:us::eng");
+  enabled_input_method_ids.emplace_back("xkb:us::eng");
 }
 
 scoped_refptr<InputMethodManager::State>
@@ -24,7 +24,7 @@ MockInputMethodManagerImpl::State::Clone() const {
 }
 
 std::unique_ptr<InputMethodDescriptors>
-MockInputMethodManagerImpl::State::GetActiveInputMethods() const {
+MockInputMethodManagerImpl::State::GetEnabledInputMethods() const {
   std::unique_ptr<InputMethodDescriptors> result =
       std::make_unique<InputMethodDescriptors>();
   result->push_back(InputMethodUtil::GetFallbackInputMethodDescriptor());
@@ -36,8 +36,8 @@ MockInputMethodManagerImpl::State::GetInputMethodFromId(
     const std::string& input_method_id) const {
   static const InputMethodDescriptor defaultInputMethod =
       InputMethodUtil::GetFallbackInputMethodDescriptor();
-  for (const auto& active_input_method_id : active_input_method_ids) {
-    if (input_method_id == active_input_method_id) {
+  for (const auto& enabled_input_method_id : enabled_input_method_ids) {
+    if (input_method_id == enabled_input_method_id) {
       return &defaultInputMethod;
     }
   }

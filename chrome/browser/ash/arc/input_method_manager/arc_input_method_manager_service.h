@@ -138,7 +138,7 @@ class ArcInputMethodManagerService
   Profile* const profile_;
 
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
-  std::set<std::string> active_arc_ime_ids_;
+  std::set<std::string> enabled_arc_ime_ids_;
   std::unique_ptr<ArcInputMethodState::Delegate> arc_ime_state_delegate_;
   ArcInputMethodState arc_ime_state_;
   InputMethodPrefs prefs_;
@@ -153,7 +153,7 @@ class ArcInputMethodManagerService
   const std::string proxy_ime_extension_id_;
   std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
-  // The currently active input method, observed for
+  // The current (active) input method, observed for
   // OnShowVirtualKeyboardIfEnabled.
   ui::InputMethod* input_method_ = nullptr;
   bool is_arc_ime_active_ = false;

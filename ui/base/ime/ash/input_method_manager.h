@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
     // Called when the IME menu is activated or deactivated.
     virtual void ImeMenuActivationChanged(bool is_active) = 0;
-    // Called when the current input method or the list of active input method
+    // Called when the current input method or the list of enabled input method
     // IDs is changed.
     virtual void ImeMenuListChanged() = 0;
     // Called when the input.ime.setMenuItems or input.ime.updateMenuItems API
@@ -146,9 +146,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void RemoveInputMethodExtension(
         const std::string& extension_id) = 0;
 
-    // Changes the current input method to |input_method_id|. If
-    // |input_method_id|
-    // is not active, switch to the first one in the active input method list.
+    // Changes the current (active) input method to |input_method_id|. If
+    // |input_method_id| is not enabled, switch to the first one in the enabled
+    // input method list.
     virtual void ChangeInputMethod(const std::string& input_method_id,
                                    bool show_message) = 0;
 
@@ -157,10 +157,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void ChangeInputMethodToJpIme() = 0;
     virtual void ToggleInputMethodForJpIme() = 0;
 
-    // Adds one entry to the list of active input method IDs, and then starts or
-    // stops the system input method framework as needed.
+    // Adds one entry to the list of enabled input method IDs, and then starts
+    // or stops the system input method framework as needed.
     virtual bool EnableInputMethod(
-        const std::string& new_active_input_method_id) = 0;
+        const std::string& new_enabled_input_method_id) = 0;
 
     // Enables "login" keyboard layouts (e.g. US Qwerty, US Dvorak, French
     // Azerty) that are necessary for the |language_code| and then switches to
@@ -180,19 +180,19 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // Returns a list of descriptors for all Input Method Extensions.
     virtual void GetInputMethodExtensions(InputMethodDescriptors* result) = 0;
 
-    // Returns the list of input methods we can select (i.e. active) including
+    // Returns the list of input methods we can select (i.e. enabled) including
     // extension input methods.
-    virtual std::unique_ptr<InputMethodDescriptors> GetActiveInputMethods()
+    virtual std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const = 0;
 
-    // Returns the list of input methods we can select (i.e. active) including
-    // extension input methods.
-    // The same as GetActiveInputMethods but returns reference to internal list.
-    virtual const std::vector<std::string>& GetActiveInputMethodIds() const = 0;
+    // Returns the list of input method IDs we can select (i.e. enabled)
+    // including extension input methods.
+    virtual const std::vector<std::string>& GetEnabledInputMethodIds()
+        const = 0;
 
-    // Returns the number of active input methods including extension input
+    // Returns the number of enabled input methods including extension input
     // methods.
-    virtual size_t GetNumActiveInputMethods() const = 0;
+    virtual size_t GetNumEnabledInputMethods() const = 0;
 
     // Returns the input method descriptor from the given input method id
     // string.
@@ -222,10 +222,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // Gets the descriptor of the input method which is currently selected.
     virtual InputMethodDescriptor GetCurrentInputMethod() const = 0;
 
-    // Updates the list of active input method IDs, and then starts or stops the
-    // system input method framework as needed.
+    // Updates the list of enabled input method IDs, and then starts or stops
+    // the system input method framework as needed.
     virtual bool ReplaceEnabledInputMethods(
-        const std::vector<std::string>& new_active_input_method_ids) = 0;
+        const std::vector<std::string>& new_enabled_input_method_ids) = 0;
 
     // Sets the currently allowed input methods (e.g. due to policy). Invalid
     // input method ids are ignored. Passing an empty vector means that all
@@ -242,12 +242,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual const std::vector<std::string>& GetAllowedInputMethods() = 0;
 
     // Methods related to custom input view of the input method.
-    // Enables custom input view of the active input method.
+    // Enables custom input view of the current (active) input method.
     virtual void EnableInputView() = 0;
-    // Disables custom input view of the active input method.
+    // Disables custom input view of the current (active) input method.
     // The fallback system input view will be used.
     virtual void DisableInputView() = 0;
-    // Returns the URL of the input view of the active input method.
+    // Returns the URL of the input view of the current (active) input method.
     virtual const GURL& GetInputViewUrl() const = 0;
 
     // Get the current UI screen type (e.g. login screen, lock screen, etc.).
@@ -344,8 +344,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   // is different from previous.
   virtual void MaybeNotifyImeMenuActivationChanged() = 0;
 
-  // Overrides active keyset with the given keyset if the active IME supports
-  // the given keyset.
+  // Overrides active keyset with the given keyset if the current (active) IME
+  // supports the given keyset.
   virtual void OverrideKeyboardKeyset(ImeKeyset keyset) = 0;
 
   // Enables or disables some advanced features, e.g. handwiring, voices input.

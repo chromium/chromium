@@ -152,7 +152,7 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
-      ime_state->GetActiveInputMethodIds();
+      ime_state->GetEnabledInputMethodIds();
   for (size_t i = 0; i < input_methods.size(); ++i) {
     const std::string& input_method = input_methods[i];
     if (input_method == params->input_method_id) {
@@ -175,7 +175,7 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
   std::unique_ptr<ash::input_method::InputMethodDescriptors> input_methods =
-      ime_state->GetActiveInputMethods();
+      ime_state->GetEnabledInputMethods();
   for (size_t i = 0; i < input_methods->size(); ++i) {
     const ash::input_method::InputMethodDescriptor& input_method =
         (*input_methods)[i];

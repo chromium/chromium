@@ -914,7 +914,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
     if (managed_by_policy) {
       preload_engines_.SetValue(
-          base::JoinString(ime_state_->GetActiveInputMethodIds(), ","));
+          base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
     }
   }
   if (reason != REASON_PREF_CHANGED || pref_name == ::prefs::kAllowedLanguages)

@@ -35,7 +35,7 @@ void MockInputMethodManager::State::ChangeInputMethodToJpIme() {}
 void MockInputMethodManager::State::ToggleInputMethodForJpIme() {}
 
 bool MockInputMethodManager::State::EnableInputMethod(
-    const std::string& new_active_input_method_id) {
+    const std::string& new_enabled_input_method_id) {
   return true;
 }
 
@@ -49,13 +49,13 @@ void MockInputMethodManager::State::GetInputMethodExtensions(
     InputMethodDescriptors* result) {}
 
 std::unique_ptr<InputMethodDescriptors>
-MockInputMethodManager::State::GetActiveInputMethods() const {
+MockInputMethodManager::State::GetEnabledInputMethods() const {
   return nullptr;
 }
 
 const std::vector<std::string>&
-MockInputMethodManager::State::GetActiveInputMethodIds() const {
-  return active_input_method_ids;
+MockInputMethodManager::State::GetEnabledInputMethodIds() const {
+  return enabled_input_method_ids;
 }
 
 const InputMethodDescriptor*
@@ -64,8 +64,8 @@ MockInputMethodManager::State::GetInputMethodFromId(
   return nullptr;
 }
 
-size_t MockInputMethodManager::State::GetNumActiveInputMethods() const {
-  return active_input_method_ids.size();
+size_t MockInputMethodManager::State::GetNumEnabledInputMethods() const {
+  return enabled_input_method_ids.size();
 }
 
 void MockInputMethodManager::State::SetEnabledExtensionImes(
@@ -88,7 +88,7 @@ InputMethodDescriptor MockInputMethodManager::State::GetCurrentInputMethod()
 }
 
 bool MockInputMethodManager::State::ReplaceEnabledInputMethods(
-    const std::vector<std::string>& new_active_input_method_ids) {
+    const std::vector<std::string>& new_enabled_input_method_ids) {
   return true;
 }
 

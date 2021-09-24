@@ -1952,7 +1952,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithIME) {
 
   EXPECT_GT(ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
-                ->GetNumActiveInputMethods(),
+                ->GetNumEnabledInputMethods(),
             1u);
 }
 
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithNoIME) {
 
   EXPECT_EQ(1u, ash::input_method::InputMethodManager::Get()
                     ->GetActiveIMEState()
-                    ->GetNumActiveInputMethods());
+                    ->GetNumEnabledInputMethods());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,

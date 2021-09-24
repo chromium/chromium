@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, CheckPODSwitches) {
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 
   EXPECT_EQ(user_input_methods[0], input_method::InputMethodManager::Get()
                                        ->GetActiveIMEState()
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenDefault) {
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, PRE_CheckPODScreenWithUsers) {
@@ -209,12 +209,12 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
 
   std::vector<std::string> expected_input_methods;
   Append_en_US_InputMethods(&expected_input_methods);
-  // Active IM for the first user (active user POD).
+  // Enabled IM for the first user (active user POD).
   expected_input_methods.push_back(user_input_methods[0]);
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 
   EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_users_[1]));
 
@@ -284,7 +284,7 @@ void LoginUIKeyboardTestWithUsersAndOwner::CheckGaiaKeyboard() {
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
@@ -307,12 +307,12 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
   expected_input_methods.push_back(user_input_methods[2]);
   // Locale default input methods (the first one also is hardware IM).
   Append_en_US_InputMethods(&expected_input_methods);
-  // Active IM for the first user (active user POD).
+  // Enabled IM for the first user (active user POD).
   expected_input_methods.push_back(user_input_methods[0]);
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 
   // Switch to Gaia.
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 }
 
 class LoginUIKeyboardPolicy : public LoginManagerTest {
@@ -360,13 +360,13 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   Append_en_US_InputMethods(&expected_input_methods);
   EXPECT_EQ(input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
-                ->GetActiveInputMethodIds(),
+                ->GetEnabledInputMethodIds(),
             expected_input_methods);
 
   std::vector<std::string> allowed_input_method{"xkb:de::ger"};
   SetAllowedInputMethod(allowed_input_method.front());
   ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 1U);
-  ASSERT_EQ(imm->GetActiveIMEState()->GetNumActiveInputMethods(), 1U);
+  ASSERT_EQ(imm->GetActiveIMEState()->GetNumEnabledInputMethods(), 1U);
 
   input_method::InputMethodManager::Get()->MigrateInputMethods(
       &allowed_input_method);
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   // it will be there after the policy is gone.
   expected_input_methods.insert(
       expected_input_methods.begin(),
-      imm->GetActiveIMEState()->GetActiveInputMethodIds()[0]);
+      imm->GetActiveIMEState()->GetEnabledInputMethodIds()[0]);
 
   // Remove the policy again
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 0U);
   ASSERT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
-                                        ->GetActiveInputMethodIds());
+                                        ->GetEnabledInputMethodIds());
 }
 
 class LoginUIDevicePolicyUserAdding : public LoginUIKeyboardPolicy {
@@ -425,11 +425,11 @@ IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
   Append_en_US_InputMethods(&default_input_methods);
   // Input methods should be default because the other user (which is focused)
   // does not have saved last input method.
-  EXPECT_EQ(user_adding_ime_state->GetActiveInputMethodIds(),
+  EXPECT_EQ(user_adding_ime_state->GetEnabledInputMethodIds(),
             default_input_methods);
 
   EXPECT_EQ(user_adding_ime_state->GetAllowedInputMethods().size(), 0u);
-  EXPECT_FALSE(base::Contains(user_adding_ime_state->GetActiveInputMethodIds(),
+  EXPECT_FALSE(base::Contains(user_adding_ime_state->GetEnabledInputMethodIds(),
                               allowed_input_method.front()));
 }
 

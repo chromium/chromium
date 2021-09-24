@@ -38,18 +38,18 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     void ChangeInputMethodToJpIme() override;
     void ToggleInputMethodForJpIme() override;
     bool EnableInputMethod(
-        const std::string& new_active_input_method_id) override;
+        const std::string& new_enabled_input_method_id) override;
     void EnableLoginLayouts(
         const std::string& language_code,
         const std::vector<std::string>& initial_layouts) override;
     void EnableLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;
-    std::unique_ptr<InputMethodDescriptors> GetActiveInputMethods()
+    std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const override;
-    const std::vector<std::string>& GetActiveInputMethodIds() const override;
+    const std::vector<std::string>& GetEnabledInputMethodIds() const override;
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
-    size_t GetNumActiveInputMethods() const override;
+    size_t GetNumEnabledInputMethods() const override;
     void SetEnabledExtensionImes(std::vector<std::string>* ids) override;
     void SetInputMethodLoginDefault() override;
     void SetInputMethodLoginDefaultFromVPD(const std::string& locale,
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     void SwitchToLastUsedInputMethod() override;
     InputMethodDescriptor GetCurrentInputMethod() const override;
     bool ReplaceEnabledInputMethods(
-        const std::vector<std::string>& new_active_input_method_ids) override;
+        const std::vector<std::string>& new_enabled_input_method_ids) override;
     bool SetAllowedInputMethods(
         const std::vector<std::string>& new_allowed_input_method_ids,
         bool enable_allowed_input_methods) override;
@@ -69,8 +69,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     InputMethodManager::UIStyle GetUIStyle() const override;
     void SetUIStyle(InputMethodManager::UIStyle ui_style) override;
 
-    // The active input method ids cache (actually default only)
-    std::vector<std::string> active_input_method_ids;
+    // The enabled input method ids cache (actually default only)
+    std::vector<std::string> enabled_input_method_ids;
 
    protected:
     friend base::RefCounted<InputMethodManager::State>;

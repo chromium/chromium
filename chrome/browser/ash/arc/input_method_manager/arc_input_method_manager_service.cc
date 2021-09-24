@@ -57,11 +57,12 @@ void SwitchImeToCallback(const std::string& ime_id,
   // TODO(yhanana): We should prevent InputMethodManager from changing current
   // input method until this callback is called with true and once it's done the
   // IME switching code below can be removed.
-  LOG(ERROR) << "Switch the active IME to \"" << ime_id << "\"(component_id=\""
+  LOG(ERROR) << "Switch the current IME to \"" << ime_id << "\"(component_id=\""
              << component_id << "\") failed";
   auto* imm = ash::input_method::InputMethodManager::Get();
   if (imm && imm->GetActiveIMEState()) {
-    for (const auto& id : imm->GetActiveIMEState()->GetActiveInputMethodIds()) {
+    for (const auto& id :
+         imm->GetActiveIMEState()->GetEnabledInputMethodIds()) {
       if (!ash::extension_ime_util::IsArcIME(id)) {
         imm->GetActiveIMEState()->ChangeInputMethod(id,
                                                     false /* show_message */);
@@ -415,11 +416,11 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
   if (ime_id == kChromeOSIMEIdInArcContainer) {
     // Chrome OS Keyboard is selected in Android side.
     auto* imm = ash::input_method::InputMethodManager::Get();
-    // Create a list of active Chrome OS IMEs.
-    auto active_imes = imm->GetActiveIMEState()->GetActiveInputMethodIds();
-    base::EraseIf(active_imes, ash::extension_ime_util::IsArcIME);
-    DCHECK(!active_imes.empty());
-    imm->GetActiveIMEState()->ChangeInputMethod(active_imes[0],
+    // Create a list of enabled Chrome OS IMEs.
+    auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
+    base::EraseIf(enabled_imes, ash::extension_ime_util::IsArcIME);
+    DCHECK(!enabled_imes.empty());
+    imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
                                                 false /* show_message */);
     return;
   }
@@ -460,7 +461,7 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
 
   base::AutoReset<bool> in_updating(&is_updating_imm_entry_, true);
   scoped_refptr<InputMethodManager::State> state = imm->GetActiveIMEState();
-  const std::string active_ime_id = state->GetCurrentInputMethod().id();
+  const std::string current_ime_id = state->GetCurrentInputMethod().id();
 
   // Remove the old registered entry.
   state->RemoveInputMethodExtension(proxy_ime_extension_id_);
@@ -486,13 +487,13 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())
     state->EnableInputMethod(descriptor.id());
 
-  state->ChangeInputMethod(active_ime_id, false);
+  state->ChangeInputMethod(current_ime_id, false);
   is_updating_imm_entry_ = false;
 
   // Call ImeMenuListChanged() here to notify the latest state.
   ImeMenuListChanged();
-  // If the active input method is changed, call InputMethodChanged() here.
-  if (active_ime_id != state->GetCurrentInputMethod().id())
+  // If the current input method is changed, call InputMethodChanged() here.
+  if (current_ime_id != state->GetCurrentInputMethod().id())
     InputMethodChanged(InputMethodManager::Get(), nullptr, false);
 }
 
@@ -519,36 +520,37 @@ void ArcInputMethodManagerService::ImeMenuListChanged() {
     return;
   }
 
-  auto new_active_ime_ids =
-      manager->GetActiveIMEState()->GetActiveInputMethodIds();
+  auto new_enabled_ime_ids =
+      manager->GetActiveIMEState()->GetEnabledInputMethodIds();
 
   // Filter out non ARC IME ids.
-  std::set<std::string> new_arc_active_ime_ids;
+  std::set<std::string> new_arc_enabled_ime_ids;
   std::copy_if(
-      new_active_ime_ids.begin(), new_active_ime_ids.end(),
-      std::inserter(new_arc_active_ime_ids, new_arc_active_ime_ids.end()),
+      new_enabled_ime_ids.begin(), new_enabled_ime_ids.end(),
+      std::inserter(new_arc_enabled_ime_ids, new_arc_enabled_ime_ids.end()),
       [](const auto& id) { return ash::extension_ime_util::IsArcIME(id); });
 
   // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
   // probably better to just observe the pref (and not disabling ones still
   // in the prefs.) See also the comment below in the second for-loop.
-  const std::set<std::string> active_ime_ids_on_prefs = prefs_.GetEnabledImes();
+  const std::set<std::string> enabled_ime_ids_on_prefs =
+      prefs_.GetEnabledImes();
 
-  for (const auto& id : new_arc_active_ime_ids) {
+  for (const auto& id : new_arc_enabled_ime_ids) {
     // Enable the IME which is not currently enabled.
-    if (!active_arc_ime_ids_.count(id))
+    if (!enabled_arc_ime_ids_.count(id))
       EnableIme(id, true /* enable */);
   }
 
-  for (const auto& id : active_arc_ime_ids_) {
-    if (!new_arc_active_ime_ids.count(id) &&
-        !active_ime_ids_on_prefs.count(id)) {
+  for (const auto& id : enabled_arc_ime_ids_) {
+    if (!new_arc_enabled_ime_ids.count(id) &&
+        !enabled_ime_ids_on_prefs.count(id)) {
       // This path is taken in the following two cases:
       // 1) The device is in tablet mode, and the user disabled the IME via
       //    chrome://settings.
       // 2) The device was just switched to laptop mode, and this service
       //    disallowed Android IMEs.
-      // In the former case, |active_ime_ids_on_prefs| doesn't have the IME,
+      // In the former case, |enabled_ime_ids_on_prefs| doesn't have the IME,
       // but in the latter case, the set still has it. Here, disable the IME
       // only for the former case so that the temporary deactivation of the
       // IME on laptop mode wouldn't be propagated to the container. Otherwise,
@@ -558,7 +560,7 @@ void ArcInputMethodManagerService::ImeMenuListChanged() {
       EnableIme(id, false /* enable */);
     }
   }
-  active_arc_ime_ids_.swap(new_arc_active_ime_ids);
+  enabled_arc_ime_ids_.swap(new_arc_enabled_ime_ids);
 }
 
 void ArcInputMethodManagerService::InputMethodChanged(
