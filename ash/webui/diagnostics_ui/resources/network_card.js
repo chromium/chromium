@@ -20,6 +20,16 @@ const BASE_SUPPORT_URL = 'https://support.google.com/chromebook?p=diagnostics_';
 const SETTINGS_URL = 'chrome://os-settings/';
 
 /**
+ * Represents the state of the network troubleshooting banner.
+ * @enum {number}
+ */
+export let TroubleshootingState = {
+  kDisabled: 0,
+  kNotConnected: 1,
+  kMissingIpAddress: 2,
+};
+
+/**
  * @fileoverview
  * 'network-card' is a styling wrapper for a network-info element.
  */
@@ -248,7 +258,8 @@ Polymer({
   getDisabledTroubleshootingInfo_() {
     return {
       header: this.i18n('disabledText', this.networkType_),
-          linkText: this.i18n('reconnectLinkText'), url: SETTINGS_URL,
+      linkText: this.i18n('reconnectLinkText'),
+      url: SETTINGS_URL,
     }
   },
 
@@ -259,7 +270,8 @@ Polymer({
   getNotConnectedTroubleshootingInfo_() {
     return {
       header: this.i18n('troubleshootingText', this.networkType_),
-          linkText: this.i18n('troubleConnecting'), url: BASE_SUPPORT_URL,
+      linkText: this.i18n('troubleConnecting'),
+      url: BASE_SUPPORT_URL,
     }
   },
 
@@ -268,30 +280,43 @@ Polymer({
    * @return {!TroubleshootingInfo}
    */
   computeTroubleshootingInfo_() {
+    let troubleshootingState = null;
     if (!this.network || isConnectedOrOnline(this.network.state)) {
       // Hide the troubleshooting banner if we're in an active state
       // unlesss the network's IP Address has been missing for >=30
       // seconds in which case we'd like to display the bannner to
       // the user.
       if (this.unableToObtainIpAddress_) {
-        this.showTroubleshootingCard_ = true;
-        return this.getMissingIpAddressInfo_();
+        troubleshootingState = TroubleshootingState.kMissingIpAddress;
       }
 
-      this.showTroubleshootingCard_ = false;
-      return {
-        header: '',
-        linkText: '',
-        url: '',
-      };
+      if (troubleshootingState == null) {
+        this.showTroubleshootingCard_ = false;
+        return {
+          header: '',
+          linkText: '',
+          url: '',
+        };
+      }
+    }
+
+    let isDisabled = this.network.state === NetworkState.kDisabled;
+    let isNotConnected = this.network.state === NetworkState.kNotConnected;
+    // Override the |troubleshootingState| value if necessary since the
+    // disabled and not connected states take precedence.
+    if (isNotConnected) {
+      troubleshootingState = TroubleshootingState.kNotConnected;
+    }
+
+    if (isDisabled) {
+      troubleshootingState = TroubleshootingState.kDisabled;
     }
 
     // At this point, |isConnectedOrOnline| was falsy which means
     // out network state is either disabled or not connected.
     this.showTroubleshootingCard_ = true;
-    let isDisabled = this.network.state === NetworkState.kDisabled;
-    return isDisabled ? this.getDisabledTroubleshootingInfo_() :
-                        this.getNotConnectedTroubleshootingInfo_();
+    return this.getInfoProperties_(
+        /** @type {!TroubleshootingState} */ (troubleshootingState));
   },
 
   /**
@@ -303,6 +328,26 @@ Polymer({
       header: this.i18n('noIpAddressText'),
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
       url: SETTINGS_URL,
+    }
+  },
+
+  /**
+   * @private
+   * @param {!TroubleshootingState} state
+   * @return {!TroubleshootingInfo}
+   */
+  getInfoProperties_(state) {
+    switch (state) {
+      case TroubleshootingState.kDisabled:
+        return this.getDisabledTroubleshootingInfo_();
+      case TroubleshootingState.kNotConnected:
+        return this.getNotConnectedTroubleshootingInfo_();
+      case TroubleshootingState.kMissingIpAddress:
+        return this.getMissingIpAddressInfo_();
+      default:
+        return {
+          header: '', linkText: '', url: '',
+        }
     }
   },
 });
