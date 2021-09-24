@@ -407,16 +407,16 @@ void MetricsStateManager::ForceClientIdCreation() {
     std::string client_id_from_prefs = ReadClientId(local_state_);
     // If client id in prefs matches the cached copy, return early.
     if (!client_id_from_prefs.empty() && client_id_from_prefs == client_id_) {
-      UMA_HISTOGRAM_ENUMERATION("UMA.ClientIdSource",
-                                ClientIdSource::kClientIdMatches);
+      base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                    ClientIdSource::kClientIdMatches);
       return;
     }
     client_id_.swap(client_id_from_prefs);
   }
 
   if (!client_id_.empty()) {
-    UMA_HISTOGRAM_ENUMERATION("UMA.ClientIdSource",
-                              ClientIdSource::kClientIdFromLocalState);
+    base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                  ClientIdSource::kClientIdFromLocalState);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     LogClientIdChanged(
         metrics::structured::NeutrinoDevicesLocation::kClientIdFromLocalState,
@@ -450,8 +450,8 @@ void MetricsStateManager::ForceClientIdCreation() {
       recovered_installation_age =
           now - base::Time::FromTimeT(client_info_backup->installation_date);
     }
-    UMA_HISTOGRAM_ENUMERATION("UMA.ClientIdSource",
-                              ClientIdSource::kClientIdBackupRecovered);
+    base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                  ClientIdSource::kClientIdBackupRecovered);
     UMA_HISTOGRAM_COUNTS_10000("UMA.ClientIdBackupRecoveredWithAge",
                                recovered_installation_age.InHours());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -472,8 +472,8 @@ void MetricsStateManager::ForceClientIdCreation() {
   // otherwise (e.g. UMA enabled in a future session), generate a new one.
   if (provisional_client_id_.empty()) {
     client_id_ = base::GenerateGUID();
-    UMA_HISTOGRAM_ENUMERATION("UMA.ClientIdSource",
-                              ClientIdSource::kClientIdNew);
+    base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                  ClientIdSource::kClientIdNew);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     LogClientIdChanged(
         metrics::structured::NeutrinoDevicesLocation::kClientIdNew,
@@ -482,8 +482,8 @@ void MetricsStateManager::ForceClientIdCreation() {
   } else {
     client_id_ = provisional_client_id_;
     provisional_client_id_.clear();
-    UMA_HISTOGRAM_ENUMERATION("UMA.ClientIdSource",
-                              ClientIdSource::kClientIdFromProvisionalId);
+    base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                  ClientIdSource::kClientIdFromProvisionalId);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     LogClientIdChanged(metrics::structured::NeutrinoDevicesLocation::
                            kClientIdFromProvisionalId,
