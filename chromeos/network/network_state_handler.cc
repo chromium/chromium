@@ -173,6 +173,15 @@ void NetworkStateHandler::InitShillPropertyHandler() {
   shill_property_handler_->Init();
 }
 
+void NetworkStateHandler::UpdateBlockedCellularNetworks(bool only_managed) {
+  if (allow_only_policy_cellular_networks_to_connect_ == only_managed) {
+    return;
+  }
+  allow_only_policy_cellular_networks_to_connect_ = only_managed;
+
+  UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
+}
+
 void NetworkStateHandler::UpdateBlockedWifiNetworks(
     bool only_managed,
     bool available_only,
@@ -187,7 +196,7 @@ void NetworkStateHandler::UpdateBlockedWifiNetworks(
   allow_only_policy_wifi_networks_to_connect_if_available_ = available_only;
   blocked_hex_ssids_ = blocked_hex_ssids;
 
-  UpdateBlockedWifiNetworksInternal();
+  UpdateBlockedNetworksInternal(NetworkTypePattern::WiFi());
 }
 
 const NetworkState* NetworkStateHandler::GetAvailableManagedWifiNetwork()
@@ -1020,14 +1029,22 @@ void NetworkStateHandler::EnsureTetherDeviceState() {
 }
 
 bool NetworkStateHandler::UpdateBlockedByPolicy(NetworkState* network) const {
-  if (!TypeMatches(network, NetworkTypePattern::WiFi()))
+  bool is_wifi_type = TypeMatches(network, NetworkTypePattern::WiFi());
+  bool is_cellular_type = TypeMatches(network, NetworkTypePattern::Cellular());
+  if (!is_wifi_type && !is_cellular_type)
     return false;
 
   bool prev_blocked_by_policy = network->blocked_by_policy();
-  bool blocked_by_policy =
-      !network->IsManagedByPolicy() &&
-      (OnlyManagedWifiNetworksAllowed() ||
-       base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+  bool blocked_by_policy = false;
+  if (is_wifi_type) {
+    blocked_by_policy =
+        !network->IsManagedByPolicy() &&
+        (OnlyManagedWifiNetworksAllowed() ||
+         base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+  } else {
+    blocked_by_policy = !network->IsManagedByPolicy() &&
+                        allow_only_policy_cellular_networks_to_connect_;
+  }
   network->set_blocked_by_policy(blocked_by_policy);
   return prev_blocked_by_policy != blocked_by_policy;
 }
@@ -1053,15 +1070,16 @@ void NetworkStateHandler::UpdateManagedWifiNetworkAvailable() {
 
   if (prev_available_managed_network_path != available_managed_network_path) {
     device->set_available_managed_network_path(available_managed_network_path);
-    UpdateBlockedWifiNetworksInternal();
+    UpdateBlockedNetworksInternal(NetworkTypePattern::WiFi());
     NotifyDevicePropertiesUpdated(device);
   }
 }
 
-void NetworkStateHandler::UpdateBlockedWifiNetworksInternal() {
+void NetworkStateHandler::UpdateBlockedNetworksInternal(
+    const NetworkTypePattern& network_type) {
   for (auto iter = network_list_.begin(); iter != network_list_.end(); ++iter) {
     NetworkState* network = (*iter)->AsNetworkState();
-    if (!network->Matches(NetworkTypePattern::WiFi()))
+    if (!network->Matches(network_type))
       continue;
     if (UpdateBlockedByPolicy(network))
       NotifyNetworkPropertiesUpdated(network);
@@ -1395,7 +1413,8 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   if (network->path() == default_network_path_)
     default_network_is_metered_ = metered && network->IsConnectedState();
 
-  if (network->Matches(NetworkTypePattern::WiFi()))
+  if (network->Matches(NetworkTypePattern::WiFi() |
+                       NetworkTypePattern::Cellular()))
     network_property_updated |= UpdateBlockedByPolicy(network);
   network_property_updated |= network->InitialPropertiesReceived(properties);
 

@@ -986,20 +986,20 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
-       AllowOnlyPolicyCellularNetworks) {
+       AllowOnlyPolicyCellularNetworksToConnect) {
   InitializeStandardProfiles();
+  InitializeEuicc();
 
   // Check transfer to NetworkStateHandler
-  EXPECT_CALL(
-      *network_state_handler_,
-      UpdateBlockedWifiNetworks(false, false, std::vector<std::string>()))
+  EXPECT_CALL(*network_state_handler_, UpdateBlockedCellularNetworks(true))
       .Times(1);
 
-  // Set 'AllowOnlyPolicyCellularNetworks' policy and another arbitrary user
+  // Set 'AllowOnlyPolicyCellularNetworks' policy and another arbitrary cellular
   // policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_allow_only_policy_cellular_networks.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_cellular.onc");
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.

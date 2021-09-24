@@ -26,6 +26,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
   // NetworkStateHandler overrides
   MOCK_METHOD3(UpdateBlockedWifiNetworks,
                void(bool, bool, const std::vector<std::string>&));
+
+  MOCK_METHOD1(UpdateBlockedCellularNetworks, void(bool));
 };
 
 }  // namespace chromeos
