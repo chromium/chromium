@@ -802,6 +802,11 @@ should be able to be added at any place in this file.
   <description>User pressed the stop media control button.</description>
 </action>
 
+<action name="Accel_Microphone_Mute">
+  <owner>rtinkoff@google.com</owner>
+  <description>User pressed the microphone mute toggle key.</description>
+</action>
+
 <action name="Accel_Minimize_Top_Window_On_Back">
   <owner>minch@chromium.org</owner>
   <description>
@@ -10137,6 +10142,20 @@ should be able to be added at any place in this file.
 <action name="JustifyRight">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Keyboard_Microphone_Muted">
+  <owner>rtinkoff@chromium.org</owner>
+  <description>
+    The user muted the mic by pressing the mic mute keyboard key.
+  </description>
+</action>
+
+<action name="Keyboard_Microphone_Unmuted">
+  <owner>rtinkoff@chromium.org</owner>
+  <description>
+    The user unmuted the mic by pressing the mic mute keyboard key.
+  </description>
 </action>
 
 <action name="KeyboardShortcutViewer.CreateWindow">

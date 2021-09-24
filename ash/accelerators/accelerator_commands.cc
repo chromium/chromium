@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/focus_cycler.h"
@@ -106,6 +107,18 @@ void MediaRewind() {
 
 void MediaStop() {
   Shell::Get()->media_controller()->HandleMediaStop();
+}
+
+void MicrophoneMuteToggle() {
+  auto* const audio_handler = CrasAudioHandler::Get();
+  const bool mute = !audio_handler->IsInputMuted();
+
+  if (mute)
+    base::RecordAction(base::UserMetricsAction("Keyboard_Microphone_Muted"));
+  else
+    base::RecordAction(base::UserMetricsAction("Keyboard_Microphone_Unmuted"));
+
+  audio_handler->SetInputMute(mute);
 }
 
 void NewIncognitoWindow() {

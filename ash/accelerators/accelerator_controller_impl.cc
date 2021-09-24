@@ -1780,6 +1780,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DESKS_NEW_DESK:
     case DESKS_REMOVE_CURRENT_DESK:
       return true;
+    case DEBUG_MICROPHONE_MUTE_TOGGLE:
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
@@ -1998,6 +1999,10 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case DESKS_REMOVE_CURRENT_DESK:
       HandleRemoveCurrentDesk();
+      break;
+    case DEBUG_MICROPHONE_MUTE_TOGGLE:
+      base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
+      accelerators::MicrophoneMuteToggle();
       break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:

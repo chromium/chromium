@@ -131,6 +131,7 @@ enum AcceleratorAction {
 
   // Debug accelerators are intentionally at the end, so that if you remove one
   // you don't need to update tests which check hashes of the ids.
+  DEBUG_MICROPHONE_MUTE_TOGGLE,
   DEBUG_PRINT_LAYER_HIERARCHY,
   DEBUG_PRINT_VIEW_HIERARCHY,
   DEBUG_PRINT_WINDOW_HIERARCHY,

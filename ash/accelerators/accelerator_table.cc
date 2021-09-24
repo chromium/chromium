@@ -4,8 +4,10 @@
 
 #include "ash/accelerators/accelerator_table.h"
 
+#include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/cxx17_backports.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -62,6 +64,7 @@ static_assert(kDeprecatedAcceleratorsLength ==
 
 const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_N, kDebugModifier, TOGGLE_WIFI},
+    {true, ui::VKEY_M, kDebugModifier, DEBUG_MICROPHONE_MUTE_TOGGLE},
     {true, ui::VKEY_O, kDebugModifier, DEBUG_SHOW_TOAST},
     {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      DEBUG_TOGGLE_TOUCH_PAD},
@@ -208,6 +211,7 @@ const size_t kActionsAllowedAtPowerMenuLength =
 const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
     DEV_ADD_REMOVE_DISPLAY,
@@ -284,6 +288,7 @@ const size_t kRepeatableActionsLength = base::size(kRepeatableActions);
 const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_PRINT_LAYER_HIERARCHY,
     DEBUG_PRINT_VIEW_HIERARCHY,
     DEBUG_PRINT_WINDOW_HIERARCHY,
@@ -371,6 +376,7 @@ const size_t kActionsNeedingWindowLength = base::size(kActionsNeedingWindow);
 const AcceleratorAction kActionsKeepingMenuOpen[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
     // Keep the menu open when switching desks. The desk activation code will

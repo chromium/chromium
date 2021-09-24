@@ -59,6 +59,9 @@ ASH_EXPORT void MediaRewind();
 // Stop playing media.
 ASH_EXPORT void MediaStop();
 
+// Toggle microphone mute.
+ASH_EXPORT void MicrophoneMuteToggle();
+
 // Open a new incognito browser window.
 ASH_EXPORT void NewIncognitoWindow();
 
