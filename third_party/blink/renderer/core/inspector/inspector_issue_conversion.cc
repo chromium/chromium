@@ -60,6 +60,9 @@ blink::protocol::String InspectorIssueCodeValue(
       return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kGenericIssue:
+      NOTREACHED();
+      return "";
   }
 }
 

@@ -278,6 +278,9 @@ void ApplyNetworkContextParamsOverrides(
     BrowserContext* browser_context,
     network::mojom::NetworkContextParams* network_context_params);
 
+void DidRejectCrossOriginPortalMessage(
+    RenderFrameHostImpl* render_frame_host_impl);
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content

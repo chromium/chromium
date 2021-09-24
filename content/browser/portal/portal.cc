@@ -353,6 +353,9 @@ void Portal::PostMessageToGuest(blink::TransferableMessage message) {
     owner_render_frame_host()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         kCrossOriginPostMessageError);
+
+    devtools_instrumentation::DidRejectCrossOriginPortalMessage(
+        owner_render_frame_host());
     return;
   }
   portal_contents_->GetMainFrame()->ForwardMessageFromHost(
@@ -362,9 +365,12 @@ void Portal::PostMessageToGuest(blink::TransferableMessage message) {
 void Portal::PostMessageToHost(blink::TransferableMessage message) {
   DCHECK(GetPortalContents());
   if (!IsSameOrigin()) {
-    portal_contents_->GetMainFrame()->AddMessageToConsole(
+    GetPortalContents()->GetMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         kCrossOriginPostMessageError);
+
+    devtools_instrumentation::DidRejectCrossOriginPortalMessage(
+        GetPortalContents()->GetMainFrame());
     return;
   }
   client().ForwardMessageFromGuest(

@@ -776,6 +776,17 @@ experimental domain Audits
       string targetOrigin
       boolean isWarning
 
+  type GenericIssueErrorType extends string
+    enum
+      CrossOriginPortalPostMessageError
+
+  # Depending on the concrete errorType, different properties are set.
+  type GenericIssueDetails extends object
+    properties
+      # Issues with the same errorType are aggregated in the frontend.
+      GenericIssueErrorType errorType
+      optional Page.FrameId frameId
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -794,6 +805,7 @@ experimental domain Audits
       QuirksModeIssue
       NavigatorUserAgentIssue
       WasmCrossOriginModuleSharingIssue
+      GenericIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -813,6 +825,7 @@ experimental domain Audits
       optional QuirksModeIssueDetails quirksModeIssueDetails
       optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails
       optional WasmCrossOriginModuleSharingIssueDetails wasmCrossOriginModuleSharingIssue
+      optional GenericIssueDetails genericIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

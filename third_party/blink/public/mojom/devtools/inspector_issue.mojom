@@ -21,6 +21,7 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kGenericIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -173,6 +174,15 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+enum GenericIssueErrorType {
+  kCrossOriginPortalPostMessageError,
+};
+
+struct GenericIssueDetails {
+  GenericIssueErrorType error_type;
+  string? frame_id;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -184,6 +194,7 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  GenericIssueDetails? generic_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 
