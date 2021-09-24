@@ -162,6 +162,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   void DecrementKeepAliveRefCount(uint64_t handle_id) override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
+  void IncrementRfhCount() override;
+  void DecrementRfhCount() override;
+  int GetRfhCount() const override;
   void DisableRefCounts() override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;

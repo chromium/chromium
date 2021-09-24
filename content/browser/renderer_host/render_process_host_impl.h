@@ -249,6 +249,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DecrementKeepAliveRefCount(uint64_t handle_id_) override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
+  void IncrementRfhCount() override;
+  void DecrementRfhCount() override;
+  int GetRfhCount() const override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
   void DisableRefCounts() override;
@@ -963,6 +966,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   size_t shutdown_delay_ref_count_;
   // We track the start-time for each |handle_id|, for crashkey reporting.
   base::flat_map<uint64_t, base::Time> keep_alive_start_times_;
+
+  // Diagnostic code for https://crbug/1148542. This will be removed prior to
+  // resolving that issue.
+  int render_frame_host_count_;
 
   // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
   // |worker_ref_count_|, and |shutdown_delay_ref_count_| must no longer be

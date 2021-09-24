@@ -1675,6 +1675,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       keep_alive_ref_count_(0),
       worker_ref_count_(0),
       shutdown_delay_ref_count_(0),
+      render_frame_host_count_(0),
       are_ref_counts_disabled_(false),
       visible_clients_(0),
       priority_(!blink::kLaunchingProcessIsBackgrounded,
@@ -2845,6 +2846,16 @@ std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
 
 size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
   return shutdown_delay_ref_count_;
+}
+
+void RenderProcessHostImpl::IncrementRfhCount() {
+  render_frame_host_count_++;
+}
+void RenderProcessHostImpl::DecrementRfhCount() {
+  render_frame_host_count_--;
+}
+int RenderProcessHostImpl::GetRfhCount() const {
+  return render_frame_host_count_;
 }
 
 void RenderProcessHostImpl::IncrementWorkerRefCount() {

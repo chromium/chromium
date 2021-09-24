@@ -405,6 +405,14 @@ size_t MockRenderProcessHost::GetShutdownDelayRefCount() const {
   return 0;
 }
 
+void MockRenderProcessHost::IncrementRfhCount() {}
+
+void MockRenderProcessHost::DecrementRfhCount() {}
+
+int MockRenderProcessHost::GetRfhCount() const {
+  return 0;
+}
+
 void MockRenderProcessHost::IncrementWorkerRefCount() {
   ++worker_ref_count_;
 }

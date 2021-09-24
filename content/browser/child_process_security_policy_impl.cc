@@ -168,13 +168,20 @@ base::debug::CrashKeyString* GetCanAccessDataShutdownDelayRefCountKey() {
   return shutdown_delay_key;
 }
 
+base::debug::CrashKeyString* GetCanAccessDataProcessRFHCount() {
+  static auto* process_rfh_count_key = base::debug::AllocateCrashKeyString(
+      "process_rfh_count", base::debug::CrashKeySize::Size32);
+  return process_rfh_count_key;
+}
+
 void LogCanAccessDataForOriginCrashKeys(
     const std::string& expected_process_lock,
     const std::string& killed_process_origin_lock,
     const std::string& requested_origin,
     const std::string& failure_reason,
     const std::string& keep_alive_durations,
-    const std::string& shutdown_delay_ref_count) {
+    const std::string& shutdown_delay_ref_count,
+    const std::string& process_rfh_count) {
   base::debug::SetCrashKeyString(GetExpectedProcessLockKey(),
                                  expected_process_lock);
   base::debug::SetCrashKeyString(GetKilledProcessOriginLockKey(),
@@ -187,6 +194,8 @@ void LogCanAccessDataForOriginCrashKeys(
                                  keep_alive_durations);
   base::debug::SetCrashKeyString(GetCanAccessDataShutdownDelayRefCountKey(),
                                  shutdown_delay_ref_count);
+  base::debug::SetCrashKeyString(GetCanAccessDataProcessRFHCount(),
+                                 process_rfh_count);
 }
 
 }  // namespace
@@ -398,7 +407,8 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
   if (child_id_ == ChildProcessHost::kInvalidUniqueID) {
     LogCanAccessDataForOriginCrashKeys(
         "(unknown)", "(unknown)", origin.GetDebugString(), "handle_not_valid",
-        "no_keep_alive_durations", "no shutdown delay ref count");
+        "no_keep_alive_durations", "no shutdown delay ref count",
+        "no process rfh count");
     return false;
   }
 
@@ -1838,11 +1848,13 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   // Record the duration of KeepAlive requests to include in the crash keys.
   std::string keep_alive_durations;
   std::string shutdown_delay_ref_count;
+  std::string process_rfh_count;
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
       keep_alive_durations = process->GetKeepAliveDurations();
       shutdown_delay_ref_count =
           base::NumberToString(process->GetShutdownDelayRefCount());
+      process_rfh_count = base::NumberToString(process->GetRfhCount());
     }
   } else {
     keep_alive_durations = "no durations available: on IO thread.";
@@ -1853,7 +1865,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   LogCanAccessDataForOriginCrashKeys(
       expected_process_lock.ToString(),
       GetKilledProcessOriginLock(security_state), url.GetOrigin().spec(),
-      failure_reason, keep_alive_durations, shutdown_delay_ref_count);
+      failure_reason, keep_alive_durations, shutdown_delay_ref_count,
+      process_rfh_count);
   return false;
 }
 

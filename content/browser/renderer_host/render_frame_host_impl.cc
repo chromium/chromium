@@ -1415,7 +1415,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
   site_instance_->AddObserver(this);
-  GetProcess()->AddObserver(this);
+  auto* process = GetProcess();
+  process->IncrementRfhCount();
+  process->AddObserver(this);
   GetSiteInstance()->IncrementActiveFrameCount();
 
   if (parent_) {
@@ -1547,8 +1549,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   g_token_frame_map.Get().erase(frame_token_);
 
+  auto* process = GetProcess();
+  process->DecrementRfhCount();
   site_instance_->RemoveObserver(this);
-  GetProcess()->RemoveObserver(this);
+  process->RemoveObserver(this);
 
   const bool was_created = is_render_frame_created();
   render_frame_state_ = RenderFrameState::kDeleted;
