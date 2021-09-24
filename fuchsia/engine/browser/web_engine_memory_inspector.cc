@@ -175,25 +175,32 @@ void WebEngineMemoryInspector::OnMemoryDumpComplete(
     // Include details of each process' role in the web instance.
     std::ostringstream type;
     type << process_dump->process_type;
-    node.CreateString("type", type.str(), dump_results_.get());
+    static const inspect::StringReference kTypeNodeName("type");
+    node.CreateString(kTypeNodeName, type.str(), dump_results_.get());
 
     const auto service_name = process_dump->service_name;
     if (service_name) {
-      node.CreateString("service", *service_name, dump_results_.get());
+      static const inspect::StringReference kServiceNodeName("service");
+      node.CreateString(kServiceNodeName, *service_name, dump_results_.get());
     }
 
     // Include the summary of the process' memory usage.
     const auto& os_dump = process_dump->os_dump;
-    node.CreateUint("resident_kb", os_dump->resident_set_kb,
+    static const inspect::StringReference kResidentKbNodeName("resident_kb");
+    node.CreateUint(kResidentKbNodeName, os_dump->resident_set_kb,
                     dump_results_.get());
-    node.CreateUint("private_kb", os_dump->private_footprint_kb,
+    static const inspect::StringReference kPrivateKbNodeName("private_kb");
+    node.CreateUint(kPrivateKbNodeName, os_dump->private_footprint_kb,
                     dump_results_.get());
-    node.CreateUint("shared_kb", os_dump->shared_footprint_kb,
+    static const inspect::StringReference kSharedKbNodeName("shared_kb");
+    node.CreateUint(kSharedKbNodeName, os_dump->shared_footprint_kb,
                     dump_results_.get());
 
     // If provided, include detail from individual allocators.
     if (!process_dump->chrome_allocator_dumps.empty()) {
-      auto detail_node = node.CreateChild("allocator_dump");
+      static const inspect::StringReference kAllocatorDumpNodeName(
+          "allocator_dump");
+      auto detail_node = node.CreateChild(kAllocatorDumpNodeName);
 
       for (auto& it : process_dump->chrome_allocator_dumps) {
         dump_results_->emplace(NodeFromAllocatorMemDump(
