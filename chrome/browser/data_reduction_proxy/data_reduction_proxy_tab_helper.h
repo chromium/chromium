@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_TAB_HELPER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -37,9 +38,9 @@ class DataReductionProxyTabHelper
   // off that code path.
   void UpdateWebkitPreferencesNow();
 
-  data_reduction_proxy::DataReductionProxySettings* drp_settings_;
+  raw_ptr<data_reduction_proxy::DataReductionProxySettings> drp_settings_;
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<DataReductionProxyTabHelper> weak_factory_{this};
 

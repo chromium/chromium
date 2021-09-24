@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -368,15 +369,15 @@ class FeedStream : public FeedApi,
 
   // Unowned.
 
-  RefreshTaskScheduler* refresh_task_scheduler_;
-  MetricsReporter* metrics_reporter_;
-  Delegate* delegate_;
-  PrefService* profile_prefs_;  // May be null.
-  FeedNetwork* feed_network_;
-  ImageFetcher* image_fetcher_;
-  FeedStore* store_;
-  PersistentKeyValueStoreImpl* persistent_key_value_store_;
-  const WireResponseTranslator* wire_response_translator_;
+  raw_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<PrefService> profile_prefs_;  // May be null.
+  raw_ptr<FeedNetwork> feed_network_;
+  raw_ptr<ImageFetcher> image_fetcher_;
+  raw_ptr<FeedStore> store_;
+  raw_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
+  raw_ptr<const WireResponseTranslator> wire_response_translator_;
 
   StreamModel::Context stream_model_context_;
 

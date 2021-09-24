@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -87,7 +88,7 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
   void UpdateSignalsStateNoLock();
 
   const MojoCreateDataPipeOptions options_;
-  NodeController* const node_controller_;
+  const raw_ptr<NodeController> node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
 

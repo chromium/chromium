@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -193,8 +194,8 @@ class GreasedBufferProducer : public SpdyBufferProducer {
 
  private:
   base::WeakPtr<SpdyStream> stream_;
-  const SpdySessionPool::GreasedHttp2Frame* const greased_http2_frame_;
-  BufferedSpdyFramer* buffered_spdy_framer_;
+  const raw_ptr<const SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
+  raw_ptr<BufferedSpdyFramer> buffered_spdy_framer_;
 };
 
 bool IsSpdySettingAtDefaultInitialValue(spdy::SpdySettingsId setting_id,

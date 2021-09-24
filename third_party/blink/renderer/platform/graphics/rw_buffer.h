@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RW_BUFFER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -77,8 +78,8 @@ class PLATFORM_EXPORT RWBuffer {
   void Validate() const;
 
  private:
-  BufferHead* head_ = nullptr;
-  BufferBlock* tail_ = nullptr;
+  raw_ptr<BufferHead> head_ = nullptr;
+  raw_ptr<BufferBlock> tail_ = nullptr;
   size_t total_used_ = 0;
 };
 
@@ -133,9 +134,9 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
            const RWBuffer::BufferBlock* tail);
   ~ROBuffer();
 
-  const RWBuffer::BufferHead* head_;
+  raw_ptr<const RWBuffer::BufferHead> head_;
   const size_t available_;
-  const RWBuffer::BufferBlock* tail_;
+  raw_ptr<const RWBuffer::BufferBlock> tail_;
 
   friend class RWBuffer;
 };

@@ -6150,7 +6150,8 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   // One checkerboard quad.
   EXPECT_EQ(1u, render_pass->quad_list.size());
 
-  auto* shared_quad_state = render_pass->quad_list.begin()->shared_quad_state;
+  auto* shared_quad_state =
+      render_pass->quad_list.begin()->shared_quad_state.get();
   // We should use scale 1 here, so the layer rect should be full layer bounds
   // and the transform should be identity.
   EXPECT_RECT_EQ(gfx::Rect(1000, 10000), shared_quad_state->quad_layer_rect);

@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -65,7 +66,7 @@ struct TabStripLayoutHelper::TabSlot {
   }
 
   ViewType type;
-  TabSlotView* view;
+  raw_ptr<TabSlotView> view;
   std::unique_ptr<TabAnimation> animation;
 };
 

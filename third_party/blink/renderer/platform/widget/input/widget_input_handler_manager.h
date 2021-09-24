@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -272,7 +273,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       frame_widget_input_handler_;
   std::unique_ptr<scheduler::WebWidgetScheduler> widget_scheduler_;
-  scheduler::WebThreadScheduler* main_thread_scheduler_;
+  raw_ptr<scheduler::WebThreadScheduler> main_thread_scheduler_;
 
   // InputHandlerProxy is only interacted with on the compositor
   // thread.

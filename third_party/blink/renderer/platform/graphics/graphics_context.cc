@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
@@ -126,7 +127,7 @@ class GraphicsContext::DarkModeFlags final {
   operator const PaintFlags&() const { return *flags_; }
 
  private:
-  const PaintFlags* flags_;
+  raw_ptr<const PaintFlags> flags_;
   absl::optional<PaintFlags> dark_mode_flags_;
 };
 

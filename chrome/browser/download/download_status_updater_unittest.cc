@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -52,7 +53,7 @@ class TestDownloadStatusUpdater : public DownloadStatusUpdater {
   }
  private:
   size_t notification_count_;
-  download::DownloadItem* acceptable_notification_item_;
+  raw_ptr<download::DownloadItem> acceptable_notification_item_;
 };
 
 class DownloadStatusUpdaterTest : public testing::Test {
@@ -195,7 +196,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
-  TestDownloadStatusUpdater* updater_;
+  raw_ptr<TestDownloadStatusUpdater> updater_;
 
   // Thread so that the DownloadManager (which is a DeleteOnUIThread
   // object) can be deleted.

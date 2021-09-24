@@ -215,12 +215,11 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      &Memory_Experimental::SetMalloc_AllocatedObjects},
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     // TODO(keishi): Add brp_quarantined metrics for the Blink partitions.
-    {"malloc/partitions/allocator/brp_quarantined_size",
-     "Malloc.BRPQuarantined", MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly,
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantined", MetricSize::kSmall,
+     "brp_quarantined_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantinedCount",
+     MetricSize::kTiny, "brp_quarantined_count", EmitTo::kSizeInUmaOnly,
      nullptr},
-    {"malloc/partitions/allocator/brp_quarantined_count",
-     "Malloc.BRPQuarantinedCount", MetricSize::kTiny,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
 #endif
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",

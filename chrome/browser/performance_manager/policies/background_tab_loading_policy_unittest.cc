@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -80,8 +81,8 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   std::unique_ptr<
       performance_manager::TestNodeWrapper<performance_manager::SystemNodeImpl>>
       system_node_;
-  BackgroundTabLoadingPolicy* policy_;
-  MockPageLoader* mock_loader_;
+  raw_ptr<BackgroundTabLoadingPolicy> policy_;
+  raw_ptr<MockPageLoader> mock_loader_;
 };
 
 TEST_F(BackgroundTabLoadingPolicyTest, ScheduleLoadForRestoredTabs) {

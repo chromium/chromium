@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_OVERLAY_SCROLL_BAR_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -52,7 +53,7 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
     void OnStateChanged() override;
 
    private:
-    OverlayScrollBar* scroll_bar_;
+    raw_ptr<OverlayScrollBar> scroll_bar_;
   };
   friend class Thumb;
 

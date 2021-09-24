@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -156,12 +157,12 @@ class Parser final {
 
   // As we parse the input string we populate a `URLPatternInit` dictionary
   // with each component pattern.  This is then the final result of the parse.
-  URLPatternInit* result_ = nullptr;
+  raw_ptr<URLPatternInit> result_ = nullptr;
 
   // The compiled Component for the protocol.  This is generated for absolute
   // strings where we need to determine if the value should be treated as
   // a "standard" URL.
-  Component* protocol_component_ = nullptr;
+  raw_ptr<Component> protocol_component_ = nullptr;
 
   // The list of Tokens produced by calling `liburlpattern::Tokenize()` on
   // `input_`.

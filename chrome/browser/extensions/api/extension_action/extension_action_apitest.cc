@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -181,7 +182,7 @@ class ActionTestHelper {
   // The name of the property in the set method details (e.g., "popup").
   const char* const js_property_key_;
   // The WebContents to use to execute API calls.
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 };
 
 // Forces a flush of the StateStore, where action state is persisted.

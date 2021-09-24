@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -55,7 +56,7 @@ class AwContentsClientBridgeTest : public Test {
   scoped_refptr<X509Certificate> selected_cert_;
   scoped_refptr<SSLPrivateKey> selected_key_;
   int cert_selected_callbacks_;
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
 };
 
 class TestClientCertificateDelegate
@@ -72,7 +73,7 @@ class TestClientCertificateDelegate
   }
 
  private:
-  AwContentsClientBridgeTest* test_;
+  raw_ptr<AwContentsClientBridgeTest> test_;
 
   DISALLOW_COPY_AND_ASSIGN(TestClientCertificateDelegate);
 };

@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -514,7 +515,7 @@ class ResourceCacheValidationSuppressor {
   }
 
  private:
-  ResourceFetcher* loader_;
+  raw_ptr<ResourceFetcher> loader_;
   bool previous_state_;
 };
 
@@ -543,22 +544,23 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
   ResourceFetcherInit(const ResourceFetcherInit&) = delete;
   ResourceFetcherInit& operator=(const ResourceFetcherInit&) = delete;
 
-  DetachableResourceFetcherProperties* const properties;
-  FetchContext* const context;
+  const raw_ptr<DetachableResourceFetcherProperties> properties;
+  const raw_ptr<FetchContext> context;
   const scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner;
   const scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner;
-  ResourceFetcher::LoaderFactory* const loader_factory;
-  ContextLifecycleNotifier* const context_lifecycle_notifier;
-  DetachableUseCounter* use_counter = nullptr;
-  DetachableConsoleLogger* console_logger = nullptr;
+  const raw_ptr<ResourceFetcher::LoaderFactory> loader_factory;
+  const raw_ptr<ContextLifecycleNotifier> context_lifecycle_notifier;
+  raw_ptr<DetachableUseCounter> use_counter = nullptr;
+  raw_ptr<DetachableConsoleLogger> console_logger = nullptr;
   ResourceLoadScheduler::ThrottlingPolicy initial_throttling_policy =
       ResourceLoadScheduler::ThrottlingPolicy::kNormal;
-  MHTMLArchive* archive = nullptr;
-  FrameOrWorkerScheduler* frame_or_worker_scheduler = nullptr;
+  raw_ptr<MHTMLArchive> archive = nullptr;
+  raw_ptr<FrameOrWorkerScheduler> frame_or_worker_scheduler = nullptr;
   ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override =
       ResourceLoadScheduler::ThrottleOptionOverride::kNone;
-  LoadingBehaviorObserver* loading_behavior_observer = nullptr;
-  BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr;
+  raw_ptr<LoadingBehaviorObserver> loading_behavior_observer = nullptr;
+  raw_ptr<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper =
+      nullptr;
 };
 
 }  // namespace blink

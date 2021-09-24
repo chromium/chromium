@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -62,7 +63,7 @@ class TrackingTestURLRequestContextGetter
 
  private:
   // Not owned here.
-  net::URLRequestThrottlerManager* throttler_manager_;
+  raw_ptr<net::URLRequestThrottlerManager> throttler_manager_;
   std::unique_ptr<net::TestURLRequestContext> context_;
 };
 

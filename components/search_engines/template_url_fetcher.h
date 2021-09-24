@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -71,7 +72,7 @@ class TemplateURLFetcher : public KeyedService {
  private:
   friend class RequestDelegate;
 
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // In progress requests.
   std::vector<std::unique_ptr<RequestDelegate>> requests_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -216,7 +217,7 @@ class ToolbarButton : public views::LabelButton,
 
     void ClearHighlightColor();
 
-    ToolbarButton* const parent_;
+    const raw_ptr<ToolbarButton> parent_;
 
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
@@ -262,7 +263,7 @@ class ToolbarButton : public views::LabelButton,
   // The model that populates the attached menu.
   std::unique_ptr<ui::MenuModel> model_;
 
-  TabStripModel* const tab_strip_model_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   // Indicates if menu is currently showing.
   bool menu_showing_ = false;

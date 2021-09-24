@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,7 +58,7 @@ class SegmentationResultPrefs {
       const std::string& result_key);
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace segmentation_platform

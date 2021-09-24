@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/decorators/process_priority_aggregator.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -27,7 +28,7 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
     GetGraphFeaturesHelper().EnableExecutionContextRegistry();
     Super::SetUp();
     ppa_ = new ProcessPriorityAggregator();
-    graph()->PassToGraph(base::WrapUnique(ppa_));
+    graph()->PassToGraph(base::WrapUnique(ppa_.get()));
   }
 
   void ExpectPriorityCounts(ProcessNodeImpl* process_node,
@@ -38,7 +39,7 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
     EXPECT_EQ(user_blocking_count, data->user_blocking_count_for_testing());
   }
 
-  ProcessPriorityAggregator* ppa_ = nullptr;
+  raw_ptr<ProcessPriorityAggregator> ppa_ = nullptr;
 };
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
@@ -53,7 +54,7 @@ class HighPMFDiscardPolicyTest
   }
 
  private:
-  HighPMFDiscardPolicy* policy_;
+  raw_ptr<HighPMFDiscardPolicy> policy_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor_;
 };

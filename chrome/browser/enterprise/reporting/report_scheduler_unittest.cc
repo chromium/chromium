@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #include <utility>
@@ -251,7 +252,7 @@ class ReportSchedulerTest : public ::testing::Test {
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
         .WillOnce(WithArgs<0>(
-            Invoke(client_, &policy::MockCloudPolicyClient::SetDMToken)));
+            Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
 #endif
   }
 
@@ -275,11 +276,11 @@ class ReportSchedulerTest : public ::testing::Test {
   ReportingDelegateFactoryDesktop report_delegate_factory_;
 #endif  // defined(OS_ANDROID)
   std::unique_ptr<ReportScheduler> scheduler_;
-  policy::MockCloudPolicyClient* client_;
-  MockReportGenerator* generator_;
-  MockReportUploader* uploader_;
-  MockRealTimeReportGenerator* real_time_generator_;
-  MockRealTimeUploader* extension_request_uploader_;
+  raw_ptr<policy::MockCloudPolicyClient> client_;
+  raw_ptr<MockReportGenerator> generator_;
+  raw_ptr<MockReportUploader> uploader_;
+  raw_ptr<MockRealTimeReportGenerator> real_time_generator_;
+  raw_ptr<MockRealTimeUploader> extension_request_uploader_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage_;
 #endif

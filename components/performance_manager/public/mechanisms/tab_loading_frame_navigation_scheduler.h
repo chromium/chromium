@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_MECHANISMS_TAB_LOADING_FRAME_NAVIGATION_SCHEDULER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -112,8 +113,8 @@ class TabLoadingFrameNavigationScheduler
 
   // Linked list mechanism for the collection of all mechanism instances. This
   // is used to implement StopThrottlingEverything.
-  TabLoadingFrameNavigationScheduler* prev_ = nullptr;
-  TabLoadingFrameNavigationScheduler* next_ = nullptr;
+  raw_ptr<TabLoadingFrameNavigationScheduler> prev_ = nullptr;
+  raw_ptr<TabLoadingFrameNavigationScheduler> next_ = nullptr;
 };
 
 // The policy delegate that the scheduler uses to make policy decisions. By

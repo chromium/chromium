@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SWAP_BUFFER_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SWAP_BUFFER_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -94,7 +95,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
                        bool lost_resource);
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  Client* client_;
+  raw_ptr<Client> client_;
   WGPUDevice device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;

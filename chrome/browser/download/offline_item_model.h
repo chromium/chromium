@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -85,7 +86,7 @@ class OfflineItemModel : public DownloadUIModel,
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;
 
-  OfflineItemModelManager* manager_;
+  raw_ptr<OfflineItemModelManager> manager_;
 
   std::unique_ptr<FilteredOfflineItemObserver> offline_item_observer_;
   std::unique_ptr<OfflineItem> offline_item_;

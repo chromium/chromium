@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -305,7 +306,7 @@ class PLATFORM_EXPORT ImageFrame final {
   SkAlphaType ComputeAlphaType() const;
 
   SkBitmap bitmap_;
-  SkBitmap::Allocator* allocator_;
+  raw_ptr<SkBitmap::Allocator> allocator_;
   bool has_alpha_;
   PixelFormat pixel_format_;
   // This will always just be the entire buffer except for GIF or WebP

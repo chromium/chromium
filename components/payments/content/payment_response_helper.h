@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -76,7 +77,7 @@ class PaymentResponseHelper
   base::WeakPtr<PaymentRequestDelegate> payment_request_delegate_;
 
   // Not owned, can be null (dependent on the spec).
-  autofill::AutofillProfile* selected_contact_profile_;
+  raw_ptr<autofill::AutofillProfile> selected_contact_profile_;
 
   // A normalized copy of the shipping address, which will be included in the
   // PaymentResponse.

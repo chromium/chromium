@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_OBSERVER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -55,7 +56,7 @@ class BLINK_EXPORT WebViewObserver : public base::CheckedObserver {
   void Observe(WebView* web_view);
 
  private:
-  WebViewImpl* web_view_;
+  raw_ptr<WebViewImpl> web_view_;
 };
 
 }  // namespace blink

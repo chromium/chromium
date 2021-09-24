@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -202,7 +203,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   // For generating test AudioBuses
   media::SineWaveAudioSource audio_source_;
 
-  MockMediaStreamVideoSource* video_source_ = nullptr;
+  raw_ptr<MockMediaStreamVideoSource> video_source_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerFixture);
@@ -711,7 +712,7 @@ class MediaRecorderHandlerPassthroughTest
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   MockMediaStreamRegistry registry_;
-  MockMediaStreamVideoSource* video_source_ = nullptr;
+  raw_ptr<MockMediaStreamVideoSource> video_source_ = nullptr;
   Persistent<MediaRecorderHandler> media_recorder_handler_;
 
  private:

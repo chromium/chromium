@@ -103,7 +103,7 @@ AuthenticatorEnvironmentImpl::MaybeGetDiscoveryFactoryTestOverride() {
 
 #if defined(OS_WIN)
 device::WinWebAuthnApi* AuthenticatorEnvironmentImpl::win_webauthn_api() const {
-  return win_webauthn_api_for_testing_ ? win_webauthn_api_for_testing_
+  return win_webauthn_api_for_testing_ ? win_webauthn_api_for_testing_.get()
                                        : device::WinWebAuthnApi::GetDefault();
 }
 

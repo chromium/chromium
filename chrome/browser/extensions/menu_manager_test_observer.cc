@@ -10,7 +10,7 @@ namespace extensions {
 
 MenuManagerTestObserver::MenuManagerTestObserver(MenuManager* menu_manager)
     : menu_manager_(menu_manager) {
-  observation_.Observe(menu_manager_);
+  observation_.Observe(menu_manager_.get());
 }
 
 MenuManagerTestObserver::~MenuManagerTestObserver() = default;

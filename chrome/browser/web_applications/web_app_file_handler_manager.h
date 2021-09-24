@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -139,8 +140,8 @@ class WebAppFileHandlerManager {
   bool disable_os_integration_for_testing_ = false;
   base::RepeatingCallback<void()> on_file_handling_expiry_updated_for_testing_;
 
-  Profile* const profile_;
-  WebAppRegistrar* registrar_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
 
   base::WeakPtrFactory<WebAppFileHandlerManager> weak_ptr_factory_{this};
 };

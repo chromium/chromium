@@ -6,6 +6,7 @@
 #define REMOTING_CLIENT_EMPTY_CURSOR_FILTER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 
 namespace remoting {
@@ -38,7 +39,7 @@ class EmptyCursorFilter : public protocol::CursorShapeStub {
   }
 
  private:
-  protocol::CursorShapeStub* cursor_stub_;
+  raw_ptr<protocol::CursorShapeStub> cursor_stub_;
 };
 
 }  // namespace remoting

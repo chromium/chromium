@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
@@ -89,7 +90,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   void ContinueTask(base::OnceClosure task) override;
 
  private:
-  Scheduler* const scheduler_;
+  const raw_ptr<Scheduler> scheduler_;
   const SequenceId sequence_id_;
 };
 

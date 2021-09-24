@@ -174,7 +174,7 @@ void URLLoaderWrapperImpl::ReadResponseBody(char* buffer,
 
 void URLLoaderWrapperImpl::ReadResponseBodyImpl(ResultCallback callback) {
   url_loader_->ReadResponseBody(
-      base::make_span(buffer_, buffer_size_),
+      base::make_span(buffer_.get(), buffer_size_),
       base::BindOnce(&URLLoaderWrapperImpl::DidRead, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -261,7 +261,7 @@ void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
     if (IsDoubleEndLineAtEnd(buffer_, i)) {
       int start_pos = 0;
       int end_pos = 0;
-      if (GetByteRangeFromHeaders(std::string(buffer_, i), &start_pos,
+      if (GetByteRangeFromHeaders(std::string(buffer_.get(), i), &start_pos,
                                   &end_pos)) {
         byte_range_ = gfx::Range(start_pos, end_pos);
         start += i;

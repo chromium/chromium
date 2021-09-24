@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -129,19 +130,19 @@ class CustomTabBarView : public views::AccessiblePaneView,
   std::u16string last_title_;
   std::u16string last_location_;
 
-  views::ImageButton* close_button_ = nullptr;
-  LocationBarView::Delegate* delegate_ = nullptr;
-  LocationIconView* location_icon_view_ = nullptr;
-  CustomTabBarTitleOriginView* title_origin_view_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
+  raw_ptr<LocationIconView> location_icon_view_ = nullptr;
+  raw_ptr<CustomTabBarTitleOriginView> title_origin_view_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // This remains a nullptr for Desktop PWAs and is non-null for Android apps
   // on ChromeOS.
-  WebAppMenuButton* web_app_menu_button_ = nullptr;
+  raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
 
-  views::FlexLayout* layout_manager_;
+  raw_ptr<views::FlexLayout> layout_manager_;
 
   base::WeakPtrFactory<CustomTabBarView> weak_factory_{this};
 };

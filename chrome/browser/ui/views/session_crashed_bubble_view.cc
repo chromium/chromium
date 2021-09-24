@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
 #include "build/branding_buildflags.h"
@@ -177,7 +178,7 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
   Browser* browser() const { return browser_; }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 // static

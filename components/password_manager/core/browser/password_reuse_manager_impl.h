@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -90,7 +91,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   scoped_refptr<PasswordStoreInterface> profile_store_;
 
@@ -100,7 +101,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // living on the background thread. It will be deleted asynchronously during
   // shutdown on the background thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  PasswordReuseDetector* reuse_detector_ = nullptr;
+  raw_ptr<PasswordReuseDetector> reuse_detector_ = nullptr;
 
   // Notifies PasswordReuseManager about sign-in events.
   std::unique_ptr<PasswordStoreSigninNotifier> notifier_;

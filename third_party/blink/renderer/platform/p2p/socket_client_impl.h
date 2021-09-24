@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -107,7 +108,7 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
   CrossThreadWeakPersistent<P2PSocketDispatcher> dispatcher_;
   THREAD_CHECKER(thread_checker_);
   int socket_id_;
-  blink::P2PSocketClientDelegate* delegate_;
+  raw_ptr<blink::P2PSocketClientDelegate> delegate_;
   State state_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 

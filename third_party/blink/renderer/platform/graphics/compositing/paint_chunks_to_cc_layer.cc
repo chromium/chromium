@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/base/features.h"
 #include "cc/input/layer_selection_bound.h"
@@ -218,9 +219,9 @@ class ConversionContext {
   bool translated_for_layer_offset_ = false;
 
   // These fields are neve nullptr.
-  const TransformPaintPropertyNode* current_transform_;
-  const ClipPaintPropertyNode* current_clip_;
-  const EffectPaintPropertyNode* current_effect_;
+  raw_ptr<const TransformPaintPropertyNode> current_transform_;
+  raw_ptr<const ClipPaintPropertyNode> current_clip_;
+  raw_ptr<const EffectPaintPropertyNode> current_effect_;
 
   // The previous transform state before SwitchToTransform() within the current
   // clip/effect state. When the next chunk's transform is different from the
@@ -229,7 +230,7 @@ class ConversionContext {
   // the value of this field will be saved into the state stack and set to
   // nullptr. When the clip/effect state ends, this field will be restored to
   // the saved value.
-  const TransformPaintPropertyNode* previous_transform_ = nullptr;
+  raw_ptr<const TransformPaintPropertyNode> previous_transform_ = nullptr;
 
   // This structure accumulates bounds of all chunks under an effect. When an
   // effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a

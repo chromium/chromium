@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_verifier_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -94,7 +95,7 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   // Returns information needed for content verification of |extension|.
   VerifyInfo GetVerifyInfo(const Extension& extension) const;
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   VerifyInfo::Mode default_mode_;
 
   // This maps an extension id to a backoff entry for slowing down

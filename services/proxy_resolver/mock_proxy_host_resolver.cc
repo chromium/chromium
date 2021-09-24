@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
@@ -121,7 +122,7 @@ class HangingProxyHostResolver::RequestImpl : public Request {
   }
 
  private:
-  HangingProxyHostResolver* resolver_;
+  raw_ptr<HangingProxyHostResolver> resolver_;
 };
 
 HangingProxyHostResolver::HangingProxyHostResolver(

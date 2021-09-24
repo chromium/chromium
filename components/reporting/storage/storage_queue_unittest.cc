@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -283,8 +284,8 @@ class TestUploader : public UploaderInterface {
           UploadComplete(Eq(uploader_->uploader_id_), Eq(Status::StatusOK())))
           .InSequence(uploader_->test_upload_sequence_,
                       uploader_->test_encounter_sequence_)
-          .WillOnce(
-              WithoutArgs(Invoke(waiter_, &test::TestCallbackWaiter::Signal)));
+          .WillOnce(WithoutArgs(
+              Invoke(waiter_.get(), &test::TestCallbackWaiter::Signal)));
     }
 
     SetUp& Required(int64_t sequence_number, base::StringPiece value) {
@@ -357,8 +358,8 @@ class TestUploader : public UploaderInterface {
     }
 
    private:
-    TestUploader* const uploader_;
-    test::TestCallbackWaiter* const waiter_;
+    const raw_ptr<TestUploader> uploader_;
+    const raw_ptr<test::TestCallbackWaiter> waiter_;
   };
 
  private:
@@ -448,7 +449,7 @@ class TestUploader : public UploaderInterface {
   const int64_t uploader_id_;
 
   absl::optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 

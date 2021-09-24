@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
@@ -86,14 +87,15 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     app_service_worker_scope_ = start_url.GetWithoutFilename();
     const std::string register_app_service_worker_script = content::JsReplace(
         kRegisterServiceWorkerScript, app_service_worker_scope_.spec());
-    ASSERT_EQ("OK", EvalJs(main_frame_, register_app_service_worker_script));
+    ASSERT_EQ("OK",
+              EvalJs(main_frame_.get(), register_app_service_worker_script));
 
     sub_app_service_worker_scope_ = sub_start_url;
     const std::string register_sub_app_service_worker_script =
         content::JsReplace(kRegisterServiceWorkerScript,
                            sub_app_service_worker_scope_.spec());
-    ASSERT_EQ("OK",
-              EvalJs(main_frame_, register_sub_app_service_worker_script));
+    ASSERT_EQ("OK", EvalJs(main_frame_.get(),
+                           register_sub_app_service_worker_script));
 
     awaiter_ = std::make_unique<base::RunLoop>();
 
@@ -217,10 +219,10 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   const AppId& sub_app_id() { return sub_app_id_; }
   const AppId& cross_site_app_id() { return cross_site_app_id_; }
 
-  RenderFrameHost* main_frame_;
-  RenderFrameHost* sub_app_frame_;
-  RenderFrameHost* in_scope_frame_;
-  RenderFrameHost* cross_site_frame_;
+  raw_ptr<RenderFrameHost> main_frame_;
+  raw_ptr<RenderFrameHost> sub_app_frame_;
+  raw_ptr<RenderFrameHost> in_scope_frame_;
+  raw_ptr<RenderFrameHost> cross_site_frame_;
 
   // Use this script text with EvalJs() on |main_frame_| to register a service
   // worker.  Use ReplaceJs() to replace $1 with the service worker scope URL.
@@ -264,7 +266,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   AppId sub_app_id_;
   AppId cross_site_app_id_;
   std::unique_ptr<base::RunLoop> awaiter_;
-  badging::TestBadgeManagerDelegate* delegate_;
+  raw_ptr<badging::TestBadgeManagerDelegate> delegate_;
   net::EmbeddedTestServer cross_origin_https_server_;
 };
 

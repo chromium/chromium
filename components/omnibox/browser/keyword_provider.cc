@@ -10,6 +10,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -61,7 +62,7 @@ class ScopedEndExtensionKeywordMode {
   void StayInKeywordMode();
 
  private:
-  KeywordExtensionsDelegate* delegate_;
+  raw_ptr<KeywordExtensionsDelegate> delegate_;
 };
 
 ScopedEndExtensionKeywordMode::ScopedEndExtensionKeywordMode(

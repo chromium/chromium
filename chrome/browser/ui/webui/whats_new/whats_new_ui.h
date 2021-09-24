@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -54,7 +55,7 @@ class WhatsNewUI : public ui::MojoWebUIController,
   std::unique_ptr<BrowserCommandHandler> command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

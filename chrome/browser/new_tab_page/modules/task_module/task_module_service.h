@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
@@ -65,7 +66,7 @@ class TaskModuleService : public KeyedService {
   bool IsTaskDismissed(task_module::mojom::TaskModuleType task_module_type,
                        const std::string& task_name);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_;
   std::string application_locale_;

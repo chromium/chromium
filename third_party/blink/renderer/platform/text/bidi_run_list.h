@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RUN_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RUN_LIST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -65,9 +66,9 @@ class BidiRunList final {
  private:
   void ClearWithoutDestroyingRuns();
 
-  Run* first_run_;
-  Run* last_run_;
-  Run* logically_last_run_;
+  raw_ptr<Run> first_run_;
+  raw_ptr<Run> last_run_;
+  raw_ptr<Run> logically_last_run_;
   unsigned run_count_;
 };
 

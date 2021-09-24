@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
@@ -38,7 +39,7 @@ class CONTENT_EXPORT SpeechRecognizer
   int session_id() const { return session_id_; }
 
  private:
-  SpeechRecognitionEventListener* listener_;
+  raw_ptr<SpeechRecognitionEventListener> listener_;
   int session_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);

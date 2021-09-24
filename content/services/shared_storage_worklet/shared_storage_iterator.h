@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_ITERATOR_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
@@ -75,7 +76,7 @@ class SharedStorageIterator final
   std::deque<v8::Global<v8::Promise::Resolver>> pending_resolvers_;
 
   // This isolate is owned by SharedStorageWorkletGlobalScope::isolate_holder_.
-  v8::Isolate* isolate_for_pending_resolvers_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_for_pending_resolvers_ = nullptr;
 
   // True if we haven't got the browser process's signal for the last batch of
   // entries. After the state is set to false, no further DidReadEntries()

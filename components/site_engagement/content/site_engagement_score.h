@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
@@ -215,7 +216,7 @@ class SiteEngagementScore {
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // |raw_score_| is the score before any decay is applied.
   double raw_score_;
@@ -240,7 +241,7 @@ class SiteEngagementScore {
   GURL origin_;
 
   // The settings to write this score to when Commit() is called.
-  HostContentSettingsMap* settings_map_;
+  raw_ptr<HostContentSettingsMap> settings_map_;
 };
 
 }  // namespace site_engagement

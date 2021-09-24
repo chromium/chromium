@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 
@@ -52,10 +53,10 @@ class NonRecordingSiteDataCache : public SiteDataCache,
   // The data cache to use to create the readers served by this data store. E.g.
   // during an incognito session it should point to the data cache used by the
   // parent session.
-  SiteDataCache* data_cache_for_readers_;
+  raw_ptr<SiteDataCache> data_cache_for_readers_;
 
   // The inspector implementation this instance delegates to.
-  SiteDataCacheInspector* data_cache_inspector_;
+  raw_ptr<SiteDataCacheInspector> data_cache_inspector_;
 
   // The ID of the browser context this data store is associated with.
   const std::string browser_context_id_;

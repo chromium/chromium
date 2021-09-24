@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class CaptionBubbleContextViews : public CaptionBubbleContextBrowser {
   bool IsActivatable() const override;
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace captions

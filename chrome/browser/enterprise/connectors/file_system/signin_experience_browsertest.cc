@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/file_system/browsertest_helper.h"
 
 #include "base/files/file_path.h"
@@ -69,7 +70,7 @@ class SigninExperienceForDownloadItemBrowserTest
   }
 
  protected:
-  content::WebContents* web_contents;
+  raw_ptr<content::WebContents> web_contents;
   absl::optional<FileSystemSettings> settings;
   DownloadItemForBrowserTest test_item{FILE_PATH_LITERAL("file.txt")};
   std::unique_ptr<download::DownloadItemRenameHandler> rename_handler;

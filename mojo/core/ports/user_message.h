@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace mojo {
 namespace core {
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
   virtual size_t GetSizeIfSerialized() const;
 
  private:
-  const TypeInfo* const type_info_;
+  const raw_ptr<const TypeInfo> type_info_;
 };
 
 }  // namespace ports

@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_TIMELINE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -299,7 +300,7 @@ class AudioParamTimeline {
     const double time2;
 
     // The current event, and it's index in the event vector.
-    const ParamEvent* event;
+    raw_ptr<const ParamEvent> event;
     const int event_index;
   };
 

@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -50,7 +51,7 @@ class ActiveTabTracker : public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  const base::TickClock* const clock_;
+  const raw_ptr<const base::TickClock> clock_;
   const ActiveTabClosedCallback active_tab_closed_callback_;
   // Map containing the latest time the active tab changed for each tab strip
   // model. Also serves as the list of all registered |TabStripModel|s.

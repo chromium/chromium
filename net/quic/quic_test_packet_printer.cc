@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_test_packet_printer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <ostream>
 
@@ -207,8 +208,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
 
  private:
-  QuicFramer* framer_;  // Unowned.
-  mutable std::ostream* output_;
+  raw_ptr<QuicFramer> framer_;  // Unowned.
+  mutable raw_ptr<std::ostream> output_;
 };
 
 }  // namespace quic

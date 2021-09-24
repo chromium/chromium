@@ -13,6 +13,7 @@
 
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 
@@ -70,17 +71,17 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
 
  private:
   // Pointer to the associated Profile. Must outlive ChromeBookmarkClient.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Pointer to the ManagedBookmarkService responsible for bookmark policy. May
   // be null during testing.
-  bookmarks::ManagedBookmarkService* managed_bookmark_service_;
+  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 
-  bookmarks::BookmarkModel* model_;
+  raw_ptr<bookmarks::BookmarkModel> model_;
 
   // Pointer to the BookmarkSyncService responsible for encoding and decoding
   // sync metadata persisted together with the bookmarks model.
-  sync_bookmarks::BookmarkSyncService* bookmark_sync_service_;
+  raw_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Owns the observer used by Offline Page listening to Bookmark Model events.

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_command_line.h"
@@ -161,7 +162,7 @@ class OriginTrialInitializationTestThread
   }
 
  private:
-  ChromeContentClient* chrome_client_;
+  raw_ptr<ChromeContentClient> chrome_client_;
   std::vector<blink::OriginTrialPolicy*> policy_objects_;
 
   DISALLOW_COPY_AND_ASSIGN(OriginTrialInitializationTestThread);

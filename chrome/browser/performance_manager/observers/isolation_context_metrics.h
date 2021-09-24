@@ -9,6 +9,7 @@
 
 #include "base/containers/small_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -147,7 +148,7 @@ class IsolationContextMetrics : public FrameNode::ObserverDefaultImpl,
   virtual void OnReportingTimerFired();
 
   // The graph to which this object belongs.
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   // Timer that is used to periodically flush metrics. This ensures that they
   // are mostly up to date in the event of a catastrophic browser crash. We

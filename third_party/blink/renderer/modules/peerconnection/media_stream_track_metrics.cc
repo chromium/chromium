@@ -7,6 +7,8 @@
 #include <inttypes.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 //#include "base/hash/md5.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -52,7 +54,7 @@ class MediaStreamTrackMetricsObserver {
   std::string track_id_;
 
   // Non-owning.
-  MediaStreamTrackMetrics* owner_;
+  raw_ptr<MediaStreamTrackMetrics> owner_;
   base::ThreadChecker thread_checker_;
 };
 

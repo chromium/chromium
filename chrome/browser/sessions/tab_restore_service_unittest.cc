@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -218,7 +219,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   blink::UserAgentOverride user_agent_override_;
   std::unique_ptr<sessions::LiveTab> live_tab_;
   std::unique_ptr<sessions::TabRestoreServiceImpl> service_;
-  TabRestoreTimeFactory* time_factory_;
+  raw_ptr<TabRestoreTimeFactory> time_factory_;
   SessionID window_id_;
   SessionID tab_id_;
 };

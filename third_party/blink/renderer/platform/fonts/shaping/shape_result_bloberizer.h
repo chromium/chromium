@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
@@ -178,7 +179,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   size_t builder_run_count_ = 0;
 
   // Current run state.
-  const SimpleFontData* pending_font_data_ = nullptr;
+  raw_ptr<const SimpleFontData> pending_font_data_ = nullptr;
   CanvasRotationInVertical pending_canvas_rotation_ =
       CanvasRotationInVertical::kRegular;
   Vector<Glyph, 1024> pending_glyphs_;

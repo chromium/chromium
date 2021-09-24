@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -135,7 +136,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   absl::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
   std::string aoa_request_description_;
-  network::mojom::NetworkContext* network_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   absl::optional<std::vector<CableDiscoveryData>> cable_data_;
   absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   absl::optional<FidoRequestType> request_type_;
@@ -145,7 +146,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   absl::optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
       cable_pairing_callback_;
 #if defined(OS_WIN)
-  WinWebAuthnApi* win_webauthn_api_ = nullptr;
+  raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
 #endif  // defined(OS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;

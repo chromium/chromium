@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/gesture_detection/bitset_32.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
@@ -102,7 +103,7 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   GestureSequence& Head();
   GestureSequence& Tail();
 
-  TouchDispositionGestureFilterClient* client_;
+  raw_ptr<TouchDispositionGestureFilterClient> client_;
   base::queue<GestureSequence> sequences_;
 
   GestureHandlingState state_;

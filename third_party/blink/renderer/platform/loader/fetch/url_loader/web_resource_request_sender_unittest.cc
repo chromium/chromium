@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -188,7 +189,7 @@ class MockRequestPeer : public WebRequestPeer {
   bool cancel_on_receive_response_ = false;
   net::LoadTimingInfo last_load_timing_;
   network::URLLoaderCompletionStatus completion_status_;
-  WebResourceRequestSender* resource_request_sender_ = nullptr;
+  raw_ptr<WebResourceRequestSender> resource_request_sender_ = nullptr;
 };  // namespace blink
 
 // Sets up the message sender override for the unit test.
@@ -284,7 +285,7 @@ class WebResourceRequestSenderTest : public testing::Test,
     }
 
    private:
-    WebResourceRequestSenderDelegate* delegate_;
+    raw_ptr<WebResourceRequestSenderDelegate> delegate_;
   };
 
  protected:

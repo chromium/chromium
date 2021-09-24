@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -72,7 +73,7 @@ class TypedNavigationUpgradeLifetimeHelper
   friend class content::WebContentsUserData<
       TypedNavigationUpgradeLifetimeHelper>;
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<TypedNavigationUpgradeLifetimeHelper> weak_factory_{
       this};
 

@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -119,7 +120,7 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
   int history_deleted_count_ = 0;
   std::vector<QueryResult> query_results_;
   base::OnceClosure continuation_closure_;
-  WebHistoryService* web_history_;
+  raw_ptr<WebHistoryService> web_history_;
 };
 
 class TestWebHistoryService : public FakeWebHistoryService {
@@ -315,7 +316,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   TestWebHistoryService web_history_;
   TestSyncService sync_service_;
   TestBrowsingHistoryDriver driver_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -14,7 +15,7 @@ namespace blink {
 struct ContextProviderCreationInfo {
   // Inputs.
   Platform::ContextAttributes context_attributes;
-  Platform::GraphicsInfo* gl_info;
+  raw_ptr<Platform::GraphicsInfo> gl_info;
   KURL url;
   // Outputs.
   std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;

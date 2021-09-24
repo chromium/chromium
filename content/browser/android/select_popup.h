@@ -9,6 +9,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -47,7 +48,7 @@ class SelectPopup {
                        const base::android::JavaParamRef<jintArray>& indices);
 
  private:
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
   JavaObjectWeakGlobalRef java_obj_;
 
   // Select popup view

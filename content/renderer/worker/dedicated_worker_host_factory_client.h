@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_WORKER_DEDICATED_WORKER_HOST_FACTORY_CLIENT_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -86,7 +87,7 @@ class DedicatedWorkerHostFactoryClient final
   void OnScriptLoadStartFailed() override;
 
   // |worker_| owns |this|.
-  blink::WebDedicatedWorker* worker_;
+  raw_ptr<blink::WebDedicatedWorker> worker_;
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle>
       subresource_loader_factory_bundle_;

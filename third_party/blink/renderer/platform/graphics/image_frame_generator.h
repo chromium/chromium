@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -130,9 +131,9 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     ~ClientMutexLocker();
 
    private:
-    ImageFrameGenerator* generator_;
+    raw_ptr<ImageFrameGenerator> generator_;
     cc::PaintImage::GeneratorClientId client_id_;
-    Mutex* mutex_;
+    raw_ptr<Mutex> mutex_;
   };
 
   ImageFrameGenerator(const SkISize& full_size,

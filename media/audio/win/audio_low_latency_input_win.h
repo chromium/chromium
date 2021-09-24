@@ -70,6 +70,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -199,7 +200,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   void ReportAndResetGlitchStats();
 
   // Our creator, the audio manager needs to be notified when we close.
-  AudioManagerWin* const manager_;
+  const raw_ptr<AudioManagerWin> manager_;
 
   // Capturing is driven by this thread (which has no message loop).
   // All OnData() callbacks will be called from this thread.
@@ -244,7 +245,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   std::string device_id_;
 
   // Pointer to the object that will receive the recorded audio samples.
-  AudioInputCallback* sink_ = nullptr;
+  raw_ptr<AudioInputCallback> sink_ = nullptr;
 
   // Windows Multimedia Device (MMDevice) API interfaces.
 

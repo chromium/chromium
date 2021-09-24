@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_INTERVENTION_POLICY_DATABASE_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_INTERVENTION_POLICY_DATABASE_COMPONENT_INSTALLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/component_updater/component_installer.h"
 
 namespace resource_coordinator {
@@ -47,8 +48,7 @@ class InterventionPolicyDatabaseComponentInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  resource_coordinator::InterventionPolicyDatabase* database_;
-
+  raw_ptr<resource_coordinator::InterventionPolicyDatabase> database_;
 };
 
 // Call once to make the component update service aware of the Intervention

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -54,7 +55,7 @@ class DeclarativeContentIsBookmarkedPredicate : public ContentPredicate {
       bool is_bookmarked);
 
   // Weak.
-  ContentPredicateEvaluator* const evaluator_;
+  const raw_ptr<ContentPredicateEvaluator> evaluator_;
 
   scoped_refptr<const Extension> extension_;
   bool is_bookmarked_;
@@ -160,7 +161,7 @@ class DeclarativeContentIsBookmarkedConditionTracker
   void UpdateAllPerWebContentsTrackers();
 
   // Weak.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Maps WebContents to the tracker for that WebContents state.
   std::map<content::WebContents*, std::unique_ptr<PerWebContentsTracker>>

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -84,9 +85,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_ = nullptr;
   }
 
-  MenuController* menu_controller_;
-  SubmenuView* submenu_;
-  aura::Window* window_;
+  raw_ptr<MenuController> menu_controller_;
+  raw_ptr<SubmenuView> submenu_;
+  raw_ptr<aura::Window> window_;
 };
 #endif  // USE_AURA
 

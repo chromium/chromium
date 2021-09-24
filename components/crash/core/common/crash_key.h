@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -260,7 +261,7 @@ class ScopedCrashKeyString {
   ~ScopedCrashKeyString() { crash_key_->Clear(); }
 
  private:
-  CrashKeyType* const crash_key_;
+  const raw_ptr<CrashKeyType> crash_key_;
 };
 
 namespace internal {

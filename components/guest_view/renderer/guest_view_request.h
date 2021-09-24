@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -53,9 +54,9 @@ class GuestViewRequest {
   v8::Isolate* isolate() const { return isolate_; }
 
  private:
-  GuestViewContainer* const container_;
+  const raw_ptr<GuestViewContainer> container_;
   v8::Global<v8::Function> callback_;
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
 };
 
 }  // namespace guest_view

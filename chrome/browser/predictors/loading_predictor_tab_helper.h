@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
@@ -130,7 +131,7 @@ class LoadingPredictorTabHelper
     RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
     scoped_refptr<PageData> page_data_;
-    content::RenderFrameHost* render_frame_host_;
+    raw_ptr<content::RenderFrameHost> render_frame_host_;
     base::WeakPtrFactory<DocumentPageDataHolder> weak_factory_{this};
   };
 
@@ -165,8 +166,8 @@ class LoadingPredictorTabHelper
   base::WeakPtr<LoadingPredictor> predictor_;
 
   // The optimization guide decider to consult for remote predictions.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
-      nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<LoadingPredictorTabHelper> weak_ptr_factory_{this};

@@ -8,6 +8,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 #include "printing/page_range.h"
 
@@ -43,7 +44,7 @@ class AwPdfExporter {
   void DidExportPdf(int page_count);
 
   JavaObjectWeakGlobalRef java_ref_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(AwPdfExporter);
 };

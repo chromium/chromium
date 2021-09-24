@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
@@ -56,7 +57,7 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
 
  private:
   SkImageInfo info_;
-  void* pixels_;
+  raw_ptr<void> pixels_;
   size_t row_bytes_;
 };
 
@@ -104,7 +105,7 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
   DCHECK(!resume_decoding || decoder);
 
   if (resume_decoding) {
-    decoder->SetData(data_, all_data_received_);
+    decoder->SetData(data_.get(), all_data_received_);
   } else {
     new_decoder = CreateDecoderWithData(factory);
     if (!new_decoder)
@@ -286,12 +287,12 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   if (factory) {
     auto decoder = factory->Create();
     if (decoder)
-      decoder->SetData(data_, all_data_received_);
+      decoder->SetData(data_.get(), all_data_received_);
     return decoder;
   }
 
   // The newly created decoder just grabbed the data.  No need to reset it.
-  return ImageDecoder::Create(data_, all_data_received_, alpha_option_,
+  return ImageDecoder::Create(data_.get(), all_data_received_, alpha_option_,
                               decoding_option_, decoder_color_behavior_,
                               scaled_size_);
 }

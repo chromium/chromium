@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_UI_SCENE_CREATOR_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/content_element.h"
 #include "chrome/browser/vr/elements/text_input.h"
@@ -63,14 +64,14 @@ class UiSceneCreator {
   void Create2dBrowsingHostedUi();
   void CreateExternalPromptNotifcationOverlay();
 
-  UiBrowserInterface* browser_;
-  UiScene* scene_;
-  Ui* ui_;
-  ContentInputDelegate* content_input_delegate_;
-  KeyboardDelegate* keyboard_delegate_;
-  TextInputDelegate* text_input_delegate_;
-  AudioDelegate* audio_delegate_;
-  Model* model_;
+  raw_ptr<UiBrowserInterface> browser_;
+  raw_ptr<UiScene> scene_;
+  raw_ptr<Ui> ui_;
+  raw_ptr<ContentInputDelegate> content_input_delegate_;
+  raw_ptr<KeyboardDelegate> keyboard_delegate_;
+  raw_ptr<TextInputDelegate> text_input_delegate_;
+  raw_ptr<AudioDelegate> audio_delegate_;
+  raw_ptr<Model> model_;
 };
 
 }  // namespace vr

@@ -438,7 +438,7 @@ void MessageChannel::DrainJSMessageQueue() {
   // Take a reference on the PluginInstance. This is because JavaScript code
   // may delete the plugin, which would destroy the PluginInstance and its
   // corresponding MessageChannel.
-  scoped_refptr<PepperPluginInstanceImpl> instance_ref(instance_);
+  scoped_refptr<PepperPluginInstanceImpl> instance_ref(instance_.get());
   while (!js_message_queue_.empty()) {
     PostMessageToJavaScriptImpl(js_message_queue_.front());
     js_message_queue_.pop_front();

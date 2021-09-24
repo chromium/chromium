@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -63,7 +64,7 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  MediaNotificationListView* list_view_ = nullptr;
+  raw_ptr<MediaNotificationListView> list_view_ = nullptr;
   std::unique_ptr<MockMediaNotificationItem> item_;
 };
 

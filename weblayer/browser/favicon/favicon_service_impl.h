@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/favicon/core/core_favicon_service.h"
@@ -105,7 +106,7 @@ class FaviconServiceImpl : public favicon::CoreFaviconService,
   std::unordered_set<MissingFaviconUrlHash> missing_favicon_urls_;
 
   // This is only used in tests, where only a single observer is necessary.
-  FaviconServiceImplObserver* observer_ = nullptr;
+  raw_ptr<FaviconServiceImplObserver> observer_ = nullptr;
 };
 
 }  // namespace weblayer

@@ -102,7 +102,7 @@ bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(
 #if DCHECK_IS_ON()
 void ScrollbarDisplayItem::PropertiesAsJSONImpl(JSONObject& json) const {
   json.SetString("scrollTranslation",
-                 String::Format("%p", data_->scroll_translation_));
+                 String::Format("%p", data_->scroll_translation_.get()));
 }
 #endif
 

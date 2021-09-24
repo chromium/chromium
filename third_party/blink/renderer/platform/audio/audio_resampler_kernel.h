@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_RESAMPLER_KERNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_RESAMPLER_KERNEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -68,7 +69,7 @@ class PLATFORM_EXPORT AudioResamplerKernel {
  private:
   double Rate() const;
 
-  AudioResampler* resampler_;
+  raw_ptr<AudioResampler> resampler_;
   AudioFloatArray source_buffer_;
 
   // This is a (floating point) read index on the input stream.

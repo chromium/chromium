@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -282,7 +283,7 @@ class InstallableManager
 
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.
-  content::ServiceWorkerContext* service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
 
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};
 

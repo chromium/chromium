@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
@@ -66,7 +67,7 @@ class MODULES_EXPORT LocalVideoCapturerSource
   // |session_id_| identifies the capture device used for this capture session.
   const media::VideoCaptureSessionId session_id_;
 
-  WebVideoCaptureImplManager* const manager_;
+  const raw_ptr<WebVideoCaptureImplManager> manager_;
 
   LocalFrameToken frame_token_;
   base::OnceClosure release_device_cb_;

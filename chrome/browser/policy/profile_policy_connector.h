@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -149,8 +150,9 @@ class ProfilePolicyConnector final {
   std::vector<std::unique_ptr<ConfigurationPolicyProvider>>
       wrapped_policy_providers_;
 
-  const ConfigurationPolicyProvider* configuration_policy_provider_ = nullptr;
-  const CloudPolicyStore* policy_store_ = nullptr;
+  raw_ptr<const ConfigurationPolicyProvider> configuration_policy_provider_ =
+      nullptr;
+  raw_ptr<const CloudPolicyStore> policy_store_ = nullptr;
 
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.

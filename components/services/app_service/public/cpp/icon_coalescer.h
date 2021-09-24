@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -74,7 +75,7 @@ class IconCoalescer : public IconLoader {
                   uint64_t sequence_number,
                   apps::mojom::IconValuePtr);
 
-  IconLoader* wrapped_loader_;
+  raw_ptr<IconLoader> wrapped_loader_;
 
   // Every incoming LoadIconFromIconKey call gets its own sequence number.
   uint64_t next_sequence_number_;

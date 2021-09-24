@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -41,7 +42,7 @@ class APIRequestHandler::ArgumentAdapter {
       v8::Local<v8::Context> context) const;
 
  private:
-  const base::Value* base_arguments_ = nullptr;
+  raw_ptr<const base::Value> base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
 };
 

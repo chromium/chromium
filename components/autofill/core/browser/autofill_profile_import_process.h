@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -212,7 +213,7 @@ class ProfileImportProcess {
 
   // A pointer to the persona data manager that is used to retrieve additional
   // information about existing profiles.
-  const PersonalDataManager* personal_data_manager_;
+  raw_ptr<const PersonalDataManager> personal_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};

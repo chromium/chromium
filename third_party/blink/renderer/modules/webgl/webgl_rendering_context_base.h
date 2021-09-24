@@ -30,6 +30,7 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -130,7 +131,7 @@ class ScopedRGBEmulationColorMask {
   ~ScopedRGBEmulationColorMask();
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
   GLboolean color_mask_[4];
   const bool requires_emulation_;
 };
@@ -948,7 +949,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
    private:
     bool draft_;
     bool developer_;
-    const char* const* prefixes_;
+    raw_ptr<const char* const> prefixes_;
   };
 
   template <typename T>
@@ -1044,8 +1045,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    DrawingBuffer* drawing_buffer_;
-    WebGLFramebuffer* read_framebuffer_binding_;
+    raw_ptr<DrawingBuffer> drawing_buffer_;
+    raw_ptr<WebGLFramebuffer> read_framebuffer_binding_;
   };
 
   // Errors raised by synthesizeGLError() while the context is lost.

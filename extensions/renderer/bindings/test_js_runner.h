@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/js_runner.h"
 
 namespace extensions {
@@ -42,7 +43,7 @@ class TestJSRunner : public JSRunner {
 
    private:
     std::unique_ptr<JSRunner> runner_;
-    JSRunner* old_runner_;
+    raw_ptr<JSRunner> old_runner_;
   };
 
   // A scoped object that allows errors to be thrown from running JS functions.
@@ -102,7 +103,7 @@ class TestJSRunner : public JSRunner {
     ~PendingCall();
     PendingCall(PendingCall&& other);
 
-    v8::Isolate* isolate;
+    raw_ptr<v8::Isolate> isolate;
     v8::Global<v8::Function> function;
     v8::Global<v8::Context> context;
     std::vector<v8::Global<v8::Value>> arguments;

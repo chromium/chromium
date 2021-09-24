@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -72,7 +73,7 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   // AudioDeviceListenerWin must be constructed and destructed on one thread.
   THREAD_CHECKER(thread_checker_);
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 }  // namespace media

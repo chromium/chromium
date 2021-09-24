@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -219,10 +220,10 @@ class ClientSession : public protocol::HostStub,
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
 
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
-  DesktopEnvironmentFactory* desktop_environment_factory_;
+  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
 
   // The DesktopEnvironmentOptions used to initialize DesktopEnvironment.
   DesktopEnvironmentOptions desktop_environment_options_;

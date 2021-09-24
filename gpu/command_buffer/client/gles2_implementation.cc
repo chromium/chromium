@@ -27,6 +27,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -6230,7 +6231,7 @@ void GLES2Implementation::RequestExtensionCHROMIUM(const char* extension) {
 
   struct ExtensionCheck {
     const char* extension;
-    ExtensionStatus* status;
+    raw_ptr<ExtensionStatus> status;
   };
   const ExtensionCheck checks[] = {
       {

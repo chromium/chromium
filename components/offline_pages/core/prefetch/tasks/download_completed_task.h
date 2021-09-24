@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_DOWNLOAD_COMPLETED_TASK_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -37,8 +38,8 @@ class DownloadCompletedTask : public Task {
   void Run() override;
   void OnPrefetchItemUpdated(bool successful_download, UpdateInfo update_info);
 
-  PrefetchDispatcher* prefetch_dispatcher_;  // Outlives this class.
-  PrefetchStore* prefetch_store_;            // Outlives this class.
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;  // Outlives this class.
+  raw_ptr<PrefetchStore> prefetch_store_;            // Outlives this class.
   PrefetchDownloadResult download_result_;
 
   base::WeakPtrFactory<DownloadCompletedTask> weak_ptr_factory_{this};

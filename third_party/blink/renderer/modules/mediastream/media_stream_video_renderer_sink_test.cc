@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/video_frame.h"
@@ -40,7 +41,8 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
         String::FromUTF8("dummy_source_name"), false /* remote */);
-    media_stream_source_->SetPlatformSource(base::WrapUnique(mock_source_));
+    media_stream_source_->SetPlatformSource(
+        base::WrapUnique(mock_source_.get()));
     WebMediaStreamTrack web_track = MediaStreamVideoTrack::CreateVideoTrack(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true);
@@ -114,7 +116,7 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
   }
 
   Persistent<MediaStreamSource> media_stream_source_;
-  MockMediaStreamVideoSource* mock_source_;
+  raw_ptr<MockMediaStreamVideoSource> mock_source_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoRendererSinkTest);
 };

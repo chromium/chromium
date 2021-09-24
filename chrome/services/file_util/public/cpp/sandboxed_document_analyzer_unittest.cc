@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -82,7 +83,7 @@ class SandboxedDocumentAnalyzerTest : public testing::Test {
     }
 
     base::OnceClosure done_closure_;
-    DocumentAnalyzerResults* results_;
+    raw_ptr<DocumentAnalyzerResults> results_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

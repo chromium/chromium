@@ -4,6 +4,7 @@
 
 #include "media/cast/receiver/cast_streaming_renderer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,7 +25,7 @@ class CastStreamingRendererTest : public testing::Test {
   ~CastStreamingRendererTest() override = default;
 
  protected:
-  MockRenderer* mock_renderer_;
+  raw_ptr<MockRenderer> mock_renderer_;
   std::unique_ptr<CastStreamingRenderer> renderer_;
 };
 

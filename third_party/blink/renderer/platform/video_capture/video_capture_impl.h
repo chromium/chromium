@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
@@ -245,7 +246,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   mojo::PendingRemote<media::mojom::blink::VideoCaptureHost>
       pending_video_capture_host_;
   mojo::Remote<media::mojom::blink::VideoCaptureHost> video_capture_host_;
-  media::mojom::blink::VideoCaptureHost* video_capture_host_for_testing_;
+  raw_ptr<media::mojom::blink::VideoCaptureHost>
+      video_capture_host_for_testing_;
 
   mojo::Receiver<media::mojom::blink::VideoCaptureObserver> observer_receiver_{
       this};
@@ -270,7 +272,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   int num_first_frame_logs_ = 0;
 
   // Methods of |gpu_factories_| need to run on |media_task_runner_|.
-  media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

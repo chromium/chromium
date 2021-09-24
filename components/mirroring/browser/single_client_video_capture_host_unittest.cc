@@ -5,6 +5,7 @@
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -256,7 +257,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockVideoCaptureObserver> consumer_;
   base::WeakPtr<VideoFrameReceiver> frame_receiver_;
-  MockVideoCaptureDevice* launched_device_ = nullptr;
+  raw_ptr<MockVideoCaptureDevice> launched_device_ = nullptr;
 
  private:
   std::unique_ptr<content::VideoCaptureDeviceLauncher> CreateDeviceLauncher() {

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -99,7 +100,7 @@ class AndroidTelemetryServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingBrowserProcess* browser_process_;
+  raw_ptr<TestingBrowserProcess> browser_process_;
   std::unique_ptr<download::MockDownloadItem> download_item_;
   base::HistogramTester histograms_;
   std::unique_ptr<TestingProfile> profile_;

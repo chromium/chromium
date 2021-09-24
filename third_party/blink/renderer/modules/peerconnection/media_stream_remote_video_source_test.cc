@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -107,7 +108,7 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         true /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(remote_source_));
+    source_->SetPlatformSource(base::WrapUnique(remote_source_.get()));
   }
 
   void TearDown() override {
@@ -174,7 +175,7 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
   scoped_refptr<webrtc::VideoTrackSourceInterface> webrtc_video_source_;
   scoped_refptr<webrtc::VideoTrackInterface> webrtc_video_track_;
   // |remote_source_| is owned by |source_|.
-  MediaStreamRemoteVideoSourceUnderTest* remote_source_ = nullptr;
+  raw_ptr<MediaStreamRemoteVideoSourceUnderTest> remote_source_ = nullptr;
   Persistent<MediaStreamSource> source_;
   int number_of_successful_track_starts_ = 0;
   int number_of_failed_track_starts_ = 0;

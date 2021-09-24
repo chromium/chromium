@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -94,7 +95,7 @@ class BrowserRemovedWaiter final : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
 };
 

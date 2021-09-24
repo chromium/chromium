@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SSL_SCT_REPORTING_SERVICE_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,9 +41,9 @@ class SCTReportingService : public KeyedService {
  private:
   void OnPreferenceChanged();
 
-  safe_browsing::SafeBrowsingService* safe_browsing_service_;
+  raw_ptr<safe_browsing::SafeBrowsingService> safe_browsing_service_;
   const PrefService& pref_service_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::CallbackListSubscription safe_browsing_state_subscription_;
 };
 

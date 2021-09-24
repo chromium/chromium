@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
@@ -69,7 +70,7 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
   mojo::Receiver<chrome::mojom::RemovableStorageWriterClient> receiver_;
 
   // |image_writer_utility_client_| owns |this|.
-  ImageWriterUtilityClient* const image_writer_utility_client_;
+  const raw_ptr<ImageWriterUtilityClient> image_writer_utility_client_;
 };
 
 ImageWriterUtilityClient::ImageWriterUtilityClient(

@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
@@ -47,7 +48,7 @@ class PasswordStoreAndroidBackendBridgeImpl
 
   // Weak reference to the `Consumer` that is notified when a task completes. It
   // is required to outlive this bridge.
-  Consumer* consumer_ = nullptr;
+  raw_ptr<Consumer> consumer_ = nullptr;
 
   // This object is an instance of PasswordStoreAndroidBackendBridgeImpl, i.e.
   // the Java counterpart to this class.

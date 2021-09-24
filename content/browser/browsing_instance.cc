@@ -85,7 +85,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
   if (allow_default_instance &&
       SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
           isolation_context_, url_info.url, site_info)) {
-    scoped_refptr<SiteInstanceImpl> site_instance = default_site_instance_;
+    scoped_refptr<SiteInstanceImpl> site_instance =
+        default_site_instance_.get();
     if (!site_instance) {
       site_instance = new SiteInstanceImpl(this);
 

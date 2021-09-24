@@ -9,6 +9,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_PPAPI_DOWNLOAD_REQUEST_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/sessions/core/session_id.h"
@@ -157,7 +158,7 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   // Callback to invoke with the result of the PPAPI download request check.
   CheckDownloadCallback callback_;
 
-  DownloadProtectionService* service_;
+  raw_ptr<DownloadProtectionService> service_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 
   // Time request was started.
@@ -173,9 +174,9 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   bool is_extended_reporting_;
   bool is_enhanced_protection_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_{this};
 };

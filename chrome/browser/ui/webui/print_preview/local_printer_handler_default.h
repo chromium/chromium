@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -54,7 +55,7 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
                                             const std::string& locale);
   static std::string GetDefaultPrinterAsync(const std::string& locale);
 
-  content::WebContents* const preview_web_contents_;
+  const raw_ptr<content::WebContents> preview_web_contents_;
 
   // TaskRunner for blocking tasks. Threading behavior is platform-specific.
   scoped_refptr<base::TaskRunner> const task_runner_;

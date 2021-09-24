@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -85,7 +86,7 @@ class PLATFORM_EXPORT ReverbConvolverStage {
 
   AudioFloatArray pre_delay_buffer_;
 
-  ReverbAccumulationBuffer* accumulation_buffer_;
+  raw_ptr<ReverbAccumulationBuffer> accumulation_buffer_;
   uint32_t accumulation_read_index_;
   size_t input_read_index_;
 

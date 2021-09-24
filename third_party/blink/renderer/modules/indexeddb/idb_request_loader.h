@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -70,7 +71,7 @@ class IDBRequestLoader : public FileReaderLoaderClient {
   // Transaction result queue item for the IDBRequest.
   //
   // The IDBRequestQueueItem owns this loader.
-  IDBRequestQueueItem* queue_item_;
+  raw_ptr<IDBRequestQueueItem> queue_item_;
 
   // All the values that will be passed back to the IDBRequest.
   //

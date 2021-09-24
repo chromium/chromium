@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -205,7 +206,7 @@ class ModelExecutionManagerTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
-  MockFeatureAggregator* feature_aggregator_;
+  raw_ptr<MockFeatureAggregator> feature_aggregator_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };

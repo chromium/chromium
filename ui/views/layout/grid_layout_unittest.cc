@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
@@ -115,7 +116,7 @@ class GridLayoutTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  GridLayout* layout_;
+  raw_ptr<GridLayout> layout_;
 };
 
 class GridLayoutAlignmentTest : public testing::Test {
@@ -144,7 +145,7 @@ class GridLayoutAlignmentTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  GridLayout* layout_;
+  raw_ptr<GridLayout> layout_;
 };
 
 TEST_F(GridLayoutAlignmentTest, Fill) {

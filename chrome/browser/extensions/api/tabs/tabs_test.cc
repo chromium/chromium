@@ -11,6 +11,7 @@
 
 #include "apps/test/app_window_waiter.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -860,7 +861,7 @@ class ExtensionWindowLastFocusedTest : public ExtensionTabsTest {
     }
 
    private:
-    views::Widget* widget_;
+    raw_ptr<views::Widget> widget_;
     bool waiting_;
   };
 

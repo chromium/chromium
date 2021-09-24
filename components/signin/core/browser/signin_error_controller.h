@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -84,7 +85,7 @@ class SigninErrorController : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event) override;
 
   const AccountMode account_mode_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

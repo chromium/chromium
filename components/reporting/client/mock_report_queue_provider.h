@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
@@ -60,7 +61,7 @@ class MockReportQueueProvider : public ReportQueueProvider {
     void OnCompleted() override;
     void OnStart() override;
 
-    MockReportQueueProvider* const provider_;
+    const raw_ptr<MockReportQueueProvider> provider_;
   };
 
   scoped_refptr<StorageModuleInterface> storage_;

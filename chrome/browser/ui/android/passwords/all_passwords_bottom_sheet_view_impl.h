@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 
@@ -53,7 +54,7 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
-  AllPasswordsBottomSheetController* controller_;
+  raw_ptr<AllPasswordsBottomSheetController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_IMPL_H_

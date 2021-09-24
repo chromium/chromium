@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/fido/cable/v2_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <vector>
@@ -333,7 +334,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     size_t buffer_i_ = 0;
     mojo::SimpleWatcher in_watcher_;
     mojo::SimpleWatcher out_watcher_;
-    Connection* peer_ = nullptr;
+    raw_ptr<Connection> peer_ = nullptr;
     mojo::Remote<network::mojom::WebSocketHandshakeClient> handshake_client_;
     mojo::Remote<network::mojom::WebSocketClient> client_receiver_;
     mojo::Receiver<network::mojom::WebSocket> socket_{this};
@@ -461,7 +462,7 @@ class TestPlatform : public authenticator::Platform {
   }
 
   Discovery::AdvertEventStream::Callback ble_advert_callback_;
-  device::VirtualCtap2Device* const ctap2_device_;
+  const raw_ptr<device::VirtualCtap2Device> ctap2_device_;
   base::WeakPtrFactory<TestPlatform> weak_factory_{this};
 };
 

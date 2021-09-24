@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/download_params.h"
 #include "content/public/browser/background_fetch_delegate.h"
@@ -146,7 +147,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
                         download::GetUploadDataCallback callback,
                         blink::mojom::SerializedBlobPtr blob);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Map from individual download GUIDs to job unique ids.
   std::map<std::string, std::string> download_job_id_map_;

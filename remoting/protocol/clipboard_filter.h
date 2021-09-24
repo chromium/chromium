@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {
@@ -36,7 +37,7 @@ class ClipboardFilter : public ClipboardStub {
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  ClipboardStub* clipboard_stub_;
+  raw_ptr<ClipboardStub> clipboard_stub_;
   bool enabled_;
 };
 

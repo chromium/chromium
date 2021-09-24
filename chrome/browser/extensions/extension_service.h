@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -613,19 +614,19 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& extension_id,
       const absl::optional<CrxInstallError>& error);
 
-  const base::CommandLine* command_line_ = nullptr;
+  raw_ptr<const base::CommandLine> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The ExtensionSystem for the profile above.
-  ExtensionSystem* system_ = nullptr;
+  raw_ptr<ExtensionSystem> system_ = nullptr;
 
   // Preferences for the owning profile.
-  ExtensionPrefs* extension_prefs_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
 
   // Blocklist for the owning profile.
-  Blocklist* blocklist_ = nullptr;
+  raw_ptr<Blocklist> blocklist_ = nullptr;
 
   ExtensionAllowlist allowlist_;
 
@@ -634,7 +635,7 @@ class ExtensionService : public ExtensionServiceInterface,
   OmahaAttributesHandler omaha_attributes_handler_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
-  ExtensionRegistry* registry_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
@@ -655,7 +656,7 @@ class ExtensionService : public ExtensionServiceInterface,
   bool extensions_enabled_ = true;
 
   // Signaled when all extensions are loaded.
-  base::OneShotEvent* const ready_;
+  const raw_ptr<base::OneShotEvent> ready_;
 
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;

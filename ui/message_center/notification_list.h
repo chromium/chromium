@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -182,7 +183,7 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   void PushNotification(std::unique_ptr<Notification> notification);
 
-  MessageCenter* message_center_;  // owner
+  raw_ptr<MessageCenter> message_center_;  // owner
   OwnedNotifications notifications_;
   bool quiet_mode_;
 };

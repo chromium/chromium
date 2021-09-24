@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_SYNC_ACCESS_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_SYNC_ACCESS_HANDLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -95,7 +96,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
     bool entered_operation() const { return entered_operation_; }
 
    private:
-    FileSystemSyncAccessHandle* handle_;
+    raw_ptr<FileSystemSyncAccessHandle> handle_;
     bool entered_operation_;
   };
 

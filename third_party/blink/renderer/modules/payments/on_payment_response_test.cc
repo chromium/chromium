@@ -5,6 +5,7 @@
 // Tests for PaymentRequest::OnPaymentResponse().
 
 #include <utility>
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -378,7 +379,7 @@ class PaymentResponseFunction : public ScriptFunction {
     return value;
   }
 
-  ScriptValue* const value_;
+  const raw_ptr<ScriptValue> value_;
 };
 
 // If the merchant requests shipping information, the resolved show() promise

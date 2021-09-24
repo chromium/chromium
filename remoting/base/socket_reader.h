@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 
@@ -47,7 +48,7 @@ class SocketReader {
   void HandleReadResult(int result);
   void CallCallback(scoped_refptr<net::IOBuffer> data, int result);
 
-  net::Socket* socket_;
+  raw_ptr<net::Socket> socket_;
   ReadResultCallback read_result_callback_;
   scoped_refptr<net::IOBuffer> read_buffer_;
 

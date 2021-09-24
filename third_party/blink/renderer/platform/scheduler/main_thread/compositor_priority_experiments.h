@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_COMPOSITOR_PRIORITY_EXPERIMENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_COMPOSITOR_PRIORITY_EXPERIMENTS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/cancelable_closure_holder.h"
@@ -54,7 +55,7 @@ class PLATFORM_EXPORT CompositorPriorityExperiments {
 
   enum class StopSignalType { kAnyCompositorTask, kBeginMainFrameTask };
 
-  MainThreadSchedulerImpl* scheduler_;  // Not owned.
+  raw_ptr<MainThreadSchedulerImpl> scheduler_;  // Not owned.
 
   const Experiment experiment_;
 

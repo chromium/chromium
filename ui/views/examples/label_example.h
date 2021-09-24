@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_LABEL_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -53,13 +54,13 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   void AlignmentChanged();
   void ElidingChanged();
 
-  Textfield* textfield_ = nullptr;
-  Combobox* alignment_ = nullptr;
-  Combobox* elide_behavior_ = nullptr;
-  Checkbox* multiline_ = nullptr;
-  Checkbox* shadows_ = nullptr;
-  Checkbox* selectable_ = nullptr;
-  Label* custom_label_ = nullptr;
+  raw_ptr<Textfield> textfield_ = nullptr;
+  raw_ptr<Combobox> alignment_ = nullptr;
+  raw_ptr<Combobox> elide_behavior_ = nullptr;
+  raw_ptr<Checkbox> multiline_ = nullptr;
+  raw_ptr<Checkbox> shadows_ = nullptr;
+  raw_ptr<Checkbox> selectable_ = nullptr;
+  raw_ptr<Label> custom_label_ = nullptr;
 };
 
 }  // namespace examples

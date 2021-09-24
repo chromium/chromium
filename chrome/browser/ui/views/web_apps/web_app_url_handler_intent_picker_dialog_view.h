@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -113,8 +114,8 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   // feature flag is enabled, disabled otherwise.
   // TODO(crbug.com/1072058): Remove when settings are implemented.
   bool enable_remember_checkbox_ = false;
-  views::Checkbox* remember_selection_checkbox_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::Checkbox> remember_selection_checkbox_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // No default selection. Not null if selected by user.
   absl::optional<int> selected_app_tag_ = absl::nullopt;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -331,7 +332,7 @@ class ScreenshotFlow::UnderlyingWebContentsObserver
   }
 
  private:
-  ScreenshotFlow* screenshot_flow_;
+  raw_ptr<ScreenshotFlow> screenshot_flow_;
 };
 
 }  // namespace image_editor

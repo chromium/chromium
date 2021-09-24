@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_output_ipc.h"
@@ -104,7 +105,7 @@ class PepperPlatformAudioOutputDev
 
   void NotifyStreamCreationFailed();
 
-  PepperAudioOutputHost* client_;
+  raw_ptr<PepperAudioOutputHost> client_;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O thread except to send messages and get the message loop.

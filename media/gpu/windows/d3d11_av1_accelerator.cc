@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/codec_picture.h"
@@ -310,8 +311,8 @@ class D3D11AV1Picture : public AV1Picture {
     return this;
   }
 
-  D3D11PictureBuffer* const picture_buffer_;
-  D3D11VideoDecoderClient* const client_;
+  const raw_ptr<D3D11PictureBuffer> picture_buffer_;
+  const raw_ptr<D3D11VideoDecoderClient> client_;
   const bool apply_grain_;
   const size_t picture_index_;
 };
@@ -371,9 +372,9 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
   HRESULT error() const { return driver_call_result_; }
 
  private:
-  MediaLog* const media_log_;
-  VideoContextWrapper* const context_;
-  ID3D11VideoDecoder* const decoder_;
+  const raw_ptr<MediaLog> media_log_;
+  const raw_ptr<VideoContextWrapper> context_;
+  const raw_ptr<ID3D11VideoDecoder> decoder_;
   const D3D11_VIDEO_DECODER_BUFFER_TYPE type_;
   base::span<uint8_t> buffer_;
   HRESULT driver_call_result_ = S_OK;

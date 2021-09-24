@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
@@ -105,7 +106,7 @@ class PLATFORM_EXPORT ScopedDarkModeElementRoleOverride {
   ~ScopedDarkModeElementRoleOverride();
 
  private:
-  GraphicsContext* graphics_context_;
+  raw_ptr<GraphicsContext> graphics_context_;
   absl::optional<DarkModeFilter::ElementRole> previous_role_override_;
 };
 

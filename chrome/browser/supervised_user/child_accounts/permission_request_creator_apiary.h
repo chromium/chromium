@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -73,7 +74,7 @@ class PermissionRequestCreatorApiary : public PermissionRequestCreator {
 
   void DispatchResult(RequestList::iterator it, bool success);
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool retry_on_network_change_;
 

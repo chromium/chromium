@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_WRITABLE_STREAM_WRAPPER_H_
 
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -110,7 +111,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
    private:
     // We need the isolate to call |AdjustAmountOfExternalAllocatedMemory| for
     // the memory stored in |buffer_|.
-    v8::Isolate* isolate_;
+    raw_ptr<v8::Isolate> isolate_;
     size_t length_ = 0u;
 
     struct OnFree {

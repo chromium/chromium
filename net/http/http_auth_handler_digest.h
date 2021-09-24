@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -177,7 +178,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
   std::string original_realm_;
 
   int nonce_count_;
-  const NonceGenerator* nonce_generator_;
+  raw_ptr<const NonceGenerator> nonce_generator_;
 };
 
 }  // namespace net

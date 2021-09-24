@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -387,8 +388,8 @@ class V8DetailedMemoryRequest {
   base::TimeDelta min_time_between_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
   MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
-  V8DetailedMemoryDecorator* decorator_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<V8DetailedMemoryDecorator> decorator_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -484,7 +485,7 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   void OnOwnerUnregistered();
 
 #if DCHECK_IS_ON()
-  const ProcessNode* process_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<const ProcessNode> process_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif
 
   MeasurementCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);

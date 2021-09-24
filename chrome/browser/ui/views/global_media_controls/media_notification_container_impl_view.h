@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
@@ -152,27 +153,27 @@ class MediaNotificationContainerImplView
   void OnSizeChanged();
 
   const std::string id_;
-  views::View* swipeable_container_ = nullptr;
+  raw_ptr<views::View> swipeable_container_ = nullptr;
 
   std::u16string title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
-  views::View* dismiss_button_placeholder_ = nullptr;
+  raw_ptr<views::View> dismiss_button_placeholder_ = nullptr;
 
   // Shows the colored circle background behind the dismiss button to give it
   // proper contrast against the artwork. The background can't be on the dismiss
   // button itself because it messes up the ink drop.
-  views::View* dismiss_button_container_ = nullptr;
+  raw_ptr<views::View> dismiss_button_container_ = nullptr;
 
-  DismissButton* dismiss_button_ = nullptr;
-  media_message_center::MediaNotificationView* view_ = nullptr;
-  MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
-  MediaNotificationFooterView* footer_view_ = nullptr;
+  raw_ptr<DismissButton> dismiss_button_ = nullptr;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
+  raw_ptr<MediaNotificationDeviceSelectorView> device_selector_view_ = nullptr;
+  raw_ptr<MediaNotificationFooterView> footer_view_ = nullptr;
 
   // Only shows up for cast notifications.
-  views::View* stop_button_strip_ = nullptr;
-  views::LabelButton* stop_cast_button_ = nullptr;
+  raw_ptr<views::View> stop_button_strip_ = nullptr;
+  raw_ptr<views::LabelButton> stop_cast_button_ = nullptr;
 
   SkColor foreground_color_;
   SkColor background_color_;
@@ -191,11 +192,11 @@ class MediaNotificationContainerImplView
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
-  MediaNotificationService* const service_;
+  const raw_ptr<MediaNotificationService> service_;
 
   const bool is_cros_;
   const GlobalMediaControlsEntryPoint entry_point_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -95,7 +96,7 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
 
   static void RunPendingMicrotask(void* data);
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   bool loop_enabled_ = true;
   Deque<base::OnceClosure> pending_microtasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;

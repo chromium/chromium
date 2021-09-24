@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_NON_WAKING_TIME_DOMAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_NON_WAKING_TIME_DOMAIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/time/tick_clock.h"
 
@@ -29,7 +30,7 @@ class NonWakingTimeDomain : public base::sequence_manager::TimeDomain {
                             base::TimeTicks run_time) override;
 
  private:
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 }  // namespace scheduler

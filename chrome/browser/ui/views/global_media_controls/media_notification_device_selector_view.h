@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
@@ -132,16 +133,16 @@ class MediaNotificationDeviceSelectorView
   bool is_expanded_ = false;
   bool is_audio_device_switching_enabled_ = false;
   bool has_cast_device_ = false;
-  MediaNotificationDeviceSelectorViewDelegate* const delegate_;
+  const raw_ptr<MediaNotificationDeviceSelectorViewDelegate> delegate_;
   std::string current_device_id_;
   SkColor foreground_color_, background_color_;
   GlobalMediaControlsEntryPoint const entry_point_;
 
   // Child views
-  AudioDeviceEntryView* current_audio_device_entry_view_ = nullptr;
-  views::View* expand_button_strip_ = nullptr;
-  ExpandDeviceSelectorButton* expand_button_ = nullptr;
-  views::View* device_entry_views_container_ = nullptr;
+  raw_ptr<AudioDeviceEntryView> current_audio_device_entry_view_ = nullptr;
+  raw_ptr<views::View> expand_button_strip_ = nullptr;
+  raw_ptr<ExpandDeviceSelectorButton> expand_button_ = nullptr;
+  raw_ptr<views::View> device_entry_views_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;

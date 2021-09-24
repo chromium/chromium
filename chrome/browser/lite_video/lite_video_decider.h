@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/lite_video/lite_video_hint_cache.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
@@ -140,7 +141,8 @@ class LiteVideoDecider
       net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // The optimization guide decider to consult for remote predictions.
-  optimization_guide::OptimizationGuideDecider* opt_guide_decider_ = nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_decider_ =
+      nullptr;
 
   // The store of hints provided by the optimization guide keyed by mainframe
   // host. If the hint is empty, then the optimization guide returned kFalse.

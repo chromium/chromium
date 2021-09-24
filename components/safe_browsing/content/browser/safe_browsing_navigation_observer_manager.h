@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -377,7 +378,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   HostToIpMap host_to_ip_map_;
 
   // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::OneShotTimer cleanup_timer_;
 };
