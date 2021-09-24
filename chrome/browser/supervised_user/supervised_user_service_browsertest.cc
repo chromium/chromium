@@ -128,7 +128,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
   EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, DenylistLoaded) {
+// Disabled due to excessive flakiness (crbug/1251785).
+IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised,
+                       DISABLED_DenylistLoaded) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       SupervisedUserService::GetDenylistSourceHistogramForTesting(), 0);
@@ -161,8 +163,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, DenylistLoaded) {
       SupervisedUserService::DenylistSource::kDenylist, 1);
 }
 
+// Disabled due to excessive flakiness (crbug/1251785).
 IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised,
-                       ExistingDenylistLoaded) {
+                       DISABLED_ExistingDenylistLoaded) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       SupervisedUserService::GetDenylistSourceHistogramForTesting(), 0);
@@ -183,7 +186,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised,
       SupervisedUserService::DenylistSource::kDenylist, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, OldDenylistLoaded) {
+// Disabled due to excessive flakiness (crbug/1251785).
+IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised,
+                       DISABLED_OldDenylistLoaded) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       SupervisedUserService::GetDenylistSourceHistogramForTesting(), 0);
@@ -219,7 +224,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, OldDenylistLoaded) {
       SupervisedUserService::DenylistSource::kOldDenylist, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, NoDenylistLoaded) {
+// Disabled due to excessive flakiness (crbug/1251785).
+IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised,
+                       DISABLED_NoDenylistLoaded) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       SupervisedUserService::GetDenylistSourceHistogramForTesting(), 0);
