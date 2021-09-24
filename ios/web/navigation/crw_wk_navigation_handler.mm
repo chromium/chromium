@@ -481,9 +481,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   [self updatePendingNavigationInfoFromNavigationResponse:WKResponse
                                               HTTPHeaders:headers];
 
-  web::WebStatePolicyDecider::PolicyDecision policyDecision =
-      web::WebStatePolicyDecider::PolicyDecision::Allow();
-
   __weak CRWPendingNavigationInfo* weakPendingNavigationInfo =
       self.pendingNavigationInfo;
   auto callback = base::BindOnce(
