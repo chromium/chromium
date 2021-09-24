@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
@@ -17,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/capture_handle.mojom.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
@@ -220,6 +223,21 @@ std::string DeviceNamePrefix(
   return std::string();
 }
 
+std::string DeviceName(content::WebContents* web_contents,
+                       blink::mojom::MediaStreamType requested_stream_type,
+                       const content::DesktopMediaID& media_id) {
+  const std::string prefix =
+      DeviceNamePrefix(web_contents, requested_stream_type, media_id);
+  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+    return base::StrCat({prefix, content::kWebContentsCaptureScheme,
+                         base::UnguessableToken::Create().ToString()});
+  } else {
+    // TODO(crbug.com/1252682): MediaStreamTrack.label leaks internal state for
+    // screen/window
+    return base::StrCat({prefix, media_id.ToString()});
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
@@ -244,11 +262,9 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
            << registered_extension_name;
 
   // Add selected desktop source to the list.
-  const std::string device_id = media_id.ToString();
-  const std::string device_name =
-      DeviceNamePrefix(web_contents, devices_video_type, media_id) + device_id;
-  auto device =
-      blink::MediaStreamDevice(devices_video_type, device_id, device_name);
+  auto device = blink::MediaStreamDevice(
+      devices_video_type, media_id.ToString(),
+      DeviceName(web_contents, devices_video_type, media_id));
   device.display_media_info = DesktopMediaIDToDisplayMediaInformation(
       web_contents, capturer_origin, media_id);
   devices->push_back(device);
