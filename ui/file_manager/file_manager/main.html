@@ -136,7 +136,6 @@
       <command id="default-task">
       <command id="open-with" label="$i18n{OPEN_WITH_BUTTON_LABEL}">
       <command id="more-actions" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
-      <command id="show-submenu" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
       <command id="invoke-sharesheet" label="$i18n{SHARESHEET_BUTTON_LABEL}">
       <command id="toggle-holding-space">
       <command id="go-to-file-location"
@@ -330,10 +329,6 @@
         <cr-menu-item command="#share-with-plugin-vm"></cr-menu-item>
         <cr-menu-item command="#manage-plugin-vm-sharing"></cr-menu-item>
         <hr id="drive-share-separator">
-        <hr id="more-actions-separator">
-        <cr-menu-item command="#show-submenu"
-                  visibleif="full-page" class="hide-on-toolbar"
-                  sub-menu="#share-sub-menu" hidden></cr-menu-item>
       </cr-menu>
 
       <cr-menu id="providers-menu"
@@ -350,8 +345,6 @@
         <cr-menu-item command="#delete">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
       </cr-menu>
 
-      <cr-menu id="share-sub-menu" class="chrome-menu files-menu"
-               menu-item-selector="cr-menu-item">
       </cr-menu>
     </menus>
 

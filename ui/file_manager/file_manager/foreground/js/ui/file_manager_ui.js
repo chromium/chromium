@@ -349,13 +349,6 @@ export class FileManagerUI {
     });
 
     /**
-     * @type {!Menu}
-     * @const
-     */
-    this.shareSubMenu = util.queryDecoratedElement('#share-sub-menu', Menu);
-    this.shareMenuButton.overflow = this.shareSubMenu;
-
-    /**
      * Banners in the file list.
      * @type {Banners|BannerController}
      */

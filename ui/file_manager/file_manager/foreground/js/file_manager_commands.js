@@ -1806,23 +1806,6 @@ CommandHandler.COMMANDS_['more-actions'] = new class extends FilesCommand {
 };
 
 /**
- * Displays any available (child) sub menu for current selection.
- */
-CommandHandler.COMMANDS_['show-submenu'] = new class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.ui.shareMenuButton.showSubMenu();
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    const canExecute = fileManager.taskController.canExecuteShowOverflow();
-    event.canExecute = canExecute;
-    event.command.setHidden(!canExecute);
-  }
-};
-
-
-/**
  * Invoke Sharesheet.
  */
 CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {

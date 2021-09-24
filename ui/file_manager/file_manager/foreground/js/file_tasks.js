@@ -1053,8 +1053,6 @@ export class FileTasks {
         shareMenuButton.menu.querySelector('cr-menu-item[command="#share"]');
     const driveShareCommandSeparator =
         shareMenuButton.menu.querySelector('#drive-share-separator');
-    const moreActionsSeparator =
-        shareMenuButton.menu.querySelector('#more-actions-separator');
 
     // Update share command.
     driveShareCommand.command.canExecuteChange(
@@ -1062,22 +1060,11 @@ export class FileTasks {
 
     // Hide share icon for New Folder creation.  See https://crbug.com/571355.
     shareMenuButton.hidden = true;
-    moreActionsSeparator.hidden = true;
 
     // Show the separator if Drive share command is enabled and there is at
     // least one other share actions.
     driveShareCommandSeparator.hidden =
         driveShareCommand.disabled || tasks.length == 0;
-
-    // Temporarily remove the more actions item while the rest of the menu
-    // items are being cleared out so we don't lose it and make it hidden for
-    // now
-    const moreActions = shareMenuButton.menu.querySelector(
-        'cr-menu-item[command="#show-submenu"]');
-    moreActions.remove();
-    moreActions.setAttribute('hidden', '');
-    // Remove the separator as well
-    moreActionsSeparator.remove();
 
     // Clear menu items except for drive share menu and a separator for it.
     // As querySelectorAll() returns live NodeList, we need to copy elements to
@@ -1087,36 +1074,6 @@ export class FileTasks {
     for (const item of itemsToRemove) {
       item.parentNode.removeChild(item);
     }
-    // Clear menu items in the overflow sub-menu since we'll repopulate it
-    // with any relevant items below.
-    if (shareMenuButton.overflow !== null) {
-      while (shareMenuButton.overflow.firstChild !== null) {
-        shareMenuButton.overflow.removeChild(
-            shareMenuButton.overflow.firstChild);
-      }
-    }
-
-    // Add menu items for the new tasks.
-    const items = this.createItems_(tasks);
-    let menu = /** @type {!Menu} */ (shareMenuButton.menu);
-    for (let i = 0; i < items.length; i++) {
-      // If we have at least 10 entries, split off into a sub-menu
-      if (i == NUM_TOP_LEVEL_ENTRIES && MAX_NON_SPLIT_ENTRIES <= items.length) {
-        moreActions.removeAttribute('hidden');
-        moreActionsSeparator.hidden = false;
-        menu = shareMenuButton.overflow;
-      }
-      const menuitem = menu.addMenuItem(items[i]);
-      decorate(menuitem, FilesMenuItem);
-      menuitem.data = items[i];
-      if (items[i].iconType) {
-        menuitem.style.backgroundImage = '';
-        menuitem.setAttribute('file-type-icon', items[i].iconType);
-      }
-    }
-    // Replace the more actions menu item and separator
-    shareMenuButton.menu.appendChild(moreActionsSeparator);
-    shareMenuButton.menu.appendChild(moreActions);
   }
 
   /**

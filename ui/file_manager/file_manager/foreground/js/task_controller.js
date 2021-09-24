@@ -123,11 +123,6 @@ export class TaskController {
     this.canExecuteOpenActions_ = false;
 
     /**
-     * @private {boolean}
-     */
-    this.canExecuteMoreActions_ = false;
-
-    /**
      * @private {!Command}
      * @const
      */
@@ -153,14 +148,6 @@ export class TaskController {
         assertInstanceof(document.querySelector('#more-actions'), Command);
 
     /**
-     * Show sub menu command that uses #show-submenu as selector.
-     * @private {!Command}
-     * @const
-     */
-    this.showSubMenuCommand_ =
-        assertInstanceof(document.querySelector('#show-submenu'), Command);
-
-    /**
      * @private {Promise<!FileTasks>}
      */
     this.tasks_ = null;
@@ -180,8 +167,6 @@ export class TaskController {
     ui.taskMenuButton.addEventListener(
         'select', this.onTaskItemClicked_.bind(this));
     ui.shareMenuButton.menu.addEventListener(
-        'activate', this.onTaskItemClicked_.bind(this));
-    ui.shareSubMenu.addEventListener(
         'activate', this.onTaskItemClicked_.bind(this));
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
@@ -463,23 +448,6 @@ export class TaskController {
   }
 
   /**
-   * Returns whether open with command can be executed or not.
-   * @return {boolean} True if open with command is executable.
-   */
-  canExecuteMoreActions() {
-    return this.canExecuteMoreActions_;
-  }
-
-  /**
-   * Returns whether show sub-menu command can be executed or not.
-   * @return {boolean} True if show-submenu command is executable.
-   */
-  canExecuteShowOverflow() {
-    // TODO (adanilo@) extend this for general sub-menu case
-    return this.ui_.shareMenuButton.overflow.firstChild !== null;
-  }
-
-  /**
    * Updates tasks menu item to match passed task items.
    *
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} openTasks List of OPEN
@@ -518,7 +486,6 @@ export class TaskController {
     this.canExecuteOpenActions_ = openTasks.length > 1;
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
-    this.canExecuteMoreActions_ = nonOpenTasks.length >= 1;
     this.moreActionsCommand_.canExecuteChange(this.ui_.listContainer.element);
 
     this.ui_.tasksSeparator.hidden =

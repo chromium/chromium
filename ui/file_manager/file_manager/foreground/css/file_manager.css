@@ -2294,14 +2294,12 @@ body.check-select #list-container list li[selected] .detail-thumbnail
 }
 
 #share-menu cr-menu-item,
-#share-sub-menu cr-menu-item,
 #tasks-menu cr-menu-item:not(.change-default) {
   background-position: left 10px center;
   padding-inline-start: 32px;
 }
 
 html[dir='rtl'] #share-menu cr-menu-item,
-html[dir='rtl'] #share-sub-menu cr-menu-item,
 html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
   background-position: right 10px center;
 }

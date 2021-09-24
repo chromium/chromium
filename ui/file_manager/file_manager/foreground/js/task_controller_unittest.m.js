@@ -79,7 +79,6 @@ export function setUp() {
     '<command id="default-task">',
     '<command id="open-with">',
     '<command id="more-actions">',
-    '<command id="show-submenu">',
   ].join('');
 
   // Initialize Command with the <command>s.
