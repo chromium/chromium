@@ -99,17 +99,6 @@ export function routineResultEntryTestSuite() {
   }
 
   /**
-   * Returns the span wrapping the link icon.
-   * @return {!HTMLSpanElement}
-   */
-  function getRoutineLinkContainer() {
-    const routineLinkContainer = /** @type{!HTMLSpanElement} */ (
-        routineResultEntryElement.$$('.routineLinkContainer'));
-    assertTrue(!!routineLinkContainer);
-    return routineLinkContainer;
-  }
-
-  /**
    * Returns the span wrapping the failure reason text.
    * @return {!HTMLSpanElement}
    */
@@ -241,29 +230,6 @@ export function routineResultEntryTestSuite() {
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'PASSED');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
-    });
-  });
-
-  test('RoutineHasNoLinkTest', () => {
-    const item = createCompletedStatus(
-        RoutineType.kBatteryCharge,
-        /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestPassed
-        }));
-
-    return initializeEntryWithItem(item).then(() => {
-      // Span should be hidden
-      assertFalse(isVisible(getRoutineLinkContainer()));
-    });
-  });
-
-  test('RoutineHasLinkTest', () => {
-    const item = new RoutineGroup(
-        [RoutineType.kLanConnectivity], 'lanConnectivityRoutineText');
-
-    return initializeEntryWithItem(item, true).then(() => {
-      // Span should not be hidden
-      assertTrue(isVisible(getRoutineLinkContainer()));
     });
   });
 

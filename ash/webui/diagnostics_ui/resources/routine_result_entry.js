@@ -74,37 +74,6 @@ export function getRoutineType(routineType) {
 }
 
 /**
- * Maps routine to help doc URL
- * @param {!RoutineType} routineType
- * @return {string} url to help docs
- */
-export function lookupLinkForRoutine(routineType) {
-  let url = '';
-  // TODO(ashleydp): Get actual routine links.
-  switch (routineType) {
-    case RoutineType.kCaptivePortal:
-    case RoutineType.kDnsLatency:
-    case RoutineType.kDnsResolution:
-    case RoutineType.kDnsResolverPresent:
-    case RoutineType.kGatewayCanBePinged:
-    case RoutineType.kHasSecureWiFiConnection:
-    case RoutineType.kHttpFirewall:
-    case RoutineType.kHttpsFirewall:
-    case RoutineType.kHttpsLatency:
-    case RoutineType.kLanConnectivity:
-    case RoutineType.kSignalStrength:
-    case RoutineType.kArcHttp:
-    case RoutineType.kArcPing:
-    case RoutineType.kArcDnsResolution:
-      url = '#'
-      break;
-    default:
-      break;
-  }
-  return url;
-}
-
-/**
  * @param {!RoutineResult} result
  * @return {?StandardRoutineResult}
  */
@@ -147,12 +116,6 @@ Polymer({
     routineType_: {
       type: String,
       computed: 'getRunningRoutineString_(item.*)',
-    },
-
-    /** @protected */
-    routineLink_: {
-      type: String,
-      computed: 'getRoutineLink_(item.*)',
     },
 
     /** @protected {!BadgeType} */
@@ -204,16 +167,6 @@ Polymer({
 
     return loadTimeData.getStringF(
         'routineEntryText', getRoutineType(this.item.routine));
-  },
-
-  /**
-   * Get routine's help/info link from lookup function
-   * @return {string}
-   * @private
-   */
-  getRoutineLink_() {
-    // TODO(michaelcheco): Use |lookupLinkForRoutine| to get correct links.
-    return this.usingRoutineGroups ? '#' : '';
   },
 
   /**
