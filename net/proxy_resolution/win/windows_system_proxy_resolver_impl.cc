@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
+#include "net/proxy_resolution/win/windows_system_proxy_resolver_impl.h"
 
 #include <cwchar>
 #include <string>
@@ -94,23 +94,24 @@ bool GetProxyServerFromWinHttpResultEntry(
 }  // namespace
 
 // static
-scoped_refptr<WindowsSystemProxyResolver>
-WindowsSystemProxyResolver::CreateWindowsSystemProxyResolver() {
-  scoped_refptr<WindowsSystemProxyResolver> resolver = base::WrapRefCounted(
-      new WindowsSystemProxyResolver(std::make_unique<WinHttpAPIWrapper>()));
+scoped_refptr<WindowsSystemProxyResolverImpl>
+WindowsSystemProxyResolverImpl::CreateWindowsSystemProxyResolver() {
+  scoped_refptr<WindowsSystemProxyResolverImpl> resolver =
+      base::WrapRefCounted(new WindowsSystemProxyResolverImpl(
+          std::make_unique<WinHttpAPIWrapper>()));
   if (resolver->Initialize()) {
     return resolver;
   }
   return nullptr;
 }
 
-WindowsSystemProxyResolver::WindowsSystemProxyResolver(
+WindowsSystemProxyResolverImpl::WindowsSystemProxyResolverImpl(
     std::unique_ptr<WinHttpAPIWrapper> winhttp_api_wrapper)
     : winhttp_api_wrapper_(std::move(winhttp_api_wrapper)),
       sequenced_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-WindowsSystemProxyResolver::~WindowsSystemProxyResolver() = default;
+WindowsSystemProxyResolverImpl::~WindowsSystemProxyResolverImpl() = default;
 
-bool WindowsSystemProxyResolver::Initialize() {
+bool WindowsSystemProxyResolverImpl::Initialize() {
   if (!winhttp_api_wrapper_->CallWinHttpOpen())
     return false;
 
@@ -124,13 +125,13 @@ bool WindowsSystemProxyResolver::Initialize() {
   // This sets the entry point for every callback in the WinHttp session created
   // above.
   if (!winhttp_api_wrapper_->CallWinHttpSetStatusCallback(
-          &WindowsSystemProxyResolver::WinHttpStatusCallback))
+          &WindowsSystemProxyResolverImpl::WinHttpStatusCallback))
     return false;
 
   return true;
 }
 
-bool WindowsSystemProxyResolver::GetProxyForUrl(
+bool WindowsSystemProxyResolverImpl::GetProxyForUrl(
     WindowsSystemProxyResolutionRequest* callback_target,
     const std::string& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -200,25 +201,25 @@ bool WindowsSystemProxyResolver::GetProxyForUrl(
   // That may happen at any time on any thread. In order to make sure this
   // object does not destruct before that callback occurs, it must AddRef()
   // itself. This reference will be Release()'d in the callback.
-  base::RefCountedThreadSafe<WindowsSystemProxyResolver>::AddRef();
+  base::RefCountedThreadSafe<WindowsSystemProxyResolverImpl>::AddRef();
 
   return true;
 }
 
-void WindowsSystemProxyResolver::AddPendingCallbackTarget(
+void WindowsSystemProxyResolverImpl::AddPendingCallbackTarget(
     WindowsSystemProxyResolutionRequest* callback_target,
     HINTERNET resolver_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_callback_target_map_[callback_target] = resolver_handle;
 }
 
-void WindowsSystemProxyResolver::RemovePendingCallbackTarget(
+void WindowsSystemProxyResolverImpl::RemovePendingCallbackTarget(
     WindowsSystemProxyResolutionRequest* callback_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_callback_target_map_.erase(callback_target);
 }
 
-bool WindowsSystemProxyResolver::HasPendingCallbackTarget(
+bool WindowsSystemProxyResolverImpl::HasPendingCallbackTarget(
     WindowsSystemProxyResolutionRequest* callback_target) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return (pending_callback_target_map_.find(callback_target) !=
@@ -226,7 +227,7 @@ bool WindowsSystemProxyResolver::HasPendingCallbackTarget(
 }
 
 WindowsSystemProxyResolutionRequest*
-WindowsSystemProxyResolver::LookupCallbackTargetFromResolverHandle(
+WindowsSystemProxyResolverImpl::LookupCallbackTargetFromResolverHandle(
     HINTERNET resolver_handle) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WindowsSystemProxyResolutionRequest* pending_callback_target = nullptr;
@@ -240,16 +241,16 @@ WindowsSystemProxyResolver::LookupCallbackTargetFromResolverHandle(
 }
 
 // static
-void __stdcall WindowsSystemProxyResolver::WinHttpStatusCallback(
-    HINTERNET resolver_handle,
-    DWORD_PTR context,
-    DWORD status,
-    void* info,
-    DWORD info_len) {
+void CALLBACK
+WindowsSystemProxyResolverImpl::WinHttpStatusCallback(HINTERNET resolver_handle,
+                                                      DWORD_PTR context,
+                                                      DWORD status,
+                                                      void* info,
+                                                      DWORD info_len) {
   DCHECK(resolver_handle);
   DCHECK(context);
-  WindowsSystemProxyResolver* windows_system_proxy_resolver =
-      reinterpret_cast<WindowsSystemProxyResolver*>(context);
+  WindowsSystemProxyResolverImpl* windows_system_proxy_resolver =
+      reinterpret_cast<WindowsSystemProxyResolverImpl*>(context);
 
   // Make a copy of any error information in |info| so it can be accessed from
   // the subsequently posted task. The |info| pointer's lifetime is managed by
@@ -261,18 +262,18 @@ void __stdcall WindowsSystemProxyResolver::WinHttpStatusCallback(
   }
 
   // It is possible for PostTask() to fail (ex: during shutdown). In that case,
-  // the WindowsSystemProxyResolver in |context| will leak. This is expected to
-  // be either unusual or to occur during shutdown, where a leak doesn't matter.
-  // Since calling the |context| on the wrong thread may be problematic, it will
-  // be allowed to leak here if PostTask() fails.
+  // the WindowsSystemProxyResolverImpl in |context| will leak. This is expected
+  // to be either unusual or to occur during shutdown, where a leak doesn't
+  // matter. Since calling the |context| on the wrong thread may be problematic,
+  // it will be allowed to leak here if PostTask() fails.
   windows_system_proxy_resolver->sequenced_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&WindowsSystemProxyResolver::DoWinHttpStatusCallback,
+      base::BindOnce(&WindowsSystemProxyResolverImpl::DoWinHttpStatusCallback,
                      windows_system_proxy_resolver, resolver_handle, status,
                      windows_error));
 }
 
-void WindowsSystemProxyResolver::DoWinHttpStatusCallback(
+void WindowsSystemProxyResolverImpl::DoWinHttpStatusCallback(
     HINTERNET resolver_handle,
     DWORD status,
     int windows_error) {
@@ -315,13 +316,13 @@ void WindowsSystemProxyResolver::DoWinHttpStatusCallback(
   // longer needed.
   winhttp_api_wrapper_->CallWinHttpCloseHandle(resolver_handle);
 
-  // The current WindowsSystemProxyResolver object may now be Release()'d on the
-  // correct sequence after all work is done, thus balancing out the AddRef()
-  // from WinHttpGetProxyForUrlEx().
-  base::RefCountedThreadSafe<WindowsSystemProxyResolver>::Release();
+  // The current WindowsSystemProxyResolverImpl object may now be Release()'d on
+  // the correct sequence after all work is done, thus balancing out the
+  // AddRef() from WinHttpGetProxyForUrlEx().
+  base::RefCountedThreadSafe<WindowsSystemProxyResolverImpl>::Release();
 }
 
-void WindowsSystemProxyResolver::GetProxyResultForCallbackTarget(
+void WindowsSystemProxyResolverImpl::GetProxyResultForCallbackTarget(
     WindowsSystemProxyResolutionRequest* callback_target,
     HINTERNET resolver_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -355,7 +356,7 @@ void WindowsSystemProxyResolver::GetProxyResultForCallbackTarget(
                                                        0);
 }
 
-void WindowsSystemProxyResolver::HandleErrorForCallbackTarget(
+void WindowsSystemProxyResolverImpl::HandleErrorForCallbackTarget(
     WindowsSystemProxyResolutionRequest* callback_target,
     int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

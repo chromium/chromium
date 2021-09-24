@@ -1298,8 +1298,11 @@ component("net") {
       "proxy_resolution/win/windows_system_proxy_resolution_request.h",
       "proxy_resolution/win/windows_system_proxy_resolution_service.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service.h",
-      "proxy_resolution/win/windows_system_proxy_resolver.cc",
       "proxy_resolution/win/windows_system_proxy_resolver.h",
+
+      # TODO(https://crbug.com/1032820): Move WinHttp code to new service
+      # "proxy_resolution/win/windows_system_proxy_resolver_impl.cc",
+      # "proxy_resolution/win/windows_system_proxy_resolver_impl.h",
       "proxy_resolution/win/winhttp_api_wrapper.cc",
       "proxy_resolution/win/winhttp_api_wrapper.h",
       "proxy_resolution/win/winhttp_proxy_resolver_functions.cc",
@@ -4448,7 +4451,6 @@ test("net_unittests") {
       "proxy_resolution/win/dhcp_pac_file_fetcher_win_unittest.cc",
       "proxy_resolution/win/proxy_config_service_win_unittest.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service_unittest.cc",
-      "proxy_resolution/win/windows_system_proxy_resolver_unittest.cc",
       "ssl/client_cert_store_win_unittest.cc",
       "ssl/ssl_platform_key_win_unittest.cc",
     ]
