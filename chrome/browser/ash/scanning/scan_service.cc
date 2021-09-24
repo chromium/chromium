@@ -95,10 +95,11 @@ bool WriteImage(const base::FilePath& file_path,
 bool SaveAsPdf(const std::vector<std::string>& jpg_images,
                const base::FilePath& file_path,
                bool rotate_alternate_pages,
-               bool is_multi_page_scan) {
+               bool is_multi_page_scan,
+               absl::optional<int> dpi) {
   const base::TimeTicks pdf_start_time = base::TimeTicks::Now();
   const bool pdf_saved = chromeos::ConvertJpgImagesToPdf(
-      jpg_images, file_path, rotate_alternate_pages);
+      jpg_images, file_path, rotate_alternate_pages, dpi);
   base::UmaHistogramTimes(is_multi_page_scan
                               ? "Scanning.MultiPageScan.PDFGenerationTime"
                               : "Scanning.PDFGenerationTime",
@@ -278,6 +279,9 @@ bool ScanService::SendScanRequest(
   // Determine if an ADF scanner that flips alternate pages was selected.
   rotate_alternate_pages_ = lorgnette_scanner_manager_->IsRotateAlternate(
       scanner_name, settings->source_name);
+
+  // Save the DPI information for the scan.
+  scan_dpi_ = settings->resolution_dpi;
 
   base::Time::Now().LocalExplode(&start_time_);
   lorgnette_scanner_manager_->Scan(
@@ -506,7 +510,7 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
         base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back(),
-                       rotate_alternate_pages_, is_multi_page_scan),
+                       rotate_alternate_pages_, is_multi_page_scan, scan_dpi_),
         base::BindOnce(&ScanService::OnPdfSaved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -591,6 +595,7 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
 void ScanService::ClearScanState() {
   page_save_failed_ = false;
   rotate_alternate_pages_ = false;
+  scan_dpi_ = absl::nullopt;
   scanned_file_paths_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;

@@ -1,5 +1,6 @@
 include_rules = [
   "+base",
+  "+printing/units.h",
   "+third_party/skia/include",
   "+ui/gfx",
 ]

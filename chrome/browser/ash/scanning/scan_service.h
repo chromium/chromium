@@ -211,6 +211,9 @@ class ScanService : public scanning::mojom::ScanService,
   // scanner that flips them.
   bool rotate_alternate_pages_;
 
+  // Stores the dots per inch (DPI) of the requested scan.
+  absl::optional<int> scan_dpi_;
+
   // The time at which GetScanners() is called. Used to record the time between
   // a user launching the Scan app and being able to interact with it.
   base::TimeTicks get_scanners_time_;
