@@ -102,7 +102,7 @@ suite('ImportDataDialog', function() {
   setup(function() {
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
-    ImportDataBrowserProxyImpl.instance_ = browserProxy;
+    ImportDataBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-import-data-dialog');
     dialog.set('prefs', prefs);

@@ -105,14 +105,14 @@ cr.define('settings_people_page', function() {
 
     setup(function() {
       browserProxy = new TestProfileInfoBrowserProxy();
-      settings.ProfileInfoBrowserProxyImpl.instance_ = browserProxy;
+      settings.ProfileInfoBrowserProxyImpl.setInstance(browserProxy);
 
       syncBrowserProxy = new TestSyncBrowserProxy();
       settings.SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
       accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
-      settings.AccountManagerBrowserProxyImpl.instance_ =
-          accountManagerBrowserProxy;
+      settings.AccountManagerBrowserProxyImpl.setInstance(
+          accountManagerBrowserProxy);
 
       PolymerTest.clearBody();
     });

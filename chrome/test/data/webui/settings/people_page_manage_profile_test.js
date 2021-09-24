@@ -79,7 +79,7 @@ suite('ManageProfileTests', function() {
 
   setup(function() {
     browserProxy = new TestManageProfileBrowserProxy();
-    ManageProfileBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfileBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     loadTimeData.overrideValues({profileShortcutsEnabled: false});
     manageProfile = createManageProfileElement();

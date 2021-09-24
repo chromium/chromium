@@ -12,7 +12,6 @@ js_type_check("closure_compile") {
   closure_flags = settings_closure_flags + mojom_js_args
   deps = [
     ":account_manager_browser_proxy",
-    ":people_page",
     ":profile_info_browser_proxy",
     ":signout_dialog",
     ":sync_account_control",
@@ -21,74 +20,10 @@ js_type_check("closure_compile") {
     ":sync_encryption_options",
     ":sync_page",
   ]
-
-  if (!is_chromeos_ash) {
-    deps += [
-      ":import_data_browser_proxy",
-      ":import_data_dialog",
-      ":manage_profile",
-      ":manage_profile_browser_proxy",
-    ]
-  }
 }
 
 js_library("account_manager_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-if (!is_chromeos_ash) {
-  js_library("import_data_browser_proxy") {
-    deps = [ "//ui/webui/resources/js:cr.m" ]
-    externs_list = [ "$externs_path/metrics_private.js" ]
-  }
-
-  js_library("import_data_dialog") {
-    deps = [
-      ":import_data_browser_proxy",
-      "../controls:settings_checkbox",
-      "../prefs:prefs_behavior",
-      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-      "//ui/webui/resources/js:i18n_behavior.m",
-      "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    ]
-  }
-
-  js_library("manage_profile") {
-    deps = [
-      ":manage_profile_browser_proxy",
-      ":sync_browser_proxy",
-      "..:i18n_setup",
-      "..:route",
-      "..:router",
-      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    ]
-  }
-
-  js_library("manage_profile_browser_proxy") {
-    deps = [
-      "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector",
-      "//ui/webui/resources/js:cr.m",
-    ]
-  }
-}
-
-js_library("people_page") {
-  deps = [
-    ":account_manager_browser_proxy",
-    ":profile_info_browser_proxy",
-    ":sync_browser_proxy",
-    "..:i18n_setup",
-    "..:open_window_proxy",
-    "..:page_visibility",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/chromeos/cr_picture:png.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
 }
 
 js_library("profile_info_browser_proxy") {
@@ -158,7 +93,7 @@ js_library("sync_page") {
 
 html_to_js("web_components") {
   js_files = [
-    "people_page.js",
+    "people_page.ts",
     "signout_dialog.js",
     "sync_account_control.js",
     "sync_controls.js",
@@ -168,8 +103,8 @@ html_to_js("web_components") {
 
   if (!is_chromeos_ash) {
     js_files += [
-      "import_data_dialog.js",
-      "manage_profile.js",
+      "import_data_dialog.ts",
+      "manage_profile.ts",
     ]
   }
 }

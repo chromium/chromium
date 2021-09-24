@@ -425,8 +425,8 @@ class SettingsClearBrowsingDataDialogElement extends
    * @return A list of selected data types.
    */
   private getSelectedDataTypes_(tab: HTMLElement): Array<string> {
-    const checkboxes = tab.querySelectorAll('settings-checkbox') as
-        NodeListOf<SettingsCheckboxElement>;
+    const checkboxes =
+        tab.querySelectorAll<SettingsCheckboxElement>('settings-checkbox');
     const dataTypes: Array<string> = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
@@ -493,8 +493,9 @@ class SettingsClearBrowsingDataDialogElement extends
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
     }
 
-    (this.shadowRoot!.querySelectorAll('settings-checkbox[no-set-pref]') as
-     NodeListOf<SettingsCheckboxElement>)
+    this.shadowRoot!
+        .querySelectorAll<SettingsCheckboxElement>(
+            'settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
 
     const {showHistoryNotice, showPasswordsNotice} =

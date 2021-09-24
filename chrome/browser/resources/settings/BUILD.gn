@@ -192,8 +192,8 @@ preprocess_if_expr("preprocess") {
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.ts",
-      "people_page/import_data_browser_proxy.js",
-      "people_page/manage_profile_browser_proxy.js",
+      "people_page/import_data_browser_proxy.ts",
+      "people_page/manage_profile_browser_proxy.ts",
     ]
   }
 }
@@ -259,7 +259,7 @@ preprocess_if_expr("preprocess_generated") {
     "on_startup_page/startup_urls_page.ts",
     "people_page/sync_account_control.js",
     "people_page/sync_encryption_options.js",
-    "people_page/people_page.js",
+    "people_page/people_page.ts",
     "people_page/signout_dialog.js",
     "people_page/sync_controls.js",
     "people_page/sync_page.js",
@@ -365,8 +365,8 @@ preprocess_if_expr("preprocess_generated") {
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/languages_subpage.ts",
-      "people_page/import_data_dialog.js",
-      "people_page/manage_profile.js",
+      "people_page/import_data_dialog.ts",
+      "people_page/manage_profile.ts",
     ]
   }
 }
@@ -662,7 +662,7 @@ ts_library("build_ts") {
     "on_startup_page/startup_urls_page.ts",
     "open_window_proxy.js",
     "page_visibility.js",
-    "people_page/people_page.js",
+    "people_page/people_page.ts",
     "people_page/profile_info_browser_proxy.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
@@ -805,10 +805,10 @@ ts_library("build_ts") {
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_subpage.ts",
       "languages_page/languages_types.ts",
-      "people_page/import_data_browser_proxy.js",
-      "people_page/import_data_dialog.js",
-      "people_page/manage_profile_browser_proxy.js",
-      "people_page/manage_profile.js",
+      "people_page/import_data_browser_proxy.ts",
+      "people_page/import_data_dialog.ts",
+      "people_page/manage_profile_browser_proxy.ts",
+      "people_page/manage_profile.ts",
     ]
   }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
   /**
@@ -94,7 +94,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
     showWelcomeDialogIfRequired() {
       chrome.send('showWelcomeDialogIfRequired');
     }
+
+    /** @return {!AccountManagerBrowserProxy} */
+    static getInstance() {
+      return instance || (instance = new AccountManagerBrowserProxyImpl());
+    }
+
+    /** @param {!AccountManagerBrowserProxy} obj */
+    static setInstance(obj) {
+      instance = obj;
+    }
   }
 
-  addSingletonGetter(AccountManagerBrowserProxyImpl);
-
+  /** @type {?AccountManagerBrowserProxy} */
+  let instance = null;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
   /**
@@ -43,7 +43,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
     getProfileStatsCount() {
       chrome.send('getProfileStatsCount');
     }
+
+    /** @return {!ProfileInfoBrowserProxy} */
+    static getInstance() {
+      return instance || (instance = new ProfileInfoBrowserProxyImpl());
+    }
+
+    /** @param {!ProfileInfoBrowserProxy} obj */
+    static setInstance(obj) {
+      instance = obj;
+    }
   }
 
-  addSingletonGetter(ProfileInfoBrowserProxyImpl);
-
+  /** @type {?ProfileInfoBrowserProxy} */
+  let instance = null;

@@ -30,7 +30,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {getImage} from 'chrome://resources/js/icon.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -45,17 +45,22 @@ import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js
 import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
+type FocusConfig = Map<string, (string|(() => void))>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+interface SettingsPeoplePageElement {
+  $: {
+    importDataDialogTrigger: HTMLElement,
+    toast: CrToastElement,
+  };
+}
+
 const SettingsPeoplePageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
+    mixinBehaviors(
+        [WebUIListenerBehavior], RouteObserverMixin(PolymerElement)) as {
+      new ():
+          PolymerElement & WebUIListenerBehavior & RouteObserverMixinInterface
+    };
 
-/** @polymer */
 class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {
     return 'settings-people-page';
@@ -82,7 +87,6 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
        * TODO(tangltom): In the future when all profiles are completely
        * migrated, this should be removed, and UIs hidden behind it should
        * become default.
-       * @private
        */
       signinAllowed_: {
         type: Boolean,
@@ -94,26 +98,22 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       // <if expr="not chromeos">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
-       * @type {?Array<!StoredAccount>}
        */
       storedAccounts: Object,
       // </if>
 
       /**
        * The current sync status, supplied by SyncBrowserProxy.
-       * @type {?SyncStatus}
        */
       syncStatus: Object,
 
       /**
        * Dictionary defining page visibility.
-       * @type {!PageVisibility}
        */
       pageVisibility: Object,
 
       /**
        * Authentication token provided by settings-lock-screen.
-       * @private
        */
       authToken_: {
         type: String,
@@ -122,14 +122,12 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
       /**
        * The currently selected profile icon URL. May be a data URL.
-       * @private
        */
       profileIconUrl_: String,
 
       /**
        * Whether the profile row is clickable. The behavior depends on the
        * platform.
-       * @private
        */
       isProfileActionable_: {
         type: Boolean,
@@ -146,12 +144,10 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
       /**
        * The current profile name.
-       * @private
        */
       profileName_: String,
 
       // <if expr="not chromeos">
-      /** @private {boolean} */
       shouldShowGoogleAccount_: {
         type: Boolean,
         value: false,
@@ -160,17 +156,14 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
             'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
       },
 
-      /** @private */
       showImportDataDialog_: {
         type: Boolean,
         value: false,
       },
       // </if>
 
-      /** @private */
       showSignoutDialog_: Boolean,
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -182,8 +175,9 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           if (routes.MANAGE_PROFILE) {
             map.set(
                 routes.MANAGE_PROFILE.path,
-                this.signinAllowed_ ? '#edit-profile' :
-                                      '#profile-row .subpage-arrow');
+                loadTimeData.getBoolean('signinAllowed') ?
+                    '#edit-profile' :
+                    '#profile-row .subpage-arrow');
           }
           // </if>
           return map;
@@ -192,14 +186,26 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
-  constructor() {
-    super();
+  private signinAllowed_: boolean;
+  syncStatus: SyncStatus|null;
+  pageVisibility: PageVisibility;
+  private authToken_: string;
+  private profileIconUrl_: string;
+  private isProfileActionable_: boolean;
+  private profileName_: String;
 
-    /** @private {!SyncBrowserProxy} */
-    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
-  }
+  // <if expr="not chromeos">
+  storedAccounts: Array<StoredAccount>|null;
+  private shouldShowGoogleAccount_: boolean;
+  private showImportDataDialog_: boolean;
+  // </if>
 
-  /** @override */
+  private showSignoutDialog_: boolean;
+  private focusConfig_: FocusConfig;
+
+  private syncBrowserProxy_: SyncBrowserProxy =
+      SyncBrowserProxyImpl.getInstance();
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -215,10 +221,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
     // </if>
     if (useProfileNameAndIcon) {
-      /** @type {!ProfileInfoBrowserProxy} */ (
-          ProfileInfoBrowserProxyImpl.getInstance())
-          .getProfileInfo()
-          .then(this.handleProfileInfo_.bind(this));
+      ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
+          this.handleProfileInfo_.bind(this));
       this.addWebUIListener(
           'profile-info-changed', this.handleProfileInfo_.bind(this));
     }
@@ -229,22 +233,23 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
     // <if expr="not chromeos">
-    const handleStoredAccounts = accounts => {
+    const handleStoredAccounts = (accounts: Array<StoredAccount>) => {
       this.storedAccounts = accounts;
     };
     this.syncBrowserProxy_.getStoredAccounts().then(handleStoredAccounts);
     this.addWebUIListener('stored-accounts-updated', handleStoredAccounts);
 
     this.addWebUIListener('sync-settings-saved', () => {
-      /** @type {!CrToastElement} */ (this.$.toast).show();
+      this.$.toast.show();
     });
     // </if>
   }
 
-  /** @protected */
   currentRouteChanged() {
+    // <if expr="not chromeos">
     this.showImportDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.IMPORT_DATA;
+    // </if>
 
     if (Router.getInstance().getCurrentRoute() === routes.SIGN_OUT) {
       // If the sync status has not been fetched yet, optimistically display
@@ -258,21 +263,13 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  /**
-   * @return {!Element}
-   * @private
-   */
-  getEditPersonAssocControl_() {
+  private getEditPersonAssocControl_(): Element {
     return this.signinAllowed_ ?
-        assert(this.shadowRoot.querySelector('#edit-profile')) :
-        assert(this.shadowRoot.querySelector('#profile-row'));
+        assert(this.shadowRoot!.querySelector('#edit-profile')!) :
+        assert(this.shadowRoot!.querySelector('#profile-row')!);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSyncAndGoogleServicesSubtext_() {
+  private getSyncAndGoogleServicesSubtext_(): string {
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return this.syncStatus.statusText;
@@ -282,10 +279,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   /**
    * Handler for when the profile's icon and name is updated.
-   * @private
-   * @param {!ProfileInfo} info
    */
-  handleProfileInfo_(info) {
+  private handleProfileInfo_(info: ProfileInfo) {
     this.profileName_ = info.name;
     /**
      * Extract first frame from image by creating a single frame PNG using
@@ -302,13 +297,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   // <if expr="chromeos">
-  /**
-   * @private
-   * @suppress {checkTypes} The types only exists in Chrome OS builds, but
-   * Closure doesn't understand the <if> above.
-   */
-  async updateAccounts_() {
-    const /** @type {!Array<{Account}>} */ accounts =
+  private async updateAccounts_() {
+    const accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
     // The user might not have any GAIA accounts (e.g. guest mode or Active
     // Directory). In these cases the profile row is hidden, so there's nothing
@@ -323,10 +313,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   /**
    * Handler for when the sync state is pushed from the browser.
-   * @param {?SyncStatus} syncStatus
-   * @private
    */
-  handleSyncStatus_(syncStatus) {
+  private handleSyncStatus_(syncStatus: SyncStatus|null) {
     // Sign-in impressions should be recorded only if the sign-in promo is
     // shown. They should be recorder only once, the first time
     // |this.syncStatus| is set.
@@ -342,22 +330,17 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   // <if expr="not chromeos">
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowGoogleAccount_() {
+  private computeShouldShowGoogleAccount_(): boolean {
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
     }
 
-    return (this.storedAccounts.length > 0 || !!this.syncStatus.signedIn) &&
-        !this.syncStatus.hasError;
+    return (this.storedAccounts!.length > 0 || !!this.syncStatus!.signedIn) &&
+        !this.syncStatus!.hasError;
   }
   // </if>
 
-  /** @private */
-  onProfileTap_() {
+  private onProfileTap_() {
     // <if expr="chromeos">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
@@ -370,8 +353,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     // </if>
   }
 
-  /** @private */
-  onDisconnectDialogClosed_(e) {
+  private onDisconnectDialogClosed_() {
     this.showSignoutDialog_ = false;
 
     if (Router.getInstance().getCurrentRoute() === routes.SIGN_OUT) {
@@ -379,20 +361,17 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  /** @private */
-  onSyncTap_() {
+  private onSyncTap_() {
     // Users can go to sync subpage regardless of sync status.
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
   // <if expr="not chromeos">
-  /** @private */
-  onImportDataTap_() {
+  private onImportDataTap_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
 
-  /** @private */
-  onImportDataDialogClosed_() {
+  private onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
     focusWithoutInk(assert(this.$.importDataDialogTrigger));
   }
@@ -400,19 +379,14 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   /**
    * Open URL for managing your Google Account.
-   * @private
    */
-  openGoogleAccount_() {
+  private openGoogleAccount_() {
     OpenWindowProxyImpl.getInstance().openURL(
         loadTimeData.getString('googleAccountUrl'));
     chrome.metricsPrivate.recordUserAction('ManageGoogleAccount_Clicked');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSyncAccountControl_() {
+  private shouldShowSyncAccountControl_(): boolean {
     if (this.syncStatus === undefined) {
       return false;
     }
@@ -421,15 +395,13 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       return false;
     }
     // </if>
-    return !!this.syncStatus.syncSystemEnabled && this.signinAllowed_;
+    return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_;
   }
 
   /**
-   * @param {string} iconUrl
-   * @return {string} A CSS image-set for multiple scale factors.
-   * @private
+   * @return A CSS image-set for multiple scale factors.
    */
-  getIconImageSet_(iconUrl) {
+  private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
   }
 }

@@ -9,102 +9,94 @@
 
 // clang-format off
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
  * Contains the possible profile shortcut statuses. These strings must be kept
  * in sync with the C++ Manage Profile handler.
- * @enum {string}
  */
-export const ProfileShortcutStatus = {
-  PROFILE_SHORTCUT_SETTING_HIDDEN: 'profileShortcutSettingHidden',
-  PROFILE_SHORTCUT_NOT_FOUND: 'profileShortcutNotFound',
-  PROFILE_SHORTCUT_FOUND: 'profileShortcutFound',
-};
+export enum ProfileShortcutStatus {
+  PROFILE_SHORTCUT_SETTING_HIDDEN = 'profileShortcutSettingHidden',
+  PROFILE_SHORTCUT_NOT_FOUND = 'profileShortcutNotFound',
+  PROFILE_SHORTCUT_FOUND = 'profileShortcutFound',
+}
 
-/** @interface */
-export class ManageProfileBrowserProxy {
+export interface ManageProfileBrowserProxy {
   /**
    * Gets the available profile icons to choose from.
-   * @return {!Promise<!Array<!AvatarIcon>>}
    */
-  getAvailableIcons() {}
+  getAvailableIcons(): Promise<Array<AvatarIcon>>;
 
   /**
    * Sets the profile's icon to the GAIA avatar.
    */
-  setProfileIconToGaiaAvatar() {}
+  setProfileIconToGaiaAvatar(): void;
 
   /**
    * Sets the profile's icon to one of the default avatars.
-   * @param {number} index The new profile avatar index.
+   * @param index The new profile avatar index.
    */
-  setProfileIconToDefaultAvatar(index) {}
+  setProfileIconToDefaultAvatar(index: number): void;
 
   /**
    * Sets the profile's name.
-   * @param {string} name The new profile name.
    */
-  setProfileName(name) {}
+  setProfileName(name: string): void;
 
   /**
    * Returns whether the current profile has a shortcut.
-   * @return {!Promise<!ProfileShortcutStatus>}
    */
-  getProfileShortcutStatus() {}
+  getProfileShortcutStatus(): Promise<ProfileShortcutStatus>;
 
   /**
    * Adds a shortcut for the current profile.
    */
-  addProfileShortcut() {}
+  addProfileShortcut(): void;
 
   /**
    * Removes the shortcut of the current profile.
    */
-  removeProfileShortcut() {}
+  removeProfileShortcut(): void;
 }
 
-/**
- * @implements {ManageProfileBrowserProxy}
- */
-export class ManageProfileBrowserProxyImpl {
-  /** @override */
+export class ManageProfileBrowserProxyImpl implements
+    ManageProfileBrowserProxy {
   getAvailableIcons() {
     return sendWithPromise('getAvailableIcons');
   }
 
-  /** @override */
   setProfileIconToGaiaAvatar() {
     chrome.send('setProfileIconToGaiaAvatar');
   }
 
-  /** @override */
-  setProfileIconToDefaultAvatar(index) {
+  setProfileIconToDefaultAvatar(index: number) {
     chrome.send('setProfileIconToDefaultAvatar', [index]);
   }
 
-  /** @override */
-  setProfileName(name) {
+  setProfileName(name: string) {
     chrome.send('setProfileName', [name]);
   }
 
-  /** @override */
   getProfileShortcutStatus() {
     return sendWithPromise('requestProfileShortcutStatus');
   }
 
-  /** @override */
   addProfileShortcut() {
     chrome.send('addProfileShortcut');
   }
 
-  /** @override */
   removeProfileShortcut() {
     chrome.send('removeProfileShortcut');
   }
+
+  static getInstance(): ManageProfileBrowserProxy {
+    return instance || (instance = new ManageProfileBrowserProxyImpl());
+  }
+
+  static setInstance(obj: ManageProfileBrowserProxy) {
+    instance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(ManageProfileBrowserProxyImpl);
+let instance: ManageProfileBrowserProxy|null = null;

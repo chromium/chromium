@@ -161,7 +161,7 @@ cr.define('settings_people_page_account_manager', function() {
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxy();
-      settings.AccountManagerBrowserProxyImpl.instance_ = browserProxy;
+      settings.AccountManagerBrowserProxyImpl.setInstance(browserProxy);
       PolymerTest.clearBody();
 
       accountManager = document.createElement('settings-account-manager');
@@ -307,7 +307,7 @@ cr.define('settings_people_page_account_manager', function() {
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxyForUnmanagedAccounts();
-      settings.AccountManagerBrowserProxyImpl.instance_ = browserProxy;
+      settings.AccountManagerBrowserProxyImpl.setInstance(browserProxy);
       PolymerTest.clearBody();
 
       accountManager = document.createElement('settings-account-manager');
@@ -352,7 +352,7 @@ cr.define('settings_people_page_account_manager', function() {
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxy();
-      settings.AccountManagerBrowserProxyImpl.instance_ = browserProxy;
+      settings.AccountManagerBrowserProxyImpl.setInstance(browserProxy);
       PolymerTest.clearBody();
 
       accountManager = document.createElement('settings-account-manager');
@@ -406,7 +406,7 @@ cr.define('settings_people_page_account_manager', function() {
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxy();
-      settings.AccountManagerBrowserProxyImpl.instance_ = browserProxy;
+      settings.AccountManagerBrowserProxyImpl.setInstance(browserProxy);
       PolymerTest.clearBody();
 
       accountManager = document.createElement('settings-account-manager');
