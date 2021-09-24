@@ -1548,6 +1548,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "enable-component-updater-test-request",
+    "owners": [ "romanarora@google.com", "lacros-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-compositing-based-throttling",
     "owners": [ "yjliu", "chromeos-perf@google.com"],
     "expiry_milestone": 98

@@ -4211,6 +4211,13 @@ const char kCellularUseExternalEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the first available "
     "external Euicc.";
 
+const char kComponentUpdaterTestRequestName[] =
+    "Enable the component updater check 'test-request' parameter";
+const char kComponentUpdaterTestRequestDescription[] =
+    "Enables the 'test-request' parameter for component updater check requests."
+    " Overrides any other component updater check request parameters that may "
+    "have been specified.";
+
 const char kContextualNudgesName[] =
     "Contextual nudges for user gesture education";
 const char kContextualNudgesDescription[] =

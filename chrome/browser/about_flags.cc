@@ -82,6 +82,8 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browsing_data/core/features.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
+#include "components/component_updater/component_updater_command_line_config_policy.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
@@ -7695,6 +7697,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideSearchStatePerTabDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchStatePerTab)},
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-component-updater-test-request",
+     flag_descriptions::kComponentUpdaterTestRequestName,
+     flag_descriptions::kComponentUpdaterTestRequestDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE_AND_VALUE(switches::kComponentUpdater,
+                                 component_updater::kSwitchTestRequestParam)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

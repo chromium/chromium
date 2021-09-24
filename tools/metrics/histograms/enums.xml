@@ -49372,6 +49372,7 @@ from previous Chrome versions.
   <int value="-594732580" label="CCTResizableForThirdParties:enabled"/>
   <int value="-594076614" label="PluginVmShowCameraPermissions:disabled"/>
   <int value="-593536514" label="ExperimentalTabController:enabled"/>
+  <int value="-593079381" label="component-updater"/>
   <int value="-592628080" label="DnsProxyEnableDOH:disabled"/>
   <int value="-591874964" label="LiteVideo:enabled"/>
   <int value="-591219096" label="SystemChinesePhysicalTyping:enabled"/>

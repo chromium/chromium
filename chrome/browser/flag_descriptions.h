@@ -2400,6 +2400,9 @@ extern const char kCellularUseAttachApnDescription[];
 extern const char kCellularUseExternalEuiccName[];
 extern const char kCellularUseExternalEuiccDescription[];
 
+extern const char kComponentUpdaterTestRequestName[];
+extern const char kComponentUpdaterTestRequestDescription[];
+
 extern const char kContextualNudgesName[];
 extern const char kContextualNudgesDescription[];
 

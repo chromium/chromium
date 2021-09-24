@@ -15,6 +15,8 @@ class CommandLine;
 
 namespace component_updater {
 
+extern const char kSwitchTestRequestParam[];
+
 // Component updater config policy implementation.
 class ComponentUpdaterCommandLineConfigPolicy final
     : public update_client::CommandLineConfigPolicy {
