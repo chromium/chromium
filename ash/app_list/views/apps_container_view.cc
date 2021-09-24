@@ -733,23 +733,6 @@ gfx::Rect AppsContainerView::GetPageBoundsForState(
   return bounds;
 }
 
-views::View* AppsContainerView::GetFirstFocusableView() {
-  if (IsInFolderView()) {
-    // The pagination inside a folder is set horizontally, so focus should be
-    // set on the first item view in the selected page when it is moved down
-    // from the search box.
-    return app_list_folder_view_->items_grid_view()
-        ->GetCurrentPageFirstItemViewInFolder();
-  }
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), false /* reverse */, false /* dont_loop */);
-}
-
-views::View* AppsContainerView::GetLastFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), true /* reverse */, false /* dont_loop */);
-}
-
 const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     const gfx::Rect& available_bounds,
     const gfx::Size& search_box_size) {

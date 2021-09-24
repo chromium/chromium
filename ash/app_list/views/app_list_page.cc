@@ -6,6 +6,7 @@
 
 #include "ash/app_list/views/contents_view.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -42,11 +43,13 @@ void AppListPage::UpdatePageBoundsForState(AppListState state,
 }
 
 views::View* AppListPage::GetFirstFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), false /* reverse */, false /* dont_loop */);
 }
 
 views::View* AppListPage::GetLastFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
 void AppListPage::AnimateOpacity(float current_progress,

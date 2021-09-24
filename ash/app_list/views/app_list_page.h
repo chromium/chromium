@@ -106,10 +106,10 @@ class ASH_EXPORT AppListPage : public views::View {
   }
 
   // Returns the first focusable view in this page.
-  virtual views::View* GetFirstFocusableView();
+  views::View* GetFirstFocusableView();
 
   // Returns the last focusable view in this page.
-  virtual views::View* GetLastFocusableView();
+  views::View* GetLastFocusableView();
 
   // Called when the app list view state changes to |target_view_state| to
   // animate the app list page opacity.

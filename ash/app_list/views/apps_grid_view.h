@@ -252,12 +252,6 @@ class ASH_EXPORT AppsGridView : public views::View,
                               AppListItemView* original_parent_item_view,
                               ui::KeyboardCode key_code);
 
-  // Returns the first app list item view in the selected page in the folder.
-  AppListItemView* GetCurrentPageFirstItemViewInFolder();
-
-  // Returns the last app list item view in the selected page in the folder.
-  AppListItemView* GetCurrentPageLastItemViewInFolder();
-
   // Updates paged view structure and save it to meta data.
   void UpdatePagedViewStructure();
 

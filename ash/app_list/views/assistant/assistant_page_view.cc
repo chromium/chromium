@@ -39,7 +39,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/background.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
@@ -333,16 +332,6 @@ absl::optional<int> AssistantPageView::GetSearchBoxTop(
   // For other view states, return absl::nullopt so the ContentsView
   // sets the default search box widget origin.
   return absl::nullopt;
-}
-
-views::View* AssistantPageView::GetFirstFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/false, /*dont_loop=*/false);
-}
-
-views::View* AssistantPageView::GetLastFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
 }
 
 void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,

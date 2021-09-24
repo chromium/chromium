@@ -104,8 +104,6 @@ class ASH_EXPORT AppsContainerView
       AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  views::View* GetFirstFocusableView() override;
-  views::View* GetLastFocusableView() override;
   void AnimateOpacity(float current_progress,
                       AppListViewState target_view_state,
                       const OpacityAnimator& animator) override;

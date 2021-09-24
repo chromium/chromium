@@ -43,7 +43,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -679,16 +678,6 @@ absl::optional<int> SearchResultPageView::GetSearchBoxTop(
   // For other view states, return absl::nullopt so the ContentsView
   // sets the default search box widget origin.
   return absl::nullopt;
-}
-
-views::View* SearchResultPageView::GetFirstFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), false /* reverse */, false /* dont_loop */);
-}
-
-views::View* SearchResultPageView::GetLastFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
 void SearchResultPageView::OnAnchoredDialogClosed() {

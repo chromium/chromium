@@ -760,19 +760,6 @@ void AppListFolderView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-bool AppListFolderView::OnKeyPressed(const ui::KeyEvent& event) {
-  // Let the FocusManager handle Left/Right keys.
-  if (!IsUnhandledUpDownKeyEvent(event))
-    return false;
-
-  if (folder_header_view_->HasTextFocus() && event.key_code() == ui::VKEY_UP) {
-    // Move focus to the last app list item view in the selected page.
-    items_grid_view_->GetCurrentPageLastItemViewInFolder()->RequestFocus();
-    return true;
-  }
-  return false;
-}
-
 void AppListFolderView::OnViewIsDeleting(views::View* view) {
   DCHECK_EQ(view, folder_item_view_);
 
