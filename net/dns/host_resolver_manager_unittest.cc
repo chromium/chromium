@@ -7052,6 +7052,84 @@ TEST_F(HostResolverManagerDnsTest, CanonicalName_V4Only) {
             "correct");
 }
 
+// Test that responses containing CNAME records but no address results are fine
+// and treated as normal NODATA responses.
+TEST_F(HostResolverManagerDnsTest, CanonicalNameWithoutResults) {
+  MockDnsClientRuleList rules;
+
+  DnsResponse a_response =
+      BuildTestDnsResponse("a.test", dns_protocol::kTypeA,
+                           {BuildTestCnameRecord("c.test", "d.test"),
+                            BuildTestCnameRecord("b.test", "c.test"),
+                            BuildTestCnameRecord("a.test", "b.test")});
+  AddDnsRule(&rules, "a.test", dns_protocol::kTypeA, std::move(a_response),
+             /*delay=*/false);
+
+  DnsResponse aaaa_response =
+      BuildTestDnsResponse("a.test", dns_protocol::kTypeAAAA,
+                           {BuildTestCnameRecord("c.test", "d.test"),
+                            BuildTestCnameRecord("b.test", "c.test"),
+                            BuildTestCnameRecord("a.test", "b.test")});
+  AddDnsRule(&rules, "a.test", dns_protocol::kTypeAAAA,
+             std::move(aaaa_response), /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_proctask(false);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("a.test", 80), NetworkIsolationKey(), NetLogWithSource(),
+      /*optional_parameters=*/absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  ASSERT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  // Underlying error should be the typical no-results error
+  // (ERR_NAME_NOT_RESOLVED), not anything more exotic like
+  // ERR_DNS_MALFORMED_RESPONSE.
+  EXPECT_EQ(response.request()->GetResolveErrorInfo().error,
+            ERR_NAME_NOT_RESOLVED);
+}
+
+// Test that if the response for one address family contains CNAME records but
+// no address results, it doesn't interfere with the other address family
+// receiving address results (as would happen if such a response were
+// incorrectly treated as a malformed response error).
+TEST_F(HostResolverManagerDnsTest, CanonicalNameWithResultsForOnlyOneFamily) {
+  MockDnsClientRuleList rules;
+
+  DnsResponse a_response =
+      BuildTestDnsResponse("a.test", dns_protocol::kTypeA,
+                           {BuildTestCnameRecord("c.test", "d.test"),
+                            BuildTestCnameRecord("b.test", "c.test"),
+                            BuildTestCnameRecord("a.test", "b.test")});
+  AddDnsRule(&rules, "a.test", dns_protocol::kTypeA, std::move(a_response),
+             /*delay=*/false);
+
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      "a.test", dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord("d.test", IPAddress::IPv6Localhost()),
+       BuildTestCnameRecord("c.test", "d.test"),
+       BuildTestCnameRecord("b.test", "c.test"),
+       BuildTestCnameRecord("a.test", "b.test")});
+  AddDnsRule(&rules, "a.test", dns_protocol::kTypeAAAA,
+             std::move(aaaa_response), /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("a.test", 80), NetworkIsolationKey(), NetLogWithSource(),
+      /*optional_parameters=*/absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  ASSERT_THAT(response.result_error(), IsOk());
+
+  ASSERT_TRUE(response.request()->GetAddressResults());
+  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
+              testing::ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 80)));
+}
+
 // Test that without specifying source, a request that would otherwise be
 // handled by DNS is sent to the system resolver if cannonname is requested.
 TEST_F(HostResolverManagerDnsTest, CanonicalNameForcesProc) {
