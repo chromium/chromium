@@ -51,12 +51,12 @@
   {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "adaptive-button-in-top-toolbar-customization",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "add-passwords-in-settings",
