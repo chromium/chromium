@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -152,6 +153,10 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
   // Returns the should_show_run_network_tests_ field.
   bool GetShouldShowRunNetworkTests();
+
+  // Returns the outermost native view. This will be used as the parent for
+  // dialog boxes.
+  gfx::NativeWindow GetNativeWindow() const;
 
   bool HasAuthDelegate() const { return auth_delegate_ != nullptr; }
 

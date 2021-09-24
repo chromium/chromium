@@ -33,9 +33,10 @@ std::string GetUrlForPage(DiagnosticsDialog::DiagnosticsPage page) {
 const float kDiagnosticsDialogScale = .8;
 
 // static
-void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page) {
+void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page,
+                                   gfx::NativeWindow parent) {
   DiagnosticsDialog* dialog = new DiagnosticsDialog(page);
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
 }
 
 DiagnosticsDialog::DiagnosticsDialog(DiagnosticsDialog::DiagnosticsPage page)

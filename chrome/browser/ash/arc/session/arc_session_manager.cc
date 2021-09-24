@@ -1689,7 +1689,8 @@ void ArcSessionManager::OnSendFeedbackClicked() {
 void ArcSessionManager::OnRunNetworkTestsClicked() {
   DCHECK(support_host_);
   chromeos::DiagnosticsDialog::ShowDialog(
-      chromeos::DiagnosticsDialog::DiagnosticsPage::kConnectivity);
+      chromeos::DiagnosticsDialog::DiagnosticsPage::kConnectivity,
+      support_host_->GetNativeWindow());
 
   // Network-related error occured so collect UMA stats on user action.
   UpdateOptInNetworkErrorActionUMA(

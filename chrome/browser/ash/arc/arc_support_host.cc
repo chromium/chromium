@@ -37,10 +37,13 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/gfx/native_widget_types.h"
 
 using sync_pb::UserConsentTypes;
 
@@ -237,6 +240,16 @@ void ArcSupportHost::SetTermsOfServiceDelegate(
 
 void ArcSupportHost::SetErrorDelegate(ErrorDelegate* delegate) {
   error_delegate_ = delegate;
+}
+
+gfx::NativeWindow ArcSupportHost::GetNativeWindow() const {
+  extensions::AppWindowRegistry* registry =
+      extensions::AppWindowRegistry::Get(profile_);
+  if (!registry) return gfx::kNullNativeWindow;
+
+  extensions::AppWindow* window =
+      registry->GetCurrentAppWindowForApp(arc::kPlayStoreAppId);
+  return window ? window->GetNativeWindow() : gfx::kNullNativeWindow;
 }
 
 bool ArcSupportHost::GetShouldShowRunNetworkTests() {

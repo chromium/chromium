@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace chromeos {
 
@@ -25,7 +26,8 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
   };
 
   // |page| is the initial page shown when the app is opened.
-  static void ShowDialog(DiagnosticsPage page = DiagnosticsPage::kDefault);
+  static void ShowDialog(DiagnosticsPage page = DiagnosticsPage::kDefault,
+                         gfx::NativeWindow parent = gfx::kNullNativeWindow);
 
  protected:
   explicit DiagnosticsDialog(DiagnosticsPage page);
