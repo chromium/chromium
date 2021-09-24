@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
@@ -31,12 +32,25 @@
 namespace ash {
 namespace {
 
-constexpr int kIconSize = 36;
+constexpr int kIconSize = 20;
+constexpr int kCircleRadius = 18;
 
 constexpr int kBetweenChildPadding = 16;
 constexpr gfx::Insets kInteriorMargin(7, 8, 7, 16);
 
 constexpr int kViewCornerRadius = 8;
+
+gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
+  // The icon with circular background should only be styled when dark light
+  // mode is enabled. Otherwise, use the default chip icon.
+  if (!features::IsDarkLightModeEnabled())
+    return icon;
+  return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+      kCircleRadius,
+      ColorProvider::Get()->GetControlsLayerColor(
+          ColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      icon);
+}
 
 }  // namespace
 
@@ -78,8 +92,6 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  icon_->SetImageSize(GetIconSize());
-  icon_->SetPreferredSize(GetIconSize());
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -112,10 +124,11 @@ void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
 }
 
 void ContinueTaskView::SetIcon(const gfx::ImageSkia& icon) {
-  gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
-      icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()));
-  icon_->SetImage(resized);
-  icon_->SetImageSize(GetIconSize());
+  icon_->SetImage(CreateIconWithCircleBackground(
+      icon.size() == GetIconSize()
+          ? icon
+          : gfx::ImageSkiaOperations::CreateResizedImage(
+                icon, skia::ImageOperations::RESIZE_BEST, GetIconSize())));
 }
 
 gfx::Size ContinueTaskView::GetIconSize() const {
