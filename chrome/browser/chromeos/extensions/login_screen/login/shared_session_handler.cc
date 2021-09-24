@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -131,7 +132,7 @@ void SharedSessionHandler::EnterSharedSession(
 
   CHECK(user_secret_salt_.empty());
 
-  if (cleanup_in_progress_) {
+  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -148,7 +149,7 @@ void SharedSessionHandler::EnterSharedSession(
   }
 
   UnlockWithSessionSecret(
-      base::BindOnce(&SharedSessionHandler::OnAuthenticateComplete,
+      base::BindOnce(&SharedSessionHandler::OnAuthenticateDone,
                      base::Unretained(this), std::move(callback)));
 }
 
@@ -174,7 +175,7 @@ void SharedSessionHandler::UnlockSharedSession(
 
   CHECK(!user_secret_salt_.empty());
 
-  if (cleanup_in_progress_) {
+  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -205,7 +206,7 @@ void SharedSessionHandler::UnlockSharedSession(
   }
 
   UnlockWithSessionSecret(
-      base::BindOnce(&SharedSessionHandler::OnAuthenticateComplete,
+      base::BindOnce(&SharedSessionHandler::OnAuthenticateDone,
                      base::Unretained(this), std::move(callback)));
 }
 
@@ -222,7 +223,8 @@ void SharedSessionHandler::EndSharedSession(
     return;
   }
 
-  if (cleanup_in_progress_) {
+  chromeos::CleanupManager* cleanup_manager = chromeos::CleanupManager::Get();
+  if (cleanup_manager->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -235,13 +237,13 @@ void SharedSessionHandler::EndSharedSession(
   user_secret_hash_.clear();
   user_secret_salt_.clear();
 
-  // TODO(crbug.com/1229170): Implement cleanup.
   if (session_state != session_manager::SessionState::LOCKED) {
     LoginApiLockHandler::Get()->RequestLockScreen();
   }
 
-  cleanup_in_progress_ = false;
-  std::move(callback).Run(absl::nullopt);
+  cleanup_manager->Cleanup(base::BindOnce(&SharedSessionHandler::OnCleanupDone,
+                                          base::Unretained(this),
+                                          std::move(callback)));
 }
 
 const std::string& SharedSessionHandler::GetSessionSecretForTesting() const {
@@ -304,11 +306,21 @@ bool SharedSessionHandler::CreateAndSetUserSecretHashAndSalt(
   return true;
 }
 
-void SharedSessionHandler::OnAuthenticateComplete(
+void SharedSessionHandler::OnAuthenticateDone(
     CallbackWithOptionalError callback,
     bool auth_success) {
   if (!auth_success) {
     std::move(callback).Run(extensions::login_api_errors::kUnlockFailure);
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
+}
+
+void SharedSessionHandler::OnCleanupDone(CallbackWithOptionalError callback,
+                                         absl::optional<std::string> errors) {
+  if (errors) {
+    std::move(callback).Run(*errors);
     return;
   }
 

@@ -73,15 +73,17 @@ class SharedSessionHandler {
 
   bool CreateAndSetUserSecretHashAndSalt(const std::string& password);
 
-  void OnAuthenticateComplete(CallbackWithOptionalError callback,
-                              bool auth_success);
+  void OnAuthenticateDone(CallbackWithOptionalError callback,
+                          bool auth_success);
+
+  void OnCleanupDone(CallbackWithOptionalError callback,
+                     absl::optional<std::string> errors);
 
   std::string GenerateRandomString(size_t size);
 
   std::string session_secret_;
   std::string user_secret_hash_;
   std::string user_secret_salt_;
-  bool cleanup_in_progress_ = false;
 };
 
 }  // namespace chromeos
