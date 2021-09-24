@@ -35,6 +35,7 @@
 namespace {
 
 std::unique_ptr<views::WebView> CreateWebView(
+    views::View* host,
     content::BrowserContext* browser_context) {
   auto webview = std::make_unique<views::WebView>(browser_context);
   // Set a flex behavior for the WebView to always fill out the extra space in
@@ -43,6 +44,11 @@ std::unique_ptr<views::WebView> CreateWebView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  // Set background of webview to the same background as the header. This is to
+  // prevent personal color themes from showing in the side panel when
+  // navigating to a new Lens results panel.
+  webview->SetBackground(
+      views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
   return webview;
 }
 
@@ -79,7 +85,7 @@ LensSidePanelView::LensSidePanelView(content::BrowserContext* browser_context,
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   CreateAndInstallHeader(close_callback, launch_callback);
   separator_ = AddChildView(std::make_unique<views::Separator>());
-  web_view_ = AddChildView(CreateWebView(browser_context));
+  web_view_ = AddChildView(CreateWebView(this, browser_context));
 }
 
 content::WebContents* LensSidePanelView::GetWebContents() {
@@ -90,12 +96,6 @@ void LensSidePanelView::OnThemeChanged() {
   views::FlexLayoutView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
   separator_->SetColor(color_provider->GetColor(ui::kColorMenuSeparator));
-
-  // Set background of webview to the same background as the header. This is to
-  // prevent personal color themes from showing in the side panel when
-  // navigating to a new Lens results panel.
-  web_view_->SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorWindowBackground));
 
   const SkColor color = color_provider->GetColor(ui::kColorIcon);
   // kGoogleLensFullLogoIcon is rectangular. We should create a tiled image so
