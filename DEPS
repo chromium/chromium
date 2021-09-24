@@ -80,6 +80,9 @@ vars = {
   # build ARC++ support libraries.
   'checkout_android_native_support': 'checkout_android or checkout_chromeos',
 
+  # By default, do not check out Cast3P.
+  'checkout_cast3p': False,
+
   # By default, do not check out Chromium autofill captured sites test
   # dependencies. These dependencies include very large numbers of very
   # large web capture files. Captured sites test dependencies are also
@@ -915,6 +918,17 @@ deps = {
           },
       ],
       'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/cast_core/prebuilts': {
+      'packages': [
+          {
+              'package': 'cast3p/cast_core/package_qa_vizio_castos_armv7a.tar',
+              'version': 'ZOzcgmEj32ltQEYvSSBfLbwcEo4MA_qtruinWrbbpGAC',
+          },
+      ],
+      'condition': 'checkout_cast3p',
       'dep_type': 'cipd',
   },
 
