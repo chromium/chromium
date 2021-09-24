@@ -414,7 +414,6 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kDiscoverFeedInNtp);
-  config.features_enabled.push_back(kRefactoredNTP);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);

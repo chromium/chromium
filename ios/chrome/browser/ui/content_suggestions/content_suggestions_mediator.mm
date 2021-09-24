@@ -295,9 +295,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   [sectionsInfo addObject:self.mostVisitedSectionInfo];
 
-  // TODO(crbug.com/1105624): Observe the kArticlesForYouEnabled Pref in order
-  // to hide the DiscoverFeed section if the finch flag is enabled.
-  if (IsDiscoverFeedEnabled() && self.contentSuggestionsEnabled) {
+  if (self.contentSuggestionsEnabled) {
     [sectionsInfo addObject:self.discoverSectionInfo];
   }
 
@@ -399,7 +397,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
   self.mostVisitedItems = self.freshMostVisitedItems;
-  if (IsDiscoverFeedEnabled()) {
     // All data needs to be reloaded in order to force a re-layout, this is
     // cheaper since the Feed is not part of this ViewController when Discover
     // is enabled.
@@ -407,9 +404,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     // TODO(crbug.com/1170995): Potentially remove once ContentSuggestions can
     // be added as part of a header.
     [self.discoverFeedDelegate contentSuggestionsWasUpdated];
-  } else {
-    [self.dataSink reloadSection:self.mostVisitedSectionInfo];
-  }
 }
 
 #pragma mark - Properties

@@ -163,7 +163,6 @@
     _prefService =
         ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
             ->GetPrefs();
-    if (IsRefactoredNTP()) {
       _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
       _prefChangeRegistrar->Init(_prefService);
       _prefObserverBridge.reset(new PrefObserverBridge(self));
@@ -180,7 +179,6 @@
       [_discoverFeedExpanded setObserver:self];
       _discoverFeedProviderObserverBridge =
           std::make_unique<DiscoverFeedObserverBridge>(self);
-    }
   }
   return self;
 }

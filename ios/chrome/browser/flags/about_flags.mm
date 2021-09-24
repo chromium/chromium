@@ -218,12 +218,6 @@ const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
     {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
      base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
 
-const FeatureEntry::FeatureParam kRefactoredNTPLogging[] = {
-    {kRefactoredNTPLoggingEnabled, "true"}};
-const FeatureEntry::FeatureVariation kRefactoredNTPLoggingVariations[] = {
-    {"Logging Enabled", kRefactoredNTPLogging,
-     base::size(kRefactoredNTPLogging), nullptr}};
-
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
@@ -455,11 +449,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDiscoverFeedInNtp,
                                     kDiscoverFeedInNtpVariations,
                                     "IOSDiscoverFeed")},
-    {"refactored-ntp", flag_descriptions::kRefactoredNTPName,
-     flag_descriptions::kRefactoredNTPDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kRefactoredNTP,
-                                    kRefactoredNTPLoggingVariations,
-                                    "RefactoredNTP")},
     {"expanded-tab-strip", flag_descriptions::kExpandedTabStripName,
      flag_descriptions::kExpandedTabStripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kExpandedTabStrip)},

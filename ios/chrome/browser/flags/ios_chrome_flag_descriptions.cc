@@ -365,11 +365,6 @@ const char kReadingListMessagesDescription[] =
     "When enabled, a Messages prompt may be presented to allow the user to "
     "save the current page to Reading List";
 
-const char kRefactoredNTPName[] = "Enables refactored new tab page";
-const char kRefactoredNTPDescription[] =
-    "When enabled, the new tab page is replaced with the refactored version, "
-    "which changes the ownership and containment of views.";
-
 const char kRestoreGaiaCookiesOnUserActionName[] =
     "Restore GAIA cookies on user action";
 const char kRestoreGaiaCookiesOnUserActionDescription[] =

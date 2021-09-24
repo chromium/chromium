@@ -10,11 +10,6 @@
 #error "This file requires ARC support."
 #endif
 
-// Feature disabled by default to keep the legacy NTP until the refactored one
-// covers all existing functionality.
-const base::Feature kRefactoredNTP{"RefactoredNTP",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnableDiscoverFeedPreview{
     "EnableDiscoverFeedPreview", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -23,15 +18,6 @@ const base::Feature kEnableDiscoverFeedAppFlows{
 
 const base::Feature kEnableNTPMemoryEnhancement{
     "EnableNTPMemoryEnhancement", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const char kRefactoredNTPLoggingEnabled[] = "RefactoredNTPLoggingEnabled";
-
-bool IsRefactoredNTP() {
-  // This feature is dependent on the DiscoverFeed being enabled, only having
-  // kRefactoredNTP enabled can lead to unexpected behavior.
-  return base::FeatureList::IsEnabled(kRefactoredNTP) &&
-         IsDiscoverFeedEnabled();
-}
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);

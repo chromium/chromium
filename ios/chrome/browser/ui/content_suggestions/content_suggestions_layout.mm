@@ -17,13 +17,6 @@
 
 @implementation ContentSuggestionsLayout
 
-- (instancetype)initWithOffset:(CGFloat)offset {
-  if (self = [super init]) {
-    _offset = offset;
-  }
-  return self;
-}
-
 - (CGFloat)minimumNTPHeight {
   CGFloat collectionViewHeight = self.parentCollectionView.bounds.size.height;
   CGFloat headerHeight = [self firstHeaderHeight];
@@ -33,9 +26,9 @@
   // NTP bottom bar. This allows the Most Visited cells to be scrolled up to the
   // top of the screen. Also computes the total NTP scrolling height for
   // Discover infinite feed.
-  self.ntpHeight = collectionViewHeight + headerHeight;
+  CGFloat ntpHeight = collectionViewHeight + headerHeight;
   CGFloat minimumHeight =
-      self.ntpHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
+      ntpHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
   CGFloat topSafeArea = self.collectionView.safeAreaInsets.top;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
     CGFloat toolbarHeight =
@@ -46,7 +39,7 @@
     CGFloat additionalHeight =
         toolbarHeight + topSafeArea + self.collectionView.contentInset.bottom;
     minimumHeight -= additionalHeight;
-    self.ntpHeight += additionalHeight;
+    ntpHeight += additionalHeight;
   }
 
   return minimumHeight;

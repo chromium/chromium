@@ -15,11 +15,6 @@
 // provides a reference to the button.
 - (void)discoverHeaderMenuButtonShown:(UIView*)menuButton;
 
-// Notifies the audience that the Discover Feed has been shown.
-// TODO(crbug.com/1126940): This is still a best effort approach and might be
-// called multiple times.
-- (void)discoverFeedShown;
-
 // Notifies the audience of the UIKit viewDidDisappear: callback.
 - (void)viewDidDisappear;
 

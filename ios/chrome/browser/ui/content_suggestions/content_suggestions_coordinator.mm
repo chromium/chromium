@@ -81,8 +81,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -125,11 +123,6 @@
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
-// YES if the feedShown method has already been called.
-// TODO(crbug.com/1126940): The coordinator shouldn't be keeping track of this
-// for its |self.discoverFeedViewController| remove once we have an appropriate
-// callback.
-@property(nonatomic, assign) BOOL feedShownWasCalled;
 
 @end
 
@@ -242,22 +235,8 @@
   self.headerController.promoCanShow =
       [self.contentSuggestionsMediator notificationPromo]->CanShow();
 
-  // Offset to maintain Discover feed scroll position.
-  CGFloat offset = 0;
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
-    web::NavigationManager* navigationManager =
-        self.webState->GetNavigationManager();
-    if (navigationManager) {
-      web::NavigationItem* item = navigationManager->GetVisibleItem();
-      if (item) {
-        offset = item->GetPageDisplayState().scroll_state().content_offset().y;
-      }
-    }
-  }
-
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-      initWithStyle:CollectionViewControllerStyleDefault
-             offset:offset];
+      initWithStyle:CollectionViewControllerStyleDefault];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -362,13 +341,6 @@
 
 - (void)discoverHeaderMenuButtonShown:(UIView*)menuButton {
   _discoverFeedHeaderMenuButton = menuButton;
-}
-
-- (void)discoverFeedShown {
-  if (IsDiscoverFeedEnabled() && !self.feedShownWasCalled) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->FeedWasShown();
-    self.feedShownWasCalled = YES;
-  }
 }
 
 - (void)viewDidDisappear {

@@ -48,15 +48,11 @@ using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 const CGFloat kMostVisitedBottomMargin = 13;
 const CGFloat kCardBorderRadius = 11;
 const CGFloat kDiscoverFeedContentWith = 430;
-// Value representing offset from bottom of the page to trigger pagination.
-const CGFloat kPaginationOffset = 800;
 // Height for the Discover Feed section header.
 const CGFloat kDiscoverFeedFeaderHeight = 30;
 }
 
-@interface ContentSuggestionsViewController ()<UIGestureRecognizerDelegate> {
-  CGFloat _initialContentOffset;
-}
+@interface ContentSuggestionsViewController () <UIGestureRecognizerDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsCollectionUpdater* collectionUpdater;
@@ -64,13 +60,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 // The overscroll actions controller managing accelerators over the toolbar.
 @property(nonatomic, strong)
     OverscrollActionsController* overscrollActionsController;
-
-// Navigation offset applied to the layout height to maintain the scroll
-// position, since the feed height is dynamic.
-@property(nonatomic) CGFloat offset;
-
-// The CollectionViewController scroll position when an scrolling event starts.
-@property(nonatomic, assign) int scrollStartPosition;
 
 // The layout of the content suggestions collection view.
 @property(nonatomic, strong) ContentSuggestionsLayout* layout;
@@ -90,14 +79,11 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithStyle:(CollectionViewControllerStyle)style
-                       offset:(CGFloat)offset {
-  _offset = offset;
-  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset];
+- (instancetype)initWithStyle:(CollectionViewControllerStyle)style {
+  _layout = [[ContentSuggestionsLayout alloc] init];
   self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
-    _initialContentOffset = NAN;
     _discoverFeedHeaderDelegate = _collectionUpdater;
   }
   return self;
@@ -193,14 +179,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   [self.overscrollActionsController clear];
 }
 
-- (void)setContentOffset:(CGFloat)offset {
-  _initialContentOffset = offset;
-  if (self.isViewLoaded && self.collectionView.window &&
-      self.collectionView.contentSize.height != 0) {
-    [self applyContentOffset];
-  }
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -264,18 +242,7 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   // Resize the collection as it might have been rotated while not being
   // presented (e.g. rotation on stack view).
   [self updateConstraints];
-  // Remove forced height if it was already applied, since the scroll position
-  // was already maintained.
-  if (self.offset > 0) {
-    self.layout.offset = 0;
-  }
-
   [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  [self applyContentOffset];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -618,7 +585,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
   [self.panGestureHandler scrollViewWillBeginDragging:scrollView];
-  self.scrollStartPosition = scrollView.contentOffset.y;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
@@ -729,47 +695,9 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     [self.collectionView insertItemsAtIndexPaths:@[ emptyItem ]];
 }
 
-// Sets the collectionView's contentOffset if |_initialContentOffset| is set.
-- (void)applyContentOffset {
-  if (!isnan(_initialContentOffset)) {
-    UICollectionView* collection = self.collectionView;
-    // Don't set the offset such as the content of the collection is smaller
-    // than the part of the collection which should be displayed with that
-    // offset, taking into account the size of the toolbar.
-    CGFloat offset = MAX(
-        0, MIN(_initialContentOffset,
-               collection.contentSize.height - collection.bounds.size.height -
-                   ToolbarExpandedHeight(
-                       self.traitCollection.preferredContentSizeCategory) +
-                   collection.contentInset.bottom));
-    if (collection.contentOffset.y != offset) {
-        collection.contentOffset = CGPointMake(0, offset);
-        // Update the constraints in case the omnibox needs to be moved.
-        [self updateConstraints];
-    }
-  }
-  _initialContentOffset = NAN;
-}
-
 // Opens top-level feed menu when pressing |menuButton|.
 - (void)openDiscoverFeedMenu {
   [self.discoverFeedMenuHandler openDiscoverFeedMenu];
-}
-
-// Evaluates whether or not another set of Discover feed articles should be
-// fetched when scrolling.
-- (BOOL)shouldTriggerInfiniteFeed:(UIScrollView*)scrollView {
-  float scrollPosition =
-      scrollView.contentOffset.y + scrollView.frame.size.height;
-  // Check if view is bouncing to ignore overscoll positions for infinite feed
-  // triggering.
-  BOOL isBouncing =
-      (scrollView.contentOffset.y >=
-       (scrollView.contentSize.height - scrollView.bounds.size.height));
-  ContentSuggestionsLayout* layout = static_cast<ContentSuggestionsLayout*>(
-      self.collectionView.collectionViewLayout);
-  return (scrollPosition > scrollView.contentSize.height - kPaginationOffset &&
-          scrollPosition > layout.ntpHeight && !isBouncing);
 }
 
 @end

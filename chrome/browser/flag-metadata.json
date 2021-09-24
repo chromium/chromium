@@ -4620,11 +4620,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "refactored-ntp",
-    "owners": [ "adamta@google.com", "sczs" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "related-searches",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
     "expiry_milestone": 97

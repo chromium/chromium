@@ -32,10 +32,8 @@
     : CollectionViewController <ContentSuggestionsCollectionControlling,
                                 ThumbStripSupporting>
 
-// Inits view controller with |offset| to maintain scroll position if needed.
-// Offset is only required if Discover feed is visible.
+// Inits view controller with |style|.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
-                       offset:(CGFloat)offset
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
@@ -95,9 +93,6 @@
 - (void)updateConstraints;
 // Clear the overscroll actions.
 - (void)clearOverscroll;
-// Sets the collection contentOffset to |offset|, or caches the value and
-// applies it after the first layout.
-- (void)setContentOffset:(CGFloat)offset;
 
 @end
 
