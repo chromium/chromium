@@ -216,6 +216,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     // WebAppProvider setup.
     os_hooks_suppress_ =
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+    chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
     InProcessBrowserTest::SetUp();
   }
 

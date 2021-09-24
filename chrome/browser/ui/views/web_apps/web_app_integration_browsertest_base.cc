@@ -983,6 +983,7 @@ WebAppIntegrationBrowserTest::~WebAppIntegrationBrowserTest() = default;
 void WebAppIntegrationBrowserTest::SetUp() {
   helper_.SetUp();
   InProcessBrowserTest::SetUp();
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
 }
 
 void WebAppIntegrationBrowserTest::SetUpOnMainThread() {
