@@ -81,11 +81,11 @@ class HistoryClustersElement extends PolymerElement {
       result_: Object,
 
       /**
-       * The title to show when the query is non-empty.
+       * The header text to show when the query is non-empty.
        */
-      title_: {
+      headerText_: {
         type: String,
-        computed: `computeTitle_(result_)`,
+        computed: `computeHeaderText_(result_)`,
       },
 
       /**
@@ -109,7 +109,6 @@ class HistoryClustersElement extends PolymerElement {
   private onVisitsRemovedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
   private result_: QueryResult = new QueryResult();
-  private title_: string = '';
   private visitsToBeRemoved_: Array<URLVisit> = [];
 
   //============================================================================
@@ -229,9 +228,9 @@ class HistoryClustersElement extends PolymerElement {
   // Helper methods
   //============================================================================
 
-  private computeTitle_(): string {
+  private computeHeaderText_(): string {
     return this.result_ ?
-        loadTimeData.getStringF('headerTitle', this.result_.query || '') :
+        loadTimeData.getStringF('headerText', this.result_.query || '') :
         '';
   }
 

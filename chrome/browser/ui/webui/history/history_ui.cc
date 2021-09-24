@@ -129,15 +129,22 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("isHistoryClustersDebug",
                      base::FeatureList::IsEnabled(history_clusters::kDebug));
 
-  // TODO(crbug.com/1173908): Replace these with localized strings.
-  source->AddString("headerTitle", u"Based on activity related to \"$1\"");
-  source->AddString("historyClustersMenuItem", u"Journeys");
-  source->AddString("relatedSearchesLabel", u"Related:");
-  source->AddString("removeAllFromHistory", u"Remove Journey from history");
-  source->AddString("removeFromHistoryToast", u"Item removed");
-  source->AddString("savedInTabGroup", u"Saved in tab group");
-  source->AddString("toggleButtonLabelLess", u"Show less");
-  source->AddString("toggleButtonLabelMore", u"Show more");
+  // TODO(crbug.com/1173908): Change `historyClustersMenuItem` to
+  // `historyClustersTabLabel` once the UI is updated to tab view.
+  static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
+      {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},
+      {"enableHistoryClusters", IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL},
+      {"headerText", IDS_HISTORY_CLUSTERS_HEADER_TEXT},
+      {"historyClustersMenuItem", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},
+      {"historyListTabLabel", IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL},
+      {"relatedSearchesHeader", IDS_HISTORY_CLUSTERS_RELATED_SEARCHES_HEADER},
+      {"removeAllFromHistory", IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS},
+      {"removeFromHistoryToast", IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST},
+      {"savedInTabGroup", IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL},
+      {"toggleButtonLabelLess", IDS_HISTORY_CLUSTERS_SHOW_LESS_BUTTON_LABEL},
+      {"toggleButtonLabelMore", IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL},
+  };
+  source->AddLocalizedStrings(kHistoryClustersStrings);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kHistoryResources, kHistoryResourcesSize),

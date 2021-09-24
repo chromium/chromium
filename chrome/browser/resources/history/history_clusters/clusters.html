@@ -12,14 +12,12 @@
     width: var(--cluster-width);
   }
 
-  #title {
+  #header {
     font-size: 1.75rem;  /* 28px */
     padding: 0 var(--cluster-padding);
   }
 </style>
-<div id="header" hidden="[[!result_.query]]">
-  <div id="title">[[title_]]</div>
-</div>
+<div id="header" hidden="[[!result_.query]]">[[headerText_]]</div>
 <iron-list id="clusters"
     items="[[result_.clusters]]"
     on-remove-visits="onRemoveVisits_">

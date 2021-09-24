@@ -2,6 +2,38 @@
 
 <!-- Strings for the chrome://history/journeys page -->
 
-<!-- TODO(crbug.com/1173908): Add strings currently hardcoded in HistoryUI. -->
 <grit-part>
+  <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
+    Turn off Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn on the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
+    Turn on Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_HEADER_TEXT" desc="Header text shown when the history items related to a given user search term are shown.">
+    Based on activity related to "<ph name="SEARCH_TERM"><ex>dual kitchen range</ex>$1</ph>"
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'.">
+    Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
+    List
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_RELATED_SEARCHES_HEADER" desc="Header text shown for the section containing search suggestions related to a group of search and browsing activities.">
+    Related searches
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS" desc="Label of the item in drop-down menu that allows the user to remove a group of history items.">
+    Remove all from history
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST" desc="Confirmation message shown after user successfully removes one history item from the item's drop-down menu.">
+    Item removed
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
+    Saved in tab group
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SHOW_LESS_BUTTON_LABEL" desc="A label for the button that collapses the view showing fewer history items.">
+    Show less
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items.">
+    Show more
+  </message>
 </grit-part>
