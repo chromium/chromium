@@ -39,6 +39,11 @@ SkColor GetDialogBackgroundBaseColor() {
                              : kDialogBackgroundBaseColorLight;
 }
 
+SkColor GetCrOSColor(cros_styles::ColorName color_name) {
+  return cros_styles::ResolveColor(color_name, IsDarkModeEnabled(),
+                                   /*use_debug_colors=*/false);
+}
+
 bool IsDarkModeEnabled() {
   auto* provider = ash::ColorProvider::Get();
   // |provider| may return null in unit testing

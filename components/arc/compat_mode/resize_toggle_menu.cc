@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
+#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
@@ -119,15 +120,20 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
 
   const auto* theme = GetNativeTheme();
 
-  const auto foreground_color = theme->GetSystemColor(
-      is_selected_ ? ui::NativeTheme::kColorId_TextOnProminentButtonColor
-                   : ui::NativeTheme::kColorId_LabelEnabledColor);
-  icon_view_->SetImage(gfx::CreateVectorIcon(icon_, foreground_color));
-  title_->SetEnabledColor(foreground_color);
+  const auto icon_color =
+      is_selected_
+          ? GetCrOSColor(cros_styles::ColorName::kIconColorSelection)
+          : theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor);
+  icon_view_->SetImage(gfx::CreateVectorIcon(icon_, icon_color));
+
+  const auto text_color =
+      is_selected_
+          ? GetCrOSColor(cros_styles::ColorName::kTextColorSelection)
+          : theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor);
+  title_->SetEnabledColor(text_color);
 
   const auto background_color =
-      is_selected_ ? theme->GetSystemColor(
-                         ui::NativeTheme::kColorId_ProminentButtonColor)
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kHighlightColor)
                    : SK_ColorTRANSPARENT;
   background()->SetNativeControlColor(background_color);
 

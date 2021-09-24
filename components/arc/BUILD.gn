@@ -186,6 +186,7 @@ static_library("arc") {
     "//ui/base/ime",
     "//ui/base/ime/ash",
     "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_styles_views_generator",
     "//ui/display/manager",
     "//ui/events",
     "//ui/events:dom_keycode_converter",

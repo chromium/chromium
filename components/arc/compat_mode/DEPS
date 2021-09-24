@@ -9,6 +9,7 @@ include_rules = [
   "+ash/wm/resize_shadow_controller.h",
   "+components/strings/grit/components_strings.h",
   "+ui/aura",
+  "+ui/chromeos/styles/cros_styles.h",
   "+ui/gfx",
   "+ui/strings",
   "+ui/views",
