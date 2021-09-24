@@ -112,7 +112,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
     AddLogEntry(log, "product_version", dmi_info->product_version.value_or(""));
   }
 
-  base::StrAppend(log, {"biosinfo:"});
+  base::StrAppend(log, {"bios_info:"});
   if (!dmi_info.is_null()) {
     AddIndentedLogEntry(log, "bios_version",
                         dmi_info->bios_version.value_or(""));
@@ -121,8 +121,12 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
       info->system_result_v2->get_system_info_v2()->os_info;
   if (!os_info.is_null()) {
     AddIndentedLogEntry(
+        log, "secureboot",
+        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfiSecure));
+    AddIndentedLogEntry(
         log, "uefi",
-        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfi));
+        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfi ||
+                   os_info->boot_mode == healthd::BootMode::kCrosEfiSecure));
   }
   base::StrAppend(log, {"\n"});
 }

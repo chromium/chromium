@@ -321,18 +321,12 @@ class RevenLogSourceTest : public ::testing::Test {
                           const std::string& expected) {
     auto info = healthd::TelemetryInfo::New();
     auto os_info = CreateOsInfo(boot_mode);
-    auto dmi_info = healthd::DmiInfo::New();
+    auto dmi_info = CreateDmiInfo();
     SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
     ash::cros_healthd::FakeCrosHealthdClient::Get()
         ->SetProbeTelemetryInfoResponseForTesting(info);
 
-    std::unique_ptr<SystemLogsResponse> response = Fetch();
-    ASSERT_NE(response, nullptr);
-    const auto revenlog_iter = response->find(kRevenLogKey);
-    ASSERT_NE(revenlog_iter, response->end());
-
-    EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
-    EXPECT_THAT(revenlog_iter->second, HasSubstr(expected));
+    VerifyOutputContains(Fetch(), expected);
   }
 
   void VerifyTpmInfo(uint32_t version,
@@ -448,7 +442,7 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
   EXPECT_THAT(revenlog_iter->second,
               HasSubstr("product_version: ThinkPad X1 Carbon Gen 8"));
 
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("bios_info:\n"));
   EXPECT_THAT(revenlog_iter->second,
               HasSubstr("\n  bios_version: N2WET26W (1.16 )"));
 }
@@ -470,24 +464,40 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_name: \n"));
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_version: \n"));
 
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("bios_info:\n"));
   EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  bios_version: \n"));
 }
 
-TEST_F(RevenLogSourceTest, BiosBootMode_kCrosEfi) {
-  VerifyBiosBootMode(healthd::BootMode::kCrosEfi, "\n  uefi: true");
+// BootMode::kCrosEfi: boot with EFI but not with secure boot
+//  secureboot = false
+//  uefi = true
+TEST_F(RevenLogSourceTest, BiosBootMode_Uefi_True_SecureBoot_False) {
+  std::string expected_output = R"(bios_info:
+  bios_version: N2WET26W (1.16 )
+  secureboot: false
+  uefi: true)";
+  VerifyBiosBootMode(healthd::BootMode::kCrosEfi, expected_output);
 }
 
-TEST_F(RevenLogSourceTest, BiosBootMode_kUnknown) {
-  VerifyBiosBootMode(healthd::BootMode::kUnknown, "\n  uefi: false");
+// BootMode::kCrosEfiSecure: boot with EFI security boot
+//  secureboot = true
+//  uefi = true
+TEST_F(RevenLogSourceTest, BiosBootMode_Uefi_True_SecureBoot_True) {
+  std::string expected_output = R"(bios_info:
+  bios_version: N2WET26W (1.16 )
+  secureboot: true
+  uefi: true)";
+  VerifyBiosBootMode(healthd::BootMode::kCrosEfiSecure, expected_output);
 }
 
-TEST_F(RevenLogSourceTest, BiosBootMode_kCrosSecure) {
-  VerifyBiosBootMode(healthd::BootMode::kCrosSecure, "\n  uefi: false");
-}
-
-TEST_F(RevenLogSourceTest, BiosBootMode_kCrosLegacy) {
-  VerifyBiosBootMode(healthd::BootMode::kCrosLegacy, "\n  uefi: false");
+TEST_F(RevenLogSourceTest, BiosBootMode_SecureBoot_False_Uefi_False) {
+  std::string expected_output = R"(bios_info:
+  bios_version: N2WET26W (1.16 )
+  secureboot: false
+  uefi: false)";
+  VerifyBiosBootMode(healthd::BootMode::kCrosSecure, expected_output);
+  VerifyBiosBootMode(healthd::BootMode::kCrosLegacy, expected_output);
+  VerifyBiosBootMode(healthd::BootMode::kUnknown, expected_output);
 }
 
 TEST_F(RevenLogSourceTest, PciEthernetDevices) {
