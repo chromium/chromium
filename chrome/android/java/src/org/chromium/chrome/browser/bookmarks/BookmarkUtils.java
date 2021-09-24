@@ -93,6 +93,15 @@ public class BookmarkUtils {
             return;
         }
 
+        if (isImprovedSaveFlowEnabled()) {
+            BookmarkId newBookmarkId =
+                    addBookmarkAndShowSaveFlow(activity, bookmarkModel, tab, bottomSheetController);
+            callback.onResult(newBookmarkId);
+            return;
+        }
+
+        // TODO(crbug.com/1249283): Add separate entrypoint to save reading list items that uses
+        // the improved save flow.
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET)) {
             // Show a bottom sheet to let the user select target bookmark folder.
             showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
@@ -130,6 +139,17 @@ public class BookmarkUtils {
                     selectedBookmarkItem.getId().getType(), BookmarkType.LAST + 1);
             callback.onResult(newBookmarkId);
         });
+    }
+
+    private static BookmarkId addBookmarkAndShowSaveFlow(Activity activity,
+            BookmarkModel bookmarkModel, Tab tab, BottomSheetController bottomSheetController) {
+        BookmarkId bookmarkId =
+                addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
+        BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
+                new BookmarkSaveFlowCoordinator(activity, bottomSheetController);
+        bookmarkSaveFlowCoordinator.show(bookmarkId);
+
+        return bookmarkId;
     }
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
@@ -383,6 +403,11 @@ public class BookmarkUtils {
         }
     }
 
+    /** Starts an {@link BookmarkFolderSelectActivity} for the given {@link BookmarkId}. */
+    public static void startFolderSelectActivity(Context context, BookmarkId bookmarkId) {
+        BookmarkFolderSelectActivity.startFolderSelectActivity(context, bookmarkId);
+    }
+
     /**
      * Opens a bookmark and reports UMA.
      * @param context The current context used to launch the intent.
@@ -451,6 +476,40 @@ public class BookmarkUtils {
     public static int getFolderIconTint(@BookmarkType int type) {
         return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_blue
                                                    : R.color.default_icon_color_tint_list;
+    }
+
+    /**
+     * Retrieve the save flow title for the given bookmark.
+     *
+     * @param context The current Android {@link Context}.
+     * @param bookmarkId The {@link BookmarkId} to get the title for.
+     * @return The title associated with the given bookmarkId.
+     */
+    public static String getSaveFlowTitleForBookmark(Context context, BookmarkId bookmarkId) {
+        // TODO(crbug.com/1243383): Add title for price tracking.
+        return context.getResources().getString(R.string.bookmark_page_saved_default);
+    }
+
+    /**
+     * Retrieve the save flow subtitle for the given bookmark.
+     *
+     * @param bookmarkId The {@link BookmarkId} to get the subtitle for.
+     * @return The subtitle associated with the given bookmarkId.
+     */
+    public static String getSaveFlowSubtitleForBookmark(BookmarkId bookmarkId) {
+        // TODO(crbug.com/1243383): Add subtitle for price tracking.
+        return null;
+    }
+
+    /**
+     * Retrieve the save flow start icon for the given bookmark.
+     *
+     * @param bookmarkId The {@link BookmarkId} to get the start icon for.
+     * @return The start icon associated with the given bookmarkId.
+     */
+    public static Drawable getSaveFlowStartIconForBookmark(BookmarkId bookmarkId) {
+        // TODO(crbug.com/1243383): Add start icon for price tracking.
+        return null;
     }
 
     private static void openUrl(Context context, String url, ComponentName componentName) {
@@ -581,5 +640,10 @@ public class BookmarkUtils {
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
         }
+    }
+
+    private static boolean isImprovedSaveFlowEnabled() {
+        return ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_IMPROVED_SAVE_FLOW);
     }
 }

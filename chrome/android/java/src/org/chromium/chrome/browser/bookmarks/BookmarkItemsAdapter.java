@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserve
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -144,7 +146,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
         // Show the tag chiplist only for the shopping folder.
         // TODO(crbug.com/1247825): Clarify how the tag list should interact with promo headers.
-        if (mCurrentFolder.getType() == ViewType.SHOPPING_POWER_BOOKMARK) {
+        PowerBookmarkMeta meta = mDelegate.getModel().getPowerBookmarkMeta(mCurrentFolder);
+        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
             mElements.add(BookmarkListEntry.createChipList());
         }
 

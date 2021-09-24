@@ -238,6 +238,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
     &kPageAnnotationsService,
+    &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kProbabilisticCryptidRenderer,
     &kQuickActionSearchWidgetAndroid,
@@ -651,6 +652,9 @@ const base::Feature kOfflineMeasurementsBackgroundTask{
 
 const base::Feature kPageAnnotationsService{"PageAnnotationsService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kBookmarksImprovedSaveFlow{
+    "BookmarksImprovedSaveFlow", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kBookmarksRefresh{"BookmarksRefresh",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

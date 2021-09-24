@@ -2093,10 +2093,13 @@ const char kPointerLockOptionsDescription[] =
     "to true, pointer movements wil not be affected by the underlying platform "
     "modications such as mouse accelaration.";
 
-const char kBookmarksRefreshName[] =
-    "Enables the a visual refresh for bookmarks";
+const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
+const char kBookmarksImprovedSaveFlowDescription[] =
+    "Enabled an improved save flow for bookmarks.";
+
+const char kBookmarksRefreshName[] = "Bookmarks visual refresh";
 const char kBookmarksRefreshDescription[] =
-    "Changes the bookmark list visuals.";
+    "Enalbed a visual refresh for bookmarks.";
 
 const char kPrerender2Name[] = "Prerender2";
 const char kPrerender2Description[] =

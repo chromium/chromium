@@ -559,6 +559,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "bookmarks-improved-save-flow",
+    "owners": ["wylieb", "fgorski", "mdjones"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "bookmarks-refresh",
     "owners": ["wylieb", "fgorski", "mdjones"],
     "expiry_milestone": 100

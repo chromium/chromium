@@ -7626,6 +7626,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
 
 #if defined(OS_ANDROID)
+    {"bookmarks-improved-save-flow",
+     flag_descriptions::kBookmarksImprovedSaveFlowName,
+     flag_descriptions::kBookmarksImprovedSaveFlowDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBookmarksImprovedSaveFlow)},
+
     {"bookmarks-refresh", flag_descriptions::kBookmarksRefreshName,
      flag_descriptions::kBookmarksRefreshDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
