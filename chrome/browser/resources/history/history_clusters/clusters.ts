@@ -20,7 +20,8 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
+import {ClusterAction, MetricsProxy} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element that requests and shows
@@ -69,6 +70,15 @@ class HistoryClustersElement extends PolymerElement {
       query: {
         type: String,
         observer: 'onQueryChanged_',
+        value: '',
+      },
+
+      /**
+       * The header text to show when the query is non-empty.
+       */
+      headerText_: {
+        type: String,
+        computed: `computeHeaderText_(result_)`,
       },
 
       /**
@@ -81,20 +91,12 @@ class HistoryClustersElement extends PolymerElement {
       result_: Object,
 
       /**
-       * The header text to show when the query is non-empty.
-       */
-      headerText_: {
-        type: String,
-        computed: `computeHeaderText_(result_)`,
-      },
-
-      /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
        */
       visitsToBeRemoved_: {
         type: Object,
-        value: [],
+        value: () => [],
       },
     };
   }
@@ -103,13 +105,13 @@ class HistoryClustersElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  query: string = '';
+  query: string;
   private callbackRouter_: PageCallbackRouter;
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
-  private result_: QueryResult = new QueryResult();
-  private visitsToBeRemoved_: Array<URLVisit> = [];
+  private result_: QueryResult;
+  private visitsToBeRemoved_: Array<URLVisit>;
 
   //============================================================================
   // Overridden methods
@@ -155,17 +157,6 @@ class HistoryClustersElement extends PolymerElement {
     this.$.confirmationDialog.get().close();
   }
 
-  private onClusterEmptied_(event: CustomEvent<Cluster>) {
-    // Find and remove the emptied cluster from the list. We don't pass an
-    // index, as then that's one more piece of state to keep consistent.
-    if (this.result_ && this.result_.clusters) {
-      const index = this.result_.clusters.indexOf(event.detail);
-      if (index !== -1) {
-        this.splice('result_.clusters', index, 1);
-      }
-    }
-  }
-
   private onConfirmationDialogCancel_() {
     this.visitsToBeRemoved_ = [];
   }
@@ -178,6 +169,17 @@ class HistoryClustersElement extends PolymerElement {
           }
         });
     this.$.confirmationDialog.get().close();
+  }
+
+  /**
+   * Called with `event` received from a cluster requesting to be removed from
+   * the list when all its visits have been removed. Contains the cluster index.
+   */
+  private onRemoveCluster_(event: CustomEvent<number>) {
+    const index = event.detail;
+    this.splice('result_.clusters', index, 1);
+    MetricsProxy.getInstance().recordClusterAction(
+        ClusterAction.DELETED, index);
   }
 
   /**

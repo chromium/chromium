@@ -100,8 +100,13 @@
   #actionMenuButton {
     --cr-icon-button-margin-end: 1px;
   }
+
+  :host(:not([has-related-visits])) #removeAllButton {
+    display: none;
+  }
 </style>
-<a id="header" href="[[visit.normalizedUrl.url]]" on-click="onClick_">
+<a id="header" href="[[visit.normalizedUrl.url]]" on-click="onClick_"
+    on-auxclick="onAuxClick_">
   <div id="start-justified">
     <page-favicon is-top-visit-favicon="[[isTopVisit]]"
         url="[[visit.normalizedUrl]]">
@@ -114,7 +119,7 @@
         </template>
       </div>
       <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
-        [[hostnameFromUrl_(visit.normalizedUrl)]]
+        [[getHostnameFromUrl_(visit.normalizedUrl)]]
         <!-- Print the debug next to the hostname to keep layout the same. -->
         <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
@@ -134,8 +139,8 @@
       <button class="dropdown-item" on-click="onRemoveSelfButtonClick_">
         $i18n{removeFromHistory}
       </button>
-      <button class="dropdown-item" on-click="onRemoveAllButtonClick_"
-          hidden="[[!hasRelatedVisits_]]">
+      <button id="removeAllButton" class="dropdown-item"
+          on-click="onRemoveAllButtonClick_">
         $i18n{removeAllFromHistory}
       </button>
     </cr-action-menu>

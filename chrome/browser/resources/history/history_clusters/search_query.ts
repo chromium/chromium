@@ -7,6 +7,7 @@ import './shared_style.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchQuery} from './history_clusters.mojom-webui.js';
+import {MetricsProxy, RelatedSearchAction} from './metrics_proxy.js';
 import {OpenWindowProxy} from './open_window_proxy.js';
 
 /**
@@ -31,6 +32,14 @@ class SearchQueryElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * The index of the search query pill.
+       */
+      index: {
+        type: Number,
+        value: -1,  // Initialized to an invalid value.
+      },
+
+      /**
        * The search query to display.
        */
       searchQuery: Object,
@@ -41,14 +50,29 @@ class SearchQueryElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  searchQuery: SearchQuery = new SearchQuery();
+  index: number;
+  searchQuery: SearchQuery;
 
   //============================================================================
   // Event handlers
   //============================================================================
 
+  private onAuxClick_() {
+    MetricsProxy.getInstance().recordRelatedSearchAction(
+        RelatedSearchAction.CLICKED, this.index);
+
+    // Notify the parent <history-cluster> element of this event.
+    this.dispatchEvent(new CustomEvent('related-search-clicked', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onClick_(event: MouseEvent) {
     event.preventDefault();  // Prevent default browser action (navigation).
+
+    this.onAuxClick_();
+
     OpenWindowProxy.getInstance().open(this.searchQuery.url.url);
   }
 }

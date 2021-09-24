@@ -415,6 +415,61 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.UIActions.Cluster.{ClusterAction}"
+    units="index" expires_after="2022-02-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Recorded every time the user {ClusterAction} in chrome://history/journeys.
+    The value represents the 0-indexed index of the cluster.
+  </summary>
+  <token key="ClusterAction">
+    <variant name="Deleted" summary="deletes a history cluster"/>
+    <variant name="RelatedSearchClicked"
+        summary="clicks a related search suggestion"/>
+    <variant name="RelatedVisitsVisibilityToggled"
+        summary="toggles visibility of the default-hidden related visits"/>
+    <variant name="VisitClicked" summary="clicks a visit"/>
+  </token>
+</histogram>
+
+<histogram
+    name="History.Clusters.UIActions.RelatedSearch.{RelatedSearchAction}"
+    units="index" expires_after="2022-02-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Recorded every time the user {RelatedSearchAction} a related search
+    suggestion in a history cluster in chrome://history/journeys. The value
+    represents the 0-indexed index of the related search suggestion in the
+    respective cluster.
+  </summary>
+  <token key="RelatedSearchAction">
+    <variant name="Clicked" summary="clicks"/>
+  </token>
+</histogram>
+
+<histogram name="History.Clusters.UIActions.{VisitType}Visit.{VisitAction}"
+    units="index" expires_after="2022-02-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Recorded every time the user {VisitAction} a {VisitType} in a history
+    cluster in chrome://history/journeys. The value represents the 0-indexed
+    index of the visit in the respective cluster.
+  </summary>
+  <token key="VisitAction">
+    <variant name="Clicked" summary="clicks"/>
+    <variant name="Deleted" summary="deletes"/>
+  </token>
+  <token key="VisitType">
+    <variant name="" summary="visit"/>
+    <variant name="nonSRP"
+        summary="visit to a url other than the default search results page"/>
+    <variant name="SRP" summary="visit to the default search results page"/>
+  </token>
+</histogram>
+
 <histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
     expires_after="M77">
   <owner>shess@chromium.org</owner>

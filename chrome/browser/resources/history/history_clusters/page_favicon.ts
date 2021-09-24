@@ -32,8 +32,8 @@ class PageFavicon extends PolymerElement {
        */
       isTopVisitFavicon: {
         type: Boolean,
-        value: false,
         reflectToAttribute: true,
+        value: false,
       },
 
       /**
@@ -41,8 +41,8 @@ class PageFavicon extends PolymerElement {
        */
       style: {
         type: String,
-        reflectToAttribute: true,
         computed: `computeStyle_(url)`,
+        reflectToAttribute: true,
       },
 
       /**
@@ -56,8 +56,8 @@ class PageFavicon extends PolymerElement {
   // Properties
   //============================================================================
 
-  isTopVisitFavicon: boolean = false;
-  url: Url = new Url();
+  isTopVisitFavicon: boolean;
+  url: Url;
 
   //============================================================================
   // Helper methods

@@ -14,6 +14,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
+import {MetricsProxy, VisitAction, VisitType} from './metrics_proxy.js';
 import {OpenWindowProxy} from './open_window_proxy.js';
 
 /**
@@ -55,18 +56,26 @@ class VisitRowElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * Whether there are related visits that can be shown.
+       */
+      hasRelatedVisits: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      /**
+       * The index of the visit in the cluster.
+       */
+      index: {
+        type: Number,
+        value: -1,  // Initialized to an invalid value.
+      },
+
+      /**
        * The visit to display.
        */
       visit: Object,
-
-      /**
-       * Whether the visit is a top visit.
-       */
-      isTopVisit: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
 
       /**
        * Annotations to show for the visit (e.g., whether page was bookmarked).
@@ -74,15 +83,6 @@ class VisitRowElement extends PolymerElement {
       annotations_: {
         type: Object,
         computed: 'computeAnnotations_(visit)',
-      },
-
-      /**
-       * Whether the visit has related visits, regardless of initial visibility.
-       */
-      hasRelatedVisits_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeHasRelatedVisits_(visit.*)',
       },
 
       /**
@@ -99,10 +99,8 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  isTopVisit: boolean = false;
-  visit: URLVisit = new URLVisit();
-  private annotations_: Array<string> = [];
-  private hasRelatedVisits_: boolean = false;
+  index: number;
+  visit: URLVisit;
 
   //============================================================================
   // Event handlers
@@ -113,6 +111,17 @@ class VisitRowElement extends PolymerElement {
     event.preventDefault();  // Prevent default browser action (navigation).
   }
 
+  private onAuxClick_() {
+    MetricsProxy.getInstance().recordVisitAction(
+        VisitAction.CLICKED, this.index, this.getVisitType_());
+
+    // Notify the parent <history-cluster> element of this event.
+    this.dispatchEvent(new CustomEvent('visit-clicked', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onClick_(event: MouseEvent) {
     // Ignore previousely handled events.
     if (event.defaultPrevented) {
@@ -120,6 +129,8 @@ class VisitRowElement extends PolymerElement {
     }
 
     event.preventDefault();  // Prevent default browser action (navigation).
+
+    this.onAuxClick_();
 
     OpenWindowProxy.getInstance().open(this.visit.normalizedUrl.url);
   }
@@ -142,6 +153,9 @@ class VisitRowElement extends PolymerElement {
     }));
 
     this.$.actionMenu.get().close();
+
+    MetricsProxy.getInstance().recordVisitAction(
+        VisitAction.DELETED, this.index, this.getVisitType_());
   }
 
   //============================================================================
@@ -159,19 +173,6 @@ class VisitRowElement extends PolymerElement {
         .map((id: string) => loadTimeData.getString(id));
   }
 
-  private computeHasRelatedVisits_(): boolean {
-    return this.visit.relatedVisits
-               .filter(visit => {
-                 // "Ghost" visits with scores of 0 (or below) are never shown.
-                 // TODO(tommycli): If there are only ghost visits within the
-                 // related visits, and the user deletes the top visit, the
-                 // ghost visits don't get deleted and get attached to a nearby
-                 // cluster next time. We should fix this semantics issue.
-                 return visit.score > 0;
-               })
-               .length > 0;
-  }
-
   private computeDebugInfo_(): string {
     if (!loadTimeData.getBoolean('isHistoryClustersDebug')) {
       return '';
@@ -183,12 +184,22 @@ class VisitRowElement extends PolymerElement {
   /**
    * Returns the domain name of `url` without the leading 'www.', if applicable.
    */
-  private hostnameFromUrl_(url: Url): string {
+  private getHostnameFromUrl_(url: Url): string {
     try {
       return new URL(url.url).hostname.replace(/^(www\.)/, '').trim();
     } catch (err) {
       return '';
     }
+  }
+
+  /**
+   * Returns the VisitType based on whether this is a visit to the default
+   * search provider's results page.
+   */
+  private getVisitType_(): VisitType {
+    return this.visit.annotations.includes(Annotation.kSearchResultsPage) ?
+        VisitType.SRP :
+        VisitType.NON_SRP;
   }
 }
 

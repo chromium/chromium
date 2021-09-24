@@ -8,5 +8,9 @@
   }
 </style>
 <template is="dom-repeat" items="[[cluster.visits]]">
-  <top-visit visit="[[item]]"></top-visit>
+  <top-visit visit="[[item]]"
+      on-related-search-clicked="onRelatedSearchClicked_"
+      on-related-visits-visibility-toggled="onRelatedVisitsVisibilityToggled_"
+      on-visit-clicked="onVisitClicked_">
+  </top-visit>
 </template>

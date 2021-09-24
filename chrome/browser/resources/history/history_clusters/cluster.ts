@@ -11,6 +11,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {BrowserProxy} from './browser_proxy.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
+import {ClusterAction, MetricsProxy} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a Cluster.
@@ -34,6 +35,14 @@ class HistoryClusterElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * The index of the cluster.
+       */
+      index: {
+        type: Number,
+        value: -1,  // Initialized to an invalid value.
+      },
+
+      /**
        * The Cluster displayed by this element.
        */
       cluster: Object,
@@ -44,7 +53,8 @@ class HistoryClusterElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  cluster: Cluster = new Cluster();
+  cluster: Cluster;
+  index: number;
   private callbackRouter_: PageCallbackRouter;
   private onVisitsRemovedListenerId_: number|null = null;
 
@@ -69,6 +79,25 @@ class HistoryClusterElement extends PolymerElement {
     this.callbackRouter_.removeListener(
         assert(this.onVisitsRemovedListenerId_!));
     this.onVisitsRemovedListenerId_ = null;
+  }
+
+  //============================================================================
+  // Event handlers
+  //============================================================================
+
+  private onRelatedSearchClicked_() {
+    MetricsProxy.getInstance().recordClusterAction(
+        ClusterAction.RELATED_SEARCH_CLICKED, this.index);
+  }
+
+  private onRelatedVisitsVisibilityToggled_() {
+    MetricsProxy.getInstance().recordClusterAction(
+        ClusterAction.RELATED_VISITS_VISIBILITY_TOGGLED, this.index);
+  }
+
+  private onVisitClicked_() {
+    MetricsProxy.getInstance().recordClusterAction(
+        ClusterAction.VISIT_CLICKED, this.index);
   }
 
   //============================================================================
@@ -123,12 +152,12 @@ class HistoryClusterElement extends PolymerElement {
     }));
 
     // Now if all top visits for this cluster have been removed, send an event
-    // to also remove this cluster from the list.
+    // with the cluster index to also remove this cluster from the list.
     if (!this.cluster.visits.length) {
-      this.dispatchEvent(new CustomEvent('cluster-emptied', {
+      this.dispatchEvent(new CustomEvent('remove-cluster', {
         bubbles: true,
         composed: true,
-        detail: this.cluster,
+        detail: this.index,
       }));
     }
   }

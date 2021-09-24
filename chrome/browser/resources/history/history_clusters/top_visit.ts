@@ -42,7 +42,7 @@ class TopVisitElement extends PolymerElement {
       visit: Object,
 
       /**
-       * Whether the related visits of the top visit are expanded/visible.
+       * Whether the default-hidden related visits are visible.
        */
       expanded_: {
         type: Boolean,
@@ -51,24 +51,35 @@ class TopVisitElement extends PolymerElement {
       },
 
       /**
-       * Related visits that are initially hidden.
+       * Whether there are related visits that can be shown.
        */
-      hiddenRelatedVisits_: {
-        type: Object,
-        computed: `computeHiddenRelatedVisits_(visit.*)`,
-      },
-
-      toggleButtonLabel_: {
-        type: String,
-        computed: `computeToggleButtonLabel_(expanded_)`,
+      hasRelatedVisits_: {
+        type: Boolean,
+        computed: 'computeHasRelatedVisits_(relatedVisits_)',
       },
 
       /**
-       * Related visits that are always visible.
+       * The default-hidden related visits.
+       */
+      hiddenRelatedVisits_: {
+        type: Object,
+        computed: `computeHiddenRelatedVisits_(relatedVisits_)`,
+      },
+
+      /**
+       * The related visits that can be shown.
+       */
+      relatedVisits_: {
+        type: Object,
+        computed: `computeRelatedVisits_(visit.*)`,
+      },
+
+      /**
+       * The always-visible related visits.
        */
       visibleRelatedVisits_: {
         type: Object,
-        computed: `computeVisibleRelatedVisits_(visit.*)`,
+        computed: `computeVisibleRelatedVisits_(relatedVisits_)`,
       },
     };
   }
@@ -77,11 +88,9 @@ class TopVisitElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  visit: URLVisit = new URLVisit();
-  private expanded_: boolean = false;
-  private hiddenRelatedVisits_: Array<URLVisit> = [];
-  private toggleButtonLabel_: string = '';
-  private visibleRelatedVisits_: Array<URLVisit> = [];
+  visit: URLVisit;
+  private expanded_: boolean;
+  private relatedVisits_: Array<URLVisit>;
 
   //============================================================================
   // Event handlers
@@ -101,6 +110,12 @@ class TopVisitElement extends PolymerElement {
   private onToggleButtonClick_() {
     this.expanded_ = !this.expanded_;
 
+    // Notify the parent <history-cluster> element of this event.
+    this.dispatchEvent(new CustomEvent('related-visits-visibility-toggled', {
+      bubbles: true,
+      composed: true,
+    }));
+
     // Dispatch an event to notify the parent elements of a resize. Note that
     // this simple solution only works because the child iron-collapse has
     // animations disabled. Otherwise, it gets an incorrect mid-animation size.
@@ -114,37 +129,48 @@ class TopVisitElement extends PolymerElement {
   // Helper methods
   //============================================================================
 
+  private computeHasRelatedVisits_(): boolean {
+    return this.relatedVisits_.length > 0;
+  }
+
   private computeHiddenRelatedVisits_(): Array<URLVisit> {
-    return this.visit && this.visit.relatedVisits ?
+    return this.relatedVisits_.filter((visit: URLVisit) => {
+      return visit.belowTheFold;
+    });
+  }
+
+  private computeRelatedVisits_(): Array<URLVisit> {
+    return this.visit.relatedVisits ?
         this.visit.relatedVisits.filter((visit: URLVisit) => {
           // 'Ghost' visits with scores of 0 (or below) are never to be shown,
           // unless the debug flag is switched on.
-          if (visit.score <= 0 &&
-              !loadTimeData.getBoolean('isHistoryClustersDebug')) {
-            return false;
-          }
-          return visit.belowTheFold;
+          return visit.score > 0 ||
+              loadTimeData.getBoolean('isHistoryClustersDebug');
         }) :
         [];
-  }
-
-  private computeToggleButtonLabel_(): string {
-    return loadTimeData.getString(
-        this.expanded_ ? 'toggleButtonLabelLess' : 'toggleButtonLabelMore');
   }
 
   private computeVisibleRelatedVisits_(): Array<URLVisit> {
-    return this.visit && this.visit.relatedVisits ?
-        this.visit.relatedVisits.filter((visit: URLVisit) => {
-          // 'Ghost' visits with scores of 0 (or below) are never to be shown,
-          // unless the debug flag is switched on.
-          if (visit.score <= 0 &&
-              !loadTimeData.getBoolean('isHistoryClustersDebug')) {
-            return false;
-          }
-          return !visit.belowTheFold;
-        }) :
-        [];
+    return this.relatedVisits_.filter((visit: URLVisit) => {
+      return !visit.belowTheFold;
+    });
+  }
+
+  /**
+   * Returns the label of the toggle button based on whether the default-hidden
+   * related visits are visible.
+   */
+  private getToggleButtonLabel_(expanded: boolean): string {
+    return loadTimeData.getString(
+        expanded ? 'toggleButtonLabelLess' : 'toggleButtonLabelMore');
+  }
+
+  /**
+   * Returns the index of `visit` among the visits in the cluster.
+   */
+  private getVisitIndex_(relatedVisits: Array<URLVisit>, visit: URLVisit):
+      number {
+    return relatedVisits.indexOf(visit) + 1;  // Index 0 is the top visit.
   }
 }
 

@@ -317,19 +317,20 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://download-shelf.top-chrome/*",
+      "chrome://eche-app/*",
       "chrome://extensions/*",
-      "chrome://new-tab-page/*",
-      "chrome://os-settings/*",
-      "chrome://settings/*",
-      "chrome://sync-confirmation/*",
-      "chrome://read-later.top-chrome/*",
-      "chrome://tab-search.top-chrome/*",
-      "chrome://tab-strip.top-chrome/*",
-      "chrome://welcome/*",
-      "chrome://profile-picker/*",
       "chrome://file-manager/*",
       "chrome://help-app/*",
-      "chrome://eche-app/*"
+      "chrome://history/*",
+      "chrome://new-tab-page/*",
+      "chrome://os-settings/*",
+      "chrome://profile-picker/*",
+      "chrome://read-later.top-chrome/*",
+      "chrome://settings/*",
+      "chrome://sync-confirmation/*",
+      "chrome://tab-search.top-chrome/*",
+      "chrome://tab-strip.top-chrome/*",
+      "chrome://welcome/*"
     ]
   }, {
     "channel": "stable",

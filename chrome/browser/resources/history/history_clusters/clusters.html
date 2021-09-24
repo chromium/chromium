@@ -22,8 +22,8 @@
     items="[[result_.clusters]]"
     on-remove-visits="onRemoveVisits_">
   <template>
-    <history-cluster cluster="[[item]]"
-        on-cluster-emptied="onClusterEmptied_">
+    <history-cluster cluster="[[item]]" index="[[index]]"
+        on-remove-cluster="onRemoveCluster_">
     </history-cluster>
   </template>
 </iron-list>
