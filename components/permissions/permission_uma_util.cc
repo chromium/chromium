@@ -281,6 +281,8 @@ std::string GetPromptDispositionString(
       return "LocationBarRightStaticIcon";
     case PermissionPromptDisposition::MINI_INFOBAR:
       return "MiniInfobar";
+    case PermissionPromptDisposition::MESSAGE_UI:
+      return "MessageUI";
     case PermissionPromptDisposition::MODAL_DIALOG:
       return "ModalDialog";
     case PermissionPromptDisposition::NONE_VISIBLE:

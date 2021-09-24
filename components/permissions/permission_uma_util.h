@@ -160,6 +160,10 @@ enum class PermissionPromptDisposition {
   // Only used on desktop, a less prominent version of chip on the left-hand
   // side of the location bar that shows a bubble when clicked.
   LOCATION_BAR_LEFT_QUIET_CHIP = 9,
+
+  // Only used on Android, a message bubble near top of the screen and below the
+  // location bar. Message UI is an alternative UI to infobar UI.
+  MESSAGE_UI = 10,
 };
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
