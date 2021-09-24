@@ -310,12 +310,10 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "intervention",
       "content-type",
       "save-data",
-      // The Device Memory header field is a number that indicates the client’s
-      // device memory i.e. approximate amount of ram in GiB. The header value
-      // must satisfy ABNF  1*DIGIT [ "." 1*DIGIT ]
-      // See
-      // https://w3c.github.io/device-memory/#sec-device-memory-client-hint-header
-      // for more details.
+
+      // These four were deprecated and replaced by variants with a `sec-ch-`
+      // prefix to conform with the proposal:
+      // https://wicg.github.io/client-hints-infrastructure/
       "device-memory",
       "dpr",
       "width",
@@ -353,6 +351,17 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       //
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
+
+      // The Device Memory header field is a number that indicates the client’s
+      // device memory i.e. approximate amount of ram in GiB. The header value
+      // must satisfy ABNF  1*DIGIT [ "." 1*DIGIT ]
+      // See
+      // https://w3c.github.io/device-memory/#sec-device-memory-client-hint-header
+      // for more details.
+      "sec-ch-device-memory",
+      "sec-ch-dpr",
+      "sec-ch-width",
+      "sec-ch-viewport-width",
   };
   if (std::find(std::begin(safe_names), std::end(safe_names), lower_name) ==
       std::end(safe_names))

@@ -25,8 +25,7 @@ const int kClientHintsNumberOfLegacyHints = 4;
 ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
   return {
       // Legacy Hints that are sent cross-origin regardless of Permissions
-      // Policy
-      // when kAllowClientHintsToThirdParty is enabled.
+      // Policy when kAllowClientHintsToThirdParty is enabled.
       {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
        mojom::PermissionsPolicyFeature::kClientHintDeviceMemory},
       {network::mojom::WebClientHintsType::kDpr_DEPRECATED,
@@ -64,6 +63,14 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintUAReduced},
       {network::mojom::WebClientHintsType::kViewportHeight,
        mojom::PermissionsPolicyFeature::kClientHintViewportHeight},
+      {network::mojom::WebClientHintsType::kDeviceMemory,
+       mojom::PermissionsPolicyFeature::kClientHintDeviceMemory},
+      {network::mojom::WebClientHintsType::kDpr,
+       mojom::PermissionsPolicyFeature::kClientHintDPR},
+      {network::mojom::WebClientHintsType::kResourceWidth,
+       mojom::PermissionsPolicyFeature::kClientHintWidth},
+      {network::mojom::WebClientHintsType::kViewportWidth,
+       mojom::PermissionsPolicyFeature::kClientHintViewportWidth},
   };
 }
 

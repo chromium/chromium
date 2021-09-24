@@ -41,6 +41,22 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
               features::kViewportHeightClientHintHeader))
         return true;
       break;
+    case WebClientHintsType::kDeviceMemory:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsDeviceMemory))
+        return true;
+      break;
+    case WebClientHintsType::kDpr:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsDPR))
+        return true;
+      break;
+    case WebClientHintsType::kResourceWidth:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsResourceWidth))
+        return true;
+      break;
+    case WebClientHintsType::kViewportWidth:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsViewportWidth))
+        return true;
+      break;
     default:
       break;
   }

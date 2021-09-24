@@ -724,6 +724,13 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
         continue;
       }
 
+      // We aren't yet including the new sec-ch-device-memory, sec-ch-dpr,
+      // sec-ch-width, sec-ch-viewport-width
+      if (header == "sec-ch-device-memory" || header == "sec-ch-dpr" ||
+          header == "sec-ch-width" || header == "sec-ch-viewport-width") {
+        continue;
+      }
+
       EXPECT_EQ(expect_client_hints, base::Contains(request.headers, header));
     }
   }

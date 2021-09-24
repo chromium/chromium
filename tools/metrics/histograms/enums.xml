@@ -34657,6 +34657,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4043" label="CoepRequireCorpSharedWorker"/>
   <int value="4044" label="CoepCredentiallessSharedWorker"/>
   <int value="4045" label="PaymentRequestBasicCard"/>
+  <int value="4046" label="ClientHintsDeviceMemory"/>
+  <int value="4047" label="ClientHintsDPR"/>
+  <int value="4048" label="ClientHintsResourceWidth"/>
+  <int value="4049" label="ClientHintsViewportWidth"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

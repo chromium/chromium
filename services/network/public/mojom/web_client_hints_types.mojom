@@ -39,6 +39,10 @@ enum WebClientHintsType {
   // header contains the reduced user agent string.
   kUAReduced = 17,
   kViewportHeight = 18,
+  kDeviceMemory = 19, // The `sec-ch-` variant of kDeviceMemory_DEPRECATED
+  kDpr = 20, // The `sec-ch-` variant of kDpr_DEPRECATED
+  kResourceWidth = 21, // The `sec-ch-` variant of kResourceWidth_DEPRECATED
+  kViewportWidth = 22, // The `sec-ch-` variant of kViewportWidth_DEPRECATED
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

@@ -43,6 +43,12 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kUAReduced, "sec-ch-ua-reduced"},
       {network::mojom::WebClientHintsType::kViewportHeight,
        "sec-ch-viewport-height"},
+      {network::mojom::WebClientHintsType::kDeviceMemory,
+       "sec-ch-device-memory"},
+      {network::mojom::WebClientHintsType::kDpr, "sec-ch-dpr"},
+      {network::mojom::WebClientHintsType::kResourceWidth, "sec-ch-width"},
+      {network::mojom::WebClientHintsType::kViewportWidth,
+       "sec-ch-viewport-width"},
   };
 }
 

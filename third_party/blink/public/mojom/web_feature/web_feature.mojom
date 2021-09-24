@@ -3353,6 +3353,10 @@ enum WebFeature {
   kCoepRequireCorpSharedWorker = 4043,
   kCoepCredentiallessSharedWorker = 4044,
   kPaymentRequestBasicCard = 4045,
+  kClientHintsDeviceMemory = 4046,
+  kClientHintsDPR = 4047,
+  kClientHintsResourceWidth = 4048,
+  kClientHintsViewportWidth = 4049,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

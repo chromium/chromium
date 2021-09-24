@@ -59,6 +59,13 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsUAReduced},
       {network::mojom::WebClientHintsType::kViewportHeight,
        WebFeature::kClientHintsViewportHeight},
+      {network::mojom::WebClientHintsType::kDeviceMemory,
+       WebFeature::kClientHintsDeviceMemory},
+      {network::mojom::WebClientHintsType::kDpr, WebFeature::kClientHintsDPR},
+      {network::mojom::WebClientHintsType::kResourceWidth,
+       WebFeature::kClientHintsResourceWidth},
+      {network::mojom::WebClientHintsType::kViewportWidth,
+       WebFeature::kClientHintsViewportWidth},
   };
 }
 

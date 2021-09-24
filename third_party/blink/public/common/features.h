@@ -472,6 +472,11 @@ extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
 // fix any issues as we approach a 3-digit major version number.
 BLINK_COMMON_EXPORT extern const base::Feature kForceMajorVersion100InUserAgent;
 
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDeviceMemory;
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR;
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsResourceWidth;
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsViewportWidth;
+
 }  // namespace features
 }  // namespace blink
 
