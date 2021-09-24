@@ -7373,6 +7373,29 @@
             ]
         }
     ],
+    "SharingHubDesktop": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledOmnibox",
+                    "enable_features": [
+                        "SharingHubDesktopOmnibox"
+                    ]
+                },
+                {
+                    "name": "EnabledAppMenu",
+                    "enable_features": [
+                        "SharingHubDesktopAppMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharingHubLinkToggle": [
         {
             "platforms": [
