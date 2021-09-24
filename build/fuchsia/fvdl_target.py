@@ -93,7 +93,6 @@ class FvdlTarget(emu_target.EmuTarget):
         self._FVDL_PATH,
         '--sdk',
         'start',
-        '--nopackageserver',
         '--nointeractive',
 
         # Host port mapping for user-networking mode.
@@ -135,6 +134,26 @@ class FvdlTarget(emu_target.EmuTarget):
     logging.info('FVDL command: ' + ' '.join(emu_command))
 
     return emu_command
+
+  def _ConfigureEmulatorLog(self, emu_command):
+    if self._log_manager.IsLoggingEnabled():
+      emu_command.extend([
+          '--emulator-log',
+          os.path.join(self._log_manager.GetLogDirectory(), 'emulator_log')
+      ])
+
+      env_flags = [
+          'ANDROID_EMUGL_LOG_PRINT=1',
+          'ANDROID_EMUGL_VERBOSE=1',
+          'VK_LOADER_DEBUG=info,error',
+      ]
+      if self._hardware_gpu:
+        vulkan_icd_file = os.path.join(
+            common.GetEmuRootForPlatform(self.EMULATOR_NAME), 'lib64', 'vulkan',
+            'vk_swiftshader_icd.json')
+        env_flags.append('VK_ICD_FILENAMES=%s' % vulkan_icd_file)
+      for flag in env_flags:
+        emu_command.extend(['--envs', flag])
 
   def _WaitUntilReady(self):
     # Indicates the FVDL command finished running.

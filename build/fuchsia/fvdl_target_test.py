@@ -8,6 +8,7 @@
 import boot_data
 import common
 import os
+import tempfile
 import unittest
 import unittest.mock as mock
 
@@ -26,77 +27,70 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                           with_network=False,
                           ram_size_mb=8192,
                           logs_dir=None)
+    common.EnsurePathExists = mock.MagicMock(return_value='image')
+    boot_data.ProvisionSSH = mock.MagicMock()
+    FvdlTarget.Shutdown = mock.MagicMock()
 
   def testBasicEmuCommand(self):
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        build_command = target._BuildCommand()
-        self.assertIn(target._FVDL_PATH, build_command)
-        self.assertIn('--sdk', build_command)
-        self.assertIn('start', build_command)
-        self.assertNotIn('--noacceleration', target._BuildCommand())
-        self.assertIn('--headless', target._BuildCommand())
-        self.assertNotIn('--host-gpu', target._BuildCommand())
-        self.assertNotIn('-N', target._BuildCommand())
-        self.assertIn('--device-proto', target._BuildCommand())
-        self.assertTrue(os.path.exists(target._device_proto_file.name))
-        correct_ram_amount = False
-        with open(target._device_proto_file.name) as file:
-          for line in file:
-            if line.strip() == 'ram:  8192':
-              correct_ram_amount = True
-              break
-        self.assertTrue(correct_ram_amount)
+      build_command = target._BuildCommand()
+      self.assertIn(target._FVDL_PATH, build_command)
+      self.assertIn('--sdk', build_command)
+      self.assertIn('start', build_command)
+      self.assertNotIn('--noacceleration', build_command)
+      self.assertIn('--headless', build_command)
+      self.assertNotIn('--host-gpu', build_command)
+      self.assertNotIn('-N', build_command)
+      self.assertIn('--device-proto', build_command)
+      self.assertNotIn('--emulator-log', build_command)
+      self.assertNotIn('--envs', build_command)
+      self.assertTrue(os.path.exists(target._device_proto_file.name))
+      correct_ram_amount = False
+      with open(target._device_proto_file.name) as file:
+        for line in file:
+          if line.strip() == 'ram:  8192':
+            correct_ram_amount = True
+            break
+      self.assertTrue(correct_ram_amount)
 
   def testBuildCommandCheckIfNotRequireKVMSetNoAcceleration(self):
     self.args.require_kvm = False
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        self.assertIn('--noacceleration', target._BuildCommand())
+      self.assertIn('--noacceleration', target._BuildCommand())
 
   def testBuildCommandCheckIfNotEnableGraphicsSetHeadless(self):
     self.args.enable_graphics = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        self.assertNotIn('--headless', target._BuildCommand())
+      self.assertNotIn('--headless', target._BuildCommand())
 
   def testBuildCommandCheckIfHardwareGpuSetHostGPU(self):
     self.args.hardware_gpu = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        self.assertIn('--host-gpu', target._BuildCommand())
+      self.assertIn('--host-gpu', target._BuildCommand())
 
   def testBuildCommandCheckIfWithNetworkSetTunTap(self):
     self.args.with_network = True
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        self.assertIn('-N', target._BuildCommand())
+      self.assertIn('-N', target._BuildCommand())
 
   def testBuildCommandCheckRamSizeNot8192SetRamSize(self):
-    self.args.ram_size_mb = 4096
+    custom_ram_size = 4096
+    self.args.ram_size_mb = custom_ram_size
     with FvdlTarget.CreateFromArgs(self.args) as target:
-      target.Shutdown = mock.MagicMock()
-      common.EnsurePathExists = mock.MagicMock(return_value='image')
-      with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
-        self.assertIn('--device-proto', target._BuildCommand())
-        self.assertTrue(os.path.exists(target._device_proto_file.name))
-        correct_ram_amount = False
-        with open(target._device_proto_file.name) as file:
-          for line in file:
-            if line.strip() == 'ram:  4096':
-              correct_ram_amount = True
-              break
-        self.assertTrue(correct_ram_amount)
+      self.assertIn('--device-proto', target._BuildCommand())
+      self.assertTrue(os.path.exists(target._device_proto_file.name))
+      correct_ram_amount = False
+      with open(target._device_proto_file.name, 'r') as f:
+        self.assertTrue('  ram:  {}\n'.format(custom_ram_size) in f.readlines())
+
+  def testBuildCommandCheckEmulatorLogSetup(self):
+    with tempfile.TemporaryDirectory() as logs_dir:
+      self.args.logs_dir = logs_dir
+      with FvdlTarget.CreateFromArgs(self.args) as target:
+        emu_command = []
+        target._ConfigureEmulatorLog(emu_command)
+        self.assertIn('--emulator-log', emu_command)
+        self.assertIn('--envs', emu_command)
 
 
 if __name__ == '__main__':
