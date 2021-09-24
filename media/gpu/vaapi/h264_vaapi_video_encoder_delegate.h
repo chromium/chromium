@@ -124,6 +124,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   scoped_refptr<H264BitstreamBuffer> packed_sps_;
   H264PPS current_pps_;
   scoped_refptr<H264BitstreamBuffer> packed_pps_;
+  bool submit_packed_headers_;
 
   // Current encoding parameters being used.
   EncodeParams curr_params_;

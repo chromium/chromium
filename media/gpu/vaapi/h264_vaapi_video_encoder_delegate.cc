@@ -209,9 +209,7 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
-    : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb),
-      packed_sps_(new H264BitstreamBuffer()),
-      packed_pps_(new H264BitstreamBuffer()) {}
+    : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
 H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() {
   // H264VaapiVideoEncoderDelegate can be destroyed on any thread.
@@ -324,13 +322,32 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   curr_params_.max_num_ref_frames =
       std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size);
 
-  if (!UpdateRates(GetDefaultVideoBitrateAllocation(config), initial_framerate))
+  bool submit_packed_sps = false;
+  bool submit_packed_pps = false;
+  bool submit_packed_slice = false;
+  if (!vaapi_wrapper_->GetSupportedPackedHeaders(
+          config.output_profile, submit_packed_sps, submit_packed_pps,
+          submit_packed_slice)) {
+    DVLOGF(1) << "Failed getting supported packed headers";
     return false;
+  }
+
+  // Submit packed headers only if packed SPS, PPS and slice header all are
+  // supported.
+  submit_packed_headers_ =
+      submit_packed_sps && submit_packed_pps && submit_packed_slice;
+  if (submit_packed_headers_) {
+    packed_sps_ = base::MakeRefCounted<H264BitstreamBuffer>();
+    packed_pps_ = base::MakeRefCounted<H264BitstreamBuffer>();
+  } else {
+    DVLOGF(2) << "Packed headers are not submitted to a driver";
+  }
 
   UpdateSPS();
   UpdatePPS();
 
-  return true;
+  return UpdateRates(GetDefaultVideoBitrateAllocation(config),
+                     initial_framerate);
 }
 
 gfx::Size H264VaapiVideoEncoderDelegate::GetCodedSize() const {
@@ -416,7 +433,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
     return false;
   }
 
-  if (pic->type == H264SliceHeader::kISlice) {
+  if (pic->type == H264SliceHeader::kISlice && submit_packed_headers_) {
     // We always generate SPS and PPS with I(DR) frame. This will help for Seek
     // operation on the generated stream.
     if (!SubmitPackedHeaders(encode_job, packed_sps_, packed_pps_)) {
@@ -584,7 +601,8 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.time_offset_length = H264SPS::kDefaultTimeOffsetLength;
   current_sps_.low_delay_hrd_flag = false;
 
-  GeneratePackedSPS();
+  if (submit_packed_headers_)
+    GeneratePackedSPS();
   encoding_parameters_changed_ = true;
 }
 
@@ -610,12 +628,15 @@ void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   current_pps_.transform_8x8_mode_flag =
       (current_sps_.profile_idc == H264SPS::kProfileIDCHigh);
 
-  GeneratePackedPPS();
+  if (submit_packed_headers_)
+    GeneratePackedPPS();
   encoding_parameters_changed_ = true;
 }
 
 void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(submit_packed_headers_);
+  DCHECK(packed_sps_);
 
   packed_sps_->Reset();
 
@@ -731,6 +752,8 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
 
 void H264VaapiVideoEncoderDelegate::GeneratePackedPPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(submit_packed_headers_);
+  DCHECK(packed_pps_);
 
   packed_pps_->Reset();
 
@@ -1020,23 +1043,6 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                      base::Unretained(this), VAEncPictureParameterBufferType,
                      MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
 
-  scoped_refptr<H264BitstreamBuffer> packed_slice_header =
-      GeneratePackedSliceHeader(pic_param, slice_param, *pic);
-  VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
-  packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
-  packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
-  packed_slice_param_buffer.has_emulation_bytes = 0;
-
-  // Submit packed slice header.
-  job->AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
-      VAEncPackedHeaderParameterBufferType,
-      MakeRefCountedBytes(&packed_slice_param_buffer,
-                          sizeof(packed_slice_param_buffer))));
-  job->AddSetupCallback(
-      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
-                     base::Unretained(this), packed_slice_header));
-
   job->AddSetupCallback(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
                      base::Unretained(this), VAEncSliceParameterBufferType,
@@ -1057,6 +1063,26 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                      base::Unretained(this), VAEncMiscParameterTypeHRD,
                      MakeRefCountedBytes(&hrd_param, sizeof(hrd_param))));
 
+  if (!submit_packed_headers_)
+    return true;
+
+  scoped_refptr<H264BitstreamBuffer> packed_slice_header =
+      GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+  VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
+  packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
+  packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
+  packed_slice_param_buffer.has_emulation_bytes = 0;
+
+  // Submit packed slice header.
+  job->AddSetupCallback(base::BindOnce(
+      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
+      VAEncPackedHeaderParameterBufferType,
+      MakeRefCountedBytes(&packed_slice_param_buffer,
+                          sizeof(packed_slice_param_buffer))));
+  job->AddSetupCallback(
+      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
+                     base::Unretained(this), packed_slice_header));
+
   return true;
 }
 
@@ -1073,6 +1099,9 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
     scoped_refptr<H264BitstreamBuffer> packed_sps,
     scoped_refptr<H264BitstreamBuffer> packed_pps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(submit_packed_headers_);
+  DCHECK(packed_sps);
+  DCHECK(packed_pps);
 
   // Submit SPS.
   VAEncPackedHeaderParameterBuffer par_buffer = {};
@@ -1101,7 +1130,6 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
   job->AddSetupCallback(
       base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
                      base::Unretained(this), packed_pps));
-
   return true;
 }
 

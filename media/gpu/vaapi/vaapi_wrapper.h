@@ -484,6 +484,15 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                          size_t* max_ref_frames)
       WARN_UNUSED_RESULT;
 
+  // Gets packed headers are supported for encoding. This is called for
+  // H264 encoding. |packed_sps|, |packed_pps| and |packed_slice| stands for
+  // whether packed slice parameter set, packed picture parameter set and packed
+  // slice header is supported, respectively.
+  virtual bool GetSupportedPackedHeaders(VideoCodecProfile profile,
+                                         bool& packed_sps,
+                                         bool& packed_pps,
+                                         bool& packed_slice) WARN_UNUSED_RESULT;
+
   // Checks if the driver supports frame rotation.
   bool IsRotationSupported();
 

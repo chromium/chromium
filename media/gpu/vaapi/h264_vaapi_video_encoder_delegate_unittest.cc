@@ -79,6 +79,16 @@ class MockVaapiWrapper : public VaapiWrapper {
  public:
   MockVaapiWrapper() : VaapiWrapper(kEncodeConstantBitrate) {}
 
+  bool GetSupportedPackedHeaders(VideoCodecProfile profile,
+                                 bool& packed_sps,
+                                 bool& packed_pps,
+                                 bool& packed_slice) override {
+    packed_sps = true;
+    packed_pps = true;
+    packed_slice = true;
+    return true;
+  }
+
  protected:
   ~MockVaapiWrapper() override = default;
 };
