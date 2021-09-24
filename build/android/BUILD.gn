@@ -125,9 +125,11 @@ python_library("resource_sizes_py") {
     ":devil_chromium_py",
     "//third_party/catapult/tracing:convert_chart_json",
   ]
+
   data = [
     build_vars_file,
     android_readelf,
+    rebase_path("$android_ndk_library_path/libc++.so.1", root_build_dir),
   ]
 }
 
