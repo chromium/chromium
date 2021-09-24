@@ -60,6 +60,10 @@ class TestRecentTabsSubMenuModel : public RecentTabsSubMenuModel {
         execute_count_(0),
         enable_count_(0) {}
 
+  TestRecentTabsSubMenuModel(const TestRecentTabsSubMenuModel&) = delete;
+  TestRecentTabsSubMenuModel& operator=(const TestRecentTabsSubMenuModel&) =
+      delete;
+
   // Testing overrides to ui::SimpleMenuModel::Delegate:
   bool IsCommandIdEnabled(int command_id) const override {
     bool val = RecentTabsSubMenuModel::IsCommandIdEnabled(command_id);
@@ -78,8 +82,6 @@ class TestRecentTabsSubMenuModel : public RecentTabsSubMenuModel {
  private:
   int execute_count_;
   int mutable enable_count_;  // Mutable because IsCommandIdEnabledAt is const.
-
-  DISALLOW_COPY_AND_ASSIGN(TestRecentTabsSubMenuModel);
 };
 
 class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
@@ -118,6 +120,10 @@ class RecentTabsSubMenuModelTest
     : public BrowserWithTestWindowTest {
  public:
   RecentTabsSubMenuModelTest() {}
+
+  RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
+  RecentTabsSubMenuModelTest& operator=(const RecentTabsSubMenuModelTest&) =
+      delete;
 
   void WaitForLoadFromLastSession() { content::RunAllTasksUntilIdle(); }
 
@@ -174,8 +180,6 @@ class RecentTabsSubMenuModelTest
  private:
   sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabsSubMenuModelTest);
 };
 
 // Test disabled "Recently closed" header with no foreign tabs.

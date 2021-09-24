@@ -18,9 +18,11 @@ namespace printing {
 // the user.
 class PolicySettings {
  public:
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  PolicySettings() = delete;
+  PolicySettings(const PolicySettings&) = delete;
+  PolicySettings& operator=(const PolicySettings&) = delete;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PolicySettings);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 };
 
 }  // namespace printing

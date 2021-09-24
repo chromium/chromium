@@ -183,6 +183,11 @@ void CALLBACK WinAccessibilityEventMonitor::WinEventHookThunk(
 }
 
 class NavigationAccessibilityTest : public InProcessBrowserTest {
+ public:
+  NavigationAccessibilityTest(const NavigationAccessibilityTest&) = delete;
+  NavigationAccessibilityTest& operator=(const NavigationAccessibilityTest&) =
+      delete;
+
  protected:
   NavigationAccessibilityTest() {}
   ~NavigationAccessibilityTest() override {}
@@ -201,8 +206,6 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
 
  private:
   base::win::ScopedCOMInitializer com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationAccessibilityTest);
 };
 
 // Tests that when focus is in the omnibox and the user types a url and

@@ -34,6 +34,10 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
       : fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
+  BrowserFinderChromeOSTest(const BrowserFinderChromeOSTest&) = delete;
+  BrowserFinderChromeOSTest& operator=(const BrowserFinderChromeOSTest&) =
+      delete;
+
   TestingProfile* CreateMultiUserProfile(const AccountId& account_id) {
     TestingProfile* profile =
         profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
@@ -79,8 +83,6 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   // |fake_user_manager_| is owned by |user_manager_enabler_|
   ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFinderChromeOSTest);
 };
 
 TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {

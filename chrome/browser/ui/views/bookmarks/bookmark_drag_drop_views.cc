@@ -162,6 +162,9 @@ constexpr gfx::Size BookmarkDragImageSource::kBookmarkDragImageSize;
 // Owns itself.
 class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
  public:
+  BookmarkDragHelper(const BookmarkDragHelper&) = delete;
+  BookmarkDragHelper& operator=(const BookmarkDragHelper&) = delete;
+
   static base::WeakPtr<BookmarkDragHelper> Create(
       Profile* profile,
       const BookmarkDragParams& params,
@@ -288,8 +291,6 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       observation_{this};
 
   base::WeakPtrFactory<BookmarkDragHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkDragHelper);
 };
 
 void DoDragImpl(std::unique_ptr<ui::OSExchangeData> drag_data,

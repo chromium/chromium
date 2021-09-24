@@ -29,8 +29,9 @@ class BookmarkBar {
     DONT_ANIMATE_STATE_CHANGE
   };
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BookmarkBar);
+  BookmarkBar() = delete;
+  BookmarkBar(const BookmarkBar&) = delete;
+  BookmarkBar& operator=(const BookmarkBar&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BAR_H_

@@ -17,6 +17,11 @@ class WebContents;
 
 class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  KeystonePromotionInfoBarDelegate(const KeystonePromotionInfoBarDelegate&) =
+      delete;
+  KeystonePromotionInfoBarDelegate& operator=(
+      const KeystonePromotionInfoBarDelegate&) = delete;
+
   // Creates a keystone promotion delegate and adds it to the
   // infobars::ContentInfoBarManager associated with |webContents|.
   static void Create(content::WebContents* webContents);
@@ -46,8 +51,6 @@ class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Used to delay the expiration of the info bar.
   base::WeakPtrFactory<KeystonePromotionInfoBarDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeystonePromotionInfoBarDelegate);
 };
 
 class KeystoneInfoBar {

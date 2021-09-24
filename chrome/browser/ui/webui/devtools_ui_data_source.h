@@ -83,14 +83,14 @@ class DevToolsDataSource : public content::URLDataSource {
 
   struct PendingRequest {
     PendingRequest();
+    PendingRequest(const PendingRequest&) = delete;
+    PendingRequest& operator=(const PendingRequest&) = delete;
     PendingRequest(PendingRequest&& other);
     PendingRequest& operator=(PendingRequest&& other) = default;
     ~PendingRequest();
 
     GotDataCallback callback;
     std::unique_ptr<network::SimpleURLLoader> loader;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingRequest);
   };
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -78,6 +78,9 @@ class FakeControllerConnection final
  public:
   FakeControllerConnection() {}
 
+  FakeControllerConnection(const FakeControllerConnection&) = delete;
+  FakeControllerConnection& operator=(const FakeControllerConnection&) = delete;
+
   void SendTextMessage(const std::string& message) {
     ASSERT_TRUE(receiver_connection_remote_.is_bound());
     receiver_connection_remote_->OnMessage(
@@ -108,8 +111,6 @@ class FakeControllerConnection final
       receiver_connection_receiver_{this};
   mojo::Remote<blink::mojom::PresentationConnection>
       receiver_connection_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeControllerConnection);
 };
 
 // This class is used to wait for Terminate to finish before destroying a

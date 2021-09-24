@@ -51,6 +51,9 @@ class ChromeCleanerDialogTest : public DialogBrowserTest {
             Return(safe_browsing::ChromeCleanerController::State::kInfected));
   }
 
+  ChromeCleanerDialogTest(const ChromeCleanerDialogTest&) = delete;
+  ChromeCleanerDialogTest& operator=(const ChromeCleanerDialogTest&) = delete;
+
   void ShowUi(const std::string& name) override {
     chrome::ShowChromeCleanerPrompt(browser(), mock_dialog_controller_.get(),
                                     mock_cleaner_controller_.get());
@@ -63,9 +66,6 @@ class ChromeCleanerDialogTest : public DialogBrowserTest {
       mock_dialog_controller_;
   std::unique_ptr<NiceMock<safe_browsing::MockChromeCleanerController>>
       mock_cleaner_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeCleanerDialogTest, InvokeUi_default) {

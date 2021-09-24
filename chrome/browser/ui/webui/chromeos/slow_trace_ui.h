@@ -50,8 +50,8 @@ class SlowTraceController : public content::WebUIController {
  public:
   explicit SlowTraceController(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SlowTraceController);
+  SlowTraceController(const SlowTraceController&) = delete;
+  SlowTraceController& operator=(const SlowTraceController&) = delete;
 };
 
 } // namespace chromeos

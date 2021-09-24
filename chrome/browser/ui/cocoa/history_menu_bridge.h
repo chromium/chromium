@@ -124,6 +124,10 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   };
 
   explicit HistoryMenuBridge(Profile* profile);
+
+  HistoryMenuBridge(const HistoryMenuBridge&) = delete;
+  HistoryMenuBridge& operator=(const HistoryMenuBridge&) = delete;
+
   ~HistoryMenuBridge() override;
 
   // TabRestoreServiceObserver:
@@ -280,8 +284,6 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   base::ScopedObservation<sessions::TabRestoreService,
                           sessions::TabRestoreServiceObserver>
       tab_restore_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryMenuBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_HISTORY_MENU_BRIDGE_H_

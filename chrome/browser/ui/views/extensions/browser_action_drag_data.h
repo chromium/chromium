@@ -23,6 +23,9 @@ class BrowserActionDragData {
   BrowserActionDragData();
   BrowserActionDragData(const std::string& id, int index);
 
+  BrowserActionDragData(const BrowserActionDragData&) = delete;
+  BrowserActionDragData& operator=(const BrowserActionDragData&) = delete;
+
   // These mirror the views::View and views::MenuDelegate methods for dropping,
   // and return the appropriate results for being able to drop an extension's
   // BrowserAction view.
@@ -58,8 +61,6 @@ class BrowserActionDragData {
 
   // The index of the view being dragged.
   size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionDragData);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_BROWSER_ACTION_DRAG_DATA_H_

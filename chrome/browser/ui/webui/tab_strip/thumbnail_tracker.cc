@@ -28,6 +28,9 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
         &ContentsData::ThumbnailImageCallback, base::Unretained(this)));
   }
 
+  ContentsData(const ContentsData&) = delete;
+  ContentsData& operator=(const ContentsData&) = delete;
+
   void RequestThumbnail() {
     if (thumbnail_)
       thumbnail_->RequestCompressedThumbnailData();
@@ -54,8 +57,6 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
   ThumbnailTracker* parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
   std::unique_ptr<ThumbnailImage::Subscription> subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsData);
 };
 
 ThumbnailTracker::ThumbnailTracker(ThumbnailUpdatedCallback callback)

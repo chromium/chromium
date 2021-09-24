@@ -18,14 +18,15 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
  public:
   BrowserRootViewBrowserTest() = default;
 
+  BrowserRootViewBrowserTest(const BrowserRootViewBrowserTest&) = delete;
+  BrowserRootViewBrowserTest& operator=(const BrowserRootViewBrowserTest&) =
+      delete;
+
   BrowserRootView* browser_root_view() {
     BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
     return static_cast<BrowserRootView*>(
         browser_view->GetWidget()->GetRootView());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserRootViewBrowserTest);
 };
 
 // Clear drop info after performing drop. http://crbug.com/838791

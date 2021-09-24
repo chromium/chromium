@@ -137,6 +137,9 @@ class TouchEventsViewTest : public ViewEventTestBase {
  public:
   TouchEventsViewTest() = default;
 
+  TouchEventsViewTest(const TouchEventsViewTest&) = delete;
+  TouchEventsViewTest& operator=(const TouchEventsViewTest&) = delete;
+
   // ViewEventTestBase:
   void SetUp() override {
     ViewEventTestBase::SetUp();
@@ -194,8 +197,6 @@ class TouchEventsViewTest : public ViewEventTestBase {
   views::View* touch_view_ = nullptr;
   TestingGestureRecognizer* gesture_recognizer_ = nullptr;
   ui::GestureRecognizer* initial_gr_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventsViewTest);
 };
 
 #if defined(OS_WIN)  // Fails on latest versions of Windows.
@@ -211,6 +212,10 @@ VIEW_TEST(TouchEventsViewTest, MAYBE_CheckWindowsNativeMessageForTouchEvents)
 class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
  public:
   TouchEventsRecursiveViewTest() {}
+
+  TouchEventsRecursiveViewTest(const TouchEventsRecursiveViewTest&) = delete;
+  TouchEventsRecursiveViewTest& operator=(const TouchEventsRecursiveViewTest&) =
+      delete;
 
   void DoTestOnMessageLoop() override {
     // ui_controls::SendTouchEvents which uses InjectTouchInput API only works
@@ -240,9 +245,6 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
         &touch_event_handler);
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchEventsRecursiveViewTest);
 };
 
 #if defined(OS_WIN)  // Fails on latest versions of Windows.

@@ -24,6 +24,10 @@ class CrostiniForceCloseViewTest : public DialogBrowserTest {
  public:
   CrostiniForceCloseViewTest() : weak_ptr_factory_(this) {}
 
+  CrostiniForceCloseViewTest(const CrostiniForceCloseViewTest&) = delete;
+  CrostiniForceCloseViewTest& operator=(const CrostiniForceCloseViewTest&) =
+      delete;
+
   void ShowUi(const std::string& name) override {
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
     closable_surface_ =
@@ -59,8 +63,6 @@ class CrostiniForceCloseViewTest : public DialogBrowserTest {
   int force_close_invocations_ = 0;
 
   base::WeakPtrFactory<CrostiniForceCloseViewTest> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniForceCloseViewTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrostiniForceCloseViewTest, FocusesForceQuit) {

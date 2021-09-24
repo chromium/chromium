@@ -19,6 +19,9 @@ class NetworkState;
 
 class InternetConfigDialog : public SystemWebDialogDelegate {
  public:
+  InternetConfigDialog(const InternetConfigDialog&) = delete;
+  InternetConfigDialog& operator=(const InternetConfigDialog&) = delete;
+
   // Shows a network configuration dialog for |network_id|. Does nothing if
   // there is no NetworkState matching |network_id|.
   static void ShowDialogForNetworkId(const std::string& network_id,
@@ -49,8 +52,6 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
   std::string dialog_id_;
   std::string network_type_;
   std::string network_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetConfigDialog);
 };
 
 // A WebUI to host the network configuration UI in a dialog, used in the

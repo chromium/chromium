@@ -46,6 +46,11 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
       : CrostiniDialogBrowserTest(true /*register_termina*/),
         app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)) {}
 
+  CrostiniRecoveryViewBrowserTest(const CrostiniRecoveryViewBrowserTest&) =
+      delete;
+  CrostiniRecoveryViewBrowserTest& operator=(
+      const CrostiniRecoveryViewBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     CrostiniDialogBrowserTest::SetUpOnMainThread();
   }
@@ -109,8 +114,6 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
 
  private:
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniRecoveryViewBrowserTest);
 };
 
 // Test the dialog is actually launched.

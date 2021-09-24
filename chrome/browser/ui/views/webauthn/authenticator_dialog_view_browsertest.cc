@@ -108,6 +108,10 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
   AuthenticatorDialogViewTest() = default;
 
+  AuthenticatorDialogViewTest(const AuthenticatorDialogViewTest&) = delete;
+  AuthenticatorDialogViewTest& operator=(const AuthenticatorDialogViewTest&) =
+      delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* const web_contents =
@@ -124,9 +128,6 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
         dialog,
         std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorDialogViewTest);
 };
 
 // Test the dialog with a custom delegate.

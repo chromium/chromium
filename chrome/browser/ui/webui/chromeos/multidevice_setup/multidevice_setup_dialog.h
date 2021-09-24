@@ -24,6 +24,9 @@ namespace multidevice_setup {
 // Chromebook and a phone).
 class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
  public:
+  MultiDeviceSetupDialog(const MultiDeviceSetupDialog&) = delete;
+  MultiDeviceSetupDialog& operator=(const MultiDeviceSetupDialog&) = delete;
+
   // Shows the dialog; if the dialog is already displayed, this function is a
   // no-op.
   static void Show();
@@ -52,8 +55,6 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
   std::vector<base::OnceClosure> on_close_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupDialog);
 };
 
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {

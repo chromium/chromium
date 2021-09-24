@@ -39,6 +39,9 @@ class BookmarkTabHelper
     virtual ~BookmarkDrag() {}
   };
 
+  BookmarkTabHelper(const BookmarkTabHelper&) = delete;
+  BookmarkTabHelper& operator=(const BookmarkTabHelper&) = delete;
+
   ~BookmarkTabHelper() override;
 
   // It is up to callers to call set_bookmark_drag_delegate(NULL) when
@@ -102,8 +105,6 @@ class BookmarkTabHelper
   BookmarkDrag* bookmark_drag_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_

@@ -44,6 +44,10 @@ void CheckNotification(VersionUpdater::Status /* status */,
 }  // namespace
 
 class VersionUpdaterCrosTest : public ::testing::Test {
+ public:
+  VersionUpdaterCrosTest(const VersionUpdaterCrosTest&) = delete;
+  VersionUpdaterCrosTest& operator=(const VersionUpdaterCrosTest&) = delete;
+
  protected:
   VersionUpdaterCrosTest()
       : version_updater_(VersionUpdater::Create(nullptr)),
@@ -106,8 +110,6 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterCrosTest);
 };
 
 // The test checks following behaviour:

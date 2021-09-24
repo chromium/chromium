@@ -28,6 +28,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
  public:
   AuthenticatorDialogTest() = default;
 
+  AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
+  AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -243,8 +246,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
  private:
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorDialogTest);
 };
 
 // Run with:

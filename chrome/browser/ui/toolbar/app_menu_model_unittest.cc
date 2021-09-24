@@ -41,6 +41,9 @@ class MenuError : public GlobalError {
         execute_count_(0) {
   }
 
+  MenuError(const MenuError&) = delete;
+  MenuError& operator=(const MenuError&) = delete;
+
   int execute_count() { return execute_count_; }
 
   bool HasMenuItem() override { return true; }
@@ -56,8 +59,6 @@ class MenuError : public GlobalError {
  private:
   int command_id_;
   int execute_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuError);
 };
 
 class FakeIconDelegate : public AppMenuIconController::Delegate {

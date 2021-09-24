@@ -25,6 +25,10 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
  public:
   BookmarkBubbleViewBrowserTest() {}
 
+  BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;
+  BookmarkBubbleViewBrowserTest& operator=(
+      const BookmarkBubbleViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
 #if !defined(OS_CHROMEOS)
@@ -50,9 +54,6 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "ios_promotion")
       BookmarkBubbleView::bookmark_bubble()->AcceptDialog();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleViewBrowserTest);
 };
 
 // ChromeOS is always signed in.

@@ -41,6 +41,10 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
  public:
   DeviceChooserContentViewTest() {}
 
+  DeviceChooserContentViewTest(const DeviceChooserContentViewTest&) = delete;
+  DeviceChooserContentViewTest& operator=(const DeviceChooserContentViewTest&) =
+      delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     table_observer_ = std::make_unique<MockTableViewObserver>();
@@ -146,8 +150,6 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
   FakeBluetoothChooserController* controller_ = nullptr;
   DeviceChooserContentView* content_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceChooserContentViewTest);
 };
 
 TEST_F(DeviceChooserContentViewTest, InitialState) {

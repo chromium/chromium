@@ -31,6 +31,11 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     HungRendererDialogView::BypassActiveBrowserRequirementForTests();
   }
 
+  HungRendererDialogViewBrowserTest(const HungRendererDialogViewBrowserTest&) =
+      delete;
+  HungRendererDialogViewBrowserTest& operator=(
+      const HungRendererDialogViewBrowserTest&) = delete;
+
   // Normally the dialog only shows multiple WebContents when they're all part
   // of the same process, but that's hard to achieve in a test.
   void AddWebContents(HungRendererDialogView* dialog,
@@ -73,9 +78,6 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     dialog->EndDialog(
         contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungRendererDialogViewBrowserTest);
 };
 
 // TODO(tapted): The framework sometimes doesn't pick up the spawned dialog and

@@ -78,6 +78,10 @@ class SkiaGoldMatchingAlgorithm;
 //   browser_tests --gtest_filter=BrowserUiTest.Invoke
 //       --test-launcher-interactive --ui=FooUiTest.InvokeUi_name
 class TestBrowserUi {
+ public:
+  TestBrowserUi(const TestBrowserUi&) = delete;
+  TestBrowserUi& operator=(const TestBrowserUi&) = delete;
+
  protected:
   TestBrowserUi();
   virtual ~TestBrowserUi();
@@ -136,20 +140,19 @@ class TestBrowserUi {
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserUi);
 };
 
 // Helper to mix in a TestBrowserUi to an existing test harness. |Base| must be
 // a descendant of InProcessBrowserTest.
 template <class Base, class TestUi>
 class SupportsTestUi : public Base, public TestUi {
+ public:
+  SupportsTestUi(const SupportsTestUi&) = delete;
+  SupportsTestUi& operator=(const SupportsTestUi&) = delete;
+
  protected:
   template <class... Args>
   explicit SupportsTestUi(Args&&... args) : Base(std::forward<Args>(args)...) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupportsTestUi);
 };
 
 using UiBrowserTest = SupportsTestUi<InProcessBrowserTest, TestBrowserUi>;

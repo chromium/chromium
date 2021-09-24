@@ -11,6 +11,12 @@
 #include "content/public/test/browser_test.h"
 
 class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
+ public:
+  RelaunchRecommendedBubbleViewDialogTest(
+      const RelaunchRecommendedBubbleViewDialogTest&) = delete;
+  RelaunchRecommendedBubbleViewDialogTest& operator=(
+      const RelaunchRecommendedBubbleViewDialogTest&) = delete;
+
  protected:
   RelaunchRecommendedBubbleViewDialogTest() = default;
 
@@ -21,9 +27,6 @@ class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
     RelaunchRecommendedBubbleView::ShowBubble(browser(), detection_time,
                                               base::DoNothing());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RelaunchRecommendedBubbleViewDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(RelaunchRecommendedBubbleViewDialogTest,

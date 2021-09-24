@@ -19,6 +19,10 @@ class WebContents;
 // Chrome-specific extension of the OmniboxEditController base class.
 class ChromeOmniboxEditController : public OmniboxEditController {
  public:
+  ChromeOmniboxEditController(const ChromeOmniboxEditController&) = delete;
+  ChromeOmniboxEditController& operator=(const ChromeOmniboxEditController&) =
+      delete;
+
   // OmniboxEditController:
   void OnAutocompleteAccept(
       const GURL& destination_url,
@@ -53,8 +57,6 @@ class ChromeOmniboxEditController : public OmniboxEditController {
   Browser* const browser_;
   Profile* const profile_;
   CommandUpdater* const command_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxEditController);
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_

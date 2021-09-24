@@ -162,6 +162,10 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
  public:
   OmniboxPopupContentsViewTest() {}
 
+  OmniboxPopupContentsViewTest(const OmniboxPopupContentsViewTest&) = delete;
+  OmniboxPopupContentsViewTest& operator=(const OmniboxPopupContentsViewTest&) =
+      delete;
+
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
   OmniboxResultView* GetResultViewAt(int index) {
@@ -210,8 +214,6 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     }
     ASSERT_TRUE(theme_service->UsingDefaultTheme());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxPopupContentsViewTest);
 };
 
 views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {

@@ -251,6 +251,9 @@ class PaymentSheetRowBuilder {
                          const std::u16string& section_name)
       : controller_(controller), section_name_(section_name) {}
 
+  PaymentSheetRowBuilder(const PaymentSheetRowBuilder&) = delete;
+  PaymentSheetRowBuilder& operator=(const PaymentSheetRowBuilder&) = delete;
+
   PaymentSheetRowBuilder& Closure(base::RepeatingClosure closure) {
     closure_ = std::move(closure);
     return *this;
@@ -360,7 +363,6 @@ class PaymentSheetRowBuilder {
   std::u16string accessible_content_;
   base::RepeatingClosure closure_;
   int id_;
-  DISALLOW_COPY_AND_ASSIGN(PaymentSheetRowBuilder);
 };
 
 }  // namespace

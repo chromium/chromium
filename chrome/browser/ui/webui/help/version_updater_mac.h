@@ -29,6 +29,9 @@ class BrowserUpdaterClient;
 // About/Help page.
 class VersionUpdaterMac : public VersionUpdater {
  public:
+  VersionUpdaterMac(const VersionUpdaterMac&) = delete;
+  VersionUpdaterMac& operator=(const VersionUpdaterMac&) = delete;
+
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback status_callback,
                       PromoteCallback promote_callback) override;
@@ -82,8 +85,6 @@ class VersionUpdaterMac : public VersionUpdater {
   scoped_refptr<BrowserUpdaterClient> update_client_;
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterMac);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_MAC_H_

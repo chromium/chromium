@@ -58,6 +58,10 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
  public:
   LocationBarViewBrowserTest() = default;
 
+  LocationBarViewBrowserTest(const LocationBarViewBrowserTest&) = delete;
+  LocationBarViewBrowserTest& operator=(const LocationBarViewBrowserTest&) =
+      delete;
+
   LocationBarView* GetLocationBarView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -69,9 +73,6 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
         ->toolbar_button_provider()
         ->GetPageActionIconView(PageActionIconType::kZoom);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationBarViewBrowserTest);
 };
 
 // Ensure the location bar decoration is added when zooming, and is removed when
@@ -207,14 +208,14 @@ class SecurityIndicatorTest : public InProcessBrowserTest {
 
   SecurityIndicatorTest() = default;
 
+  SecurityIndicatorTest(const SecurityIndicatorTest&) = delete;
+  SecurityIndicatorTest& operator=(const SecurityIndicatorTest&) = delete;
+
   LocationBarView* GetLocationBarView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityIndicatorTest);
 };
 
 // Check that the security indicator text is not shown for HTTPS and "Not

@@ -13,10 +13,10 @@ class ManagePasswordsIconView {
  public:
   ManagePasswordsIconView() {}
 
-  virtual void SetState(password_manager::ui::State state) = 0;
+  ManagePasswordsIconView(const ManagePasswordsIconView&) = delete;
+  ManagePasswordsIconView& operator=(const ManagePasswordsIconView&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsIconView);
+  virtual void SetState(password_manager::ui::State state) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEW_H_

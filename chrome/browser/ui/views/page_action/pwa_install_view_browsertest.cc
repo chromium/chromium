@@ -61,6 +61,10 @@ namespace {
 
 class PwaInstallIconChangeWaiter : public views::ViewObserver {
  public:
+  PwaInstallIconChangeWaiter(const PwaInstallIconChangeWaiter&) = delete;
+  PwaInstallIconChangeWaiter& operator=(const PwaInstallIconChangeWaiter&) =
+      delete;
+
   static void VerifyIconVisibility(views::View* iconView, bool visible);
 
  private:
@@ -78,8 +82,6 @@ class PwaInstallIconChangeWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
 
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PwaInstallIconChangeWaiter);
 };
 
 // static

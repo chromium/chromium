@@ -100,6 +100,9 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
       base::WeakPtr<MediaRouterFileDialogDelegate> delegate,
       std::unique_ptr<FileSystemDelegate> file_system_delegate);
 
+  MediaRouterFileDialog(const MediaRouterFileDialog&) = delete;
+  MediaRouterFileDialog& operator=(const MediaRouterFileDialog&) = delete;
+
   ~MediaRouterFileDialog() override;
 
   virtual GURL GetLastSelectedFileUrl();
@@ -155,8 +158,6 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
 
   // Object which the media router file dialog callbacks get sent to.
   base::WeakPtr<MediaRouterFileDialogDelegate> const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterFileDialog);
 };
 
 }  // namespace media_router

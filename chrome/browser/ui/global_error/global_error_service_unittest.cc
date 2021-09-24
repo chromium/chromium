@@ -56,6 +56,9 @@ class MenuError : public BaseError {
         severity_(severity) {
   }
 
+  MenuError(const MenuError&) = delete;
+  MenuError& operator=(const MenuError&) = delete;
+
   Severity GetSeverity() override { return severity_; }
 
   bool HasMenuItem() override { return true; }
@@ -66,8 +69,6 @@ class MenuError : public BaseError {
  private:
   int command_id_;
   Severity severity_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuError);
 };
 
 } // namespace

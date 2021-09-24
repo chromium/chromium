@@ -38,6 +38,12 @@ media_router::MediaRoute MakeRoute(const std::string& route_id,
 }
 
 class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
+ public:
+  SystemTrayTrayCastMediaRouterChromeOSTest(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+  SystemTrayTrayCastMediaRouterChromeOSTest& operator=(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+
  protected:
   SystemTrayTrayCastMediaRouterChromeOSTest() : InProcessBrowserTest() {}
   ~SystemTrayTrayCastMediaRouterChromeOSTest() override {}
@@ -118,8 +124,6 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
   media_router::MediaRoutesObserver* media_routes_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayTrayCastMediaRouterChromeOSTest);
 };
 
 }  // namespace

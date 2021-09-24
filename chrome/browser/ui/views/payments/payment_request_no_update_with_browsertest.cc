@@ -14,6 +14,12 @@
 namespace payments {
 
 class PaymentRequestNoUpdateWithTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestNoUpdateWithTest(const PaymentRequestNoUpdateWithTest&) =
+      delete;
+  PaymentRequestNoUpdateWithTest& operator=(
+      const PaymentRequestNoUpdateWithTest&) = delete;
+
  protected:
   PaymentRequestNoUpdateWithTest() {}
 
@@ -26,9 +32,6 @@ class PaymentRequestNoUpdateWithTest : public PaymentRequestBrowserTestBase {
 
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestNoUpdateWithTest);
 };
 
 // A merchant that does not listen to shipping address update events will not

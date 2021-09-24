@@ -16,6 +16,11 @@ class ContentInfoBarManager;
 // Helper class to put up an infobar when installation fails.
 class InstallationErrorInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  InstallationErrorInfoBarDelegate(const InstallationErrorInfoBarDelegate&) =
+      delete;
+  InstallationErrorInfoBarDelegate& operator=(
+      const InstallationErrorInfoBarDelegate&) = delete;
+
   // Creates an error infobar and delegate and adds the infobar to
   // |infobar_manager|.
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
@@ -34,8 +39,6 @@ class InstallationErrorInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
 
   extensions::CrxInstallError error_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallationErrorInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_INSTALLATION_ERROR_INFOBAR_DELEGATE_H_

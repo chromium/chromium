@@ -50,6 +50,9 @@ class FindInPageTest : public InProcessBrowserTest {
     FindBarHost::disable_animations_during_testing_ = true;
   }
 
+  FindInPageTest(const FindInPageTest&) = delete;
+  FindInPageTest& operator=(const FindInPageTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Some bots are flaky due to slower loading interacting with
     // deferred commits.
@@ -105,9 +108,6 @@ class FindInPageTest : public InProcessBrowserTest {
         return details;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindInPageTest);
 };
 
 // Flaky because the test server fails to start? See: http://crbug.com/96594.

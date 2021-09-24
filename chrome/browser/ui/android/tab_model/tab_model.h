@@ -120,6 +120,9 @@ class TabModel {
     SIZE
   };
 
+  TabModel(const TabModel&) = delete;
+  TabModel& operator=(const TabModel&) = delete;
+
   virtual Profile* GetProfile() const;
   virtual bool IsOffTheRecord() const;
   virtual sync_sessions::SyncedWindowDelegate* GetSyncedWindowDelegate() const;
@@ -190,8 +193,6 @@ class TabModel {
   // unique within the current session, and is not guaranteed to be unique
   // across sessions.
   SessionID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabModel);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_H_

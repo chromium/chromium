@@ -80,6 +80,10 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
 
   HatsServiceBrowserTestBase() = default;
 
+  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
+  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
+      delete;
+
   ~HatsServiceBrowserTestBase() override = default;
 
   HatsService* GetHatsService() {
@@ -103,21 +107,27 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
 
   std::vector<base::test::ScopedFeatureList::FeatureAndParams>
       enabled_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceBrowserTestBase);
 };
 
 class HatsServiceProbabilityZero : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceProbabilityZero(const HatsServiceProbabilityZero&) = delete;
+  HatsServiceProbabilityZero& operator=(const HatsServiceProbabilityZero&) =
+      delete;
+
  protected:
   HatsServiceProbabilityZero()
       : HatsServiceBrowserTestBase({probability_zero}) {}
 
   ~HatsServiceProbabilityZero() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceProbabilityZero);
 };
 
 class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceProbabilityOne(const HatsServiceProbabilityOne&) = delete;
+  HatsServiceProbabilityOne& operator=(const HatsServiceProbabilityOne&) =
+      delete;
+
  protected:
   HatsServiceProbabilityOne()
       : HatsServiceBrowserTestBase(
@@ -136,8 +146,6 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
   void TearDownOnMainThread() override {
     GetHatsService()->SetSurveyMetadataForTesting({});
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceProbabilityOne);
 };
 
 }  // namespace

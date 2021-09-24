@@ -37,6 +37,9 @@ class AcceleratorsCocoa {
   typedef std::vector<ui::Accelerator> AcceleratorVector;
   typedef AcceleratorMap::const_iterator const_iterator;
 
+  AcceleratorsCocoa(const AcceleratorsCocoa&) = delete;
+  AcceleratorsCocoa& operator=(const AcceleratorsCocoa&) = delete;
+
   const_iterator const begin() { return accelerators_.begin(); }
   const_iterator const end() { return accelerators_.end(); }
 
@@ -56,8 +59,6 @@ class AcceleratorsCocoa {
 
   // Contains accelerators from both the app menu and the main menu.
   AcceleratorMap accelerators_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorsCocoa);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_ACCELERATORS_COCOA_H_

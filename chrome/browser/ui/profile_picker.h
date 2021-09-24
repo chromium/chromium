@@ -62,6 +62,9 @@ class ProfilePicker {
     kMax = kForced
   };
 
+  ProfilePicker(const ProfilePicker&) = delete;
+  ProfilePicker& operator=(const ProfilePicker&) = delete;
+
   // Shows the Profile picker for the given `entry_point` or re-activates an
   // existing one. In the latter case, the displayed page and the target url
   // on profile selection is not updated.
@@ -143,9 +146,6 @@ class ProfilePicker {
   // MacOS when there are no windows, or from Windows tray icon.
   // This returns true if the user has multiple profiles and has not opted-out.
   static bool ShouldShowAtLaunch();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfilePicker);
 };
 
 // Dialog that will be displayed when a locked profile is selected in the

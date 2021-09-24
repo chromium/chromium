@@ -41,6 +41,9 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
  public:
   explicit DefaultStateProvider(const Browser* browser) : browser_(browser) {}
 
+  DefaultStateProvider(const DefaultStateProvider&) = delete;
+  DefaultStateProvider& operator=(const DefaultStateProvider&) = delete;
+
   // Overridden from WindowSizer::StateProvider:
   bool GetPersistentState(gfx::Rect* bounds,
                           gfx::Rect* work_area,
@@ -142,7 +145,6 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
 
   // If set, is used as the reference browser for GetLastActiveWindowState.
   const Browser* browser_;
-  DISALLOW_COPY_AND_ASSIGN(DefaultStateProvider);
 };
 
 }  // namespace

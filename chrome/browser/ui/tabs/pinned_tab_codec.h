@@ -28,6 +28,9 @@ class PrefRegistrySyncable;
 // dictionary describing the entry.
 class PinnedTabCodec {
  public:
+  PinnedTabCodec(const PinnedTabCodec&) = delete;
+  PinnedTabCodec& operator=(const PinnedTabCodec&) = delete;
+
   // Registers the preference used by this class.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -44,8 +47,6 @@ class PinnedTabCodec {
  private:
   PinnedTabCodec();
   ~PinnedTabCodec();
-
-  DISALLOW_COPY_AND_ASSIGN(PinnedTabCodec);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_

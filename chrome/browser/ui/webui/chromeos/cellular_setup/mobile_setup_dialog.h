@@ -17,6 +17,10 @@ namespace cellular_setup {
 
 // DEPRECATED: Being replaced by new UI; see https://crbug.com/778021.
 class MobileSetupDialog : public SystemWebDialogDelegate {
+ public:
+  MobileSetupDialog(const MobileSetupDialog&) = delete;
+  MobileSetupDialog& operator=(const MobileSetupDialog&) = delete;
+
  protected:
   explicit MobileSetupDialog(const NetworkState& network);
   ~MobileSetupDialog() override;
@@ -31,8 +35,6 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
   friend void NetworkConnectDelegateChromeOS::ShowCarrierAccountDetail(
       const std::string& network_id);
   static void ShowByNetworkId(const std::string& network_id);
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupDialog);
 };
 
 }  // namespace cellular_setup

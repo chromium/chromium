@@ -41,6 +41,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
                               public views::AXEventObserver,
                               public extensions::AutomationEventRouterObserver {
  public:
+  AutomationManagerAura(const AutomationManagerAura&) = delete;
+  AutomationManagerAura& operator=(const AutomationManagerAura&) = delete;
+
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
 
@@ -153,8 +156,6 @@ class AutomationManagerAura : public ui::AXActionHandler,
       automation_event_router_observer_{this};
 
   bool send_window_state_on_enable_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };
 
 #endif  // CHROME_BROWSER_UI_AURA_ACCESSIBILITY_AUTOMATION_MANAGER_AURA_H_

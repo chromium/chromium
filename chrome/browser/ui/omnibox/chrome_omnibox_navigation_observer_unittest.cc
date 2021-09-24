@@ -39,6 +39,12 @@ using network::TestURLLoaderFactory;
 
 class ChromeOmniboxNavigationObserverTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  ChromeOmniboxNavigationObserverTest(
+      const ChromeOmniboxNavigationObserverTest&) = delete;
+  ChromeOmniboxNavigationObserverTest& operator=(
+      const ChromeOmniboxNavigationObserverTest&) = delete;
+
  protected:
   ChromeOmniboxNavigationObserverTest() {}
   ~ChromeOmniboxNavigationObserverTest() override {}
@@ -72,8 +78,6 @@ class ChromeOmniboxNavigationObserverTest
  private:
   // ChromeRenderViewHostTestHarness:
   void SetUp() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxNavigationObserverTest);
 };
 
 void ChromeOmniboxNavigationObserverTest::SetUp() {

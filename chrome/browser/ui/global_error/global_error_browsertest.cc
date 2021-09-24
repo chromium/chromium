@@ -117,11 +117,11 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
     extensions::ExtensionPrefs::SetRunAlertsInFirstRunForTest();
   }
 
+  GlobalErrorBubbleTest(const GlobalErrorBubbleTest&) = delete;
+  GlobalErrorBubbleTest& operator=(const GlobalErrorBubbleTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorBubbleTest);
 };
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {

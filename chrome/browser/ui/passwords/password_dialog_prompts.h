@@ -18,6 +18,9 @@ class CredentialManagerDialogController;
 // A platform-independent interface for the account chooser dialog.
 class AccountChooserPrompt {
  public:
+  AccountChooserPrompt(const AccountChooserPrompt&) = delete;
+  AccountChooserPrompt& operator=(const AccountChooserPrompt&) = delete;
+
   // Shows the account chooser dialog.
   virtual void ShowAccountChooser() = 0;
 
@@ -27,13 +30,14 @@ class AccountChooserPrompt {
  protected:
   AccountChooserPrompt() = default;
   virtual ~AccountChooserPrompt() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserPrompt);
 };
 
 // A platform-independent interface for the autosignin promo.
 class AutoSigninFirstRunPrompt {
  public:
+  AutoSigninFirstRunPrompt(const AutoSigninFirstRunPrompt&) = delete;
+  AutoSigninFirstRunPrompt& operator=(const AutoSigninFirstRunPrompt&) = delete;
+
   // Shows the dialog.
   virtual void ShowAutoSigninPrompt() = 0;
 
@@ -43,13 +47,14 @@ class AutoSigninFirstRunPrompt {
  protected:
   AutoSigninFirstRunPrompt() = default;
   virtual ~AutoSigninFirstRunPrompt() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoSigninFirstRunPrompt);
 };
 
 // A platform-independent interface for the credentials leaked prompt.
 class CredentialLeakPrompt {
  public:
+  CredentialLeakPrompt(const CredentialLeakPrompt&) = delete;
+  CredentialLeakPrompt& operator=(const CredentialLeakPrompt&) = delete;
+
   // Shows the dialog.
   virtual void ShowCredentialLeakPrompt() = 0;
 
@@ -60,8 +65,6 @@ class CredentialLeakPrompt {
  protected:
   CredentialLeakPrompt() = default;
   virtual ~CredentialLeakPrompt() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialLeakPrompt);
 };
 
 // Factory function for AccountChooserPrompt on desktop platforms.

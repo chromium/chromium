@@ -27,6 +27,9 @@ class View;
 // it is created with. The dialog is created using the static ShowBubble method.
 class BookmarkBubbleView {
  public:
+  BookmarkBubbleView(const BookmarkBubbleView&) = delete;
+  BookmarkBubbleView& operator=(const BookmarkBubbleView&) = delete;
+
   static void ShowBubble(views::View* anchor_view,
                          views::Button* highlighted_button,
                          bookmarks::BookmarkBubbleObserver* observer,
@@ -45,8 +48,6 @@ class BookmarkBubbleView {
   class BookmarkBubbleDelegate;
   // The bookmark bubble, if we're showing one.
   static views::BubbleDialogDelegate* bookmark_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BUBBLE_VIEW_H_

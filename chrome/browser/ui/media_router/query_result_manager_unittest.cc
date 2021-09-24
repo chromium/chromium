@@ -45,6 +45,9 @@ class QueryResultManagerTest : public ::testing::Test {
   QueryResultManagerTest()
       : mock_router_(), query_result_manager_(&mock_router_) {}
 
+  QueryResultManagerTest(const QueryResultManagerTest&) = delete;
+  QueryResultManagerTest& operator=(const QueryResultManagerTest&) = delete;
+
   void DiscoverSinks(MediaCastMode cast_mode, const MediaSource& source) {
     EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
         .WillOnce(Return(true));
@@ -75,9 +78,6 @@ class QueryResultManagerTest : public ::testing::Test {
   NiceMock<MockMediaRouter> mock_router_;
   QueryResultManager query_result_manager_;
   MockObserver mock_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManagerTest);
 };
 
 // Requires that the elements of |expected| are unique.

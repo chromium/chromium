@@ -17,6 +17,10 @@ class InfoBarContainerAndroid : public infobars::InfoBarContainer {
  public:
   InfoBarContainerAndroid(JNIEnv* env,
                           jobject infobar_container);
+
+  InfoBarContainerAndroid(const InfoBarContainerAndroid&) = delete;
+  InfoBarContainerAndroid& operator=(const InfoBarContainerAndroid&) = delete;
+
   void SetWebContents(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj,
                       const base::android::JavaParamRef<jobject>& web_contents);
@@ -39,8 +43,6 @@ class InfoBarContainerAndroid : public infobars::InfoBarContainer {
   // We're owned by the java infobar, need to use a weak ref so it can destroy
   // us.
   JavaObjectWeakGlobalRef weak_java_infobar_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarContainerAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_INFOBAR_CONTAINER_ANDROID_H_

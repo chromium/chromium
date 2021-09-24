@@ -36,6 +36,11 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
  public:
   AutofillAccessibilityWinBrowserTest() = default;
 
+  AutofillAccessibilityWinBrowserTest(
+      const AutofillAccessibilityWinBrowserTest&) = delete;
+  AutofillAccessibilityWinBrowserTest& operator=(
+      const AutofillAccessibilityWinBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -74,9 +79,6 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
     SimulateKeyPress(web_contents, key, code, key_code, false, false, false,
                      false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillAccessibilityWinBrowserTest);
 };
 
 // The test is flaky on Windows. See https://crbug.com/1221273

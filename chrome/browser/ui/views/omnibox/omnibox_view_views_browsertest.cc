@@ -74,6 +74,10 @@ void SetClipboardText(ui::ClipboardBuffer buffer, const std::u16string& text) {
 }  // namespace
 
 class OmniboxViewViewsTest : public InProcessBrowserTest {
+ public:
+  OmniboxViewViewsTest(const OmniboxViewViewsTest&) = delete;
+  OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
+
  protected:
   OmniboxViewViewsTest() = default;
   ~OmniboxViewViewsTest() override = default;
@@ -143,8 +147,6 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
 #endif
     return native_window;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxViewViewsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, PasteAndGoDoesNotLeavePopupOpen) {

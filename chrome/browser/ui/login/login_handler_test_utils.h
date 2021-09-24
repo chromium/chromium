@@ -67,8 +67,9 @@ class WindowedNavigationObserver
   explicit WindowedNavigationObserver(
       content::NavigationController* controller);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowedNavigationObserver);
+  WindowedNavigationObserver(const WindowedNavigationObserver&) = delete;
+  WindowedNavigationObserver& operator=(const WindowedNavigationObserver&) =
+      delete;
 };
 
 template <int T>
@@ -95,6 +96,9 @@ class WindowedLoadStopObserver
   WindowedLoadStopObserver(content::NavigationController* controller,
                            int notification_count);
 
+  WindowedLoadStopObserver(const WindowedLoadStopObserver&) = delete;
+  WindowedLoadStopObserver& operator=(const WindowedLoadStopObserver&) = delete;
+
  protected:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -102,8 +106,6 @@ class WindowedLoadStopObserver
 
  private:
   int remaining_notification_count_;  // Number of notifications remaining.
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedLoadStopObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_LOGIN_LOGIN_HANDLER_TEST_UTILS_H_

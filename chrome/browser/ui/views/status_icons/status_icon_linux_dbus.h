@@ -37,6 +37,9 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
  public:
   StatusIconLinuxDbus();
 
+  StatusIconLinuxDbus(const StatusIconLinuxDbus&) = delete;
+  StatusIconLinuxDbus& operator=(const StatusIconLinuxDbus&) = delete;
+
   // StatusIcon:
   void SetIcon(const gfx::ImageSkia& image) override;
   void SetToolTip(const std::u16string& tool_tip) override;
@@ -130,8 +133,6 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
   base::FilePath icon_file_;
 
   base::WeakPtrFactory<StatusIconLinuxDbus> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconLinuxDbus);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_LINUX_DBUS_H_

@@ -50,6 +50,9 @@ class CertNodeBuilder {
   // string, then delegates to the other constructor.
   explicit CertNodeBuilder(int label_id);
 
+  CertNodeBuilder(const CertNodeBuilder&) = delete;
+  CertNodeBuilder& operator=(const CertNodeBuilder&) = delete;
+
   // Builder methods all return |*this| so that they can be chained in single
   // expressions.
 
@@ -73,8 +76,6 @@ class CertNodeBuilder {
   // |built_| is false until Build() is called. Once it is |true|, |node_| and
   // |children_| are no longer valid for use.
   bool built_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CertNodeBuilder);
 };
 
 CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {

@@ -31,6 +31,10 @@ namespace chromeos {
 class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
                                   public web_modal::WebContentsModalDialogHost {
  public:
+  InlineLoginDialogChromeOS(const InlineLoginDialogChromeOS&) = delete;
+  InlineLoginDialogChromeOS& operator=(const InlineLoginDialogChromeOS&) =
+      delete;
+
   static bool IsShown();
 
   // ui::SystemWebDialogDelegate overrides.
@@ -82,8 +86,6 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   base::OnceClosure close_dialog_closure_;
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       modal_dialog_host_observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginDialogChromeOS);
 };
 
 }  // namespace chromeos

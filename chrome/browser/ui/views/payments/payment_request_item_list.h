@@ -122,6 +122,10 @@ class PaymentRequestItemList {
 
   explicit PaymentRequestItemList(
       base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestItemList(const PaymentRequestItemList&) = delete;
+  PaymentRequestItemList& operator=(const PaymentRequestItemList&) = delete;
+
   virtual ~PaymentRequestItemList();
 
   // Adds an item to this list. |item->list()| should return this object.
@@ -149,8 +153,6 @@ class PaymentRequestItemList {
   std::vector<std::unique_ptr<Item>> items_;
   Item* selected_item_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestItemList);
 };
 
 }  // namespace payments

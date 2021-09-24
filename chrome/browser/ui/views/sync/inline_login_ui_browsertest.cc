@@ -167,14 +167,14 @@ class MockInlineSigninHelper : public InlineSigninHelper {
       const std::string& signin_scoped_device_id,
       bool confirm_untrusted_signin);
 
+  MockInlineSigninHelper(const MockInlineSigninHelper&) = delete;
+  MockInlineSigninHelper& operator=(const MockInlineSigninHelper&) = delete;
+
   MOCK_METHOD1(OnClientOAuthSuccess, void(const ClientOAuthResult& result));
   MOCK_METHOD1(OnClientOAuthFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
 
   GaiaAuthFetcher* GetGaiaAuthFetcher() { return GetGaiaAuthFetcherForTest(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInlineSigninHelper);
 };
 
 MockInlineSigninHelper::MockInlineSigninHelper(
@@ -218,10 +218,12 @@ class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
       bool confirm_untrusted_signin,
       bool is_force_sign_in_with_usermanager);
 
-  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
+  MockSyncStarterInlineSigninHelper(const MockSyncStarterInlineSigninHelper&) =
+      delete;
+  MockSyncStarterInlineSigninHelper& operator=(
+      const MockSyncStarterInlineSigninHelper&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncStarterInlineSigninHelper);
+  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
 };
 
 MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(

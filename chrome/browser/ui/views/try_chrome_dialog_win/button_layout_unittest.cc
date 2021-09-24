@@ -50,6 +50,9 @@ class ButtonLayoutTest
     kSuperSizedButton = kWideButtonMax + 1,
   };
 
+  ButtonLayoutTest(const ButtonLayoutTest&) = delete;
+  ButtonLayoutTest& operator=(const ButtonLayoutTest&) = delete;
+
  protected:
   ButtonLayoutTest()
       : layout_(host_.SetLayoutManager(
@@ -157,8 +160,6 @@ class ButtonLayoutTest
   ButtonLayout* const layout_;  // Owned by |host_|.
   const int button_1_width_;
   const int button_2_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonLayoutTest);
 };
 
 TEST_P(ButtonLayoutTest, GetPreferredSize) {

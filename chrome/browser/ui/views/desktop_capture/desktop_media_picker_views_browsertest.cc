@@ -29,6 +29,11 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
  public:
   DesktopMediaPickerViewsBrowserTest() {}
 
+  DesktopMediaPickerViewsBrowserTest(
+      const DesktopMediaPickerViewsBrowserTest&) = delete;
+  DesktopMediaPickerViewsBrowserTest& operator=(
+      const DesktopMediaPickerViewsBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     picker_ = std::make_unique<DesktopMediaPickerViews>();
@@ -84,8 +89,6 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
   // tests to update the UI state after showing it.
   base::OnceCallback<void(const std::vector<FakeDesktopMediaList*>&)>
       after_show_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerViewsBrowserTest);
 };
 
 // Invokes a dialog that allows the user to select what view of their desktop

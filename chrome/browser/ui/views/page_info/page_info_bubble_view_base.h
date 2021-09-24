@@ -43,6 +43,9 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
     BUBBLE_ACCURACY_TIP,
   };
 
+  PageInfoBubbleViewBase(const PageInfoBubbleViewBase&) = delete;
+  PageInfoBubbleViewBase& operator=(const PageInfoBubbleViewBase&) = delete;
+
   // Returns the type of the bubble being shown. For testing only.
   static BubbleType GetShownBubbleType();
 
@@ -68,8 +71,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
   void WebContentsDestroyed() override;
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewBase);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_BASE_H_

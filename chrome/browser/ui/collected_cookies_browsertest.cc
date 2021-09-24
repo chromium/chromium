@@ -22,6 +22,9 @@ class CollectedCookiesTest : public DialogBrowserTest {
  public:
   CollectedCookiesTest() {}
 
+  CollectedCookiesTest(const CollectedCookiesTest&) = delete;
+  CollectedCookiesTest& operator=(const CollectedCookiesTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -42,9 +45,6 @@ class CollectedCookiesTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     TabDialogs::FromWebContents(web_contents)->ShowCollectedCookies();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesTest);
 };
 
 // Test that calls ShowUi("default").

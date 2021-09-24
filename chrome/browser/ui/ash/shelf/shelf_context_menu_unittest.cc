@@ -94,6 +94,10 @@ std::string GetAppNameInShelfGroup(uint32_t task_id) {
 }
 
 class ShelfContextMenuTest : public ChromeAshTestBase {
+ public:
+  ShelfContextMenuTest(const ShelfContextMenuTest&) = delete;
+  ShelfContextMenuTest& operator=(const ShelfContextMenuTest&) = delete;
+
  protected:
   ShelfContextMenuTest() = default;
   ~ShelfContextMenuTest() override = default;
@@ -247,8 +251,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   std::unique_ptr<ChromeShelfItemFactory> shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   extensions::ExtensionService* extension_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuTest);
 };
 
 // Verifies that "New Incognito window" menu item in the launcher context

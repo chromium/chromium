@@ -60,6 +60,10 @@ class FullscreenNotificationObserver : public FullscreenObserver {
 // Test fixture with convenience functions for fullscreen, keyboard lock, and
 // mouse lock.
 class ExclusiveAccessTest : public InProcessBrowserTest {
+ public:
+  ExclusiveAccessTest(const ExclusiveAccessTest&) = delete;
+  ExclusiveAccessTest& operator=(const ExclusiveAccessTest&) = delete;
+
  protected:
   ExclusiveAccessTest();
   ~ExclusiveAccessTest() override;
@@ -122,8 +126,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::WeakPtrFactory<ExclusiveAccessTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessTest);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_TEST_H_

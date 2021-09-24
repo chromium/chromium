@@ -36,6 +36,10 @@ class AddSupervisionMetricsRecorder {
     kMaxValue = kSwitchedAccounts
   };
 
+  AddSupervisionMetricsRecorder(const AddSupervisionMetricsRecorder&) = delete;
+  AddSupervisionMetricsRecorder& operator=(
+      const AddSupervisionMetricsRecorder&) = delete;
+
   static AddSupervisionMetricsRecorder* GetInstance();
 
   // Records UMA metrics for users going through the Add Supervision process.
@@ -57,8 +61,6 @@ class AddSupervisionMetricsRecorder {
 
   // Records when the user initiates the Add Supervision process.
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionMetricsRecorder);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_

@@ -747,6 +747,11 @@ class BookmarkContextMenuNotificationObserver {
         base::Unretained(this)));
   }
 
+  BookmarkContextMenuNotificationObserver(
+      const BookmarkContextMenuNotificationObserver&) = delete;
+  BookmarkContextMenuNotificationObserver& operator=(
+      const BookmarkContextMenuNotificationObserver&) = delete;
+
   void ScheduleCallback() {
     DCHECK(!task_.is_null());
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task_));
@@ -754,8 +759,6 @@ class BookmarkContextMenuNotificationObserver {
 
  private:
   base::OnceClosure task_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkContextMenuNotificationObserver);
 };
 
 // Tests context menus by way of opening a context menu for a bookmark,

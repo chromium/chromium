@@ -98,7 +98,12 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     absl::optional<RequestPermissionCallback> callback_;
   };
 
+  ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;
+  ArcUsbHostPermissionManager& operator=(const ArcUsbHostPermissionManager&) =
+      delete;
+
   ~ArcUsbHostPermissionManager() override;
+
   static ArcUsbHostPermissionManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -211,8 +216,6 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   ArcAppListPrefs* const arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManager);
 };
 
 }  // namespace arc

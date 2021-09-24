@@ -39,8 +39,9 @@ class InitiatorWebContentsObserver
   explicit InitiatorWebContentsObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitiatorWebContentsObserver);
+  InitiatorWebContentsObserver(const InitiatorWebContentsObserver&) = delete;
+  InitiatorWebContentsObserver& operator=(const InitiatorWebContentsObserver&) =
+      delete;
 };
 
 gfx::Size RestrictToPlatformMinimumSize(const gfx::Size& min_size) {

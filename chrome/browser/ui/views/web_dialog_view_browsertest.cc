@@ -69,6 +69,9 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
  public:
   WebDialogBrowserTest() {}
 
+  WebDialogBrowserTest(const WebDialogBrowserTest&) = delete;
+  WebDialogBrowserTest& operator=(const WebDialogBrowserTest&) = delete;
+
   // content::BrowserTestBase:
   void SetUpOnMainThread() override;
 
@@ -83,8 +86,6 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
 
  private:
   views::ViewTracker view_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogBrowserTest);
 };
 
 void WebDialogBrowserTest::SetUpOnMainThread() {

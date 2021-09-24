@@ -49,6 +49,9 @@ class HoverButtonTest : public ChromeViewsTestBase {
  public:
   HoverButtonTest() {}
 
+  HoverButtonTest(const HoverButtonTest&) = delete;
+  HoverButtonTest& operator=(const HoverButtonTest&) = delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
@@ -74,7 +77,6 @@ class HoverButtonTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  DISALLOW_COPY_AND_ASSIGN(HoverButtonTest);
 };
 
 // Double check the length of the strings used for testing are either over or

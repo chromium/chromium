@@ -97,6 +97,10 @@ class PageInfoBubbleViewTestApi {
     CreateView();
   }
 
+  PageInfoBubbleViewTestApi(const PageInfoBubbleViewTestApi&) = delete;
+  PageInfoBubbleViewTestApi& operator=(const PageInfoBubbleViewTestApi&) =
+      delete;
+
   void CreateView() {
     if (bubble_delegate_) {
       bubble_delegate_->GetWidget()->CloseNow();
@@ -309,8 +313,6 @@ class PageInfoBubbleViewTestApi {
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
   bool is_version_two_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewTestApi);
 };
 
 }  // namespace test
@@ -351,6 +353,10 @@ class ScopedWebContentsTestHelper {
     web_contents_ = factory_.CreateWebContents(profile_);
   }
 
+  ScopedWebContentsTestHelper(const ScopedWebContentsTestHelper&) = delete;
+  ScopedWebContentsTestHelper& operator=(const ScopedWebContentsTestHelper&) =
+      delete;
+
   content::WebContents* web_contents() { return web_contents_; }
   Profile* profile() { return profile_; }
   TestingPrefServiceSimple* local_state() {
@@ -368,8 +374,6 @@ class ScopedWebContentsTestHelper {
   Profile* profile_ = nullptr;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsTestHelper);
 };
 
 class PageInfoBubbleViewTest : public testing::Test,

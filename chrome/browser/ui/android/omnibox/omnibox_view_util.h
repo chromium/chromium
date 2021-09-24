@@ -11,8 +11,10 @@
 
 // Helper functions for the Omnibox view on Android.
 class OmniboxViewUtil {
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(OmniboxViewUtil);
+ public:
+  OmniboxViewUtil() = delete;
+  OmniboxViewUtil(const OmniboxViewUtil&) = delete;
+  OmniboxViewUtil& operator=(const OmniboxViewUtil&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_OMNIBOX_OMNIBOX_VIEW_UTIL_H_

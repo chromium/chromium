@@ -62,6 +62,10 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() = default;
 
+  IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;
+  IntentPickerBubbleViewTest& operator=(const IntentPickerBubbleViewTest&) =
+      delete;
+
   void TearDown() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
     bubble_->GetWidget()->CloseNow();
@@ -137,9 +141,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   IntentPickerBubbleView* bubble_;
   views::View* anchor_view_;
   std::vector<AppInfo> app_info_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerBubbleViewTest);
 };
 
 // Verifies that we didn't set up an image for any LabelButton.

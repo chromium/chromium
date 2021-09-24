@@ -142,6 +142,9 @@ class PasswordItemsView::PasswordRow {
   PasswordRow(PasswordItemsView* parent,
               const password_manager::PasswordForm* password_form);
 
+  PasswordRow(const PasswordRow&) = delete;
+  PasswordRow& operator=(const PasswordRow&) = delete;
+
   void AddToLayout(views::GridLayout* layout,
                    PasswordItemsViewColumnSetType type_id);
 
@@ -156,8 +159,6 @@ class PasswordItemsView::PasswordRow {
   PasswordItemsView* const parent_;
   const password_manager::PasswordForm* const password_form_;
   bool deleted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordRow);
 };
 
 PasswordItemsView::PasswordRow::PasswordRow(

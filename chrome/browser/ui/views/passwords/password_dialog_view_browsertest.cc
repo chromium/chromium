@@ -51,6 +51,11 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
  public:
   explicit TestManagePasswordsUIController(content::WebContents* web_contents);
 
+  TestManagePasswordsUIController(const TestManagePasswordsUIController&) =
+      delete;
+  TestManagePasswordsUIController& operator=(
+      const TestManagePasswordsUIController&) = delete;
+
   void OnDialogHidden() override;
   AccountChooserPrompt* CreateAccountChooser(
       CredentialManagerDialogController* controller) override;
@@ -79,8 +84,6 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   AccountChooserPrompt* current_account_chooser_;
   AutoSigninFirstRunPrompt* current_autosignin_prompt_;
   CredentialLeakPrompt* current_credential_leak_prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestManagePasswordsUIController);
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(

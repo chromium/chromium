@@ -34,6 +34,9 @@ class ShelfAppUpdater {
     virtual ~Delegate() {}
   };
 
+  ShelfAppUpdater(const ShelfAppUpdater&) = delete;
+  ShelfAppUpdater& operator=(const ShelfAppUpdater&) = delete;
+
   virtual ~ShelfAppUpdater();
 
   Delegate* delegate() { return delegate_; }
@@ -47,8 +50,6 @@ class ShelfAppUpdater {
   // Unowned pointers
   Delegate* delegate_;
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_APP_UPDATER_H_

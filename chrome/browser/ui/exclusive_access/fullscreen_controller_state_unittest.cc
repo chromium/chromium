@@ -209,6 +209,11 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
  public:
   FullscreenControllerStateUnitTest();
 
+  FullscreenControllerStateUnitTest(const FullscreenControllerStateUnitTest&) =
+      delete;
+  FullscreenControllerStateUnitTest& operator=(
+      const FullscreenControllerStateUnitTest&) = delete;
+
   // FullscreenControllerStateTest:
   void SetUp() override;
   void TearDown() override;
@@ -222,8 +227,6 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
   bool ShouldSkipStateAndEventPair(State state, Event event) override;
   Browser* GetBrowser() override;
   FullscreenControllerTestWindow* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateUnitTest);
 };
 
 FullscreenControllerStateUnitTest::FullscreenControllerStateUnitTest() =
@@ -752,10 +755,10 @@ class FullscreenChangeObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents) {
   }
 
-  MOCK_METHOD2(DidToggleFullscreenModeForTab, void(bool, bool));
+  FullscreenChangeObserver(const FullscreenChangeObserver&) = delete;
+  FullscreenChangeObserver& operator=(const FullscreenChangeObserver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenChangeObserver);
+  MOCK_METHOD2(DidToggleFullscreenModeForTab, void(bool, bool));
 };
 
 // Tests that going from tab fullscreen -> browser fullscreen causes an explicit

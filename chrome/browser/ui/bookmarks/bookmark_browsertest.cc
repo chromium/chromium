@@ -92,6 +92,9 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
 #endif
   }
 
+  BookmarkBrowsertest(const BookmarkBrowsertest&) = delete;
+  BookmarkBrowsertest& operator=(const BookmarkBrowsertest&) = delete;
+
   bool IsVisible() {
     return browser()->bookmark_bar_state() == BookmarkBar::SHOW;
   }
@@ -130,8 +133,6 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   // We make the histogram tester a member field to make sure it starts
   // recording as early as possible.
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBrowsertest);
 };
 
 // Test of bookmark bar toggling, visibility, and animation.

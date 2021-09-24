@@ -53,6 +53,10 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
  public:
   FullscreenControlViewTest() = default;
 
+  FullscreenControlViewTest(const FullscreenControlViewTest&) = delete;
+  FullscreenControlViewTest& operator=(const FullscreenControlViewTest&) =
+      delete;
+
   void SetUp() override {
     // It is important to disable system keyboard lock as low-level test
     // utilities may install a keyboard hook to listen for keyboard events and
@@ -166,8 +170,6 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlViewTest);
 };
 
 // Creating the popup on Mac increases the memory use by ~2MB so it should be

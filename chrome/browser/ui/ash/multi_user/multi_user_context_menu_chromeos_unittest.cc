@@ -31,6 +31,11 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
+  MultiUserContextMenuChromeOSTest(const MultiUserContextMenuChromeOSTest&) =
+      delete;
+  MultiUserContextMenuChromeOSTest& operator=(
+      const MultiUserContextMenuChromeOSTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -59,8 +64,6 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
   // Owned by |user_manager_enabler_|.
   FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserContextMenuChromeOSTest);
 };
 
 void MultiUserContextMenuChromeOSTest::SetUp() {

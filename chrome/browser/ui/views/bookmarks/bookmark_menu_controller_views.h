@@ -55,6 +55,9 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
       size_t start_child_index,
       bool for_drop);
 
+  BookmarkMenuController(const BookmarkMenuController&) = delete;
+  BookmarkMenuController& operator=(const BookmarkMenuController&) = delete;
+
   void RunMenuAt(BookmarkBarView* bookmark_bar);
 
   void clear_bookmark_bar() { bookmark_bar_ = nullptr; }
@@ -144,8 +147,6 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   // folder on the bookmark bar and not for drop, or if the BookmarkBarView has
   // been destroyed before the menu.
   BookmarkBarView* bookmark_bar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_CONTROLLER_VIEWS_H_

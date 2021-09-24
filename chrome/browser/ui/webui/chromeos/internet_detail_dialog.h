@@ -18,6 +18,9 @@ class NetworkState;
 
 class InternetDetailDialog : public SystemWebDialogDelegate {
  public:
+  InternetDetailDialog(const InternetDetailDialog&) = delete;
+  InternetDetailDialog& operator=(const InternetDetailDialog&) = delete;
+
   // Returns whether the dialog is being shown.
   static bool IsShown();
 
@@ -41,8 +44,6 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
   std::string network_id_;
   std::string network_type_;
   std::string network_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialog);
 };
 
 // A WebUI to host a subset of the network details page to allow setting of

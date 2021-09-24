@@ -56,6 +56,9 @@ class OobeUI : public ui::MojoWebUIController {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+
     virtual void OnCurrentScreenChanged(OobeScreenId current_screen,
                                         OobeScreenId new_screen) = 0;
 
@@ -63,10 +66,13 @@ class OobeUI : public ui::MojoWebUIController {
 
    protected:
     virtual ~Observer() {}
-    DISALLOW_COPY(Observer);
   };
 
   OobeUI(content::WebUI* web_ui, const GURL& url);
+
+  OobeUI(const OobeUI&) = delete;
+  OobeUI& operator=(const OobeUI&) = delete;
+
   ~OobeUI() override;
 
   CoreOobeView* GetCoreOobeView();
@@ -225,8 +231,6 @@ class OobeUI : public ui::MojoWebUIController {
   std::unique_ptr<JSCallsContainer> js_calls_container_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OobeUI);
 };
 
 }  // namespace chromeos

@@ -38,6 +38,9 @@ class BrowserList {
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
 
+  BrowserList(const BrowserList&) = delete;
+  BrowserList& operator=(const BrowserList&) = delete;
+
   // Returns the last active browser for this list.
   Browser* GetLastActive() const;
 
@@ -197,8 +200,6 @@ class BrowserList {
       base::ObserverList<BrowserListObserver>::Unchecked>::Leaky observers_;
 
   static BrowserList* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserList);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIST_H_

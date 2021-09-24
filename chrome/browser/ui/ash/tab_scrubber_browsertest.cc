@@ -88,6 +88,9 @@ class TabScrubberTest : public InProcessBrowserTest,
  public:
   TabScrubberTest() = default;
 
+  TabScrubberTest(const TabScrubberTest&) = delete;
+  TabScrubberTest& operator=(const TabScrubberTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(chromeos::switches::kNaturalScrollDefault);
   }
@@ -315,8 +318,6 @@ class TabScrubberTest : public InProcessBrowserTest,
     aura::Window* root = window->GetRootWindow();
     return std::make_unique<ui::test::EventGenerator>(root, window);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TabScrubberTest);
 };
 
 // Swipe a single tab in each direction.

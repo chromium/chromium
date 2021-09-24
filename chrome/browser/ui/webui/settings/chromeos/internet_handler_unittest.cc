@@ -34,6 +34,10 @@ class TestInternetHandler : public InternetHandler {
 }  // namespace
 
 class InternetHandlerTest : public BrowserWithTestWindowTest {
+ public:
+  InternetHandlerTest(const InternetHandlerTest&) = delete;
+  InternetHandlerTest& operator=(const InternetHandlerTest&) = delete;
+
  protected:
   InternetHandlerTest() = default;
 
@@ -81,9 +85,6 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<chromeos::tether::FakeGmsCoreNotificationsStateTracker>
       fake_tracker_;
   std::unique_ptr<TestInternetHandler> handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InternetHandlerTest);
 };
 
 TEST_F(InternetHandlerTest, TestSendsDeviceNames) {

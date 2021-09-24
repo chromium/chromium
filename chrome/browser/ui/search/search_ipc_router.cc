@@ -51,6 +51,11 @@ class EmbeddedSearchClientFactoryImpl
     embedded_search_client_.reset();
   }
 
+  EmbeddedSearchClientFactoryImpl(const EmbeddedSearchClientFactoryImpl&) =
+      delete;
+  EmbeddedSearchClientFactoryImpl& operator=(
+      const EmbeddedSearchClientFactoryImpl&) = delete;
+
   search::mojom::EmbeddedSearchClient* GetEmbeddedSearchClient() override {
     return embedded_search_client_.is_bound() ? embedded_search_client_.get()
                                               : nullptr;
@@ -81,8 +86,6 @@ class EmbeddedSearchClientFactoryImpl
   // Receivers used to listen to connection requests.
   content::RenderFrameHostReceiverSet<search::mojom::EmbeddedSearchConnector>
       factory_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedSearchClientFactoryImpl);
 };
 
 void EmbeddedSearchClientFactoryImpl::Connect(

@@ -66,6 +66,11 @@ bool g_show_sync_enabled_ui_for_testing_ = false;
 class DiceTurnSyncOnHelperShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  DiceTurnSyncOnHelperShutdownNotifierFactory(
+      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
+  DiceTurnSyncOnHelperShutdownNotifierFactory& operator=(
+      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
+
   static DiceTurnSyncOnHelperShutdownNotifierFactory* GetInstance() {
     static base::NoDestructor<DiceTurnSyncOnHelperShutdownNotifierFactory>
         factory;
@@ -84,8 +89,6 @@ class DiceTurnSyncOnHelperShutdownNotifierFactory
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
   ~DiceTurnSyncOnHelperShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperShutdownNotifierFactory);
 };
 
 // User input handler for the signin confirmation dialog.

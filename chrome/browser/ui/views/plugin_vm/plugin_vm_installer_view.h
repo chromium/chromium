@@ -26,7 +26,11 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
  public:
   METADATA_HEADER(PluginVmInstallerView);
+
   explicit PluginVmInstallerView(Profile* profile);
+
+  PluginVmInstallerView(const PluginVmInstallerView&) = delete;
+  PluginVmInstallerView& operator=(const PluginVmInstallerView&) = delete;
 
   static PluginVmInstallerView* GetActiveViewForTesting();
 
@@ -101,8 +105,6 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   absl::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
 
   base::OnceCallback<void(bool success)> finished_callback_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_

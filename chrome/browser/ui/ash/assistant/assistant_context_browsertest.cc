@@ -31,6 +31,9 @@ class AssistantStructureWaiter {
  public:
   AssistantStructureWaiter() = default;
 
+  AssistantStructureWaiter(const AssistantStructureWaiter&) = delete;
+  AssistantStructureWaiter& operator=(const AssistantStructureWaiter&) = delete;
+
   void Wait() { loop_.Run(); }
 
   std::unique_ptr<ui::AssistantTree> take_structure() {
@@ -46,8 +49,6 @@ class AssistantStructureWaiter {
  private:
   std::unique_ptr<ui::AssistantTree> structure_;
   base::RunLoop loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStructureWaiter);
 };
 
 }  // namespace

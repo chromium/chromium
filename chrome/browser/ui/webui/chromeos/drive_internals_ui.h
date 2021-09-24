@@ -16,8 +16,8 @@ class DriveInternalsUI : public content::WebUIController {
  public:
   explicit DriveInternalsUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveInternalsUI);
+  DriveInternalsUI(const DriveInternalsUI&) = delete;
+  DriveInternalsUI& operator=(const DriveInternalsUI&) = delete;
 };
 
 }  // namespace chromeos

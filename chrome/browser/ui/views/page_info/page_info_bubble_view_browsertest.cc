@@ -748,6 +748,9 @@ namespace {
 // Tracks focus of an arbitrary UI element.
 class FocusTracker {
  public:
+  FocusTracker(const FocusTracker&) = delete;
+  FocusTracker& operator=(const FocusTracker&) = delete;
+
   bool focused() const { return focused_; }
 
   // Wait for focused() to be in state |target_state_is_focused|. If focused()
@@ -784,8 +787,6 @@ class FocusTracker {
   bool target_state_is_focused_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusTracker);
 };
 
 // Watches a WebContents for focus changes.

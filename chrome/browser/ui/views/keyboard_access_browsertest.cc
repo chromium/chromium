@@ -134,6 +134,9 @@ class KeyboardAccessTest : public InProcessBrowserTest {
  public:
   KeyboardAccessTest() {}
 
+  KeyboardAccessTest(const KeyboardAccessTest&) = delete;
+  KeyboardAccessTest& operator=(const KeyboardAccessTest&) = delete;
+
   // Use the keyboard to select "New Tab" from the app menu.
   // This test depends on the fact that there is one menu and that
   // New Tab is the first item in the menu. If the menus change,
@@ -176,9 +179,6 @@ class KeyboardAccessTest : public InProcessBrowserTest {
   // It verifies that the menu when dismissed by sending the ESC key it does
   // not display twice.
   void TestMenuKeyboardAccessAndDismiss();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardAccessTest);
 };
 
 void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,

@@ -34,14 +34,16 @@ class ExternalProtocolDialogTestApi {
   explicit ExternalProtocolDialogTestApi(ExternalProtocolDialog* dialog)
       : dialog_(dialog) {}
 
+  ExternalProtocolDialogTestApi(const ExternalProtocolDialogTestApi&) = delete;
+  ExternalProtocolDialogTestApi& operator=(
+      const ExternalProtocolDialogTestApi&) = delete;
+
   void SetCheckBoxSelected(bool checked) {
     dialog_->SetRememberSelectionCheckboxCheckedForTesting(checked);
   }
 
  private:
   ExternalProtocolDialog* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialogTestApi);
 };
 
 }  // namespace test

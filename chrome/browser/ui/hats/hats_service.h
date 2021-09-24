@@ -194,9 +194,12 @@ class HatsService : public KeyedService {
     kMaxValue = kNoRejectedByHatsService,
   };
 
-  ~HatsService() override;
-
   explicit HatsService(Profile* profile);
+
+  HatsService(const HatsService&) = delete;
+  HatsService& operator=(const HatsService&) = delete;
+
+  ~HatsService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -320,8 +323,6 @@ class HatsService : public KeyedService {
   bool hats_next_dialog_exists_ = false;
 
   base::WeakPtrFactory<HatsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HatsService);
 };
 
 #endif  // CHROME_BROWSER_UI_HATS_HATS_SERVICE_H_

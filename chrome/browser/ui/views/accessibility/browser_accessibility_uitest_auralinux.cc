@@ -25,12 +25,15 @@ class AuraLinuxAccessibilityInProcessBrowserTest : public InProcessBrowserTest {
   AuraLinuxAccessibilityInProcessBrowserTest()
       : ax_mode_setter_(ui::kAXModeComplete) {}
 
+  AuraLinuxAccessibilityInProcessBrowserTest(
+      const AuraLinuxAccessibilityInProcessBrowserTest&) = delete;
+  AuraLinuxAccessibilityInProcessBrowserTest& operator=(
+      const AuraLinuxAccessibilityInProcessBrowserTest&) = delete;
+
   void VerifyEmbedRelationships();
 
  private:
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraLinuxAccessibilityInProcessBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
@@ -56,10 +59,14 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
+
+  TestTabModalConfirmDialogDelegate(const TestTabModalConfirmDialogDelegate&) =
+      delete;
+  TestTabModalConfirmDialogDelegate& operator=(
+      const TestTabModalConfirmDialogDelegate&) = delete;
+
   std::u16string GetTitle() override { return u"Dialog Title"; }
   std::u16string GetDialogMessage() override { return std::u16string(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
 
 // Open a tab-modal dialog and test IndexInParent with the modal dialog.

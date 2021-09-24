@@ -84,6 +84,11 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
         app_locale_(app_locale),
         initially_valid_(initially_valid) {}
 
+  ExpirationDateValidationDelegate(const ExpirationDateValidationDelegate&) =
+      delete;
+  ExpirationDateValidationDelegate& operator=(
+      const ExpirationDateValidationDelegate&) = delete;
+
   bool IsValidTextfield(views::Textfield* textfield,
                         std::u16string* error_message) override {
     NOTREACHED();
@@ -148,8 +153,6 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
   EditorViewController* controller_;
   const std::string app_locale_;
   bool initially_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpirationDateValidationDelegate);
 };
 
 }  // namespace

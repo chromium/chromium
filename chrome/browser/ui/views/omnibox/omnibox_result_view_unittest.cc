@@ -39,14 +39,16 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
             /*location_bar_view=*/nullptr),
         selected_index_(0) {}
 
+  TestOmniboxPopupContentsView(const TestOmniboxPopupContentsView&) = delete;
+  TestOmniboxPopupContentsView& operator=(const TestOmniboxPopupContentsView&) =
+      delete;
+
   void SetSelectedIndex(size_t index) override { selected_index_ = index; }
 
   size_t GetSelectedIndex() const override { return selected_index_; }
 
  private:
   size_t selected_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxPopupContentsView);
 };
 
 }  // namespace

@@ -17,6 +17,9 @@ class WebAppMinimalUITest : public WebAppControllerBrowserTest {
  public:
   WebAppMinimalUITest() = default;
 
+  WebAppMinimalUITest(const WebAppMinimalUITest&) = delete;
+  WebAppMinimalUITest& operator=(const WebAppMinimalUITest&) = delete;
+
   BrowserView* CreateBrowserView(blink::mojom::DisplayMode display_mode) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = GURL("https://example.org");
@@ -26,9 +29,6 @@ class WebAppMinimalUITest : public WebAppControllerBrowserTest {
     Browser* browser = LaunchWebAppBrowser(app_id);
     return BrowserView::GetBrowserViewForBrowser(browser);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppMinimalUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppMinimalUITest, Standalone) {

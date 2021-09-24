@@ -36,6 +36,12 @@ namespace {
 // will use NativeAppWindowCocoa.
 class QuitWithAppsControllerInteractiveTest
     : public extensions::PlatformAppBrowserTest {
+ public:
+  QuitWithAppsControllerInteractiveTest(
+      const QuitWithAppsControllerInteractiveTest&) = delete;
+  QuitWithAppsControllerInteractiveTest& operator=(
+      const QuitWithAppsControllerInteractiveTest&) = delete;
+
  protected:
   QuitWithAppsControllerInteractiveTest() : app_(NULL) {}
 
@@ -45,9 +51,6 @@ class QuitWithAppsControllerInteractiveTest
   }
 
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuitWithAppsControllerInteractiveTest);
 };
 
 }  // namespace

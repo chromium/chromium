@@ -30,6 +30,10 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
     feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
   }
 
+  ReadLaterButtonBrowserTest(const ReadLaterButtonBrowserTest&) = delete;
+  ReadLaterButtonBrowserTest& operator=(const ReadLaterButtonBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
     browser()->profile()->GetPrefs()->SetBoolean(
@@ -59,7 +63,6 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(ReadLaterButtonBrowserTest);
 };
 
 // TODO(1115950): Flaky on Windows.

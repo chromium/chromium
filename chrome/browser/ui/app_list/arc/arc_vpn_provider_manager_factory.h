@@ -15,6 +15,10 @@ class ArcVpnProviderManager;
 
 class ArcVpnProviderManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ArcVpnProviderManagerFactory(const ArcVpnProviderManagerFactory&) = delete;
+  ArcVpnProviderManagerFactory& operator=(const ArcVpnProviderManagerFactory&) =
+      delete;
+
   static ArcVpnProviderManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -30,8 +34,6 @@ class ArcVpnProviderManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVpnProviderManagerFactory);
 };
 
 }  // namespace app_list

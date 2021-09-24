@@ -23,6 +23,10 @@ class ReopenTabInProductHelp;
 
 class ReopenTabInProductHelpFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ReopenTabInProductHelpFactory(const ReopenTabInProductHelpFactory&) = delete;
+  ReopenTabInProductHelpFactory& operator=(
+      const ReopenTabInProductHelpFactory&) = delete;
+
   static ReopenTabInProductHelpFactory* GetInstance();
 
   static ReopenTabInProductHelp* GetForProfile(Profile* profile);
@@ -38,8 +42,6 @@ class ReopenTabInProductHelpFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   friend struct base::DefaultSingletonTraits<ReopenTabInProductHelpFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(ReopenTabInProductHelpFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_FACTORY_H_

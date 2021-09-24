@@ -27,6 +27,11 @@ class CardExpirationDateFixFlowViewAndroid
       CardExpirationDateFixFlowController* controller,
       content::WebContents* web_contents);
 
+  CardExpirationDateFixFlowViewAndroid(
+      const CardExpirationDateFixFlowViewAndroid&) = delete;
+  CardExpirationDateFixFlowViewAndroid& operator=(
+      const CardExpirationDateFixFlowViewAndroid&) = delete;
+
   void OnUserAccept(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& month,
@@ -49,8 +54,6 @@ class CardExpirationDateFixFlowViewAndroid
   CardExpirationDateFixFlowController* controller_;
 
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardExpirationDateFixFlowViewAndroid);
 };
 
 }  // namespace autofill

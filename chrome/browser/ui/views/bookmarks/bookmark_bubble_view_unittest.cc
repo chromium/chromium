@@ -40,6 +40,9 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
       : BrowserWithTestWindowTest(
             content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
+  BookmarkBubbleViewTest(const BookmarkBubbleViewTest&) = delete;
+  BookmarkBubbleViewTest& operator=(const BookmarkBubbleViewTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -86,8 +89,6 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
 
  private:
   views::UniqueWidgetPtr anchor_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleViewTest);
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.

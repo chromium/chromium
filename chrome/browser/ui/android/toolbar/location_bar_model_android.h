@@ -20,8 +20,14 @@ class WebContents;
 // Owns a LocationBarModel and provides a way for Java to interact with it.
 class LocationBarModelAndroid : public ChromeLocationBarModelDelegate {
  public:
+  LocationBarModelAndroid() = delete;
+
   LocationBarModelAndroid(JNIEnv* env,
                           const base::android::JavaRef<jobject>& obj);
+
+  LocationBarModelAndroid(const LocationBarModelAndroid&) = delete;
+  LocationBarModelAndroid& operator=(const LocationBarModelAndroid&) = delete;
+
   ~LocationBarModelAndroid() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -42,8 +48,6 @@ class LocationBarModelAndroid : public ChromeLocationBarModelDelegate {
  private:
   std::unique_ptr<LocationBarModel> location_bar_model_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocationBarModelAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_LOCATION_BAR_MODEL_ANDROID_H_

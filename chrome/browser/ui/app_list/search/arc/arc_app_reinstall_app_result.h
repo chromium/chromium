@@ -34,6 +34,10 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
       const arc::mojom::AppReinstallCandidatePtr& mojom_data,
       const gfx::ImageSkia& skia_icon,
       ArcAppReinstallAppResult::Observer* observer);
+
+  ArcAppReinstallAppResult(const ArcAppReinstallAppResult&) = delete;
+  ArcAppReinstallAppResult& operator=(const ArcAppReinstallAppResult&) = delete;
+
   ~ArcAppReinstallAppResult() override;
 
   // ChromeSearchResult:
@@ -44,7 +48,6 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
   // Observer passed in constructor. not owned.
   Observer* const observer_;
   const std::string package_name_;
-  DISALLOW_COPY_AND_ASSIGN(ArcAppReinstallAppResult);
 };
 
 }  // namespace app_list

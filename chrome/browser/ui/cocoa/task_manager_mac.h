@@ -89,6 +89,9 @@ class TaskManagerMac : public ui::TableModelObserver,
                        public content::NotificationObserver,
                        public TableViewDelegate {
  public:
+  TaskManagerMac(const TaskManagerMac&) = delete;
+  TaskManagerMac& operator=(const TaskManagerMac&) = delete;
+
   // Called by the TaskManagerWindowController:
   void WindowWasClosed();
   NSImage* GetImageForRow(int row);
@@ -141,8 +144,6 @@ class TaskManagerMac : public ui::TableModelObserver,
   // An open task manager window. There can only be one open at a time. This
   // is reset to be null when the window is closed.
   static TaskManagerMac* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerMac);
 };
 
 }  // namespace task_manager

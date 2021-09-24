@@ -18,6 +18,10 @@ class Profile;
 // the associated GlobalErrorService.
 class GlobalErrorServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  GlobalErrorServiceFactory(const GlobalErrorServiceFactory&) = delete;
+  GlobalErrorServiceFactory& operator=(const GlobalErrorServiceFactory&) =
+      delete;
+
   static GlobalErrorService* GetForProfile(Profile* profile);
 
   static GlobalErrorServiceFactory* GetInstance();
@@ -33,8 +37,6 @@ class GlobalErrorServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_SERVICE_FACTORY_H_

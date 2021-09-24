@@ -61,6 +61,11 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
  public:
   PluginVmInstallerViewBrowserTest() = default;
 
+  PluginVmInstallerViewBrowserTest(const PluginVmInstallerViewBrowserTest&) =
+      delete;
+  PluginVmInstallerViewBrowserTest& operator=(
+      const PluginVmInstallerViewBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
@@ -183,8 +188,6 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(quit_closure));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerViewBrowserTest);
 };
 
 class PluginVmInstallerViewBrowserTestWithFeatureEnabled

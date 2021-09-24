@@ -50,6 +50,9 @@ gfx::ImageSkia CreateDefaultFavicon() {
 
 class DefaultFavicon {
  public:
+  DefaultFavicon(const DefaultFavicon&) = delete;
+  DefaultFavicon& operator=(const DefaultFavicon&) = delete;
+
   static const DefaultFavicon& GetInstance() {
     static base::NoDestructor<DefaultFavicon> default_favicon;
     return *default_favicon;
@@ -63,8 +66,6 @@ class DefaultFavicon {
   DefaultFavicon() : icon_(CreateDefaultFavicon()) {}
 
   const gfx::ImageSkia icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFavicon);
 };
 
 }  // namespace

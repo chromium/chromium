@@ -16,11 +16,12 @@
 #include "ui/gfx/geometry/rect.h"
 
 class SendMouseMoveUITest : public InProcessBrowserTest {
+ public:
+  SendMouseMoveUITest(const SendMouseMoveUITest&) = delete;
+  SendMouseMoveUITest& operator=(const SendMouseMoveUITest&) = delete;
+
  protected:
   SendMouseMoveUITest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendMouseMoveUITest);
 };
 
 // This test positions the mouse at every point on the screen. It is not meant

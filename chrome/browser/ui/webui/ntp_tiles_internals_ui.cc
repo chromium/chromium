@@ -42,6 +42,11 @@ class ChromeNTPTilesInternalsMessageHandlerClient
       favicon::FaviconService* favicon_service)
       : handler_(favicon_service) {}
 
+  ChromeNTPTilesInternalsMessageHandlerClient(
+      const ChromeNTPTilesInternalsMessageHandlerClient&) = delete;
+  ChromeNTPTilesInternalsMessageHandlerClient& operator=(
+      const ChromeNTPTilesInternalsMessageHandlerClient&) = delete;
+
  private:
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -64,8 +69,6 @@ class ChromeNTPTilesInternalsMessageHandlerClient
       const std::vector<const base::Value*>& values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNTPTilesInternalsMessageHandlerClient);
 };
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessages() {

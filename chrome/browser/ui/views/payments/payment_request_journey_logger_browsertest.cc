@@ -1016,6 +1016,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class PaymentRequestIframeTest : public PaymentRequestJourneyLoggerTestBase {
+ public:
+  PaymentRequestIframeTest(const PaymentRequestIframeTest&) = delete;
+  PaymentRequestIframeTest& operator=(const PaymentRequestIframeTest&) = delete;
+
  protected:
   PaymentRequestIframeTest() {}
 
@@ -1026,9 +1030,6 @@ class PaymentRequestIframeTest : public PaymentRequestJourneyLoggerTestBase {
   }
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestIframeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {

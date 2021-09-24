@@ -79,7 +79,12 @@ struct NavigateParams {
   NavigateParams(Profile* profile,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
+
+  NavigateParams(const NavigateParams&) = delete;
+  NavigateParams& operator=(const NavigateParams&) = delete;
+
   NavigateParams(NavigateParams&& params);
+
   ~NavigateParams();
 
   // Copies fields from |params| struct to |nav_params| struct.
@@ -319,7 +324,6 @@ struct NavigateParams {
 
  private:
   NavigateParams();
-  DISALLOW_COPY_AND_ASSIGN(NavigateParams);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_

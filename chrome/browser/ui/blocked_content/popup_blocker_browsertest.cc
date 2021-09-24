@@ -94,6 +94,9 @@ class CloseObserver : public content::WebContentsObserver {
   explicit CloseObserver(WebContents* contents)
       : content::WebContentsObserver(contents) {}
 
+  CloseObserver(const CloseObserver&) = delete;
+  CloseObserver& operator=(const CloseObserver&) = delete;
+
   void Wait() { close_loop_.Run(); }
 
   // content::WebContentsObserver:
@@ -101,8 +104,6 @@ class CloseObserver : public content::WebContentsObserver {
 
  private:
   base::RunLoop close_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseObserver);
 };
 
 class PopupBlockerBrowserTest : public InProcessBrowserTest {

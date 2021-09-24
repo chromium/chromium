@@ -22,6 +22,10 @@ class StatusTrayStateChangerWinTest : public testing::Test {
  public:
   StatusTrayStateChangerWinTest() {}
 
+  StatusTrayStateChangerWinTest(const StatusTrayStateChangerWinTest&) = delete;
+  StatusTrayStateChangerWinTest& operator=(
+      const StatusTrayStateChangerWinTest&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     com_ = std::make_unique<base::win::ScopedCOMInitializer>();
@@ -82,8 +86,6 @@ class StatusTrayStateChangerWinTest : public testing::Test {
   Microsoft::WRL::ComPtr<StatusTrayStateChangerWin> tray_watcher_;
 
   StatusIconWin* status_icon_win_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWinTest);
 };
 
 // Test is disabled due to multiple COM initialization errors.  See

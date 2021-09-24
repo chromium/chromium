@@ -69,6 +69,10 @@ class ExtensionDialog : public views::DialogDelegate,
     absl::optional<SkColor> title_inactive_color;
 #endif
   };
+
+  ExtensionDialog(const ExtensionDialog&) = delete;
+  ExtensionDialog& operator=(const ExtensionDialog&) = delete;
+
   // Create and show a dialog with |url| centered over the provided window.
   // |parent_window| is the parent window to which the pop-up will be attached.
   // |profile| is the profile that the extension is registered with.
@@ -134,8 +138,6 @@ class ExtensionDialog : public views::DialogDelegate,
 
   // The observer of this popup.
   ExtensionDialogObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_DIALOG_H_

@@ -171,6 +171,10 @@ void VerifyPageContentDict(
 }  // namespace
 
 class MultideviceHandlerTest : public testing::Test {
+ public:
+  MultideviceHandlerTest(const MultideviceHandlerTest&) = delete;
+  MultideviceHandlerTest& operator=(const MultideviceHandlerTest&) = delete;
+
  protected:
   MultideviceHandlerTest()
       : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
@@ -502,8 +506,6 @@ class MultideviceHandlerTest : public testing::Test {
   std::unique_ptr<TestMultideviceHandler> handler_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultideviceHandlerTest);
 };
 
 TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {

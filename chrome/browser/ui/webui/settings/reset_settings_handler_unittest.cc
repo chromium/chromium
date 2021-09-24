@@ -54,6 +54,10 @@ class TestingResetSettingsHandler : public ResetSettingsHandler {
     set_web_ui(web_ui);
   }
 
+  TestingResetSettingsHandler(const TestingResetSettingsHandler&) = delete;
+  TestingResetSettingsHandler& operator=(const TestingResetSettingsHandler&) =
+      delete;
+
   size_t resets() const { return resetter_.resets(); }
 
   using settings::ResetSettingsHandler::HandleResetProfileSettings;
@@ -65,8 +69,6 @@ class TestingResetSettingsHandler : public ResetSettingsHandler {
 
 private:
   MockProfileResetter resetter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingResetSettingsHandler);
 };
 
 class ResetSettingsHandlerTest : public testing::Test {

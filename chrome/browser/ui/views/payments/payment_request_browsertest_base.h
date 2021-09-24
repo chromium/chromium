@@ -94,6 +94,10 @@ class PaymentRequestBrowserTestBase
     PAYMENT_HANDLER_WINDOW_OPENED,
   };
 
+  PaymentRequestBrowserTestBase(const PaymentRequestBrowserTestBase&) = delete;
+  PaymentRequestBrowserTestBase& operator=(
+      const PaymentRequestBrowserTestBase&) = delete;
+
   base::WeakPtr<PaymentRequestBrowserTestBase> GetWeakPtr();
 
  protected:
@@ -285,7 +289,6 @@ class PaymentRequestBrowserTestBase
   bool skip_ui_for_basic_card_ = false;
 
   base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestBrowserTestBase);
 };
 
 }  // namespace payments

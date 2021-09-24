@@ -28,6 +28,9 @@ class DbusAppmenu;
 // instance we are offering.
 class DbusAppmenuRegistrar {
  public:
+  DbusAppmenuRegistrar(const DbusAppmenuRegistrar&) = delete;
+  DbusAppmenuRegistrar& operator=(const DbusAppmenuRegistrar&) = delete;
+
   static DbusAppmenuRegistrar* GetInstance();
 
   void OnMenuBarCreated(DbusAppmenu* menu);
@@ -77,8 +80,6 @@ class DbusAppmenuRegistrar {
   std::map<DbusAppmenu*, MenuState> menus_;
 
   base::WeakPtrFactory<DbusAppmenuRegistrar> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DbusAppmenuRegistrar);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DBUS_APPMENU_REGISTRAR_H_

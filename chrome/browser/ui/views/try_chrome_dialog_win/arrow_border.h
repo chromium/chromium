@@ -56,6 +56,9 @@ class ArrowBorder : public views::Border {
               const gfx::VectorIcon& arrow_icon,
               const Properties* properties);
 
+  ArrowBorder(const ArrowBorder&) = delete;
+  ArrowBorder& operator=(const ArrowBorder&) = delete;
+
   // Sets the bounds of the arrow in pixels relative to the containing widget.
   void set_arrow_bounds(const gfx::Rect& arrow_bounds) {
     arrow_bounds_ = arrow_bounds;
@@ -81,8 +84,6 @@ class ArrowBorder : public views::Border {
   // client area. This rectangle may extend into the contents of the popup
   // (including its border).
   gfx::Rect arrow_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArrowBorder);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_ARROW_BORDER_H_

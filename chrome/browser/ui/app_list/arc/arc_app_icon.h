@@ -65,6 +65,10 @@ class ArcAppIcon {
              int resource_size_in_dip,
              Observer* observer,
              IconType icon_type = IconType::kUncompressed);
+
+  ArcAppIcon(const ArcAppIcon&) = delete;
+  ArcAppIcon& operator=(const ArcAppIcon&) = delete;
+
   virtual ~ArcAppIcon();
 
   // Starts loading the icon at every supported scale factor. The |observer_|
@@ -273,8 +277,6 @@ class ArcAppIcon {
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
   base::WeakPtrFactory<ArcAppIcon> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppIcon);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_ICON_H_

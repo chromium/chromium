@@ -182,6 +182,9 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     Build(browser);
   }
 
+  HelpMenuModel(const HelpMenuModel&) = delete;
+  HelpMenuModel& operator=(const HelpMenuModel&) = delete;
+
  private:
   void Build(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
@@ -218,8 +221,6 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     if (browser->profile()->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed))
       AddItemWithStringId(IDC_FEEDBACK, IDS_FEEDBACK);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HelpMenuModel);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

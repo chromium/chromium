@@ -24,6 +24,9 @@ namespace chromeos {
 // convert a regular Google account into a Family-Link managed account.
 class AddSupervisionDialog : public SystemWebDialogDelegate {
  public:
+  AddSupervisionDialog(const AddSupervisionDialog&) = delete;
+  AddSupervisionDialog& operator=(const AddSupervisionDialog&) = delete;
+
   // Shows the dialog; if the dialog is already displayed, this function is a
   // no-op.
   static void Show(gfx::NativeView parent);
@@ -58,8 +61,6 @@ class AddSupervisionDialog : public SystemWebDialogDelegate {
 
  private:
   bool should_close_on_escape_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionDialog);
 };
 
 // Controller for chrome://add-supervision

@@ -22,6 +22,11 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
       PasswordGenerationPopupController* controller,
       views::Widget* parent_widget);
 
+  PasswordGenerationPopupViewViews(const PasswordGenerationPopupViewViews&) =
+      delete;
+  PasswordGenerationPopupViewViews& operator=(
+      const PasswordGenerationPopupViewViews&) = delete;
+
   // PasswordGenerationPopupView implementation
   bool Show() override WARN_UNUSED_RESULT;
   void Hide() override;
@@ -51,8 +56,6 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
 
   // Controller for this view. Weak reference.
   PasswordGenerationPopupController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationPopupViewViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_

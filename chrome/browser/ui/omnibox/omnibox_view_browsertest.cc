@@ -149,6 +149,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
  public:
   OmniboxViewTest() {}
 
+  OmniboxViewTest(const OmniboxViewTest&) = delete;
+  OmniboxViewTest& operator=(const OmniboxViewTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -371,8 +374,6 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
   // Non-owning pointer.
   TestLocationBarModel* test_location_bar_model_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxViewTest);
 };
 
 // Test if ctrl-* accelerators are workable in omnibox.

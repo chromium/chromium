@@ -15,6 +15,11 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
  public:
   ExclusiveAccessBubbleViewsTest() {}
 
+  ExclusiveAccessBubbleViewsTest(const ExclusiveAccessBubbleViewsTest&) =
+      delete;
+  ExclusiveAccessBubbleViewsTest& operator=(
+      const ExclusiveAccessBubbleViewsTest&) = delete;
+
   ExclusiveAccessBubbleViews* bubble() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -31,9 +36,6 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
  protected:
   bool was_destroying_ = false;
   bool was_observing_in_destroying_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubbleViewsTest);
 };
 
 // Simulate obscure codepaths resulting in the bubble Widget being closed before

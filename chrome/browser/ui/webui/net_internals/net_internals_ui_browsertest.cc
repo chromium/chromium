@@ -118,6 +118,9 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
  public:
   explicit MessageHandler(NetInternalsTest* net_internals_test);
 
+  MessageHandler(const MessageHandler&) = delete;
+  MessageHandler& operator=(const MessageHandler&) = delete;
+
  private:
   void RegisterMessages() override;
 
@@ -153,8 +156,6 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
       net::NetworkIsolationKey::CreateTransient()};
 
   base::WeakPtrFactory<MessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageHandler);
 };
 
 NetInternalsTest::MessageHandler::MessageHandler(

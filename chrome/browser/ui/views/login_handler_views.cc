@@ -120,6 +120,9 @@ class LoginHandlerViews : public LoginHandler {
       widget_ = constrained_window::ShowWebModalDialogViews(this, web_contents);
     }
 
+    Dialog(const Dialog&) = delete;
+    Dialog& operator=(const Dialog&) = delete;
+
     void CloseDialog() {
       handler_ = nullptr;
       // The hosting widget may have been freed.
@@ -163,8 +166,6 @@ class LoginHandlerViews : public LoginHandler {
     // The LoginView that contains the user's login information.
     LoginView* login_view_;
     views::Widget* widget_;
-
-    DISALLOW_COPY_AND_ASSIGN(Dialog);
   };
 
   Dialog* dialog_ = nullptr;

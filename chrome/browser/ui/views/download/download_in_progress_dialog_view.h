@@ -16,6 +16,10 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(DownloadInProgressDialogView);
 
+  DownloadInProgressDialogView(const DownloadInProgressDialogView&) = delete;
+  DownloadInProgressDialogView& operator=(const DownloadInProgressDialogView&) =
+      delete;
+
   // |dialog_type| should be either DOWNLOAD_CLOSE_BROWSER_SHUTDOWN to indicate
   // the user is closing the browser or
   // DOWNLOAD_CLOSE_LAST_WINDOW_IN_INCOGNITO_PROFILE to indicate the user is
@@ -33,8 +37,6 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
   ~DownloadInProgressDialogView() override;
 
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadInProgressDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_IN_PROGRESS_DIALOG_VIEW_H_

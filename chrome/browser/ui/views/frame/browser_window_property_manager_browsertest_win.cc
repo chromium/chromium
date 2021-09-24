@@ -155,12 +155,14 @@ class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
  public:
   BrowserTestWithProfileShortcutManager() {}
 
+  BrowserTestWithProfileShortcutManager(
+      const BrowserTestWithProfileShortcutManager&) = delete;
+  BrowserTestWithProfileShortcutManager& operator=(
+      const BrowserTestWithProfileShortcutManager&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableProfileShortcutManager);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestWithProfileShortcutManager);
 };
 
 // Check that the window properties on Windows are properly set.

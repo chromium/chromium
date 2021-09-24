@@ -162,6 +162,9 @@ class DiceTurnSyncOnHelper
                        const CoreAccountId& account_id,
                        SigninAbortedMode signin_aborted_mode);
 
+  DiceTurnSyncOnHelper(const DiceTurnSyncOnHelper&) = delete;
+  DiceTurnSyncOnHelper& operator=(const DiceTurnSyncOnHelper&) = delete;
+
   // SyncStartupTracker::Observer:
   void SyncStartupCompleted() override;
   void SyncStartupFailed() override;
@@ -281,7 +284,6 @@ class DiceTurnSyncOnHelper
   bool enterprise_account_confirmed_ = false;
 
   base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_H_

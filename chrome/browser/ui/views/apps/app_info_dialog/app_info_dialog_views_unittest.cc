@@ -62,6 +62,9 @@ class AppInfoDialogTestApi {
  public:
   explicit AppInfoDialogTestApi(AppInfoDialog* dialog) : dialog_(dialog) {}
 
+  AppInfoDialogTestApi(const AppInfoDialogTestApi&) = delete;
+  AppInfoDialogTestApi& operator=(const AppInfoDialogTestApi&) = delete;
+
   void ShowAppInWebStore() {
     auto* header_panel =
         static_cast<AppInfoHeaderPanel*>(dialog_->children().front());
@@ -70,8 +73,6 @@ class AppInfoDialogTestApi {
 
  private:
   AppInfoDialog* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoDialogTestApi);
 };
 
 }  // namespace test
@@ -87,6 +88,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
                                public views::WidgetObserver {
  public:
   AppInfoDialogViewsTest() = default;
+
+  AppInfoDialogViewsTest(const AppInfoDialogViewsTest&) = delete;
+  AppInfoDialogViewsTest& operator=(const AppInfoDialogViewsTest&) = delete;
 
   // Overridden from testing::Test:
   void SetUp() override {
@@ -196,9 +200,6 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   ArcAppTest arc_test_;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInfoDialogViewsTest);
 };
 
 // Tests that the dialog closes when the current app is uninstalled.

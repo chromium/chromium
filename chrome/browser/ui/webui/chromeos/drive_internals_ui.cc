@@ -831,6 +831,9 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
         zip_path_(logs_directory_.AppendASCII(kLogsZipName)),
         drive_internals_(std::move(drive_internals)) {}
 
+  LogsZipper(const LogsZipper&) = delete;
+  LogsZipper& operator=(const LogsZipper&) = delete;
+
   void Start() {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -908,8 +911,6 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
   const base::WeakPtr<DriveInternalsWebUIHandler> drive_internals_;
 
   std::unique_ptr<download::AllDownloadItemNotifier> download_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogsZipper);
 };
 
 constexpr char LogsZipper::kLogsZipName[];

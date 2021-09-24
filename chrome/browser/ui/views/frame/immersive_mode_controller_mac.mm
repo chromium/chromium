@@ -164,6 +164,11 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   };
 
   ImmersiveModeControllerMac();
+
+  ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
+  ImmersiveModeControllerMac& operator=(const ImmersiveModeControllerMac&) =
+      delete;
+
   ~ImmersiveModeControllerMac() override;
 
   // ImmersiveModeController overrides:
@@ -209,8 +214,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   base::scoped_nsobject<NSObject> menu_reveal_monitor_;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerMac);
 };
 
 }  // namespace

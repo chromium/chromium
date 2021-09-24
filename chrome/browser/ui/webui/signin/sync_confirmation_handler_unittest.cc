@@ -51,14 +51,16 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
     set_web_ui(web_ui);
   }
 
+  TestingSyncConfirmationHandler(const TestingSyncConfirmationHandler&) =
+      delete;
+  TestingSyncConfirmationHandler& operator=(
+      const TestingSyncConfirmationHandler&) = delete;
+
   using SyncConfirmationHandler::HandleConfirm;
   using SyncConfirmationHandler::HandleUndo;
   using SyncConfirmationHandler::HandleInitializedWithSize;
   using SyncConfirmationHandler::HandleGoToSettings;
   using SyncConfirmationHandler::RecordConsent;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingSyncConfirmationHandler);
 };
 
 class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
@@ -75,6 +77,10 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
         on_sync_confirmation_ui_closed_called_(false),
         sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
         web_ui_(new content::TestWebUI) {}
+
+  SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
+  SyncConfirmationHandlerTest& operator=(const SyncConfirmationHandlerTest&) =
+      delete;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -204,8 +210,6 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandlerTest);
 };
 
 const char SyncConfirmationHandlerTest::kConsentText1[] = "consentText1";

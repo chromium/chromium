@@ -25,6 +25,9 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
  public:
   BubbleViewError() : bubble_view_close_count_(0) { }
 
+  BubbleViewError(const BubbleViewError&) = delete;
+  BubbleViewError& operator=(const BubbleViewError&) = delete;
+
   int bubble_view_close_count() { return bubble_view_close_count_; }
 
   bool HasMenuItem() override { return false; }
@@ -54,8 +57,6 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
 
  private:
   int bubble_view_close_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleViewError);
 };
 
 } // namespace

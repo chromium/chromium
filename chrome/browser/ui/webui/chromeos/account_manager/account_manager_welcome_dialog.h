@@ -14,6 +14,10 @@ namespace chromeos {
 
 class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
  public:
+  AccountManagerWelcomeDialog(const AccountManagerWelcomeDialog&) = delete;
+  AccountManagerWelcomeDialog& operator=(const AccountManagerWelcomeDialog&) =
+      delete;
+
   // Displays the Chrome OS Account Manager welcome screen, if it has not been
   // shown "too many times" before. Returns true if the screen was displayed,
   // false otherwise.
@@ -38,8 +42,6 @@ class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
 
  private:
   static bool ShowIfRequiredInternal();
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerWelcomeDialog);
 };
 
 }  // namespace chromeos

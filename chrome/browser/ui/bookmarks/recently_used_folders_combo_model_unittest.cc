@@ -50,10 +50,13 @@ class RecentlyUsedFoldersComboModelTest : public testing::Test {
  public:
   RecentlyUsedFoldersComboModelTest() = default;
 
+  RecentlyUsedFoldersComboModelTest(const RecentlyUsedFoldersComboModelTest&) =
+      delete;
+  RecentlyUsedFoldersComboModelTest& operator=(
+      const RecentlyUsedFoldersComboModelTest&) = delete;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyUsedFoldersComboModelTest);
 };
 
 // Verifies there are no duplicate nodes in the model.

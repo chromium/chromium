@@ -36,6 +36,10 @@ namespace {
 // with and without the experimental WindowPlacement blink feature.
 class PopupBrowserTest : public InProcessBrowserTest,
                          public ::testing::WithParamInterface<bool> {
+ public:
+  PopupBrowserTest(const PopupBrowserTest&) = delete;
+  PopupBrowserTest& operator=(const PopupBrowserTest&) = delete;
+
  protected:
   PopupBrowserTest() = default;
   ~PopupBrowserTest() override = default;
@@ -64,9 +68,6 @@ class PopupBrowserTest : public InProcessBrowserTest,
     EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
     return popup;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, PopupBrowserTest, ::testing::Bool());

@@ -118,8 +118,10 @@ class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
     set_web_ui(web_ui);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingAccountManagerUIHandler);
+  TestingAccountManagerUIHandler(const TestingAccountManagerUIHandler&) =
+      delete;
+  TestingAccountManagerUIHandler& operator=(
+      const TestingAccountManagerUIHandler&) = delete;
 };
 
 class AccountManagerUIHandlerTest

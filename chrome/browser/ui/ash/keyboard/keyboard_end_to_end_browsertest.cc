@@ -75,6 +75,9 @@ gfx::Size GetScreenBounds() {
 
 class KeyboardEndToEndTest : public InProcessBrowserTest {
  public:
+  KeyboardEndToEndTest(const KeyboardEndToEndTest&) = delete;
+  KeyboardEndToEndTest& operator=(const KeyboardEndToEndTest&) = delete;
+
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
@@ -144,8 +147,6 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
 
  private:
   base::FilePath test_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndTest);
 };
 
 class KeyboardEndToEndFormTest : public KeyboardEndToEndTest {

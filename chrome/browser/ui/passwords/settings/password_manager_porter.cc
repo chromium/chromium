@@ -70,14 +70,15 @@ class PasswordImportConsumer {
  public:
   explicit PasswordImportConsumer(Profile* profile);
 
+  PasswordImportConsumer(const PasswordImportConsumer&) = delete;
+  PasswordImportConsumer& operator=(const PasswordImportConsumer&) = delete;
+
   void ConsumePassword(password_manager::PasswordImporter::Result result,
                        password_manager::CSVPasswordSequence seq);
 
  private:
   Profile* profile_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordImportConsumer);
 };
 
 PasswordImportConsumer::PasswordImportConsumer(Profile* profile)

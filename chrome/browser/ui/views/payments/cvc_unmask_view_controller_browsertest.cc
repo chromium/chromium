@@ -14,11 +14,14 @@ namespace payments {
 
 class PaymentRequestCvcUnmaskViewControllerTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestCvcUnmaskViewControllerTest(
+      const PaymentRequestCvcUnmaskViewControllerTest&) = delete;
+  PaymentRequestCvcUnmaskViewControllerTest& operator=(
+      const PaymentRequestCvcUnmaskViewControllerTest&) = delete;
+
  protected:
   PaymentRequestCvcUnmaskViewControllerTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCvcUnmaskViewControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,

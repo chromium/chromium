@@ -19,6 +19,10 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
  public:
   static void Show(gfx::NativeWindow parent_window);
 
+  UpdateRecommendedMessageBox(const UpdateRecommendedMessageBox&) = delete;
+  UpdateRecommendedMessageBox& operator=(const UpdateRecommendedMessageBox&) =
+      delete;
+
  private:
   UpdateRecommendedMessageBox();
   ~UpdateRecommendedMessageBox() override;
@@ -32,8 +36,6 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
   const views::Widget* GetWidget() const override;
 
   views::MessageBoxView* message_box_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRecommendedMessageBox);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_

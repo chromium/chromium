@@ -50,6 +50,9 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
   FaviconRequestHelper(base::WeakPtr<DiscardsGraphDumpImpl> graph_dump,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  FaviconRequestHelper(const FaviconRequestHelper&) = delete;
+  FaviconRequestHelper& operator=(const FaviconRequestHelper&) = delete;
+
   void RequestFavicon(GURL page_url,
                       performance_manager::WebContentsProxy contents_proxy,
                       int64_t serialization_id);
@@ -63,8 +66,6 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconRequestHelper);
 };
 
 DiscardsGraphDumpImpl::FaviconRequestHelper::FaviconRequestHelper(

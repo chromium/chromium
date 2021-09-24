@@ -80,6 +80,9 @@ class ThumbnailImageTest : public testing::Test,
  public:
   ThumbnailImageTest() = default;
 
+  ThumbnailImageTest(const ThumbnailImageTest&) = delete;
+  ThumbnailImageTest& operator=(const ThumbnailImageTest&) = delete;
+
  protected:
   static SkBitmap CreateBitmap(int width, int height) {
     SkBitmap bitmap;
@@ -101,7 +104,6 @@ class ThumbnailImageTest : public testing::Test,
 
   bool is_being_observed_ = false;
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailImageTest);
 };
 
 using Subscription = ThumbnailImage::Subscription;

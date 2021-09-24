@@ -84,15 +84,22 @@ class ContentSettingBlockedImageModel : public ContentSettingSimpleImageModel {
   ContentSettingBlockedImageModel(ImageType image_type,
                                   ContentSettingsType content_type);
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingBlockedImageModel(const ContentSettingBlockedImageModel&) =
+      delete;
+  ContentSettingBlockedImageModel& operator=(
+      const ContentSettingBlockedImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBlockedImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
  public:
   ContentSettingGeolocationImageModel();
+
+  ContentSettingGeolocationImageModel(
+      const ContentSettingGeolocationImageModel&) = delete;
+  ContentSettingGeolocationImageModel& operator=(
+      const ContentSettingGeolocationImageModel&) = delete;
 
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 
@@ -105,19 +112,17 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingGeolocationImageModel);
 };
 
 class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingRPHImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingRPHImageModel(const ContentSettingRPHImageModel&) = delete;
+  ContentSettingRPHImageModel& operator=(const ContentSettingRPHImageModel&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingRPHImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingMIDISysExImageModel
@@ -125,10 +130,12 @@ class ContentSettingMIDISysExImageModel
  public:
   ContentSettingMIDISysExImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingMIDISysExImageModel(const ContentSettingMIDISysExImageModel&) =
+      delete;
+  ContentSettingMIDISysExImageModel& operator=(
+      const ContentSettingMIDISysExImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMIDISysExImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingDownloadsImageModel
@@ -136,10 +143,12 @@ class ContentSettingDownloadsImageModel
  public:
   ContentSettingDownloadsImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingDownloadsImageModel(const ContentSettingDownloadsImageModel&) =
+      delete;
+  ContentSettingDownloadsImageModel& operator=(
+      const ContentSettingDownloadsImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingDownloadsImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingClipboardReadWriteImageModel
@@ -147,16 +156,22 @@ class ContentSettingClipboardReadWriteImageModel
  public:
   ContentSettingClipboardReadWriteImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingClipboardReadWriteImageModel(
+      const ContentSettingClipboardReadWriteImageModel&) = delete;
+  ContentSettingClipboardReadWriteImageModel& operator=(
+      const ContentSettingClipboardReadWriteImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingClipboardReadWriteImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 // Image model for displaying media icons in the location bar.
 class ContentSettingMediaImageModel : public ContentSettingImageModel {
  public:
   ContentSettingMediaImageModel();
+
+  ContentSettingMediaImageModel(const ContentSettingMediaImageModel&) = delete;
+  ContentSettingMediaImageModel& operator=(
+      const ContentSettingMediaImageModel&) = delete;
 
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
   bool IsMicAccessed();
@@ -176,18 +191,18 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
 
  private:
   PageSpecificContentSettings::MicrophoneCameraState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMediaImageModel);
 };
 
 class ContentSettingSensorsImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingSensorsImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingSensorsImageModel(const ContentSettingSensorsImageModel&) =
+      delete;
+  ContentSettingSensorsImageModel& operator=(
+      const ContentSettingSensorsImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSensorsImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 // The image model for an icon that acts as a quiet permission request prompt
@@ -200,25 +215,28 @@ class ContentSettingNotificationsImageModel
  public:
   ContentSettingNotificationsImageModel();
 
+  ContentSettingNotificationsImageModel(
+      const ContentSettingNotificationsImageModel&) = delete;
+  ContentSettingNotificationsImageModel& operator=(
+      const ContentSettingNotificationsImageModel&) = delete;
+
   // ContentSettingSimpleImageModel:
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
   void SetPromoWasShown(content::WebContents* contents) override;
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingNotificationsImageModel);
 };
 
 class ContentSettingPopupImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingPopupImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingPopupImageModel(const ContentSettingPopupImageModel&) = delete;
+  ContentSettingPopupImageModel& operator=(
+      const ContentSettingPopupImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingPopupImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 namespace {

@@ -74,6 +74,11 @@ class FakeRelaunchNotificationController
       : RelaunchNotificationController(upgrade_detector, clock, tick_clock),
         delegate_(delegate) {}
 
+  FakeRelaunchNotificationController(
+      const FakeRelaunchNotificationController&) = delete;
+  FakeRelaunchNotificationController& operator=(
+      const FakeRelaunchNotificationController&) = delete;
+
   using RelaunchNotificationController::kRelaunchGracePeriod;
 
   base::Time IncreaseRelaunchDeadlineOnShow() {
@@ -102,8 +107,6 @@ class FakeRelaunchNotificationController
   }
 
   ControllerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRelaunchNotificationController);
 };
 
 // A mock delegate for testing.
@@ -124,6 +127,9 @@ class FakeUpgradeDetector : public UpgradeDetector {
       : UpgradeDetector(clock, tick_clock) {
     set_upgrade_detected_time(this->clock()->Now());
   }
+
+  FakeUpgradeDetector(const FakeUpgradeDetector&) = delete;
+  FakeUpgradeDetector& operator=(const FakeUpgradeDetector&) = delete;
 
   base::TimeDelta GetHighAnnoyanceLevelDelta() {
     return GetAnnoyanceLevelDeadline(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH) -
@@ -170,8 +176,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
 
  private:
   base::TimeDelta high_threshold_ = base::TimeDelta::FromDays(7);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);
 };
 
 }  // namespace
@@ -179,6 +183,12 @@ class FakeUpgradeDetector : public UpgradeDetector {
 // A test harness that provides facilities for manipulating the relaunch
 // notification policy setting and for broadcasting upgrade notifications.
 class RelaunchNotificationControllerTest : public ::testing::Test {
+ public:
+  RelaunchNotificationControllerTest(
+      const RelaunchNotificationControllerTest&) = delete;
+  RelaunchNotificationControllerTest& operator=(
+      const RelaunchNotificationControllerTest&) = delete;
+
  protected:
   RelaunchNotificationControllerTest()
       : task_environment_(
@@ -226,8 +236,6 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
   FakeUpgradeDetector upgrade_detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationControllerTest);
 };
 
 TEST_F(RelaunchNotificationControllerTest, CreateDestroy) {

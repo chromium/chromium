@@ -63,6 +63,10 @@ class AppMenuIconController : public GlobalErrorObserver,
   AppMenuIconController(UpgradeDetector* upgrade_detector,
                         Profile* profile,
                         Delegate* delegate);
+
+  AppMenuIconController(const AppMenuIconController&) = delete;
+  AppMenuIconController& operator=(const AppMenuIconController&) = delete;
+
   ~AppMenuIconController() override;
 
   // Forces an update of the UI based on the current state of the world. This
@@ -94,8 +98,6 @@ class AppMenuIconController : public GlobalErrorObserver,
   Delegate* const delegate_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuIconController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_ICON_CONTROLLER_H_

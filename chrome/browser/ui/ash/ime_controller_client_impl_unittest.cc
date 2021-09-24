@@ -58,6 +58,9 @@ class TestInputMethodManager : public MockInputMethodManager {
       input_methods_ = {ime1, ime2};
     }
 
+    TestState(const TestState&) = delete;
+    TestState& operator=(const TestState&) = delete;
+
     // MockInputMethodManager::State:
     void ChangeInputMethod(const std::string& input_method_id,
                            bool show_message) override {
@@ -100,11 +103,13 @@ class TestInputMethodManager : public MockInputMethodManager {
    protected:
     friend base::RefCounted<InputMethodManager::State>;
     ~TestState() override {}
-
-    DISALLOW_COPY_AND_ASSIGN(TestState);
   };
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {}
+
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
+
   ~TestInputMethodManager() override = default;
 
   // MockInputMethodManager:
@@ -141,9 +146,6 @@ class TestInputMethodManager : public MockInputMethodManager {
   ash::input_method::ImeKeyset keyboard_keyset_;
   FakeInputMethodDelegate delegate_;
   InputMethodUtil util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 class ImeControllerClientImplTest : public testing::Test {

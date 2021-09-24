@@ -179,6 +179,9 @@ class TestingPeopleHandler : public PeopleHandler {
     set_web_ui(web_ui);
   }
 
+  TestingPeopleHandler(const TestingPeopleHandler&) = delete;
+  TestingPeopleHandler& operator=(const TestingPeopleHandler&) = delete;
+
   using PeopleHandler::is_configuring_sync;
 
  private:
@@ -186,8 +189,6 @@ class TestingPeopleHandler : public PeopleHandler {
   void DisplayGaiaLoginInNewTabOrWindow(
       signin_metrics::AccessPoint access_point) override {}
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPeopleHandler);
 };
 
 class TestWebUIProvider

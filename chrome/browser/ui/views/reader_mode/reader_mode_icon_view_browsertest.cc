@@ -38,6 +38,11 @@ const char* kNonArticlePath = "/dom_distiller/non_og_article.html";
 const char* kArticleTitle = "Test Page Title";
 
 class ReaderModeIconViewBrowserTest : public InProcessBrowserTest {
+ public:
+  ReaderModeIconViewBrowserTest(const ReaderModeIconViewBrowserTest&) = delete;
+  ReaderModeIconViewBrowserTest& operator=(
+      const ReaderModeIconViewBrowserTest&) = delete;
+
  protected:
   ReaderModeIconViewBrowserTest() {
     feature_list_.InitAndEnableFeature(dom_distiller::kReaderMode);
@@ -64,8 +69,6 @@ class ReaderModeIconViewBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderModeIconViewBrowserTest);
 };
 
 // TODO(gilmanmh): Add tests for the following cases:
@@ -171,6 +174,12 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewPrerenderBrowserTest,
 
 class ReaderModeIconViewBrowserTestWithSettings
     : public ReaderModeIconViewBrowserTest {
+ public:
+  ReaderModeIconViewBrowserTestWithSettings(
+      const ReaderModeIconViewBrowserTestWithSettings&) = delete;
+  ReaderModeIconViewBrowserTestWithSettings& operator=(
+      const ReaderModeIconViewBrowserTestWithSettings&) = delete;
+
  protected:
   ReaderModeIconViewBrowserTestWithSettings() {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -186,8 +195,6 @@ class ReaderModeIconViewBrowserTestWithSettings
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderModeIconViewBrowserTestWithSettings);
 };
 
 // Flaky on Linux Win ChromeOS: crbug.com/1054641

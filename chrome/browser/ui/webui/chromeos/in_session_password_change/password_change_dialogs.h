@@ -15,6 +15,10 @@ namespace chromeos {
 
 // A modal system dialog without any frame decorating it.
 class BasePasswordDialog : public SystemWebDialogDelegate {
+ public:
+  BasePasswordDialog(const BasePasswordDialog&) = delete;
+  BasePasswordDialog& operator=(const BasePasswordDialog&) = delete;
+
  protected:
   BasePasswordDialog(GURL url, gfx::Size desired_size);
   ~BasePasswordDialog() override;
@@ -26,27 +30,29 @@ class BasePasswordDialog : public SystemWebDialogDelegate {
 
  private:
   gfx::Size desired_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePasswordDialog);
 };
 
 // System dialog wrapping chrome:://password-change
 class PasswordChangeDialog : public BasePasswordDialog {
  public:
+  PasswordChangeDialog(const PasswordChangeDialog&) = delete;
+  PasswordChangeDialog& operator=(const PasswordChangeDialog&) = delete;
+
   static void Show();
   static void Dismiss();
 
  protected:
   PasswordChangeDialog();
   ~PasswordChangeDialog() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordChangeDialog);
 };
 
 // System dialog wrapping chrome://confirm-password-change
 class ConfirmPasswordChangeDialog : public BasePasswordDialog {
  public:
+  ConfirmPasswordChangeDialog(const ConfirmPasswordChangeDialog&) = delete;
+  ConfirmPasswordChangeDialog& operator=(const ConfirmPasswordChangeDialog&) =
+      delete;
+
   static void Show(const std::string& scraped_old_password,
                    const std::string& scraped_new_password,
                    bool show_spinner_initially);
@@ -70,22 +76,22 @@ class ConfirmPasswordChangeDialog : public BasePasswordDialog {
   std::string scraped_old_password_;
   std::string scraped_new_password_;
   bool show_spinner_initially_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfirmPasswordChangeDialog);
 };
 
 // System dialog wrapping chrome://urgent-password-expiry-notification
 class UrgentPasswordExpiryNotificationDialog : public BasePasswordDialog {
  public:
+  UrgentPasswordExpiryNotificationDialog(
+      const UrgentPasswordExpiryNotificationDialog&) = delete;
+  UrgentPasswordExpiryNotificationDialog& operator=(
+      const UrgentPasswordExpiryNotificationDialog&) = delete;
+
   static void Show();
   static void Dismiss();
 
  protected:
   UrgentPasswordExpiryNotificationDialog();
   ~UrgentPasswordExpiryNotificationDialog() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UrgentPasswordExpiryNotificationDialog);
 };
 
 }  // namespace chromeos

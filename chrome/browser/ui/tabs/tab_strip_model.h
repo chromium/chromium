@@ -199,9 +199,15 @@ class TabStripModel : public TabGroupController {
 
   static constexpr int kNoTab = -1;
 
+  TabStripModel() = delete;
+
   // Construct a TabStripModel with a delegate to help it do certain things
   // (see the TabStripModelDelegate documentation). |delegate| cannot be NULL.
   explicit TabStripModel(TabStripModelDelegate* delegate, Profile* profile);
+
+  TabStripModel(const TabStripModel&) = delete;
+  TabStripModel& operator=(const TabStripModel&) = delete;
+
   ~TabStripModel() override;
 
   // Retrieves the TabStripModelDelegate associated with this TabStripModel.
@@ -891,8 +897,6 @@ class TabStripModel : public TabGroupController {
   size_t tabs_scrubbed_by_key_press_count_ = 0;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TabStripModel);
 };
 
 // Forbid construction of ScopedObservation and ScopedMultiSourceObservation

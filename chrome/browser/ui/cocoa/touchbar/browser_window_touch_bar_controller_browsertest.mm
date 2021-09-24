@@ -31,6 +31,11 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
  public:
   BrowserWindowTouchBarControllerTest() : InProcessBrowserTest() {}
 
+  BrowserWindowTouchBarControllerTest(
+      const BrowserWindowTouchBarControllerTest&) = delete;
+  BrowserWindowTouchBarControllerTest& operator=(
+      const BrowserWindowTouchBarControllerTest&) = delete;
+
   API_AVAILABLE(macos(10.12.2))
   NSTouchBar* MakeTouchBar() {
     auto* delegate =
@@ -54,9 +59,6 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
         browser_view->frame()->native_browser_frame());
     return browser_frame->GetTouchBarController();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowTouchBarControllerTest);
 };
 
 // Test if the touch bar gets invalidated when the active tab is changed.

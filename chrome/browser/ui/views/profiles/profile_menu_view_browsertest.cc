@@ -615,13 +615,13 @@ class ProfileMenuClickTest : public ProfileMenuClickTestBase,
   class test_case_name : public ProfileMenuClickTest {                    \
    public:                                                                \
     test_case_name() = default;                                           \
+    test_case_name(const test_case_name&) = delete;                       \
+    test_case_name& operator=(const test_case_name&) = delete;            \
                                                                           \
     ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex( \
         size_t index) override {                                          \
       return actionable_item_list[index];                                 \
     }                                                                     \
-                                                                          \
-    DISALLOW_COPY_AND_ASSIGN(test_case_name);                             \
   };                                                                      \
                                                                           \
   INSTANTIATE_TEST_SUITE_P(                                               \

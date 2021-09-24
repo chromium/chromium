@@ -15,6 +15,10 @@ namespace chromeos {
 
 class AccountMigrationWelcomeDialog : public SystemWebDialogDelegate {
  public:
+  AccountMigrationWelcomeDialog(const AccountMigrationWelcomeDialog&) = delete;
+  AccountMigrationWelcomeDialog& operator=(
+      const AccountMigrationWelcomeDialog&) = delete;
+
   // Displays the migration dialog for the |email|.
   static AccountMigrationWelcomeDialog* Show(const std::string& email);
 
@@ -36,8 +40,6 @@ class AccountMigrationWelcomeDialog : public SystemWebDialogDelegate {
  private:
   const std::string email_;
   const std::string id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountMigrationWelcomeDialog);
 };
 
 }  // namespace chromeos

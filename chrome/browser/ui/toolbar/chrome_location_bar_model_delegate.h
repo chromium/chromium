@@ -24,6 +24,11 @@ class PrefRegistrySyncable;
 // out how to fetch the active WebContents to its subclasses.
 class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
  public:
+  ChromeLocationBarModelDelegate(const ChromeLocationBarModelDelegate&) =
+      delete;
+  ChromeLocationBarModelDelegate& operator=(
+      const ChromeLocationBarModelDelegate&) = delete;
+
   // Returns active WebContents.
   virtual content::WebContents* GetActiveWebContents() const = 0;
 
@@ -87,8 +92,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
 
   // Helper method that returns the state of URL elision in the omnibox.
   ElisionConfig GetElisionConfig() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLocationBarModelDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LOCATION_BAR_MODEL_DELEGATE_H_

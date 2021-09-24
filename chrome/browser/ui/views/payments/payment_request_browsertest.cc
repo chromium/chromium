@@ -38,11 +38,14 @@ using ::testing::UnorderedElementsAre;
 
 class PaymentRequestWebContentsManagerTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestWebContentsManagerTest(
+      const PaymentRequestWebContentsManagerTest&) = delete;
+  PaymentRequestWebContentsManagerTest& operator=(
+      const PaymentRequestWebContentsManagerTest&) = delete;
+
  protected:
   PaymentRequestWebContentsManagerTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestWebContentsManagerTest);
 };
 
 // If the page creates multiple PaymentRequest objects, it should not crash.
@@ -54,11 +57,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestWebContentsManagerTest, MultipleRequests) {
 }
 
 class PaymentRequestNoShippingTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestNoShippingTest(const PaymentRequestNoShippingTest&) = delete;
+  PaymentRequestNoShippingTest& operator=(const PaymentRequestNoShippingTest&) =
+      delete;
+
  protected:
   PaymentRequestNoShippingTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestNoShippingTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InactiveBrowserWindow) {
@@ -179,11 +184,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InvalidSSL) {
 }
 
 class PaymentRequestAbortTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestAbortTest(const PaymentRequestAbortTest&) = delete;
+  PaymentRequestAbortTest& operator=(const PaymentRequestAbortTest&) = delete;
+
  protected:
   PaymentRequestAbortTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestAbortTest);
 };
 
 // Testing the use of the abort() JS API.
@@ -235,6 +241,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestAbortTest,
 
 class PaymentRequestPaymentMethodIdentifierTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentMethodIdentifierTest(
+      const PaymentRequestPaymentMethodIdentifierTest&) = delete;
+  PaymentRequestPaymentMethodIdentifierTest& operator=(
+      const PaymentRequestPaymentMethodIdentifierTest&) = delete;
+
  protected:
   PaymentRequestPaymentMethodIdentifierTest() {}
 
@@ -245,9 +257,6 @@ class PaymentRequestPaymentMethodIdentifierTest
 
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentMethodIdentifierTest);
 };
 
 // One network is specified in 'basic-card' data, one in supportedMethods.
@@ -316,6 +325,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentMethodIdentifierTest, Url_Valid) {
 // interactive manner for visual testing.
 class PaymentsRequestVisualTest
     : public SupportsTestDialog<PaymentRequestNoShippingTest> {
+ public:
+  PaymentsRequestVisualTest(const PaymentsRequestVisualTest&) = delete;
+  PaymentsRequestVisualTest& operator=(const PaymentsRequestVisualTest&) =
+      delete;
+
  protected:
   PaymentsRequestVisualTest() {}
 
@@ -327,9 +341,6 @@ class PaymentsRequestVisualTest
     // show, but not the close, resulting in a DCHECK in its destructor.
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentsRequestVisualTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentsRequestVisualTest, InvokeUi_NoShipping) {
@@ -338,11 +349,14 @@ IN_PROC_BROWSER_TEST_F(PaymentsRequestVisualTest, InvokeUi_NoShipping) {
 }
 
 class PaymentRequestSettingsLinkTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestSettingsLinkTest(const PaymentRequestSettingsLinkTest&) =
+      delete;
+  PaymentRequestSettingsLinkTest& operator=(
+      const PaymentRequestSettingsLinkTest&) = delete;
+
  protected:
   PaymentRequestSettingsLinkTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSettingsLinkTest);
 };
 
 // Tests that clicking the settings link brings the user to settings.

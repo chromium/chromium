@@ -408,11 +408,11 @@ class ZoomBubbleDialogTest : public DialogBrowserTest {
  public:
   ZoomBubbleDialogTest() {}
 
+  ZoomBubbleDialogTest(const ZoomBubbleDialogTest&) = delete;
+  ZoomBubbleDialogTest& operator=(const ZoomBubbleDialogTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override { ShowInActiveTab(browser()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ZoomBubbleDialogTest);
 };
 
 // Test that calls ShowUi("default").

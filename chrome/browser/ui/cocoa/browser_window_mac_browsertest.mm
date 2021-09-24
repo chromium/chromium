@@ -23,8 +23,8 @@ class BrowserWindowMacTest : public InProcessBrowserTest {
  public:
   BrowserWindowMacTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacTest);
+  BrowserWindowMacTest(const BrowserWindowMacTest&) = delete;
+  BrowserWindowMacTest& operator=(const BrowserWindowMacTest&) = delete;
 };
 
 // Test that mainMenu commands do not attempt to validate against a Browser*

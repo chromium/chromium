@@ -17,6 +17,10 @@
 // A dialog-specific subclass of TestBrowserUi, which will verify that a test
 // showed a single dialog.
 class TestBrowserDialog : public TestBrowserUi {
+ public:
+  TestBrowserDialog(const TestBrowserDialog&) = delete;
+  TestBrowserDialog& operator=(const TestBrowserDialog&) = delete;
+
  protected:
   TestBrowserDialog();
   ~TestBrowserDialog() override;
@@ -75,8 +79,6 @@ class TestBrowserDialog : public TestBrowserUi {
   // This should always be true, but some dialogs don't yet size themselves
   // properly. https://crbug.com/893292.
   bool should_verify_dialog_bounds_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserDialog);
 };
 
 template <class Base>

@@ -19,6 +19,11 @@
 namespace payments {
 
 class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestModifiersTest(const PaymentRequestModifiersTest&) = delete;
+  PaymentRequestModifiersTest& operator=(const PaymentRequestModifiersTest&) =
+      delete;
+
  protected:
   PaymentRequestModifiersTest() {}
 
@@ -43,8 +48,6 @@ class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestModifiersTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,

@@ -30,6 +30,11 @@ class CrostiniUpdateFilesystemViewBrowserTest
   CrostiniUpdateFilesystemViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/) {}
 
+  CrostiniUpdateFilesystemViewBrowserTest(
+      const CrostiniUpdateFilesystemViewBrowserTest&) = delete;
+  CrostiniUpdateFilesystemViewBrowserTest& operator=(
+      const CrostiniUpdateFilesystemViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     PrepareShowCrostiniUpdateFilesystemView(
@@ -63,9 +68,6 @@ class CrostiniUpdateFilesystemViewBrowserTest
 
   const crostini::ContainerId kContainerId =
       crostini::ContainerId("vm_name", "container_name");
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpdateFilesystemViewBrowserTest);
 };
 
 // Test the dialog is actually launched.

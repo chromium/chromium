@@ -17,11 +17,14 @@
 namespace payments {
 
 class PaymentRequestErrorMessageTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestErrorMessageTest(const PaymentRequestErrorMessageTest&) =
+      delete;
+  PaymentRequestErrorMessageTest& operator=(
+      const PaymentRequestErrorMessageTest&) = delete;
+
  protected:
   PaymentRequestErrorMessageTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestErrorMessageTest);
 };
 
 // Testing the use of the complete('fail') JS API and the error message.

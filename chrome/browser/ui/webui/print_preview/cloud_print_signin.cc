@@ -26,6 +26,9 @@ class SignInObserver : public content::WebContentsObserver {
   SignInObserver(content::WebContents* web_contents, base::OnceClosure callback)
       : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
 
+  SignInObserver(const SignInObserver&) = delete;
+  SignInObserver& operator=(const SignInObserver&) = delete;
+
  private:
   // Overridden from content::WebContentsObserver:
   void DidFinishNavigation(
@@ -55,8 +58,6 @@ class SignInObserver : public content::WebContentsObserver {
 
   base::OnceClosure callback_;
   base::WeakPtrFactory<SignInObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignInObserver);
 };
 
 }  // namespace

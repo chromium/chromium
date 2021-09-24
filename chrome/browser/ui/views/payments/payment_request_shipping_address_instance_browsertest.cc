@@ -16,11 +16,14 @@ namespace {
 
 class PaymentRequestShippingAddressInstanceTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestShippingAddressInstanceTest(
+      const PaymentRequestShippingAddressInstanceTest&) = delete;
+  PaymentRequestShippingAddressInstanceTest& operator=(
+      const PaymentRequestShippingAddressInstanceTest&) = delete;
+
  protected:
   PaymentRequestShippingAddressInstanceTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestShippingAddressInstanceTest);
 };
 
 // If the page creates multiple PaymentRequest objects, it should not crash.

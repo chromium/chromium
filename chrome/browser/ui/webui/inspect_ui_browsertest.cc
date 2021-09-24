@@ -28,13 +28,13 @@ class InspectUITest : public WebUIBrowserTest {
  public:
   InspectUITest() {}
 
+  InspectUITest(const InspectUITest&) = delete;
+  InspectUITest& operator=(const InspectUITest&) = delete;
+
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(base::FilePath(FILE_PATH_LITERAL("inspect_ui_test.js")));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InspectUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {

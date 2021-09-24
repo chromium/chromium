@@ -55,12 +55,13 @@ class ClipboardObserver : public ui::ClipboardObserver {
   explicit ClipboardObserver(base::RepeatingClosure callback)
       : callback_(callback) {}
 
+  ClipboardObserver(const ClipboardObserver&) = delete;
+  ClipboardObserver& operator=(const ClipboardObserver&) = delete;
+
   void OnClipboardDataChanged() override { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardObserver);
 };
 
 }  // namespace

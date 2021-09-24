@@ -70,6 +70,12 @@ void CloseAndWait(views::Widget* widget) {
 
 class ExtensionInstallDialogViewTestBase
     : public extensions::ExtensionBrowserTest {
+ public:
+  ExtensionInstallDialogViewTestBase(
+      const ExtensionInstallDialogViewTestBase&) = delete;
+  ExtensionInstallDialogViewTestBase& operator=(
+      const ExtensionInstallDialogViewTestBase&) = delete;
+
  protected:
   ExtensionInstallDialogViewTestBase();
 
@@ -87,8 +93,6 @@ class ExtensionInstallDialogViewTestBase
  private:
   const extensions::Extension* extension_;
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogViewTestBase);
 };
 
 ExtensionInstallDialogViewTestBase::ExtensionInstallDialogViewTestBase()
@@ -125,14 +129,15 @@ ExtensionInstallDialogViewTestBase::CreatePrompt(
 }
 
 class ScrollbarTest : public ExtensionInstallDialogViewTestBase {
+ public:
+  ScrollbarTest(const ScrollbarTest&) = delete;
+  ScrollbarTest& operator=(const ScrollbarTest&) = delete;
+
  protected:
   ScrollbarTest() {}
 
   bool IsScrollbarVisible(
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollbarTest);
 };
 
 bool ScrollbarTest::IsScrollbarVisible(
@@ -362,6 +367,11 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
         extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
   }
 
+  ExtensionInstallDialogViewInteractiveBrowserTest(
+      const ExtensionInstallDialogViewInteractiveBrowserTest&) = delete;
+  ExtensionInstallDialogViewInteractiveBrowserTest& operator=(
+      const ExtensionInstallDialogViewInteractiveBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     extensions::ChromeTestExtensionLoader loader(browser()->profile());
@@ -438,8 +448,6 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
   std::vector<std::u16string> retained_devices_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogViewInteractiveBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
@@ -654,12 +662,14 @@ class ExtensionInstallDialogRatingsSectionTest
  public:
   ExtensionInstallDialogRatingsSectionTest() {}
 
+  ExtensionInstallDialogRatingsSectionTest(
+      const ExtensionInstallDialogRatingsSectionTest&) = delete;
+  ExtensionInstallDialogRatingsSectionTest& operator=(
+      const ExtensionInstallDialogRatingsSectionTest&) = delete;
+
   void TestRatingsSectionA11y(int num_ratings,
                               double average_rating,
                               const std::string& expected_text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogRatingsSectionTest);
 };
 
 void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
@@ -717,9 +727,13 @@ class ExtensionInstallDialogWithWithholdPermissionsUI
         extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
   }
 
+  ExtensionInstallDialogWithWithholdPermissionsUI(
+      const ExtensionInstallDialogWithWithholdPermissionsUI&) = delete;
+  ExtensionInstallDialogWithWithholdPermissionsUI& operator=(
+      const ExtensionInstallDialogWithWithholdPermissionsUI&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogWithWithholdPermissionsUI);
 };
 
 // Verifies that some UI is displayed in the extra view for withholding

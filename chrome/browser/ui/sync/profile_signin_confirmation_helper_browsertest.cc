@@ -23,13 +23,15 @@ class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
  public:
   ProfileSigninConfirmationHelperBrowserTest() {}
 
+  ProfileSigninConfirmationHelperBrowserTest(
+      const ProfileSigninConfirmationHelperBrowserTest&) = delete;
+  ProfileSigninConfirmationHelperBrowserTest& operator=(
+      const ProfileSigninConfirmationHelperBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Force the first-run flow to trigger autoimport.
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationHelperBrowserTest);
 };
 
 // http://crbug.com/321302

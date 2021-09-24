@@ -27,6 +27,10 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   explicit CardUnmaskPromptViewAndroid(CardUnmaskPromptController* controller,
                                        content::WebContents* web_contents);
 
+  CardUnmaskPromptViewAndroid(const CardUnmaskPromptViewAndroid&) = delete;
+  CardUnmaskPromptViewAndroid& operator=(const CardUnmaskPromptViewAndroid&) =
+      delete;
+
   bool CheckUserInputValidity(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -66,8 +70,6 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
 
   CardUnmaskPromptController* controller_;
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViewAndroid);
 };
 
 }  // namespace autofill

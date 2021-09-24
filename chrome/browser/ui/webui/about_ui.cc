@@ -188,6 +188,9 @@ base::FilePath CreateDemoResourcesTermsPath(const base::FilePath& file_path) {
 class ChromeOSTermsHandler
     : public base::RefCountedThreadSafe<ChromeOSTermsHandler> {
  public:
+  ChromeOSTermsHandler(const ChromeOSTermsHandler&) = delete;
+  ChromeOSTermsHandler& operator=(const ChromeOSTermsHandler&) = delete;
+
   static void Start(const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
     scoped_refptr<ChromeOSTermsHandler> handler(
@@ -340,13 +343,14 @@ class ChromeOSTermsHandler
 
   // EULA contents that was loaded from file.
   std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSTermsHandler);
 };
 
 class ChromeOSCreditsHandler
     : public base::RefCountedThreadSafe<ChromeOSCreditsHandler> {
  public:
+  ChromeOSCreditsHandler(const ChromeOSCreditsHandler&) = delete;
+  ChromeOSCreditsHandler& operator=(const ChromeOSCreditsHandler&) = delete;
+
   static void Start(const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
     scoped_refptr<ChromeOSCreditsHandler> handler(
@@ -407,13 +411,14 @@ class ChromeOSCreditsHandler
 
   // Chrome OS credits contents that was loaded from file.
   std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSCreditsHandler);
 };
 
 class CrostiniCreditsHandler
     : public base::RefCountedThreadSafe<CrostiniCreditsHandler> {
  public:
+  CrostiniCreditsHandler(const CrostiniCreditsHandler&) = delete;
+  CrostiniCreditsHandler& operator=(const CrostiniCreditsHandler&) = delete;
+
   static void Start(Profile* profile,
                     const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
@@ -491,8 +496,6 @@ class CrostiniCreditsHandler
   std::string contents_;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniCreditsHandler);
 };
 #endif
 

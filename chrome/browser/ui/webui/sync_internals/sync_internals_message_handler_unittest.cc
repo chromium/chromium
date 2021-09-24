@@ -91,6 +91,12 @@ static std::unique_ptr<KeyedService> BuildFakeUserEventService(
 }
 
 class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SyncInternalsMessageHandlerTest(const SyncInternalsMessageHandlerTest&) =
+      delete;
+  SyncInternalsMessageHandlerTest& operator=(
+      const SyncInternalsMessageHandlerTest&) = delete;
+
  protected:
   SyncInternalsMessageHandlerTest() = default;
   ~SyncInternalsMessageHandlerTest() override = default;
@@ -196,8 +202,6 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   SyncService* last_delegate_sync_service_ = nullptr;
   // Fake return value for sync_ui_util::ConstructAboutInformation().
   base::DictionaryValue about_information_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncInternalsMessageHandlerTest);
 };
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {

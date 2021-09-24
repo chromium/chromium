@@ -42,6 +42,11 @@ class AppShimMenuControllerBrowserTest
         hosted_app_(nullptr),
         initial_menu_item_count_(0) {}
 
+  AppShimMenuControllerBrowserTest(const AppShimMenuControllerBrowserTest&) =
+      delete;
+  AppShimMenuControllerBrowserTest& operator=(
+      const AppShimMenuControllerBrowserTest&) = delete;
+
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
   void SetUpApps(int flags) {
@@ -126,9 +131,6 @@ class AppShimMenuControllerBrowserTest
   const extensions::Extension* app_2_;
   const extensions::Extension* hosted_app_;
   NSUInteger initial_menu_item_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppShimMenuControllerBrowserTest);
 };
 
 // Test that focusing an app window changes the menu bar.

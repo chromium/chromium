@@ -13,8 +13,8 @@ class NaClUI : public content::WebUIController {
  public:
   explicit NaClUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClUI);
+  NaClUI(const NaClUI&) = delete;
+  NaClUI& operator=(const NaClUI&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NACL_UI_H_

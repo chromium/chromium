@@ -32,6 +32,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
                        public ImmersiveModeController::Observer,
                        public extensions::IconImage::Observer {
  public:
+  ZoomBubbleView(const ZoomBubbleView&) = delete;
+  ZoomBubbleView& operator=(const ZoomBubbleView&) = delete;
+
   // Shows the bubble and automatically closes it after a short time period if
   // |reason| is AUTOMATIC.
   static void ShowBubble(content::WebContents* web_contents,
@@ -178,8 +181,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // The session of the Browser that triggered the bubble. This allows the zoom
   // icon to be updated even if the WebContents is destroyed.
   const SessionID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_

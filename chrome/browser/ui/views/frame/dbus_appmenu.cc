@@ -185,6 +185,9 @@ std::vector<std::pair<ui::MenuModel*, int>> FindMenuItemsForCommand(
 struct DbusAppmenu::HistoryItem {
   HistoryItem() : session_id(SessionID::InvalidValue()) {}
 
+  HistoryItem(const HistoryItem&) = delete;
+  HistoryItem& operator=(const HistoryItem&) = delete;
+
   // The title for the menu item.
   std::u16string title;
   // The URL that will be navigated to if the user selects this item.
@@ -202,9 +205,6 @@ struct DbusAppmenu::HistoryItem {
   // is the owner of all items. If it is not a window, then the entry is a
   // single page and the vector will be empty.
   std::vector<HistoryItem*> tabs;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryItem);
 };
 
 DbusAppmenu::DbusAppmenu(BrowserView* browser_view, uint32_t browser_frame_id)

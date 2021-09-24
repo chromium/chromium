@@ -21,6 +21,9 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
                                                   const std::string& username,
                                                   const std::string& password)>;
 
+  SmbCredentialsDialog(const SmbCredentialsDialog&) = delete;
+  SmbCredentialsDialog& operator=(const SmbCredentialsDialog&) = delete;
+
   // Shows the dialog, and runs |callback| when the user responds with a
   // username/password, or the dialog is closed. If a dialog is currently being
   // shown for |mount_id|, the existing dialog will be focused and its callback
@@ -47,8 +50,6 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
   const std::string mount_id_;
   const std::string share_path_;
   RequestCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbCredentialsDialog);
 };
 
 class SmbCredentialsDialogUI : public ui::WebDialogUI {

@@ -13,8 +13,8 @@ class BrowserSwitchUI : public content::WebUIController {
  public:
   explicit BrowserSwitchUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSwitchUI);
+  BrowserSwitchUI(const BrowserSwitchUI&) = delete;
+  BrowserSwitchUI& operator=(const BrowserSwitchUI&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_SWITCH_BROWSER_SWITCH_UI_H_

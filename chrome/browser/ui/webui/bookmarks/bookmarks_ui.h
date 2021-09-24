@@ -17,11 +17,11 @@ class BookmarksUI : public content::WebUIController {
  public:
   explicit BookmarksUI(content::WebUI* web_ui);
 
+  BookmarksUI(const BookmarksUI&) = delete;
+  BookmarksUI& operator=(const BookmarksUI&) = delete;
+
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarksUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_UI_H_

@@ -60,6 +60,10 @@ class StatusTrayStateChangerWin
  public:
   StatusTrayStateChangerWin(UINT icon_id, HWND window);
 
+  StatusTrayStateChangerWin(const StatusTrayStateChangerWin&) = delete;
+  StatusTrayStateChangerWin& operator=(const StatusTrayStateChangerWin&) =
+      delete;
+
   // Call this method to move the icon matching |icon_id| and |window| to the
   // taskbar from the overflow area.  This will not make any changes if the
   // icon has been set to |PREFERENCE_SHOW_NEVER|, in order to comply with
@@ -127,8 +131,6 @@ class StatusTrayStateChangerWin
   std::unique_ptr<NOTIFYITEM> notify_item_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_TRAY_STATE_CHANGER_WIN_H_

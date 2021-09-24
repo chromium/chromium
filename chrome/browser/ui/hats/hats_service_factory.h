@@ -14,6 +14,9 @@ class Profile;
 
 class HatsServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  HatsServiceFactory(const HatsServiceFactory&) = delete;
+  HatsServiceFactory& operator=(const HatsServiceFactory&) = delete;
+
   static HatsService* GetForProfile(Profile* profile, bool create_if_necessary);
   static HatsServiceFactory* GetInstance();
 
@@ -26,8 +29,6 @@ class HatsServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_HATS_HATS_SERVICE_FACTORY_H_

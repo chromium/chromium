@@ -25,6 +25,9 @@ class BrowserFrameMac : public views::NativeWidgetMac,
  public:
   BrowserFrameMac(BrowserFrame* browser_frame, BrowserView* browser_view);
 
+  BrowserFrameMac(const BrowserFrameMac&) = delete;
+  BrowserFrameMac& operator=(const BrowserFrameMac&) = delete;
+
   API_AVAILABLE(macos(10.12.2))
   BrowserWindowTouchBarController* GetTouchBarController() const;
 
@@ -74,8 +77,6 @@ class BrowserFrameMac : public views::NativeWidgetMac,
  private:
   BrowserView* browser_view_;  // Weak. Our ClientView.
   base::scoped_nsobject<BrowserWindowTouchBarViewsDelegate> touch_bar_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFrameMac);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_

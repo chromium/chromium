@@ -16,6 +16,11 @@ class ArcUsbHostPermissionManager;
 class ArcUsbHostPermissionManagerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcUsbHostPermissionManagerFactory(
+      const ArcUsbHostPermissionManagerFactory&) = delete;
+  ArcUsbHostPermissionManagerFactory& operator=(
+      const ArcUsbHostPermissionManagerFactory&) = delete;
+
   static ArcUsbHostPermissionManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -32,8 +37,6 @@ class ArcUsbHostPermissionManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManagerFactory);
 };
 
 }  // namespace arc

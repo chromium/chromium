@@ -27,6 +27,10 @@ class TestStackView : public views::View {
   };
 
   TestStackView() {}
+
+  TestStackView(const TestStackView&) = delete;
+  TestStackView& operator=(const TestStackView&) = delete;
+
   ~TestStackView() override {
     for (auto& observer: observers_) {
       observer.OnViewBeingDeleted();
@@ -39,8 +43,6 @@ class TestStackView : public views::View {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStackView);
 };
 
 class ViewStackTest : public ChromeViewsTestBase {
@@ -53,6 +55,9 @@ class ViewStackTest : public ChromeViewsTestBase {
     view_stack_->slide_out_animator_->SetAnimationDuration(
         base::TimeDelta::FromMilliseconds(1));
   }
+
+  ViewStackTest(const ViewStackTest&) = delete;
+  ViewStackTest& operator=(const ViewStackTest&) = delete;
 
   void AssertViewOnTopOfStack(views::View* view) {
     gfx::Rect target = view_stack_->bounds();
@@ -98,8 +103,6 @@ class ViewStackTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<ViewStack> view_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewStackTest);
 };
 
 TEST_F(ViewStackTest, TestInitialStateAddedAsChildView) {

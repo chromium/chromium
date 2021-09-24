@@ -48,10 +48,11 @@ class ImmersiveRevealedLockAsh : public ImmersiveRevealedLock {
   explicit ImmersiveRevealedLockAsh(chromeos::ImmersiveRevealedLock* lock)
       : lock_(lock) {}
 
+  ImmersiveRevealedLockAsh(const ImmersiveRevealedLockAsh&) = delete;
+  ImmersiveRevealedLockAsh& operator=(const ImmersiveRevealedLockAsh&) = delete;
+
  private:
   std::unique_ptr<chromeos::ImmersiveRevealedLock> lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealedLockAsh);
 };
 
 }  // namespace

@@ -38,6 +38,9 @@ class QuotaInternalsProxy
  public:
   explicit QuotaInternalsProxy(QuotaInternalsHandler* handler);
 
+  QuotaInternalsProxy(const QuotaInternalsProxy&) = delete;
+  QuotaInternalsProxy& operator=(const QuotaInternalsProxy&) = delete;
+
   void RequestInfo(scoped_refptr<storage::QuotaManager> quota_manager);
   void TriggerStoragePressure(
       url::Origin origin,
@@ -87,8 +90,6 @@ class QuotaInternalsProxy
       hosts_pending_;
   std::vector<PerHostStorageInfo> report_pending_;
   base::WeakPtrFactory<QuotaInternalsProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaInternalsProxy);
 };
 }  // namespace quota_internals
 

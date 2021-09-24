@@ -26,11 +26,11 @@ class MockCredentialLeakPrompt : public CredentialLeakPrompt {
  public:
   MockCredentialLeakPrompt() = default;
 
+  MockCredentialLeakPrompt(const MockCredentialLeakPrompt&) = delete;
+  MockCredentialLeakPrompt& operator=(const MockCredentialLeakPrompt&) = delete;
+
   MOCK_METHOD0(ShowCredentialLeakPrompt, void());
   MOCK_METHOD0(ControllerGone, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialLeakPrompt);
 };
 
 class CredentialLeakDialogControllerTest : public testing::Test {

@@ -27,15 +27,15 @@ namespace test {
 // A friend of SadTabView that's able to call RecordFirstPaint.
 class SadTabViewTestApi {
  public:
+  SadTabViewTestApi(const SadTabViewTestApi&) = delete;
+  SadTabViewTestApi& operator=(const SadTabViewTestApi&) = delete;
+
   static void RecordFirstPaintForTesting(SadTabView* sad_tab_view) {
     if (!sad_tab_view->painted_) {
       sad_tab_view->RecordFirstPaint();
       sad_tab_view->painted_ = true;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SadTabViewTestApi);
 };
 
 }  // namespace test
@@ -43,6 +43,10 @@ class SadTabViewTestApi {
 class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  public:
   SadTabViewInteractiveUITest() {}
+
+  SadTabViewInteractiveUITest(const SadTabViewInteractiveUITest&) = delete;
+  SadTabViewInteractiveUITest& operator=(const SadTabViewInteractiveUITest&) =
+      delete;
 
  protected:
   void KillRendererForActiveWebContentsSync() {
@@ -124,9 +128,6 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     test::SadTabViewTestApi::RecordFirstPaintForTesting(sad_tab_view);
     PressSpacebar();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SadTabViewInteractiveUITest);
 };
 
 #if defined(OS_MAC)

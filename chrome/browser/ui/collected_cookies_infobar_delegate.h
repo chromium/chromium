@@ -19,6 +19,11 @@ class ContentInfoBarManager;
 // the reload right from the infobar.
 class CollectedCookiesInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  CollectedCookiesInfoBarDelegate(const CollectedCookiesInfoBarDelegate&) =
+      delete;
+  CollectedCookiesInfoBarDelegate& operator=(
+      const CollectedCookiesInfoBarDelegate&) = delete;
+
   // Creates a collected cookies infobar and delegate and adds the infobar to
   // |infobar_manager|.
   static void Create(infobars::ContentInfoBarManager* infobar_manager);
@@ -34,8 +39,6 @@ class CollectedCookiesInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_COLLECTED_COOKIES_INFOBAR_DELEGATE_H_

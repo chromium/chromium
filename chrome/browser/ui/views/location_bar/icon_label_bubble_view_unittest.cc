@@ -60,6 +60,9 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
     SetLabel(u"Label");
   }
 
+  TestIconLabelBubbleView(const TestIconLabelBubbleView&) = delete;
+  TestIconLabelBubbleView& operator=(const TestIconLabelBubbleView&) = delete;
+
   void SetCurrentAnimationValue(int value) {
     value_ = value;
     SizeToPreferredSize();
@@ -129,7 +132,6 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   int value_ = 0;
   bool is_bubble_showing_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestIconLabelBubbleView);
 };
 
 }  // namespace

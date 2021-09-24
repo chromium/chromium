@@ -25,6 +25,10 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
   explicit BrowserNonClientFrameViewTest(Browser::Type type)
       : TestWithBrowserView(type), frame_view_(nullptr) {}
 
+  BrowserNonClientFrameViewTest(const BrowserNonClientFrameViewTest&) = delete;
+  BrowserNonClientFrameViewTest& operator=(
+      const BrowserNonClientFrameViewTest&) = delete;
+
   // TestWithBrowserView override:
   void SetUp() override {
 #if defined(OS_WIN)
@@ -41,9 +45,6 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
  protected:
   // Owned by the browser view.
   BrowserNonClientFrameView* frame_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewTest);
 };
 
 class BrowserNonClientFrameViewPopupTest

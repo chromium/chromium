@@ -34,6 +34,9 @@ namespace {
 
 class ViewBoundsChangeWaiter : public views::ViewObserver {
  public:
+  ViewBoundsChangeWaiter(const ViewBoundsChangeWaiter&) = delete;
+  ViewBoundsChangeWaiter& operator=(const ViewBoundsChangeWaiter&) = delete;
+
   static void VerifyY(views::View* view, int y) {
     if (y != view->bounds().y())
       ViewBoundsChangeWaiter(view).run_loop_.Run();
@@ -53,8 +56,6 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
 
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewBoundsChangeWaiter);
 };
 
 }  // namespace

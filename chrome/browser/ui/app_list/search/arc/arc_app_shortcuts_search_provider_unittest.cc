@@ -35,6 +35,12 @@ constexpr char kFakeAppPackageName[] = "FakeAppPackageName";
 class ArcAppShortcutsSearchProviderTest
     : public AppListTestBase,
       public ::testing::WithParamInterface<bool> {
+ public:
+  ArcAppShortcutsSearchProviderTest(const ArcAppShortcutsSearchProviderTest&) =
+      delete;
+  ArcAppShortcutsSearchProviderTest& operator=(
+      const ArcAppShortcutsSearchProviderTest&) = delete;
+
  protected:
   ArcAppShortcutsSearchProviderTest() = default;
   ~ArcAppShortcutsSearchProviderTest() override = default;
@@ -82,9 +88,6 @@ class ArcAppShortcutsSearchProviderTest
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsSearchProviderTest);
 };
 
 TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {

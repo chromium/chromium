@@ -16,6 +16,11 @@ class ArcPackageSyncableService;
 class ArcPackageSyncableServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcPackageSyncableServiceFactory(const ArcPackageSyncableServiceFactory&) =
+      delete;
+  ArcPackageSyncableServiceFactory& operator=(
+      const ArcPackageSyncableServiceFactory&) = delete;
+
   static ArcPackageSyncableService* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -31,8 +36,6 @@ class ArcPackageSyncableServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableServiceFactory);
 };
 
 }  // namespace arc

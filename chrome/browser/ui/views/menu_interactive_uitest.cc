@@ -50,6 +50,9 @@ class MenuControllerUITest : public InProcessBrowserTest {
  public:
   MenuControllerUITest() {}
 
+  MenuControllerUITest(const MenuControllerUITest&) = delete;
+  MenuControllerUITest& operator=(const MenuControllerUITest&) = delete;
+
   // This method creates a MenuRunner, MenuItemView, etc, adds two menu
   // items, shows the menu so that it can calculate the position of the first
   // menu item and move the mouse there, and closes the menu.
@@ -102,9 +105,6 @@ class MenuControllerUITest : public InProcessBrowserTest {
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.
   gfx::Point mouse_pos_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {

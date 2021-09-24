@@ -35,6 +35,9 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
  public:
   BookmarkMenuDelegateTest() : model_(nullptr) {}
 
+  BookmarkMenuDelegateTest(const BookmarkMenuDelegateTest&) = delete;
+  BookmarkMenuDelegateTest& operator=(const BookmarkMenuDelegateTest&) = delete;
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -150,8 +153,6 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   }
 
   views::MenuDelegate test_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuDelegateTest);
 };
 
 TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {

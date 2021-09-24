@@ -30,6 +30,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
  public:
   CertificateViewerDialog() {}
 
+  CertificateViewerDialog(const CertificateViewerDialog&) = delete;
+  CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
+
   // Shows the dialog and calls |callback| when the dialog closes. The caller
   // must ensure the CertificateViewerDialog remains valid until then.
   void Show(HWND parent,
@@ -86,8 +89,6 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     // May delete |this|.
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialog);
 };
 
 }  // namespace

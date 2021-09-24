@@ -51,6 +51,9 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
   CertificateTableModel(const net::ClientCertIdentityList& identities,
                         const std::vector<std::string>& provider_names);
 
+  CertificateTableModel(const CertificateTableModel&) = delete;
+  CertificateTableModel& operator=(const CertificateTableModel&) = delete;
+
   // ui::TableModel:
   int RowCount() override;
   std::u16string GetText(int index, int column_id) override;
@@ -64,8 +67,6 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
     std::u16string serial;
   };
   std::vector<Row> rows_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateTableModel);
 };
 
 CertificateSelector::CertificateTableModel::CertificateTableModel(

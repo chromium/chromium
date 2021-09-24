@@ -19,6 +19,9 @@ namespace chromeos {
 
 class BluetoothPairingDialog : public SystemWebDialogDelegate {
  public:
+  BluetoothPairingDialog(const BluetoothPairingDialog&) = delete;
+  BluetoothPairingDialog& operator=(const BluetoothPairingDialog&) = delete;
+
   // Show the Bluetooth pairing dialog. When provided, |device_address| is the
   // unique device address that the dialog should attempt to pair with and
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
@@ -49,8 +52,6 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   std::string dialog_id_;
 
   base::DictionaryValue device_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPairingDialog);
 };
 
 // A WebUI to host the Bluetooth device pairing web UI.

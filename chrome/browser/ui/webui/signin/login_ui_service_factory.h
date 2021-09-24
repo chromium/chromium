@@ -17,6 +17,9 @@ class Profile;
 // the associated LoginUIService.
 class LoginUIServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  LoginUIServiceFactory(const LoginUIServiceFactory&) = delete;
+  LoginUIServiceFactory& operator=(const LoginUIServiceFactory&) = delete;
+
   // Returns the instance of LoginUIService associated with this profile
   // (creating one if none exists). Returns NULL if this profile cannot have a
   // LoginUIService (for example, if |profile| is incognito).
@@ -35,8 +38,6 @@ class LoginUIServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUIServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_FACTORY_H_

@@ -20,6 +20,10 @@ class MediaRouterUIService;
 
 class MediaRouterUIServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  MediaRouterUIServiceFactory(const MediaRouterUIServiceFactory&) = delete;
+  MediaRouterUIServiceFactory& operator=(const MediaRouterUIServiceFactory&) =
+      delete;
+
   static MediaRouterUIService* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -45,8 +49,6 @@ class MediaRouterUIServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
 #endif
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUIServiceFactory);
 };
 
 }  // namespace media_router

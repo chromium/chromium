@@ -53,6 +53,9 @@ class FaviconDelegate : public ui::MenuModelDelegate {
  public:
   FaviconDelegate() : was_called_(false) {}
 
+  FaviconDelegate(const FaviconDelegate&) = delete;
+  FaviconDelegate& operator=(const FaviconDelegate&) = delete;
+
   void OnIconChanged(int command_id) override {
     was_called_ = true;
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
@@ -62,8 +65,6 @@ class FaviconDelegate : public ui::MenuModelDelegate {
 
  private:
   bool was_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconDelegate);
 };
 
 }  // namespace

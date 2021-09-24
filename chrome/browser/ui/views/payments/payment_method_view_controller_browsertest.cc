@@ -22,6 +22,12 @@
 namespace payments {
 
 class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentMethodViewControllerTest(const PaymentMethodViewControllerTest&) =
+      delete;
+  PaymentMethodViewControllerTest& operator=(
+      const PaymentMethodViewControllerTest&) = delete;
+
  protected:
   PaymentMethodViewControllerTest()
       : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS),
@@ -58,8 +64,6 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
  private:
   net::EmbeddedTestServer gpay_server_;
   net::EmbeddedTestServer kylepay_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentMethodViewControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, OneCardSelected) {

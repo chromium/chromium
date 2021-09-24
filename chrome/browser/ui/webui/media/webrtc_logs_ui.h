@@ -14,8 +14,8 @@ class WebRtcLogsUI : public content::WebUIController {
  public:
   explicit WebRtcLogsUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLogsUI);
+  WebRtcLogsUI(const WebRtcLogsUI&) = delete;
+  WebRtcLogsUI& operator=(const WebRtcLogsUI&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MEDIA_WEBRTC_LOGS_UI_H_

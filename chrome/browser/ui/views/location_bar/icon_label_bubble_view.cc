@@ -127,13 +127,13 @@ class IconLabelBubbleView::HighlightPathGenerator
  public:
   HighlightPathGenerator() = default;
 
+  HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+  HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
     return static_cast<const IconLabelBubbleView*>(view)->GetHighlightPath();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlightPathGenerator);
 };
 
 IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,

@@ -99,6 +99,12 @@ class TestChromeUserManager : public ash::FakeChromeUserManager {
 }  // namespace
 
 class SessionControllerClientImplTest : public testing::Test {
+ public:
+  SessionControllerClientImplTest(const SessionControllerClientImplTest&) =
+      delete;
+  SessionControllerClientImplTest& operator=(
+      const SessionControllerClientImplTest&) = delete;
+
  protected:
   SessionControllerClientImplTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {}
@@ -208,8 +214,6 @@ class SessionControllerClientImplTest : public testing::Test {
 
   std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
       cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerClientImplTest);
 };
 
 // Make sure that cycling one user does not cause any harm.

@@ -45,6 +45,10 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
         message,
         base::BindRepeating(&WebUIMessageListener::HandleMessage, AsWeakPtr()));
   }
+
+  WebUIMessageListener(const WebUIMessageListener&) = delete;
+  WebUIMessageListener& operator=(const WebUIMessageListener&) = delete;
+
   bool Wait() {
     message_loop_->Run();
     return true;
@@ -56,8 +60,6 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
   }
 
   scoped_refptr<content::MessageLoopRunner> message_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIMessageListener);
 };
 
 class DNDToInputNavigationObserver : public content::WebContentsObserver {
@@ -65,6 +67,11 @@ class DNDToInputNavigationObserver : public content::WebContentsObserver {
   explicit DNDToInputNavigationObserver(content::WebContents* web_contents) {
     Observe(web_contents);
   }
+
+  DNDToInputNavigationObserver(const DNDToInputNavigationObserver&) = delete;
+  DNDToInputNavigationObserver& operator=(const DNDToInputNavigationObserver&) =
+      delete;
+
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     navigated = true;
@@ -73,8 +80,6 @@ class DNDToInputNavigationObserver : public content::WebContentsObserver {
 
  private:
   bool navigated = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DNDToInputNavigationObserver);
 };
 
 int ExecuteHostScriptAndExtractInt(content::WebContents* web_contents,
@@ -105,6 +110,9 @@ class WebUIWebViewBrowserTest : public WebUIBrowserTest {
  public:
   WebUIWebViewBrowserTest() {}
 
+  WebUIWebViewBrowserTest(const WebUIWebViewBrowserTest&) = delete;
+  WebUIWebViewBrowserTest& operator=(const WebUIWebViewBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(
@@ -131,9 +139,6 @@ class WebUIWebViewBrowserTest : public WebUIBrowserTest {
         signin_metrics::Reason::kForcedSigninPrimaryAccount, false));
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebUIWebViewBrowserTest);
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in

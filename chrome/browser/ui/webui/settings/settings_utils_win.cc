@@ -36,6 +36,9 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
  public:
   ManageCertificatesDialog() {}
 
+  ManageCertificatesDialog(const ManageCertificatesDialog&) = delete;
+  ManageCertificatesDialog& operator=(const ManageCertificatesDialog&) = delete;
+
   // Shows the dialog and calls |callback| when the dialog closes. The caller
   // must ensure the ManageCertificatesDialog remains valid until then.
   void Show(HWND parent, base::OnceClosure callback) {
@@ -72,8 +75,6 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
     // May delete |this|.
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ManageCertificatesDialog);
 };
 
 }  // namespace

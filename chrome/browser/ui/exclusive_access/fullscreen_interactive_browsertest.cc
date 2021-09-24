@@ -24,6 +24,10 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
                                 content::RenderFrameHost* wanted_rfh)
       : content::WebContentsObserver(web_contents), wanted_rfh_(wanted_rfh) {}
 
+  FullscreenWebContentsObserver(const FullscreenWebContentsObserver&) = delete;
+  FullscreenWebContentsObserver& operator=(
+      const FullscreenWebContentsObserver&) = delete;
+
   // WebContentsObserver override.
   void DidAcquireFullscreen(content::RenderFrameHost* rfh) override {
     EXPECT_EQ(wanted_rfh_, rfh);
@@ -44,8 +48,6 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool found_value_ = false;
   content::RenderFrameHost* wanted_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };
 
 }  // namespace

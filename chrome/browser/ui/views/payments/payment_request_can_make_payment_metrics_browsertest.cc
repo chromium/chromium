@@ -23,6 +23,12 @@ namespace payments {
 
 class PaymentRequestCanMakePaymentMetricsTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestCanMakePaymentMetricsTest(
+      const PaymentRequestCanMakePaymentMetricsTest&) = delete;
+  PaymentRequestCanMakePaymentMetricsTest& operator=(
+      const PaymentRequestCanMakePaymentMetricsTest&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentMetricsTest() = default;
 
@@ -50,9 +56,6 @@ class PaymentRequestCanMakePaymentMetricsTest
     // Wait for all callbacks to run.
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentMetricsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,

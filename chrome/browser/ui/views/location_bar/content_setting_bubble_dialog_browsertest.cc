@@ -88,6 +88,11 @@ class ContentSettingBubbleDialogTest : public DialogBrowserTest {
         {permissions::features::kPermissionQuietChip});
   }
 
+  ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
+      delete;
+  ContentSettingBubbleDialogTest& operator=(
+      const ContentSettingBubbleDialogTest&) = delete;
+
   void ApplyMediastreamSettings(bool mic_accessed, bool camera_accessed);
   void ApplyContentSettingsForType(ContentSettingsType content_type);
   void TriggerQuietNotificationPermissionRequest(
@@ -101,8 +106,6 @@ class ContentSettingBubbleDialogTest : public DialogBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<permissions::MockPermissionRequest>
       notification_permission_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleDialogTest);
 };
 
 void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(

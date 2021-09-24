@@ -82,6 +82,10 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   MockSelectFileDialogListener()
       : file_selected_(false), canceled_(false), params_(nullptr) {}
 
+  MockSelectFileDialogListener(const MockSelectFileDialogListener&) = delete;
+  MockSelectFileDialogListener& operator=(const MockSelectFileDialogListener&) =
+      delete;
+
   bool file_selected() const { return file_selected_; }
   bool canceled() const { return canceled_; }
   base::FilePath path() const { return path_; }
@@ -127,8 +131,6 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   base::FilePath path_;
   void* params_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSelectFileDialogListener);
 };
 
 // Enumerates possible app modes. We support extension mode (Chrome App)

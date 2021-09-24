@@ -46,6 +46,10 @@ class NetworkProfileBubble {
     METRIC_NETWORKED_PROFILE_CHECK_SIZE  // Must be the last.
   };
 
+  NetworkProfileBubble() = delete;
+  NetworkProfileBubble(const NetworkProfileBubble&) = delete;
+  NetworkProfileBubble& operator=(const NetworkProfileBubble&) = delete;
+
   // Returns true if the check for network located profile should be done. This
   // test is only performed up to |kMaxWarnings| times in a row and then
   // repeated after a period of silence that lasts |kSilenceDurationDays| days.
@@ -75,8 +79,6 @@ class NetworkProfileBubble {
   // the notification more than once per browser run.
   // This flag is not thread-safe and should only be accessed on the UI thread!
   static bool notification_shown_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NetworkProfileBubble);
 };
 
 #endif  // CHROME_BROWSER_UI_NETWORK_PROFILE_BUBBLE_H_

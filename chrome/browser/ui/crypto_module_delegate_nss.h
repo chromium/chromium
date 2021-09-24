@@ -25,6 +25,10 @@ class ChromeNSSCryptoModuleDelegate
   ChromeNSSCryptoModuleDelegate(CryptoModulePasswordReason reason,
                                 const net::HostPortPair& server);
 
+  ChromeNSSCryptoModuleDelegate(const ChromeNSSCryptoModuleDelegate&) = delete;
+  ChromeNSSCryptoModuleDelegate& operator=(
+      const ChromeNSSCryptoModuleDelegate&) = delete;
+
   // crypto::CryptoModuleBlockingPasswordDelegate implementation.
   std::string RequestPassword(const std::string& slot_name,
                               bool retry,
@@ -49,8 +53,6 @@ class ChromeNSSCryptoModuleDelegate
   // Stores the results from the dialog for access on worker thread.
   std::string password_;
   bool cancelled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNSSCryptoModuleDelegate);
 };
 
 // Create a delegate which only handles unlocking slots.

@@ -26,6 +26,10 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   CardNameFixFlowViewAndroid(CardNameFixFlowController* controller,
                              content::WebContents* web_contents);
 
+  CardNameFixFlowViewAndroid(const CardNameFixFlowViewAndroid&) = delete;
+  CardNameFixFlowViewAndroid& operator=(const CardNameFixFlowViewAndroid&) =
+      delete;
+
   void OnUserAccept(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& name);
@@ -51,8 +55,6 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
 
   CardNameFixFlowController* controller_;
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowViewAndroid);
 };
 
 }  // namespace autofill

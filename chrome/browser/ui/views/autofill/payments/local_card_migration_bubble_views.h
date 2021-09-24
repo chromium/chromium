@@ -29,6 +29,10 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
                                 content::WebContents* web_contents,
                                 LocalCardMigrationBubbleController* controller);
 
+  LocalCardMigrationBubbleViews(const LocalCardMigrationBubbleViews&) = delete;
+  LocalCardMigrationBubbleViews& operator=(
+      const LocalCardMigrationBubbleViews&) = delete;
+
   void Show(DisplayReason reason);
 
   // AutofillBubbleBase:
@@ -55,8 +59,6 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
       PaymentsBubbleClosedReason::kUnknown;
 
   LocalCardMigrationBubbleController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleViews);
 };
 
 }  // namespace autofill

@@ -61,6 +61,11 @@ class NetworkPortalNotificationControllerDelegate
       base::WeakPtr<NetworkPortalNotificationController> controller)
       : guid_(guid), clicked_(false), controller_(controller) {}
 
+  NetworkPortalNotificationControllerDelegate(
+      const NetworkPortalNotificationControllerDelegate&) = delete;
+  NetworkPortalNotificationControllerDelegate& operator=(
+      const NetworkPortalNotificationControllerDelegate&) = delete;
+
   // Overridden from message_center::NotificationDelegate:
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
@@ -74,8 +79,6 @@ class NetworkPortalNotificationControllerDelegate
   bool clicked_;
 
   base::WeakPtr<NetworkPortalNotificationController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalNotificationControllerDelegate);
 };
 
 void NetworkPortalNotificationControllerDelegate::Click(

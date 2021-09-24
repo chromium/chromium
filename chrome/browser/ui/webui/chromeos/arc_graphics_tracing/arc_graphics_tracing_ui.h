@@ -21,8 +21,8 @@ class ArcGraphicsTracingUI : public content::WebUIController {
  public:
   explicit ArcGraphicsTracingUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcGraphicsTracingUI);
+  ArcGraphicsTracingUI(const ArcGraphicsTracingUI&) = delete;
+  ArcGraphicsTracingUI& operator=(const ArcGraphicsTracingUI&) = delete;
 };
 
 }  // namespace chromeos

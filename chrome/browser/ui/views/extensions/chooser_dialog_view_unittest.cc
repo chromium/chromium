@@ -22,6 +22,9 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
  public:
   ChooserDialogViewTest() {}
 
+  ChooserDialogViewTest(const ChooserDialogViewTest&) = delete;
+  ChooserDialogViewTest& operator=(const ChooserDialogViewTest&) = delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
@@ -84,8 +87,6 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> parent_widget_;
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChooserDialogViewTest);
 };
 
 TEST_F(ChooserDialogViewTest, ButtonState) {

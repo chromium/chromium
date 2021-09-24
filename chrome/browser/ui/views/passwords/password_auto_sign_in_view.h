@@ -18,6 +18,9 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
   PasswordAutoSignInView(content::WebContents* web_contents,
                          views::View* anchor_view);
 
+  PasswordAutoSignInView(const PasswordAutoSignInView&) = delete;
+  PasswordAutoSignInView& operator=(const PasswordAutoSignInView&) = delete;
+
 #if defined(UNIT_TEST)
   static void set_auto_signin_toast_timeout(int seconds) {
     auto_signin_toast_timeout_ = seconds;
@@ -43,8 +46,6 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
 
   // The timeout in seconds for the auto sign-in toast.
   static int auto_signin_toast_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutoSignInView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_AUTO_SIGN_IN_VIEW_H_

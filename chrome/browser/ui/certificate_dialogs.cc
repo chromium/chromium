@@ -76,6 +76,9 @@ class Exporter : public ui::SelectFileDialog::Listener {
            gfx::NativeWindow parent,
            net::ScopedCERTCertificateList cert_chain);
 
+  Exporter(const Exporter&) = delete;
+  Exporter& operator=(const Exporter&) = delete;
+
   // SelectFileDialog::Listener implemenation.
   void FileSelected(const base::FilePath& path,
                     int index,
@@ -89,8 +92,6 @@ class Exporter : public ui::SelectFileDialog::Listener {
 
   // The certificate hierarchy (leaf cert first).
   net::ScopedCERTCertificateList cert_chain_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(Exporter);
 };
 
 Exporter::Exporter(content::WebContents* web_contents,

@@ -45,6 +45,9 @@ class AssistantOptInUI : public ui::WebDialogUI {
 // Dialog delegate for the assistant optin page.
 class AssistantOptInDialog : public SystemWebDialogDelegate {
  public:
+  AssistantOptInDialog(const AssistantOptInDialog&) = delete;
+  AssistantOptInDialog& operator=(const AssistantOptInDialog&) = delete;
+
   // Shows the assistant optin dialog.
   static void Show(ash::FlowType type = ash::FlowType::kConsentFlow,
                    ash::AssistantSetup::StartAssistantOptInFlowCallback
@@ -73,8 +76,6 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
 
   // Callback to run if the flow is completed.
   ash::AssistantSetup::StartAssistantOptInFlowCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInDialog);
 };
 
 }  // namespace chromeos

@@ -55,6 +55,11 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
  protected:
   NativeAppWindowCocoaBrowserTest() {}
 
+  NativeAppWindowCocoaBrowserTest(const NativeAppWindowCocoaBrowserTest&) =
+      delete;
+  NativeAppWindowCocoaBrowserTest& operator=(
+      const NativeAppWindowCocoaBrowserTest&) = delete;
+
   void SetUpAppWithWindows(int num_windows) {
     app_ = InstallExtension(
         test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"), 1);
@@ -75,9 +80,6 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
   }
 
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowCocoaBrowserTest);
 };
 
 }  // namespace

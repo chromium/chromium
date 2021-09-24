@@ -44,6 +44,9 @@ class BrowserViewTest : public InProcessBrowserTest {
  public:
   BrowserViewTest() : devtools_(nullptr) {}
 
+  BrowserViewTest(const BrowserViewTest&) = delete;
+  BrowserViewTest& operator=(const BrowserViewTest&) = delete;
+
  protected:
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -74,8 +77,6 @@ class BrowserViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewTest);
 };
 
 namespace {
@@ -107,10 +108,14 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
+
+  TestTabModalConfirmDialogDelegate(const TestTabModalConfirmDialogDelegate&) =
+      delete;
+  TestTabModalConfirmDialogDelegate& operator=(
+      const TestTabModalConfirmDialogDelegate&) = delete;
+
   std::u16string GetTitle() override { return std::u16string(u"Dialog Title"); }
   std::u16string GetDialogMessage() override { return std::u16string(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
 }  // namespace
 
@@ -211,6 +216,10 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
   BookmarkBarViewObserverImpl() : change_count_(0) {
   }
 
+  BookmarkBarViewObserverImpl(const BookmarkBarViewObserverImpl&) = delete;
+  BookmarkBarViewObserverImpl& operator=(const BookmarkBarViewObserverImpl&) =
+      delete;
+
   int change_count() const { return change_count_; }
   void clear_change_count() { change_count_ = 0; }
 
@@ -219,8 +228,6 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
 
  private:
   int change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewObserverImpl);
 };
 
 // Verifies we don't unnecessarily change the visibility of the BookmarkBarView.

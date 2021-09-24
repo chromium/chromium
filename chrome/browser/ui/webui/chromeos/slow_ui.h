@@ -16,8 +16,8 @@ class SlowUI : public content::WebUIController {
  public:
   explicit SlowUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SlowUI);
+  SlowUI(const SlowUI&) = delete;
+  SlowUI& operator=(const SlowUI&) = delete;
 };
 
 }  // namespace chromeos

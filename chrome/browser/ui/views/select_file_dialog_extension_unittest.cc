@@ -39,6 +39,10 @@ class SelectFileDialogExtensionTest
     }
   }
 
+  SelectFileDialogExtensionTest(const SelectFileDialogExtensionTest&) = delete;
+  SelectFileDialogExtensionTest& operator=(
+      const SelectFileDialogExtensionTest&) = delete;
+
   static SelectFileDialogExtension* CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
     SelectFileDialogExtension* dialog = new SelectFileDialogExtension(listener,
@@ -52,8 +56,6 @@ class SelectFileDialogExtensionTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogExtensionTest);
 };
 
 // Test listener for a SelectFileDialog.

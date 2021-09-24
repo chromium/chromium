@@ -43,6 +43,9 @@ class KeyboardHandlerTest : public testing::Test {
     device_data_manager_test_api_.SetKeyboardDevices({});
   }
 
+  KeyboardHandlerTest(const KeyboardHandlerTest&) = delete;
+  KeyboardHandlerTest& operator=(const KeyboardHandlerTest&) = delete;
+
  protected:
   // Updates out-params from the last message sent to WebUI about a change to
   // which keys should be shown. False is returned if the message was invalid or
@@ -163,9 +166,6 @@ class KeyboardHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   TestKeyboardHandler handler_;
   KeyboardHandler::TestAPI handler_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHandlerTest);
 };
 
 TEST_F(KeyboardHandlerTest, DefaultKeys) {

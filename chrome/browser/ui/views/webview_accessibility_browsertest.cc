@@ -54,6 +54,9 @@ class WebViewBrowserTest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
+  WebViewBrowserTest(const WebViewBrowserTest&) = delete;
+  WebViewBrowserTest& operator=(const WebViewBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -70,9 +73,6 @@ class WebViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserTest);
 };
 
 // Flaky. https://crbug.com/1013805

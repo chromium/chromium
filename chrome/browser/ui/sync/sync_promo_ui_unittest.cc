@@ -22,6 +22,9 @@ class SyncPromoUITest : public testing::Test {
  public:
   SyncPromoUITest() {}
 
+  SyncPromoUITest(const SyncPromoUITest&) = delete;
+  SyncPromoUITest& operator=(const SyncPromoUITest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
@@ -37,9 +40,6 @@ class SyncPromoUITest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncPromoUITest);
 };
 
 // Verifies that ShouldShowSyncPromo returns false if sync is disabled by

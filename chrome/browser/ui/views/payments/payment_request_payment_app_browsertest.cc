@@ -31,6 +31,11 @@
 namespace payments {
 
 class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentAppTest(const PaymentRequestPaymentAppTest&) = delete;
+  PaymentRequestPaymentAppTest& operator=(const PaymentRequestPaymentAppTest&) =
+      delete;
+
  protected:
   PaymentRequestPaymentAppTest()
       : alicepay_(net::EmbeddedTestServer::TYPE_HTTPS),
@@ -171,8 +176,6 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   net::EmbeddedTestServer kylepay_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentAppTest);
 };
 
 // Test payment request methods are not supported by the payment app.

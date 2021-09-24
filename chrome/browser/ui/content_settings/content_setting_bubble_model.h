@@ -147,6 +147,10 @@ class ContentSettingBubbleModel {
 
   struct BubbleContent {
     BubbleContent();
+
+    BubbleContent(const BubbleContent&) = delete;
+    BubbleContent& operator=(const BubbleContent&) = delete;
+
     ~BubbleContent();
 
     std::u16string title;
@@ -162,9 +166,6 @@ class ContentSettingBubbleModel {
     bool show_learn_more = false;
     std::u16string done_button_text;
     std::u16string cancel_button_text;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(BubbleContent);
   };
 
   static const int kAllowButtonIndex;
@@ -177,6 +178,10 @@ class ContentSettingBubbleModel {
   CreateContentSettingBubbleModel(Delegate* delegate,
                                   content::WebContents* web_contents,
                                   ContentSettingsType content_type);
+
+  ContentSettingBubbleModel(const ContentSettingBubbleModel&) = delete;
+  ContentSettingBubbleModel& operator=(const ContentSettingBubbleModel&) =
+      delete;
 
   virtual ~ContentSettingBubbleModel();
 
@@ -279,8 +284,6 @@ class ContentSettingBubbleModel {
   Owner* owner_;
   Delegate* delegate_;
   BubbleContent bubble_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
 };
 
 // A generic bubble used for a single content setting.
@@ -289,6 +292,11 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   ContentSettingSimpleBubbleModel(Delegate* delegate,
                                   content::WebContents* web_contents,
                                   ContentSettingsType content_type);
+
+  ContentSettingSimpleBubbleModel(const ContentSettingSimpleBubbleModel&) =
+      delete;
+  ContentSettingSimpleBubbleModel& operator=(
+      const ContentSettingSimpleBubbleModel&) = delete;
 
   ContentSettingsType content_type() { return content_type_; }
 
@@ -307,8 +315,6 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   void OnCustomLinkClicked() override;
 
   ContentSettingsType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSimpleBubbleModel);
 };
 
 // RPH stands for Register Protocol Handler.
