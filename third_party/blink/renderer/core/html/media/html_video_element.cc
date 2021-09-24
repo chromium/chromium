@@ -739,7 +739,7 @@ void HTMLVideoElement::OnIntersectionChangedForLazyLoad(
   lazy_load_intersection_observer_ = nullptr;
 
   auto notify_visible = [](HTMLVideoElement* self) {
-    if (self->web_media_player_)
+    if (self && self->web_media_player_)
       self->web_media_player_->OnBecameVisible();
   };
 
