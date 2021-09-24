@@ -168,7 +168,7 @@ if (is_android) {
   # switching has proven to be very difficult due to interactions with Pinpoint.
   group("all_chrome_android_targets_for_perf_testing") {
     testonly = true
-    data_deps = []
+    data_deps = [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
     foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
       data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
     }
