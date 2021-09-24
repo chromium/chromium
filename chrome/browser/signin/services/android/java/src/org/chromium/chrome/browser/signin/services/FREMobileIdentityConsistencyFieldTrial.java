@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.signin.services;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -30,8 +32,8 @@ public class FREMobileIdentityConsistencyFieldTrial {
 
     @AnyThread
     public static boolean isEnabled() {
-        // Disabled by default.
-        return ENABLED_GROUP.equals(getFirstRunTrialGroup());
+        return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)
+                || ENABLED_GROUP.equals(getFirstRunTrialGroup());
     }
 
     @CalledByNative
@@ -70,28 +72,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
-        }
-    }
-
-    /**
-     * Enables MobileIdentityConsistencyFRE experiment for tests.
-     */
-    @AnyThread
-    public static void enableForTesting() {
-        synchronized (LOCK) {
-            SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, ENABLED_GROUP);
-        }
-    }
-
-    /**
-     * Disables MobileIdentityConsistencyFRE experiment for tests.
-     */
-    @AnyThread
-    public static void disableForTesting() {
-        synchronized (LOCK) {
-            SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, DISABLED_GROUP);
         }
     }
 }
