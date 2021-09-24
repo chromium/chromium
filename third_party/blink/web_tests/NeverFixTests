@@ -1087,6 +1087,7 @@ external/wpt/appmanifest/display-override-member/display-override-member-media-f
 external/wpt/appmanifest/display-override-member/display-override-member-media-feature-standalone-manual.tentative.html [ Skip ]
 external/wpt/appmanifest/display-override-member/display-override-member-media-feature-standalone-overrides-browser-manual.tentative.html [ Skip ]
 external/wpt/appmanifest/file_handlers-member/file_handlers-member-manual.tentative.html [ Skip ]
+external/wpt/appmanifest/protocol_handlers-member/protocol_handlers-member-manual.tentative.html [ Skip ]
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-manual.html [ Skip ]
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-empty-name-manual.html [ Skip ]
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-invalid-url-manual.html [ Skip ]
