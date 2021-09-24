@@ -113,6 +113,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
@@ -1970,6 +1971,38 @@ public class StartSurfaceTest {
         onView(withId(R.id.home_button)).perform(click());
         assertFalse(cta.getLayoutManager().overviewVisible());
         onViewWaiting(withId(R.id.new_tab_incognito_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testOpenRecentTabOnStartAndTapBackButtonReturnToStartSurface()
+        throws ExecutionException {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // Taps on the "Recent tabs" menu item.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
+                org.chromium.chrome.R.id.recent_tabs_menu_id);
+        Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
+                TabLaunchType.FROM_START_SURFACE,
+                cta.getActivityTabProvider().get().getLaunchType());
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        pressBack();
+
+        // Tap the back on the "Recent tabs" should take us back to the start surface homepage, and
+        // the Tab should be deleted.
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
     }
 
     private void backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(
