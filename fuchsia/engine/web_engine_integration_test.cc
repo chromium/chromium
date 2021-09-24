@@ -584,11 +584,13 @@ TEST_F(WebEngineIntegrationCameraTest, CameraNoVideoCaptureProcess) {
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        HardwareVideoDecoderFlag_Provided) {
   // Check that the CodecFactory service is requested.
-  bool is_requested = false;
+  base::RunLoop codec_connected_run_loop;
   zx_status_t status =
       filtered_service_directory().outgoing_directory()->AddPublicService(
           fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
-              [&is_requested](auto request) { is_requested = true; }));
+              [&codec_connected_run_loop](auto request) {
+                codec_connected_run_loop.Quit();
+              }));
   ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
   // The VULKAN flag is required for hardware video decoders to be available.
@@ -603,9 +605,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       kAutoplayVp9OpusToEndUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
-  navigation_listener()->RunUntilTitleEquals("ended");
-
-  EXPECT_TRUE(is_requested);
+  codec_connected_run_loop.Run();
 }
 
 // Check that the CodecFactory service is not requested when
