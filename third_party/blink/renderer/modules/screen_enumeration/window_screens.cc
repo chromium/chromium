@@ -70,13 +70,24 @@ ScriptPromise WindowScreens::GetScreens(ScriptState* script_state,
                      context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
+  auto permission_descriptor = CreatePermissionDescriptor(
+      mojom::blink::PermissionName::WINDOW_PLACEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  permission_service_->RequestPermission(
-      CreatePermissionDescriptor(
-          mojom::blink::PermissionName::WINDOW_PLACEMENT),
-      LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame()),
-      WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
-                WrapPersistent(this), WrapPersistent(resolver)));
+  auto callback = WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
+                            WrapPersistent(this), WrapPersistent(resolver));
+
+  // Only allow the user prompts when the frame has a transient activation.
+  // Otherwise, resolve or reject the promise with the current permission state.
+  // This allows sites with permission already granted to obtain screen info
+  // when the document loads, to populate multi-screen UI.
+  if (LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame())) {
+    permission_service_->RequestPermission(std::move(permission_descriptor),
+                                           /*user_gesture=*/true,
+                                           std::move(callback));
+  } else {
+    permission_service_->HasPermission(std::move(permission_descriptor),
+                                       std::move(callback));
+  }
 
   return resolver->Promise();
 }
@@ -90,7 +101,10 @@ void WindowScreens::OnPermissionRequestComplete(
     auto* const isolate = resolver->GetScriptState()->GetIsolate();
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        isolate, DOMExceptionCode::kNotAllowedError, "Permission denied."));
+        isolate, DOMExceptionCode::kNotAllowedError,
+        status == mojom::blink::PermissionStatus::DENIED
+            ? "Permission denied."
+            : "Permission decision deferred."));
     return;
   }
 

@@ -1011,8 +1011,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
       };
     })();
   )";
-  EXPECT_TRUE(ExecJs(tab, request_fullscreen_script,
-                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(ExecJs(tab, request_fullscreen_script));
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   WaitForUserActivationExpiry();
 
@@ -1037,25 +1036,29 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #if defined(OS_WIN)
 #define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
 #else
-// TODO(crbug.com/1246649): flakes on other bots.
-#define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
+#define MAYBE_FullscreenOnPermissionGrant FullscreenOnPermissionGrant
 #endif
-// Test requesting fullscreen using the permission grant's transient affordance.
+// Test requesting fullscreen using the permission grant's transient activation.
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnPermissionGrant) {
-  SetUpTestScreenAndWindowPlacementTab();
+  EXPECT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/simple.html"));
+  AddTabAtIndex(1, url, PAGE_TRANSITION_TYPED);
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Request and auto-accept the Window Placement permission, this should grant
-  // a transient affordance that can be used to request fullscreen.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(tab);
+
+  // Request the Window Placement permission and accept the prompt after user
+  // activation expires; accepting should grant a new transient activation
+  // signal that can be used to request fullscreen, without another gesture.
+  ExecuteScriptAsync(tab, "getScreens()");
+  WaitForUserActivationExpiry();
+  ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
+  permission_request_manager->Accept();
   const std::string request_fullscreen_from_prompt_script = R"(
     (async () => {
-      if (navigator.userActivation.isActive)
-        return false;
-      window.screensInterface = await window.getScreens();
-      if (!navigator.userActivation.isActive || !!document.fullscreenElement)
-        return false;
-      const options = { screen: window.screensInterface.screens[1] };
-      await document.body.requestFullscreen(options);
+      await document.body.requestFullscreen();
       return !!document.fullscreenElement;
     })();
   )";
