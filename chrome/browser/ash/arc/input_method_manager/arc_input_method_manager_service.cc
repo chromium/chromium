@@ -467,7 +467,7 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   state->RemoveInputMethodExtension(proxy_ime_extension_id_);
 
   const InputMethodDescriptors installed_imes =
-      arc_ime_state_.GetActiveInputMethods();
+      arc_ime_state_.GetAvailableInputMethods();
   if (installed_imes.empty()) {
     // If no ARC IME is installed or allowed, remove ARC IME entry from
     // preferences.

@@ -42,7 +42,7 @@ void ArcInputMethodState::DisableInputMethod(const std::string& ime_id) {
   SetInputMethodEnabled(ime_id, false);
 }
 
-InputMethodDescriptors ArcInputMethodState::GetActiveInputMethods() const {
+InputMethodDescriptors ArcInputMethodState::GetAvailableInputMethods() const {
   const bool all_allowed = delegate_->ShouldArcIMEAllowed();
 
   InputMethodDescriptors result;

@@ -39,7 +39,7 @@ class ArcInputMethodState {
   void DisableInputMethod(const std::string& ime_id);
 
   // Return the InputMethodDescriptors which are installed and allowed.
-  ash::input_method::InputMethodDescriptors GetActiveInputMethods() const;
+  ash::input_method::InputMethodDescriptors GetAvailableInputMethods() const;
   // Return the InputMethodDescriptors which are enabled and allowed.
   ash::input_method::InputMethodDescriptors GetEnabledInputMethods() const;
 
