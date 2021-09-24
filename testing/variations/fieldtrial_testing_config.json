@@ -7483,31 +7483,6 @@
             ]
         }
     ],
-    "SharingFilterDevices": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_strict",
-                    "params": {
-                        "SharingPulseDeltaAndroidHours": "0",
-                        "SharingPulseDeltaDesktopHours": "0"
-                    },
-                    "enable_features": [
-                        "SharingMatchPulseInterval"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharingHubLinkToggle": [
         {
             "platforms": [
