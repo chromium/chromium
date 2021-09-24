@@ -4646,11 +4646,6 @@ crbug.com/895257 [ Mac ] external/wpt/css/css-fonts/variations/at-font-face-font
 #Sheriff 2018-10-23
 crbug.com/898378 [ Mac10.13 ] fast/scroll-behavior/smooth-scroll/keyboard-scroll.html [ Timeout ]
 
-# Sheriff 2018-10-26
-### See crbug.com/891427 comment near the top of this file:
-####crbug.com/899087 [ Linux ] virtual/android/fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass ]
-
-
 # Sheriff 2018-10-29
 crbug.com/766357 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Pass ]
 
