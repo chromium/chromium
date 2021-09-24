@@ -110,11 +110,21 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     STACK_ALLOCATED();
 
    public:
-    explicit DetachLayoutTreeScope(StyleEngine& engine) : engine_(engine) {}
+    explicit DetachLayoutTreeScope(StyleEngine& engine)
+        : engine_(engine)
+#if DCHECK_IS_ON()
+          ,
+          in_detach_scope_(&engine.in_detach_scope_, true)
+#endif  // DCHECK_IS_ON()
+    {
+    }
     ~DetachLayoutTreeScope() { engine_.MarkForLayoutTreeChangesAfterDetach(); }
 
    private:
     StyleEngine& engine_;
+#if DCHECK_IS_ON()
+    base::AutoReset<bool> in_detach_scope_;
+#endif  // DCHECK_IS_ON()
   };
 
   // There are a few instances where we are marking nodes style dirty from
@@ -482,8 +492,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     // This method will be called for every LayoutObject while detaching a
     // subtree. Since the trees are detached bottom up, the last parent passed
     // in will be the parent of one of the roots being detached.
-    if (in_dom_removal_)
+    if (in_dom_removal_) {
+#if DCHECK_IS_ON()
+      DCHECK(in_detach_scope_)
+          << "A DetachLayoutTreeScope must wrap a DOMRemovalScope to handle "
+             "and reset parent_for_detached_subtree_";
+#endif  // DCHECK_IS_ON()
       parent_for_detached_subtree_ = parent;
+    }
   }
 
   void SetColorSchemeFromMeta(const CSSValue* color_scheme);
@@ -685,6 +701,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
   bool in_dom_removal_{false};
+#if DCHECK_IS_ON()
+  bool in_detach_scope_{false};
+#endif  // DCHECK_IS_ON()
   bool in_apply_animation_update_{false};
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};

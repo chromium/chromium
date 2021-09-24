@@ -2614,6 +2614,7 @@ void StyleEngine::ChangeRenderingForHTMLSelect(HTMLSelectElement& select) {
   // DetachLayoutTree will clear dirty bits which means we also need to simulate
   // that we are in a dom removal to make the style recalc root be updated
   // correctly.
+  StyleEngine::DetachLayoutTreeScope detach_scope(*this);
   StyleEngine::DOMRemovalScope removal_scope(*this);
   To<Element>(select).DetachLayoutTree();
   // If the recalc root is in this subtree, DetachLayoutTree() above clears the

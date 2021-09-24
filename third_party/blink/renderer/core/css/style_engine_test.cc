@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -87,6 +88,10 @@ class StyleEngineTest : public testing::Test {
 
   Node* GetStyleRecalcRoot() {
     return GetStyleEngine().style_recalc_root_.GetRootNode();
+  }
+
+  LayoutObject* GetParentForDetachedSubtree() {
+    return GetStyleEngine().parent_for_detached_subtree_.Get();
   }
 
   const CSSValue* ComputedValue(Element* element, String property_name) {
@@ -4747,6 +4752,17 @@ TEST_F(StyleEngineTest, CascadeLayerActiveStyleSheetVectorNullRuleSetCrash) {
 
   // Should not crash
   UpdateAllLifecyclePhases();
+}
+
+TEST_F(StyleEngineTest, ChangeRenderingForHTMLSelect_DetachParent) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <select id="select"></select>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetParentForDetachedSubtree());
+  GetStyleEngine().ChangeRenderingForHTMLSelect(
+      To<HTMLSelectElement>(*GetDocument().getElementById("select")));
+  EXPECT_FALSE(GetParentForDetachedSubtree());
 }
 
 }  // namespace blink
