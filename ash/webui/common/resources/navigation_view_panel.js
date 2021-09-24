@@ -74,6 +74,20 @@ export class NavigationViewPanelElement extends PolymerElement {
 
       /**
        * Can only be set to True if specified from the parent element by
+       * adding show-banner as an attribute to <navigation-view-panel>. If
+       * True, a banner will appear above the 2 column view (sidebar +
+       * page). If False, banner grid-area will not show and regular grid
+       * layout will be used based on show-tool-bar property.
+       * @type {boolean}
+       */
+      showBanner: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Can only be set to True if specified from the parent element by
        * adding show-tool-bar as an attribute to <navigation-view-panel>. If
        * True, a toolbar will appear at the top of the navigation view panel
        * with a 2 column view below it (sidebar + page). If False,

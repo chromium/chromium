@@ -2,6 +2,9 @@
   <style>
     html {
       --areas-no-header-nav: "sideNav main";
+      --areas-no-header-nav-banner: "banner banner"
+                                    "sideNav main";
+      --left-aligned-top-offset: 75px;
     }
 
    /* calc formula: (viewport width - (padding + side nav size)) */
@@ -9,6 +12,9 @@
       html {
         --areas-nav: "head head"
                  "main main";
+        --areas-nav-banner: "head head"
+                            "banner banner"
+                            "main main";
         --columns-nav: 1fr 1fr;
         --container-padding-nav: 24px;
         --container-max-width-nav: calc(100vw - 48px);
@@ -19,6 +25,9 @@
       html {
         --areas-nav: "head head"
                  "sideNav main";
+        --areas-nav-banner: "head head"
+                            "banner banner"
+                            "sideNav main";
         --columns-nav: 192px 1fr;
         --container-padding-nav: 40px;
         --container-max-width-nav: calc(100vw - 272px);

@@ -6,6 +6,28 @@
     position: fixed;
   }
 
+  ::slotted([slot=banner]) {
+    grid-area: banner;
+  }
+
+  :host([show-banner]) {
+    --left-aligned-top-offset: 150px;
+  }
+
+  :host([show-banner][show-tool-bar]) #container {
+    display: grid;
+    grid-template-areas: var(--areas-nav-banner);
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
+
+  :host([show-banner]:not([show-tool-bar])) #container {
+    display: grid;
+    grid-template-areas: var(--areas-no-header-nav-banner);
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
+
   :host([show-tool-bar]) #container {
     display: grid;
     grid-template-areas: var(--areas-nav);
@@ -23,6 +45,13 @@
     grid-area: head;
     position: sticky;
     top: 0;
+    z-index: 3;
+  }
+
+  :host([show-banner]) #banner {
+    grid-area: banner;
+    position: sticky;
+    top: 72px;
     z-index: 3;
   }
 
@@ -57,7 +86,7 @@
 
   .left-aligned {
     position: sticky;
-    top: 75px;
+    top: var(--left-aligned-top-offset);
   }
 
   page-toolbar {
@@ -74,6 +103,11 @@
           title="[[title]]"
           is-narrow="[[!showNav]]">
       </page-toolbar>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showBanner]]">
+    <div id="banner">
+      <slot name="banner"></slot>
     </div>
   </template>
   <cr-drawer id="drawer" heading="[[title]]">
