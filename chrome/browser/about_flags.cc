@@ -46,7 +46,6 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
-#include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/permissions/abusive_origin_notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -6420,13 +6419,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kPasswordChangeFeatureVariations,
                                     "PasswordChangeFeatureVariations")},
 
-    {"context-menu-performance-info-and-remote-hints-fetching",
-     flag_descriptions::kContextMenuPerformanceInfoAndRemoteHintFetchingName,
-     flag_descriptions::
-         kContextMenuPerformanceInfoAndRemoteHintFetchingDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(optimization_guide::features::
-                            kContextMenuPerformanceInfoAndRemoteHintFetching)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)

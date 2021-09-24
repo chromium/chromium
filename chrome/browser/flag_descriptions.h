@@ -1727,9 +1727,6 @@ extern const char kCloseTabSuggestionsDescription[];
 extern const char kCriticalPersistedTabDataName[];
 extern const char kCriticalPersistedTabDataDescription[];
 
-extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[];
-extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[];
-
 extern const char kContextualSearchDebugName[];
 extern const char kContextualSearchDebugDescription[];
 

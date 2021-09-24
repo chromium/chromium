@@ -791,11 +791,6 @@
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 96
   },
-  {
-    "name": "context-menu-performance-info-and-remote-hints-fetching",
-    "owners": [ "jds" ],
-    "expiry_milestone": 90
-  },
   { "name":"context-menu-phase2",
       "owners":["gambard", "bling-flags@google.com"],
       "expiry_milestone":100

@@ -3041,13 +3041,6 @@ const char kCriticalPersistedTabDataDescription[] =
     "A new method of persisting Tab data across restarts has been devised "
     "and implemented. This actives the new approach.";
 
-const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[] =
-    "Context menu performance info and remote hint fetching";
-const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[] =
-    "Enables showing link performance information in the context menu and "
-    "allows communicating with Google servers to fetch performance information "
-    "for the main frame URL.";
-
 const char kContextualSearchDebugName[] = "Contextual Search debug";
 const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "
