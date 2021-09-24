@@ -363,8 +363,6 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
       break;
     }
   }
-  UMA_HISTOGRAM_COUNTS_1000("PasswordManager.NumFormManagersCleared",
-                            form_managers_.size());
   form_managers_.clear();
 
   TryToFindPredictionsToPossibleUsernameData();
