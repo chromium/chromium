@@ -415,7 +415,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
         // expects a string -> string dictionary.
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{ss}", &variant_writer);
-        AppendStringDictionary(value, writer);
+        AppendStringDictionary(value, &variant_writer);
         writer->CloseContainer(&variant_writer);
       } else {
         dbus::MessageWriter variant_writer(nullptr);
