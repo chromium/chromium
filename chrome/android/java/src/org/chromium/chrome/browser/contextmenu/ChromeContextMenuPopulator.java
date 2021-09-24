@@ -592,21 +592,22 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                               .get(mMode == ContextMenuMode.CUSTOM_TAB ? 0
                                                                        : groupedItems.size() - 1)
                               .second;
-            if (mMode == ContextMenuMode.WEB_APP
-                    && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
-                items.add(createListItem(Item.OPEN_IN_CHROME));
-            } else if (mMode == ContextMenuMode.CUSTOM_TAB && !mItemDelegate.isIncognito()) {
-                boolean addNewEntries = !UrlUtilities.isInternalScheme(mParams.getUrl())
-                        && !isEmptyUrl(mParams.getUrl());
-                if (SharedPreferencesManager.getInstance().readBoolean(
-                            ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, false)
-                        && addNewEntries) {
-                    if (mItemDelegate.isIncognitoSupported()) {
-                        items.add(0, createListItem(Item.OPEN_IN_CHROME_INCOGNITO_TAB));
+            if (UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
+                if (mMode == ContextMenuMode.WEB_APP) {
+                    items.add(createListItem(Item.OPEN_IN_CHROME));
+                } else if (mMode == ContextMenuMode.CUSTOM_TAB && !mItemDelegate.isIncognito()) {
+                    boolean addNewEntries = !UrlUtilities.isInternalScheme(mParams.getUrl())
+                            && !isEmptyUrl(mParams.getUrl());
+                    if (SharedPreferencesManager.getInstance().readBoolean(
+                                ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, false)
+                            && addNewEntries) {
+                        if (mItemDelegate.isIncognitoSupported()) {
+                            items.add(0, createListItem(Item.OPEN_IN_CHROME_INCOGNITO_TAB));
+                        }
+                        items.add(0, createListItem(Item.OPEN_IN_NEW_CHROME_TAB));
+                    } else if (addNewEntries && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
+                        items.add(0, createListItem(Item.OPEN_IN_BROWSER_ID));
                     }
-                    items.add(0, createListItem(Item.OPEN_IN_NEW_CHROME_TAB));
-                } else if (addNewEntries && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
-                    items.add(0, createListItem(Item.OPEN_IN_BROWSER_ID));
                 }
             }
             if (groupedItems.isEmpty() && items.size() > 0) {
