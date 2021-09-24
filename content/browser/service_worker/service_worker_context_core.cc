@@ -371,9 +371,6 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
     return;
   }
 
-  std::unique_ptr<std::vector<std::pair<int, int>>> render_frames(
-      new std::vector<std::pair<int, int>>());
-
   bool has_main_frame = false;
   while (!container_host_iterator->IsAtEnd()) {
     ServiceWorkerContainerHost* container_host =
