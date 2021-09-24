@@ -1411,8 +1411,8 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
 }
 
 // Flaky on Mac and Linux ASAN builds. See: crbug.com/1189512.
-#if defined(OS_MAC) || (defined(OS_LINUX) && defined(ADDRESS_SANITIZER)) || \
-    defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(OS_MAC) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    (defined(OS_LINUX) && (defined(ADDRESS_SANITIZER) || defined(UBSAN)))
 #define MAYBE_DatabaseOperationSequencing DISABLED_DatabaseOperationSequencing
 #else
 #define MAYBE_DatabaseOperationSequencing DatabaseOperationSequencing
