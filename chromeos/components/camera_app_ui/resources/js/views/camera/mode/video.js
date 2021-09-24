@@ -528,15 +528,19 @@ export class Video extends ModeBase {
     this.recordingType_ = this.getToggledRecordOption_();
     if (this.recordingType_ === RecordType.GIF) {
       state.set(state.State.RECORDING_GIF, true);
+      state.set(state.State.SHUTTER_PROGRESSING, true);
       this.gifRecordTime_.start({resume: false});
 
       const gifSaver = await this.captureGif_();
+
+      state.set(state.State.SHUTTER_PROGRESSING, false);
+      this.gifRecordTime_.stop({pause: false});
+
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
       await this.handler_.handleResultGif(gifSaver);
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
 
       state.set(state.State.RECORDING_GIF, false);
-      this.gifRecordTime_.stop({pause: false});
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;

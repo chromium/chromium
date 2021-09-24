@@ -25,6 +25,10 @@ body.recording-gif #shutter-progress-bar>circle {
   animation-fill-mode: forwards;
 }
 
+body.recording-gif:not(.shutter-progressing) #shutter-progress-bar>circle {
+  animation-play-state: paused;
+}
+
 #shutter-progress-bar {
   --bar-width: 4px;
   --inner-perimeter: calc((var(--outer-radius) - var(--bar-width)) * 2 * 3.1416);
