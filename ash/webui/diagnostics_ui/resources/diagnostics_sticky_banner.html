@@ -21,8 +21,12 @@
   #bannerMsg {
     @apply --diagnostics-caution-banner-font;
   }
+
+  .elevation-2 {
+    box-shadow: var(--diagnostics-box-shadow-elevation-2);
+  }
 </style>
-<div id="banner" hidden="[[!bannerMessage]]">
+<div id="banner" hidden$="[[!bannerMessage]]" class$="[[scrollingClass_]]">
   <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
   <span id="bannerMsg">[[bannerMessage]]</span>
 </div>

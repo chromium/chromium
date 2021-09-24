@@ -27,6 +27,18 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
         value: '',
         notify: true,
       },
+
+      /** @protected {string} */
+      scrollingClass_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      scrollTimerId_: {
+        type: Number,
+        value: -1,
+      },
     };
   }
 
@@ -54,6 +66,14 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
     this.dismissCautionBannerHandler_ = () => {
       this.bannerMessage = '';
     };
+
+    /**
+     * Event callback for 'scroll'.
+     * @private {?Function}
+     */
+    this.scrollClassHandler_ = () => {
+      this.onScroll_();
+    };
   }
 
   /** @override */
@@ -63,6 +83,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
         'show-caution-banner', this.showCautionBannerHandler_);
     window.addEventListener(
         'dismiss-caution-banner', this.dismissCautionBannerHandler_);
+    window.addEventListener('scroll', this.scrollClassHandler_);
   }
 
   /** @override */
@@ -72,6 +93,29 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
         'show-caution-banner', this.showCautionBannerHandler_);
     window.removeEventListener(
         'dismiss-caution-banner', this.dismissCautionBannerHandler_);
+    window.removeEventListener('scroll', this.scrollClassHandler_);
+  }
+
+  /**
+   * Event handler for 'scroll' to ensure shadow and elevation of banner is
+   * correct while scrolling. Timer is used to clear class after 300ms.
+   * @private
+   */
+  onScroll_() {
+    if (!this.bannerMessage) {
+      return;
+    }
+
+    // Reset timer since we've received another 'scroll' event.
+    if (this.scrollTimerId_ !== -1) {
+      this.scrollingClass_ = 'elevation-2';
+      clearTimeout(this.scrollTimerId_);
+    }
+
+    // Remove box shadow from banner since the user has stopped scrolling
+    // for at least 300ms.
+    this.scrollTimerId_ =
+        window.setTimeout(() => this.scrollingClass_ = '', 300);
   }
 };
 

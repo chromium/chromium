@@ -4,7 +4,7 @@
 
 import {DiagnosticsStickyBannerElement} from 'chrome://diagnostics/diagnostics_sticky_banner.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -53,6 +53,22 @@ export function diagnosticsStickyBannerTestSuite() {
   }
 
   /**
+   * @suppress {visibility}
+   * @return {string}
+   */
+  function getScrollClass_() {
+    return diagnosticsStickyBannerElement.scrollingClass_;
+  }
+
+  /**
+   * @suppress {visibility}
+   * @return {number}
+   */
+  function getScrollTimerId_() {
+    return diagnosticsStickyBannerElement.scrollTimerId_;
+  }
+
+  /**
    * @param {string} message
    * @return {!Promise}
    */
@@ -69,6 +85,19 @@ export function diagnosticsStickyBannerTestSuite() {
    */
   function triggerDismissBannerEvent() {
     window.dispatchEvent(new CustomEvent('dismiss-caution-banner', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    return flushTasks();
+  }
+
+  /**
+   * Triggers 'scroll' event.
+   * @return {!Promise}
+   */
+  function triggerScrollEvent() {
+    window.dispatchEvent(new CustomEvent('scroll', {
       bubbles: true,
       composed: true,
     }));
@@ -145,6 +174,33 @@ export function diagnosticsStickyBannerTestSuite() {
           assertEquals('', diagnosticsStickyBannerElement.bannerMessage);
           assertFalse(isVisible(getBanner()));
           dx_utils.assertElementDoesNotContainText(getBannerMsg(), testMessage);
+        });
+  });
+
+  test('BannerHandlesScrollEvent', () => {
+    return initializeDiagnosticsStickyBanner()
+        .then(() => {
+          dx_utils.assertTextDoesNotContain(getScrollClass_(), 'elevation-2');
+          assertEquals(-1, getScrollTimerId_());
+        })
+        .then(() => triggerScrollEvent())
+        // Do not update if no banner message is set.
+        .then(() => {
+          dx_utils.assertTextDoesNotContain(getScrollClass_(), 'elevation-2');
+          assertEquals(-1, getScrollTimerId_());
+        })
+        .then(() => setBannerMessage('Test Message'))
+        .then(() => triggerScrollEvent())
+        // First scroll initializes but does not update class.
+        .then(() => {
+          dx_utils.assertTextDoesNotContain(getScrollClass_(), 'elevation-2');
+          assertNotEquals(-1, getScrollTimerId_());
+        })
+        // Subsequent scrolls ensure class name is set.
+        .then(() => triggerScrollEvent())
+        .then(() => {
+          dx_utils.assertTextContains(getScrollClass_(), 'elevation-2');
+          assertNotEquals(-1, getScrollTimerId_());
         });
   });
 }
