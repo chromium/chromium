@@ -807,6 +807,13 @@ void TextControlElement::ParseAttribute(
       if (auto* frame = GetDocument().GetFrame())
         frame->GetSpellChecker().RemoveSpellingAndGrammarMarkers(*inner_editor);
     }
+  } else if (params.name == html_names::kSpellcheckAttr) {
+    if (HTMLElement* inner_editor = InnerEditorElement()) {
+      if (auto* frame = GetDocument().GetFrame()) {
+        frame->GetSpellChecker().RespondToChangedEnablement(
+            *inner_editor, IsSpellCheckingEnabled());
+      }
+    }
   } else {
     HTMLFormControlElementWithState::ParseAttribute(params);
   }

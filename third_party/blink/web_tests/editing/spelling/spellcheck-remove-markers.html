@@ -134,4 +134,17 @@
         '<div contenteditable spellcheck="false">zz. I have a issue.</div>',
         'Setting "spellcheck" attribute to "false" removes spelling markers.')
     });
+
+    spellcheck_test(
+    '<textarea>|zz. I have a issue.</textarea>',
+    '',
+    '<textarea>#zz#. I have ~a~ issue.</textarea>',
+    {
+      title: '11) Setup for the initial markers.',
+      callback: sample => spellcheck_test(
+        sample,
+        document => document.querySelector('textarea').setAttribute('spellcheck', 'false'),
+        '<textarea spellcheck="false">zz. I have a issue.</textarea>',
+        'Setting "spellcheck" attribute to "false" removes spelling markers for textarea.')
+    });
 </script>
