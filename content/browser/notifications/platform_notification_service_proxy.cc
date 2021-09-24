@@ -61,7 +61,7 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
     DisplayResultCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::OnceClosure task;
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
@@ -84,27 +84,17 @@ void PlatformNotificationServiceProxy::DisplayNotification(
     return;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> core_thread_task_runner;
-  constexpr BrowserTaskTraits traits = {base::TaskPriority::USER_VISIBLE};
-  switch (ServiceWorkerContext::GetCoreThreadId()) {
-    case BrowserThread::UI:
-      core_thread_task_runner = GetUIThreadTaskRunner(traits);
-      break;
-    case BrowserThread::IO:
-      core_thread_task_runner = GetIOThreadTaskRunner(traits);
-      break;
-    case BrowserThread::ID_COUNT:
-      NOTREACHED();
-  }
-  core_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
-          service_worker_context_, data.service_worker_registration_id,
-          blink::StorageKey(url::Origin::Create(data.origin)),
+  GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+      ->PostTask(
+          FROM_HERE,
           base::BindOnce(
-              &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
-              weak_ptr_factory_io_.GetWeakPtr(), data, std::move(callback))));
+              &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
+              service_worker_context_, data.service_worker_registration_id,
+              blink::StorageKey(url::Origin::Create(data.origin)),
+              base::BindOnce(
+                  &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
+                  weak_ptr_factory_io_.GetWeakPtr(), data,
+                  std::move(callback))));
 }
 
 void PlatformNotificationServiceProxy::CloseNotifications(
