@@ -398,14 +398,11 @@ void ImageTransportSurfaceOverlayMacBase<BaseClass>::OnGpuSwitched(
   }
   gl_renderer_id_ = context_renderer_id & kCGLRendererIDMatchingMask;
 
-  // Post a task holding a reference to the new GL context. The reason for
-  // this is to avoid creating-then-destroying the context for every image
-  // transport surface that is observing the GPU switch.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::DoNothing::Once<scoped_refptr<ui::IOSurfaceContext>>(),
-          context_on_new_gpu));
+  // Delay releasing the reference to the new GL context. The reason for this
+  // is to avoid creating-then-destroying the context for every image transport
+  // surface that is observing the GPU switch.
+  base::ThreadTaskRunnerHandle::Get()->ReleaseSoon(
+      FROM_HERE, std::move(context_on_new_gpu));
 }
 
 // Template instantiation
