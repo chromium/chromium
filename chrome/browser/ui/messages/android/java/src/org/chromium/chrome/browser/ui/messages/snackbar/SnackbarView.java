@@ -22,6 +22,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -312,8 +313,21 @@ public class SnackbarView {
             mActionButtonView.setVisibility(View.VISIBLE);
             mActionButtonView.setContentDescription(snackbar.getActionText());
             setViewText(mActionButtonView, snackbar.getActionText(), animate);
+            // Set the end margin on the message view to 0 when there is action text.
+            if (mMessageView.getLayoutParams() instanceof LayoutParams) {
+                LayoutParams lp = (LayoutParams) mMessageView.getLayoutParams();
+                lp.setMarginEnd(0);
+                mMessageView.setLayoutParams(lp);
+            }
         } else {
             mActionButtonView.setVisibility(View.GONE);
+            // Set a non-zero end margin on the message view when there is no action text.
+            if (mMessageView.getLayoutParams() instanceof LayoutParams) {
+                LayoutParams lp = (LayoutParams) mMessageView.getLayoutParams();
+                lp.setMarginEnd(mParent.getResources().getDimensionPixelSize(
+                        R.dimen.snackbar_text_view_margin));
+                mMessageView.setLayoutParams(lp);
+            }
         }
         Drawable profileImage = snackbar.getProfileImage();
         if (profileImage != null) {
