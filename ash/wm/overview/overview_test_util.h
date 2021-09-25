@@ -25,8 +25,8 @@ const aura::Window* GetOverviewHighlightedWindow();
 void ToggleOverview(
     OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
-// Waits for the overview enter/exit anmations to finish. No-op and immediately
-// return if animations are disabled.
+// Waits for the overview enter/exit animations to finish. No-op and immediately
+// returns if animations are disabled.
 void WaitForOverviewEnterAnimation();
 void WaitForOverviewExitAnimation();
 

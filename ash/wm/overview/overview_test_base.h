@@ -5,9 +5,11 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_TEST_BASE_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_TEST_BASE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
 
 namespace views {
@@ -22,7 +24,6 @@ class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
 class ScopedOverviewTransformWindow;
-class ShelfViewTestAPI;
 class SplitViewController;
 class WindowPreviewView;
 
@@ -32,6 +33,8 @@ class OverviewTestBase : public AshTestBase {
   template <typename... TaskEnvironmentTraits>
   explicit OverviewTestBase(TaskEnvironmentTraits&&... traits)
       : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+  OverviewTestBase(const OverviewTestBase&) = delete;
+  OverviewTestBase& operator=(const OverviewTestBase&) = delete;
   ~OverviewTestBase() override;
 
   // Enters tablet mode. Needed by tests that test dragging and or splitview,

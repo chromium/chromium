@@ -6,6 +6,7 @@ include_rules = [
   "+chromeos/cryptohome",
   "+components/account_id",
   "+components/app_restore",
+  "+components/desks_storage",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
   "+components/live_caption",

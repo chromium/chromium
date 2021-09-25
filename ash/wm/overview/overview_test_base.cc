@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
