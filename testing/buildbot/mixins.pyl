@@ -426,14 +426,7 @@
         '--device=aemu',
       ],
     },
-  },
-  'fuchsia-fvdl': {
-    '$mixin_append': {
-      'args': [
-        '--device=fvdl',
-      ],
-    },
-  },
+  }, 
   'fuchsia_logs': {
     '$mixin_append': {
       'args': [

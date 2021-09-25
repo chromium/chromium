@@ -28,7 +28,7 @@ def _AddTargetSpecificationArgs(arg_parser):
   device_args.add_argument('--device',
                            default=None,
                            choices=BUILTIN_TARGET_NAMES + ['custom'],
-                           help='Choose to run on aemu|qemu|device. '
+                           help='Choose to run on fvdl|aemu|qemu|device. '
                            'By default, Fuchsia will run on AEMU on x64 '
                            'hosts and QEMU on arm64 hosts. Alternatively, '
                            'setting to custom will require specifying the '
@@ -160,6 +160,6 @@ def GetDeploymentTargetForArgs(args):
   if args.device:
     device = args.device
   else:
-    device = 'aemu' if args.target_cpu == 'x64' else 'qemu'
+    device = 'fvdl' if args.target_cpu == 'x64' else 'qemu'
 
   return _LoadTargetClass(_GetPathToBuiltinTarget(device)).CreateFromArgs(args)

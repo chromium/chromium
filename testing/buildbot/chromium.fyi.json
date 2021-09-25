@@ -27033,9 +27033,6 @@
     ],
     "gtest_tests": [
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27054,9 +27051,6 @@
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27075,9 +27069,6 @@
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27096,9 +27087,6 @@
         "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27117,9 +27105,6 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27138,9 +27123,6 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27159,9 +27141,6 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27181,8 +27160,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -27202,9 +27180,6 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27223,9 +27198,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27244,9 +27216,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27265,9 +27234,6 @@
         "test_id_prefix": "ninja://media/capture:capture_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27286,9 +27252,6 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_browsertests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27307,9 +27270,6 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_integration_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27328,9 +27288,6 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27350,9 +27307,6 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27371,9 +27325,6 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27393,8 +27344,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -27414,9 +27364,6 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27435,9 +27382,6 @@
         "test_id_prefix": "ninja://courgette:courgette_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27456,9 +27400,6 @@
         "test_id_prefix": "ninja://fuchsia/base:cr_fuchsia_base_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27477,9 +27418,6 @@
         "test_id_prefix": "ninja://components/cronet:cronet_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27498,9 +27436,6 @@
         "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27519,9 +27454,6 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27540,9 +27472,6 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27561,9 +27490,6 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27582,9 +27508,6 @@
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27603,9 +27526,6 @@
         "test_id_prefix": "ninja://fuchsia/mojom:fuchsia_mojo_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27624,9 +27544,6 @@
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27645,9 +27562,6 @@
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27666,9 +27580,6 @@
         "test_id_prefix": "ninja://gin:gin_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27687,9 +27598,6 @@
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27708,9 +27616,6 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27730,8 +27635,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter"
         ],
         "merge": {
           "args": [],
@@ -27751,9 +27655,6 @@
         "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27772,9 +27673,6 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27793,9 +27691,6 @@
         "test_id_prefix": "ninja://fuchsia/http:http_service_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27815,8 +27710,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -27836,9 +27730,6 @@
         "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27857,9 +27748,6 @@
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27878,9 +27766,6 @@
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27899,9 +27784,6 @@
         "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27920,9 +27802,6 @@
         "test_id_prefix": "ninja://media/midi:midi_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27941,9 +27820,6 @@
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27963,8 +27839,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -27986,8 +27861,7 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
-          "--device=fvdl"
+          "--child-arg=--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -28007,9 +27881,6 @@
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28028,9 +27899,6 @@
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28049,9 +27917,6 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28071,8 +27936,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28092,9 +27956,6 @@
         "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28113,9 +27974,6 @@
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28134,9 +27992,6 @@
         "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28155,9 +28010,6 @@
         "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28177,8 +28029,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28199,8 +28050,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28220,9 +28070,6 @@
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28241,9 +28088,6 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28263,8 +28107,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28285,8 +28128,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28307,8 +28149,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28328,9 +28169,6 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28350,8 +28188,7 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1",
-          "--device=fvdl"
+          "--child-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -28371,9 +28208,6 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_integration_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28392,9 +28226,6 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28413,9 +28244,6 @@
         "test_id_prefix": "ninja://fuchsia/runners:web_runner_integration_tests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28434,9 +28262,6 @@
         "test_id_prefix": "ninja://ui/wm:wm_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28455,9 +28280,6 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
       },
       {
-        "args": [
-          "--device=fvdl"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -28480,7 +28302,6 @@
       {
         "args": [
           "bin/run_angle_unittests",
-          "--device=fvdl",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",
@@ -28510,8 +28331,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -28532,8 +28352,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter",
-          "--device=fvdl"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter"
         ],
         "merge": {
           "args": [],
@@ -28561,8 +28380,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28595,8 +28413,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28629,8 +28446,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28663,8 +28479,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28701,8 +28516,7 @@
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
-          "0",
-          "--device=fvdl"
+          "0"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28736,7 +28550,6 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
@@ -28775,8 +28588,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28810,7 +28622,6 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
@@ -28849,8 +28660,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28883,8 +28693,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {
@@ -28917,8 +28726,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=fvdl"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "fuchsia_telemetry_gpu_integration_test",
         "merge": {

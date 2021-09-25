@@ -155,7 +155,7 @@ def parse_args(args):
                              help=('Do not log Zircon debug messages.')),
         optparse.make_option('--device',
                              choices=['aemu', 'qemu', 'device', 'fvdl'],
-                             default='aemu',
+                             default='fvdl',
                              help=('Choose device to launch Fuchsia with. '
                                    'Defaults to AEMU.')),
         optparse.make_option('--fuchsia-target-cpu',
