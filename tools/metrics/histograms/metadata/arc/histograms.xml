@@ -635,7 +635,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.CupsPrinting.PageCount" units="units"
-    expires_after="2022-03-04">
+    expires_after="2020-10-04">
+  <obsolete>
+    Removed 2021-09.
+  </obsolete>
   <owner>skau@chromium.org</owner>
   <owner>vkuzkokov@google.com</owner>
   <summary>
