@@ -361,7 +361,7 @@ Polymer({
     }
 
     if (status.result &&
-        getSimpleResult(status.result) !== StandardRoutineResult.kTestPassed &&
+        getSimpleResult(status.result) === StandardRoutineResult.kTestFailed &&
         !this.failedTest_) {
       this.failedTest_ = status.routine;
     }

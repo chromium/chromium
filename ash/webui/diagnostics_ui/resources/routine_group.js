@@ -105,7 +105,7 @@ export class RoutineGroup {
    * @return {boolean}
    */
   testFailed_(result) {
-    return getSimpleResult(result) !== StandardRoutineResult.kTestPassed;
+    return getSimpleResult(result) === StandardRoutineResult.kTestFailed;
   }
 
   /**
