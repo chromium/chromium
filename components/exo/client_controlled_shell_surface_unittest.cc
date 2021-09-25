@@ -87,10 +87,7 @@ bool HasBackdrop() {
 }
 
 bool IsWidgetPinned(views::Widget* widget) {
-  chromeos::WindowPinType type =
-      widget->GetNativeWindow()->GetProperty(chromeos::kWindowPinTypeKey);
-  return type == chromeos::WindowPinType::kPinned ||
-         type == chromeos::WindowPinType::kTrustedPinned;
+  return ash::WindowState::Get(widget->GetNativeWindow())->IsPinned();
 }
 
 int GetShadowElevation(aura::Window* window) {

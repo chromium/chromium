@@ -432,7 +432,12 @@ void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
   if (!widget_)
     CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
 
-  widget_->GetNativeWindow()->SetProperty(chromeos::kWindowPinTypeKey, type);
+  if (type == chromeos::WindowPinType::kNone) {
+    ash::WindowState::Get(widget_->GetNativeWindow())->Restore();
+  } else {
+    bool trusted = type == chromeos::WindowPinType::kTrustedPinned;
+    ash::window_util::PinWindow(widget_->GetNativeWindow(), trusted);
+  }
 }
 
 void ClientControlledShellSurface::SetSystemUiVisibility(bool autohide) {
