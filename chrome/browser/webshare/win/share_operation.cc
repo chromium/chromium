@@ -5,7 +5,6 @@
 #include "chrome/browser/webshare/win/share_operation.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -547,8 +546,7 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
                 operation->WriteStream(
                     stream,
                     base::BindOnce(
-                        base::DoNothing::Once<
-                            scoped_refptr<OutputStreamWriteOperation>>(),
+                        [](scoped_refptr<OutputStreamWriteOperation>) {},
                         operation));
                 return S_OK;
               });

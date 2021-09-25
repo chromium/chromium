@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_incognito_file_delegate.h"
 
-#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
@@ -63,10 +62,9 @@ void WriteDataToProducer(
   // the duration of the write.
   producer_raw->Write(
       std::move(data_source),
-      WTF::Bind(base::DoNothing::Once<
-                    std::unique_ptr<mojo::DataPipeProducer>,
-                    scoped_refptr<base::RefCountedData<Vector<uint8_t>>>,
-                    MojoResult>(),
+      WTF::Bind([](std::unique_ptr<mojo::DataPipeProducer>,
+                   scoped_refptr<base::RefCountedData<Vector<uint8_t>>>,
+                   MojoResult) {},
                 std::move(producer), std::move(data)));
 }
 

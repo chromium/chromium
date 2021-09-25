@@ -5,7 +5,6 @@
 #include "base/timer/mock_timer.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,8 +69,7 @@ TEST(MockTimerTest, DoesNotRetainClosure) {
   base::TimeDelta delay = base::TimeDelta::FromSeconds(2);
   ASSERT_TRUE(weak_ptr.get());
   timer.Start(FROM_HERE, delay,
-              base::BindOnce(base::DoNothing::Once<HasWeakPtr*>(),
-                             base::Owned(has_weak_ptr)));
+              base::BindOnce([](HasWeakPtr*) {}, base::Owned(has_weak_ptr)));
   ASSERT_TRUE(weak_ptr.get());
   timer.Fire();
   ASSERT_FALSE(weak_ptr.get());

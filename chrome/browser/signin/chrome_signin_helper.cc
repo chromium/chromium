@@ -118,10 +118,10 @@ class AccountReconcilorLockWrapper
   }
 
   void DestroyAfterDelay() {
+    // TODO(dcheng): Should ReleaseSoon() support this use case?
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<
-                           scoped_refptr<AccountReconcilorLockWrapper>>(),
+        base::BindOnce([](scoped_refptr<AccountReconcilorLockWrapper>) {},
                        base::RetainedRef(this)),
         base::TimeDelta::FromMilliseconds(
             g_dice_account_reconcilor_blocked_delay_ms));

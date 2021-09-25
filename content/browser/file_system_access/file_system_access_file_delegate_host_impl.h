@@ -65,15 +65,15 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
     // provided method with the provided arguments (and the wrapped callback).
     //
     // FileSystemOperationRunner assumes file_system_context() is kept alive, to
-    // make sure this happens it is bound to a DoNothing callback.
+    // make sure this happens it is bound to a callback that otherwise does
+    // nothing.
     manager()
         ->operation_runner()
         .AsyncCall(base::IgnoreResult(method))
         .WithArgs(std::forward<ArgsMinusCallback>(args)...,
                   std::move(wrapped_callback))
-        .Then(base::BindOnce(
-            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
-            base::WrapRefCounted(file_system_context())));
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(file_system_context())));
   }
   // Same as the previous overload, but using RepeatingCallback and
   // BindRepeating instead.
@@ -103,15 +103,15 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
     // provided method with the provided arguments (and the wrapped callback).
     //
     // FileSystemOperationRunner assumes file_system_context() is kept alive, to
-    // make sure this happens it is bound to a DoNothing callback.
+    // make sure this happens it is bound to a callback that otherwise does
+    // nothing.
     manager()
         ->operation_runner()
         .AsyncCall(base::IgnoreResult(method))
         .WithArgs(std::forward<ArgsMinusCallback>(args)...,
                   std::move(wrapped_callback))
-        .Then(base::BindOnce(
-            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
-            base::WrapRefCounted(file_system_context())));
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(file_system_context())));
   }
 
   void OnDisconnect();

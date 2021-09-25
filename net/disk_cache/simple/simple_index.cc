@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -623,9 +622,8 @@ void SimpleIndex::WriteToDisk(IndexWriteToDiskReason reason) {
   if (cleanup_tracker_) {
     // Make anyone synchronizing with our cleanup wait for the index to be
     // written back.
-    after_write = base::BindOnce(
-        base::DoNothing::Once<scoped_refptr<BackendCleanupTracker>>(),
-        cleanup_tracker_);
+    after_write = base::BindOnce([](scoped_refptr<BackendCleanupTracker>) {},
+                                 cleanup_tracker_);
   }
 
   index_file_->WriteToDisk(cache_type_, reason, entries_set_, cache_size_,

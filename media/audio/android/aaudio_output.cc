@@ -5,7 +5,6 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/android/build_info.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -137,9 +136,8 @@ AAudioOutputStream::~AAudioOutputStream() {
   // bound to the callback stays valid, until the callbacks stop.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<AAudioDestructionHelper>>(),
-          std::move(destruction_helper_)),
+      base::BindOnce([](std::unique_ptr<AAudioDestructionHelper>) {},
+                     std::move(destruction_helper_)),
       base::TimeDelta::FromSeconds(1));
 }
 

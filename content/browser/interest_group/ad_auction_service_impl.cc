@@ -87,10 +87,9 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
   // TODO(qingxin): time out these requests if they take too long.
   simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory,
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<network::SimpleURLLoader>,
-                                scoped_refptr<net::HttpResponseHeaders>>(),
-          std::move(simple_url_loader)));
+      base::BindOnce([](std::unique_ptr<network::SimpleURLLoader>,
+                        scoped_refptr<net::HttpResponseHeaders>) {},
+                     std::move(simple_url_loader)));
 }
 
 bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {

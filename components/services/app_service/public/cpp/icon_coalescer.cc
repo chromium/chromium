@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 
 namespace apps {
 
@@ -139,10 +138,10 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
   return std::make_unique<IconLoader::Releaser>(
       nullptr,
-      // The DoNothing callback does nothiing explicitly, but after it runs, it
-      // implicitly decrements the scoped_refptr's shared reference count, and
-      // therefore possibly deletes the underlying IconLoader::Releaser.
-      base::BindOnce(base::DoNothing::Once<scoped_refptr<RefCountedReleaser>>(),
+      // The callback does nothing explicitly, but after it runs, it implicitly
+      // decrements the scoped_refptr's shared reference count, and therefore
+      // possibly deletes the underlying IconLoader::Releaser.
+      base::BindOnce([](scoped_refptr<RefCountedReleaser>) {},
                      std::move(shared_releaser)));
 }
 

@@ -221,8 +221,7 @@ void UsbDeviceHandleWin::Close() {
     // after any queued operations have completed.
     blocking_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<base::win::ScopedHandle>(),
-                       std::move(hub_handle_)));
+        base::BindOnce([](base::win::ScopedHandle) {}, std::move(hub_handle_)));
   }
 
   for (auto& map_entry : interfaces_) {

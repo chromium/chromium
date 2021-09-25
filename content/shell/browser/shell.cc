@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -643,9 +642,8 @@ void Shell::UpdateInspectedWebContentsIfNecessary(
   for (auto* shell_devtools_bindings :
        ShellDevToolsBindings::GetInstancesForWebContents(old_contents)) {
     shell_devtools_bindings->UpdateInspectedWebContents(
-        new_contents,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<PendingCallback>>(),
-                       pending_callback));
+        new_contents, base::BindOnce([](scoped_refptr<PendingCallback>) {},
+                                     pending_callback));
   }
 }
 

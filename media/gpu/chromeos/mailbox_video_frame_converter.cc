@@ -5,7 +5,6 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -432,8 +431,8 @@ void MailboxVideoFrameConverter::WaitOnSyncTokenAndReleaseFrameOnGPUThread(
   gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
   DCHECK(shared_image_stub);
 
-  auto keep_video_frame_alive = base::BindOnce(
-      base::DoNothing::Once<scoped_refptr<VideoFrame>>(), std::move(frame));
+  auto keep_video_frame_alive =
+      base::BindOnce([](scoped_refptr<VideoFrame>) {}, std::move(frame));
   auto* scheduler = gpu_channel_->scheduler();
   DCHECK(scheduler);
   scheduler->ScheduleTask(gpu::Scheduler::Task(

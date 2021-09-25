@@ -12,7 +12,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
@@ -906,8 +905,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
   // observers which signal that the underlying resource is okay to reuse. E.g.,
   // VideoFramePool.
   if (frame->wrapped_frame_) {
-    wrapping_frame->AddDestructionObserver(base::BindOnce(
-        base::DoNothing::Once<scoped_refptr<VideoFrame>>(), frame));
+    wrapping_frame->AddDestructionObserver(
+        base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
     frame = frame->wrapped_frame_;
   }
 

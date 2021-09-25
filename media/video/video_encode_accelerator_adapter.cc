@@ -660,8 +660,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   // Keep the SharedMemoryHolder until the frame is destroyed so that the
   // memory is not freed prematurely.
   shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
-      base::DoNothing::Once<
-          std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>>(),
+      [](std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>) {},
       std::move(handle))));
   auto status =
       ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);

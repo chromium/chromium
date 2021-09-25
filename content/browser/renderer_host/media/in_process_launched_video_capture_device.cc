@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
@@ -47,8 +46,7 @@ InProcessLaunchedVideoCaptureDevice::~InProcessLaunchedVideoCaptureDevice() {
       FROM_HERE,
       base::BindOnce(
           &StopAndReleaseDeviceOnDeviceThread, device_ptr,
-          base::BindOnce(base::DoNothing::Once<
-                             scoped_refptr<base::SingleThreadTaskRunner>>(),
+          base::BindOnce([](scoped_refptr<base::SingleThreadTaskRunner>) {},
                          device_task_runner_)));
 }
 

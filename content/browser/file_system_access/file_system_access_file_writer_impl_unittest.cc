@@ -198,8 +198,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
             contents, mojo::StringDataSource::AsyncWritingMode::
                           STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
         base::BindOnce(
-            base::DoNothing::Once<std::unique_ptr<mojo::DataPipeProducer>,
-                                  MojoResult>(),
+            [](std::unique_ptr<mojo::DataPipeProducer>, MojoResult) {},
             std::move(producer)));
     return consumer_handle;
   }

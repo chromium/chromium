@@ -47,8 +47,7 @@ class Latch : public base::RefCountedThreadSafe<
   // Closure does nothing. The Closure just serves to keep a reference alive
   // until |this| is ready to be destroyed; invoking the |callback|.
   base::RepeatingClosure NoOpClosure() {
-    return base::BindRepeating(base::DoNothing::Repeatedly<Latch*>(),
-                               base::RetainedRef(this));
+    return base::BindRepeating([](Latch*) {}, base::RetainedRef(this));
   }
 
  private:

@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
 #include "base/bind_post_task.h"
-#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -137,15 +136,15 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
     // provided method with the provided arguments (and the wrapped callback).
     //
     // FileSystemOperationRunner assumes file_system_context() is kept alive, to
-    // make sure this happens it is bound to a DoNothing callback.
+    // make sure this happens it is bound to a callback that otherwise does
+    // nothing.
     manager()
         ->operation_runner()
         .AsyncCall(base::IgnoreResult(method))
         .WithArgs(std::forward<ArgsMinusCallback>(args)...,
                   std::move(wrapped_callback))
-        .Then(base::BindOnce(
-            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
-            base::WrapRefCounted(file_system_context())));
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(file_system_context())));
   }
   // Same as the previous overload, but using RepeatingCallback and
   // BindRepeating instead.
@@ -175,15 +174,15 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
     // provided method with the provided arguments (and the wrapped callback).
     //
     // FileSystemOperationRunner assumes file_system_context() is kept alive, to
-    // make sure this happens it is bound to a DoNothing callback.
+    // make sure this happens it is bound to a callback that otherwise does
+    // nothing.
     manager()
         ->operation_runner()
         .AsyncCall(base::IgnoreResult(method))
         .WithArgs(std::forward<ArgsMinusCallback>(args)...,
                   std::move(wrapped_callback))
-        .Then(base::BindOnce(
-            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
-            base::WrapRefCounted(file_system_context())));
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(file_system_context())));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

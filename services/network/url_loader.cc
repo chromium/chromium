@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -728,7 +727,7 @@ class URLLoader::FileOpenerForUpload {
   static void PostCloseFiles(std::vector<base::File> opened_files) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(base::DoNothing::Once<std::vector<base::File>>(),
+        base::BindOnce([](std::vector<base::File>) {},
                        std::move(opened_files)));
   }
 

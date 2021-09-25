@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/audio_bus.h"
@@ -301,8 +300,7 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
 
     // Keep |buffer| alive as long as |audio_bus|.
     audio_bus->SetWrappedDataDeleter(
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<AudioBuffer>>(),
-                       std::move(buffer)));
+        base::BindOnce([](scoped_refptr<AudioBuffer>) {}, std::move(buffer)));
 
     return audio_bus;
   }
