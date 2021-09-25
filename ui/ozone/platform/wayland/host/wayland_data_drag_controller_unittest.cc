@@ -859,32 +859,65 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
 }
 
 // Regression test for https://crbug.com/1209269.
+//
+// Emulates "quick" wl_pointer.button release events being sent by the
+// compositor, and processed by the ozone/wayland either (1) before or (2) just
+// after WaylandWindow::StartDrag is called. The drag start happens in
+// reposponse to sequence of input events. Such event processing may take some
+// time, for example, when they happen in web contents, which involves async
+// browser <=> renderer IPC, etc. In both cases, drag controller is expected to
+// gracefully reset state and quit drag loop as if the drag session was
+// cancelled as usual.
 TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   const bool restored_focus = window_->has_pointer_focus();
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
 
+  // 1. Send wl_pointer.button release before drag start.
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-
-  // Emulate a "quick" wl_pointer.button release event being processed by the
-  // compositor, which leads to a no-op subsequent WaylandWindow::StartDrag. In
-  // this case, the client is expected to gracefully reset state and quit drag
-  // loop as if the drag session was cancelled as usual.
   SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
   Sync();
 
   EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(0);
 
   // Attempt to start drag session and ensure it fails.
-  bool result = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
-                                   DragEventSource::kMouse, /*cursor=*/{},
-                                   /*can_grab_pointer=*/true,
-                                   drag_handler_delegate_.get());
-  EXPECT_FALSE(result);
+  bool result_1 = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
+                                     DragEventSource::kMouse, /*cursor=*/{},
+                                     /*can_grab_pointer=*/true,
+                                     drag_handler_delegate_.get());
+  EXPECT_FALSE(result_1);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   Mock::VerifyAndClearExpectations(this);
-
   EXPECT_FALSE(drag_controller()->origin_window_);
+  EXPECT_FALSE(drag_controller()->nested_dispatcher_);
+
+  // 2. Send wl_pointer.button release just after drag start.
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  Sync();
+
+  // Schedule a wl_pointer.button up, attempt to start drag session and ensure
+  // it exits with cancellation status.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
+
+    EXPECT_CALL(*drop_handler_, OnDragLeave).Times(1);
+    EXPECT_CALL(*drag_handler_delegate_,
+                OnDragFinished(Eq(DragOperation::kNone)))
+        .Times(1);
+    Sync();
+  }));
+  EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(1);
+  bool result_2 = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
+                                     DragEventSource::kMouse, /*cursor=*/{},
+                                     /*can_grab_pointer=*/true,
+                                     drag_handler_delegate_.get());
+  // TODO(crbug.com/1022722): Double-check if this should return false instead.
+  EXPECT_TRUE(result_2);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Mock::VerifyAndClearExpectations(drag_handler_delegate_.get());
+  Mock::VerifyAndClearExpectations(this);
+  EXPECT_FALSE(drag_controller()->origin_window_);
+  EXPECT_FALSE(drag_controller()->nested_dispatcher_);
 
   window_->SetPointerFocus(restored_focus);
 }
