@@ -32,6 +32,12 @@
     ],
     "scripts": []
   },
+  "linux-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": []
+  },
   "linux-official": {
     "additional_compile_targets": [
       "all"

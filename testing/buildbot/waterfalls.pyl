@@ -263,6 +263,17 @@
           'scripts': 'public_build_scripts',
         },
       },
+      'linux-archive-tagged': {
+        'mixins': [
+          'linux-archive-rel-args',
+        ],
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'public_build_scripts',
+        },
+      },
       'linux-official': {
         'additional_compile_targets': [
           'all',

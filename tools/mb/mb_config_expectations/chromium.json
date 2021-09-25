@@ -49,6 +49,14 @@
       "use_goma": true
     }
   },
+  "linux-archive-tagged": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
   "linux-official": {
     "gn_args": {
       "is_official_build": true,

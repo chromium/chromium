@@ -802,6 +802,7 @@
     'remove_from': [
       'linux-archive-dbg',
       'linux-archive-rel',
+      'linux-archive-tagged',
       'mac-archive-dbg',
       'mac-archive-rel',
       'mac-arm64-archive-dbg',
