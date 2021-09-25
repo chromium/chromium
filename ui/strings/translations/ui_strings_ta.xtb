@@ -12,7 +12,7 @@
 <translation id="1243314992276662751">பதிவேற்று</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1290982764014248209"><ph name="DRAGGED_APP" />ஐ <ph name="FOLDER_NAME" /> கோப்புறைக்கு நகர்த்தும்.</translation>
+<translation id="1290982764014248209"><ph name="DRAGGED_APP" />ஐ <ph name="FOLDER_NAME" /> ஃபோல்டருக்கு நகர்த்தும்.</translation>
 <translation id="1291104554099683393">சிறுசிறு பகுதிகளாக உரையைப் பகிர முயலவும்.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">பரிந்துரைக்கப்படும் ஆப்ஸ்</translation>
@@ -122,7 +122,7 @@
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 மாதத்திற்கு முன்}other{# மாதங்களுக்கு முன்}}</translation>
 <translation id="4289300219472526559">பேச்சைத் தொடங்கு</translation>
-<translation id="430191667033048642"><ph name="FOLDER_NAME" /> கோப்புறைக்கு <ph name="MOVED_APP_NAME" /> ஆப்ஸ் நகர்த்தப்பட்டது.</translation>
+<translation id="430191667033048642"><ph name="FOLDER_NAME" /> ஃபோல்டருக்கு <ph name="MOVED_APP_NAME" /> ஆப்ஸ் நகர்த்தப்பட்டது.</translation>
 <translation id="4306392492252714209">கிளிப்போர்டிலிருந்து அகற்றும்.</translation>
 <translation id="4316910396681052118">எல்லாப் பயன்பாடுகளும்</translation>
 <translation id="4491109536499578614">படம்</translation>
@@ -139,14 +139,14 @@
 <translation id="4971687151119236543">ஊடகத்தின் முந்தைய டிராக்</translation>
 <translation id="5046499563572181734">இங்கே தட்டவும்</translation>
 <translation id="5076340679995252485">&amp;ஒட்டு</translation>
-<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> மற்றும் <ph name="IN_PLACE_APP" /> ஆப்ஸை ஒருங்கிணைத்து புதிய கோப்புறை உருவாக்கப்பட்டது.</translation>
+<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> மற்றும் <ph name="IN_PLACE_APP" /> ஆப்ஸை ஒருங்கிணைத்து புதிய ஃபோல்டர் உருவாக்கப்பட்டது.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> பெ.பை</translation>
 <translation id="5266161281976477809">கூடுதல் உள்ளடக்கத்தைக் காட்டும் முக்கோணம்</translation>
 <translation id="5278860589123563674">அனுப்ப முடியவில்லை</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
 <translation id="5329858601952122676">&amp;நீக்கு</translation>
-<translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். கோப்புறையை உருவாக்க, விடுவிக்கவும்.</translation>
+<translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். ஃபோல்டரை உருவாக்க, விடுவிக்கவும்.</translation>
 <translation id="5463830097259460683">ஈமோஜி &amp;&amp; குறியீடுகள்</translation>
 <translation id="5476505524087279545">தேர்வு நீக்கு</translation>
 <translation id="547979256943495781">ஷெல்ஃப் வலப்புறம் உள்ளது</translation>
@@ -197,7 +197,7 @@
 <translation id="6620110761915583480">ஃபைலைச் சேமி</translation>
 <translation id="6699343763173986273">ஊடகத்தின் அடுத்த டிராக்</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
-<translation id="6786750046913594791">கோப்புறையை மூடு</translation>
+<translation id="6786750046913594791">ஃபோல்டரை மூடு</translation>
 <translation id="6808150112686056157">ஊடகத்தை நிறுத்து</translation>
 <translation id="6845383723252244143">ஃபோல்டரைத் தேர்ந்தெடு</translation>
 <translation id="6845533974506654842">அழுத்துக</translation>
@@ -261,7 +261,7 @@
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ம}other{#ம}}</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
-<translation id="8806053966018712535"><ph name="FOLDER_NAME" /> கோப்புறை</translation>
+<translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ஃபோல்டர்</translation>
 <translation id="883911313571074303">படத்தைக் குறிப்பிடு</translation>
 <translation id="8841375032071747811">முந்தையது பொத்தான்</translation>
 <translation id="8867568208303837180">அனுப்புகிறது...</translation>

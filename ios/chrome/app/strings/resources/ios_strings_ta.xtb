@@ -47,7 +47,7 @@
 <translation id="1321993286294231467">படத்தைச் சேமிப்பதில் பிழை.</translation>
 <translation id="1322735045095424339">மறைநிலைப் பயன்முறையைப் பயன்படுத்துமாறு உங்கள் நிறுவனம் கோருகிறது</translation>
 <translation id="1323735185997015385">நீக்கு</translation>
-<translation id="132683371494960526">மூலக் கோப்புறையை மாற்ற, இருமுறை தட்டவும்.</translation>
+<translation id="132683371494960526">மூல ஃபோல்டரை மாற்ற, இருமுறை தட்டவும்.</translation>
 <translation id="1340643665687018190">மூடு மெனு</translation>
 <translation id="1358214951266274152">நீங்கள் நகலெடுத்த இணைப்பிற்குச் செல்லவும்</translation>
 <translation id="1360432990279830238">வெளியேறி, ஒத்திசைவை முடக்கவா?</translation>
@@ -96,7 +96,7 @@
 <translation id="1752547299766512813">கடவுச்சொற்களைச் சேமி</translation>
 <translation id="1753905327828125965">அதிகமாகப் பார்க்கப்பட்டவை</translation>
 <translation id="1803264062614276815">கார்டு உரிமையாளரின் பெயர்</translation>
-<translation id="1809939268435598390">கோப்புறையை நீக்கு</translation>
+<translation id="1809939268435598390">ஃபோல்டரை நீக்கு</translation>
 <translation id="1813414402673211292">உலாவிய தரவை சுத்தமாக்கு</translation>
 <translation id="1815941218935345331">கடவுக்குறியீடு</translation>
 <translation id="1820259098641718022">வாசிப்புப் பட்டியலில் சேர்க்கப்பட்டது</translation>
@@ -195,7 +195,7 @@
 <translation id="2876369937070532032">ஆபத்தான தளங்களைப் பார்ப்பதால் உங்கள் பாதுகாப்பிற்கு ஆபத்து ஏற்படும்போது நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
 <translation id="288655811176831528">தாவலை மூடு</translation>
 <translation id="2893180576842394309">‘தேடல்’ மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
-<translation id="2898963176829412617">புதிய கோப்புறை…</translation>
+<translation id="2898963176829412617">புதிய ஃபோல்டர்…</translation>
 <translation id="2916171785467530738">தேடல்கள் மற்றும் URLகளைத் தன்னிரப்புதல்</translation>
 <translation id="291754862089661335">இந்த ஃபிரேமில் QR அல்லது பார் குறியீடு தெரியும்படி வைக்கவும்</translation>
 <translation id="2921219216347069551">பக்கத்தைப் பகிர முடியவில்லை</translation>
@@ -268,7 +268,7 @@
 <translation id="35083190962747987">${url} ஐத் திற</translation>
 <translation id="3519193562722059437">வலையில் உலாவ ஒரு தாவலைத் திறக்கவும்.</translation>
 <translation id="3523473570015918798">வெளியேறினால் உங்கள் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள், பிற Chrome தரவு ஆகியவை இனி உங்கள் Google கணக்குடன் ஒத்திசைக்கப்படாது.</translation>
-<translation id="3527085408025491307">கோப்புறை</translation>
+<translation id="3527085408025491307">ஃபோல்டர்</translation>
 <translation id="3529024052484145543">பாதுகாப்பற்றது</translation>
 <translation id="3533202363250687977">எல்லா மறைநிலைத் தாவல்களையும் மூடு</translation>
 <translation id="3533436815740441613">புதிய தாவல்</translation>
@@ -481,7 +481,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">தேடல் இன்ஜின்</translation>
 <translation id="5854790677617711513">30 நாட்களுக்கு முந்தையவை</translation>
-<translation id="5857090052475505287">புதிய கோப்புறை</translation>
+<translation id="5857090052475505287">புதிய ஃபோல்டர்</translation>
 <translation id="5857675236236529683">படிக்கத் தயாரானதும் வாசிப்புப் பட்டியலை இங்கே பாருங்கள்</translation>
 <translation id="5857770089550859117">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடர் தேவை.</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
@@ -625,7 +625,7 @@
 <translation id="6930799952781667037">இந்த மொழிக்கு மாற்ற தட்டவும்.</translation>
 <translation id="6944369514868857500">மற்றொரு கணக்கைத் தேர்வுசெய்க</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
-<translation id="6973630695168034713">கோப்புறைகள்</translation>
+<translation id="6973630695168034713">ஃபோல்டர்கள்</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">உங்கள் Google கணக்கை நிர்வகியுங்கள்</translation>
 <translation id="6989674195860388998">அமைப்புகளுக்குச் செல்…</translation>

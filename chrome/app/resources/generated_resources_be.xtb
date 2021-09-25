@@ -3870,7 +3870,7 @@
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="5126611267288187364">Прагляд змяненняў</translation>
-<translation id="5127620150973591153">Абаронены ідэнтыфікатар злучэння: <ph name="TOKEN" /></translation>
+<translation id="5127620150973591153">Абаронены ідэнтыфікатар падключэння: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
 <translation id="512903556749061217">далучана</translation>
@@ -7076,7 +7076,7 @@
 <translation id="8615618338313291042">Праграма інкогніта: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Дадаць у кантакты карыстальніка <ph name="CONTACT_NAME" />.</translation>
 <translation id="8617269623452051934">выкарыстанне вамі прылады</translation>
-<translation id="8617748779076050570">Абаронены ідэнтыфікатар злучэння: <ph name="CONNECTION_ID" /></translation>
+<translation id="8617748779076050570">Абаронены ідэнтыфікатар падключэння: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619803522055190423">З ценем</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Вашы бацькі пакуль што не ўхвалілі гэта</translation>
