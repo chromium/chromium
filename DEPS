@@ -4602,6 +4602,17 @@ hooks = [
     ],
   },
 
+  # Download Cast Web Runtime
+  {
+    'name': 'cast_web_runtime',
+    'pattern': '.',
+    'action': [
+      'python3',
+      'src/tools/cast3p/update_runtime.py',
+    ],
+    'condition': 'checkout_cast3p',
+  },
+
   {
     'name': 'Generate location tags for tests',
     'pattern': '.',
