@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
@@ -36,6 +37,32 @@ SkColor ConvertHexStringToColor(const std::string& hex) {
   return success ? color : SK_ColorRED;
 }
 
+std::string ConvertToolTypeToString(AnnotatorToolType type) {
+  switch (type) {
+    case AnnotatorToolType::kMarker:
+      return "marker";
+    case AnnotatorToolType::kPen:
+      return "pen";
+    case AnnotatorToolType::kHighlighter:
+      return "highlighter";
+    case AnnotatorToolType::kEraser:
+      return "eraser";
+  }
+}
+
+AnnotatorToolType ConvertStringToToolType(const std::string& type) {
+  if (type == "marker")
+    return AnnotatorToolType::kMarker;
+  if (type == "pen")
+    return AnnotatorToolType::kPen;
+  if (type == "highlighter")
+    return AnnotatorToolType::kHighlighter;
+  if (type == "eraser")
+    return AnnotatorToolType::kEraser;
+  NOTREACHED();
+  return AnnotatorToolType::kMarker;
+}
+
 }  // namespace
 
 // static
@@ -46,11 +73,11 @@ AnnotatorTool AnnotatorTool::FromValue(const base::Value& value) {
   DCHECK(value.FindKey(kToolSize));
   DCHECK(value.FindKey(kToolSize)->is_int());
   DCHECK(value.FindKey(kToolType));
-  DCHECK(value.FindKey(kToolType)->is_int());
+  DCHECK(value.FindKey(kToolType)->is_string());
   AnnotatorTool t;
   t.color = ConvertHexStringToColor(*(value.FindStringPath(kToolColor)));
   t.size = *(value.FindIntPath(kToolSize));
-  t.type = static_cast<AnnotatorToolType>(*(value.FindIntPath(kToolType)));
+  t.type = ConvertStringToToolType(*(value.FindStringPath(kToolType)));
   return t;
 }
 
@@ -58,7 +85,7 @@ base::Value AnnotatorTool::ToValue() const {
   base::Value val(base::Value::Type::DICTIONARY);
   val.SetKey(kToolColor, base::Value(ConvertColorToHexString(color)));
   val.SetKey(kToolSize, base::Value(size));
-  val.SetKey(kToolType, base::Value(static_cast<int>(type)));
+  val.SetKey(kToolType, base::Value(ConvertToolTypeToString(type)));
   return val;
 }
 
