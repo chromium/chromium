@@ -134156,6 +134156,19 @@
        {}
       ]
      ],
+     "highlight-cascade-004.html": [
+      "eb181096ce1ee035aa10e21e6f35fba58c5c7acb",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-cascade-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "highlight-painting-001.html": [
       "ef253e6117c94ef63f9be97eaac0d94667c9fce3",
       [
@@ -246179,6 +246192,10 @@
       "256c28ba0c068630cf675698e019b656a6c56da7",
       []
      ],
+     "highlight-cascade-004-ref.html": [
+      "f9bf83f9c1d63b50b61b96a4edadc1241d3c640b",
+      []
+     ],
      "highlight-painting-001-ref.html": [
       "c5d8814a8252b0a8e4be1b43f635cd7b11f548fc",
       []
@@ -256223,6 +256240,14 @@
      },
      "round-function-expected.txt": [
       "8b1783d785c1cbd71cbeecb58bd21dcb18edf763",
+      []
+     ],
+     "round-mod-rem-serialize-expected.txt": [
+      "162be5e295a67ef0c12240a65387e8490f3221a9",
+      []
+     ],
+     "signs-abs-serialize-expected.txt": [
+      "2dc9ef1833ebaf5354f62518f85f6b2c700d0802",
       []
      ],
      "sin-cos-tan-computed-expected.txt": [
@@ -360227,6 +360252,48 @@
      ],
      "round-function.html": [
       "b1e950efe7238fcc08b9423dca88e51383f8f7d3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "round-mod-rem-computed.html": [
+      "a98e4a4332250c08b5996a03455a682d26abdc5e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "round-mod-rem-invalid.html": [
+      "99ef2c64b453ac0b56580378a1c4ab59577e90b4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "round-mod-rem-serialize.html": [
+      "490249591947022e09c58b69f1c703483fad2e7d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "signs-abs-computed.html": [
+      "ba672f23cec532befccc2947c4ee14e48d1e2a79",
+      [
+       null,
+       {}
+      ]
+     ],
+     "signs-abs-invalid.html": [
+      "15b058d0c42bade38f083838eaaabadc64410627",
+      [
+       null,
+       {}
+      ]
+     ],
+     "signs-abs-serialize.html": [
+      "b7b5ad2b7529fd81cfc54909c333aed588632549",
       [
        null,
        {}

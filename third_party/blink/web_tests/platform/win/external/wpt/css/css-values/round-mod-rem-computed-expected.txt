@@ -1,0 +1,93 @@
+This is a testharness.js-based test.
+Found 89 tests; 6 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL round(10,10) should be used-value-equivalent to 10 assert_equals: round(10,10) and 10 serialize to the same thing in used values. expected "matrix(10, 0, 0, 10, 0, 0)" but got "none"
+FAIL mod(1,1) should be used-value-equivalent to 0 assert_equals: mod(1,1) and 0 serialize to the same thing in used values. expected "matrix(0, 0, 0, 0, 0, 0)" but got "none"
+FAIL rem(1,1) should be used-value-equivalent to 0 assert_equals: rem(1,1) and 0 serialize to the same thing in used values. expected "matrix(0, 0, 0, 0, 0, 0)" but got "none"
+FAIL calc(round(100,10)) should be used-value-equivalent to 100 assert_equals: calc(round(100,10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(up, 101,10)) should be used-value-equivalent to 110 assert_equals: calc(round(up, 101,10)) and 110 serialize to the same thing in used values. expected "matrix(110, 0, 0, 110, 0, 0)" but got "none"
+FAIL calc(round(down, 106,10)) should be used-value-equivalent to 100 assert_equals: calc(round(down, 106,10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(to-zero,105, 10)) should be used-value-equivalent to 100 assert_equals: calc(round(to-zero,105, 10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(to-zero,-105, 10)) should be used-value-equivalent to 100 assert_equals: calc(round(to-zero,-105, 10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(-100,10)) should be used-value-equivalent to -100 assert_equals: calc(round(-100,10)) and -100 serialize to the same thing in used values. expected "matrix(-100, 0, 0, -100, 0, 0)" but got "none"
+FAIL calc(round(up, -103,10)) should be used-value-equivalent to -100 assert_equals: calc(round(up, -103,10)) and -100 serialize to the same thing in used values. expected "matrix(-100, 0, 0, -100, 0, 0)" but got "none"
+FAIL mod(18,5) should be used-value-equivalent to 3 assert_equals: mod(18,5) and 3 serialize to the same thing in used values. expected "matrix(3, 0, 0, 3, 0, 0)" but got "none"
+FAIL rem(18,5) should be used-value-equivalent to 3 assert_equals: rem(18,5) and 3 serialize to the same thing in used values. expected "matrix(3, 0, 0, 3, 0, 0)" but got "none"
+FAIL mod(-140,-90) should be used-value-equivalent to -50 assert_equals: mod(-140,-90) and -50 serialize to the same thing in used values. expected "matrix(-50, 0, 0, -50, 0, 0)" but got "none"
+FAIL mod(-18,5) should be used-value-equivalent to 2 assert_equals: mod(-18,5) and 2 serialize to the same thing in used values. expected "matrix(2, 0, 0, 2, 0, 0)" but got "none"
+FAIL rem(-18,5) should be used-value-equivalent to -3 assert_equals: rem(-18,5) and -3 serialize to the same thing in used values. expected "matrix(-3, 0, 0, -3, 0, 0)" but got "none"
+FAIL mod(140,-90) should be used-value-equivalent to -40 assert_equals: mod(140,-90) and -40 serialize to the same thing in used values. expected "matrix(-40, 0, 0, -40, 0, 0)" but got "none"
+FAIL rem(140,-90) should be used-value-equivalent to 50 assert_equals: rem(140,-90) and 50 serialize to the same thing in used values. expected "matrix(50, 0, 0, 50, 0, 0)" but got "none"
+FAIL calc(round(round(100,10), 10)) should be used-value-equivalent to 100 assert_equals: calc(round(round(100,10), 10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(up, round(100,10) + 1,10)) should be used-value-equivalent to 110 assert_equals: calc(round(up, round(100,10) + 1,10)) and 110 serialize to the same thing in used values. expected "matrix(110, 0, 0, 110, 0, 0)" but got "none"
+FAIL calc(round(down, round(100,10) + 2 * 3,10)) should be used-value-equivalent to 100 assert_equals: calc(round(down, round(100,10) + 2 * 3,10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(to-zero,round(100,10) * 2 - 95, 10)) should be used-value-equivalent to 100 assert_equals: calc(round(to-zero,round(100,10) * 2 - 95, 10)) and 100 serialize to the same thing in used values. expected "matrix(100, 0, 0, 100, 0, 0)" but got "none"
+FAIL calc(round(round(100,10)* -1,10)) should be used-value-equivalent to -100 assert_equals: calc(round(round(100,10)* -1,10)) and -100 serialize to the same thing in used values. expected "matrix(-100, 0, 0, -100, 0, 0)" but got "none"
+FAIL calc(round(up, -103 + -103 / -103 - 1,10)) should be used-value-equivalent to -100 assert_equals: calc(round(up, -103 + -103 / -103 - 1,10)) and -100 serialize to the same thing in used values. expected "matrix(-100, 0, 0, -100, 0, 0)" but got "none"
+FAIL calc(mod(18,5) * 2 + mod(17,5)) should be used-value-equivalent to 8 assert_equals: calc(mod(18,5) * 2 + mod(17,5)) and 8 serialize to the same thing in used values. expected "matrix(8, 0, 0, 8, 0, 0)" but got "none"
+FAIL calc(rem(mod(18,5),5)) should be used-value-equivalent to 3 assert_equals: calc(rem(mod(18,5),5)) and 3 serialize to the same thing in used values. expected "matrix(3, 0, 0, 3, 0, 0)" but got "none"
+FAIL calc(rem(mod(18,5),mod(17,5))) should be used-value-equivalent to 1 assert_equals: calc(rem(mod(18,5),mod(17,5))) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL calc(mod(-140,-90)) should be used-value-equivalent to -50 assert_equals: calc(mod(-140,-90)) and -50 serialize to the same thing in used values. expected "matrix(-50, 0, 0, -50, 0, 0)" but got "none"
+FAIL calc(mod(rem(1,18)* -1,5)) should be used-value-equivalent to -1 assert_equals: calc(mod(rem(1,18)* -1,5)) and -1 serialize to the same thing in used values. expected "matrix(-1, 0, 0, -1, 0, 0)" but got "none"
+FAIL round(10px,6px) should be used-value-equivalent to 12px assert_equals: round(10px,6px) and 12px serialize to the same thing in used values. expected "12px" but got "0px"
+FAIL round(10cm,6cm) should be used-value-equivalent to 12cm assert_equals: round(10cm,6cm) and 12cm serialize to the same thing in used values. expected "453.543px" but got "0px"
+FAIL round(10mm,6mm) should be used-value-equivalent to 12mm assert_equals: round(10mm,6mm) and 12mm serialize to the same thing in used values. expected "45.3543px" but got "0px"
+FAIL round(10Q, 6Q) should be used-value-equivalent to 12Q assert_equals: round(10Q, 6Q) and 12Q serialize to the same thing in used values. expected "11.3386px" but got "0px"
+FAIL round(10in,6in) should be used-value-equivalent to 12in assert_equals: round(10in,6in) and 12in serialize to the same thing in used values. expected "1152px" but got "0px"
+FAIL round(10pc,6pc) should be used-value-equivalent to 12pc assert_equals: round(10pc,6pc) and 12pc serialize to the same thing in used values. expected "192px" but got "0px"
+FAIL round(10pt,6pt) should be used-value-equivalent to 12pt assert_equals: round(10pt,6pt) and 12pt serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL round(10em,6em) should be used-value-equivalent to 12em assert_equals: round(10em,6em) and 12em serialize to the same thing in used values. expected "192px" but got "0px"
+FAIL round(10ex,6ex) should be used-value-equivalent to 12ex assert_equals: round(10ex,6ex) and 12ex serialize to the same thing in used values. expected "84px" but got "0px"
+FAIL round(10ch,6ch) should be used-value-equivalent to 12ch assert_equals: round(10ch,6ch) and 12ch serialize to the same thing in used values. expected "96px" but got "0px"
+FAIL round(10rem,6rem) should be used-value-equivalent to 12rem assert_equals: round(10rem,6rem) and 12rem serialize to the same thing in used values. expected "192px" but got "0px"
+FAIL round(10vh,6vh) should be used-value-equivalent to 12vh assert_equals: round(10vh,6vh) and 12vh serialize to the same thing in used values. expected "72px" but got "0px"
+FAIL round(10vw,6vw) should be used-value-equivalent to 12vw assert_equals: round(10vw,6vw) and 12vw serialize to the same thing in used values. expected "96px" but got "0px"
+FAIL round(10vmin,6vmin) should be used-value-equivalent to 12vmin assert_equals: round(10vmin,6vmin) and 12vmin serialize to the same thing in used values. expected "72px" but got "0px"
+FAIL round(10vmax,6vmax) should be used-value-equivalent to 12vmax assert_equals: round(10vmax,6vmax) and 12vmax serialize to the same thing in used values. expected "96px" but got "0px"
+PASS round(10s,6s) should be used-value-equivalent to 12s
+PASS round(10ms,6ms) should be used-value-equivalent to 12ms
+FAIL round(10deg,6deg) should be used-value-equivalent to 12deg Cannot read properties of undefined (reading 'split')
+FAIL round(10grad,6grad) should be used-value-equivalent to 12grad Cannot read properties of undefined (reading 'split')
+FAIL round(10rad,6rad) should be used-value-equivalent to 12rad Cannot read properties of undefined (reading 'split')
+FAIL round(10turn,6turn) should be used-value-equivalent to 12turn Cannot read properties of undefined (reading 'split')
+FAIL mod(10px,6px) should be used-value-equivalent to 4px assert_equals: mod(10px,6px) and 4px serialize to the same thing in used values. expected "4px" but got "0px"
+FAIL mod(10cm,6cm) should be used-value-equivalent to 4cm assert_equals: mod(10cm,6cm) and 4cm serialize to the same thing in used values. expected "151.181px" but got "0px"
+FAIL mod(10mm,6mm) should be used-value-equivalent to 4mm assert_equals: mod(10mm,6mm) and 4mm serialize to the same thing in used values. expected "15.1181px" but got "0px"
+FAIL mod(10Q, 6Q) should be used-value-equivalent to 4Q assert_equals: mod(10Q, 6Q) and 4Q serialize to the same thing in used values. expected "3.77953px" but got "0px"
+FAIL mod(10in,6in) should be used-value-equivalent to 4in assert_equals: mod(10in,6in) and 4in serialize to the same thing in used values. expected "384px" but got "0px"
+FAIL mod(10pc,6pc) should be used-value-equivalent to 4pc assert_equals: mod(10pc,6pc) and 4pc serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL mod(10em,6em) should be used-value-equivalent to 4em assert_equals: mod(10em,6em) and 4em serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL mod(10ex,6ex) should be used-value-equivalent to 4ex assert_equals: mod(10ex,6ex) and 4ex serialize to the same thing in used values. expected "28px" but got "0px"
+FAIL mod(10ch,6ch) should be used-value-equivalent to 4ch assert_equals: mod(10ch,6ch) and 4ch serialize to the same thing in used values. expected "32px" but got "0px"
+FAIL mod(10rem,6rem) should be used-value-equivalent to 4rem assert_equals: mod(10rem,6rem) and 4rem serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL mod(10vh,6vh) should be used-value-equivalent to 4vh assert_equals: mod(10vh,6vh) and 4vh serialize to the same thing in used values. expected "24px" but got "0px"
+FAIL mod(10vw,6vw) should be used-value-equivalent to 4vw assert_equals: mod(10vw,6vw) and 4vw serialize to the same thing in used values. expected "32px" but got "0px"
+FAIL mod(10vmin,6vmin) should be used-value-equivalent to 4vmin assert_equals: mod(10vmin,6vmin) and 4vmin serialize to the same thing in used values. expected "24px" but got "0px"
+FAIL mod(10vmax,6vmax) should be used-value-equivalent to 4vmax assert_equals: mod(10vmax,6vmax) and 4vmax serialize to the same thing in used values. expected "32px" but got "0px"
+PASS mod(10s,6s) should be used-value-equivalent to 4s
+PASS mod(10ms,6ms) should be used-value-equivalent to 4ms
+FAIL mod(10deg,6deg) should be used-value-equivalent to 4deg Cannot read properties of undefined (reading 'split')
+FAIL mod(10grad,6grad) should be used-value-equivalent to 4grad Cannot read properties of undefined (reading 'split')
+FAIL mod(10rad,6rad) should be used-value-equivalent to 4rad Cannot read properties of undefined (reading 'split')
+FAIL mod(10turn,6turn) should be used-value-equivalent to 4turn Cannot read properties of undefined (reading 'split')
+FAIL rem(10px,6px) should be used-value-equivalent to 4px assert_equals: rem(10px,6px) and 4px serialize to the same thing in used values. expected "4px" but got "0px"
+FAIL rem(10cm,6cm) should be used-value-equivalent to 4cm assert_equals: rem(10cm,6cm) and 4cm serialize to the same thing in used values. expected "151.181px" but got "0px"
+FAIL rem(10mm,6mm) should be used-value-equivalent to 4mm assert_equals: rem(10mm,6mm) and 4mm serialize to the same thing in used values. expected "15.1181px" but got "0px"
+FAIL rem(10Q, 6Q) should be used-value-equivalent to 4Q assert_equals: rem(10Q, 6Q) and 4Q serialize to the same thing in used values. expected "3.77953px" but got "0px"
+FAIL rem(10in,6in) should be used-value-equivalent to 4in assert_equals: rem(10in,6in) and 4in serialize to the same thing in used values. expected "384px" but got "0px"
+FAIL rem(10pc,6pc) should be used-value-equivalent to 4pc assert_equals: rem(10pc,6pc) and 4pc serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL rem(10em,6em) should be used-value-equivalent to 4em assert_equals: rem(10em,6em) and 4em serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL rem(10ex,6ex) should be used-value-equivalent to 4ex assert_equals: rem(10ex,6ex) and 4ex serialize to the same thing in used values. expected "28px" but got "0px"
+FAIL rem(10ch,6ch) should be used-value-equivalent to 4ch assert_equals: rem(10ch,6ch) and 4ch serialize to the same thing in used values. expected "32px" but got "0px"
+FAIL rem(10rem,6rem) should be used-value-equivalent to 4rem assert_equals: rem(10rem,6rem) and 4rem serialize to the same thing in used values. expected "64px" but got "0px"
+FAIL rem(10vh,6vh) should be used-value-equivalent to 4vh assert_equals: rem(10vh,6vh) and 4vh serialize to the same thing in used values. expected "24px" but got "0px"
+FAIL rem(10vw,6vw) should be used-value-equivalent to 4vw assert_equals: rem(10vw,6vw) and 4vw serialize to the same thing in used values. expected "32px" but got "0px"
+FAIL rem(10vmin,6vmin) should be used-value-equivalent to 4vmin assert_equals: rem(10vmin,6vmin) and 4vmin serialize to the same thing in used values. expected "24px" but got "0px"
+FAIL rem(10vmax,6vmax) should be used-value-equivalent to 4vmax assert_equals: rem(10vmax,6vmax) and 4vmax serialize to the same thing in used values. expected "32px" but got "0px"
+PASS rem(10s,6s) should be used-value-equivalent to 4s
+PASS rem(10ms,6ms) should be used-value-equivalent to 4ms
+FAIL rem(10deg,6deg) should be used-value-equivalent to 4deg Cannot read properties of undefined (reading 'split')
+FAIL rem(10grad,6grad) should be used-value-equivalent to 4grad Cannot read properties of undefined (reading 'split')
+FAIL rem(10rad,6rad) should be used-value-equivalent to 4rad Cannot read properties of undefined (reading 'split')
+FAIL rem(10turn,6turn) should be used-value-equivalent to 4turn Cannot read properties of undefined (reading 'split')
+Harness: the test ran to completion.
+

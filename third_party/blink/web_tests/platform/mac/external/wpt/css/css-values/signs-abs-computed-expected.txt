@@ -1,0 +1,146 @@
+This is a testharness.js-based test.
+Found 142 tests; 87 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL abs(1) should be used-value-equivalent to 1 assert_equals: abs(1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL sign(1) should be used-value-equivalent to 1 assert_equals: sign(1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL abs(-1) should be used-value-equivalent to 1 assert_equals: abs(-1) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL sign(-1) should be used-value-equivalent to -1 assert_equals: sign(-1) and -1 serialize to the same thing in used values. expected "matrix(-1, 0, 0, -1, 0, 0)" but got "none"
+PASS abs(sign(1)) should be used-value-equivalent to 1
+PASS abs(sign(sign(1))) should be used-value-equivalent to 1
+PASS sign(sign(sign(1) + sign(1))) should be used-value-equivalent to 1
+FAIL calc(abs(0.1 + 0.2) + 0.05) should be used-value-equivalent to 0.35 Cannot read properties of undefined (reading 'split')
+FAIL calc(sign(0.1 + 0.2) - 0.05) should be used-value-equivalent to 0.95 Cannot read properties of undefined (reading 'split')
+FAIL calc(abs(0.1 + 0.2) * 2) should be used-value-equivalent to 0.6 Cannot read properties of undefined (reading 'split')
+FAIL calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6 Cannot read properties of undefined (reading 'split')
+FAIL calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6 Cannot read properties of undefined (reading 'split')
+FAIL calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05 Cannot read properties of undefined (reading 'split')
+FAIL calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95 Cannot read properties of undefined (reading 'split')
+FAIL calc(sign(-0)) should be used-value-equivalent to -0 assert_equals: calc(sign(-0)) and -0 serialize to the same thing in used values. expected "matrix(0, 0, 0, 0, 0, 0)" but got "none"
+FAIL calc(sign(0)) should be used-value-equivalent to 0 assert_equals: calc(sign(0)) and 0 serialize to the same thing in used values. expected "matrix(0, 0, 0, 0, 0, 0)" but got "none"
+PASS sign(1px) should be used-value-equivalent to 1
+PASS sign(1cm) should be used-value-equivalent to 1
+PASS sign(1mm) should be used-value-equivalent to 1
+PASS sign(1Q) should be used-value-equivalent to 1
+PASS sign(1in) should be used-value-equivalent to 1
+PASS sign(1pc) should be used-value-equivalent to 1
+PASS sign(1pt) should be used-value-equivalent to 1
+PASS sign(1em) should be used-value-equivalent to 1
+PASS sign(1ex) should be used-value-equivalent to 1
+PASS sign(1ch) should be used-value-equivalent to 1
+PASS sign(1rem) should be used-value-equivalent to 1
+PASS sign(1vh) should be used-value-equivalent to 1
+PASS sign(1vw) should be used-value-equivalent to 1
+PASS sign(1vmin) should be used-value-equivalent to 1
+PASS sign(1vmax) should be used-value-equivalent to 1
+PASS sign(-1px) should be used-value-equivalent to -1
+PASS sign(-1cm) should be used-value-equivalent to -1
+PASS sign(-1mm) should be used-value-equivalent to -1
+PASS sign(-1Q) should be used-value-equivalent to -1
+PASS sign(-1in) should be used-value-equivalent to -1
+PASS sign(-1pc) should be used-value-equivalent to -1
+PASS sign(-1pt) should be used-value-equivalent to -1
+PASS sign(-1em) should be used-value-equivalent to -1
+PASS sign(-1ex) should be used-value-equivalent to -1
+PASS sign(-1ch) should be used-value-equivalent to -1
+PASS sign(-1rem) should be used-value-equivalent to -1
+PASS sign(-1vh) should be used-value-equivalent to -1
+PASS sign(-1vw) should be used-value-equivalent to -1
+PASS sign(-1vmin) should be used-value-equivalent to -1
+PASS sign(-1vmax) should be used-value-equivalent to -1
+PASS sign(1s) should be used-value-equivalent to 1
+PASS sign(1ms) should be used-value-equivalent to 1
+PASS sign(-1s) should be used-value-equivalent to -1
+PASS sign(-1ms) should be used-value-equivalent to -1
+PASS sign(1deg) should be used-value-equivalent to 1
+PASS sign(1grad) should be used-value-equivalent to 1
+PASS sign(1rad) should be used-value-equivalent to 1
+PASS sign(1turn) should be used-value-equivalent to 1
+PASS sign(-1deg) should be used-value-equivalent to -1
+PASS sign(-1grad) should be used-value-equivalent to -1
+PASS sign(-1rad) should be used-value-equivalent to -1
+PASS sign(-1turn) should be used-value-equivalent to -1
+PASS sign(0px) should be used-value-equivalent to 0
+PASS sign(0cm) should be used-value-equivalent to 0
+PASS sign(0mm) should be used-value-equivalent to 0
+PASS sign(0Q) should be used-value-equivalent to 0
+PASS sign(0in) should be used-value-equivalent to 0
+PASS sign(0pc) should be used-value-equivalent to 0
+PASS sign(0pt) should be used-value-equivalent to 0
+PASS sign(0em) should be used-value-equivalent to 0
+PASS sign(0ex) should be used-value-equivalent to 0
+PASS sign(0ch) should be used-value-equivalent to 0
+PASS sign(0rem) should be used-value-equivalent to 0
+PASS sign(0vh) should be used-value-equivalent to 0
+PASS sign(0vw) should be used-value-equivalent to 0
+PASS sign(0vmin) should be used-value-equivalent to 0
+PASS sign(0vmax) should be used-value-equivalent to 0
+PASS sign(-0px) should be used-value-equivalent to -0
+PASS sign(-0cm) should be used-value-equivalent to -0
+PASS sign(-0mm) should be used-value-equivalent to -0
+PASS sign(-0Q) should be used-value-equivalent to -0
+PASS sign(-0in) should be used-value-equivalent to -0
+PASS sign(-0pc) should be used-value-equivalent to -0
+PASS sign(-0pt) should be used-value-equivalent to -0
+PASS sign(-0em) should be used-value-equivalent to -0
+PASS sign(-0ex) should be used-value-equivalent to -0
+PASS sign(-0ch) should be used-value-equivalent to -0
+PASS sign(-0rem) should be used-value-equivalent to -0
+PASS sign(-0vh) should be used-value-equivalent to -0
+PASS sign(-0vw) should be used-value-equivalent to -0
+PASS sign(-0vmin) should be used-value-equivalent to -0
+PASS sign(-0vmax) should be used-value-equivalent to -0
+PASS sign(0s) should be used-value-equivalent to 0
+PASS sign(0ms) should be used-value-equivalent to 0
+PASS sign(-0s) should be used-value-equivalent to 0
+PASS sign(-0ms) should be used-value-equivalent to 0
+PASS sign(0deg) should be used-value-equivalent to 0
+PASS sign(0grad) should be used-value-equivalent to 0
+PASS sign(0rad) should be used-value-equivalent to 0
+PASS sign(0turn) should be used-value-equivalent to 0
+PASS sign(-0deg) should be used-value-equivalent to -0
+PASS sign(-0grad) should be used-value-equivalent to -0
+PASS sign(-0rad) should be used-value-equivalent to -0
+PASS sign(-0turn) should be used-value-equivalent to -0
+FAIL abs(1px) should be used-value-equivalent to 1px assert_equals: abs(1px) and 1px serialize to the same thing in used values. expected "1px" but got "0px"
+FAIL abs(1cm) should be used-value-equivalent to 1cm assert_equals: abs(1cm) and 1cm serialize to the same thing in used values. expected "37.7953px" but got "0px"
+FAIL abs(1mm) should be used-value-equivalent to 1mm assert_equals: abs(1mm) and 1mm serialize to the same thing in used values. expected "3.77953px" but got "0px"
+FAIL abs(1Q) should be used-value-equivalent to 1Q assert_equals: abs(1Q) and 1Q serialize to the same thing in used values. expected "0.944882px" but got "0px"
+FAIL abs(1in) should be used-value-equivalent to 1in assert_equals: abs(1in) and 1in serialize to the same thing in used values. expected "96px" but got "0px"
+FAIL abs(1pc) should be used-value-equivalent to 1pc assert_equals: abs(1pc) and 1pc serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(1pt) should be used-value-equivalent to 1pt assert_equals: abs(1pt) and 1pt serialize to the same thing in used values. expected "1.33333px" but got "0px"
+FAIL abs(1em) should be used-value-equivalent to 1em assert_equals: abs(1em) and 1em serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(1ex) should be used-value-equivalent to 1ex assert_equals: abs(1ex) and 1ex serialize to the same thing in used values. expected "7.17969px" but got "0px"
+FAIL abs(1ch) should be used-value-equivalent to 1ch assert_equals: abs(1ch) and 1ch serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(1rem) should be used-value-equivalent to 1rem assert_equals: abs(1rem) and 1rem serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(1vh) should be used-value-equivalent to 1vh assert_equals: abs(1vh) and 1vh serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL abs(1vw) should be used-value-equivalent to 1vw assert_equals: abs(1vw) and 1vw serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(1vmin) should be used-value-equivalent to 1vmin assert_equals: abs(1vmin) and 1vmin serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL abs(1vmax) should be used-value-equivalent to 1vmax assert_equals: abs(1vmax) and 1vmax serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(-1px) should be used-value-equivalent to 1px assert_equals: abs(-1px) and 1px serialize to the same thing in used values. expected "1px" but got "0px"
+FAIL abs(-1cm) should be used-value-equivalent to 1cm assert_equals: abs(-1cm) and 1cm serialize to the same thing in used values. expected "37.7953px" but got "0px"
+FAIL abs(-1mm) should be used-value-equivalent to 1mm assert_equals: abs(-1mm) and 1mm serialize to the same thing in used values. expected "3.77953px" but got "0px"
+FAIL abs(-1Q) should be used-value-equivalent to 1Q assert_equals: abs(-1Q) and 1Q serialize to the same thing in used values. expected "0.944882px" but got "0px"
+FAIL abs(-1in) should be used-value-equivalent to 1in assert_equals: abs(-1in) and 1in serialize to the same thing in used values. expected "96px" but got "0px"
+FAIL abs(-1pc) should be used-value-equivalent to 1pc assert_equals: abs(-1pc) and 1pc serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(-1pt) should be used-value-equivalent to 1pt assert_equals: abs(-1pt) and 1pt serialize to the same thing in used values. expected "1.33333px" but got "0px"
+FAIL abs(-1em) should be used-value-equivalent to 1em assert_equals: abs(-1em) and 1em serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(-1ex) should be used-value-equivalent to 1ex assert_equals: abs(-1ex) and 1ex serialize to the same thing in used values. expected "7.17969px" but got "0px"
+FAIL abs(-1ch) should be used-value-equivalent to 1ch assert_equals: abs(-1ch) and 1ch serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(-1rem) should be used-value-equivalent to 1rem assert_equals: abs(-1rem) and 1rem serialize to the same thing in used values. expected "16px" but got "0px"
+FAIL abs(-1vh) should be used-value-equivalent to 1vh assert_equals: abs(-1vh) and 1vh serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL abs(-1vw) should be used-value-equivalent to 1vw assert_equals: abs(-1vw) and 1vw serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(-1vmin) should be used-value-equivalent to 1vmin assert_equals: abs(-1vmin) and 1vmin serialize to the same thing in used values. expected "6px" but got "0px"
+FAIL abs(-1vmax) should be used-value-equivalent to 1vmax assert_equals: abs(-1vmax) and 1vmax serialize to the same thing in used values. expected "8px" but got "0px"
+FAIL abs(1s) should be used-value-equivalent to 1s assert_equals: abs(1s) and 1s serialize to the same thing in used values. expected "1s" but got "0s"
+FAIL abs(1ms) should be used-value-equivalent to 1ms assert_equals: abs(1ms) and 1ms serialize to the same thing in used values. expected "0.001s" but got "0s"
+FAIL abs(-1s) should be used-value-equivalent to 1s assert_equals: abs(-1s) and 1s serialize to the same thing in used values. expected "1s" but got "0s"
+FAIL abs(-1ms) should be used-value-equivalent to 1ms assert_equals: abs(-1ms) and 1ms serialize to the same thing in used values. expected "0.001s" but got "0s"
+FAIL abs(1deg) should be used-value-equivalent to 1deg Cannot read properties of undefined (reading 'split')
+FAIL abs(1grad) should be used-value-equivalent to 1grad Cannot read properties of undefined (reading 'split')
+FAIL abs(1rad) should be used-value-equivalent to 1rad Cannot read properties of undefined (reading 'split')
+FAIL abs(1turn) should be used-value-equivalent to 1turn Cannot read properties of undefined (reading 'split')
+FAIL abs(-1deg) should be used-value-equivalent to 1deg Cannot read properties of undefined (reading 'split')
+FAIL abs(-1grad) should be used-value-equivalent to 1grad Cannot read properties of undefined (reading 'split')
+FAIL abs(-1rad) should be used-value-equivalent to 1rad Cannot read properties of undefined (reading 'split')
+FAIL abs(-1turn) should be used-value-equivalent to 1turn Cannot read properties of undefined (reading 'split')
+Harness: the test ran to completion.
+
