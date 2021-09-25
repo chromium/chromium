@@ -70,9 +70,6 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // The shelf model shared by all shelf instances.
   ShelfModel model_;
 
-  // Whether notification indicators are enabled for app icons in the shelf.
-  const bool is_notification_indicator_enabled_;
-
   // Whether the pref for notification badging is enabled.
   absl::optional<bool> notification_badging_pref_enabled_;
 

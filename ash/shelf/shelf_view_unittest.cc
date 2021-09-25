@@ -69,7 +69,6 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
@@ -2311,27 +2310,9 @@ TEST_P(ShelfViewMenuTest, ShelfViewMenuAnchorPoint) {
           .x());
 }
 
-// Test class that enables notification indicators.
-class NotificationIndicatorTest : public ShelfViewTest {
- public:
-  NotificationIndicatorTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kNotificationIndicator);
-  }
-
-  NotificationIndicatorTest(const NotificationIndicatorTest&) = delete;
-  NotificationIndicatorTest& operator=(const NotificationIndicatorTest&) =
-      delete;
-
-  ~NotificationIndicatorTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that an item has a notification badge indicator when the notification
 // is added and removed.
-TEST_F(NotificationIndicatorTest, ItemHasCorrectNotificationBadgeIndicator) {
+TEST_F(ShelfViewTest, ItemHasCorrectNotificationBadgeIndicator) {
   const ShelfID item_id = AddApp();
   const ShelfAppButton* shelf_app_button = GetButtonByID(item_id);
 

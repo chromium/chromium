@@ -511,26 +511,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
   sm_.Replay();
 }
 
-class ShelfNotificationBadgeSpokenFeedbackTest : public SpokenFeedbackTest {
- protected:
-  ShelfNotificationBadgeSpokenFeedbackTest() {
-    scoped_features_.InitWithFeatures({::features::kNotificationIndicator}, {});
-  }
-  ~ShelfNotificationBadgeSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         ShelfNotificationBadgeSpokenFeedbackTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
-
 // Verifies that an announcement is triggered when focusing a ShelfItem with a
 // notification badge shown.
-IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
-                       ShelfNotificationBadgeAnnouncement) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfNotificationBadgeAnnouncement) {
   EnableChromeVox();
 
   // Create and add a test app to the shelf model.

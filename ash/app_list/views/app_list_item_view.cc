@@ -28,7 +28,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -272,9 +271,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
       is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),
       grid_delegate_(grid_delegate),
-      view_delegate_(view_delegate),
-      is_notification_indicator_enabled_(
-          features::IsNotificationIndicatorEnabled()) {
+      view_delegate_(view_delegate) {
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks. This crashes if fetching a11y node
   // data during paint because message_view_ is null.
@@ -304,7 +301,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
                             false /*animate*/);
   }
 
-  if (is_notification_indicator_enabled_ && !is_folder_) {
+  if (!is_folder_) {
     notification_indicator_ =
         AddChildView(std::make_unique<AppNotificationIndicatorView>(
             item->notification_badge_color()));
@@ -760,7 +757,7 @@ void AppListItemView::Layout() {
     title_bounds.Inset(title_shadow_margins_);
   title_->SetBoundsRect(title_bounds);
 
-  if (is_notification_indicator_enabled_ && notification_indicator_)
+  if (notification_indicator_)
     notification_indicator_->SetBoundsRect(icon_bounds);
 }
 
@@ -1100,7 +1097,7 @@ void AppListItemView::ItemNameChanged() {
 }
 
 void AppListItemView::ItemBadgeVisibilityChanged() {
-  if (is_notification_indicator_enabled_ && notification_indicator_ && icon_)
+  if (notification_indicator_ && icon_)
     notification_indicator_->SetVisible(item_weak_->has_notification_badge());
 }
 

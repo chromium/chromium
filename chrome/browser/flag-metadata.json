@@ -2256,11 +2256,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-notification-indicator",
-    "owners": [ "mmourgos", "newcomer" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "enable-notifications-revamp",
     "owners": [ "amehfooz", "newcomer" ],
     "expiry_milestone": 100

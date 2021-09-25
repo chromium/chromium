@@ -62,7 +62,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -716,9 +715,7 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
 class AppListControllerImplTestWithNotificationBadging
     : public AppListControllerImplTest {
  public:
-  AppListControllerImplTestWithNotificationBadging() {
-    scoped_features_.InitWithFeatures({::features::kNotificationIndicator}, {});
-  }
+  AppListControllerImplTestWithNotificationBadging() = default;
   AppListControllerImplTestWithNotificationBadging(
       const AppListControllerImplTestWithNotificationBadging& other) = delete;
   AppListControllerImplTestWithNotificationBadging& operator=(
@@ -740,9 +737,6 @@ class AppListControllerImplTestWithNotificationBadging
     static_cast<apps::AppRegistryCache::Observer*>(controller)
         ->OnAppUpdate(test_update);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests that when an app has an update to its notification badge, the change

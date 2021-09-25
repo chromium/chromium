@@ -406,9 +406,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // active notification.
   AppNotificationIndicatorView* notification_indicator_ = nullptr;
 
-  // Whether the notification indicator flag is enabled.
-  const bool is_notification_indicator_enabled_;
-
   // Helper to trigger icon load.
   absl::optional<AppIconLoadHelper> icon_load_helper_;
 

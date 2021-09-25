@@ -38,11 +38,7 @@ extern const base::Feature kSystemCaptionStyle;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kSystemKeyboardLock;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kNotificationIndicator;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUiCompositorScrollWithLayers;
-
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsNotificationIndicatorEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUiGpuRasterizationEnabled();
 

@@ -1680,11 +1680,6 @@ const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =
     "Enables the new experimental USB backend for macOS";
 
-const char kNotificationIndicatorName[] = "Notification Indicators";
-const char kNotificationIndicatorDescription[] =
-    "Enable notification indicators, which appear on shelf app icons and "
-    "launcher apps when a notification is active.";
-
 const char kNotificationsRevampName[] = "Notifications Revamp";
 const char kNotificationsRevampDescription[] =
     "Enable notification UI revamp and grouped web notifications.";

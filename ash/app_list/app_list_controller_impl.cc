@@ -69,7 +69,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "extensions/common/constants.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/display/manager/display_manager.h"
@@ -274,9 +273,7 @@ GetTransitionFromMetricsAnimationInfo(
 
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
-      fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)),
-      is_notification_indicator_enabled_(
-          ::features::IsNotificationIndicatorEnabled()) {
+      fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)) {
   if (features::IsAppListBubbleEnabled())
     bubble_presenter_ = std::make_unique<AppListBubblePresenter>(this);
 
@@ -621,8 +618,7 @@ bool AppListControllerImpl::IsVisible() {
 void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
   client_->OnItemAdded(profile_id_, item->CloneMetadata());
 
-  if (is_notification_indicator_enabled_ && cache_ &&
-      notification_badging_pref_enabled_.value_or(false)) {
+  if (cache_ && notification_badging_pref_enabled_.value_or(false)) {
     // Update the notification badge indicator for the newly added app list
     // item.
     cache_->ForOneApp(item->id(), [item](const apps::AppUpdate& update) {
@@ -634,30 +630,26 @@ void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (is_notification_indicator_enabled_) {
-    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
 
-    pref_change_registrar_->Add(
-        prefs::kAppNotificationBadgingEnabled,
-        base::BindRepeating(
-            &AppListControllerImpl::UpdateAppNotificationBadging,
-            base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAppNotificationBadgingEnabled,
+      base::BindRepeating(&AppListControllerImpl::UpdateAppNotificationBadging,
+                          base::Unretained(this)));
 
-    // Observe AppRegistryCache for the current active account to get
-    // notification updates.
-    AccountId account_id =
-        Shell::Get()->session_controller()->GetActiveAccountId();
-    cache_ =
-        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-    Observe(cache_);
+  // Observe AppRegistryCache for the current active account to get
+  // notification updates.
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  cache_ = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  Observe(cache_);
 
-    // Resetting the recorded pref forces the next call to
-    // UpdateAppNotificationBadging() to update notification badging for every
-    // app item.
-    notification_badging_pref_enabled_.reset();
-    UpdateAppNotificationBadging();
-  }
+  // Resetting the recorded pref forces the next call to
+  // UpdateAppNotificationBadging() to update notification badging for every
+  // app item.
+  notification_badging_pref_enabled_.reset();
+  UpdateAppNotificationBadging();
 
   if (!IsTabletMode()) {
     DismissAppList();

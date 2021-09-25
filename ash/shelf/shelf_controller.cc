@@ -23,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -99,9 +98,7 @@ void SetShelfBehaviorsFromPrefs() {
 
 }  // namespace
 
-ShelfController::ShelfController()
-    : is_notification_indicator_enabled_(
-          features::IsNotificationIndicatorEnabled()) {
+ShelfController::ShelfController() {
   ShelfModel::SetInstance(&model_);
 
   Shell::Get()->session_controller()->AddObserver(this);
@@ -150,30 +147,27 @@ void ShelfController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));
 
-  if (is_notification_indicator_enabled_) {
-    pref_change_registrar_->Add(
-        prefs::kAppNotificationBadgingEnabled,
-        base::BindRepeating(&ShelfController::UpdateAppNotificationBadging,
-                            base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAppNotificationBadgingEnabled,
+      base::BindRepeating(&ShelfController::UpdateAppNotificationBadging,
+                          base::Unretained(this)));
 
-    // Observe AppRegistryCache for the current active account to get
-    // notification updates.
-    AccountId account_id =
-        Shell::Get()->session_controller()->GetActiveAccountId();
-    cache_ =
-        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-    Observe(cache_);
+  // Observe AppRegistryCache for the current active account to get
+  // notification updates.
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  cache_ = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  Observe(cache_);
 
-    // Resetting the recorded pref forces the next call to
-    // UpdateAppNotificationBadging() to update notification badging for every
-    // app item.
-    notification_badging_pref_enabled_.reset();
+  // Resetting the recorded pref forces the next call to
+  // UpdateAppNotificationBadging() to update notification badging for every
+  // app item.
+  notification_badging_pref_enabled_.reset();
 
-    // Update the notification badge indicator for all apps. This will also
-    // ensure that apps have the correct notification badge value for the
-    // multiprofile case when switching between users.
-    UpdateAppNotificationBadging();
-  }
+  // Update the notification badge indicator for all apps. This will also
+  // ensure that apps have the correct notification badge value for the
+  // multiprofile case when switching between users.
+  UpdateAppNotificationBadging();
 }
 
 void ShelfController::OnTabletModeStarted() {
@@ -235,8 +229,7 @@ void ShelfController::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void ShelfController::ShelfItemAdded(int index) {
-  if (!cache_ || !is_notification_indicator_enabled_ ||
-      !notification_badging_pref_enabled_.value_or(false))
+  if (!cache_ || !notification_badging_pref_enabled_.value_or(false))
     return;
 
   auto app_id = model_.items()[index].id.app_id;

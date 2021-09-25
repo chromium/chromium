@@ -200,9 +200,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   gfx::ShadowValues icon_shadows_;
 
-  // Whether the notification indicator is enabled.
-  const bool is_notification_indicator_enabled_;
-
   // The bitmap image for this app button.
   gfx::ImageSkia icon_image_;
 

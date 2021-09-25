@@ -558,9 +558,6 @@ class ASH_EXPORT AppListControllerImpl
   // initial notification badge information when app list items are added.
   apps::AppRegistryCache* cache_ = nullptr;
 
-  // Whether the notification indicator flag is enabled.
-  const bool is_notification_indicator_enabled_;
-
   // Observes user profile prefs for the app list.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

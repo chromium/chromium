@@ -12,7 +12,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -145,9 +144,7 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 
 class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
  protected:
-  NotificationSpokenFeedbackAppListTest() {
-    scoped_features_.InitWithFeatures({::features::kNotificationIndicator}, {});
-  }
+  NotificationSpokenFeedbackAppListTest() = default;
   ~NotificationSpokenFeedbackAppListTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -161,9 +158,6 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
 
     item->UpdateNotificationBadgeForTesting(has_badge);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,

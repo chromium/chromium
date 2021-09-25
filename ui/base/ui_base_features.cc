@@ -92,13 +92,6 @@ const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
 const base::Feature kSystemKeyboardLock{"SystemKeyboardLock",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kNotificationIndicator = {"EnableNotificationIndicator",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsNotificationIndicatorEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationIndicator);
-}
-
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 const base::Feature kUiGpuRasterization = {"UiGpuRasterization",
 #if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_FUCHSIA) || \

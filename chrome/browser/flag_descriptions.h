@@ -967,9 +967,6 @@ extern const char kDestroyProfileOnBrowserCloseDescription[];
 extern const char kNewUsbBackendName[];
 extern const char kNewUsbBackendDescription[];
 
-extern const char kNotificationIndicatorName[];
-extern const char kNotificationIndicatorDescription[];
-
 extern const char kNotificationsRevampName[];
 extern const char kNotificationsRevampDescription[];
 

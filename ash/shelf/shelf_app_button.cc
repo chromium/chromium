@@ -25,7 +25,6 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -280,9 +279,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
       shelf_view_(shelf_view),
       indicator_(new AppStatusIndicatorView()),
       notification_indicator_(nullptr),
-      state_(STATE_NORMAL),
-      is_notification_indicator_enabled_(
-          features::IsNotificationIndicatorEnabled()) {
+      state_(STATE_NORMAL) {
   const gfx::ShadowValue kShadows[] = {
       gfx::ShadowValue(gfx::Vector2d(0, 2), 0, SkColorSetARGB(0x1A, 0, 0, 0)),
       gfx::ShadowValue(gfx::Vector2d(0, 3), 1, SkColorSetARGB(0x1A, 0, 0, 0)),
@@ -326,10 +323,9 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
 
   AddChildView(indicator_);
   AddChildView(icon_view_);
-  if (is_notification_indicator_enabled_) {
-    notification_indicator_ = views::DotIndicator::Install(this);
-    SetNotificationBadgeColor(kDefaultIndicatorColor);
-  }
+  notification_indicator_ = views::DotIndicator::Install(this);
+  SetNotificationBadgeColor(kDefaultIndicatorColor);
+
   views::InkDrop::Get(this)->GetInkDrop()->AddObserver(this);
 
   // Do not set a clip, allow the ink drop to burst out.
@@ -400,7 +396,7 @@ void ShelfAppButton::AddState(State state) {
     if (state & STATE_ACTIVE)
       indicator_->ShowActiveStatus(true);
 
-    if (is_notification_indicator_enabled_ && (state & STATE_NOTIFICATION))
+    if (state & STATE_NOTIFICATION)
       notification_indicator_->Show();
 
     if (state & STATE_DRAGGING)
@@ -417,7 +413,7 @@ void ShelfAppButton::ClearState(State state) {
     if (state & STATE_ACTIVE)
       indicator_->ShowActiveStatus(false);
 
-    if (is_notification_indicator_enabled_ && (state & STATE_NOTIFICATION))
+    if (state & STATE_NOTIFICATION)
       notification_indicator_->Hide();
 
     if (state & STATE_DRAGGING)
@@ -506,12 +502,10 @@ bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
 }
 
 void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
-  if (features::IsNotificationIndicatorEnabled()) {
-    if (item.has_notification)
-      AddState(ShelfAppButton::STATE_NOTIFICATION);
-    else
-      ClearState(ShelfAppButton::STATE_NOTIFICATION);
-  }
+  if (item.has_notification)
+    AddState(ShelfAppButton::STATE_NOTIFICATION);
+  else
+    ClearState(ShelfAppButton::STATE_NOTIFICATION);
 
   app_status_ = item.app_status;
 
@@ -705,10 +699,8 @@ void ShelfAppButton::Layout() {
 
   icon_view_->SetBoundsRect(icon_view_bounds);
 
-  if (is_notification_indicator_enabled_) {
-    notification_indicator_->SetBoundsRect(
-        GetNotificationIndicatorBounds(icon_scale_));
-  }
+  notification_indicator_->SetBoundsRect(
+      GetNotificationIndicatorBounds(icon_scale_));
 
   // The indicators should be aligned with the icon, not the icon + shadow.
   // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
