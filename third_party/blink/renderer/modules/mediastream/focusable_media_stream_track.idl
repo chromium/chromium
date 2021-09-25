@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1215480): Link to spec once produced.
+// https://wicg.github.io/conditional-focus/
 enum CaptureStartFocusBehavior {
   "focus-captured-surface",
   "no-focus-change"
 };
 
-// TODO(crbug.com/1215480): Link to spec once produced.
+// https://wicg.github.io/conditional-focus/
 [
     Exposed = Window,
     RuntimeEnabled = ConditionalFocus
@@ -23,7 +23,6 @@ interface FocusableMediaStreamTrack : MediaStreamTrack {
   // Promise<MediaStream> is resolved, or if the call comes too late due
   // to processing delays, the user agent assumes an implicit call with |focus|
   // set to a value decided by the user agent itself.
-  // TODO(crbug.com/1215480): Link to WICG spec once produced.
   [CallWith = ExecutionContext, RaisesException]
   void focus(CaptureStartFocusBehavior focus_behavior);
 };

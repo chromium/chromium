@@ -432,6 +432,7 @@
     },
     {
       name: "ConditionalFocus",
+      origin_trial_feature_name: "ConditionalFocus",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "experimental"},
     },
