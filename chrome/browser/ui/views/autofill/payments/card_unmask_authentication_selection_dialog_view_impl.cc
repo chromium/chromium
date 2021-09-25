@@ -39,6 +39,7 @@ CardUnmaskAuthenticationSelectionDialogViewImpl::
 
 CardUnmaskAuthenticationSelectionDialogViewImpl::
     ~CardUnmaskAuthenticationSelectionDialogViewImpl() {
+  // Inform `controller_` of the dialog's destruction.
   if (controller_)
     controller_->OnDialogClosed();
 }

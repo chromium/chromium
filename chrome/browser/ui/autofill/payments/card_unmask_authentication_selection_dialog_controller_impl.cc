@@ -20,12 +20,13 @@ namespace autofill {
 
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
     ~CardUnmaskAuthenticationSelectionDialogControllerImpl() {
-  // This part of code is executed only if browser window is closed when the
+  // This part of code is executed only if the browser window is closed when the
   // dialog is visible. In this case the controller is destroyed before
   // CardUnmaskAuthenticationSelectionDialogViewImpl::dtor() is called,
-  // but the reference to controller is not reset. Need to reset via
-  // CardUnmaskAuthenticationSelectionDialogView::CloseDialog() to avoid a
-  // crash.
+  // but the reference to controller is not reset. This reference needs to be
+  // reset via
+  // CardUnmaskAuthenticationSelectionDialogView::OnControllerDestroying() to
+  // avoid a crash.
   if (dialog_view_)
     dialog_view_->OnControllerDestroying();
 }
