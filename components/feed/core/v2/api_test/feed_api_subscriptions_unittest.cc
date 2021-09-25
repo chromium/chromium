@@ -153,6 +153,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
@@ -172,6 +174,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 1, 1);
 }
 
 // Make two Follow attempts for the same page. Both appear successful, but only
@@ -263,7 +267,29 @@ TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedWhileOffline) {
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 }
 
+TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedByIdWhileOffline) {
+  base::HistogramTester histograms;
+  is_offline_ = true;
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+
+  subscriptions().FollowWebFeed("feed_id", callback.Bind());
+
+  EXPECT_EQ(0, network_.GetFollowRequestCount());
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedOffline,
+            callback.RunAndGetResult().request_status);
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowByIdResult",
+      WebFeedSubscriptionRequestStatus::kFailedOffline, 1);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 0);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0);
+}
+
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
+  base::HistogramTester histograms;
   network_.InjectFollowResponse(MakeFailedResponse());
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
   EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
@@ -275,6 +301,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
             callback.RunAndGetResult().request_status);
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
   EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowUriResult",
+      WebFeedSubscriptionRequestStatus::kFailedUnknownError, 1);
 }
 
 // Follow and then unfollow a web feed successfully.

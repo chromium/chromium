@@ -799,6 +799,9 @@ void MetricsReporter::OnFollowAttempt(
     base::UmaHistogramSparse(
         "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow",
         result.subscription_count);
+    base::UmaHistogramBoolean(
+        "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended",
+        result.web_feed_metadata.is_recommended);
   }
 }
 

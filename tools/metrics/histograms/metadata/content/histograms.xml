@@ -1547,6 +1547,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended"
+    enum="Boolean" expires_after="2022-09-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Whether the followed web feed was recommended by the server.
+
+    Reported upon successfully following a web feed. Reported as 'true' if the
+    web feed was recommended, even if the user did not see or interact with
+    recommendation UI.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.Opened" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Opened
