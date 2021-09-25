@@ -46,8 +46,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
                                         bool default_match_changed) {
   DCHECK(controller == autocomplete_controller_.get());
 
-  OmniboxPopupModel* popup = omnibox_edit_model_->popup_model();
-  const bool was_open = popup && popup->IsOpen();
+  const bool was_open = omnibox_edit_model_->PopupIsOpen();
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
@@ -56,18 +55,17 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       omnibox_edit_model_->OnCurrentMatchChanged();
     } else {
       InvalidateCurrentMatch();
-      if (popup)
-        popup->OnResultChanged();
+      omnibox_edit_model_->OnPopupResultChanged();
       omnibox_edit_model_->OnPopupDataChanged(
           std::u16string(),
           /*is_temporary_text=*/false, std::u16string(), std::u16string(), {},
           std::u16string(), false, std::u16string());
     }
-  } else if (popup) {
-    popup->OnResultChanged();
+  } else {
+    omnibox_edit_model_->OnPopupResultChanged();
   }
 
-  if (was_open && !popup->IsOpen()) {
+  if (was_open && !omnibox_edit_model_->PopupIsOpen()) {
     // Accept the temporary text as the user text, because it makes little sense
     // to have temporary text when the popup is closed.
     omnibox_edit_model_->AcceptTemporaryTextAsUserText();
@@ -93,17 +91,16 @@ void OmniboxController::InvalidateCurrentMatch() {
 }
 
 void OmniboxController::ClearPopupKeywordMode() const {
-  OmniboxPopupModel* popup = omnibox_edit_model_->popup_model();
-  // |popup| can be nullptr in tests.
-  if (popup && popup->IsOpen() &&
-      popup->selected_line_state() == OmniboxPopupSelection::KEYWORD_MODE) {
-    popup->SetSelectedLineState(OmniboxPopupSelection::NORMAL);
+  if (omnibox_edit_model_->PopupIsOpen()) {
+    OmniboxPopupSelection selection = omnibox_edit_model_->GetPopupSelection();
+    if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
+      selection.state = OmniboxPopupSelection::NORMAL;
+      omnibox_edit_model_->SetPopupSelection(selection);
+    }
   }
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const SkBitmap& bitmap) {
-  DCHECK(omnibox_edit_model_->popup_model());
-  omnibox_edit_model_->popup_model()->SetRichSuggestionBitmap(result_index,
-                                                              bitmap);
+  omnibox_edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
 }

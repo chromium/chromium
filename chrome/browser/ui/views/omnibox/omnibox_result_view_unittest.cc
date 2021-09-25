@@ -37,18 +37,20 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
             /*omnibox_view=*/nullptr,
             edit_model,
             /*location_bar_view=*/nullptr),
-        selected_index_(0) {}
+        selection_(OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL)) {}
 
   TestOmniboxPopupContentsView(const TestOmniboxPopupContentsView&) = delete;
   TestOmniboxPopupContentsView& operator=(const TestOmniboxPopupContentsView&) =
       delete;
 
-  void SetSelectedIndex(size_t index) override { selected_index_ = index; }
+  void SetSelectedIndex(size_t index) override { selection_.line = index; }
 
-  size_t GetSelectedIndex() const override { return selected_index_; }
+  size_t GetSelectedIndex() const override { return selection_.line; }
+
+  OmniboxPopupSelection GetSelection() const override { return selection_; }
 
  private:
-  size_t selected_index_;
+  OmniboxPopupSelection selection_;
 };
 
 }  // namespace

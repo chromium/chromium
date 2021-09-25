@@ -222,27 +222,22 @@ void OmniboxPopupContentsView::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
   OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
-  edit_model_->popup_model()->SetSelection(
-      OmniboxPopupSelection(index, line_state));
-  OnPropertyChanged(edit_model_->popup_model(), views::kPropertyEffectsNone);
+  edit_model_->SetPopupSelection(OmniboxPopupSelection(index, line_state));
+  OnPropertyChanged(edit_model_, views::kPropertyEffectsNone);
 }
 
 size_t OmniboxPopupContentsView::GetSelectedIndex() const {
-  return edit_model_->popup_model()->selected_line();
+  return GetSelection().line;
 }
 
 OmniboxPopupSelection OmniboxPopupContentsView::GetSelection() const {
-  // TODO(orinj): This should get full selection straight from popup model
-  // and should be the only selection method; eliminate others and
-  // reconcile with test code overrides of `GetSelectedIndex` and
-  // `SetSelectedIndex`.
-  return OmniboxPopupSelection(
-      GetSelectedIndex(), edit_model_->popup_model()->selected_line_state());
+  return edit_model_->GetPopupSelection();
 }
 
 void OmniboxPopupContentsView::UnselectButton() {
-  edit_model_->popup_model()->SetSelectedLineState(
-      OmniboxPopupSelection::NORMAL);
+  OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
+  selection.state = OmniboxPopupSelection::NORMAL;
+  edit_model_->SetPopupSelection(selection);
 }
 
 OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
@@ -412,8 +407,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
                               pref_service, match.suggestion_group_id.value());
       result_view->SetVisible(!match_hidden);
 
-      const SkBitmap* bitmap =
-          edit_model_->popup_model()->RichSuggestionBitmapAt(i);
+      const SkBitmap* bitmap = edit_model_->GetPopupRichSuggestionBitmap(i);
       if (bitmap) {
         result_view->SetRichSuggestionImage(
             gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));

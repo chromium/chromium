@@ -265,7 +265,7 @@ void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
       !OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
     button->SetVisible(false);
   } else {
-    button->SetVisible(model_->popup_model()->IsControlPresentOnMatch(
+    button->SetVisible(model_->IsPopupControlPresentOnMatch(
         OmniboxPopupSelection(model_index_, state)));
   }
 }
@@ -282,7 +282,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     // a second click of the button violates assumptions in |AcceptKeyword|.
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
-    model_->popup_model()->SetSelection(selection);
+    model_->SetPopupSelection(selection);
     if (model_->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
@@ -290,8 +290,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
       model_->AcceptKeyword(entry_method);
     }
   } else {
-    model_->popup_model()->TriggerSelectionAction(selection,
-                                                  event.time_stamp());
+    model_->TriggerPopupSelectionAction(selection, event.time_stamp());
   }
 }
 

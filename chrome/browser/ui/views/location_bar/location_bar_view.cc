@@ -912,7 +912,7 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
 
   // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
   // The page action icons are not relevant to the displayed suggestions.
-  return omnibox_view_->model()->popup_model()->IsOpen();
+  return omnibox_view_->model()->PopupIsOpen();
 }
 
 // static
@@ -1057,7 +1057,7 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
   DCHECK(IsInitialized());
-  return omnibox_view_->model()->popup_model()->view();
+  return omnibox_view_->model()->get_popup_view();
 }
 
 void LocationBarView::KeywordHintViewPressed(const ui::Event& event) {

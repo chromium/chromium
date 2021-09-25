@@ -432,7 +432,7 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
 
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
-  model_->popup_model()->TriggerSelectionAction(
+  model_->TriggerPopupSelectionAction(
       OmniboxPopupSelection(model_index_, state), event.time_stamp());
 }
 
@@ -500,11 +500,10 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     // The selected match can have a special name, e.g. when is one or more
     // buttons that can be tabbed to.
     std::u16string label =
-        is_selected
-            ? model_->popup_model()->GetAccessibilityLabelForCurrentSelection(
-                  raw_match.contents, false)
-            : AutocompleteMatchType::ToAccessibilityLabel(raw_match,
-                                                          raw_match.contents);
+        is_selected ? model_->GetPopupAccessibilityLabelForCurrentSelection(
+                          raw_match.contents, false)
+                    : AutocompleteMatchType::ToAccessibilityLabel(
+                          raw_match, raw_match.contents);
     node_data->SetName(label);
   }
 
@@ -562,7 +561,7 @@ void OmniboxResultView::UpdateHoverState() {
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   bool old_visibility = remove_suggestion_button_->GetVisible();
   bool new_visibility =
-      model_->popup_model()->IsControlPresentOnMatch(OmniboxPopupSelection(
+      model_->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
           model_index_,
           OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
       (GetMatchSelected() || IsMouseHovered());

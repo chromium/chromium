@@ -72,8 +72,7 @@ class OmniboxRowView::HeaderView : public views::View {
     views::FocusRing::Get(header_toggle_button_)
         ->SetHasFocusPredicate([&](View* view) {
           return view->GetVisible() &&
-                 row_view_->model_->popup_model()->selection() ==
-                     GetHeaderSelection();
+                 row_view_->model_->GetPopupSelection() == GetHeaderSelection();
         });
 
     if (row_view_->pref_service_) {
@@ -125,8 +124,7 @@ class OmniboxRowView::HeaderView : public views::View {
     return true;
   }
   void OnMouseReleased(const ui::MouseEvent& event) override {
-    row_view_->model_->popup_model()->TriggerSelectionAction(
-        GetHeaderSelection());
+    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
   }
   void OnMouseEntered(const ui::MouseEvent& event) override { UpdateUI(); }
   void OnMouseExited(const ui::MouseEvent& event) override { UpdateUI(); }
@@ -150,7 +148,7 @@ class OmniboxRowView::HeaderView : public views::View {
   // Updates the UI state for the new hover or selection state.
   void UpdateUI() {
     OmniboxPartState part_state = OmniboxPartState::NORMAL;
-    if (row_view_->model_->popup_model()->selection() == GetHeaderSelection()) {
+    if (row_view_->model_->GetPopupSelection() == GetHeaderSelection()) {
       part_state = OmniboxPartState::SELECTED;
     } else if (IsMouseHovered()) {
       part_state = OmniboxPartState::HOVERED;
@@ -200,8 +198,7 @@ class OmniboxRowView::HeaderView : public views::View {
 
  private:
   void HeaderToggleButtonPressed() {
-    row_view_->model_->popup_model()->TriggerSelectionAction(
-        GetHeaderSelection());
+    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
     // The PrefChangeRegistrar will update the actual button toggle state.
   }
 
@@ -350,8 +347,8 @@ void OmniboxRowView::OnSelectionStateChanged() {
 }
 
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
-  DCHECK(model_->popup_model()->selection().IsButtonFocused());
-  if (model_->popup_model()->selected_line_state() ==
+  DCHECK(model_->GetPopupSelection().IsButtonFocused());
+  if (model_->GetPopupSelection().state ==
       OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     return header_view_->header_toggle_button();
   }

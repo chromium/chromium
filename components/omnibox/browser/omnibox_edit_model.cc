@@ -169,6 +169,10 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
   }
 }
 
+OmniboxPopupView* OmniboxEditModel::get_popup_view() {
+  return popup_model_->view();
+}
+
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
   return controller()->GetLocationBarModel()->GetPageClassification(
@@ -1770,6 +1774,12 @@ OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
   return popup_model()->StepSelection(direction, step);
 }
 
+bool OmniboxEditModel::IsPopupControlPresentOnMatch(
+    OmniboxPopupSelection selection) const {
+  DCHECK(popup_model());
+  return popup_model()->IsControlPresentOnMatch(selection);
+}
+
 bool OmniboxEditModel::TriggerPopupSelectionAction(
     OmniboxPopupSelection selection,
     base::TimeTicks timestamp,
@@ -1791,6 +1801,24 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   DCHECK(popup_model());
   return popup_model()->GetAccessibilityLabelForCurrentSelection(
       match_text, include_positional_info, label_prefix_length);
+}
+
+void OmniboxEditModel::OnPopupResultChanged() {
+  if (popup_model()) {
+    popup_model()->OnResultChanged();
+  }
+}
+
+const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
+    int result_index) const {
+  DCHECK(popup_model());
+  return popup_model()->RichSuggestionBitmapAt(result_index);
+}
+
+void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
+                                                    const SkBitmap& bitmap) {
+  DCHECK(popup_model());
+  popup_model()->SetRichSuggestionBitmap(result_index, bitmap);
 }
 
 PrefService* OmniboxEditModel::GetPrefService() const {

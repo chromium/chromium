@@ -76,6 +76,7 @@ class OmniboxEditModel {
   }
 
   void set_popup_view(OmniboxPopupView* popup_view);
+  OmniboxPopupView* get_popup_view();
 
   // NOTE: popup_model() can be NULL for testing.
   OmniboxPopupModel* popup_model() const { return popup_model_.get(); }
@@ -458,6 +459,11 @@ class OmniboxEditModel {
       OmniboxPopupSelection::Direction direction,
       OmniboxPopupSelection::Step step);
 
+  // Returns true if the control represented by |selection.state| is present on
+  // the match in |selection.line|. This is the source-of-truth the UI code
+  // should query to decide whether or not to draw the control.
+  bool IsPopupControlPresentOnMatch(OmniboxPopupSelection selection) const;
+
   // On popup, triggers the action on |selection| (usually an auxiliary button).
   // If the popup model supports the action and performs it, this returns true.
   // This can't handle all actions currently, and returns false in those cases.
@@ -483,6 +489,17 @@ class OmniboxEditModel {
       const std::u16string& match_text,
       bool include_positional_info,
       int* label_prefix_length = nullptr);
+
+  // Invoked any time the result set of the controller changes.
+  // TODO(orinj): This method seems like a good candidate for removal; it is
+  // preserved here only to prevent possible behavior change while refactoring.
+  void OnPopupResultChanged();
+
+  // Lookup the bitmap for |result_index|. Returns nullptr if not found.
+  const SkBitmap* GetPopupRichSuggestionBitmap(int result_index) const;
+
+  // Stores the image in a local data member and schedules a repaint.
+  void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
 
  protected:
   // Utility method to get current PrefService; protected instead of private
