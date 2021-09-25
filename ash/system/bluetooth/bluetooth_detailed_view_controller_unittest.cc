@@ -5,7 +5,6 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 
 #include <memory>
-#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -18,21 +17,15 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
-#include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace ash {
 namespace tray {
 namespace {
 
 using chromeos::bluetooth_config::AdapterStateController;
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 class FakeBluetoothDetailedViewFactory : public BluetoothDetailedView::Factory {
  public:
@@ -128,22 +121,6 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
         ->GetAdapterState();
   }
 
-  PairedBluetoothDevicePropertiesPtr CreatePairedDevice(
-      DeviceConnectionState connection_state) {
-    PairedBluetoothDevicePropertiesPtr paired_properties =
-        PairedBluetoothDeviceProperties::New();
-    paired_properties->device_properties = BluetoothDeviceProperties::New();
-    paired_properties->device_properties->connection_state = connection_state;
-    return paired_properties;
-  }
-
-  void SetPairedDevices(
-      std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
-    scoped_bluetooth_config_test_helper_.fake_device_cache()->SetPairedDevices(
-        std::move(paired_devices));
-    base::RunLoop().RunUntilIdle();
-  }
-
   void SetBluetoothAdapterState(BluetoothSystemState system_state) {
     scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
         ->SetSystemState(system_state);
@@ -221,29 +198,6 @@ TEST_F(BluetoothDetailedViewControllerTest,
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
   bluetooth_detailed_view_delegate()->OnPairNewDeviceRequested();
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
-}
-
-TEST_F(BluetoothDetailedViewControllerTest,
-       CorrectlySplitsDevicesByConnectionState) {
-  std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices;
-  paired_devices.push_back(
-      CreatePairedDevice(DeviceConnectionState::kNotConnected));
-  paired_devices.push_back(
-      CreatePairedDevice(DeviceConnectionState::kConnecting));
-  paired_devices.push_back(
-      CreatePairedDevice(DeviceConnectionState::kConnected));
-
-  EXPECT_EQ(0u, bluetooth_device_list_controller()->connected_devices_count());
-  EXPECT_EQ(
-      0u,
-      bluetooth_device_list_controller()->previously_connected_devices_count());
-
-  SetPairedDevices(std::move(paired_devices));
-
-  EXPECT_EQ(1u, bluetooth_device_list_controller()->connected_devices_count());
-  EXPECT_EQ(
-      2u,
-      bluetooth_device_list_controller()->previously_connected_devices_count());
 }
 
 }  // namespace tray

@@ -34,9 +34,6 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override;
-
   chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
       device_properties_;
 };

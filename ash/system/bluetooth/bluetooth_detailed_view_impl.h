@@ -58,9 +58,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   void NotifyDeviceListChanged() override;
   views::View* device_list() override;
 
-  // TrayDetailedView:
-  void HandleViewClicked(views::View* view) override;
-
   // views::View:
   const char* GetClassName() const override;
 

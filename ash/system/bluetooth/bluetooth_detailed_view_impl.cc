@@ -97,11 +97,6 @@ views::View* BluetoothDetailedViewImpl::device_list() {
   return scroll_content();
 }
 
-void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
-  delegate()->OnDeviceListItemSelected(
-      static_cast<BluetoothDeviceListItemView*>(view)->device_properties());
-}
-
 const char* BluetoothDetailedViewImpl::GetClassName() const {
   return "BluetoothDetailedViewImpl";
 }

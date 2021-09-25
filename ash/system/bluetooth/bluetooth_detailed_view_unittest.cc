@@ -10,7 +10,6 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
-#include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/top_shortcut_button.h"
@@ -36,9 +35,6 @@ namespace ash {
 namespace tray {
 namespace {
 
-const std::string kDeviceNickname = "mau5";
-
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 class FakeBluetoothDetailedViewDelegate
@@ -296,29 +292,6 @@ TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
       view_bounds.y() + (view_bounds.height() - separator_height + 1) / 2;
 
   EXPECT_EQ(view_center, button_center.y());
-}
-
-TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
-  bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
-
-  PairedBluetoothDevicePropertiesPtr paired_properties =
-      PairedBluetoothDeviceProperties::New();
-  paired_properties->nickname = kDeviceNickname;
-
-  BluetoothDeviceListItemView* device_list_item =
-      bluetooth_detailed_view()->AddDeviceListItem();
-  device_list_item->UpdateDeviceProperties(paired_properties);
-
-  bluetooth_detailed_view()->NotifyDeviceListChanged();
-
-  EXPECT_FALSE(
-      bluetooth_detailed_view_delegate()->last_device_list_item_selected());
-  ClickOnAndWait(device_list_item);
-  EXPECT_TRUE(
-      bluetooth_detailed_view_delegate()->last_device_list_item_selected());
-  EXPECT_EQ(kDeviceNickname, bluetooth_detailed_view_delegate()
-                                 ->last_device_list_item_selected()
-                                 ->nickname);
 }
 
 }  // namespace tray
