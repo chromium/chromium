@@ -28,10 +28,15 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 #include "sandbox/win/src/sid.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::Return;
 
 namespace sandbox {
 namespace policy {
@@ -388,6 +393,67 @@ TEST_F(SandboxWinTest, BlocklistAddOneDllDontCheckInBrowser) {
               std::vector<std::wstring>({L"thelongname.dll", L"thelon~1.dll",
                                          L"thelon~2.dll", L"thelon~3.dll"}));
   }
+}
+
+// Sandbox can't reach into content to pull the real policies, so these tests
+// merely verifies that various parts of the delegate are called correctly and a
+// policy can be generated.
+class TestSandboxDelegate : public SandboxDelegate {
+ public:
+  TestSandboxDelegate(SandboxType sandbox_type) : sandbox_type_(sandbox_type) {}
+  SandboxType GetSandboxType() override { return sandbox_type_; }
+  bool DisableDefaultPolicy() override { return false; }
+  bool GetAppContainerId(std::string* appcontainer_id) override {
+    NOTREACHED();
+    return false;
+  }
+
+  MOCK_METHOD1(PreSpawnTarget, bool(TargetPolicy* policy));
+
+  void PostSpawnTarget(base::ProcessHandle process) override {}
+
+  bool ShouldUnsandboxedRunInJob() override { return false; }
+
+  bool CetCompatible() override { return true; }
+
+ private:
+  SandboxType sandbox_type_;
+};
+
+TEST_F(SandboxWinTest, GeneratedPolicyTest) {
+  TestSandboxDelegate test_renderer_delegate(SandboxType::kRenderer);
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  base::HandlesToInheritVector handles_to_inherit;
+  BrokerServices* broker = SandboxFactory::GetBrokerServices();
+  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  // PreSpawn should get called, but not modifying the policy for this test.
+  EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_)).WillOnce(Return(true));
+  ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_renderer_delegate, policy);
+  ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
+  // Check some default values come back. No need to check the exact policy in
+  // detail, but just that GeneratePolicyForSandboxedProcess generated some kind
+  // of valid policy.
+  EXPECT_EQ(IntegrityLevel::INTEGRITY_LEVEL_LOW, policy->GetIntegrityLevel());
+  EXPECT_EQ(JobLevel::JOB_LOCKDOWN, policy->GetJobLevel());
+  EXPECT_EQ(TokenLevel::USER_LOCKDOWN, policy->GetLockdownTokenLevel());
+}
+
+TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
+  TestSandboxDelegate test_unsandboxed_delegate(SandboxType::kNoSandbox);
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  base::HandlesToInheritVector handles_to_inherit;
+  BrokerServices* broker = SandboxFactory::GetBrokerServices();
+  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  // Unsandboxed processes never call the delegate prespawn as there is no
+  // policy.
+  EXPECT_CALL(test_unsandboxed_delegate, PreSpawnTarget(_)).Times(0);
+
+  ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_unsandboxed_delegate, policy);
+  ASSERT_EQ(ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS, result);
 }
 
 }  // namespace policy

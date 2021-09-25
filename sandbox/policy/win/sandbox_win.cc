@@ -433,7 +433,7 @@ void LogLaunchWarning(ResultCode last_warning, DWORD last_error) {
   base::UmaHistogramSparse("Process.Sandbox.Launch.Warning", last_error);
 }
 
-ResultCode AddPolicyForSandboxedProcess(TargetPolicy* policy) {
+ResultCode AddDefaultPolicyForSandboxedProcess(TargetPolicy* policy) {
   ResultCode result = sandbox::SBOX_ALL_OK;
 
   // Win8+ adds a device DeviceApi that we don't need.
@@ -810,6 +810,19 @@ ResultCode LaunchWithoutSandbox(
   return SBOX_ALL_OK;
 }
 
+bool IsUnsandboxedProcess(
+    SandboxType sandbox_type,
+    const base::CommandLine& cmd_line,
+    const base::CommandLine& launcher_process_command_line) {
+  if (IsUnsandboxedSandboxType(sandbox_type))
+    return true;
+  if (cmd_line.HasSwitch(switches::kNoSandbox))
+    return true;
+  if (launcher_process_command_line.HasSwitch(switches::kNoSandbox))
+    return true;
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -977,29 +990,27 @@ bool SandboxWin::InitTargetServices(TargetServices* target_services) {
 }
 
 // static
-ResultCode SandboxWin::StartSandboxedProcess(
+ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     const base::CommandLine& cmd_line,
     const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
-    base::Process* process) {
+    const scoped_refptr<TargetPolicy>& policy) {
   const base::CommandLine& launcher_process_command_line =
       *base::CommandLine::ForCurrentProcess();
 
   SandboxType sandbox_type = delegate->GetSandboxType();
-  // --no-sandbox and kNoSandbox are launched without creating a Policy.
-  if (IsUnsandboxedSandboxType(sandbox_type) ||
-      cmd_line.HasSwitch(switches::kNoSandbox) ||
-      launcher_process_command_line.HasSwitch(switches::kNoSandbox)) {
-    return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
-                                process);
+  // --no-sandbox and kNoSandbox are launched without a policy.
+  if (IsUnsandboxedProcess(sandbox_type, cmd_line,
+                           launcher_process_command_line)) {
+    return ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS;
   }
 
-  scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
-
   // Allow no sandbox job if the --allow-no-sandbox-job switch is present.
-  if (launcher_process_command_line.HasSwitch(switches::kAllowNoSandboxJob))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowNoSandboxJob)) {
     policy->SetAllowNoSandboxJob();
+  }
 
   // Add any handles to be inherited to the policy.
   for (HANDLE handle : handles_to_inherit)
@@ -1058,7 +1069,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
     return result;
 
   if (!delegate->DisableDefaultPolicy()) {
-    result = AddPolicyForSandboxedProcess(policy.get());
+    result = AddDefaultPolicyForSandboxedProcess(policy.get());
     if (result != SBOX_ALL_OK)
       return result;
   }
@@ -1127,6 +1138,27 @@ ResultCode SandboxWin::StartSandboxedProcess(
 
   if (!delegate->PreSpawnTarget(policy.get()))
     return SBOX_ERROR_DELEGATE_PRE_SPAWN;
+
+  return result;
+}
+
+// static
+ResultCode SandboxWin::StartSandboxedProcess(
+    const base::CommandLine& cmd_line,
+    const std::string& process_type,
+    const base::HandlesToInheritVector& handles_to_inherit,
+    SandboxDelegate* delegate,
+    base::Process* process) {
+  scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
+  ResultCode result = GeneratePolicyForSandboxedProcess(
+      cmd_line, process_type, handles_to_inherit, delegate, policy);
+
+  if (ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS == result) {
+    return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
+                                process);
+  }
+  if (SBOX_ALL_OK != result)
+    return result;
 
   TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
 
