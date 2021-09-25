@@ -2849,8 +2849,8 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash ]
+crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash ]
 crbug.com/626703 [ Linux ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
