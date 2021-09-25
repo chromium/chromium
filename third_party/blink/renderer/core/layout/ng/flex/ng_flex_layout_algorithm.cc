@@ -133,11 +133,6 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
   return AxisEdge::kStart;
 }
 
-LayoutUnit ComputeSizeFromAspectRatio(LayoutUnit extent,
-                                      const LogicalSize& aspect_ratio) {
-  return extent.MulDiv(aspect_ratio.inline_size, aspect_ratio.block_size);
-}
-
 }  // namespace
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositioned(NGBlockNode child) {
@@ -283,23 +278,6 @@ bool NGFlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
     const NGBlockNode& child) const {
   return !algorithm_.IsMultiline() && is_cross_size_definite_ &&
          DoesItemStretch(child);
-}
-
-LogicalSize NGFlexLayoutAlgorithm::GetMainOverCrossAspectRatio(
-    const NGBlockNode& child) const {
-  DCHECK(child.HasAspectRatio());
-  LogicalSize aspect_ratio = child.GetAspectRatio();
-
-  DCHECK_GT(aspect_ratio.inline_size, 0);
-  DCHECK_GT(aspect_ratio.block_size, 0);
-
-  // Multiplying by ratio will take something in the item's block axis and
-  // convert it to the inline axis. We want to convert from cross size to main
-  // size. If block axis and cross axis are the same, then we already have what
-  // we need. Otherwise we need to use the reciprocal.
-  if (!MainAxisIsInlineAxis(child))
-    aspect_ratio.Transpose();
-  return aspect_ratio;
 }
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
@@ -449,12 +427,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       DCHECK_GE(cross_size, LayoutUnit());
       cross_size = min_max_sizes_in_cross_axis_direction.ClampSizeToMinAndMax(
           cross_size);
-      // TODO(dgrogan): This isn't right for non-replaced aspect-ratio items
-      // with box-sizing: border-box, but it's what existing code does. Fix in a
-      // follow-up CL by reusing something from ng_length_utils.
-      return ComputeSizeFromAspectRatio(cross_size - cross_axis_border_padding,
-                                        GetMainOverCrossAspectRatio(child)) +
-             main_axis_border_padding;
+      if (MainAxisIsInlineAxis(child)) {
+        return InlineSizeFromAspectRatio(
+            border_padding_in_child_writing_mode, child.GetAspectRatio(),
+            child_style.BoxSizingForAspectRatio(), cross_size);
+      }
+      return BlockSizeFromAspectRatio(
+          border_padding_in_child_writing_mode, child.GetAspectRatio(),
+          child_style.BoxSizingForAspectRatio(), cross_size);
     };
 
     // The logic that calculates flex_base_border_box assumes that the used
@@ -550,13 +530,18 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       }
       DCHECK_GE(content_size_suggestion, main_axis_border_padding);
 
-      if (child.HasAspectRatio()) {
+      // TODO(crbug.com/1252693):
+      // This code block is needed because
+      // IntrinsicBlockSizeFunc incorrectly ignores the inline min/max
+      // constraints for aspect-ratio items. So we apply those constraints here
+      // in AdjustChildSizeForAspectRatioCrossAxisMinAndMax. Once 1252693 is
+      // fixed, we can delete this entire code block.
+      if (child.HasAspectRatio() && !MainAxisIsInlineAxis(child)) {
         content_size_suggestion =
             AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
                 child, content_size_suggestion,
-                min_max_sizes_in_cross_axis_direction.min_size,
-                min_max_sizes_in_cross_axis_direction.max_size,
-                main_axis_border_padding, cross_axis_border_padding);
+                min_max_sizes_in_cross_axis_direction,
+                border_padding_in_child_writing_mode);
       }
 
       LayoutUnit specified_size_suggestion = LayoutUnit::Max();
@@ -640,45 +625,24 @@ LayoutUnit
 NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
     const NGBlockNode& child,
     LayoutUnit content_size_suggestion,
-    LayoutUnit cross_min,
-    LayoutUnit cross_max,
-    LayoutUnit main_axis_border_padding,
-    LayoutUnit cross_axis_border_padding) {
+    const MinMaxSizes& cross_min_max,
+    const NGBoxStrut& border_padding_in_child_writing_mode) {
   DCHECK(child.HasAspectRatio());
 
-  const LogicalSize ratio = GetMainOverCrossAspectRatio(child);
   // Clamp content_suggestion by any definite min and max cross size properties
   // converted through the aspect ratio.
-  const Length& cross_max_length = is_horizontal_flow_
-                                       ? child.Style().MaxHeight()
-                                       : child.Style().MaxWidth();
-  DCHECK_GE(cross_max, cross_axis_border_padding);
-  // TODO(dgrogan): No tests fail if we unconditionally apply max_main_length.
-  // Either add a test that needs it or remove it.
-  if (IsItemCrossAxisLengthDefinite(child, cross_max_length)) {
-    LayoutUnit max_main_length =
-        main_axis_border_padding +
-        ComputeSizeFromAspectRatio(cross_max - cross_axis_border_padding,
-                                   ratio);
-    content_size_suggestion =
-        std::min(max_main_length, content_size_suggestion);
+  if (MainAxisIsInlineAxis(child)) {
+    auto min_max = ComputeTransferredMinMaxInlineSizes(
+        child.GetAspectRatio(), cross_min_max,
+        border_padding_in_child_writing_mode,
+        child.Style().BoxSizingForAspectRatio());
+    return min_max.ClampSizeToMinAndMax(content_size_suggestion);
   }
-
-  const Length& cross_min_length = is_horizontal_flow_
-                                       ? child.Style().MinHeight()
-                                       : child.Style().MinWidth();
-  DCHECK_GE(cross_min, cross_axis_border_padding);
-  // TODO(dgrogan): Same as above with min_main_length here -- it may be
-  // unneeded or untested.
-  if (IsItemCrossAxisLengthDefinite(child, cross_min_length)) {
-    LayoutUnit min_main_length =
-        main_axis_border_padding +
-        ComputeSizeFromAspectRatio(cross_min - cross_axis_border_padding,
-                                   ratio);
-    content_size_suggestion =
-        std::max(min_main_length, content_size_suggestion);
-  }
-  return content_size_suggestion;
+  auto min_max = ComputeTransferredMinMaxBlockSizes(
+      child.GetAspectRatio(), cross_min_max,
+      border_padding_in_child_writing_mode,
+      child.Style().BoxSizingForAspectRatio());
+  return min_max.ClampSizeToMinAndMax(content_size_suggestion);
 }
 
 scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {

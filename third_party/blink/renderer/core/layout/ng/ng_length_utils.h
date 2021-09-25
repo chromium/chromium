@@ -297,6 +297,10 @@ MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const MinMaxSizes& block_min_max,
     const NGBoxStrut& border_padding,
     const EBoxSizing sizing);
+MinMaxSizes ComputeTransferredMinMaxBlockSizes(const LogicalSize& ratio,
+                                               const MinMaxSizes& block_min_max,
+                                               const NGBoxStrut& border_padding,
+                                               const EBoxSizing sizing);
 
 // Computes the transferred min/max inline sizes from the min/max block
 // sizes and the aspect ratio.

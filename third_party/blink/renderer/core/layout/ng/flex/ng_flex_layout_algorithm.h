@@ -40,7 +40,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                      const Length& length) const;
   bool AspectRatioProvidesMainSize(const NGBlockNode& child,
                                    const Length& cross_axis_length) const;
-  LogicalSize GetMainOverCrossAspectRatio(const NGBlockNode& child) const;
   bool DoesItemStretch(const NGBlockNode& child) const;
   // This implements the first of the additional scenarios where a flex item
   // has definite sizes when it would not if it weren't a flex item.
@@ -49,10 +48,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   LayoutUnit AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
       const NGBlockNode& child,
       LayoutUnit content_suggestion,
-      LayoutUnit cross_min,
-      LayoutUnit cross_max,
-      LayoutUnit main_axis_border_padding,
-      LayoutUnit cross_axis_border_padding);
+      const MinMaxSizes& cross_min_max,
+      const NGBoxStrut& border_padding_in_child_writing_mode);
 
   bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
