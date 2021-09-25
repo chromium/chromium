@@ -71,7 +71,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('pair-device', {
       bubbles: true,
       composed: true,
-      detail: {deviceId: this.device.id},
+      detail: {device: this.device},
     }));
   }
 }

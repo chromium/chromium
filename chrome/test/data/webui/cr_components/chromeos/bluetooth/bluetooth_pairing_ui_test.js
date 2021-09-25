@@ -59,7 +59,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     assertEquals(1, deviceSelectionPage.devices.length);
   });
 
-  test('finished event fired on succesful device pair', async function() {
+  test('finished event fired on successful device pair', async function() {
     const id = '12//345&6789';
     const deviceSelectionPage =
         bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
@@ -78,7 +78,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
 
     await flushAsync();
-    const event = new CustomEvent('pair-device', {detail: {deviceId: id}});
+    const event = new CustomEvent(
+        'pair-device', {detail: {device: device.deviceProperties}});
     deviceSelectionPage.dispatchEvent(event);
     await flushAsync();
 
@@ -116,7 +117,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 0);
 
     let event = new CustomEvent(
-        'pair-device', {detail: {deviceId: device.deviceProperties.id}});
+        'pair-device', {detail: {device: device.deviceProperties}});
     deviceSelectionPage.dispatchEvent(event);
     await flushAsync();
 
@@ -126,7 +127,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     await flushAsync();
     event = new CustomEvent(
-        'pair-device', {detail: {deviceId: device.deviceProperties.id}});
+        'pair-device', {detail: {device: device.deviceProperties}});
     deviceSelectionPage.dispatchEvent(event);
     await flushAsync();
 

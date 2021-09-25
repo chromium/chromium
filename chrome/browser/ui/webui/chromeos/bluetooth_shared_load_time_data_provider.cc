@@ -31,6 +31,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"bluetoothPair", IDS_BLUETOOTH_PAIRING_PAIR},
       {"bluetoothReject", IDS_BLUETOOTH_PAIRING_REJECT_PASSKEY},
       {"bluetoothStartConnecting", IDS_BLUETOOTH_PAIRING_START_CONNECTING},
+      {"bluetoothEnterPin", IDS_BLUETOOTH_PAIRING_ENTER_PIN},
       // Device connecting and pairing.
       // These ids are generated in JS using 'bluetooth_' + a value from
       // bluetoothPrivate.PairingEventType (see bluetooth_private.idl).

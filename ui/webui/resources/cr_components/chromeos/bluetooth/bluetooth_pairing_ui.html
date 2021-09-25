@@ -7,11 +7,21 @@
   <iron-pages
       attr-for-selected="id"
       selected="[[selectedPageId_]]">
-    <bluetooth-pairing-device-selection-page
-        devices="[[discoveredDevices_]]"
-        on-pair-device="onPairDevice_"
-        id="deviceSelectionPage">
-    </bluetooth-pairing-device-selection-page>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_SELECTION_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-device-selection-page
+          devices="[[discoveredDevices_]]"
+          on-pair-device="onPairDevice_"
+          id="deviceSelectionPage">
+      </bluetooth-pairing-device-selection-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_REQUEST_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-request-code-page
+          device="[[selectedDevice_]]"
+          id="deviceRequestCodePage">
+      </bluetooth-pairing-request-code-page>
+    </template>
     <!-- TODO(crbug.com/1010321): Add other bluetooth pairing subpage UI elements. -->
   </iron-pages>
 </div>

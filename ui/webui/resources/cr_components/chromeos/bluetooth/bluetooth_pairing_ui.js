@@ -8,8 +8,8 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import './bluetooth_base_page.js';
 import './bluetooth_pairing_device_selection_page.js';
+import './bluetooth_pairing_request_code_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from '../../../js/assert.m.js';
@@ -19,6 +19,7 @@ import {getBluetoothConfig} from './cros_bluetooth_config.js';
 const BluetoothPairingSubpageId = {
   // TODO(crbug.com/1010321): Add missing bluetooth pairing subpages.
   DEVICE_SELECTION_PAGE: 'deviceSelectionPage',
+  DEVICE_REQUEST_CODE_PAGE: 'deviceRequestCodePage',
 };
 
 /**
@@ -52,6 +53,23 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       discoveredDevices_: {
         type: Array,
         value: [],
+      },
+
+      /**
+       * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       */
+      devicePendingPairing_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * Used to access |BluetoothPairingSubpageId| type in HTML.
+       * @private {!BluetoothPairingSubpageId}
+       */
+      SubpageId: {
+        type: Object,
+        value: BluetoothPairingSubpageId,
       },
     };
   }
@@ -98,7 +116,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   /**
-   * @param {!CustomEvent<!{deviceId: string}>} event
+   * @param {!CustomEvent<!{device:
+   *     chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}>} event
    * @private
    */
   onPairDevice_(event) {
@@ -110,9 +129,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
     this.pairingDelegateReceiver_ =
         new chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver(this);
+
+    // TODO(crbug.com/1010321): Add test for |devicePendingPairing_| when
+    // request code page UI is added.
+    this.devicePendingPairing_ = event.detail.device;
+    assert(this.devicePendingPairing_);
+
     this.devicePairingHandler_
         .pairDevice(
-            event.detail.deviceId,
+            this.devicePendingPairing_.id,
             this.pairingDelegateReceiver_.$.bindNewPipeAndPassRemote())
         .then(result => {
           this.handlePairDeviceResult_(result.result);
@@ -125,6 +150,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    */
   handlePairDeviceResult_(result) {
     this.pairingDelegateReceiver_ = null;
+    this.devicePendingPairing_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
       this.dispatchEvent(new CustomEvent('finished', {
@@ -169,6 +195,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   /** @override */
   authorizePairing() {
     // TODO(crbug.com/1010321): Implement this function.
+  }
+
+  /**
+   * @param {!BluetoothPairingSubpageId} subpageId
+   * @return {boolean}
+   * @private
+   */
+  shouldShowSubpage_(subpageId) {
+    return this.selectedPageId_ === subpageId;
   }
 }
 
