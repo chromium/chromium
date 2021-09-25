@@ -12,7 +12,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {ScalingType} from '../data/scaling.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /*
@@ -24,11 +24,11 @@ import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.j
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  * @implements {SettingsBehaviorInterface}
  */
 const PrintPreviewScalingSettingsElementBase =
-    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewScalingSettingsElement extends

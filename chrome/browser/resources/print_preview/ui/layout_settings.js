@@ -8,7 +8,7 @@ import './settings_section.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 
@@ -16,10 +16,10 @@ import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.j
  * @constructor
  * @extends {PolymerElement}
  * @implements {SettingsBehaviorInterface}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  */
 const PrintPreviewLayoutSettingsElementBase =
-    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewLayoutSettingsElement extends

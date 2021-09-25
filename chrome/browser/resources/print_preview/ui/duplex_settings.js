@@ -16,17 +16,17 @@ import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/pol
 import {DuplexMode} from '../data/model.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {SettingsBehaviorInterface}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  */
 const PrintPreviewDuplexSettingsElementBase =
-    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewDuplexSettingsElement extends

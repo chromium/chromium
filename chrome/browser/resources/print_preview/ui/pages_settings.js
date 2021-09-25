@@ -17,7 +17,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {areRangesEqual} from '../print_preview_utils.js';
 
 import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /** @enum {number} */
@@ -56,13 +56,13 @@ function parseIntStrict(value) {
  * @constructor
  * @extends {PolymerElement}
  * @implements {InputBehaviorInterface}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  * @implements {SettingsBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPagesSettingsElementBase = mixinBehaviors(
-    [SettingsBehavior, InputBehavior, SelectBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [SettingsBehavior, InputBehavior, WebUIListenerBehavior],
+    SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewPagesSettingsElement extends

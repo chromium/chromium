@@ -98,7 +98,7 @@ preprocess_if_expr("preprocess") {
     "ui/highlight_utils.ts",
     "ui/input_behavior.js",
     "ui/plugin_proxy.js",
-    "ui/select_behavior.js",
+    "ui/select_mixin.ts",
     "ui/settings_behavior.js",
   ]
 
@@ -126,7 +126,7 @@ preprocess_if_expr("preprocess_generated") {
     "ui/destination_dialog_css.ts",
     "ui/destination_list.ts",
     "ui/destination_list_item.ts",
-    "ui/destination_select_css.js",
+    "ui/destination_select_css.ts",
     "ui/destination_settings.js",
     "ui/dpi_settings.js",
     "ui/duplex_settings.js",
@@ -155,15 +155,15 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos) {
     in_files += [
-      "ui/destination_dropdown_cros.js",
-      "ui/destination_select_cros.js",
+      "ui/destination_dropdown_cros.ts",
+      "ui/destination_select_cros.ts",
       "ui/pin_settings.js",
       "ui/provisional_destination_resolver.ts",
       "ui/destination_dialog_cros.ts",
     ]
   } else {
     in_files += [
-      "ui/destination_select.js",
+      "ui/destination_select.ts",
       "ui/link_container.js",
       "ui/destination_dialog.ts",
     ]
@@ -267,7 +267,7 @@ ts_library("build_ts") {
     "ui/destination_dialog_css.ts",
     "ui/destination_list.ts",
     "ui/destination_list_item.ts",
-    "ui/destination_select_css.js",
+    "ui/destination_select_css.ts",
     "ui/destination_settings.js",
     "ui/dpi_settings.js",
     "ui/duplex_settings.js",
@@ -291,7 +291,7 @@ ts_library("build_ts") {
     "ui/print_preview_shared_css.js",
     "ui/print_preview_vars_css.js",
     "ui/scaling_settings.js",
-    "ui/select_behavior.js",
+    "ui/select_mixin.ts",
     "ui/settings_behavior.js",
     "ui/settings_section.js",
     "ui/settings_select.js",
@@ -305,15 +305,15 @@ ts_library("build_ts") {
       "data/printer_status_cros.ts",
       "native_layer_cros.ts",
       "ui/destination_dialog_cros.ts",
-      "ui/destination_dropdown_cros.js",
-      "ui/destination_select_cros.js",
+      "ui/destination_dropdown_cros.ts",
+      "ui/destination_select_cros.ts",
       "ui/pin_settings.js",
       "ui/provisional_destination_resolver.ts",
     ]
   } else {
     in_files += [
       "ui/destination_dialog.ts",
-      "ui/destination_select.js",
+      "ui/destination_select.ts",
       "ui/link_container.js",
     ]
   }

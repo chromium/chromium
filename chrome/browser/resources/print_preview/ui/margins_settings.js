@@ -11,17 +11,17 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {MarginsType} from '../data/margins.js';
 import {State} from '../data/state.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  * @implements {SettingsBehaviorInterface}
  */
 const PrintPreviewMarginsSettingsElementBase =
-    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewMarginsSettingsElement extends

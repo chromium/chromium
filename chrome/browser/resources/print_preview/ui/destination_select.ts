@@ -13,32 +13,26 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/js/util.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 import './destination_select_css.js';
 import './icons.js';
 import './print_preview_shared_css.js';
 import './throbber_css.js';
 import '../strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SelectBehaviorInterface}
- */
 const PrintPreviewDestinationSelectElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], SelectMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nBehavior & SelectMixinInterface};
 
-/** @polymer */
 export class PrintPreviewDestinationSelectElement extends
     PrintPreviewDestinationSelectElementBase {
   static get is() {
@@ -55,7 +49,6 @@ export class PrintPreviewDestinationSelectElement extends
 
       dark: Boolean,
 
-      /** @type {!Destination} */
       destination: Object,
 
       disabled: Boolean,
@@ -66,16 +59,13 @@ export class PrintPreviewDestinationSelectElement extends
 
       pdfPrinterDisabled: Boolean,
 
-      /** @type {!Array<!Destination>} */
       recentDestinationList: Array,
 
-      /** @private {string} */
       pdfDestinationKey_: {
         type: String,
         value: PDF_DESTINATION_KEY,
       },
 
-      /** @private {string} */
       statusText_: {
         type: String,
         computed: 'computeStatusText_(destination)',
@@ -84,16 +74,26 @@ export class PrintPreviewDestinationSelectElement extends
     };
   }
 
+  activeUser: string;
+  dark: boolean;
+  destination: Destination;
+  disabled: boolean;
+  loaded: boolean;
+  noDestinations: boolean;
+  pdfPrinterDisabled: boolean;
+  recentDestinationList: Destination[];
+  private pdfDestinationKey_: string;
+  private statusText_: string;
+  private meta_: IronMeta;
+
   constructor() {
     super();
 
-    /** @private {!IronMetaElement} */
-    this.meta_ = /** @type {!IronMetaElement} */ (
-        Base.create('iron-meta', {type: 'iconset'}));
+    this.meta_ = new IronMeta({type: 'iconset', value: undefined});
   }
 
   focus() {
-    this.shadowRoot.querySelector('.md-select').focus();
+    this.shadowRoot!.querySelector<HTMLElement>('.md-select')!.focus();
   }
 
   /** Sets the select to the current value of |destination|. */
@@ -105,10 +105,9 @@ export class PrintPreviewDestinationSelectElement extends
    * Returns the iconset and icon for the selected printer. If printer details
    * have not yet been retrieved from the backend, attempts to return an
    * appropriate icon early based on the printer's sticky information.
-   * @return {string} The iconset and icon for the current selection.
-   * @private
+   * @return The iconset and icon for the current selection.
    */
-  getDestinationIcon_() {
+  private getDestinationIcon_(): string {
     if (!this.selectedValue) {
       return '';
     }
@@ -143,11 +142,10 @@ export class PrintPreviewDestinationSelectElement extends
   }
 
   /**
-   * @return {string} An inline svg corresponding to the icon for the current
+   * @return An inline svg corresponding to the icon for the current
    *     destination and the image for the dropdown arrow.
-   * @private
    */
-  getBackgroundImages_() {
+  private getBackgroundImages_(): string {
     const icon = this.getDestinationIcon_();
     if (!icon) {
       return '';
@@ -163,17 +161,16 @@ export class PrintPreviewDestinationSelectElement extends
     return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
   }
 
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.dispatchEvent(new CustomEvent(
         'selected-option-change',
         {bubbles: true, composed: true, detail: value}));
   }
 
   /**
-   * @return {string} The connection status text to display.
-   * @private
+   * @return The connection status text to display.
    */
-  computeStatusText_() {
+  private computeStatusText_(): string {
     // |destination| can be either undefined, or null here.
     if (!this.destination) {
       return '';
@@ -191,18 +188,16 @@ export class PrintPreviewDestinationSelectElement extends
     return '';
   }
 
-  /** @private */
-  onStatusTextSet_() {
-    this.shadowRoot.querySelector('.destination-status').innerHTML =
+  private onStatusTextSet_() {
+    this.shadowRoot!.querySelector('.destination-status')!.innerHTML =
         this.statusText_;
   }
 
   /**
    * Return the options currently visible to the user for testing purposes.
-   * @return {!NodeList<!Element>}
    */
-  getVisibleItemsForTest() {
-    return this.shadowRoot.querySelectorAll('option:not([hidden])');
+  getVisibleItemsForTest(): NodeListOf<Element> {
+    return this.shadowRoot!.querySelectorAll('option:not([hidden])');
   }
 }
 

@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/util.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 import './destination_dropdown_cros.js';
 import './destination_select_css.js';
 import './icons.js';
@@ -16,24 +15,18 @@ import './throbber_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SelectBehaviorInterface}
- */
 const PrintPreviewDestinationSelectCrosElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], SelectMixin(PolymerElement)) as
+    {new (): I18nBehavior & SelectMixinInterface & PolymerElement};
 
-/** @polymer */
 export class PrintPreviewDestinationSelectCrosElement extends
     PrintPreviewDestinationSelectCrosElementBase {
   static get is() {
@@ -50,7 +43,6 @@ export class PrintPreviewDestinationSelectCrosElement extends
 
       dark: Boolean,
 
-      /** @type {!Destination} */
       destination: Object,
 
       disabled: Boolean,
@@ -63,19 +55,16 @@ export class PrintPreviewDestinationSelectCrosElement extends
 
       pdfPrinterDisabled: Boolean,
 
-      /** @type {!Array<!Destination>} */
       recentDestinationList: {
         type: Array,
         observer: 'onRecentDestinationListChanged_',
       },
 
-      /** @private {string} */
       pdfDestinationKey_: {
         type: String,
         value: PDF_DESTINATION_KEY,
       },
 
-      /** @private {string} */
       statusText_: {
         type: String,
         computed:
@@ -83,15 +72,12 @@ export class PrintPreviewDestinationSelectCrosElement extends
         observer: 'onStatusTextSet_',
       },
 
-      /** @private {string} */
       destinationIcon_: {
         type: String,
-        computed:
-            'computeDestinationIcon_('+
-                'selectedValue, destination, destination.printerStatusReason)',
+        computed: 'computeDestinationIcon_(' +
+            'selectedValue, destination, destination.printerStatusReason)',
       },
 
-      /** @private */
       isCurrentDestinationCrosLocal_: {
         type: Boolean,
         computed: 'computeIsCurrentDestinationCrosLocal_(destination)',
@@ -100,10 +86,17 @@ export class PrintPreviewDestinationSelectCrosElement extends
     };
   }
 
+  destination: Destination;
+  pdfPrinterDisabled: boolean;
+  recentDestinationList: Destination[];
+  private pdfDestinationKey_: string;
+  private statusText_: string;
+  private destinationIcon_: string;
+  private isCurrentDestinationCrosLocal_: boolean;
+
   focus() {
-    this.shadowRoot.querySelector('#dropdown')
-        .shadowRoot.querySelector('#destination-dropdown')
-        .focus();
+    this.shadowRoot!.querySelector(
+                        'print-preview-destination-dropdown-cros')!.focus();
   }
 
   /** Sets the select to the current value of |destination|. */
@@ -115,10 +108,9 @@ export class PrintPreviewDestinationSelectCrosElement extends
    * Returns the iconset and icon for the selected printer. If printer details
    * have not yet been retrieved from the backend, attempts to return an
    * appropriate icon early based on the printer's sticky information.
-   * @return {string} The iconset and icon for the current selection.
-   * @private
+   * @return The iconset and icon for the current selection.
    */
-  computeDestinationIcon_() {
+  private computeDestinationIcon_(): string {
     if (!this.selectedValue) {
       return '';
     }
@@ -163,25 +155,17 @@ export class PrintPreviewDestinationSelectCrosElement extends
     return 'print-preview:print';
   }
 
-  /**
-   * @param {string} value
-   * @private
-   */
-  fireSelectedOptionChange_(value) {
+  private fireSelectedOptionChange_(value: string) {
     this.dispatchEvent(new CustomEvent(
         'selected-option-change',
         {bubbles: true, composed: true, detail: value}));
   }
 
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.fireSelectedOptionChange_(value);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onDropdownValueSelected_(e) {
+  private onDropdownValueSelected_(e: CustomEvent<HTMLButtonElement>) {
     const selectedItem = e.detail;
     if (!selectedItem || selectedItem.value === this.destination.key) {
       return;
@@ -192,9 +176,8 @@ export class PrintPreviewDestinationSelectCrosElement extends
 
   /**
    * Send a printer status request for any new destination in the dropdown.
-   * @private
    */
-  onRecentDestinationListChanged_() {
+  private onRecentDestinationListChanged_() {
     for (const destination of this.recentDestinationList) {
       if (!destination || destination.origin !== DestinationOrigin.CROS) {
         continue;
@@ -208,10 +191,8 @@ export class PrintPreviewDestinationSelectCrosElement extends
   /**
    * Check if the printer is currently in the dropdown then update its status
    *    icon if it's present.
-   * @param {string} destinationKey
-   * @private
    */
-  onPrinterStatusReceived_(destinationKey) {
+  private onPrinterStatusReceived_(destinationKey: string) {
     const indexFound = this.recentDestinationList.findIndex(destination => {
       return destination.key === destinationKey;
     });
@@ -232,11 +213,10 @@ export class PrintPreviewDestinationSelectCrosElement extends
   }
 
   /**
-   * @return {string}  An error status for the current destination. If no error
+   * @return An error status for the current destination. If no error
    *     status exists, an empty string.
-   * @private
    */
-  computeStatusText_() {
+  private computeStatusText_(): string {
     // |destination| can be either undefined, or null here.
     if (!this.destination) {
       return '';
@@ -258,7 +238,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
     }
 
     const printerStatusReason = this.destination.printerStatusReason;
-    if (!printerStatusReason ||
+    if (printerStatusReason === null ||
         printerStatusReason === PrinterStatusReason.NO_ERROR ||
         printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
       return '';
@@ -267,38 +247,29 @@ export class PrintPreviewDestinationSelectCrosElement extends
     return this.getErrorString_(printerStatusReason);
   }
 
-  /** @private */
-  onStatusTextSet_() {
-    this.shadowRoot.querySelector('#statusText').innerHTML = this.statusText_;
+  private onStatusTextSet_() {
+    this.shadowRoot!.querySelector('#statusText')!.innerHTML = this.statusText_;
   }
 
-  /**
-   * @param {!PrinterStatusReason} printerStatusReason
-   * @return {!string}
-   * @private
-   */
-  getErrorString_(printerStatusReason) {
+  private getErrorString_(printerStatusReason: PrinterStatusReason): string {
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
     return errorStringKey ? this.i18n(errorStringKey) : '';
   }
 
   /**
    * True when the currently selected destination is a CrOS local printer.
-   * @return {boolean}
-   * @private
    */
-  computeIsCurrentDestinationCrosLocal_() {
+  private computeIsCurrentDestinationCrosLocal_(): boolean {
     return this.destination &&
         this.destination.origin === DestinationOrigin.CROS;
   }
 
   /**
    * Return the options currently visible to the user for testing purposes.
-   * @return {!Array<!Element>}
    */
-  getVisibleItemsForTest() {
-    return this.shadowRoot.querySelector('#dropdown')
-        .shadowRoot.querySelectorAll('.list-item:not([hidden])');
+  getVisibleItemsForTest(): NodeListOf<Element> {
+    return this.shadowRoot!.querySelector('#dropdown')!.shadowRoot!
+        .querySelectorAll('.list-item:not([hidden])');
   }
 }
 

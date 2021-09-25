@@ -10,22 +10,23 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import './print_preview_vars_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const PrintPreviewDestinationDropdownCrosElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'dropdown-value-selected': CustomEvent<HTMLButtonElement>;
+  }
+}
 
-/** @polymer */
+const PrintPreviewDestinationDropdownCrosElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class PrintPreviewDestinationDropdownCrosElement extends
     PrintPreviewDestinationDropdownCrosElementBase {
   static get is() {
@@ -38,16 +39,13 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
   static get properties() {
     return {
-      /** @type {!Destination} */
       value: Object,
 
-      /** @type {!Array<!Destination>} */
       itemList: {
         type: Array,
         observer: 'enqueueDropdownRefit_',
       },
 
-      /** @type {boolean} */
       disabled: {
         type: Boolean,
         value: false,
@@ -67,11 +65,9 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
       /**
        * Index of the highlighted item in the dropdown.
-       * @private
        */
       highlightedIndex_: Number,
 
-      /** @private */
       dropdownLength_: {
         type: Number,
         computed: 'computeDropdownLength_(itemList, pdfPrinterDisabled, ' +
@@ -82,32 +78,37 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     };
   }
 
-  constructor() {
-    super();
+  value: Destination;
+  itemList: Destination[];
+  disabled: boolean;
+  driveDestinationKey: string;
+  noDestinations: boolean;
+  pdfPrinterDisabled: boolean;
+  destinationStatusText: string;
+  private highlightedIndex_: number;
+  private dropdownLength_: number;
 
-    /** @private {boolean} */
-    this.opened_ = false;
-  }
+  private opened_: boolean = false;
+  private dropdownRefitPending_: boolean = false;
 
-  /** @override */
   ready() {
     super.ready();
 
     this.addEventListener('mousemove', e => this.onMouseMove_(e));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.updateTabIndex_();
   }
 
-  /**
-   * @param {Element} element
-   * @private
-   */
-  fireDropdownValueSelected_(element) {
+  focus() {
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#destination-dropdown')!.focus();
+  }
+
+  private fireDropdownValueSelected_(element: Element) {
     this.dispatchEvent(new CustomEvent(
         'dropdown-value-selected',
         {bubbles: true, composed: true, detail: element}));
@@ -115,10 +116,9 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
   /**
    * Enqueues a task to refit the iron-dropdown if it is open.
-   * @private
    */
-  enqueueDropdownRefit_() {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
+  private enqueueDropdownRefit_() {
+    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     if (!this.dropdownRefitPending_ && dropdown.opened) {
       this.dropdownRefitPending_ = true;
       setTimeout(() => {
@@ -128,21 +128,19 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     }
   }
 
-  /** @private */
-  openDropdown_() {
+  private openDropdown_() {
     if (this.disabled) {
       return;
     }
 
     this.highlightedIndex_ = this.getButtonListFromDropdown_().findIndex(
         item => item.value === this.value.key);
-    this.shadowRoot.querySelector('iron-dropdown').open();
+    this.shadowRoot!.querySelector('iron-dropdown')!.open();
     this.opened_ = true;
   }
 
-  /** @private */
-  closeDropdown_() {
-    this.shadowRoot.querySelector('iron-dropdown').close();
+  private closeDropdown_() {
+    this.shadowRoot!.querySelector('iron-dropdown')!.close();
     this.opened_ = false;
     this.highlightedIndex_ = -1;
   }
@@ -155,20 +153,19 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * @param {!Event} event
    * @private
    */
-  onMouseMove_(event) {
-    const item = /** @type {!Element} */ (event.composedPath().find(
-        elm => elm.classList && elm.classList.contains('list-item')));
+  private onMouseMove_(event: Event) {
+    const item =
+        (event.composedPath() as HTMLElement[])
+            .find(elm => elm.classList && elm.classList.contains('list-item'));
     if (!item) {
       return;
     }
-    this.highlightedIndex_ = this.getButtonListFromDropdown_().indexOf(item);
+    this.highlightedIndex_ =
+        this.getButtonListFromDropdown_().indexOf(item as HTMLButtonElement);
   }
 
-  /** @private */
-  onClick_(event) {
-    const dropdown =
-        /** @type {!IronDropdownElement} */ (
-            this.shadowRoot.querySelector('iron-dropdown'));
+  private onClick_(event: Event) {
+    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     // Exit if path includes |dropdown| because event will be handled by
     // onSelect_.
     if (event.composedPath().includes(dropdown)) {
@@ -182,21 +179,13 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     this.openDropdown_();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelect_(event) {
-    this.dropdownValueSelected_(/** @type {!Element} */ (event.currentTarget));
+  private onSelect_(event: Event) {
+    this.dropdownValueSelected_(event.currentTarget as Element);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onKeyDown_(event) {
+  private onKeyDown_(event: KeyboardEvent) {
     event.stopPropagation();
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
+    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     switch (event.code) {
       case 'ArrowUp':
       case 'ArrowDown':
@@ -221,12 +210,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     }
   }
 
-  /**
-   * @param {string} eventCode
-   * @private
-   */
-  onArrowKeyPress_(eventCode) {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
+  private onArrowKeyPress_(eventCode: string) {
+    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     const items = this.getButtonListFromDropdown_();
     if (items.length === 0) {
       return;
@@ -256,63 +241,52 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   }
 
   /**
-   * @param {string} eventCode
-   * @param {number} currentIndex
-   * @param {number} numItems
-   * @return {number} Returns -1 when the next item would be outside the list.
-   * @private
+   * @return -1 when the next item would be outside the list.
    */
-  getNextItemIndexInList_(eventCode, currentIndex, numItems) {
+  private getNextItemIndexInList_(
+      eventCode: string, currentIndex: number, numItems: number): number {
     const nextIndex =
         eventCode === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
     return nextIndex >= 0 && nextIndex < numItems ? nextIndex : -1;
   }
 
-  /**
-   * @param {Element|undefined} dropdownItem
-   * @private
-   */
-  dropdownValueSelected_(dropdownItem) {
+  private dropdownValueSelected_(dropdownItem?: Element) {
     this.closeDropdown_();
     if (dropdownItem) {
       this.fireDropdownValueSelected_(dropdownItem);
     }
-    this.shadowRoot.querySelector('#destination-dropdown').focus();
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#destination-dropdown')!.focus();
   }
 
   /**
    * Returns list of all the visible items in the dropdown.
-   * @return {!Array<!Element>}
-   * @private
    */
-  getButtonListFromDropdown_() {
+  private getButtonListFromDropdown_(): HTMLButtonElement[] {
     if (!this.shadowRoot) {
       return [];
     }
 
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
-    return Array.from(dropdown.getElementsByClassName('list-item'))
+    const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
+    return Array
+        .from(dropdown.querySelectorAll<HTMLButtonElement>('.list-item'))
         .filter(item => !item.hidden);
   }
 
   /**
    * Sets tabindex to -1 when dropdown is disabled to prevent the dropdown from
    * being focusable.
-   * @private
    */
-  updateTabIndex_() {
-    this.shadowRoot.querySelector('#destination-dropdown')
-        .setAttribute('tabindex', this.disabled ? '-1' : '0');
+  private updateTabIndex_() {
+    this.shadowRoot!.querySelector('#destination-dropdown')!.setAttribute(
+        'tabindex', this.disabled ? '-1' : '0');
   }
 
   /**
    * Determines if an item in the dropdown should be highlighted based on the
    * current value of |highlightedIndex_|.
-   * @param {string} itemValue
-   * @return {string}
-   * @private
    */
-  getHighlightedClass_(itemValue) {
+  private getHighlightedClass_(itemValue: string): string {
     const itemToHighlight =
         this.getButtonListFromDropdown_()[this.highlightedIndex_];
     return itemToHighlight && itemValue === itemToHighlight.value ?
@@ -323,21 +297,15 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   /**
    * Close the dropdown when focus is lost except when an item in the dropdown
    * is the element that received the focus.
-   * @param {!Event} event
-   * @private
    */
-  onBlur_(event) {
+  private onBlur_(event: FocusEvent) {
     if (!this.getButtonListFromDropdown_().includes(
-            /** @type {!Element} */ (event.relatedTarget))) {
+            (event.relatedTarget as HTMLButtonElement))) {
       this.closeDropdown_();
     }
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeDropdownLength_() {
+  private computeDropdownLength_(): number {
     if (this.noDestinations) {
       return 1;
     }
@@ -357,24 +325,23 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     return length;
   }
 
-  /**
-   * @param {!PrinterStatusReason} printerStatusReason
-   * @return {string}
-   * @private
-   */
-  getPrinterStatusErrorString_(printerStatusReason) {
+  private getPrinterStatusErrorString_(printerStatusReason:
+                                           PrinterStatusReason): string {
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
     return errorStringKey ? this.i18n(errorStringKey) : '';
   }
 
-  /**
-   * @param {!PrinterStatusReason} printerStatusReason
-   * @param {boolean} isEnterprisePrinter
-   * @return {string}
-   * @private
-   */
-  getPrinterStatusIcon_(printerStatusReason, isEnterprisePrinter) {
+  private getPrinterStatusIcon_(
+      printerStatusReason: PrinterStatusReason,
+      isEnterprisePrinter: boolean): string {
     return getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-dropdown-cros':
+        PrintPreviewDestinationDropdownCrosElement;
   }
 }
 

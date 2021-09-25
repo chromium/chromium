@@ -17,7 +17,7 @@ html_to_js("web_components") {
     "destination_dialog_css.ts",
     "destination_list_item.ts",
     "destination_list.ts",
-    "destination_select_css.js",
+    "destination_select_css.ts",
     "destination_settings.js",
     "dpi_settings.js",
     "duplex_settings.js",
@@ -47,15 +47,15 @@ html_to_js("web_components") {
   if (is_chromeos) {
     js_files += [
       "destination_dialog_cros.ts",
-      "destination_dropdown_cros.js",
-      "destination_select_cros.js",
+      "destination_dropdown_cros.ts",
+      "destination_select_cros.ts",
       "pin_settings.js",
       "provisional_destination_resolver.ts",
     ]
   } else {
     js_files += [
       "destination_dialog.ts",
-      "destination_select.js",
+      "destination_select.ts",
     ]
   }
 }

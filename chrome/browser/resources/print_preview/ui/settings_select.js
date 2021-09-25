@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
@@ -28,10 +28,10 @@ export let SelectOption;
  * @constructor
  * @extends {PolymerElement}
  * @implements {SettingsBehaviorInterface}
- * @implements {SelectBehaviorInterface}
+ * @implements {SelectMixinInterface}
  */
 const PrintPreviewSettingsSelectElementBase =
-    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewSettingsSelectElement extends
