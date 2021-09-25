@@ -1699,7 +1699,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'vYdpaWIxUzRyiSS-wpZmGmxnu79kgN9q_kb2w2YlFOoC',
+        'version': 'yesLEVtJiCOq14OvyOrnxowJ-3QNm1AJrrX-gyZPIMAC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
