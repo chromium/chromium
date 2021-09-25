@@ -3013,7 +3013,8 @@ message TpmStatusInfo {
   optional int32 dictionary_attack_threshold = 7;
   optional bool dictionary_attack_lockout_in_effect = 8;
   optional int32 dictionary_attack_lockout_seconds_remaining = 9;
-  optional bool boot_lockbox_finalized = 10;
+  // DEPRECATED: Not filled by the client anymore (since b/172748724).
+  optional bool boot_lockbox_finalized = 10 [deprecated = true];
   optional bool owner_password_is_present = 11;
 }
 
