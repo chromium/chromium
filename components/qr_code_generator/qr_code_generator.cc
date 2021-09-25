@@ -61,6 +61,8 @@ struct QRVersionInfo {
       __builtin_unreachable();
     }
   }
+  QRVersionInfo(const QRVersionInfo&) = delete;
+  QRVersionInfo& operator=(const QRVersionInfo&) = delete;
 
   // The version of the QR code.
   const int version;
@@ -136,8 +138,6 @@ struct QRVersionInfo {
 
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(QRVersionInfo);
 };
 
 namespace {

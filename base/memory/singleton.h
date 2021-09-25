@@ -32,7 +32,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/lazy_instance_helpers.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base {

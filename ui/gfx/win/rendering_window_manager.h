@@ -43,14 +43,14 @@ class GFX_EXPORT RenderingWindowManager {
   friend class base::NoDestructor<RenderingWindowManager>;
 
   RenderingWindowManager();
+  RenderingWindowManager(const RenderingWindowManager&) = delete;
+  RenderingWindowManager& operator=(const RenderingWindowManager&) = delete;
   ~RenderingWindowManager();
 
   // UI thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // Map from registered parent HWND to child HWND.
   base::flat_map<HWND, HWND> registered_hwnds_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingWindowManager);
 };
 
 }  // namespace gfx

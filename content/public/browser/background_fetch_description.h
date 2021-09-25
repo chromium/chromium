@@ -28,6 +28,10 @@ struct CONTENT_EXPORT BackgroundFetchDescription {
                              uint64_t upload_total_bytes,
                              std::vector<std::string> outstanding_guids,
                              bool start_paused);
+  BackgroundFetchDescription(const BackgroundFetchDescription&) = delete;
+  BackgroundFetchDescription& operator=(const BackgroundFetchDescription&) =
+      delete;
+
   ~BackgroundFetchDescription();
 
   // Fetch identifiers.
@@ -49,9 +53,6 @@ struct CONTENT_EXPORT BackgroundFetchDescription {
   // Initialization params.
   std::vector<std::string> outstanding_guids;
   bool start_paused;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDescription);
 };
 
 }  // namespace content

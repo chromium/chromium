@@ -13,7 +13,6 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 

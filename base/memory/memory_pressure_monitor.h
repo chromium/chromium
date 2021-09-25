@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 

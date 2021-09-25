@@ -14,7 +14,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_collision_warner.h"
