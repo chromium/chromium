@@ -535,6 +535,10 @@ const base::Feature kFilesZipUnpack{"FilesZipUnpack",
 const base::Feature kFiltersInRecents{"FiltersInRecents",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the firmware updater app.
+const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
@@ -1371,6 +1375,10 @@ bool IsFastPairEnabled() {
 
 bool IsFileManagerSwaEnabled() {
   return base::FeatureList::IsEnabled(kFilesSWA);
+}
+
+bool IsFirmwareUpdaterAppEnabled() {
+  return base::FeatureList::IsEnabled(kFirmwareUpdaterApp);
 }
 
 bool IsFullscreenAlertBubbleEnabled() {

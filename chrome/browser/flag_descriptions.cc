@@ -921,6 +921,11 @@ const char kEnableFencedFramesDescription[] =
     "embedding an isolated top-level page. See "
     "https://github.com/shivanigithub/fenced-frame";
 
+const char kEnableFirmwareUpdaterAppName[] = "Enable firmware updater app";
+const char kEnableFirmwareUpdaterAppDescription[] =
+    "Enable the firmware updater SWA, allowing users to update firmware "
+    "on supported peripherals.";
+
 const char kEnableGamepadButtonAxisEventsName[] =
     "Gamepad Button and Axis Events";
 const char kEnableGamepadButtonAxisEventsDescription[] =
