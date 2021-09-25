@@ -78,16 +78,19 @@ export class RoutineGroup {
       // Prevent 1st failed test from being overwritten.
       this.failedTest = this.failedTest || status.routine;
 
-      const blocking = !this.nonBlockingRoutines_.has(status.routine);
-      this.inWarningState = this.inWarningState || !blocking;
-      this.progress = isLastRoutine ? ExecutionProgress.kCompleted :
-                                      ExecutionProgress.kWarning;
-      return;
+      const isBlocking = !this.nonBlockingRoutines_.has(status.routine);
+      this.inWarningState = this.inWarningState || !isBlocking;
+
+      // We've encountered a blocking failure.
+      if (this.failedTest && isBlocking) {
+        this.progress = ExecutionProgress.kCompleted;
+        return;
+      }
     }
 
-    // Set status to "completed" only when all routines in this group
-    // are finished running. Otherwise, check if we're in the warning
-    // state before setting the progress to running.
+    // Set status to "completed" only when all routines in this group are
+    // finished running. Otherwise, check if we're in the warning state
+    // before setting the progress to running.
     this.progress = isLastRoutine ?
         ExecutionProgress.kCompleted :
         this.inWarningState ? ExecutionProgress.kWarning :
