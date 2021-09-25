@@ -1217,6 +1217,46 @@
             ]
         }
     ],
+    "AutofillSurveys": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Card",
+                    "params": {
+                        "en_site_id": "F2fsskHvB0ugnJ3q1cK0NXLjUaK5",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillCardSurvey"
+                    ]
+                },
+                {
+                    "name": "Password",
+                    "params": {
+                        "en_site_id": "6VQ4NCCaq0ugnJ3q1cK0TR13rB8t",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPasswordSurvey"
+                    ]
+                },
+                {
+                    "name": "Address",
+                    "params": {
+                        "en_site_id": "qQW9c2ho10ugnJ3q1cK0X48UQjZs",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillAddressSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval": [
         {
             "platforms": [
