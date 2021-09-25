@@ -2804,6 +2804,13 @@ const char kWebrtcUseMinMaxVEADimensionsDescription[] =
     "When enabled, WebRTC will only use the Video Encode Accelerator for "
     "video resolutions inside those published as supported.";
 
+const char kWebUsbDeviceDetectionName[] =
+    "Automatic detection of WebUSB-compatible devices";
+const char kWebUsbDeviceDetectionDescription[] =
+    "When enabled, the user will be notified when a device which advertises "
+    "support for WebUSB is connected. Disable if problems with USB devices are "
+    "observed when the browser is running.";
+
 const char kWebXrForceRuntimeName[] = "Force WebXr Runtime";
 const char kWebXrForceRuntimeDescription[] =
     "Force the browser to use a particular runtime, even if it would not "

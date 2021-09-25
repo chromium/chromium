@@ -48,6 +48,8 @@ extern const base::Feature kTriggerNetworkDataMigration;
 // determine whether data migration should occur or not.
 bool ShouldTriggerNetworkDataMigration();
 
+extern const base::Feature kWebUsbDeviceDetection;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

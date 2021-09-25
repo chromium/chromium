@@ -1586,6 +1586,9 @@ extern const char kWebrtcSrtpAesGcmDescription[];
 extern const char kWebrtcUseMinMaxVEADimensionsName[];
 extern const char kWebrtcUseMinMaxVEADimensionsDescription[];
 
+extern const char kWebUsbDeviceDetectionName[];
+extern const char kWebUsbDeviceDetectionDescription[];
+
 extern const char kWebXrForceRuntimeName[];
 extern const char kWebXrForceRuntimeDescription[];
 

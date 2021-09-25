@@ -86,4 +86,9 @@ bool ShouldTriggerNetworkDataMigration() {
   return false;
 }
 
+// Enables runtime detection of USB devices which provide a WebUSB landing page
+// descriptor.
+const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

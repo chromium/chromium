@@ -3315,6 +3315,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebBluetoothNewPermissionsBackendDescription,
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebBluetoothNewPermissionsBackend)},
+    {"enable-webusb-device-detection",
+     flag_descriptions::kWebUsbDeviceDetectionName,
+     flag_descriptions::kWebUsbDeviceDetectionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUsbDeviceDetection)},
 #if defined(USE_AURA)
     {"overscroll-history-navigation",
      flag_descriptions::kOverscrollHistoryNavigationName,

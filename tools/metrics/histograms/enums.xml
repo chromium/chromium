@@ -50086,6 +50086,7 @@ from previous Chrome versions.
   <int value="-15879016"
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>
   <int value="-13918890" label="disable-download-notification"/>
+  <int value="-13180015" label="WebUsbDeviceDetection:disabled"/>
   <int value="-12225998" label="ShareButtonInTopToolbar:disabled"/>
   <int value="-11983392"
       label="MagnifierContinuousMouseFollowingModeSetting:enabled"/>
@@ -52410,6 +52411,7 @@ from previous Chrome versions.
   <int value="1803465156" label="enable-zero-suggest-most-visited"/>
   <int value="1803470125" label="SyncUSSSessions:enabled"/>
   <int value="1803914892" label="TemporaryUnexpireFlagsM76:enabled"/>
+  <int value="1806450300" label="WebUsbDeviceDetection:enabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>

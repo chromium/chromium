@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,7 +29,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/web_contents.h"
-#include "device/base/features.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -184,13 +184,10 @@ WebUsbDetector::WebUsbDetector() = default;
 WebUsbDetector::~WebUsbDetector() = default;
 
 void WebUsbDetector::Initialize() {
-#if defined(OS_WIN)
-  // The WebUSB device detector is disabled on Windows due to jank and hangs
-  // caused by enumerating devices. The new USB backend is designed to resolve
-  // these issues so enable it for testing. https://crbug.com/656702
-  if (!base::FeatureList::IsEnabled(device::kNewUsbBackend))
+  // The WebUSB device detector can be disabled if it causes trouble due to
+  // buggy devices and drivers.
+  if (!base::FeatureList::IsEnabled(features::kWebUsbDeviceDetection))
     return;
-#endif  // defined(OS_WIN)
 
   // Tests may set a fake manager.
   if (!device_manager_) {
