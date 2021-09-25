@@ -19,5 +19,17 @@ FAIL CSS Fonts Module Level 4: parsing @font-palette-values 16 Cannot read prope
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 17 Cannot read properties of undefined (reading 'fontFamily')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 18 Cannot read properties of undefined (reading 'cssText')
 FAIL CSS Fonts Module Level 4: parsing @font-palette-values 19 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 20 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 21 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 22 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 23 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 24 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 25 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 26 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 27 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 28 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 29 Cannot read properties of undefined (reading 'fontFamily')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 30 Cannot read properties of undefined (reading 'cssText')
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 31 Cannot read properties of undefined (reading 'fontFamily')
 Harness: the test ran to completion.
 

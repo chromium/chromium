@@ -2600,49 +2600,49 @@
     },
     "icons-member": {
      "icons-member-cors-fail-manual.sub.html": [
-      "a6acdd4b0147184c1b73d153657a1b6e6090ba45",
+      "f49dac6057ae12f97f524ba5d3a61ffa94b10be8",
       [
        null,
        {}
       ]
      ],
      "icons-member-cors-manual.sub.html": [
-      "a54f3629caf7ab7f55ecb60e46007f62a3d1b51a",
+      "aa0fe89db653fe5db1da5ddd5fcb91ff2625eb99",
       [
        null,
        {}
       ]
      ],
      "icons-member-csp-fail-manual.sub.html": [
-      "7f35fc318e8c0c38ad576578537e024b2dc0ce4b",
+      "e4706011f8437dcad920644dafc313ee7889f659",
       [
        null,
        {}
       ]
      ],
      "icons-member-csp-manual.sub.html": [
-      "15e09129e972b907033968b0b49205d98dfb334b",
+      "c76364b83feab36ff16d1a54981cb6f85df7eec5",
       [
        null,
        {}
       ]
      ],
      "icons-member-last-matching-manual.html": [
-      "04f18f47e2090987352a707a54c7857c75b446b4",
+      "a02ddc3a50294b6977e8919aa2aa2ab66935622a",
       [
        null,
        {}
       ]
      ],
      "icons-member-manual.html": [
-      "f42db8d6b273e498be0f0e66daa6087f4063716f",
+      "6a9b7620ed1c102391ebb4f1987f2fcfa5c219e5",
       [
        null,
        {}
       ]
      ],
      "icons-member-next-appropriate-manual.html": [
-      "1e84ba948f028e67ff31d65dea85400e972e311c",
+      "8e87fc106207f97f92b710769d637bbd71bd3497",
       [
        null,
        {}
@@ -2668,6 +2668,15 @@
      ],
      "orientation-member-portrait-manual.html": [
       "2c7c996e2a0b4421996cf9ff5f3e009cb77f8a60",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "protocol_handlers-member": {
+     "protocol_handlers-member-manual.tentative.html": [
+      "fa9c958e0e4ba03a3820f2364314ffc1fff7b93f",
       [
        null,
        {}
@@ -214491,6 +214500,12 @@
       ]
      }
     },
+    "currentchange-event": {
+     "currentchange-app-history-reload-transitionWhile-expected.txt": [
+      "4f115e002d99400418c9fca8f85a490cb10fe9ff",
+      []
+     ]
+    },
     "navigate": {
      "reload-service-worker-fetch-event-expected.txt": [
       "cf4b285328a985e8413570fcc80e16d4501b3d09",
@@ -214670,74 +214685,84 @@
      }
     },
     "icons-member": {
-     "fail.png": [
-      "1d596c6ba6ab8a6a2636ce524a8cd8cf06538b41",
+     "icons-member-service-worker.js": [
+      "21b07f8515a1cdc225a72884fc40899fe57f5afe",
       []
      ],
-     "icons-member-cors-fail.sub.webmanifest": [
-      "e8b9327ed8fec3b30d7ba2dafc31a73b269c0a19",
-      []
-     ],
-     "icons-member-cors-fail.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member-cors.sub.webmanifest": [
-      "5d95262af3e7842eb3e4e79b87c3f98e86ad1fd7",
-      []
-     ],
-     "icons-member-cors.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member-csp-fail.webmanifest": [
-      "a17364871ec00da8a5f13ebc434b3873fcef1e4e",
-      []
-     ],
-     "icons-member-csp-fail.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member-csp.sub.webmanifest": [
-      "5d95262af3e7842eb3e4e79b87c3f98e86ad1fd7",
-      []
-     ],
-     "icons-member-csp.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member-last-matching.webmanifest": [
-      "f4423d28f7e743013c7aa6fafe8aeb9db10dc52a",
-      []
-     ],
-     "icons-member-last-matching.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member-next-appropriate.webmanifest": [
-      "5ae381ec65ebff3a43c6921d2386076d8f21f957",
-      []
-     ],
-     "icons-member-next-appropriate.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "icons-member.webmanifest": [
-      "a744fee8a828f33ce6d4972c80b67c614db5df9b",
-      []
-     ],
-     "icons-member.webmanifest.headers": [
-      "2bab061d43ab9e533b0160ca506231939886cd89",
-      []
-     ],
-     "pass.png": [
-      "be7433a3e2c305ff699e74f9bbd56e87484ba35c",
-      []
-     ],
-     "pass.png.sub.headers": [
-      "adf190aa8ea92e24e74c3c90f21d2155f809abbe",
-      []
-     ]
+     "resources": {
+      "fail.png": [
+       "1d596c6ba6ab8a6a2636ce524a8cd8cf06538b41",
+       []
+      ],
+      "icons-member-cors-fail.sub.webmanifest": [
+       "24e2214365bd218697e479d7537edbe37d9e7c5d",
+       []
+      ],
+      "icons-member-cors-fail.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member-cors.sub.webmanifest": [
+       "33cb12654b662dbcf4334a5607e038fb84850608",
+       []
+      ],
+      "icons-member-cors.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member-csp-fail.webmanifest": [
+       "2b614ebb01fef241b434e90d77899a9d6380857b",
+       []
+      ],
+      "icons-member-csp-fail.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member-csp.sub.webmanifest": [
+       "f1089bba3c57afd7f1cc8feee5d903154672a6f2",
+       []
+      ],
+      "icons-member-csp.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member-last-matching.webmanifest": [
+       "04ac33112d576d6723266ec5a7c99023686f973b",
+       []
+      ],
+      "icons-member-last-matching.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member-manual.js": [
+       "cf149792a3ee7c63d72b01d95604b32e526c7373",
+       []
+      ],
+      "icons-member-next-appropriate.webmanifest": [
+       "e65169b06a2f5873f47dee9c6235d5f66229d761",
+       []
+      ],
+      "icons-member-next-appropriate.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "icons-member.webmanifest": [
+       "8e7a2c34268c8878d99372dfb9948c44d3e8ed7e",
+       []
+      ],
+      "icons-member.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "pass.png": [
+       "be7433a3e2c305ff699e74f9bbd56e87484ba35c",
+       []
+      ],
+      "pass.png.sub.headers": [
+       "adf190aa8ea92e24e74c3c90f21d2155f809abbe",
+       []
+      ]
+     }
     },
     "name-member": {
      "name-member-fail.webmanifest": [
@@ -214774,6 +214799,30 @@
       "2bab061d43ab9e533b0160ca506231939886cd89",
       []
      ]
+    },
+    "protocol_handlers-member": {
+     "protocol_handlers-member-service-worker.js": [
+      "e502e2a9859f6df6f4793fb43e155623c8547a94",
+      []
+     ],
+     "resources": {
+      "icon.png": [
+       "9255547fae08775cce76b769ad4c6d13cc9b241a",
+       []
+      ],
+      "protocol_handlers-member.webmanifest": [
+       "cce6ae1e22b7813db32b060d86e5c499f6f3d84f",
+       []
+      ],
+      "protocol_handlers-member.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
+      "protocol_handlers_entry.html": [
+       "c5fa629f22bfdabef4cac02927646f76f66baafc",
+       []
+      ]
+     }
     },
     "short_name-member": {
      "short_name-member.webmanifest": [
@@ -233974,7 +234023,7 @@
        []
       ],
       "font-palette-values-valid-expected.txt": [
-       "d8f9ffbb55ae057e1ee3e637bb19e1bce1a46cfe",
+       "252eb64ff6414742251f11b772d35d730290d146",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -319980,6 +320029,162 @@
       ]
      ]
     },
+    "currentchange-event": {
+     "currentchange-anchor-href.html": [
+      "2a93abf9937942200d4c2d28c8051456de438003",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-back-forward-cross-doc.html": [
+      "7782d11b0c31a578637f9b7c17c00f95fe6f3cec",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-back-forward-same-doc.html": [
+      "85a93a21bd0f4a708dc99b751c533342743410ce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-cross-doc.html": [
+      "d6a657a1b1174ce0f3ced3bba8fd617620fefc3d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-preventDefault.html": [
+      "82f10006832e16522844cdb7fa0bcf2e6a3a8578",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-replace-cross-doc.html": [
+      "3d8ceb746b80da1564a539e080ae965aa30d03b9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-replace-same-doc.html": [
+      "2967f21d973aa6e6dd8b38ad0b1d0b7e09917d93",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-replace-transitionWhile.html": [
+      "86079e777cb9059b13e6763ea31877475142d368",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-same-doc.html": [
+      "d112e2592806e8fe9830de8fbb2e8b2a8f1a97c7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-navigate-transitionWhile.html": [
+      "d6a39d204ed72c6d578556798e1b9527f58ba219",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-reload-cross-doc.html": [
+      "ae142fb5d3bc4d600037077cf5bbbbcece64b6f2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-reload-transitionWhile.html": [
+      "d1f022f584218fec9fb6fb584175adabd7a1a286",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-app-history-updateCurrent.html": [
+      "9e3a3ec387a2ce682e433dc39c6d2e94bfb3f27e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-dispose-ordering.html": [
+      "f9d23f7dd5da79afb95bd998c618685c225c9e6a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-history-back-same-doc.html": [
+      "7cfecb15b8ef9e4dc4e2cf678262e889b8d02550",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-history-pushState.html": [
+      "e5468eafc3938f71c907410ed33fad1a184141ce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-history-replaceState.html": [
+      "5a99561ebd2f929e082cfd6b7938898f03243747",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-location-api.html": [
+      "8cf52ca6d288387036a5d93a007f33c1c79deef3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-navigate-from-initial-about-blank-same-doc.html": [
+      "80782613203ae437937cc7de7f440c9446224d50",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-navigate-from-initial-about-blank.html": [
+      "f97e1e898e94b4790c2d138ebcd48dee2b638626",
+      [
+       null,
+       {}
+      ]
+     ],
+     "currentchange-properties.html": [
+      "a5417fa312c1b43db84b90c7f67fa1ab88be9333",
+      [
+       null,
+       {}
+      ]
+     ],
+     "event-constructor.html": [
+      "6c489363567fd61d210ad92e8336605ea02f1704",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "navigate": {
      "back-forward-multiple-frames.html": [
       "80a8fb65a05fb622988e8f64ac78f16c9172869d",
@@ -342649,7 +342854,7 @@
        ]
       ],
       "font-palette-values-valid.html": [
-       "c6774efbb14931ebf50808c3cb35fbff8a1379b8",
+       "665841cc21a5f5aab6ec897a301446003364f5cd",
        [
         null,
         {}
@@ -432393,15 +432598,6 @@
         [
          null,
          {}
-        ]
-       ],
-       "popup-light-dismiss-resize.tentative.html": [
-        "cec65f77dcaddfd170581992ddec02c53619898e",
-        [
-         null,
-         {
-          "testdriver": true
-         }
         ]
        ],
        "popup-light-dismiss.tentative.html": [
