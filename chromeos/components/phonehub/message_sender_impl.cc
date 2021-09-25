@@ -38,13 +38,18 @@ MessageSenderImpl::MessageSenderImpl(
 
 MessageSenderImpl::~MessageSenderImpl() = default;
 
-void MessageSenderImpl::SendCrosState(bool notification_setting_enabled) {
+void MessageSenderImpl::SendCrosState(bool notification_setting_enabled,
+                                      bool camera_roll_setting_enabled) {
   proto::NotificationSetting is_notification_enabled =
       notification_setting_enabled
           ? proto::NotificationSetting::NOTIFICATIONS_ON
           : proto::NotificationSetting::NOTIFICATIONS_OFF;
+  proto::CameraRollSetting is_camera_roll_enabled =
+      camera_roll_setting_enabled ? proto::CameraRollSetting::CAMERA_ROLL_ON
+                                  : proto::CameraRollSetting::CAMERA_ROLL_OFF;
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
+  request.set_camera_roll_setting(is_camera_roll_enabled);
 
   SendMessage(proto::MessageType::PROVIDE_CROS_STATE, &request);
 }

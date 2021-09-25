@@ -64,8 +64,10 @@ TEST_F(MessageSenderImplTest, SendCrossState) {
   proto::CrosState request;
   request.set_notification_setting(
       proto::NotificationSetting::NOTIFICATIONS_ON);
+  request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
 
-  message_sender_->SendCrosState(/*notification_enabled=*/true);
+  message_sender_->SendCrosState(/*notification_enabled=*/true,
+                                 /*camera_roll_enabled=*/false);
   VerifyMessage(proto::MessageType::PROVIDE_CROS_STATE, &request,
                 fake_connection_manager_->sent_messages().back());
 }

@@ -22,7 +22,8 @@ class FakeMessageSender : public MessageSender {
   ~FakeMessageSender() override;
 
   // MessageSender:
-  void SendCrosState(bool notification_enabled) override;
+  void SendCrosState(bool notification_enabled,
+                     bool camera_roll_enabled) override;
   void SendUpdateNotificationModeRequest(bool do_not_disturb_enabled) override;
   void SendUpdateBatteryModeRequest(bool battery_saver_mode_enabled) override;
   void SendDismissNotificationRequest(int64_t notification_id) override;
@@ -34,7 +35,7 @@ class FakeMessageSender : public MessageSender {
   void SendFetchCameraRollItemsRequest(
       const proto::FetchCameraRollItemsRequest& request) override;
 
-  bool GetRecentCrosState() const;
+  std::pair<bool, bool> GetRecentCrosState() const;
   bool GetRecentUpdateNotificationModeRequest() const;
   bool GetRecentUpdateBatteryModeRequest() const;
   int64_t GetRecentDismissNotificationRequest() const;
@@ -63,7 +64,9 @@ class FakeMessageSender : public MessageSender {
   size_t GetFetchCameraRollItemsRequestCallCount() const;
 
  private:
-  std::vector<bool> cros_states_;
+  std::vector<std::pair</*is_notifications_setting_enabled*/ bool,
+                        /*is_camera_roll_setting_enabled*/ bool>>
+      cros_states_;
   std::vector<bool> update_notification_mode_requests_;
   std::vector<bool> update_battery_mode_requests_;
   std::vector<int64_t> dismiss_notification_requests_;

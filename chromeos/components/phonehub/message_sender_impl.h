@@ -27,7 +27,8 @@ class MessageSenderImpl : public MessageSender {
   ~MessageSenderImpl() override;
 
   // MessageSender:
-  void SendCrosState(bool notification_setting_enabled) override;
+  void SendCrosState(bool notification_setting_enabled,
+                     bool camera_roll_setting_enabled) override;
   void SendUpdateNotificationModeRequest(bool do_not_disturb_enabled) override;
   void SendUpdateBatteryModeRequest(bool battery_saver_mode_enabled) override;
   void SendDismissNotificationRequest(int64_t notification_id) override;
