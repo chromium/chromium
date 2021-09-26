@@ -280,8 +280,9 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceAdded(
     apps::BrowserAppInstanceUpdate update,
     aura::Window* window) {
   DCHECK(window);
+  auto id = update.id;
   auto& instance = AddInstance(
-      lacros_app_instances_, update.id,
+      lacros_app_instances_, id,
       std::make_unique<BrowserAppInstance>(std::move(update), window));
   for (auto& observer : observers_) {
     observer.OnBrowserAppAdded(instance);
