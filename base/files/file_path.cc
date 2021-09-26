@@ -222,7 +222,6 @@ bool FilePath::IsSeparator(CharType character) {
       return true;
     }
   }
-
   return false;
 }
 
@@ -267,14 +266,17 @@ bool FilePath::IsParent(const FilePath& child) const {
 
 bool FilePath::AppendRelativePath(const FilePath& child,
                                   FilePath* path) const {
+                                          
   std::vector<StringType> parent_components;
   std::vector<StringType> child_components;
   GetComponents(&parent_components);
   child.GetComponents(&child_components);
 
   if (parent_components.empty() ||
-      parent_components.size() >= child_components.size())
+      parent_components.size() >= child_components.size()) {
+
     return false;
+  }
 
   std::vector<StringType>::const_iterator parent_comp =
       parent_components.begin();
@@ -1368,6 +1370,7 @@ FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
   DCHECK_NE(kSeparators + kSeparatorsLength,
             std::find(kSeparators, kSeparators + kSeparatorsLength, separator));
+
   StringType copy = path_;
   for (size_t i = 0; i < kSeparatorsLength; ++i) {
     std::replace(copy.begin(), copy.end(), kSeparators[i], separator);

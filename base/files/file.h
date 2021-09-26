@@ -20,22 +20,25 @@
 
 #if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_NACL) || \
     defined(OS_FUCHSIA) || (defined(OS_ANDROID) && __ANDROID_API__ < 21)
-struct stat;
-namespace base {
-typedef struct stat stat_wrapper_t;
-}
-#elif defined(OS_POSIX)
-struct stat64;
-namespace base {
-typedef struct stat64 stat_wrapper_t;
-}
+
+  struct stat; // 这里都是基于Linux平台
+  namespace base {
+  typedef struct stat stat_wrapper_t;
+  }
+#elif defined(OS_POSIX) // 基于Posix接口
+  struct stat64;
+  namespace base {
+  typedef struct stat64 stat_wrapper_t;
+  }
 #endif
 
 namespace base {
 
+// OS级别的轻量级文件包装器
 // Thin wrapper around an OS-level file.
 // Note that this class does not provide any support for asynchronous IO, other
 // than the ability to create asynchronous handles on Windows.
+// 请注意，除了在 Windows 上创建异步句柄的能力之外，此类不提供任何对异步 IO 的支持。
 //
 // Note about const: this class does not attempt to determine if the underlying
 // file system object is affected by a particular method in order to consider
@@ -43,7 +46,7 @@ namespace base {
 // obvious non-modifying way are marked as const. Any method that forward calls
 // to the OS is not considered const, even if there is no apparent change to
 // member variables.
-class BASE_EXPORT File {
+class BASE_EXPORT File { // BASE_EXPORT 是宏定义，用于定义跨平台的可导出符号属性标识
  public:
   // FLAG_(OPEN|CREATE).* are mutually exclusive. You should specify exactly one
   // of the five (possibly combining with other flags) when opening or creating
@@ -54,6 +57,7 @@ class BASE_EXPORT File {
   // creation on POSIX; for existing files, consider using Lock().
   enum Flags {
     FLAG_OPEN = 1 << 0,            // Opens a file, only if it exists.
+    // 创建一个新文件，仅当它不存在时
     FLAG_CREATE = 1 << 1,          // Creates a new file, only if it does not
                                    // already exist.
     FLAG_OPEN_ALWAYS = 1 << 2,     // May create a new file.
@@ -80,7 +84,7 @@ class BASE_EXPORT File {
                                          // See DeleteOnClose() for details.
   };
 
-  // This enum has been recorded in multiple histograms using PlatformFileError
+  // This enum has been recorded in multiple histograms(直方图) using PlatformFileError
   // enum. If the order of the fields needs to change, please ensure that those
   // histograms are obsolete or have been moved to a different enum.
   //
@@ -110,7 +114,7 @@ class BASE_EXPORT File {
   };
 
   // This explicit mapping matches both FILE_ on Windows and SEEK_ on Linux.
-  enum Whence {
+  enum Whence { // Linux的seek操作，windows的FILE_操作
     FROM_BEGIN   = 0,
     FROM_CURRENT = 1,
     FROM_END     = 2
@@ -124,13 +128,13 @@ class BASE_EXPORT File {
   struct BASE_EXPORT Info {
     Info();
     ~Info();
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+  #if defined(OS_POSIX) || defined(OS_FUCHSIA)
     // Fills this struct with values from |stat_info|.
     void FromStat(const stat_wrapper_t& stat_info);
-#endif
+  #endif
 
     // The size of the file in bytes.  Undefined when is_directory is true.
-    int64_t size = 0;
+    int64_t size = 0; // 问价字节大小，如果是目录时，则未定义
 
     // True if the file corresponds to a directory.
     bool is_directory = false;
@@ -168,21 +172,19 @@ class BASE_EXPORT File {
   // Creates an object with a specific error_details code.
   explicit File(Error error_details);
 
-  File(File&& other);
-
-  File(const File&) = delete;
-  File& operator=(const File&) = delete;
-
   ~File();
 
-  File& operator=(File&& other);
+  File(File&& other); // 允许 移动构造
+  File& operator=(File&& other); // 允许 移动operator=
+  File(const File&) = delete; // 禁止copy-constructor
+  File& operator=(const File&) = delete; // 禁止operator=
 
   // Creates or opens the given file.
   void Initialize(const FilePath& path, uint32_t flags);
 
   // Returns |true| if the handle / fd wrapped by this object is valid.  This
   // method doesn't interact with the file system and is thus safe to be called
-  // from threads that disallow blocking.
+  // from threads that disallow(禁止) blocking(阻塞).
   bool IsValid() const;
 
   // Returns true if a new file was created (or an old one truncated to zero
@@ -280,8 +282,8 @@ class BASE_EXPORT File {
 
 #if !defined(OS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
   enum class LockMode {
-    kShared,
-    kExclusive,
+    kShared,    // 共享锁(读锁)
+    kExclusive, // 互斥锁(写锁)
   };
 
   // Attempts to take an exclusive write lock on the file. Returns immediately

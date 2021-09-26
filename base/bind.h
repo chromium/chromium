@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
-#include "base/mac/scoped_block.h"
+  #include "base/mac/scoped_block.h"
 #endif
 
 // -----------------------------------------------------------------------------
@@ -62,14 +62,14 @@ template <typename Functor, typename... Args>
 inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
     Functor&& functor,
     Args&&... args) {
+
   static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
                     (std::is_rvalue_reference<Functor&&>() &&
                      !std::is_const<std::remove_reference_t<Functor>>()),
                 "BindOnce requires non-const rvalue for OnceCallback binding."
                 " I.e.: base::BindOnce(std::move(callback)).");
   static_assert(
-      conjunction<
-          internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
+      conjunction<internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
       "Use std::move() instead of base::Passed() with base::BindOnce()");
 
   return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
@@ -105,8 +105,7 @@ OnceCallback<Signature> BindOnce(RepeatingCallback<Signature> callback) {
 }
 
 template <typename Signature>
-RepeatingCallback<Signature> BindRepeating(
-    RepeatingCallback<Signature> callback) {
+RepeatingCallback<Signature> BindRepeating(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
 }

@@ -93,8 +93,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
     // It's not safe to touch |this| after the invocation, since running the
     // bound function may destroy |this|.
     OnceCallback cb = std::move(*this);
-    PolymorphicInvoke f =
-        reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
+    PolymorphicInvoke f = reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
     return f(cb.bind_state_.get(), std::forward<Args>(args)...);
   }
 
@@ -121,13 +120,11 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   // convertible to OnceCallback, that conversion will not used when matching
   // for template argument deduction.
   template <typename ThenR, typename... ThenArgs>
-  OnceCallback<ThenR(Args...)> Then(
-      RepeatingCallback<ThenR(ThenArgs...)> then) && {
+  OnceCallback<ThenR(Args...)> Then(RepeatingCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
-    return BindOnce(
-        internal::ThenHelper<
-            OnceCallback,
-            RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
+    return BindOnce(internal::ThenHelper<
+        OnceCallback,
+        RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
   }
 };

@@ -146,7 +146,8 @@ class Pickle;
 class PickleIterator;
 
 // An abstraction to isolate users from the differences between native
-// pathnames on different platforms.
+// pathnames on different platforms. 
+// 将用户与不同平台上本机路径名之间的差异隔离开来的抽象。
 class BASE_EXPORT FilePath {
  public:
 #if defined(OS_WIN)
@@ -167,15 +168,17 @@ class BASE_EXPORT FilePath {
   // hierarchical paths.  Each character in this array is a valid separator,
   // but kSeparators[0] is treated as the canonical separator and will be used
   // when composing pathnames.
+  // 用于分隔分层路径中的组件的空终止分隔符数组。 此数组中的每个字符都是有效的分隔符，
+  // 但 kSeparators[0] 被视为规范分隔符，并将在组合路径名时使用。
   static const CharType kSeparators[];
 
   // base::size(kSeparators).
   static const size_t kSeparatorsLength;
 
-  // A special path component meaning "this directory."
+  // 一个特殊的路径组件，意思是“这个目录”。
   static const CharType kCurrentDirectory[];
 
-  // A special path component meaning "the parent directory."
+  // 一个特殊的路径组件，意思是“父目录”。
   static const CharType kParentDirectory[];
 
   // The character used to identify a file extension.
@@ -210,6 +213,7 @@ class BASE_EXPORT FilePath {
   void clear() { path_.clear(); }
 
   // Returns true if |character| is in kSeparators.
+  // 判断参数字符是否是分隔符
   static bool IsSeparator(CharType character);
 
   // Returns a vector of all of the components of the provided path. It is
@@ -225,6 +229,7 @@ class BASE_EXPORT FilePath {
   void GetComponents(std::vector<FilePath::StringType>* components) const;
 
   // Returns true if this FilePath is a parent or ancestor of the |child|.
+  // 如果此 FilePath 是 |child| 的父级或祖先，则返回 true。
   // Absolute and relative paths are accepted i.e. /foo is a parent to /foo/bar,
   // and foo is a parent to foo/bar. Any ancestor is considered a parent i.e. /a
   // is a parent to both /a/b and /a/b/c.  Does not convert paths to absolute,
