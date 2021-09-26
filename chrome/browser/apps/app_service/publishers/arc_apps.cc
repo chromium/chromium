@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -532,7 +533,8 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
     instance_registry_observation_.Observe(instance_registry);
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kWebApkGenerator)) {
+  if (base::FeatureList::IsEnabled(ash::features::kWebApkGenerator) &&
+      web_app::AreWebAppsEnabled(profile_)) {
     web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
   }
 

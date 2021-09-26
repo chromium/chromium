@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -37,6 +38,7 @@ WebApkManager::WebApkManager(Profile* profile)
       initialized_(false),
       install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  DCHECK(web_app::AreWebAppsEnabled(profile_));
   proxy_ = AppServiceProxyFactory::GetForProfile(profile_);
   apk_service_ = ash::ApkWebAppService::Get(profile_);
   DCHECK(apk_service_);
