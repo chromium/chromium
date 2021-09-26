@@ -157,6 +157,7 @@ void FastPairRepositoryImpl::CompleteAccountKeyLookup(
     DeviceMetadata* device_metadata) {
   if (!device_metadata) {
     std::move(callback).Run(absl::nullopt);
+    return;
   }
   std::move(callback).Run(
       PairingMetadata(device_metadata, std::move(account_key)));
