@@ -11,8 +11,6 @@
 #include "ui/base/class_property.h"
 #include "ui/views/widget/widget.h"
 
-class AccountId;
-
 namespace app_restore {
 struct AppLaunchInfo;
 struct WindowInfo;
@@ -51,13 +49,6 @@ void SaveAppLaunchInfo(
 COMPONENT_EXPORT(APP_RESTORE)
 void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 
-// Gets the ARC app launch information from the full restore file for `app_id`
-// and `session_id`.
-COMPONENT_EXPORT(APP_RESTORE)
-std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
-    const std::string& app_id,
-    int32_t session_id);
-
 // Gets the window information from the full restore file for |window|.
 COMPONENT_EXPORT(APP_RESTORE)
 std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window);
@@ -74,17 +65,6 @@ int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
 // Returns the restore window id for the ARC app's |session_id|.
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
-
-// Returns true if we should restore apps and pages based on the restore setting
-// and the user's choice from the notification. Otherwise, returns false.
-COMPONENT_EXPORT(APP_RESTORE) bool ShouldRestore(const AccountId& account_id);
-
-// Returns true if the restore pref is 'Always' or 'Ask every time', as we
-// could restore apps and pages based on the user's choice from the
-// notification for |account_id|. Otherwise, returns false, when the restore
-// pref is 'Do not restore'.
-COMPONENT_EXPORT(APP_RESTORE)
-bool CanPerformRestore(const AccountId& account_id);
 
 // Sets the current active profile path.
 COMPONENT_EXPORT(APP_RESTORE)

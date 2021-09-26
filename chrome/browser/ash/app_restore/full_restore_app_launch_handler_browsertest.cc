@@ -126,6 +126,15 @@ void RemoveInactiveDesks() {
   }
 }
 
+// Gets the ARC app launch information from the full restore file for `app_id`
+// and `session_id`.
+std::unique_ptr<::app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
+    const std::string& app_id,
+    int32_t session_id) {
+  return ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetArcAppLaunchInfo(app_id, session_id);
+}
+
 class TestFullRestoreInfoObserver
     : public ::full_restore::FullRestoreInfo::Observer {
  public:
@@ -1279,8 +1288,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   void VerifyGetArcAppLaunchInfo(const std::string& app_id,
                                  int32_t session_id,
                                  int32_t restore_window_id) {
-    auto app_launch_info =
-        ::full_restore::GetArcAppLaunchInfo(app_id, session_id);
+    auto app_launch_info = GetArcAppLaunchInfo(app_id, session_id);
     ASSERT_TRUE(app_launch_info);
 
     EXPECT_EQ(app_id, app_launch_info->app_id);
@@ -1680,7 +1688,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   VerifyWindowInfo(window, kActivationIndex);
 
   // Verify the ghost window session id has been removed from the restore data.
-  EXPECT_FALSE(::full_restore::GetArcAppLaunchInfo(app_id, session_id2));
+  EXPECT_FALSE(GetArcAppLaunchInfo(app_id, session_id2));
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);
@@ -1786,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   VerifyWindowInfo(window, kActivationIndex);
 
   // Verify the ghost window session id has been removed from the restore data.
-  EXPECT_FALSE(::full_restore::GetArcAppLaunchInfo(app_id, session_id3));
+  EXPECT_FALSE(GetArcAppLaunchInfo(app_id, session_id3));
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);

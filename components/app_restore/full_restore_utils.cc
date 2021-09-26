@@ -5,7 +5,6 @@
 #include "components/app_restore/full_restore_utils.h"
 
 #include "base/files/file_path.h"
-#include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"
@@ -31,16 +30,6 @@ void SaveWindowInfo(const app_restore::WindowInfo& window_info) {
     return;
 
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
-}
-
-std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
-    const std::string& app_id,
-    int32_t session_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return nullptr;
-
-  return FullRestoreReadHandler::GetInstance()->GetArcAppLaunchInfo(app_id,
-                                                                    session_id);
 }
 
 std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window) {
@@ -80,14 +69,6 @@ int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
 
   return FullRestoreReadHandler::GetInstance()
       ->GetArcRestoreWindowIdForSessionId(session_id);
-}
-
-bool ShouldRestore(const AccountId& account_id) {
-  return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
-}
-
-bool CanPerformRestore(const AccountId& account_id) {
-  return FullRestoreInfo::GetInstance()->CanPerformRestore(account_id);
 }
 
 void SetActiveProfilePath(const base::FilePath& profile_path) {
