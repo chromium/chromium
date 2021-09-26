@@ -391,10 +391,6 @@ try_.chromium_android_builder(
     tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_android_builder(
@@ -411,9 +407,6 @@ try_.chromium_android_builder(
     ),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_android_builder(
@@ -428,10 +421,6 @@ try_.chromium_android_builder(
     tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_android_builder(
@@ -1066,10 +1055,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_linux_builder(
@@ -1432,10 +1417,6 @@ try_.chromium_linux_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_linux_builder(
@@ -1446,10 +1427,6 @@ try_.chromium_linux_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_linux_builder(
@@ -1534,10 +1511,6 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_linux_builder(
@@ -1548,10 +1521,6 @@ try_.chromium_linux_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 try_.chromium_linux_builder(

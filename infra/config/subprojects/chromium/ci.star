@@ -580,10 +580,6 @@ ci.android_builder(
     execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
-    # TODO(crbug.com/1143122): remove this after migration.
-    experiments = {
-        "chromium.chromium_tests.use_isolate": 50,
-    },
 )
 
 ci.android_builder(
