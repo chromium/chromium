@@ -17,14 +17,15 @@ struct DeviceMetadata;
 // Thin wrapper around Account Key + decoded metadata for a Fast Pair device
 // which has already been paired.
 struct COMPONENT_EXPORT(QUICK_PAIR_REPOSITORY) PairingMetadata {
-  explicit PairingMetadata(const DeviceMetadata* device_metadata,
-                           const std::vector<uint8_t> account_key);
-  PairingMetadata(const PairingMetadata&) = delete;
+  explicit PairingMetadata(DeviceMetadata* device_metadata,
+                           std::vector<uint8_t> account_key);
+  PairingMetadata(const PairingMetadata&);
+  PairingMetadata& operator=(const PairingMetadata&);
   PairingMetadata(PairingMetadata&&);
   ~PairingMetadata();
 
-  const DeviceMetadata* device_metadata;
-  const std::vector<uint8_t> account_key;
+  DeviceMetadata* device_metadata;
+  std::vector<uint8_t> account_key;
 };
 
 }  // namespace quick_pair

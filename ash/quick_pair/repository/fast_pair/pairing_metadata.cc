@@ -7,10 +7,12 @@
 namespace ash {
 namespace quick_pair {
 
-PairingMetadata::PairingMetadata(const DeviceMetadata* device_metadata,
-                                 const std::vector<uint8_t> account_key)
+PairingMetadata::PairingMetadata(DeviceMetadata* device_metadata,
+                                 std::vector<uint8_t> account_key)
     : device_metadata(device_metadata), account_key(std::move(account_key)) {}
 
+PairingMetadata::PairingMetadata(const PairingMetadata&) = default;
+PairingMetadata& PairingMetadata::operator=(const PairingMetadata&) = default;
 PairingMetadata::PairingMetadata(PairingMetadata&&) = default;
 PairingMetadata::~PairingMetadata() = default;
 

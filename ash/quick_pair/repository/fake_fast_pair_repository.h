@@ -35,6 +35,8 @@ class FakeFastPairRepository : public FastPairRepository {
 
   void ClearFakeMetadata(const std::string& hex_model_id);
 
+  void SetCheckAccountKeysResult(absl::optional<PairingMetadata> result);
+
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
@@ -50,6 +52,7 @@ class FakeFastPairRepository : public FastPairRepository {
   static void SetInstance(FastPairRepository* instance);
 
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
+  absl::optional<PairingMetadata> check_account_key_result_;
   base::WeakPtrFactory<FakeFastPairRepository> weak_ptr_factory_{this};
 };
 

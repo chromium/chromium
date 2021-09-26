@@ -25,6 +25,11 @@ void FakeFastPairRepository::ClearFakeMetadata(
   data_.erase(base::ToUpperASCII(hex_model_id));
 }
 
+void FakeFastPairRepository::SetCheckAccountKeysResult(
+    absl::optional<PairingMetadata> result) {
+  check_account_key_result_ = result;
+}
+
 void FakeFastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
@@ -46,7 +51,7 @@ void FakeFastPairRepository::IsValidModelId(
 void FakeFastPairRepository::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(check_account_key_result_);
 }
 
 void FakeFastPairRepository::AssociateAccountKey(
