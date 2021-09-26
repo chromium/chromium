@@ -4,19 +4,66 @@
 
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
+#include "base/bind.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
 namespace webapps {
 
-bool InstallableAmbientBadgeMessageController::IsMessageEnqueued() {
-  // TODO(crbug.com/1247374): Implement.
-  return false;
+InstallableAmbientBadgeMessageController::
+    InstallableAmbientBadgeMessageController() = default;
+
+InstallableAmbientBadgeMessageController::
+    ~InstallableAmbientBadgeMessageController() {
+  DismissMessage();
 }
 
-void InstallableAmbientBadgeMessageController::EnqueueMessage() {
-  // TODO(crbug.com/1247374): Implement.
+bool InstallableAmbientBadgeMessageController::IsMessageEnqueued() {
+  return message_ != nullptr;
+}
+
+void InstallableAmbientBadgeMessageController::EnqueueMessage(
+    content::WebContents* web_contents,
+    const std::u16string& app_name) {
+  DCHECK(!message_);
+
+  message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::INSTALLABLE_AMBIENT_BADGE,
+      base::BindOnce(
+          &InstallableAmbientBadgeMessageController::HandleInstallButtonClicked,
+          base::Unretained(this)),
+      base::BindOnce(
+          &InstallableAmbientBadgeMessageController::HandleMessageDismissed,
+          base::Unretained(this)));
+
+  // TODO(crbug.com/1247374): Adjust title string, add description and icon.
+  message_->SetTitle(l10n_util::GetStringFUTF16(
+      IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE, app_name));
+  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_INSTALL));
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
 }
 
 void InstallableAmbientBadgeMessageController::DismissMessage() {
+  if (!message_)
+    return;
+
+  messages::MessageDispatcherBridge::Get()->DismissMessage(
+      message_.get(), messages::DismissReason::UNKNOWN);
+}
+
+void InstallableAmbientBadgeMessageController::HandleInstallButtonClicked() {
   // TODO(crbug.com/1247374): Implement.
+}
+
+void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
+    messages::DismissReason dismiss_reason) {
+  DCHECK(message_);
+  message_.reset();
+  // TODO(crbug.com/1247374): Add a call to
+  // AppBannerManagerAndroid::BadgeDismissed to record metrics.
 }
 
 }  // namespace webapps

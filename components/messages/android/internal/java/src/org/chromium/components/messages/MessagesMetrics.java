@@ -105,6 +105,8 @@ public class MessagesMetrics {
                 return "SharedHighlighting";
             case MessageIdentifier.NEAR_OOM_REDUCTION:
                 return "NearOomReduction";
+            case MessageIdentifier.INSTALLABLE_AMBIENT_BADGE:
+                return "InstallableAmbientBadge";
             default:
                 return "Unknown";
         }

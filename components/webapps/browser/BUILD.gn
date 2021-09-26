@@ -94,6 +94,7 @@ source_set("browser") {
       "//components/feature_engagement",
       "//components/infobars/android",
       "//components/infobars/content",
+      "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//components/strings",
       "//components/url_formatter",
@@ -150,4 +151,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
+
+  if (is_android) {
+    sources += [ "android/installable/installable_ambient_badge_message_controller_unittest.cc" ]
+    deps += [ "//components/messages/android:test_support" ]
+  }
 }

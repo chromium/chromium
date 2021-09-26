@@ -55899,6 +55899,7 @@ Called by update_use_counter_css.py.-->
   <int value="17" label="SyncError"/>
   <int value="18" label="SharedHighlighting"/>
   <int value="19" label="NearOomReduction"/>
+  <int value="20" label="InstallableAmbientBadge"/>
 </enum>
 
 <enum name="MessageLoopProblems">

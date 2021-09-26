@@ -556,7 +556,7 @@ void AppBannerManagerAndroid::ShowAmbientBadge() {
   if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage) &&
       base::FeatureList::IsEnabled(
           messages::kMessagesForAndroidInfrastructure)) {
-    message_controller_.EnqueueMessage();
+    message_controller_.EnqueueMessage(web_contents(), GetAppName());
   } else {
     InstallableAmbientBadgeInfoBarDelegate::Create(
         web_contents(), weak_factory_.GetWeakPtr(), GetAppName(), primary_icon_,

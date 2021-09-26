@@ -90,6 +90,7 @@ enum class MessageIdentifier {
   SYNC_ERROR = 17,
   SHARED_HIGHLIGHTING = 18,
   NEAR_OOM_REDUCTION = 19,
+  INSTALLABLE_AMBIENT_BADGE = 20,
 
   // Insert new values before this line.
   COUNT

@@ -5,6 +5,16 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_INSTALLABLE_INSTALLABLE_AMBIENT_BADGE_MESSAGE_CONTROLLER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_INSTALLABLE_INSTALLABLE_AMBIENT_BADGE_MESSAGE_CONTROLLER_H_
 
+#include <memory>
+#include <string>
+
+#include "components/messages/android/message_enums.h"
+#include "components/messages/android/message_wrapper.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace webapps {
 
 // Message controller for a message shown to users when they visit a
@@ -12,6 +22,9 @@ namespace webapps {
 // flow.
 class InstallableAmbientBadgeMessageController {
  public:
+  InstallableAmbientBadgeMessageController();
+  ~InstallableAmbientBadgeMessageController();
+
   // Returns true if the message was enqueued with EnqueueMessage() method, but
   // wasn't dismissed yet.
   bool IsMessageEnqueued();
@@ -19,13 +32,18 @@ class InstallableAmbientBadgeMessageController {
   // Enqueues a message to be displayed on the screen. Typically there are no
   // other messages on the screen and enqueued message will get displayed
   // immediately.
-  void EnqueueMessage();
+  void EnqueueMessage(content::WebContents* web_contents,
+                      const std::u16string& app_name);
 
   // Dismisses displayed message. This method is safe to call  when there is no
   // displayed message.
   void DismissMessage();
 
  private:
+  void HandleInstallButtonClicked();
+  void HandleMessageDismissed(messages::DismissReason dismiss_reason);
+
+  std::unique_ptr<messages::MessageWrapper> message_;
 };
 
 }  // namespace webapps
