@@ -25,17 +25,15 @@ enum class TagViolationReportingMode {
 
 //#if defined(OS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
-BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(
-    TagViolationReportingMode);
+BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 //#else
 // Changes the memory tagging mode for the calling thread.
-BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
-    TagViolationReportingMode);
+BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode);
 //#endif  // defined(OS_ANDROID)
 
 // Gets the memory tagging mode for the calling thread.
 BASE_EXPORT TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
-}  // namespace memory
-}  // namespace base
+} // namespace memory
+} // namespace base
 
-#endif  // BASE_MEMORY_TAGGING_H_
+#endif // BASE_MEMORY_TAGGING_H_

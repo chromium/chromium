@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/allocator/malloc_zone_functions_mac.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -10,31 +11,29 @@ namespace allocator {
 
 class MallocZoneFunctionsTest : public testing::Test {
  protected:
-  void TearDown() override { ClearAllMallocZonesForTesting(); }
+  void TearDown() override {
+    ClearAllMallocZonesForTesting();
+  }
 };
 
 TEST_F(MallocZoneFunctionsTest, TestDefaultZoneMallocFree) {
-  ChromeMallocZone* malloc_zone =
-      reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
+  ChromeMallocZone* malloc_zone = reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
   StoreMallocZone(malloc_zone);
-  int* test = reinterpret_cast<int*>(
-      g_malloc_zones[0].malloc(malloc_default_zone(), 33));
+  int* test = reinterpret_cast<int*>(g_malloc_zones[0].malloc(malloc_default_zone(), 33));
   test[0] = 1;
   test[1] = 2;
   g_malloc_zones[0].free(malloc_default_zone(), test);
 }
 
 TEST_F(MallocZoneFunctionsTest, IsZoneAlreadyStored) {
-  ChromeMallocZone* malloc_zone =
-      reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
+  ChromeMallocZone* malloc_zone = reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
   EXPECT_FALSE(IsMallocZoneAlreadyStored(malloc_zone));
   StoreMallocZone(malloc_zone);
   EXPECT_TRUE(IsMallocZoneAlreadyStored(malloc_zone));
 }
 
 TEST_F(MallocZoneFunctionsTest, CannotDoubleStoreZone) {
-  ChromeMallocZone* malloc_zone =
-      reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
+  ChromeMallocZone* malloc_zone = reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
   StoreMallocZone(malloc_zone);
   StoreMallocZone(malloc_zone);
   EXPECT_EQ(1, GetMallocZoneCountForTesting());
@@ -53,5 +52,5 @@ TEST_F(MallocZoneFunctionsTest, CannotStoreMoreThanMaxZones) {
   EXPECT_EQ(max_zone_count, GetMallocZoneCountForTesting());
 }
 
-}  // namespace allocator
-}  // namespace base
+} // namespace allocator
+} // namespace base

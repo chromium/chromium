@@ -17,16 +17,16 @@
 #include "build/build_config.h"
 
 #if !defined(OS_WIN)
-#include <unistd.h>
+  #include <unistd.h>
 #else
-#include "base/allocator/winheap_stubs_win.h"
+  #include "base/allocator/winheap_stubs_win.h"
 #endif
 
 #if defined(OS_APPLE)
-#include <malloc/malloc.h>
+  #include <malloc/malloc.h>
 
-#include "base/allocator/allocator_interception_mac.h"
-#include "base/mac/mach_logging.h"
+  #include "base/allocator/allocator_interception_mac.h"
+  #include "base/mac/mach_logging.h"
 #endif
 
 // No calls to malloc / new in this file. They would would cause re-entrancy of
@@ -37,7 +37,8 @@
 namespace {
 
 std::atomic<const base::allocator::AllocatorDispatch*> g_chain_head{
-    &base::allocator::AllocatorDispatch::default_dispatch};
+  &base::allocator::AllocatorDispatch::default_dispatch
+};
 
 bool g_call_new_handler_on_malloc_failure = false;
 
@@ -68,7 +69,7 @@ ALWAYS_INLINE const base::allocator::AllocatorDispatch* GetChainHead() {
   return g_chain_head.load(std::memory_order_relaxed);
 }
 
-}  // namespace
+} // namespace
 
 namespace base {
 namespace allocator {
@@ -98,15 +99,14 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
     std::atomic_thread_fence(std::memory_order_seq_cst);
     // Set the chain head to the new dispatch atomically. If we lose the race,
     // retry.
-    if (g_chain_head.compare_exchange_strong(chain_head, dispatch,
-                                             std::memory_order_relaxed,
-                                             std::memory_order_relaxed)) {
+    if (g_chain_head.compare_exchange_strong(
+            chain_head, dispatch, std::memory_order_relaxed, std::memory_order_relaxed)) {
       // Success.
       return;
     }
   }
 
-  CHECK(false);  // Too many retries, this shouldn't happen.
+  CHECK(false); // Too many retries, this shouldn't happen.
 }
 
 void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
@@ -114,8 +114,8 @@ void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
   g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
 
-}  // namespace allocator
-}  // namespace base
+} // namespace allocator
+} // namespace base
 
 // The Shim* functions below are the entry-points into the shim-layer and
 // are supposed to be invoked by the allocator_shim_override_*
@@ -166,8 +166,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 #if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
-    ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
-                                             context);
+    ptr = chain_head->alloc_aligned_function(chain_head, alignment, size, context);
   } while (!ptr && CallNewHandler(size));
   return ptr;
 }
@@ -186,8 +185,7 @@ ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
   void* ptr;
   do {
     ptr = chain_head->alloc_function(chain_head, size, context);
-  } while (!ptr && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+  } while (!ptr && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
@@ -195,10 +193,8 @@ ALWAYS_INLINE void* ShimCalloc(size_t n, size_t size, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
-    ptr = chain_head->alloc_zero_initialized_function(chain_head, n, size,
-                                                      context);
-  } while (!ptr && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+    ptr = chain_head->alloc_zero_initialized_function(chain_head, n, size, context);
+  } while (!ptr && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
@@ -209,8 +205,7 @@ ALWAYS_INLINE void* ShimRealloc(void* address, size_t size, void* context) {
   void* ptr;
   do {
     ptr = chain_head->realloc_function(chain_head, address, size, context);
-  } while (!ptr && size && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+  } while (!ptr && size && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
@@ -218,18 +213,15 @@ ALWAYS_INLINE void* ShimMemalign(size_t alignment, size_t size, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
-    ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
-                                             context);
-  } while (!ptr && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+    ptr = chain_head->alloc_aligned_function(chain_head, alignment, size, context);
+  } while (!ptr && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
 ALWAYS_INLINE int ShimPosixMemalign(void** res, size_t alignment, size_t size) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
-  if (((alignment % sizeof(void*)) != 0) ||
-      !base::bits::IsPowerOfTwo(alignment)) {
+  if (((alignment % sizeof(void*)) != 0) || !base::bits::IsPowerOfTwo(alignment)) {
     return EINVAL;
   }
   void* ptr = ShimMemalign(alignment, size, nullptr);
@@ -260,59 +252,41 @@ ALWAYS_INLINE void ShimFree(void* address, void* context) {
 
 ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->get_size_estimate_function(
-      chain_head, const_cast<void*>(address), context);
+  return chain_head->get_size_estimate_function(chain_head, const_cast<void*>(address), context);
 }
 
-ALWAYS_INLINE unsigned ShimBatchMalloc(size_t size,
-                                       void** results,
-                                       unsigned num_requested,
-                                       void* context) {
+ALWAYS_INLINE unsigned ShimBatchMalloc(size_t size, void** results, unsigned num_requested, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->batch_malloc_function(chain_head, size, results,
-                                           num_requested, context);
+  return chain_head->batch_malloc_function(chain_head, size, results, num_requested, context);
 }
 
-ALWAYS_INLINE void ShimBatchFree(void** to_be_freed,
-                                 unsigned num_to_be_freed,
-                                 void* context) {
+ALWAYS_INLINE void ShimBatchFree(void** to_be_freed, unsigned num_to_be_freed, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->batch_free_function(chain_head, to_be_freed,
-                                         num_to_be_freed, context);
+  return chain_head->batch_free_function(chain_head, to_be_freed, num_to_be_freed, context);
 }
 
 ALWAYS_INLINE void ShimFreeDefiniteSize(void* ptr, size_t size, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->free_definite_size_function(chain_head, ptr, size,
-                                                 context);
+  return chain_head->free_definite_size_function(chain_head, ptr, size, context);
 }
 
-ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,
-                                      size_t alignment,
-                                      void* context) {
+ALWAYS_INLINE void* ShimAlignedMalloc(size_t size, size_t alignment, void* context) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr = nullptr;
   do {
-    ptr = chain_head->aligned_malloc_function(chain_head, size, alignment,
-                                              context);
-  } while (!ptr && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+    ptr = chain_head->aligned_malloc_function(chain_head, size, alignment, context);
+  } while (!ptr && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimAlignedRealloc(void* address,
-                                       size_t size,
-                                       size_t alignment,
-                                       void* context) {
+ALWAYS_INLINE void* ShimAlignedRealloc(void* address, size_t size, size_t alignment, void* context) {
   // _aligned_realloc(size == 0) means _aligned_free() and might return a
   // nullptr. We should not call the std::new_handler in that case, though.
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr = nullptr;
   do {
-    ptr = chain_head->aligned_realloc_function(chain_head, address, size,
-                                               alignment, context);
-  } while (!ptr && size && g_call_new_handler_on_malloc_failure &&
-           CallNewHandler(size));
+    ptr = chain_head->aligned_realloc_function(chain_head, address, size, alignment, context);
+  } while (!ptr && size && g_call_new_handler_on_malloc_failure && CallNewHandler(size));
   return ptr;
 }
 
@@ -321,36 +295,35 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
   return chain_head->aligned_free_function(chain_head, address, context);
 }
 
-}  // extern "C"
+} // extern "C"
 
-#if !defined(OS_WIN) && \
-    !(defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
-// Cpp symbols (new / delete) should always be routed through the shim layer
-// except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
-// malloc intercept is deep enough that it also catches the cpp calls.
-//
-// In case of PartitionAlloc-Everywhere on macOS, malloc backed by
-// base::internal::PartitionMalloc crashes on OOM, and we need to avoid crashes
-// in case of operator new() noexcept.  Thus, operator new() noexcept needs to
-// be routed to base::internal::PartitionMallocUnchecked through the shim layer.
-#include "base/allocator/allocator_shim_override_cpp_symbols.h"
+#if !defined(OS_WIN) && !(defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+  // Cpp symbols (new / delete) should always be routed through the shim layer
+  // except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
+  // malloc intercept is deep enough that it also catches the cpp calls.
+  //
+  // In case of PartitionAlloc-Everywhere on macOS, malloc backed by
+  // base::internal::PartitionMalloc crashes on OOM, and we need to avoid crashes
+  // in case of operator new() noexcept.  Thus, operator new() noexcept needs to
+  // be routed to base::internal::PartitionMallocUnchecked through the shim layer.
+  #include "base/allocator/allocator_shim_override_cpp_symbols.h"
 #endif
 
 #if defined(OS_ANDROID)
-// Android does not support symbol interposition. The way malloc symbols are
-// intercepted on Android is by using link-time -wrap flags.
-#include "base/allocator/allocator_shim_override_linker_wrapped_symbols.h"
+  // Android does not support symbol interposition. The way malloc symbols are
+  // intercepted on Android is by using link-time -wrap flags.
+  #include "base/allocator/allocator_shim_override_linker_wrapped_symbols.h"
 #elif defined(OS_WIN)
-// On Windows we use plain link-time overriding of the CRT symbols.
-#include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
+  // On Windows we use plain link-time overriding of the CRT symbols.
+  #include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
 #elif defined(OS_APPLE)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/allocator_shim_override_mac_default_zone.h"
-#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/allocator_shim_override_mac_symbols.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    #include "base/allocator/allocator_shim_override_mac_default_zone.h"
+  #else // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    #include "base/allocator/allocator_shim_override_mac_symbols.h"
+  #endif // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #else
-#include "base/allocator/allocator_shim_override_libc_symbols.h"
+  #include "base/allocator/allocator_shim_override_libc_symbols.h"
 #endif
 
 // In the case of tcmalloc we also want to plumb into the glibc hooks
@@ -373,9 +346,8 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // libc_override_glibc.h, see in third_party/tcmalloc) and LLVM for LSAN use the
 // same mechanism.
 
-#if defined(LIBC_GLIBC) && \
-    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
-#include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
+#if defined(LIBC_GLIBC) && (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+  #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
 #if defined(OS_APPLE)
@@ -383,7 +355,7 @@ namespace base {
 namespace allocator {
 
 void InitializeAllocatorShim() {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Prepares the default dispatch. After the intercepted malloc calls have
   // traversed the shim this will route them to the default malloc zone.
   InitializeDefaultDispatchToMacAllocator();
@@ -393,20 +365,19 @@ void InitializeAllocatorShim() {
   // This replaces the default malloc zone, causing calls to malloc & friends
   // from the codebase to be routed to ShimMalloc() above.
   base::allocator::ReplaceFunctionsForStoredZones(&functions);
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  #endif // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
-}  // namespace allocator
-}  // namespace base
+} // namespace allocator
+} // namespace base
 #endif
 
 // Cross-checks.
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-#error The allocator shim should not be compiled when building for memory tools.
+  #error The allocator shim should not be compiled when building for memory tools.
 #endif
 
-#if (defined(__GNUC__) && defined(__EXCEPTIONS)) || \
-    (defined(_MSC_VER) && defined(_CPPUNWIND))
-#error This code cannot be used when exceptions are turned on.
+#if (defined(__GNUC__) && defined(__EXCEPTIONS)) || (defined(_MSC_VER) && defined(_CPPUNWIND))
+  #error This code cannot be used when exceptions are turned on.
 #endif

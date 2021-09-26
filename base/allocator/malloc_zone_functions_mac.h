@@ -16,27 +16,17 @@ namespace base {
 namespace allocator {
 
 typedef void* (*malloc_type)(struct _malloc_zone_t* zone, size_t size);
-typedef void* (*calloc_type)(struct _malloc_zone_t* zone,
-                             size_t num_items,
-                             size_t size);
+typedef void* (*calloc_type)(struct _malloc_zone_t* zone, size_t num_items, size_t size);
 typedef void* (*valloc_type)(struct _malloc_zone_t* zone, size_t size);
 typedef void (*free_type)(struct _malloc_zone_t* zone, void* ptr);
-typedef void* (*realloc_type)(struct _malloc_zone_t* zone,
-                              void* ptr,
-                              size_t size);
-typedef void* (*memalign_type)(struct _malloc_zone_t* zone,
-                               size_t alignment,
-                               size_t size);
+typedef void* (*realloc_type)(struct _malloc_zone_t* zone, void* ptr, size_t size);
+typedef void* (*memalign_type)(struct _malloc_zone_t* zone, size_t alignment, size_t size);
 typedef unsigned (*batch_malloc_type)(struct _malloc_zone_t* zone,
                                       size_t size,
                                       void** results,
                                       unsigned num_requested);
-typedef void (*batch_free_type)(struct _malloc_zone_t* zone,
-                                void** to_be_freed,
-                                unsigned num_to_be_freed);
-typedef void (*free_definite_size_type)(struct _malloc_zone_t* zone,
-                                        void* ptr,
-                                        size_t size);
+typedef void (*batch_free_type)(struct _malloc_zone_t* zone, void** to_be_freed, unsigned num_to_be_freed);
+typedef void (*free_definite_size_type)(struct _malloc_zone_t* zone, void* ptr, size_t size);
 typedef size_t (*size_fn_type)(struct _malloc_zone_t* zone, const void* ptr);
 
 struct MallocZoneFunctions {
@@ -53,8 +43,7 @@ struct MallocZoneFunctions {
   const ChromeMallocZone* context;
 };
 
-BASE_EXPORT void StoreZoneFunctions(const ChromeMallocZone* zone,
-                                    MallocZoneFunctions* functions);
+BASE_EXPORT void StoreZoneFunctions(const ChromeMallocZone* zone, MallocZoneFunctions* functions);
 static constexpr int kMaxZoneCount = 30;
 BASE_EXPORT extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 
@@ -82,9 +71,7 @@ BASE_EXPORT extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 // Returns whether the zone was successfully stored.
 BASE_EXPORT bool StoreMallocZone(ChromeMallocZone* zone);
 BASE_EXPORT bool IsMallocZoneAlreadyStored(ChromeMallocZone* zone);
-BASE_EXPORT bool DoesMallocZoneNeedReplacing(
-    ChromeMallocZone* zone,
-    const MallocZoneFunctions* functions);
+BASE_EXPORT bool DoesMallocZoneNeedReplacing(ChromeMallocZone* zone, const MallocZoneFunctions* functions);
 
 BASE_EXPORT int GetMallocZoneCountForTesting();
 BASE_EXPORT void ClearAllMallocZonesForTesting();
@@ -97,7 +84,7 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   IMMEDIATE_CRASH();
 }
 
-}  // namespace allocator
-}  // namespace base
+} // namespace allocator
+} // namespace base
 
-#endif  // BASE_ALLOCATOR_MALLOC_ZONE_FUNCTIONS_MAC_H_
+#endif // BASE_ALLOCATOR_MALLOC_ZONE_FUNCTIONS_MAC_H_
