@@ -44,6 +44,9 @@ tast_disabled_tests_from_chrome_all = [
   "quicksettings.SignInScreen.battery",
   "quicksettings.SignInScreen.noaudio_nobattery",
   "quicksettings.SignInScreen.audio",
+
+  # b/201197372
+  "crostini.AppEmacs",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
