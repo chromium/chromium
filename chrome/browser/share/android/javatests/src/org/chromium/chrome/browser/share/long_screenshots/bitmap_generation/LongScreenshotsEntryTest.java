@@ -86,8 +86,8 @@ public class LongScreenshotsEntryTest {
         }
 
         @Override
-        public int compositeBitmap(
-                Rect rect, Runnable errorCallback, Callback<Bitmap> onBitmapGenerated) {
+        public int compositeBitmap(Rect rect, Runnable errorCallback,
+                Callback<Bitmap> onBitmapGenerated, boolean boundsRelativeToCapture) {
             if (mThrowErrorOnComposite) {
                 errorCallback.run();
                 return -1;

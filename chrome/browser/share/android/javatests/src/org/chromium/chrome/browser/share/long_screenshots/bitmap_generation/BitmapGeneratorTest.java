@@ -88,7 +88,7 @@ public class BitmapGeneratorTest {
                 Assert.assertEquals(CompositorStatus.OK, status);
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
                     mGenerator.compositeBitmap(
-                            new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated);
+                            new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated, false);
                 });
             }
 

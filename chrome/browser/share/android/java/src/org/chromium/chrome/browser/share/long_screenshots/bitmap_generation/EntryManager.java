@@ -180,8 +180,9 @@ public class EntryManager {
      * @param updateMemoryUsage The callback to be notified of the bitmap memory usage.
      * @return The new entry that generates the bitmap.
      */
-    public LongScreenshotsEntry generateEntry(Rect bounds) {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mGenerator, bounds, (bytes) -> {});
+    public LongScreenshotsEntry generateEntry(Rect bounds, boolean boundsRelativeToCapture) {
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(
+                mGenerator, bounds, (bytes) -> {}, boundsRelativeToCapture);
         processEntry(entry, true, false);
         return entry;
     }
@@ -297,5 +298,12 @@ public class EntryManager {
                 }
             }
         };
+    }
+
+    public void destroy() {
+        if (mGenerator != null) {
+            mGenerator.destroy();
+            mGenerator = null;
+        }
     }
 }
