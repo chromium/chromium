@@ -30,6 +30,8 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkTypes.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -425,28 +427,29 @@ void AssistantPageView::OnThemeChanged() {
   if (features::IsAppListBubbleEnabled()) {
     layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80));
+  } else if (features::IsDarkLightModeEnabled()) {
+    const float opacity = features::IsBackgroundBlurEnabled()
+                              ? AppListView::kAppListOpacityWithBlur
+                              : AppListView::kAppListOpacity;
+    // We pass kShield80 to ColorProvider::GetShieldLayerColor. But we overwrite
+    // it as kAppListOpacity is 0.95 and kShield doesn't have kShield95.
+    layer()->SetColor(
+        SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
+                        ColorProvider::ShieldLayerType::kShield80),
+                    static_cast<U8CPU>(opacity * 255)));
   } else {
-    background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
-        assistant_colors::ColorName::kBgAssistantPlate));
-
-    // Changing color of a background object doesn't trigger a paint.
-    SchedulePaint();
+    layer()->SetColor(SK_ColorWHITE);
   }
 }
 
 void AssistantPageView::InitLayout() {
+  // Use a solid color layer. The color is set in OnThemeChanged().
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  layer()->SetFillsBoundsOpaquely(false);
+
   if (features::IsAppListBubbleEnabled()) {
-    // Use a solid color layer with blur. The color is set in OnThemeChanged().
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  } else {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    SetBackground(
-        views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
-            assistant_colors::ColorName::kBgAssistantPlate)));
   }
 
   view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);

@@ -22,6 +22,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkTypes.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
@@ -919,28 +920,60 @@ TEST_F(AssistantPageNonBubbleTest, Theme) {
 
   ShowAssistantUi();
 
-  EXPECT_EQ(page_view()->background()->get_color(), SK_ColorWHITE);
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(), SK_ColorWHITE);
 }
 
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
+      features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list_disable_blur;
+  scoped_feature_list_disable_blur.InitAndDisableFeature(
+      features::kEnableBackgroundBlur);
+
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
+  ASSERT_FALSE(features::IsBackgroundBlurEnabled());
+
   ShowAssistantUi();
 
-  EXPECT_EQ(page_view()->background()->get_color(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+  const U8CPU opacity = static_cast<U8CPU>(AppListView::kAppListOpacity * 255);
+
+  // We pass kShield80 to ColorProvider::GetShieldLayerColor. But it will be
+  // overwritten by opacity. kAppListOpacity is 0.95. kShield doesn't have
+  // kShield95.
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
+                            ColorProvider::ShieldLayerType::kShield80),
+                        opacity));
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
 
-  EXPECT_EQ(page_view()->background()->get_color(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
+                            ColorProvider::ShieldLayerType::kShield80),
+                        opacity));
+}
+
+TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  ASSERT_TRUE(features::IsBackgroundBlurEnabled());
+
+  ShowAssistantUi();
+
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            ColorProvider::Get()->GetShieldLayerColor(
+                ColorProvider::ShieldLayerType::kShield80));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            ColorProvider::Get()->GetShieldLayerColor(
+                ColorProvider::ShieldLayerType::kShield80));
 }
 
 // AppListBubble only uses AssistantPageView in tablet mode. Clamshell mode uses
