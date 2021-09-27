@@ -46,20 +46,31 @@ void BrowserAccessibilityMac::OnDataChanged() {
 // Replace a native object and refocus if it had focus.
 // This will force VoiceOver to re-announce it, and refresh Braille output.
 void BrowserAccessibilityMac::ReplaceNativeObject() {
-  // We need to keep the old native wrapper alive until we set up the new one
-  // because we need to retrieve some information from the old wrapper in order
-  // to add it to the new one, e.g. its list of children.
-  base::scoped_nsobject<BrowserAccessibilityCocoa> old_native_obj(
-      GetNativeWrapper());
-
-  // We should never enter here when no native object is created, but
-  // keep a null check just in case.
-  if (!old_native_obj) {
-    NOTREACHED() << "No object to replace.";
+  // Since our native wrapper is owned by a platform node, in order to replace
+  // the wrapper, a platform node should always be present. In other words, we
+  // could have never called this method without a platform node having been
+  // created.
+  if (!platform_node_) {
+    NOTREACHED() << "No platform node exists, so there should not be any "
+                    "native wrapper to replace.";
     return;
   }
 
-  // Recreate native object.
+  // We need to keep the old native wrapper alive until we set up the new one
+  // because we need to retrieve some information from the old wrapper in order
+  // to add it to the new one, e.g. its list of children.
+  base::scoped_nsobject<AXPlatformNodeCocoa> old_native_obj(
+      platform_node_->ReleaseNativeWrapper());
+
+  // We should have never called this method if a native wrapper has not been
+  // created, but keep a null check just in case.
+  if (!old_native_obj) {
+    NOTREACHED() << "No native wrapper exists, so there is nothing to replace.";
+    return;
+  }
+
+  // Re-create native wrapper and also take ownership of that wrapper in
+  // `platform_node_` relinquishing the ownership of the old wrapper.
   BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
 
   // Replace child in parent.
@@ -70,7 +81,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   base::scoped_nsobject<NSMutableArray> new_children;
   NSArray* old_children = [ToBrowserAccessibilityCocoa(parent) children];
   for (uint i = 0; i < [old_children count]; ++i) {
-    BrowserAccessibilityCocoa* child = [old_children objectAtIndex:i];
+    AXPlatformNodeCocoa* child = [old_children objectAtIndex:i];
     if (child == old_native_obj)
       [new_children addObject:new_native_obj];
     else
@@ -84,7 +95,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
         new_native_obj, NSAccessibilityFocusedUIElementChangedNotification);
   }
 
-  // Postprone the old native wrapper destruction. It will be destroyed after
+  // Postpone the old native wrapper destruction. It will be destroyed after
   // a delay so that VO is securely on the new focus first (otherwise the focus
   // event will not be announced).
   // We use 1000ms; however, this magic number isn't necessary to avoid
@@ -93,7 +104,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::scoped_nsobject<BrowserAccessibilityCocoa> destroyed) {
+          [](base::scoped_nsobject<AXPlatformNodeCocoa> destroyed) {
             if (destroyed && [destroyed instanceActive]) {
               // Follow destruction pattern from NativeReleaseReference().
               [destroyed detach];
