@@ -137,6 +137,8 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
     case CERT_KEY_USAGE_RSA_DIGITAL_SIGNATURE:
       return base::FilePath(
           FILE_PATH_LITERAL("key_usage_rsa_digitalsignature.pem"));
+    case CERT_TEST_NAMES:
+      return base::FilePath(FILE_PATH_LITERAL("test_names.pem"));
     default:
       NOTREACHED();
   }
@@ -226,6 +228,14 @@ void BaseTestServer::SetPort(uint16_t port) {
 
 GURL BaseTestServer::GetURL(const std::string& path) const {
   return GURL(GetScheme() + "://" + host_port_pair_.ToString() + "/" + path);
+}
+
+GURL BaseTestServer::GetURL(const std::string& hostname,
+                            const std::string& relative_url) const {
+  GURL local_url = GetURL(relative_url);
+  GURL::Replacements replace_host;
+  replace_host.SetHostStr(hostname);
+  return local_url.ReplaceComponents(replace_host);
 }
 
 GURL BaseTestServer::GetURLWithUser(const std::string& path,

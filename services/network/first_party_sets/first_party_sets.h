@@ -97,11 +97,12 @@ class FirstPartySets {
       base::OnceCallback<void(const std::string&)> callback);
 
  private:
-  // Returns a pointer to `site`'s owner (optionally inferring a singleton set
-  // if necessary), or `nullptr` if `site` has no owner. Must not return
-  // `nullptr` if `infer_singleton_sets` is true.
-  const net::SchemefulSite* FindOwner(const net::SchemefulSite& site,
-                                      bool infer_singleton_sets) const;
+  // Returns `site`'s owner (optionally inferring a singleton set if necessary),
+  // or `nullopt` if `site` has no owner. Must not return `nullopt` if
+  // `infer_singleton_sets` is true.
+  const absl::optional<net::SchemefulSite> FindOwner(
+      const net::SchemefulSite& site,
+      bool infer_singleton_sets) const;
 
   // We must ensure there's no intersection between the manually-specified set
   // and the sets that came from Component Updater. (When reconciling the

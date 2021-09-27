@@ -1167,6 +1167,8 @@ TEST_F(FirstPartySetsTest, ComputeContext) {
   net::SchemefulSite nonmember1(GURL("https://nonmember1.test"));
   net::SchemefulSite member(GURL("https://member1.test"));
   net::SchemefulSite owner(GURL("https://example.test"));
+  net::SchemefulSite wss_member(GURL("wss://member1.test"));
+  net::SchemefulSite wss_nonmember(GURL("wss://nonmember.test"));
 
   // Works as usual for sites that are in First-Party sets.
   EXPECT_THAT(sets().ComputeContext(member, &member, {member}),
@@ -1180,10 +1182,17 @@ TEST_F(FirstPartySetsTest, ComputeContext) {
   EXPECT_THAT(sets().ComputeContext(member, &member, {member, owner}),
               net::SamePartyContext(SamePartyContextType::kSameParty));
 
+  // Works if the site is provided with WSS scheme instead of HTTPS.
+  EXPECT_THAT(sets().ComputeContext(wss_member, &member, {member, owner}),
+              net::SamePartyContext(SamePartyContextType::kSameParty));
+
   EXPECT_THAT(sets().ComputeContext(nonmember, &member, {member}),
               net::SamePartyContext(SamePartyContextType::kCrossParty));
   EXPECT_THAT(sets().ComputeContext(member, &nonmember, {member}),
               net::SamePartyContext(SamePartyContextType::kCrossParty));
+  EXPECT_THAT(
+      sets().ComputeContext(wss_nonmember, &wss_member, {member, owner}),
+      net::SamePartyContext(SamePartyContextType::kCrossParty));
 
   // Top&resource differs from Ancestors.
   EXPECT_THAT(sets().ComputeContext(member, &member, {nonmember}),
@@ -1224,6 +1233,12 @@ TEST_F(FirstPartySetsTest, IsInNontrivialFirstPartySet) {
 
   EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
       net::SchemefulSite(GURL("https://member1.test"))));
+
+  EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
+      net::SchemefulSite(GURL("wss://member1.test"))));
+
+  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
+      net::SchemefulSite(GURL("ws://member1.test"))));
 
   EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
       net::SchemefulSite(GURL("https://nonmember.test"))));

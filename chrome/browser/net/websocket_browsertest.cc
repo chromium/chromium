@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
@@ -45,25 +46,31 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
 
+using SSLOptions = net::SpawnedTestServer::SSLOptions;
+
 class WebSocketBrowserTest : public InProcessBrowserTest {
  public:
-  WebSocketBrowserTest()
+  explicit WebSocketBrowserTest(
+      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
       : ws_server_(net::SpawnedTestServer::TYPE_WS,
                    net::GetWebSocketTestDataDirectory()),
         wss_server_(net::SpawnedTestServer::TYPE_WSS,
-                    SSLOptions(SSLOptions::CERT_OK),
+                    SSLOptions(cert),
                     net::GetWebSocketTestDataDirectory()) {}
 
  protected:
@@ -145,7 +152,6 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   net::SpawnedTestServer wss_server_;
 
  private:
-  typedef net::SpawnedTestServer::SSLOptions SSLOptions;
   std::unique_ptr<content::TitleWatcher> watcher_;
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketBrowserTest);
@@ -162,35 +168,70 @@ class WebSocketBrowserTestWithAllowFileAccessFromFiles
 };
 
 // Framework for tests using the connect_to.html page served by a separate HTTP
-// server.
+// or HTTPS server.
 class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
  protected:
-  WebSocketBrowserConnectToTest() {
-    http_server_.ServeFilesFromSourceDirectory(
-        net::GetWebSocketTestDataDirectory());
-  }
+  explicit WebSocketBrowserConnectToTest(
+      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
+      : WebSocketBrowserTest(cert) {}
 
   // The title watcher and HTTP server are set up automatically by the test
   // framework. Each test case still needs to configure and start the
   // WebSocket server(s) it needs.
   void SetUpOnMainThread() override {
+    server().ServeFilesFromSourceDirectory(
+        net::GetWebSocketTestDataDirectory());
     WebSocketBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(server().Start());
   }
 
-  // Supply a ws: or wss: URL to connect to.
-  void ConnectTo(GURL url) {
-    ASSERT_TRUE(http_server_.Started());
+  // Supply a ws: or wss: URL to connect to. Serves connect_to.html from the
+  // server's default host.
+  void ConnectTo(const GURL& url) {
+    ConnectTo(server().base_url().host(), url);
+  }
+
+  // Supply a ws: or wss: URL to connect to via loading `host`/connect_to.html.
+  void ConnectTo(const std::string& host, const GURL& url) {
+    ASSERT_TRUE(server().Started());
     std::string query("url=" + url.spec());
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), http_server_.GetURL("/connect_to.html")
+        browser(), server()
+                       .GetURL(host, "/connect_to.html")
                        .ReplaceComponents(replacements)));
   }
 
- private:
+  virtual net::EmbeddedTestServer& server() = 0;
+};
+
+// Concrete impl for tests that use connect_to.html over HTTP.
+class WebSocketBrowserHTTPConnectToTest : public WebSocketBrowserConnectToTest {
+ protected:
+  net::EmbeddedTestServer& server() override { return http_server_; }
+
   net::EmbeddedTestServer http_server_;
+};
+
+// Concrete impl for tests that use connect_to.html over HTTPS.
+class WebSocketBrowserHTTPSConnectToTest
+    : public WebSocketBrowserConnectToTest {
+ protected:
+  explicit WebSocketBrowserHTTPSConnectToTest(
+      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
+      : WebSocketBrowserConnectToTest(cert),
+        https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    server().SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    WebSocketBrowserConnectToTest::SetUpOnMainThread();
+  }
+
+  net::EmbeddedTestServer& server() override { return https_server_; }
+
+  net::EmbeddedTestServer https_server_;
 };
 
 // Automatically fill in any login prompts that appear with the supplied
@@ -352,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthInWSURL) {
   // Launch a basic-auth-protected WebSocket server.
   ws_server_.set_websocket_basic_auth(true);
@@ -364,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthInWSURLBadCreds) {
   // Launch a basic-auth-protected WebSocket server.
   ws_server_.set_websocket_basic_auth(true);
@@ -376,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthNoCreds) {
   // Launch a basic-auth-protected WebSocket server.
   ws_server_.set_websocket_basic_auth(true);
@@ -420,8 +461,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   net::SpawnedTestServer wss_server(
       net::SpawnedTestServer::TYPE_WSS,
-      net::SpawnedTestServer::SSLOptions(
-          net::SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN),
+      SSLOptions(SSLOptions::CERT_COMMON_NAME_IS_DOMAIN),
       net::GetWebSocketTestDataDirectory());
   // This test sets HSTS on localhost. To avoid being redirected to https, start
   // the http server on 127.0.0.1 instead.
@@ -709,6 +749,45 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
   base::RunLoop run_loop;
   NavigateToPath(base::StringPrintf("check-origin.html?port=%d", port));
   EXPECT_EQ("FILE", WaitAndGetTitle());
+}
+
+// A test fixture that enables First-Party Sets.
+class FirstPartySetsWebSocketBrowserTest
+    : public WebSocketBrowserHTTPSConnectToTest {
+ public:
+  FirstPartySetsWebSocketBrowserTest()
+      : WebSocketBrowserHTTPSConnectToTest(SSLOptions::CERT_TEST_NAMES) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebSocketBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kUseFirstPartySet,
+        "https://a.test,https://b.test,https://c.test");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FirstPartySetsWebSocketBrowserTest,
+                       SendsSamePartyCookies) {
+  ASSERT_TRUE(wss_server_.Start());
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 server().GetURL("a.test", "/"),
+                                 "same-party-cookie=1; SameParty; Secure"));
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 server().GetURL("a.test", "/"),
+                                 "same-site-cookie=1; SameSite=Lax; Secure"));
+
+  content::DOMMessageQueue message_queue;
+  ConnectTo("b.test", wss_server_.GetURL("a.test", "echo-request-headers"));
+
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  // Only the SameParty cookie should have been sent, since it was a cross-site
+  // but same-party connection.
+  EXPECT_THAT(message, testing::HasSubstr("same-party-cookie=1"));
+  EXPECT_THAT(message, testing::Not(testing::HasSubstr("same-site-cookie=1")));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 }  // namespace

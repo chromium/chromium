@@ -77,6 +77,11 @@ class BaseTestServer {
       // A certificate with invalid notBefore and notAfter times. Windows'
       // certificate library will not parse this certificate.
       CERT_BAD_VALIDITY,
+
+      // A certificate that covers a number of test names. See [test_names] in
+      // net/data/ssl/scripts/ee.cnf. More may be added by editing this list and
+      // and rerunning net/data/ssl/scripts/generate-test-certs.sh.
+      CERT_TEST_NAMES,
     };
 
     // NOTE: the values of these enumerators are passed to the the Python test
@@ -198,6 +203,8 @@ class BaseTestServer {
   bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
 
   GURL GetURL(const std::string& path) const;
+  GURL GetURL(const std::string& hostname,
+              const std::string& relative_url) const;
 
   GURL GetURLWithUser(const std::string& path,
                       const std::string& user) const;
