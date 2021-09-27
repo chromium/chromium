@@ -4156,6 +4156,25 @@ ci.fyi_mac_builder(
     description_html = "experiment reclient on mac. removed after the migration. crbug.com/1244441",
 )
 
+ci.fyi_mac_builder(
+    name = "mac-arm64-on-arm64-rel-reclient",
+    builderless = True,
+
+    # same with mac-arm64-on-arm64-rel
+    cores = None,  # crbug.com/1245114
+    cpu = cpu.ARM64,
+    os = os.MAC_11,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "re",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    description_html = "experiment reclient on mac-arm. removed after the migration. crbug.com/1252626",
+)
+
 ci.fyi_builder(
     name = "chromeos-amd64-generic-rel (goma cache silo)",
     console_view_entry = consoles.console_view_entry(

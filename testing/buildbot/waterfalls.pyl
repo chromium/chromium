@@ -3316,6 +3316,15 @@
           'isolated_scripts': 'wpt_web_tests_input',
         },
       },
+      # TODO(crbug.com/1252626): remove this after the migration.
+      'mac-arm64-on-arm64-rel-reclient': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'chromium_mac_scripts',
+        }
+      },
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
