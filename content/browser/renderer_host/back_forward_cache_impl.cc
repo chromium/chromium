@@ -388,6 +388,46 @@ bool AllRenderViewHostsReceivedAckFromRenderer(
   return true;
 }
 
+// Behavior on pages with cache-control:no-store specified by flags.
+enum class CacheControlNoStoreExperimentLevel {
+  // No experiments for cache-control:no-store are running.
+  kDoNotStore = 1,
+  // Only the metrics gathering experiment is on.
+  kStoreAndEvictUponRestore = 2,
+  // Restore the entry only when cookies have not changed while in cache.
+  kStoreAndRestoreUnlessCookieChange = 3,
+  // Restore the entry only when HTTP Only cookies have not changed while in
+  // cache.
+  kStoreAndRestoreUnlessHTTPOnlyCookieChange = 4,
+};
+
+const char kCacheControlNoStoreExperimentLevelName[] = "level";
+
+static constexpr base::FeatureParam<CacheControlNoStoreExperimentLevel>::Option
+    cache_control_levels[] = {
+        {CacheControlNoStoreExperimentLevel::kStoreAndEvictUponRestore,
+         "store-and-evict"},
+        {CacheControlNoStoreExperimentLevel::kStoreAndRestoreUnlessCookieChange,
+         "restore-unless-cookie-change"},
+        {CacheControlNoStoreExperimentLevel::
+             kStoreAndRestoreUnlessHTTPOnlyCookieChange,
+         "restore-unless-http-only-cookie-change"},
+};
+const base::FeatureParam<CacheControlNoStoreExperimentLevel>
+    cache_control_level{&kCacheControlNoStoreEnterBackForwardCache,
+                        kCacheControlNoStoreExperimentLevelName,
+                        CacheControlNoStoreExperimentLevel::kDoNotStore,
+                        &cache_control_levels};
+
+CacheControlNoStoreExperimentLevel GetCacheControlNoStoreLevel() {
+  if (!IsBackForwardCacheEnabled() ||
+      !base::FeatureList::IsEnabled(
+          kCacheControlNoStoreEnterBackForwardCache)) {
+    return CacheControlNoStoreExperimentLevel::kDoNotStore;
+  }
+  return cache_control_level.Get();
+}
+
 }  // namespace
 
 // static
@@ -549,19 +589,25 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   if (!matching_entry)
     return;
 
+  // Note that kCacheControlNoStoreHTTPOnlyCookieModified,
+  // kCacheControlNoStoreCookieModified and kCacheControlNoStore are mutually
+  // exclusive.
   if (matching_entry->cookie_modified_->http_only_cookie_modified) {
     result->No(BackForwardCacheMetrics::NotRestoredReason::
                    kCacheControlNoStoreHTTPOnlyCookieModified);
   } else if (matching_entry->cookie_modified_->cookie_modified) {
-    result->No(BackForwardCacheMetrics::NotRestoredReason::
-                   kCacheControlNoStoreCookieModified);
-  } else {
-    // Cookies did not change, but if the restore flag is not onm we may still
-    // block bfcache.
-    if (!AllowRestoringPagesWithCacheControlNoStore()) {
-      result->No(
-          BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
+    // JavaScript cookies are modified but not HTTP cookies. Only restore based
+    // on the experiment level.
+    if (GetCacheControlNoStoreLevel() <=
+        CacheControlNoStoreExperimentLevel::
+            kStoreAndRestoreUnlessCookieChange) {
+      result->No(BackForwardCacheMetrics::NotRestoredReason::
+                     kCacheControlNoStoreCookieModified);
     }
+  } else if (GetCacheControlNoStoreLevel() ==
+             CacheControlNoStoreExperimentLevel::kStoreAndEvictUponRestore) {
+    result->No(
+        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
   }
 }
 
@@ -1222,20 +1268,8 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
 }
 
 bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-
-  return base::FeatureList::IsEnabled(
-      kCacheControlNoStoreEnterBackForwardCache);
-}
-
-bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {
-  if (!IsBackForwardCacheEnabled() ||
-      !AllowStoringPagesWithCacheControlNoStore())
-    return false;
-
-  return base::FeatureList::IsEnabled(
-      kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange);
+  return GetCacheControlNoStoreLevel() >
+         CacheControlNoStoreExperimentLevel::kDoNotStore;
 }
 
 bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(

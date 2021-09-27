@@ -54,18 +54,12 @@ constexpr base::Feature kBackForwardCacheNoTimeEviction{
     "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allows pages with cache-control:no-store to enter the back/forward cache.
+// Feature params can specify whether pages with cache-control:no-store can be
+// restored if cookies change / if HTTPOnly cookies change.
 // TODO(crbug.com/1228611): Enable this feature.
 const base::Feature kCacheControlNoStoreEnterBackForwardCache{
     "CacheControlNoStoreEnterBackForwardCache",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Restore pages with cache-control:no-store from back/forward cache if there is
-// no cookie change while the page is in cache.
-// TODO(crbug.com/1228611): Enable this feature.
-const base::Feature
-    kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange{
-        "CacheControlNoStoreRestoreFromBackForwardCache",
-        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allows pages with MediaSession's playback state change to stay eligible for
 // the back/forward cache.
@@ -364,10 +358,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns true if the flag is on for pages with cache-control:no-store to
   // get restored from back/forward cache unless cookies change.
   static bool AllowStoringPagesWithCacheControlNoStore();
-
-  // Returns true if the flag is on for pages with cache-control:no-store to
-  // temporarily enter back/forward cache.
-  static bool AllowRestoringPagesWithCacheControlNoStore();
 
   // Contains the set of stored Entries.
   // Invariant:
