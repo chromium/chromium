@@ -2034,7 +2034,7 @@
   {
     "name": "enable-holding-space-in-progress-downloads-integration",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "enable-hostname-setting",
