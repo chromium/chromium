@@ -191,18 +191,35 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
           .LockedDisplayLockCount() == 0)
     return;
 
-  for (Node& node : EphemeralRangeInFlatTree(range).Nodes()) {
-    if (Element* element = DynamicTo<Element>(&node)) {
-      if (DisplayLockContext* context = element->GetDisplayLockContext()) {
-        forced_context_set_.insert(context);
+  // Ranges use NodeTraversal::Next to go in between their start and end nodes,
+  // and will access the layout information of each of those nodes. In order to
+  // ensure that each of these nodes has unlocked layout information, we have to
+  // do a scoped unlock for each of those nodes by unlocking all of their flat
+  // tree ancestors.
+  for (Node* node = range->FirstNode(); node != range->PastLastNode();
+       node = NodeTraversal::Next(*node)) {
+    if (node->IsChildOfShadowHost()) {
+      // This node may be slotted into another place in the flat tree, so we
+      // have to do a flat tree parent traversal for it.
+      for (Node* ancestor = node; ancestor;
+           ancestor = FlatTreeTraversal::Parent(*ancestor)) {
+        if (Element* element = DynamicTo<Element>(ancestor)) {
+          if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+            forced_context_set_.insert(context);
+          }
+        }
+      }
+    } else {
+      if (Element* element = DynamicTo<Element>(node)) {
+        if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+          forced_context_set_.insert(context);
+        }
       }
     }
   }
-  // We want to unlock everything up the ancestor tree and all nodes in between
-  // the first and last nodes of the range. EphemeralRangeInFlatTree::Nodes will
-  // cover all of the in between nodes and the ancestors of the end node
-  for (Node& node : FlatTreeTraversal::AncestorsOf(*range->FirstNode())) {
-    if (Element* element = DynamicTo<Element>(&node)) {
+  for (Node* node = range->FirstNode(); node;
+       node = FlatTreeTraversal::Parent(*node)) {
+    if (Element* element = DynamicTo<Element>(node)) {
       if (DisplayLockContext* context = element->GetDisplayLockContext()) {
         forced_context_set_.insert(context);
       }
