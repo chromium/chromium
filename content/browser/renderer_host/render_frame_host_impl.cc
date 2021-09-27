@@ -5253,7 +5253,7 @@ void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
   frame_tree_node()->SetInsecureNavigationsSet(set);
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
+FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(
     int32_t child_frame_routing_id,
     bad_message::BadMessageReason reason) {
   auto child_frame_or_proxy = LookupRenderFrameHostOrProxy(
@@ -5261,7 +5261,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
   return FindAndVerifyChildInternal(child_frame_or_proxy, reason);
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
+FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(
     const blink::FrameToken& child_frame_token,
     bad_message::BadMessageReason reason) {
   auto child_frame_or_proxy =
@@ -5269,7 +5269,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
   return FindAndVerifyChildInternal(child_frame_or_proxy, reason);
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
+FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChildInternal(
     RenderFrameHostOrProxy child_frame_or_proxy,
     bad_message::BadMessageReason reason) {
   // A race can result in |child| to be nullptr. Avoid killing the renderer in
@@ -5290,7 +5290,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
     bad_message::ReceivedBadMessage(GetProcess(), reason);
     return nullptr;
   }
-  return child_frame_or_proxy.GetCurrentFrameHost();
+  return child_frame_or_proxy.GetFrameTreeNode();
 }
 
 void RenderFrameHostImpl::UpdateTitle(
@@ -6284,14 +6284,14 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 
   bool has_display_none_property_changed =
       properties->is_display_none !=
-      child->frame_tree_node()->frame_owner_properties().is_display_none;
+      child->frame_owner_properties().is_display_none;
 
-  child->frame_tree_node()->set_frame_owner_properties(*properties);
+  child->set_frame_owner_properties(*properties);
 
-  child->frame_tree_node()->render_manager()->OnDidUpdateFrameOwnerProperties(
-      *properties);
+  child->render_manager()->OnDidUpdateFrameOwnerProperties(*properties);
   if (has_display_none_property_changed) {
-    delegate_->DidChangeDisplayState(child, properties->is_display_none);
+    delegate_->DidChangeDisplayState(child->current_frame_host(),
+                                     properties->is_display_none);
   }
 }
 
@@ -6317,8 +6317,8 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
   if (!child)
     return;
 
-  child->frame_tree_node()->set_csp_attribute(std::move(parsed_csp_attribute));
-  child->frame_tree_node()->set_anonymous(anonymous);
+  child->set_csp_attribute(std::move(parsed_csp_attribute));
+  child->set_anonymous(anonymous);
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(
@@ -6327,21 +6327,23 @@ void RenderFrameHostImpl::DidChangeFramePolicy(
   // Ensure that a frame can only update sandbox flags or permissions policy for
   // its immediate children.  If this is not the case, the renderer is
   // considered malicious and is killed.
-  RenderFrameHostImpl* child = FindAndVerifyChild(
+  FrameTreeNode* child = FindAndVerifyChild(
       // TODO(iclelland): Rename this message
       child_frame_token, bad_message::RFH_SANDBOX_FLAGS);
   if (!child)
     return;
 
-  child->frame_tree_node()->SetPendingFramePolicy(frame_policy);
+  child->SetPendingFramePolicy(frame_policy);
 
   // Notify the RenderFrame if it lives in a different process from its parent.
   // The frame's proxies in other processes also need to learn about the updated
   // flags and policy, but these notifications are sent later in
   // RenderFrameHostManager::CommitPendingFramePolicy(), when the frame
   // navigates and the new policies take effect.
-  if (child->GetSiteInstance() != GetSiteInstance()) {
-    child->GetAssociatedLocalFrame()->DidUpdateFramePolicy(frame_policy);
+  if (child->current_frame_host()->GetSiteInstance() != GetSiteInstance()) {
+    child->current_frame_host()
+        ->GetAssociatedLocalFrame()
+        ->DidUpdateFramePolicy(frame_policy);
   }
 }
 

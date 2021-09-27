@@ -1192,18 +1192,17 @@ void SavePackage::SavableResourceLinksResponse(
                            referrer.To<content::Referrer>());
   }
   for (auto& subframe : subframes) {
-    RenderFrameHostImpl* rfh_subframe = sender->FindAndVerifyChild(
+    FrameTreeNode* subframe_ftn = sender->FindAndVerifyChild(
         subframe->subframe_token,
         bad_message::DWNLD_INVALID_SAVABLE_RESOURCE_LINKS_RESPONSE);
 
-    if (!rfh_subframe) {
+    if (!subframe_ftn) {
       // crbug.com/541354 - Raciness when saving a dynamically changing page.
       continue;
     }
 
     EnqueueFrame(container_frame_tree_node_id,
-                 rfh_subframe->frame_tree_node()->frame_tree_node_id(),
-                 subframe->original_url);
+                 subframe_ftn->frame_tree_node_id(), subframe->original_url);
   }
 
   CompleteSavableResourceLinksResponse();

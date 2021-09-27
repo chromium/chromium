@@ -2166,20 +2166,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
     committed_speculative_rfh_before_navigation_commit_ = true;
   }
 
-  // Returns the child RenderFrameHostImpl if |child_frame_routing_id| is an
-  // immediate child of this FrameTreeNode. |child_frame_routing_id| is
-  // considered untrusted, so the renderer process is killed if it refers to a
-  // RenderFrameHostImpl that is not a child of this node.
-  RenderFrameHostImpl* FindAndVerifyChild(int32_t child_frame_routing_id,
-                                          bad_message::BadMessageReason reason);
+  // Returns the child frame if |child_frame_routing_id| is an immediate child
+  // of this RenderFrameHost. |child_frame_routing_id| is considered untrusted,
+  // so the renderer process is killed if it refers to a RenderFrameHostImpl
+  // that is not a child of this node.
+  FrameTreeNode* FindAndVerifyChild(int32_t child_frame_routing_id,
+                                    bad_message::BadMessageReason reason);
 
-  // Returns the child RenderFrameHostImpl if |child_frame_token| is an
-  // immediate child of this FrameTreeNode. |child_frame_token| is considered
-  // untrusted, so the renderer process is killed if it refers to a
-  // RenderFrameHostImpl that is not a child of this node.
-  RenderFrameHostImpl* FindAndVerifyChild(
-      const blink::FrameToken& child_frame_token,
-      bad_message::BadMessageReason reason);
+  // Returns the child frame if |child_frame_token| is an immediate child of
+  // this RenderFrameHostImpl. |child_frame_token| is considered untrusted, so
+  // the renderer process is killed if it refers to a RenderFrameHostImpl that
+  // is not a child of this node.
+  FrameTreeNode* FindAndVerifyChild(const blink::FrameToken& child_frame_token,
+                                    bad_message::BadMessageReason reason);
 
   // Whether we should run the pagehide/visibilitychange handlers of the
   // RenderFrameHost we're navigating away from (|old_frame_host|) during the
@@ -2506,7 +2505,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;
 
-  RenderFrameHostImpl* FindAndVerifyChildInternal(
+  FrameTreeNode* FindAndVerifyChildInternal(
       RenderFrameHostOrProxy child_frame_or_proxy,
       bad_message::BadMessageReason reason);
 
