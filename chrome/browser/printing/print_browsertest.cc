@@ -375,6 +375,98 @@ class TestPrintViewManager : public PrintViewManager {
   std::unique_ptr<PrintSettings> snooped_settings_;
 };
 
+class TestPrintViewManagerForDLP : public TestPrintViewManager {
+ public:
+  // Used to simulate Data Leak Prevention polices and possible user actions.
+  enum class RestrictionLevel {
+    // No DLP restrictions set - printing is allowed.
+    kNotSet,
+    // The user is warned and selects "continue" - printing is allowed.
+    kWarnAllow,
+    // The user is warned and selects "cancel" - printing is not allowed.
+    kWarnCancel,
+    // Printing is blocked, no print preview is shown.
+    kBlock,
+  };
+
+  static TestPrintViewManagerForDLP* CreateForWebContents(
+      content::WebContents* web_contents,
+      RestrictionLevel restriction_level) {
+    auto manager = std::make_unique<TestPrintViewManagerForDLP>(
+        web_contents, restriction_level);
+    auto* manager_ptr = manager.get();
+    web_contents->SetUserData(PrintViewManager::UserDataKey(),
+                              std::move(manager));
+    return manager_ptr;
+  }
+
+  // Used by the TestPrintViewManagerForDLP to check that the correct action is
+  // taken based on the restriction level.
+  enum class PrintAllowance {
+    // No checks done yet to determine whether printing is allowed or not.
+    kUnknown,
+    // There are no restrictions/user allowed printing.
+    kAllowed,
+    // There are BLOCK restrictions or user canceled the printing.
+    kDisallowed,
+  };
+
+  TestPrintViewManagerForDLP(content::WebContents* web_contents,
+                             RestrictionLevel restriction_level)
+      : TestPrintViewManager(web_contents),
+        restriction_level_(restriction_level) {
+    PrintViewManager::SetReceiverImplForTesting(this);
+  }
+  TestPrintViewManagerForDLP(const TestPrintViewManagerForDLP&) = delete;
+  TestPrintViewManagerForDLP& operator=(const TestPrintViewManagerForDLP&) =
+      delete;
+  ~TestPrintViewManagerForDLP() override {
+    PrintViewManager::SetReceiverImplForTesting(nullptr);
+  }
+
+  void WaitUntilPreviewIsShownOrCancelled() {
+    base::RunLoop run_loop;
+    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+    run_loop.Run();
+  }
+
+  PrintAllowance GetPrintAllowance() const { return allowance_; }
+
+ private:
+  bool IsPrintingRestricted() const override {
+    return restriction_level_ == RestrictionLevel::kBlock;
+  }
+
+  bool ShouldWarnBeforePrinting() const override {
+    return restriction_level_ == RestrictionLevel::kWarnAllow ||
+           restriction_level_ == RestrictionLevel::kWarnCancel;
+  }
+
+  void ShowWarning(
+      base::OnceClosure on_print_preview_allowed_cb,
+      base::OnceClosure on_print_preview_rejected_cb) const override {
+    if (restriction_level_ == RestrictionLevel::kWarnAllow) {
+      std::move(on_print_preview_allowed_cb).Run();
+    } else if (restriction_level_ == RestrictionLevel::kWarnCancel) {
+      std::move(on_print_preview_rejected_cb).Run();
+    }
+  }
+
+  void PrintPreviewRejectedForTesting() override {
+    run_loop_->Quit();
+    allowance_ = PrintAllowance::kDisallowed;
+  }
+
+  void PrintPreviewAllowedForTesting() override {
+    run_loop_->Quit();
+    allowance_ = PrintAllowance::kAllowed;
+  }
+
+  RestrictionLevel restriction_level_ = RestrictionLevel::kNotSet;
+  PrintAllowance allowance_ = PrintAllowance::kUnknown;
+  base::RunLoop* run_loop_ = nullptr;
+};
+
 class PrintBrowserTest : public InProcessBrowserTest {
  public:
   PrintBrowserTest() = default;
@@ -1023,6 +1115,163 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, RegularPrinting) {
 
   EXPECT_EQ(content::AreAllSitesIsolatedForTesting(), IsOopifEnabled());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that if user allows printing after being shown a warning due to DLP
+// restrictions, the print preview is rendered.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents,
+          TestPrintViewManagerForDLP::RestrictionLevel::kWarnAllow);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false,
+             /*print_only_selection=*/false);
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
+}
+
+// Test that if user cancels printing after being shown a warning due to DLP
+// restrictions, the print preview is not rendered.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceled) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents,
+          TestPrintViewManagerForDLP::RestrictionLevel::kWarnCancel);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false,
+             /*print_only_selection=*/false);
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
+}
+
+// Test that if printing is blocked due to DLP restrictions, the print preview
+// is not rendered.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlocked) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents, TestPrintViewManagerForDLP::RestrictionLevel::kBlock);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false,
+             /*print_only_selection=*/false);
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
+}
+
+// Test that if user allows printing after being shown a warning due to DLP
+// restrictions, the print preview is rendered when initiated by window.print().
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowedWithWindowDotPrint) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents,
+          TestPrintViewManagerForDLP::RestrictionLevel::kWarnAllow);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
+}
+
+// Test that if user cancels printing after being shown a warning due to DLP
+// restrictions, the print preview is not rendered when initiated by
+// window.print().
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceledWithWindowDotPrint) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents,
+          TestPrintViewManagerForDLP::RestrictionLevel::kWarnCancel);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
+}
+
+// Test that if printing is blocked due to DLP restrictions, the print preview
+// is not rendered when initiated by window.print().
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlockedWithWindowDotPrint) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Set up the print view manager and DLP restrictions.
+  TestPrintViewManagerForDLP* print_view_manager =
+      TestPrintViewManagerForDLP::CreateForWebContents(
+          web_contents, TestPrintViewManagerForDLP::RestrictionLevel::kBlock);
+
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
+  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
+  ASSERT_EQ(print_view_manager->GetPrintAllowance(),
+            TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Printing preview a webpage with isolate-origins enabled.
 // Test that we will use oopif printing for this case.

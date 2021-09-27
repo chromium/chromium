@@ -215,19 +215,11 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
     base::OnceClosure on_print_preview_allowed_cb,
     base::OnceClosure on_print_preview_rejected_cb) {
   if (IsPrintingRestricted()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::ShowDlpPrintDisabledNotification();
-#else
-    NOTREACHED();
-#endif
+    ShowBlockedNotification();
     std::move(on_print_preview_rejected_cb).Run();
   } else if (ShouldWarnBeforePrinting()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::ShowDlpPrintWarningDialog(std::move(on_print_preview_allowed_cb),
-                                      std::move(on_print_preview_rejected_cb));
-#else
-    NOTREACHED();
-#endif
+    ShowWarning(std::move(on_print_preview_allowed_cb),
+                std::move(on_print_preview_rejected_cb));
   } else {
     std::move(on_print_preview_allowed_cb).Run();
   }
@@ -241,6 +233,7 @@ void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
     return;
   }
   PrintPreviewDone();
+  PrintPreviewRejectedForTesting();
 }
 
 void PrintViewManager::RenderFrameCreated(
@@ -388,6 +381,7 @@ void PrintViewManager::OnScriptedPrintPreviewAllowed(bool source_is_modifiable,
   params.is_modifiable = source_is_modifiable;
   PrintPreviewUI::SetInitialParams(
       dialog_controller->GetPrintPreviewForContents(web_contents()), params);
+  PrintPreviewAllowedForTesting();
 }
 
 void PrintViewManager::RequestPrintPreview(
@@ -421,6 +415,7 @@ void PrintViewManager::OnRequestPrintPreviewAllowed(
   PrintPreviewDialogController::PrintPreview(web_contents());
   PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(web_contents()),
                                    *params);
+  PrintPreviewAllowedForTesting();
 }
 
 void PrintViewManager::CheckForCancel(int32_t preview_ui_id,
@@ -459,6 +454,33 @@ bool PrintViewManager::ShouldWarnBeforePrinting() const {
 #else
   return false;
 #endif
+}
+
+void PrintViewManager::ShowWarning(
+    base::OnceClosure on_print_preview_allowed_cb,
+    base::OnceClosure on_print_preview_rejected_cb) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::ShowDlpPrintWarningDialog(std::move(on_print_preview_allowed_cb),
+                                    std::move(on_print_preview_rejected_cb));
+#else
+  NOTREACHED();
+#endif
+}
+
+void PrintViewManager::ShowBlockedNotification() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::ShowDlpPrintDisabledNotification();
+#else
+  NOTREACHED();
+#endif
+}
+
+void PrintViewManager::PrintPreviewRejectedForTesting() {
+  // Note: This is only used for testing.
+}
+
+void PrintViewManager::PrintPreviewAllowedForTesting() {
+  // Note: This is only used for testing.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManager)
