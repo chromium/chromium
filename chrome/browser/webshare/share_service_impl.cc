@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
@@ -35,7 +34,7 @@
 ShareServiceImpl::ShareServiceImpl(content::RenderFrameHost& render_frame_host)
     : content::WebContentsObserver(
           content::WebContents::FromRenderFrameHost(&render_frame_host)),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       sharesheet_client_(web_contents()),
 #endif
       render_frame_host_(&render_frame_host) {
@@ -235,7 +234,7 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   sharesheet_client_.Share(title, text, share_url, std::move(files),
                            std::move(callback));
 #elif defined(OS_MAC)

@@ -11,13 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webshare/safe_browsing_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
 
@@ -71,7 +70,7 @@ class ShareServiceImpl : public blink::mojom::ShareService,
  private:
   absl::optional<SafeBrowsingRequest> safe_browsing_request_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   webshare::SharesheetClient sharesheet_client_;
 #endif
   content::RenderFrameHost* render_frame_host_;
