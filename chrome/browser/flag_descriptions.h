@@ -2094,9 +2094,6 @@ extern const char kAppManagementIntentSettingsDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
-extern const char kEnableAccessibilityLiveCaptionSodaName[];
-extern const char kEnableAccessibilityLiveCaptionSodaDescription[];
-
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 

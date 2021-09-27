@@ -3693,12 +3693,6 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
-const char kEnableAccessibilityLiveCaptionSodaName[] = "SODA for Live Caption";
-const char kEnableAccessibilityLiveCaptionSodaDescription[] =
-    "If Live Caption (chrome://flags/#enable-accessibility-live-captions) is "
-    "enabled, whether or not to use SODA for live captions instead of the web "
-    "api. Turn on the feature in chrome://settings/accessibility.";
-
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "
