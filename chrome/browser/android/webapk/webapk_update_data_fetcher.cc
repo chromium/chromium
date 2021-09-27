@@ -261,6 +261,9 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   // The inner vector represents a shortcut items, with the following fields:
   // <name>, <short name>, <launch url>, <icon url>, <icon hash>.
   std::vector<std::vector<std::u16string>> shortcuts;
+  // Each entry contains the icon data for the corresponding entry in
+  // |shortcuts|.
+  std::vector<std::string> shortcut_icon_data;
   DCHECK_EQ(info_.shortcut_items.size(), info_.best_shortcut_icon_urls.size());
 
   for (size_t i = 0; i < info_.shortcut_items.size(); i++) {
@@ -279,8 +282,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
                          shortcut.short_name.value_or(std::u16string()),
                          base::UTF8ToUTF16(shortcut.url.spec()),
                          base::UTF8ToUTF16(chosen_icon_url.spec()),
-                         base::UTF8ToUTF16(chosen_icon_hash),
-                         base::UTF8ToUTF16(chosen_icon_data)});
+                         base::UTF8ToUTF16(chosen_icon_hash)});
+    shortcut_icon_data.push_back(std::move(chosen_icon_data));
   }
 
   Java_WebApkUpdateDataFetcher_onDataAvailable(
@@ -295,5 +298,6 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       java_share_params_title, java_share_params_text,
       java_share_params_is_method_post, java_share_params_is_enctype_multipart,
       java_share_params_file_names, java_share_params_accepts,
-      base::android::ToJavaArrayOfStringArray(env, shortcuts));
+      base::android::ToJavaArrayOfStringArray(env, shortcuts),
+      base::android::ToJavaArrayOfByteArray(env, shortcut_icon_data));
 }
