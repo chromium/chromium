@@ -70,10 +70,13 @@ class FrameHostInterceptor::FrameAgent
 
 FrameHostInterceptor::FrameHostInterceptor(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  for (auto* rfh : web_contents->GetAllFrames()) {
-    if (rfh->IsRenderFrameLive())
-      RenderFrameCreated(rfh);
-  }
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](FrameHostInterceptor* interceptor,
+         RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          interceptor->RenderFrameCreated(render_frame_host);
+      },
+      this));
 }
 
 FrameHostInterceptor::~FrameHostInterceptor() = default;
