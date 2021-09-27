@@ -259,3 +259,60 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
       apps::mojom::PatternMatchType::kNone, host_filter);
   ASSERT_FALSE(apps_util::IsSupportedLink(browser_filter));
 }
+
+TEST_F(IntentFilterUtilTest, HostMatchOverlap) {
+  auto google_domain_filter = MakeFilter(
+      "https", "www.google.com", "/", apps::mojom::PatternMatchType::kLiteral);
+
+  auto maps_domain_filter = MakeFilter("https", "maps.google.com", "/",
+                                       apps::mojom::PatternMatchType::kLiteral);
+
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, "www.google.com",
+      apps::mojom::PatternMatchType::kNone, maps_domain_filter);
+
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+}
+
+TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
+  auto literal_pattern_filter1 = MakeFilter(
+      "https", "www.example.com", "/", apps::mojom::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::mojom::ConditionType::kPattern, "/foo",
+                               apps::mojom::PatternMatchType::kLiteral,
+                               literal_pattern_filter1);
+
+  auto literal_pattern_filter2 =
+      MakeFilter("https", "www.example.com", "/foo/bar",
+                 apps::mojom::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::mojom::ConditionType::kPattern, "/bar",
+                               apps::mojom::PatternMatchType::kLiteral,
+                               literal_pattern_filter2);
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                             literal_pattern_filter2));
+
+  auto root_prefix_filter = MakeFilter("https", "www.example.com", "/",
+                                       apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter2));
+
+  auto bar_prefix_filter = MakeFilter("https", "www.example.com", "/bar",
+                                      apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                             literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                            literal_pattern_filter2));
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(bar_prefix_filter, root_prefix_filter));
+
+  auto foo_prefix_filter = MakeFilter("https", "www.example.com", "/foo",
+                                      apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(foo_prefix_filter, bar_prefix_filter));
+}
