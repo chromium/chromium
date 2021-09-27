@@ -5679,7 +5679,7 @@
   {
     "name": "webxr-incubations",
     "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 110
   },
   {
     "name": "webxr-runtime",
