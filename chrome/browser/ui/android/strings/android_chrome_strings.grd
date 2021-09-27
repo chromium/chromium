@@ -352,7 +352,7 @@ CHAR_LIMIT guidelines:
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google services<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_USAGE_AND_CRASH_REPORTS_TITLE" desc="Title for a preference that enables sending usage statistics and crash reports.">
-        Help improve Chrome's features and performance
+        Help improve Chrome\u2019s features and performance
       </message>
       <message name="IDS_USAGE_AND_CRASH_REPORTS_SUMMARY" desc="Description for 'Help improve Chrome's features and performance' preference.">
         Automatically sends usage statistics and crash reports to Google

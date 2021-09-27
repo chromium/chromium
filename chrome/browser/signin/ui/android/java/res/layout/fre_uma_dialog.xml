@@ -18,9 +18,20 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/signin_fre_uma_dialog_section_margin"
+            android:layout_marginBottom="10dp"
             android:text="@string/signin_fre_uma_dialog_title"
             style="@style/TextAppearance.Headline.Primary" />
+
+        <Switch
+            android:id="@+id/fre_uma_dialog_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="@string/usage_and_crash_reports_title"
+            android:checked="true"
+            android:gravity="start|center"
+            android:lineSpacingMultiplier="1.2"
+            style="@style/TextAppearance.TextLarge.Primary" />
 
         <TextView
             android:layout_width="match_parent"

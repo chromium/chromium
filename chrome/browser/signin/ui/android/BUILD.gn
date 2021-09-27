@@ -176,7 +176,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogTest.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogTest.java",
   ]
   deps = [
     ":java",

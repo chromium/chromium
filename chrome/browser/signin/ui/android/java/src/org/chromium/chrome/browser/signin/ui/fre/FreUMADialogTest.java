@@ -4,9 +4,22 @@
 
 package org.chromium.chrome.browser.signin.ui.fre;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,6 +29,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -27,6 +43,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.signin.ui.R;
+import org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator.Listener;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -45,7 +62,7 @@ import java.io.IOException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class FreUMADialogRenderTest {
+public class FreUMADialogTest {
     @ClassRule
     public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
             new BaseActivityTestRule<>(DummyUiActivity.class);
@@ -53,8 +70,14 @@ public class FreUMADialogRenderTest {
     private static Activity sActivity;
 
     @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
+    @Mock
+    private Listener mListenerMock;
 
     private FreUMADialogCoordinator mCoordinator;
 
@@ -82,7 +105,8 @@ public class FreUMADialogRenderTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new FreUMADialogCoordinator(sActivity,
-                    new ModalDialogManager(new AppModalPresenter(sActivity), ModalDialogType.APP));
+                    new ModalDialogManager(new AppModalPresenter(sActivity), ModalDialogType.APP),
+                    mListenerMock);
         });
     }
 
@@ -94,6 +118,26 @@ public class FreUMADialogRenderTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(mCoordinator::dismissDialogForTesting);
+    }
+
+    @Test
+    @MediumTest
+    public void testTurningOffAllowCrashUpload() {
+        onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
+        onView(withText(org.chromium.chrome.R.string.done)).perform(click());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+        verify(mListenerMock).onAllowCrashUploadChecked(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testLeavingAllowCrashUploadOn() {
+        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked()));
+        onView(withText(org.chromium.chrome.R.string.done)).perform(click());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+        verify(mListenerMock, never()).onAllowCrashUploadChecked(anyBoolean());
     }
 
     @Test

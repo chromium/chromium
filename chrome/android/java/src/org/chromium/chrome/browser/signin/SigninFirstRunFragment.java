@@ -34,8 +34,9 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
-public class SigninFirstRunFragment
-        extends Fragment implements FirstRunFragment, SigninFirstRunCoordinator.Listener {
+public class SigninFirstRunFragment extends Fragment implements FirstRunFragment,
+                                                                SigninFirstRunCoordinator.Listener,
+                                                                FreUMADialogCoordinator.Listener {
     private static final String FOOTER_LINK_OPEN = "<LINK>";
     private static final String FOOTER_LINK_CLOSE = "</LINK>";
 
@@ -44,8 +45,8 @@ public class SigninFirstRunFragment
 
     private ModalDialogManager mModalDialogManager;
     private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
-    private @Nullable FreUMADialogCoordinator mFreUMADialogCoordinator;
     private boolean mNativeInitialized;
+    private boolean mAllowCrashUpload;
 
     public SigninFirstRunFragment() {}
 
@@ -63,6 +64,8 @@ public class SigninFirstRunFragment
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
         mSigninFirstRunCoordinator =
                 new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
+        mAllowCrashUpload = true;
+        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         final NoUnderlineClickableSpan footerLinkSpan =
                 new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
         final SpannableString footerString = SpanApplier.applySpans(
@@ -71,7 +74,6 @@ public class SigninFirstRunFragment
         TextViewWithClickableSpans footerView = view.findViewById(R.id.signin_fre_footer);
         footerView.setText(footerString);
         footerView.setMovementMethod(LinkMovementMethod.getInstance());
-        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
     }
 
@@ -128,7 +130,16 @@ public class SigninFirstRunFragment
     /** Implements {@link SigninFirstRunCoordinator.Listener}. */
     @Override
     public void advanceToNextPage() {
-        getPageDelegate().acceptTermsOfService(true);
+        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+    }
+
+    /**
+     * Implements {@link
+     * org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator.Listener}
+     */
+    @Override
+    public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
+        mAllowCrashUpload = allowCrashUpload;
     }
 
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
@@ -140,7 +151,6 @@ public class SigninFirstRunFragment
     }
 
     private void onFooterLinkClicked(View view) {
-        mFreUMADialogCoordinator =
-                new FreUMADialogCoordinator(requireContext(), mModalDialogManager);
+        new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this);
     }
 }

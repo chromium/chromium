@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -355,6 +356,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
 
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_first_section_header))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_first_section_body))
@@ -364,6 +366,51 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.signin_fre_uma_dialog_second_section_body))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.done)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWhenDismissingUMADialog() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+
+        onView(withText(R.string.done)).perform(click());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissButtonWhenAllowCrashUploadTurnedOff() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
+        onView(withText(R.string.done)).perform(click());
+
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> { return mFragment.mIsAdvanceToNextPageCalled; });
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButtonWhenAllowCrashUploadTurnedOff() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        launchActivityWithFragment();
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
+        onView(withText(R.string.done)).perform(click());
+
+        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
+                R.string.signin_promo_continue_as, GIVEN_NAME1);
+        onView(withText(continueAsText)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> { return mFragment.mIsAdvanceToNextPageCalled; });
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
     }
 
     @Test

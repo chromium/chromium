@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.ui.fre;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Switch;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,13 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Google in the First Run Experience signin screen.
  */
 public class FreUMADialogCoordinator {
+    /**
+     * Callback for the switch in the dialog.
+     */
+    public interface Listener {
+        void onAllowCrashUploadChecked(boolean isChecked);
+    }
+
     private final ModalDialogManager mDialogManager;
     private final PropertyModel mModel;
     private final View mView;
@@ -32,8 +40,9 @@ public class FreUMADialogCoordinator {
      * Constructs the coordinator and shows the dialog.
      */
     @MainThread
-    public FreUMADialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
-        mView = inflateFreFooterDialogView(context);
+    public FreUMADialogCoordinator(
+            Context context, ModalDialogManager modalDialogManager, Listener listener) {
+        mView = inflateFreFooterDialogView(context, listener);
         mDialogManager = modalDialogManager;
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
@@ -53,13 +62,15 @@ public class FreUMADialogCoordinator {
         };
     }
 
-    private View inflateFreFooterDialogView(Context context) {
+    private View inflateFreFooterDialogView(Context context, Listener listener) {
         View view = LayoutInflater.from(context).inflate(R.layout.fre_uma_dialog, null);
         view.findViewById(R.id.fre_uma_dialog_dismiss_button)
                 .setOnClickListener(v
                         -> mDialogManager.dismissDialog(
                                 mModel, DialogDismissalCause.ACTION_ON_CONTENT));
-
+        Switch umaSwitch = view.findViewById(R.id.fre_uma_dialog_switch);
+        umaSwitch.setOnCheckedChangeListener(
+                (compoundButton, isChecked) -> listener.onAllowCrashUploadChecked(isChecked));
         return view;
     }
 
