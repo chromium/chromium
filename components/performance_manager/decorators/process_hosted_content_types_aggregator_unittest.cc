@@ -64,6 +64,12 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, AdFrame) {
   frame_node->SetIsAdFrame(true);
   EXPECT_TRUE(
       process_node->hosted_content_types().Has(ProcessNode::ContentType::kAd));
+
+  // Untag the frame as an ad. The process is still counted as having hosted an
+  // ad frame.
+  frame_node->SetIsAdFrame(false);
+  EXPECT_TRUE(
+      process_node->hosted_content_types().Has(ProcessNode::ContentType::kAd));
 }
 
 TEST_F(ProcessHostedContentTypesAggregatorTest, ContentTypeIsPermanent) {
