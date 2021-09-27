@@ -26,4 +26,8 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   device_properties_ = mojo::Clone(device_properties);
 }
 
+const char* BluetoothDeviceListItemView::GetClassName() const {
+  return "BluetoothDeviceListItemView";
+}
+
 }  // namespace ash

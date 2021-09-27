@@ -12,6 +12,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -19,6 +20,7 @@
 namespace ash {
 namespace {
 using chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling;
+using chromeos::bluetooth_config::mojom::DeviceConnectionState;
 }  // namespace
 
 BluetoothDetailedViewController::BluetoothDetailedViewController(
@@ -45,6 +47,11 @@ views::View* BluetoothDetailedViewController::CreateView() {
       bluetooth_detailed_view.get());
   BluetoothEnabledStateChanged();
 
+  if (IsBluetoothEnabledOrEnabling(system_state_)) {
+    device_list_controller_->UpdateDeviceList(connected_devices_,
+                                              previously_connected_devices_);
+  }
+
   // We are expected to return an unowned pointer that the caller is responsible
   // for deleting.
   return bluetooth_detailed_view.release()->GetAsView();
@@ -64,6 +71,22 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 
   if (has_bluetooth_enabled_state_changed)
     BluetoothEnabledStateChanged();
+
+  connected_devices_.clear();
+  previously_connected_devices_.clear();
+
+  for (auto& paired_device : properties->paired_devices) {
+    if (paired_device->device_properties->connection_state ==
+        DeviceConnectionState::kConnected) {
+      connected_devices_.push_back(std::move(paired_device));
+    } else {
+      previously_connected_devices_.push_back(std::move(paired_device));
+    }
+  }
+  if (device_list_controller_ && IsBluetoothEnabledOrEnabling(system_state_)) {
+    device_list_controller_->UpdateDeviceList(connected_devices_,
+                                              previously_connected_devices_);
+  }
 }
 
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {

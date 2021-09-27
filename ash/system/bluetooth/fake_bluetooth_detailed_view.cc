@@ -6,13 +6,15 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/tray/tri_view.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 namespace tray {
 
 FakeBluetoothDetailedView::FakeBluetoothDetailedView(Delegate* delegate)
     : BluetoothDetailedView(delegate),
-      device_list_(std::make_unique<views::ScrollView>()) {}
+      device_list_(std::make_unique<views::View>()) {}
 
 FakeBluetoothDetailedView::~FakeBluetoothDetailedView() = default;
 
@@ -30,9 +32,13 @@ BluetoothDeviceListItemView* FakeBluetoothDetailedView::AddDeviceListItem() {
 }
 
 ash::TriView* FakeBluetoothDetailedView::AddDeviceListSubHeader(
-    const gfx::VectorIcon&,
-    int) {
-  return device_list_->AddChildView(new ash::TriView());
+    const gfx::VectorIcon& /*icon*/,
+    int text_id) {
+  std::unique_ptr<TriView> sub_header = std::make_unique<TriView>();
+  sub_header->AddView(TriView::Container::CENTER,
+                      new views::Label(l10n_util::GetStringUTF16(text_id)));
+  device_list_->AddChildView(sub_header.get());
+  return sub_header.release();
 }
 
 void FakeBluetoothDetailedView::NotifyDeviceListChanged() {
@@ -40,7 +46,7 @@ void FakeBluetoothDetailedView::NotifyDeviceListChanged() {
 }
 
 views::View* FakeBluetoothDetailedView::device_list() {
-  return device_list_->contents();
+  return device_list_.get();
 }
 
 }  // namespace tray
