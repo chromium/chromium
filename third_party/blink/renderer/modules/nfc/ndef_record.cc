@@ -4,9 +4,15 @@
 
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
 
+#include "base/notreached.h"
 #include "services/device/public/mojom/nfc.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_message_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_record_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_ndefmessageinit_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -15,10 +21,12 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -31,10 +39,33 @@ WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
   return data;
 }
 
-bool GetBytesOfBufferSource(const V8NDEFRecordDataSource* buffer_source,
+// Retrieves a RecordInit's |data| as a v8::Local<V8::Value> or creates a new
+// v8::Undefined if |data| is not set.
+// This is necessary because an empty v8::Local<V8::Value> as created in an
+// empty ScriptValue will cause calls to v8::Value methods such as IsString()
+// to crash.
+v8::Local<v8::Value> GetPayloadDataOrUndefined(
+    v8::Isolate* isolate,
+    const NDEFRecordInit& record_init) {
+  return record_init.hasData() ? record_init.data().V8Value()
+                               : v8::Undefined(isolate).As<v8::Value>();
+}
+
+// This reproduces the V8 type checks from
+// V8UnionArrayBufferOrArrayBufferView::Create() without attempting the V8 ->
+// native conversions that can trigger exceptions. We just want to know if the
+// V8 type is potentially convertible to a V8BufferSource.
+bool MaybeIsBufferSource(const ScriptValue& script_value) {
+  if (script_value.IsEmpty())
+    return false;
+  const auto v8_value = script_value.V8Value();
+  return v8_value->IsArrayBuffer() || v8_value->IsSharedArrayBuffer() ||
+         v8_value->IsArrayBufferView();
+}
+
+bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
                             WTF::Vector<uint8_t>* target,
                             ExceptionState& exception_state) {
-  DCHECK(buffer_source->IsV8BufferSource());
   DOMArrayPiece array_piece;
   if (buffer_source->IsArrayBuffer()) {
     array_piece = DOMArrayPiece(buffer_source->GetAsArrayBuffer());
@@ -133,15 +164,13 @@ String getDocumentLanguage(const ExecutionContext* execution_context) {
   return document_language;
 }
 
-static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
+static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
                                     const String& id,
                                     const NDEFRecordInit& record,
                                     ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-string-to-ndef
-  if (
-      !record.hasData() ||
-      !(record.data()->IsString() || record.data()->IsV8BufferSource())
-  ) {
+  if (!record.hasData() || !(record.data().V8Value()->IsString() ||
+                             MaybeIsBufferSource(record.data()))) {
     exception_state.ThrowTypeError(
         "The data for 'text' NDEFRecords must be a String or a BufferSource.");
     return nullptr;
@@ -153,7 +182,7 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
   if (record.hasLang()) {
     language = record.lang();
   } else {
-    language = getDocumentLanguage(execution_context);
+    language = getDocumentLanguage(ExecutionContext::From(script_state));
   }
 
   // Bits 0 to 5 define the length of the language tag
@@ -164,36 +193,37 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
     return nullptr;
   }
 
-  const auto* data = record.data();
   const String& encoding_label = record.getEncodingOr("utf-8");
   WTF::Vector<uint8_t> bytes;
-  switch (data->GetContentType()) {
-    case V8NDEFRecordDataSource::ContentType::kArrayBuffer:
-    case V8NDEFRecordDataSource::ContentType::kArrayBufferView:
-      if (encoding_label != "utf-8" && encoding_label != "utf-16" &&
-          encoding_label != "utf-16be" && encoding_label != "utf-16le") {
-        exception_state.ThrowTypeError(
-            "Encoding must be either \"utf-8\", \"utf-16\", \"utf-16be\", or "
-            "\"utf-16le\".");
-        return nullptr;
-      }
-      if (!GetBytesOfBufferSource(data, &bytes, exception_state)) {
-        return nullptr;
-      }
-      break;
-    case V8NDEFRecordDataSource::ContentType::kNDEFMessageInit:
-      NOTREACHED();
-      break;
-    case V8NDEFRecordDataSource::ContentType::kString:
-      if (encoding_label != "utf-8") {
-        exception_state.ThrowTypeError(
-            "A DOMString data source is always encoded as \"utf-8\" so other "
-            "encodings are not allowed.");
-        return nullptr;
-      }
-      StringUTF8Adaptor utf8_string(data->GetAsString());
-      bytes.Append(utf8_string.data(), utf8_string.size());
-      break;
+
+  if (MaybeIsBufferSource(record.data())) {
+    if (encoding_label != "utf-8" && encoding_label != "utf-16" &&
+        encoding_label != "utf-16be" && encoding_label != "utf-16le") {
+      exception_state.ThrowTypeError(
+          "Encoding must be either \"utf-8\", \"utf-16\", \"utf-16be\", or "
+          "\"utf-16le\".");
+      return nullptr;
+    }
+    auto* buffer_source = NativeValueTraits<V8BufferSource>::NativeValue(
+        script_state->GetIsolate(), record.data().V8Value(), exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+    if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
+      return nullptr;
+  } else if (record.data().V8Value()->IsString()) {
+    if (encoding_label != "utf-8") {
+      exception_state.ThrowTypeError(
+          "A DOMString data source is always encoded as \"utf-8\" so other "
+          "encodings are not allowed.");
+      return nullptr;
+    }
+    const String data = NativeValueTraits<IDLString>::NativeValue(
+        script_state->GetIsolate(), record.data().V8Value(), exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+    bytes = GetUTF8DataFromString(data);
+  } else {
+    NOTREACHED();
   }
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,
@@ -201,20 +231,25 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
 }
 
 // Create a 'url' record or an 'absolute-url' record.
-static NDEFRecord* CreateUrlRecord(const String& id,
-                                   const NDEFRecordInit& record,
-                                   ExceptionState& exception_state) {
+NDEFRecord* CreateUrlRecord(const ScriptState* script_state,
+                            const String& id,
+                            const NDEFRecordInit& record,
+                            ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-url-to-ndef
-  if (
-      !record.hasData() || !record.data()->IsString()
-  ) {
+  // No need to check mediaType according to the spec.
+  if (!record.hasData() || !record.data().V8Value()->IsString()) {
+    // https://github.com/w3c/web-nfc/issues/623
+    // This check could be removed if we threw a TypeError instead of a
+    // SyntaxError below.
     exception_state.ThrowTypeError(
         "The data for url NDEFRecord must be a String.");
     return nullptr;
   }
-
-  // No need to check mediaType according to the spec.
-  const String& url = record.data()->GetAsString();
+  auto* isolate = script_state->GetIsolate();
+  const String& url = NativeValueTraits<IDLString>::NativeValue(
+      isolate, GetPayloadDataOrUndefined(isolate, record), exception_state);
+  if (exception_state.HadException())
+    return nullptr;
   if (!KURL(NullURL(), url).IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Cannot parse data for url record.");
@@ -226,17 +261,16 @@ static NDEFRecord* CreateUrlRecord(const String& id,
       record.recordType(), id, GetUTF8DataFromString(url));
 }
 
-static NDEFRecord* CreateMimeRecord(const String& id,
-                                    const NDEFRecordInit& record,
-                                    ExceptionState& exception_state) {
+NDEFRecord* CreateMimeRecord(const ScriptState* script_state,
+                             const String& id,
+                             const NDEFRecordInit& record,
+                             ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-binary-data-to-ndef
-  if (
-      !record.hasData() || !record.data()->IsV8BufferSource()
-  ) {
-    exception_state.ThrowTypeError(
-        "The data for 'mime' NDEFRecord must be a BufferSource.");
+  auto* isolate = script_state->GetIsolate();
+  auto* buffer_source = NativeValueTraits<V8BufferSource>::NativeValue(
+      isolate, GetPayloadDataOrUndefined(isolate, record), exception_state);
+  if (exception_state.HadException())
     return nullptr;
-  }
 
   // ExtractMIMETypeFromMediaType() ignores parameters of the MIME type.
   String mime_type;
@@ -247,51 +281,45 @@ static NDEFRecord* CreateMimeRecord(const String& id,
   }
 
   WTF::Vector<uint8_t> bytes;
-  if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
+  if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
     return nullptr;
-  }
 
   return MakeGarbageCollected<NDEFRecord>(id, mime_type, bytes);
 }
 
-static NDEFRecord* CreateUnknownRecord(const String& id,
-                                       const NDEFRecordInit& record,
-                                       ExceptionState& exception_state) {
-  if (
-      !record.hasData() || !record.data()->IsV8BufferSource()
-  ) {
-    exception_state.ThrowTypeError(
-        "The data for 'unknown' NDEFRecord must be a BufferSource.");
+NDEFRecord* CreateUnknownRecord(const ScriptState* script_state,
+                                const String& id,
+                                const NDEFRecordInit& record,
+                                ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+  auto* buffer_source = NativeValueTraits<V8BufferSource>::NativeValue(
+      isolate, GetPayloadDataOrUndefined(isolate, record), exception_state);
+  if (exception_state.HadException())
     return nullptr;
-  }
 
   WTF::Vector<uint8_t> bytes;
-  if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
+  if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
     return nullptr;
-  }
 
   return MakeGarbageCollected<NDEFRecord>(
       device::mojom::blink::NDEFRecordTypeCategory::kStandardized, "unknown",
       id, bytes);
 }
 
-static NDEFRecord* CreateSmartPosterRecord(
-    const ExecutionContext* execution_context,
-    const String& id,
-    const NDEFRecordInit& record,
-    ExceptionState& exception_state) {
+NDEFRecord* CreateSmartPosterRecord(const ScriptState* script_state,
+                                    const String& id,
+                                    const NDEFRecordInit& record,
+                                    uint8_t records_depth,
+                                    ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#dfn-map-smart-poster-to-ndef
-  if (
-      !record.hasData() || !record.data()->IsNDEFMessageInit()
-  ) {
-    exception_state.ThrowTypeError(
-        "The data for 'smart-poster' NDEFRecord must be an NDEFMessageInit.");
+  auto* isolate = script_state->GetIsolate();
+  auto* ndef_message_init = NativeValueTraits<NDEFMessageInit>::NativeValue(
+      isolate, GetPayloadDataOrUndefined(isolate, record), exception_state);
+  if (exception_state.HadException())
     return nullptr;
-  }
 
   NDEFMessage* payload_message = NDEFMessage::CreateAsPayloadOfSmartPoster(
-      execution_context, record.data()->GetAsNDEFMessageInit(),
-      exception_state);
+      script_state, ndef_message_init, exception_state, records_depth);
   if (exception_state.HadException())
     return nullptr;
   DCHECK(payload_message);
@@ -301,39 +329,45 @@ static NDEFRecord* CreateSmartPosterRecord(
       "smart-poster", id, payload_message);
 }
 
-static NDEFRecord* CreateExternalRecord(
-    const ExecutionContext* execution_context,
-    const String& id,
-    const NDEFRecordInit& record,
-    ExceptionState& exception_state) {
-  const String& record_type = record.recordType();
-
+NDEFRecord* CreateExternalRecord(const ScriptState* script_state,
+                                 const String& id,
+                                 const NDEFRecordInit& record,
+                                 uint8_t records_depth,
+                                 ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#dfn-map-external-data-to-ndef
+
   if (record.hasData()) {
-    switch (record.data()->GetContentType()) {
-      case V8NDEFRecordDataSource::ContentType::kArrayBuffer:
-      case V8NDEFRecordDataSource::ContentType::kArrayBufferView: {
-        Vector<uint8_t> bytes;
-        if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
-          return nullptr;
-        }
-        return MakeGarbageCollected<NDEFRecord>(
-            device::mojom::blink::NDEFRecordTypeCategory::kExternal,
-            record_type, id, bytes);
-      }
-      case V8NDEFRecordDataSource::ContentType::kNDEFMessageInit: {
-        NDEFMessage* payload_message = NDEFMessage::Create(
-            execution_context, record.data()->GetAsNDEFMessageInit(),
-            exception_state, /*is_embedded=*/true);
-        if (exception_state.HadException())
-          return nullptr;
-        DCHECK(payload_message);
-        return MakeGarbageCollected<NDEFRecord>(
-            device::mojom::blink::NDEFRecordTypeCategory::kExternal,
-            record_type, id, payload_message);
-      }
-      case V8NDEFRecordDataSource::ContentType::kString:
-        break;
+    const String& record_type = record.recordType();
+
+    if (MaybeIsBufferSource(record.data())) {
+      auto* buffer_source = NativeValueTraits<V8BufferSource>::NativeValue(
+          script_state->GetIsolate(), record.data().V8Value(), exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+
+      Vector<uint8_t> bytes;
+      if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
+        return nullptr;
+
+      return MakeGarbageCollected<NDEFRecord>(
+          device::mojom::blink::NDEFRecordTypeCategory::kExternal, record_type,
+          id, bytes);
+    } else if (record.data().IsObject()) {
+      auto* ndef_message_init = NativeValueTraits<NDEFMessageInit>::NativeValue(
+          script_state->GetIsolate(), record.data().V8Value(), exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+
+      NDEFMessage* payload_message = NDEFMessage::Create(
+          script_state, ndef_message_init, exception_state,
+          /*records_depth=*/records_depth, /*is_embedded=*/true);
+      if (exception_state.HadException())
+        return nullptr;
+      DCHECK(payload_message);
+
+      return MakeGarbageCollected<NDEFRecord>(
+          device::mojom::blink::NDEFRecordTypeCategory::kExternal, record_type,
+          id, payload_message);
     }
   }
 
@@ -343,38 +377,45 @@ static NDEFRecord* CreateExternalRecord(
   return nullptr;
 }
 
-static NDEFRecord* CreateLocalRecord(const ExecutionContext* execution_context,
-                                     const String& id,
-                                     const NDEFRecordInit& record,
-                                     ExceptionState& exception_state) {
-  const String& record_type = record.recordType();
-
+NDEFRecord* CreateLocalRecord(const ScriptState* script_state,
+                              const String& id,
+                              const NDEFRecordInit& record,
+                              uint8_t records_depth,
+                              ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#dfn-map-local-type-to-ndef
+
   if (record.hasData()) {
-    switch (record.data()->GetContentType()) {
-      case V8NDEFMessageSource::ContentType::kArrayBuffer:
-      case V8NDEFMessageSource::ContentType::kArrayBufferView: {
-        Vector<uint8_t> bytes;
-        if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
-          return nullptr;
-        }
-        return MakeGarbageCollected<NDEFRecord>(
-            device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type,
-            id, bytes);
-      }
-      case V8NDEFMessageSource::ContentType::kNDEFMessageInit: {
-        NDEFMessage* payload_message = NDEFMessage::Create(
-            execution_context, record.data()->GetAsNDEFMessageInit(),
-            exception_state, /*is_embedded=*/true);
-        if (exception_state.HadException())
-          return nullptr;
-        DCHECK(payload_message);
-        return MakeGarbageCollected<NDEFRecord>(
-            device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type,
-            id, payload_message);
-      }
-      case V8NDEFMessageSource::ContentType::kString:
-        break;
+    const String& record_type = record.recordType();
+
+    if (MaybeIsBufferSource(record.data())) {
+      auto* buffer_source = NativeValueTraits<V8BufferSource>::NativeValue(
+          script_state->GetIsolate(), record.data().V8Value(), exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+
+      Vector<uint8_t> bytes;
+      if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
+        return nullptr;
+
+      return MakeGarbageCollected<NDEFRecord>(
+          device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type, id,
+          bytes);
+    } else if (record.data().IsObject()) {
+      auto* ndef_message_init = NativeValueTraits<NDEFMessageInit>::NativeValue(
+          script_state->GetIsolate(), record.data().V8Value(), exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+
+      NDEFMessage* payload_message = NDEFMessage::Create(
+          script_state, ndef_message_init, exception_state,
+          /*records_depth=*/records_depth, /*is_embedded=*/true);
+      if (exception_state.HadException())
+        return nullptr;
+      DCHECK(payload_message);
+
+      return MakeGarbageCollected<NDEFRecord>(
+          device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type, id,
+          payload_message);
     }
   }
 
@@ -387,9 +428,18 @@ static NDEFRecord* CreateLocalRecord(const ExecutionContext* execution_context,
 }  // namespace
 
 // static
-NDEFRecord* NDEFRecord::Create(const ExecutionContext* execution_context,
+NDEFRecord* NDEFRecord::CreateForBindings(const ScriptState* script_state,
+                                          const NDEFRecordInit* record,
+                                          ExceptionState& exception_state) {
+  return Create(script_state, record, exception_state, /*records_depth=*/0U,
+                /*is_embedded=*/false);
+}
+
+// static
+NDEFRecord* NDEFRecord::Create(const ScriptState* script_state,
                                const NDEFRecordInit* record,
                                ExceptionState& exception_state,
+                               uint8_t records_depth,
                                bool is_embedded) {
   // https://w3c.github.io/web-nfc/#creating-ndef-record
   const String& record_type = record->recordType();
@@ -419,18 +469,18 @@ NDEFRecord* NDEFRecord::Create(const ExecutionContext* execution_context,
         device::mojom::blink::NDEFRecordTypeCategory::kStandardized,
         record_type, /*id=*/String(), WTF::Vector<uint8_t>());
   } else if (record_type == "text") {
-    return CreateTextRecord(execution_context, id, *record, exception_state);
+    return CreateTextRecord(script_state, id, *record, exception_state);
   } else if (record_type == "url" || record_type == "absolute-url") {
-    return CreateUrlRecord(id, *record, exception_state);
+    return CreateUrlRecord(script_state, id, *record, exception_state);
   } else if (record_type == "mime") {
-    return CreateMimeRecord(id, *record, exception_state);
+    return CreateMimeRecord(script_state, id, *record, exception_state);
   } else if (record_type == "unknown") {
-    return CreateUnknownRecord(id, *record, exception_state);
+    return CreateUnknownRecord(script_state, id, *record, exception_state);
   } else if (record_type == "smart-poster") {
-    return CreateSmartPosterRecord(execution_context, id, *record,
+    return CreateSmartPosterRecord(script_state, id, *record, records_depth,
                                    exception_state);
   } else if (IsValidExternalType(record_type)) {
-    return CreateExternalRecord(execution_context, id, *record,
+    return CreateExternalRecord(script_state, id, *record, records_depth,
                                 exception_state);
   } else if (IsValidLocalType(record_type)) {
     if (!is_embedded) {
@@ -439,7 +489,8 @@ NDEFRecord* NDEFRecord::Create(const ExecutionContext* execution_context,
           "of another record (smart-poster, external, or local).");
       return nullptr;
     }
-    return CreateLocalRecord(execution_context, id, *record, exception_state);
+    return CreateLocalRecord(script_state, id, *record, records_depth,
+                             exception_state);
   }
 
   exception_state.ThrowTypeError("Invalid NDEFRecord type.");
@@ -490,12 +541,11 @@ NDEFRecord::NDEFRecord(const String& id,
       lang_(lang),
       payload_data_(std::move(data)) {}
 
-NDEFRecord::NDEFRecord(const ExecutionContext* execution_context,
-                       const String& text)
+NDEFRecord::NDEFRecord(const ScriptState* script_state, const String& text)
     : category_(device::mojom::blink::NDEFRecordTypeCategory::kStandardized),
       record_type_("text"),
       encoding_("utf-8"),
-      lang_(getDocumentLanguage(execution_context)),
+      lang_(getDocumentLanguage(ExecutionContext::From(script_state))),
       payload_data_(GetUTF8DataFromString(text)) {}
 
 NDEFRecord::NDEFRecord(const String& id,

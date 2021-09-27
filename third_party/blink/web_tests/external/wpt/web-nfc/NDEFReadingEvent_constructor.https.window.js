@@ -53,5 +53,5 @@ test(() => {
   assert_equals(event.message.records[0].recordType, 'text', 'recordType');
   assert_equals(event.message.records[0].mediaType, null, 'mediaType');
   assert_equals(event.message.records[0].encoding, 'utf-8', 'encoding');
-  assert_equals(event.message.records[0].lang, null, 'lang is not set');
-}, 'NDEFReadingEvent constructor does not set NDEFRecord#lang for any text records it embeds');
+  assert_equals(event.message.records[0].lang, 'en', 'lang');
+}, 'NDEFReadingEvent constructor sets NDEFRecord#lang for the text records it embeds');
