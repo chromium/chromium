@@ -1,0 +1,141 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
+
+#include "base/feature_list.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/side_panel.h"
+#include "components/lens/lens_features.h"
+#include "components/reading_list/features/reading_list_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace lens {
+namespace {
+
+constexpr char kShowAction[] = "LensSidePanel.Show";
+constexpr char kHideAction[] = "LensSidePanel.Hide";
+constexpr char kHideChromeSidePanelAction[] =
+    "LensSidePanel.HideChromeSidePanel";
+constexpr char kLensQueryWhileShowingAction[] =
+    "LensSidePanel.LensQueryWhileShowing";
+constexpr char kCloseButtonClickAction[] = "LensSidePanel.CloseButtonClick";
+
+class LensSidePanelControllerTest : public TestWithBrowserView {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        {features::kLensRegionSearch, ::features::kSidePanel,
+         reading_list::switches::kReadLater},
+        {});
+    TestWithBrowserView::SetUp();
+
+    // Create an active web contents.
+    AddTab(browser_view()->browser(), GURL("about:blank"));
+    controller_ = browser_view()->lens_side_panel_controller();
+  }
+
+ protected:
+  LensSidePanelController* controller_;
+};
+
+TEST_F(LensSidePanelControllerTest, OpenWithURLShowsLensSidePanel) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowAction));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kHideChromeSidePanelAction));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kLensQueryWhileShowingAction));
+}
+
+TEST_F(LensSidePanelControllerTest, OpenWithURLRecordsMultipleLensQueries) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://bar.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryWhileShowingAction));
+}
+
+TEST_F(LensSidePanelControllerTest, OpenWithURLHidesChromeSidePanel) {
+  base::UserActionTester user_action_tester;
+  browser_view()->right_aligned_side_panel()->SetVisible(true);
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kHideChromeSidePanelAction));
+}
+
+TEST_F(LensSidePanelControllerTest, CloseAfterOpenHidesLensSidePanel) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  controller_->Close();
+
+  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kCloseButtonClickAction));
+}
+
+TEST_F(LensSidePanelControllerTest, ReOpensAndCloses) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  controller_->Close();
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://bar.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  controller_->Close();
+
+  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kShowAction));
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kHideAction));
+}
+
+TEST_F(LensSidePanelControllerTest, LoadResultsInNewTabHidesLensSidePanel) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  controller_->LoadResultsInNewTab();
+
+  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kCloseButtonClickAction));
+}
+
+}  // namespace
+}  // namespace lens
