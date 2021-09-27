@@ -74,12 +74,14 @@ class DISPLAY_EXPORT Screen {
       const gfx::Point& point,
       const std::set<gfx::NativeWindow>& ignore) = 0;
 
-  // Returns the number of displays.
-  // Mirrored displays are excluded; this method is intended to return the
-  // number of distinct, usable displays.
+  // Returns the number of displays.  Mirrored displays are excluded; this
+  // method is intended to return the number of distinct, usable displays.
+  // The value returned must be at least 1, as GetAllDisplays returns a fake
+  // display if there are no displays in the system.
   virtual int GetNumDisplays() const = 0;
 
   // Returns the list of displays that are currently available.
+  // Screen subclasses must return at least one Display, even if it is fake.
   virtual const std::vector<Display>& GetAllDisplays() const = 0;
 
   // Returns the display nearest the specified window.
