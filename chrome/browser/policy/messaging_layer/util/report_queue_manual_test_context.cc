@@ -9,18 +9,12 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/task_runner_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -36,7 +30,10 @@ ReportQueueManualTestContext::ReportQueueManualTestContext(
       frequency_(frequency),
       number_of_messages_to_enqueue_(number_of_messages_to_enqueue),
       destination_(destination),
-      priority_(priority) {}
+      priority_(priority),
+      report_queue_(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(sequenced_task_runner))) {}
 
 ReportQueueManualTestContext::~ReportQueueManualTestContext() = default;
 
@@ -62,30 +59,8 @@ void ReportQueueManualTestContext::OnStart() {
     return;
   }
 
-  // The DMToken must be retrieved on the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ReportQueueManualTestContext::GetDmToken,
-                                base::Unretained(this)));
-}
-
-void ReportQueueManualTestContext::GetDmToken() {
-  const policy::DMToken dm_token =
-      policy::GetDMToken(ProfileManager::GetPrimaryUserProfile());
-  Schedule(&ReportQueueManualTestContext::OnDmTokenResponse,
-           base::Unretained(this), dm_token);
-}
-
-void ReportQueueManualTestContext::OnDmTokenResponse(policy::DMToken dm_token) {
-  CheckOnValidSequence();
-  if (!dm_token.is_valid()) {
-    Status invalid_dm_token =
-        Status(error::FAILED_PRECONDITION, "Cannot retrieve a valid DMToken");
-    LOG(ERROR) << invalid_dm_token;
-    Complete(invalid_dm_token);
-    return;
-  }
-  dm_token_ = dm_token;
-  BuildReportQueue();
+  Schedule(&ReportQueueManualTestContext::BuildReportQueue,
+           base::Unretained(this));
 }
 
 void ReportQueueManualTestContext::BuildReportQueue() {
@@ -93,7 +68,9 @@ void ReportQueueManualTestContext::BuildReportQueue() {
   ReportQueueConfiguration::PolicyCheckCallback policy_check_cb =
       base::BindRepeating([]() -> Status { return Status::StatusOK(); });
   auto config_result = reporting::ReportQueueConfiguration::Create(
-      dm_token_.value(), destination_, std::move(policy_check_cb));
+      // using an empty DM token cause device DM tokens are appended by default
+      // during event uploads
+      /*dm_token=*/"", destination_, std::move(policy_check_cb));
   if (!config_result.ok()) {
     Complete(config_result.status());
     return;
@@ -108,14 +85,16 @@ void ReportQueueManualTestContext::BuildReportQueue() {
     return;
   }
 
-  reporting::ReportQueueProvider::CreateQueue(
-      std::move(config_result.ValueOrDie()),
-      base::BindOnce(&ReportQueueManualTestContext::OnReportQueueResponse,
-                     base::Unretained(this)));
+  auto report_queue_result =
+      reporting::ReportQueueProvider::CreateSpeculativeQueue(
+          std::move(config_result.ValueOrDie()));
+  Schedule(&ReportQueueManualTestContext::OnReportQueueResponse,
+           base::Unretained(this), std::move(report_queue_result));
 }
 
 void ReportQueueManualTestContext::OnReportQueueResponse(
-    StatusOr<std::unique_ptr<ReportQueue>> report_queue_result) {
+    StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+        report_queue_result) {
   if (!report_queue_result.ok()) {
     Complete(report_queue_result.status());
     return;

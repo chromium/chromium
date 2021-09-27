@@ -17,10 +17,10 @@
 
 namespace reporting {
 
-// This is a test fixture for manually testing uploading of events. Should only
-// be used when debugging or testing. It will enqueue an incrementing uint64
-// every |frequency| for the provided destination. All messages will be sent as
-// FAST_BATCH.
+// This is a test fixture for manually testing uploading of device events.
+// Should only be used when debugging or testing. It will enqueue an
+// incrementing uint64 every |frequency| for the provided destination. All
+// messages will be sent as FAST_BATCH.
 //
 // This context can be used in the following way:
 //   Start<ReportQueueManualTestContext>(base::TimeDelta::FromSeconds(1),
@@ -35,12 +35,17 @@ namespace reporting {
 //                                base::TaskTraits()));
 // As configured this context will create a ReportQueue and upload an event
 // to the FAST_BATCH priority every second for 10 seconds.
+//
+// This context does not support user events today, but support for user events
+// may be added later, if necessary. Note however, that for user events
+// respective DM token needs to be supplied.
 class ReportQueueManualTestContext : public TaskRunnerContext<Status> {
  public:
   using CompletionCallback = base::OnceCallback<void(Status)>;
   using BuildReportQueueCallback = base::OnceCallback<void(
       std::unique_ptr<ReportQueueConfiguration>,
-      base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>)>;
+      base::OnceCallback<void(
+          StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>)>)>;
 
   ReportQueueManualTestContext(
       base::TimeDelta frequency,
@@ -60,11 +65,10 @@ class ReportQueueManualTestContext : public TaskRunnerContext<Status> {
 
   void OnStart() override;
 
-  void GetDmToken();
-  void OnDmTokenResponse(policy::DMToken dm_token);
   void BuildReportQueue();
   void OnReportQueueResponse(
-      StatusOr<std::unique_ptr<ReportQueue>> report_queue_result);
+      StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+          report_queue_result);
   void ScheduleEnqueue();
   void Enqueue();
   void OnEnqueue(Status status);
@@ -92,8 +96,8 @@ class ReportQueueManualTestContext : public TaskRunnerContext<Status> {
   // on sequence.
   uint64_t value_{0u};
 
-  policy::DMToken dm_token_;
-  std::unique_ptr<ReportQueue> report_queue_;
+  // Speculative report queue used to queue events
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue_;
 };
 
 }  // namespace reporting

@@ -2403,10 +2403,6 @@ static_library("browser") {
       "apps/digital_goods/digital_goods_impl.h",
       "apps/digital_goods/util.cc",
       "apps/digital_goods/util.h",
-      "policy/messaging_layer/util/heartbeat_event.cc",
-      "policy/messaging_layer/util/heartbeat_event.h",
-      "policy/messaging_layer/util/heartbeat_event_factory.cc",
-      "policy/messaging_layer/util/heartbeat_event_factory.h",
     ]
     deps += [
       "//ash/components/audio",
@@ -2490,6 +2486,14 @@ static_library("browser") {
     if (enable_cros_libassistant) {
       deps += [ "//chromeos/services/libassistant/public/mojom" ]
     }
+  }
+  if (is_chromeos) {
+    sources += [
+      "policy/messaging_layer/util/heartbeat_event.cc",
+      "policy/messaging_layer/util/heartbeat_event.h",
+      "policy/messaging_layer/util/heartbeat_event_factory.cc",
+      "policy/messaging_layer/util/heartbeat_event_factory.h",
+    ]
   }
   if (is_linux || is_chromeos) {
     deps += [ "//chrome/browser/error_reporting" ]
