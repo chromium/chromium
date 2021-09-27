@@ -35,10 +35,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/policy/profile_policy_connector.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -46,20 +49,19 @@ namespace web_app {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr char kUserTypesTestDir[] = "user_types";
-#endif
 
 #if defined(OS_CHROMEOS)
 constexpr char kGoodJsonTestDir[] = "good_json";
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kAppAllUrl[] = "https://www.google.com/all";
-constexpr char kAppChildUrl[] = "https://www.google.com/child";
 constexpr char kAppGuestUrl[] = "https://www.google.com/guest";
 constexpr char kAppManagedUrl[] = "https://www.google.com/managed";
 constexpr char kAppUnmanagedUrl[] = "https://www.google.com/unmanaged";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAppChildUrl[] = "https://www.google.com/child";
 #endif
 
 }  // namespace
@@ -93,11 +95,8 @@ class PreinstalledWebAppManagerTest : public testing::Test {
                                                Profile* profile = nullptr) {
     std::unique_ptr<TestingProfile> testing_profile;
     if (!profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       testing_profile = CreateProfileAndLogin();
-      profile = testing_profile.get();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      testing_profile = CreateProfile();
       profile = testing_profile.get();
 #else
       NOTREACHED();
@@ -144,7 +143,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return profile_builder.Build();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Helper that creates simple test guest profile.
   std::unique_ptr<TestingProfile> CreateGuestProfile() {
     TestingProfile::Builder profile_builder;
@@ -156,10 +155,12 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // This makes profile appears as a primary profile in ChromeOS.
   std::unique_ptr<TestingProfile> CreateProfileAndLogin() {
     std::unique_ptr<TestingProfile> profile = CreateProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile->GetProfileUserName(), "1234567890"));
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
+#endif
     return profile;
   }
 
@@ -167,8 +168,10 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // manager. This makes profile appears as a primary profile in ChromeOS.
   std::unique_ptr<TestingProfile> CreateGuestProfileAndLogin() {
     std::unique_ptr<TestingProfile> profile = CreateGuestProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager()->AddGuestUser();
     user_manager()->LoginUser(user_manager()->GetGuestAccountId());
+#endif
     return profile;
   }
 
@@ -178,7 +181,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     for (const auto& install_options : install_options_list)
       ASSERT_EQ(1u, expectations.count(install_options.install_url));
   }
-#endif
+#endif  // defined(OS_CHROMEOS)
 
   void ExpectHistograms(int enabled, int disabled, int errors) {
     histograms_.ExpectUniqueSample(
@@ -461,6 +464,22 @@ TEST_F(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/2, /*errors=*/0);
 }
+
+TEST_F(PreinstalledWebAppManagerTest, GuestUser) {
+  VerifySetOfApps(CreateGuestProfileAndLogin().get(),
+                  {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
+}
+
+TEST_F(PreinstalledWebAppManagerTest, UnmanagedUser) {
+  VerifySetOfApps(CreateProfileAndLogin().get(),
+                  {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
+}
+
+TEST_F(PreinstalledWebAppManagerTest, ManagedUser) {
+  const auto profile = CreateProfileAndLogin();
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
+}
 #else
 // No app is expected for non-ChromeOS builds.
 TEST_F(PreinstalledWebAppManagerTest, NoApp) {
@@ -469,26 +488,11 @@ TEST_F(PreinstalledWebAppManagerTest, NoApp) {
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1252273): Enable test for Lacros.
 TEST_F(PreinstalledWebAppManagerTest, ChildUser) {
   const auto profile = CreateProfileAndLogin();
   profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppChildUrl)});
-}
-
-TEST_F(PreinstalledWebAppManagerTest, GuestUser) {
-  VerifySetOfApps(CreateGuestProfileAndLogin().get(),
-                  {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
-}
-
-TEST_F(PreinstalledWebAppManagerTest, ManagedUser) {
-  const auto profile = CreateProfileAndLogin();
-  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
-}
-
-TEST_F(PreinstalledWebAppManagerTest, UnmanagedUser) {
-  VerifySetOfApps(CreateProfileAndLogin().get(),
-                  {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
 
 TEST_F(PreinstalledWebAppManagerTest, NonPrimaryProfile) {
@@ -496,6 +500,7 @@ TEST_F(PreinstalledWebAppManagerTest, NonPrimaryProfile) {
                   {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
 
+// TODO(crbug.com/1252272): Enable extra web apps tests for Lacros.
 TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
   // The extra_web_apps directory contains two JSON files in different named
   // subdirectories. The --extra-web-apps-dir switch should control which
