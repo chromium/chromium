@@ -2522,12 +2522,23 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
       return true;
   }
 
-  // The ignored state of media controls can change without a layout update.
-  // Keep them in the tree at all times so that the serializer isn't
-  // accidentally working with unincluded nodes, which is not allowed.
-  if (node->IsInUserAgentShadowRoot() &&
-      IsA<HTMLMediaElement>(node->OwnerShadowHost())) {
-    return true;
+  if (const Element* owner = node->OwnerShadowHost()) {
+    // The ignored state of media controls can change without a layout update.
+    // Keep them in the tree at all times so that the serializer isn't
+    // accidentally working with unincluded nodes, which is not allowed.
+    if (IsA<HTMLMediaElement>(owner))
+      return true;
+
+    // Do not include ignored descendants of an <input type="number"> because
+    // they interfere with AXPosition code that assumes a plain input field
+    // structure. Specifically, caret moved events will not be emitted for the
+    // final offset because the associated tree position for that offset is an
+    // ignored node. In some cases platform accessibility code will instead
+    // incorrectly emit a caret moved event for the AXPosition which follows the
+    // input.
+    if (IsA<HTMLInputElement>(owner) &&
+        DynamicTo<HTMLInputElement>(owner)->type() == input_type_names::kNumber)
+      return false;
   }
 
   Element* element = GetElement();

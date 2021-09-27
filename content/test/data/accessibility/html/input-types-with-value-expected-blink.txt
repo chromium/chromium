@@ -12,12 +12,9 @@ rootWebArea
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:' value='3' valueForRange=3.00
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++++++staticText editable name='3'
-++++++++++++++++++inlineTextBox editable name='3'
-++++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++++++++staticText editable name='3'
+++++++++++++++inlineTextBox editable name='3'
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
