@@ -35,7 +35,7 @@ class RecordTimeBase {
 
     /**
      * @const {?MaxTimeOption}
-     * @private
+     * @protected
      */
     this.maxTimeOption_ = maxTimeOption || null;
 
