@@ -64,12 +64,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-pre-ready state-no-source'",
-      "bounds": [150, 60],
-      "transform": 1
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV)",
+      "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [150, 60],
       "transform": 1
     },
