@@ -16,7 +16,8 @@ namespace ui {
 ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
     WaylandConnection* connection,
     ZWPTextInputWrapperClient* client,
-    zwp_text_input_manager_v1* text_input_manager)
+    zwp_text_input_manager_v1* text_input_manager,
+    zcr_text_input_extension_v1* text_input_extension)
     : connection_(connection), client_(client) {
   static constexpr zwp_text_input_v1_listener text_input_listener = {
       &OnEnter,                  // text_input_enter,
@@ -34,11 +35,27 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
       &OnTextDirection,          // text_input_text_direction
   };
 
+  static constexpr zcr_extended_text_input_v1_listener
+      extended_text_input_listener = {
+          &OnSetPreeditRegion,  // extended_text_input_set_preedit_region,
+      };
+
   auto* text_input =
       zwp_text_input_manager_v1_create_text_input(text_input_manager);
   obj_ = wl::Object<zwp_text_input_v1>(text_input);
-
   zwp_text_input_v1_add_listener(text_input, &text_input_listener, this);
+
+  if (text_input_extension) {
+    auto* extended_text_input =
+        zcr_text_input_extension_v1_get_extended_text_input(
+            text_input_extension, obj_.get());
+    if (extended_text_input) {
+      extended_obj_ =
+          wl::Object<zcr_extended_text_input_v1>(extended_text_input);
+      zcr_extended_text_input_v1_add_listener(
+          extended_text_input, &extended_text_input_listener, this);
+    }
+  }
 }
 
 ZWPTextInputWrapperV1::~ZWPTextInputWrapperV1() = default;
@@ -201,6 +218,18 @@ void ZWPTextInputWrapperV1::OnTextDirection(
     uint32_t serial,
     uint32_t direction) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void ZWPTextInputWrapperV1::OnSetPreeditRegion(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    int32_t index,
+    uint32_t length) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  auto spans = std::move(self->spans_);
+  self->ResetInputEventState();
+  self->client_->OnSetPreeditRegion(index, length, spans);
 }
 
 }  // namespace ui

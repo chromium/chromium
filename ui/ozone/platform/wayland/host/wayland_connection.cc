@@ -80,6 +80,7 @@ constexpr uint32_t kMaxZXdgShellVersion = 1;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
+constexpr uint32_t kMaxTextInputExtensionVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
@@ -566,6 +567,11 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to zwp_text_input_manager_v1 global";
       return;
     }
+  } else if (!connection->text_input_extension_v1_ &&
+             strcmp(interface, "zcr_text_input_extension_v1") == 0) {
+    connection->text_input_extension_v1_ =
+        wl::Bind<zcr_text_input_extension_v1>(
+            registry, name, std::min(version, kMaxTextInputExtensionVersion));
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =

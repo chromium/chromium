@@ -21,6 +21,7 @@
 #include <presentation-time-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
+#include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
@@ -147,6 +148,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_keyboard_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_source_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_offer_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_text_input_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_text_input_extension_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)

@@ -6,9 +6,11 @@
 #include <wayland-server.h>
 #include <memory>
 
+#include "base/i18n/break_iterator.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
@@ -16,6 +18,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -27,6 +30,19 @@ using ::testing::SaveArg;
 using ::testing::Values;
 
 namespace ui {
+namespace {
+
+// Returns the number of grapheme clusters in the text.
+absl::optional<size_t> CountGraphemeCluster(base::StringPiece16 text) {
+  base::i18n::BreakIterator iter(text,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
+  if (!iter.Init())
+    return absl::nullopt;
+  size_t result = 0;
+  while (iter.Advance())
+    ++result;
+  return result;
+}
 
 class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
  public:
@@ -49,19 +65,29 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     on_delete_surrounding_text_range_ = gfx::Range(index, index + length);
   }
 
-  bool was_on_commit_called() { return was_on_commit_called_; }
+  void OnSetPreeditRegion(const gfx::Range& range,
+                          const std::vector<ImeTextSpan>& spans) override {
+    was_on_set_preedit_region_called_ = true;
+  }
 
-  bool was_on_preedit_changed_called() {
+  bool was_on_commit_called() const { return was_on_commit_called_; }
+
+  bool was_on_preedit_changed_called() const {
     return was_on_preedit_changed_called_;
   }
 
-  absl::optional<gfx::Range> on_delete_surrounding_text_range() {
+  bool was_on_set_preedit_region_called() const {
+    return was_on_set_preedit_region_called_;
+  }
+
+  absl::optional<gfx::Range> on_delete_surrounding_text_range() const {
     return on_delete_surrounding_text_range_;
   }
 
  private:
   bool was_on_commit_called_ = false;
   bool was_on_preedit_changed_called_ = false;
+  bool was_on_set_preedit_region_called_ = false;
   absl::optional<gfx::Range> on_delete_surrounding_text_range_;
 };
 
@@ -93,9 +119,13 @@ class WaylandInputMethodContextTest : public WaylandTest {
     connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
 
     zwp_text_input_ = server_.text_input_manager_v1()->text_input();
-
     ASSERT_TRUE(connection_->text_input_manager_v1());
     ASSERT_TRUE(zwp_text_input_);
+
+    zcr_extended_text_input_ =
+        server_.text_input_extension_v1()->extended_text_input();
+    ASSERT_TRUE(connection_->text_input_extension_v1());
+    ASSERT_TRUE(zcr_extended_text_input_);
   }
 
  protected:
@@ -103,6 +133,7 @@ class WaylandInputMethodContextTest : public WaylandTest {
       input_method_context_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
   wl::MockZwpTextInput* zwp_text_input_ = nullptr;
+  wl::MockZcrExtendedTextInput* zcr_extended_text_input_ = nullptr;
 };
 
 TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
@@ -327,6 +358,93 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
   EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
 }
 
+TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
+  constexpr char16_t text[] = u"abcあdef";
+  const gfx::Range range(3, 4);  // あ is selected.
+
+  // SetSurroundingText should be called in UTF-8.
+  EXPECT_CALL(*zwp_text_input_,
+              SetSurroundingText("abcあdef", gfx::Range(3, 6)));
+  input_method_context_->SetSurroundingText(text, range);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  // Specify "cあd" as a new preedit region.
+  zcr_extended_text_input_v1_send_set_preedit_region(
+      zcr_extended_text_input_->resource(), -4, 5);
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_set_preedit_region_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_NoSurroundingText) {
+  // If no surrounding text is set yet, set_preedit_region would fail.
+  zcr_extended_text_input_v1_send_set_preedit_region(
+      zcr_extended_text_input_->resource(), -1, 3);
+  Sync();
+  EXPECT_FALSE(
+      input_method_context_delegate_->was_on_set_preedit_region_called());
+}
+
+// The range is represented in UTF-16 code points, so it is independent from
+// grapheme clusters.
+TEST_P(WaylandInputMethodContextTest,
+       OnSetPreeditRegion_GraphemeClusterIndependeceSimple) {
+  // Single code point representation of é.
+  constexpr char16_t u16_text[] = u"\u00E9";
+  constexpr char u8_text[] = "\xC3\xA9";  // In UTF-8 encode.
+
+  const gfx::Range u16_range(0, 1);
+  const gfx::Range u8_range(0, 2);
+
+  // Double check the text has one grapheme cluster.
+  ASSERT_EQ(1u, CountGraphemeCluster(u16_text));
+
+  // SetSurroundingText should be called in UTF-8.
+  EXPECT_CALL(*zwp_text_input_, SetSurroundingText(u8_text, u8_range));
+  input_method_context_->SetSurroundingText(u16_text, u16_range);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  // Specify the whole range as a new preedit region.
+  zcr_extended_text_input_v1_send_set_preedit_region(
+      zcr_extended_text_input_->resource(),
+      -static_cast<int32_t>(u8_range.length()), u8_range.length());
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_set_preedit_region_called());
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       OnSetPreeditRegion_GraphemeClusterIndependeceCombined) {
+  // Decomposed code point representation of é.
+  constexpr char16_t u16_text[] = u"\u0065\u0301";
+  constexpr char u8_text[] = "\x65\xCC\x81";  // In UTF-8 encode.
+
+  const gfx::Range u16_range(0, 2);
+  const gfx::Range u8_range(0, 3);
+
+  // Double check the text has one grapheme cluster.
+  ASSERT_EQ(1u, CountGraphemeCluster(u16_text));
+
+  // SetSurroundingText should be called in UTF-8.
+  EXPECT_CALL(*zwp_text_input_, SetSurroundingText(u8_text, u8_range));
+  input_method_context_->SetSurroundingText(u16_text, u16_range);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  // Specify the whole range as a new preedit region.
+  zcr_extended_text_input_v1_send_set_preedit_region(
+      zcr_extended_text_input_->resource(),
+      -static_cast<int32_t>(u8_range.length()), u8_range.length());
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_set_preedit_region_called());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandInputMethodContextTest,
                          Values(wl::ServerConfig{
@@ -336,4 +454,5 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
 
+}  // namespace
 }  // namespace ui

@@ -19,6 +19,7 @@ namespace ui {
 
 struct CompositionText;
 class KeyEvent;
+struct ImeTextSpan;
 
 // An interface of input method context for input method frameworks on
 // GNU/Linux and likes.
@@ -73,6 +74,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
 
   // Prepares things for a new composition session.
   virtual void OnPreeditStart() = 0;
+
+  // Sets the composition from the current text in the text input client.
+  // |range| is in UTF-16 code range.
+  virtual void OnSetPreeditRegion(const gfx::Range& range,
+                                  const std::vector<ImeTextSpan>& spans) = 0;
 };
 
 }  // namespace ui

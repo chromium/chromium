@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
@@ -59,6 +60,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnCommitString(base::StringPiece text) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
+  void OnSetPreeditRegion(int32_t index,
+                          uint32_t length,
+                          const std::vector<SpanStyle>& spans) override;
 
  private:
   void UpdatePreeditText(const std::u16string& preedit_text);
@@ -91,6 +95,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   size_t surrounding_text_offset_ = 0;
   // The string in SetSurroundingText.
   std::string surrounding_text_;
+  // The selection range in UTF-8 offsets in the |surrounding_text_|.
+  gfx::Range selection_range_utf8_ = gfx::Range::InvalidRange();
 };
 
 }  // namespace ui

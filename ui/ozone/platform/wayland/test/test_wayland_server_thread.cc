@@ -86,6 +86,8 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     if (!xdg_shell_.Initialize(display_.get()))
       return false;
   }
+  if (!zcr_text_input_extension_v1_.Initialize(display_.get()))
+    return false;
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;
   if (!zwp_linux_explicit_synchronization_v1_.Initialize(display_.get()))

@@ -88,6 +88,36 @@ bool IsImeEnabled() {
   return false;
 }
 
+// Returns ImeTextSpan style to be assigned. Maybe nullopt if it is not
+// supported.
+absl::optional<std::pair<ImeTextSpan::Type, ImeTextSpan::Thickness>>
+ConvertStyle(uint32_t style) {
+  switch (style) {
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
+      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
+                                                ImeTextSpan::Thickness::kNone));
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT:
+      return absl::make_optional(std::make_pair(
+          ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThick));
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE:
+      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
+                                                ImeTextSpan::Thickness::kThin));
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION:
+      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kSuggestion,
+                                                ImeTextSpan::Thickness::kNone));
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT:
+      return absl::make_optional(
+          std::make_pair(ImeTextSpan::Type::kMisspellingSuggestion,
+                         ImeTextSpan::Thickness::kNone));
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_NONE:
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_ACTIVE:
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INACTIVE:
+    default:
+      VLOG(1) << "Unsupported style. Skipped: " << style;
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
@@ -121,7 +151,8 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
   if (use_ozone_wayland_vkb && !is_simple_ && !text_input_ &&
       connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_, this, connection_->text_input_manager_v1());
+        connection_, this, connection_->text_input_manager_v1(),
+        connection_->text_input_extension_v1());
   }
 }
 
@@ -222,6 +253,7 @@ void WaylandInputMethodContext::SetSurroundingText(
     return;
 
   surrounding_text_ = text_utf8;
+  selection_range_utf8_ = selection_range_utf8;
 
   if (text_utf8.size() <= kWaylandMessageDataMaxLength) {
     // We separate this case to run the function simpler and faster since this
@@ -297,38 +329,15 @@ void WaylandInputMethodContext::OnPreeditString(
     auto start_offset = OffsetFromUTF8Offset(text, span.index);
     if (!start_offset)
       continue;
-    text_span.start_offset = *start_offset;
     auto end_offset = OffsetFromUTF8Offset(text, span.index + span.length);
     if (!end_offset)
       continue;
-    text_span.end_offset = *end_offset;
-    bool supported = true;
-    switch (span.style) {
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
-        break;
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT:
-        text_span.thickness = ImeTextSpan::Thickness::kThick;
-        break;
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE:
-        text_span.thickness = ImeTextSpan::Thickness::kThin;
-        break;
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION:
-        text_span.type = ImeTextSpan::Type::kSuggestion;
-        break;
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT:
-        text_span.type = ImeTextSpan::Type::kMisspellingSuggestion;
-        break;
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_NONE:
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_ACTIVE:
-      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INACTIVE:
-      default:
-        VLOG(1) << "Unsupported style. Skipped: " << span.style;
-        supported = false;
-        break;
-    }
-    if (!supported)
+    auto style = ConvertStyle(span.style);
+    if (!style.has_value())
       continue;
-    composition_text.ime_text_spans.push_back(std::move(text_span));
+    composition_text.ime_text_spans.emplace_back(
+        /* type= */ style->first, *start_offset, *end_offset,
+        /* thickness = */ style->second);
   }
 
   if (preedit_cursor < 0) {
@@ -405,6 +414,67 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
 #else
   NOTIMPLEMENTED();
 #endif
+}
+
+void WaylandInputMethodContext::OnSetPreeditRegion(
+    int32_t index,
+    uint32_t length,
+    const std::vector<SpanStyle>& spans) {
+  // |index| and |length| are expected to be in UTF8. |index| is relative to the
+  // current cursor position.
+  if (surrounding_text_.empty() || !selection_range_utf8_.IsValid()) {
+    LOG(ERROR) << "SetSurroundingText should run before OnSetPreeditRegion.";
+    return;
+  }
+
+  // Validation of index and length.
+  if (index < 0 &&
+      selection_range_utf8_.end() < static_cast<uint32_t>(-index)) {
+    LOG(ERROR) << "Invalid starting point is specified";
+    return;
+  }
+  size_t begin_utf8 = static_cast<size_t>(
+      static_cast<ssize_t>(selection_range_utf8_.end()) + index);
+  size_t end_utf8 = begin_utf8 + length;
+  if (end_utf8 > surrounding_text_.size()) {
+    LOG(ERROR) << "Too long preedit range is specified";
+    return;
+  }
+
+  std::vector<size_t> offsets = {begin_utf8, end_utf8};
+  for (const auto& span : spans) {
+    offsets.push_back(begin_utf8 + span.index);
+    offsets.push_back(begin_utf8 + span.index + span.length);
+  }
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  if (offsets[0] == std::u16string::npos ||
+      offsets[1] == std::u16string::npos) {
+    LOG(ERROR) << "Invalid range is specified";
+    return;
+  }
+
+  std::vector<ui::ImeTextSpan> ime_text_spans;
+  for (size_t i = 0; i < spans.size(); ++i) {
+    size_t begin_span = offsets[i * 2 + 2];
+    size_t end_span = offsets[i * 2 + 3];
+    if (begin_span == std::u16string::npos || end_span == std::u16string::npos)
+      continue;
+    if (begin_span < offsets[0] || end_span < offsets[0] ||
+        begin_span > offsets[1] || end_span > offsets[1]) {
+      // Out of composition range.
+      continue;
+    }
+
+    auto style = ConvertStyle(spans[i].style);
+    if (!style.has_value())
+      continue;
+    ime_text_spans.emplace_back(/* type= */ style->first,
+                                begin_span - offsets[0], end_span - offsets[0],
+                                /* thickness = */ style->second);
+  }
+
+  ime_delegate_->OnSetPreeditRegion(gfx::Range(offsets[0], offsets[1]),
+                                    ime_text_spans);
 }
 
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {

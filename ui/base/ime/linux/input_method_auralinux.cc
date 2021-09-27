@@ -475,6 +475,15 @@ void InputMethodAuraLinux::OnPreeditEnd() {
                   !is_sync_mode_ && client && client->HasCompositionText());
 }
 
+void InputMethodAuraLinux::OnSetPreeditRegion(
+    const gfx::Range& range,
+    const std::vector<ImeTextSpan>& spans) {
+  auto* text_input_client = GetTextInputClient();
+  if (!text_input_client)
+    return;
+  text_input_client->SetCompositionFromExistingText(range, spans);
+}
+
 // Overridden from InputMethodBase.
 
 void InputMethodAuraLinux::OnWillChangeFocusedClient(
