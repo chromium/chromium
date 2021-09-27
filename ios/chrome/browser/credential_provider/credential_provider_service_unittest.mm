@@ -9,7 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,6 +37,7 @@
 
 namespace {
 
+using password_manager::FakeAffiliationService;
 using password_manager::PasswordForm;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
@@ -80,7 +83,7 @@ class CredentialProviderServiceTest : public PlatformTest {
 
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         &testing_pref_service_, password_store_, auth_service_,
-        credential_store_, nullptr, &sync_service_);
+        credential_store_, nullptr, &sync_service_, &affiliation_service_);
 
     // Fire sync service state changed to simulate sync setup finishing.
     sync_service_.FireStateChanged();
@@ -113,6 +116,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   ChromeAccountManagerService* account_manager_service_;
   syncer::TestSyncService sync_service_;
+  FakeAffiliationService affiliation_service_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialProviderServiceTest);
 };

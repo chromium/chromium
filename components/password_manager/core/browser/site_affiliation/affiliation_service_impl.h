@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
 
@@ -35,6 +36,7 @@ class SchemeHostPort;
 namespace password_manager {
 
 class AffiliationBackend;
+struct PasswordFormDigest;
 
 extern const char kGetChangePasswordURLMetricName[];
 
@@ -97,6 +99,13 @@ class AffiliationServiceImpl : public AffiliationService,
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until) override;
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
+  void InjectAffiliationAndBrandingInformation(
+      std::vector<std::unique_ptr<PasswordForm>> forms,
+      AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
+      PasswordFormsCallback result_callback) override;
+
+  // Returns whether or not |form| represents an Android credential.
+  static bool IsValidAndroidCredential(const PasswordFormDigest& form);
 
   AffiliationBackend* GetBackendForTesting() { return backend_; }
 
@@ -109,6 +118,17 @@ class AffiliationServiceImpl : public AffiliationService,
       std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
   void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
+
+  // Called back by AffiliationService to supply the list of facets
+  // affiliated with the Android credential in |form|. Injects affiliation and
+  // branding information by setting |affiliated_web_realm|, |app_display_name|
+  // and |app_icon_url| on |form| if |success| is true and |results| is
+  // non-empty. Invokes |barrier_closure|.
+  void CompleteInjectAffiliationAndBrandingInformation(
+      PasswordForm* form,
+      base::OnceClosure barrier_closure,
+      const AffiliatedFacets& results,
+      bool success);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;

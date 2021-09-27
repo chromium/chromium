@@ -514,6 +514,8 @@ static_library("test_support") {
     "mock_smart_bubble_stats_store.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
+    "site_affiliation/fake_affiliation_service.cc",
+    "site_affiliation/fake_affiliation_service.h",
     "site_affiliation/mock_affiliation_fetcher_factory.cc",
     "site_affiliation/mock_affiliation_fetcher_factory.h",
     "site_affiliation/mock_affiliation_service.cc",

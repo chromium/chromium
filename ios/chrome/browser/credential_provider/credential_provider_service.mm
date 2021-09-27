@@ -15,8 +15,8 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -137,11 +137,13 @@ CredentialProviderService::CredentialProviderService(
     AuthenticationService* authentication_service,
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    password_manager::AffiliationService* affiliation_service)
     : password_store_(password_store),
       authentication_service_(authentication_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
+      affiliation_service_(affiliation_service),
       credential_store_(credential_store) {
   DCHECK(password_store_);
   password_store_->AddObserver(this);
@@ -284,9 +286,8 @@ void CredentialProviderService::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   auto callback = base::BindOnce(&CredentialProviderService::SyncAllCredentials,
                                  weak_factory_.GetWeakPtr());
-  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
-  if (matcher) {
-    matcher->InjectAffiliationAndBrandingInformation(
+  if (affiliation_service_) {
+    affiliation_service_->InjectAffiliationAndBrandingInformation(
         std::move(results),
         AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));
@@ -343,9 +344,8 @@ void CredentialProviderService::OnLoginsChanged(
       &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
       weak_factory_.GetWeakPtr());
 
-  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
-  if (matcher) {
-    matcher->InjectAffiliationAndBrandingInformation(
+  if (affiliation_service_) {
+    affiliation_service_->InjectAffiliationAndBrandingInformation(
         std::move(forms_to_add),
         AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));

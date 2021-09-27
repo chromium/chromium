@@ -434,9 +434,10 @@ void PasswordStore::InjectAffiliationAndBrandingInformation(
     LoginsReply callback,
     LoginsResult forms) {
   if (affiliated_match_helper_ && !forms.empty()) {
-    affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
-        std::move(forms), AffiliationService::StrategyOnCacheMiss::FAIL,
-        std::move(callback));
+    affiliated_match_helper_->get_affiliation_service()
+        ->InjectAffiliationAndBrandingInformation(
+            std::move(forms), AffiliationService::StrategyOnCacheMiss::FAIL,
+            std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms));
   }

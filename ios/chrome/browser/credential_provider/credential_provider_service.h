@@ -16,6 +16,10 @@
 
 @protocol MutableCredentialStore;
 
+namespace password_manager {
+class AffiliationService;
+}
+
 namespace syncer {
 class SyncService;
 }
@@ -36,7 +40,8 @@ class CredentialProviderService
       AuthenticationService* authentication_service,
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      password_manager::AffiliationService* affiliation_service);
 
   CredentialProviderService(const CredentialProviderService&) = delete;
   CredentialProviderService& operator=(const CredentialProviderService&) =
@@ -119,6 +124,9 @@ class CredentialProviderService
 
   // Sync Service to observe.
   syncer::SyncService* sync_service_ = nullptr;
+
+  // Affiliation service to provide affiliations.
+  password_manager::AffiliationService* affiliation_service_ = nullptr;
 
   // The interface for saving and updating credentials.
   id<MutableCredentialStore> credential_store_ = nil;

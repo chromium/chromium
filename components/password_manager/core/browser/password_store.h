@@ -84,6 +84,8 @@ class PasswordStore : public PasswordStoreInterface {
   // must already be initialized if it is non-null.
   // TODO(crbug.bom/1218413): Inject into constructor or `Init()` instead.
   void SetAffiliatedMatchHelper(std::unique_ptr<AffiliatedMatchHelper> helper);
+
+  // TODO(crbug.com/1252350): Delete this method once it's no longer used.
   AffiliatedMatchHelper* affiliated_match_helper() const {
     return affiliated_match_helper_.get();
   }

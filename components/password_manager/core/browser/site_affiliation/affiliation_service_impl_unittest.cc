@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/android_affiliation/fake_affiliation_api.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_base.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
@@ -60,11 +61,64 @@ constexpr char kTestFacetURIAlpha2[] = "https://two.alpha.example.com";
 constexpr char kTestFacetURIAlpha3[] = "https://three.alpha.example.com";
 constexpr char kTestFacetURIBeta1[] = "https://one.beta.example.com";
 
+const char kTestAndroidFacetURIAlpha[] =
+    "android://hash@com.example.alpha.android";
+const char kTestAndroidFacetNameAlpha1[] = "Facet Name Alpha 1";
+const char kTestAndroidFacetIconURLAlpha1[] = "https://example.com/alpha_1.png";
+const char kTestAndroidRealmAlpha1[] =
+    "android://hash@com.example.alpha.android/";
+const char kTestWebRealmAlpha1[] = "https://one.alpha.example.com/";
+const char kTestWebRealmAlpha2[] = "https://two.alpha.example.com/";
+
+const char kTestAndroidFacetURIBeta1[] =
+    "android://hash@com.example.beta.android";
+const char kTestAndroidFacetNameBeta1[] = "Facet Name Beta 1";
+const char kTestAndroidFacetIconURLBeta1[] = "https://example.com/beta_1.png";
+const char kTestWebRealmBeta1[] = "https://one.beta.example.com/";
+const char kTestAndroidRealmBeta1[] =
+    "android://hash@com.example.beta.android/";
+
+const char kTestAndroidFacetURIBeta2[] =
+    "android://hash@com.yetanother.beta.android";
+const char kTestAndroidFacetNameBeta2[] = "Facet Name Beta 2";
+const char kTestAndroidFacetIconURLBeta2[] = "https://example.com/beta_2.png";
+const char kTestAndroidRealmBeta2[] =
+    "android://hash@com.yetanother.beta.android/";
+
+const char kTestAndroidFacetURIGamma[] =
+    "android://hash@com.example.gamma.android";
+const char kTestAndroidRealmGamma[] =
+    "android://hash@com.example.gamma.android";
+
+const char16_t kTestUsername[] = u"JohnDoe";
+const char16_t kTestPassword[] = u"secret";
+
 AffiliatedFacets GetTestEquivalenceClassAlpha() {
   return {
       {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
       {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)},
       {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)},
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha),
+       FacetBrandingInfo{kTestAndroidFacetNameAlpha1,
+                         GURL(kTestAndroidFacetIconURLAlpha1)}},
+  };
+}
+
+AffiliatedFacets GetTestEquivalenceClassBeta() {
+  return {
+      {FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)},
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta1),
+       FacetBrandingInfo{kTestAndroidFacetNameBeta1,
+                         GURL(kTestAndroidFacetIconURLBeta1)}},
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
+       FacetBrandingInfo{kTestAndroidFacetNameBeta2,
+                         GURL(kTestAndroidFacetIconURLBeta2)}},
+  };
+}
+
+AffiliatedFacets GetTestEquivalenceClassGamma() {
+  return {
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma)},
   };
 }
 
@@ -75,6 +129,15 @@ std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
         FacetURI::FromCanonicalSpec(url::SchemeHostPort(url).Serialize()));
   }
   return facet_URIs;
+}
+
+PasswordForm GetTestAndroidCredentials(const char* signon_realm) {
+  PasswordForm form;
+  form.scheme = PasswordForm::Scheme::kHtml;
+  form.signon_realm = signon_realm;
+  form.username_value = kTestUsername;
+  form.password_value = kTestPassword;
+  return form;
 }
 
 }  // namespace
@@ -503,6 +566,15 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
             service()->GetChangePasswordURL(origin2));
 }
 
+TEST_F(AffiliationServiceImplTest, IsValidAndroidCredential) {
+  EXPECT_FALSE(AffiliationServiceImpl::IsValidAndroidCredential(
+      {PasswordForm::Scheme::kHtml, kTestWebRealmBeta1, GURL()}));
+  PasswordFormDigest android_credential(
+      GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+  EXPECT_TRUE(
+      AffiliationServiceImpl::IsValidAndroidCredential(android_credential));
+}
+
 // Test fixture to imitate a fetch factory for testing and not just mock it.
 class AffiliationServiceImplTestWithFetcherFactory
     : public AffiliationServiceImplTest {
@@ -515,12 +587,22 @@ class AffiliationServiceImplTestWithFetcherFactory
     fake_affiliation_api_.SetFetcherFactory(fake_fetcher_factory.get());
     fake_affiliation_api_.AddTestEquivalenceClass(
         GetTestEquivalenceClassAlpha());
+    fake_affiliation_api_.AddTestEquivalenceClass(
+        GetTestEquivalenceClassBeta());
+    fake_affiliation_api_.AddTestEquivalenceClass(
+        GetTestEquivalenceClassGamma());
     background_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&AffiliationBackend::SetFetcherFactoryForTesting,
                        base::Unretained(service_->GetBackendForTesting()),
                        std::move(fake_fetcher_factory)));
   }
+
+  void OnFormsCallback(std::vector<std::unique_ptr<PasswordForm>> forms) {
+    result_forms_.swap(forms);
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> result_forms_;
 };
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
@@ -589,6 +671,63 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
   mock_consumer()->ExpectFailure();
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_consumer());
+}
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       InjectAffiliationAndBrandingInformation) {
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmAlpha1)));
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmBeta1)));
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmBeta2)));
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmGamma)));
+
+  PasswordFormDigest digest = {PasswordForm::Scheme::kHtml, kTestWebRealmBeta1,
+                               GURL()};
+  PasswordForm web_form;
+  web_form.scheme = digest.scheme;
+  web_form.signon_realm = digest.signon_realm;
+  web_form.url = digest.url;
+  forms.push_back(std::make_unique<PasswordForm>(web_form));
+
+  size_t expected_form_count = forms.size();
+
+  service()->InjectAffiliationAndBrandingInformation(
+      std::move(forms),
+      AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      base::BindOnce(
+          &AffiliationServiceImplTestWithFetcherFactory::OnFormsCallback,
+          base::Unretained(this)));
+
+  background_task_runner()->RunUntilIdle();
+  ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
+  fake_affiliation_api()->ServeNextRequest();
+  RunUntilIdle();
+
+  ASSERT_EQ(expected_form_count, result_forms_.size());
+  EXPECT_THAT(result_forms_[0]->affiliated_web_realm,
+              testing::AnyOf(kTestWebRealmAlpha1, kTestWebRealmAlpha2));
+  EXPECT_EQ(kTestAndroidFacetNameAlpha1, result_forms_[0]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetIconURLAlpha1,
+            result_forms_[0]->app_icon_url.possibly_invalid_spec());
+
+  EXPECT_THAT(result_forms_[1]->affiliated_web_realm,
+              testing::Eq(kTestWebRealmBeta1));
+  EXPECT_EQ(kTestAndroidFacetNameBeta1, result_forms_[1]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetIconURLBeta1,
+            result_forms_[1]->app_icon_url.possibly_invalid_spec());
+
+  EXPECT_THAT(result_forms_[2]->affiliated_web_realm,
+              testing::Eq(kTestWebRealmBeta1));
+  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_forms_[2]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetIconURLBeta2,
+            result_forms_[2]->app_icon_url.possibly_invalid_spec());
+
+  EXPECT_THAT(result_forms_[3]->affiliated_web_realm, testing::IsEmpty());
+  EXPECT_THAT(result_forms_[4]->affiliated_web_realm, testing::IsEmpty());
 }
 
 }  // namespace password_manager

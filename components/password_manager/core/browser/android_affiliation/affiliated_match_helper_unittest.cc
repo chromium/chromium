@@ -298,19 +298,6 @@ class AffiliatedMatchHelperTest : public testing::Test,
     return last_result_realms_;
   }
 
-  std::vector<std::unique_ptr<PasswordForm>>
-  InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms) {
-    expecting_result_callback_ = true;
-    match_helper()->InjectAffiliationAndBrandingInformation(
-        std::move(forms), AffiliationService::StrategyOnCacheMiss::FAIL,
-        base::BindOnce(&AffiliatedMatchHelperTest::OnFormsCallback,
-                       base::Unretained(this)));
-    RunUntilIdle();
-    EXPECT_FALSE(expecting_result_callback_);
-    return std::move(last_result_forms_);
-  }
-
   void DestroyMatchHelper() { match_helper_.reset(); }
 
   TestPasswordStore* password_store() { return password_store_.get(); }
@@ -327,12 +314,6 @@ class AffiliatedMatchHelperTest : public testing::Test,
     EXPECT_TRUE(expecting_result_callback_);
     expecting_result_callback_ = false;
     last_result_realms_ = affiliated_realms;
-  }
-
-  void OnFormsCallback(std::vector<std::unique_ptr<PasswordForm>> forms) {
-    EXPECT_TRUE(expecting_result_callback_);
-    expecting_result_callback_ = false;
-    last_result_forms_.swap(forms);
   }
 
   // testing::Test:
@@ -358,7 +339,6 @@ class AffiliatedMatchHelperTest : public testing::Test,
   base::ScopedMockTimeMessageLoopTaskRunner mock_time_task_runner_;
 
   std::vector<std::string> last_result_realms_;
-  std::vector<std::unique_ptr<PasswordForm>> last_result_forms_;
   bool expecting_result_callback_ = false;
 
   scoped_refptr<TestPasswordStore> password_store_ =
@@ -434,83 +414,6 @@ TEST_P(AffiliatedMatchHelperTest,
   EXPECT_THAT(GetAffiliatedAndroidAndWebRealms(
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::IsEmpty());
-}
-
-// Verifies that InjectAffiliationAndBrandingInformation() injects the realms of
-// web sites affiliated with the given Android application into the password
-// forms, as well as branding information corresponding to the application, if
-// any.
-TEST_P(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmAlpha3)));
-  mock_affiliation_service()
-      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
-          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
-          StrategyOnCacheMiss::FAIL, GetTestEquivalenceClassAlpha());
-
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmBeta2)));
-  mock_affiliation_service()
-      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
-          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
-          StrategyOnCacheMiss::FAIL, GetTestEquivalenceClassBeta());
-
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmBeta3)));
-  mock_affiliation_service()
-      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
-          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3),
-          StrategyOnCacheMiss::FAIL, GetTestEquivalenceClassBeta());
-
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmGamma)));
-  mock_affiliation_service()
-      ->ExpectCallToGetAffiliationsAndBrandingAndEmulateFailure(
-          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma),
-          StrategyOnCacheMiss::FAIL);
-
-  PasswordFormDigest digest =
-      GetTestObservedWebForm(kTestWebRealmBeta1, nullptr);
-  PasswordForm web_form;
-  web_form.scheme = digest.scheme;
-  web_form.signon_realm = digest.signon_realm;
-  web_form.url = digest.url;
-  forms.push_back(std::make_unique<PasswordForm>(web_form));
-
-  size_t expected_form_count = forms.size();
-  std::vector<std::unique_ptr<PasswordForm>> results(
-      InjectAffiliationAndBrandingInformation(std::move(forms)));
-  ASSERT_EQ(expected_form_count, results.size());
-  EXPECT_THAT(results[0]->affiliated_web_realm,
-              testing::AnyOf(kTestWebRealmAlpha1, kTestWebRealmAlpha2));
-  EXPECT_EQ(kTestAndroidFacetNameAlpha3, results[0]->app_display_name);
-  EXPECT_EQ(kTestAndroidFacetIconURLAlpha3,
-            results[0]->app_icon_url.possibly_invalid_spec());
-  EXPECT_THAT(results[1]->affiliated_web_realm,
-              testing::Eq(kTestWebRealmBeta1));
-  EXPECT_EQ(kTestAndroidFacetNameBeta2, results[1]->app_display_name);
-  EXPECT_EQ(kTestAndroidFacetIconURLBeta2,
-            results[1]->app_icon_url.possibly_invalid_spec());
-  EXPECT_THAT(results[2]->affiliated_web_realm,
-              testing::Eq(kTestWebRealmBeta1));
-  EXPECT_EQ(kTestAndroidFacetNameBeta3, results[2]->app_display_name);
-  EXPECT_EQ(kTestAndroidFacetIconURLBeta3,
-            results[2]->app_icon_url.possibly_invalid_spec());
-  EXPECT_THAT(results[3]->affiliated_web_realm, testing::IsEmpty());
-  EXPECT_THAT(results[4]->affiliated_web_realm, testing::IsEmpty());
-}
-
-// Note: IsValidWebCredential() is tested as part of
-// GetAffiliatedAndroidAndWebRealms tests above.
-TEST_P(AffiliatedMatchHelperTest, IsValidAndroidCredential) {
-  EXPECT_FALSE(AffiliatedMatchHelper::IsValidAndroidCredential(
-      GetTestObservedWebForm(kTestWebRealmBeta1, nullptr)));
-  PasswordFormDigest android_credential(
-      GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-  EXPECT_TRUE(
-      AffiliatedMatchHelper::IsValidAndroidCredential(android_credential));
 }
 
 // Verifies that affiliations for Android applications with pre-existing
