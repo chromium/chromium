@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 
 namespace blink {
 

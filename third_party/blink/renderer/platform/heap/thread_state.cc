@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/cppgc/heap-consistency.h"

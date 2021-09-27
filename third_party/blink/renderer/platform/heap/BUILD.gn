@@ -19,31 +19,9 @@ buildflag_header("blink_heap_buildflags") {
   ]
 }
 
-source_set("heap_unsanitized") {
-  if (is_asan) {
-    configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
-  }
-  configs +=
-      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
-
-  # std::atomic<>:: functions must be inlined.
-  configs -= [ "//build/config/compiler:default_optimization" ]
-  configs += [ "//build/config/compiler:optimize_max" ]
-  if (using_mismatched_sample_profile) {
-    configs -= [ "//build/config/compiler:afdo_optimize_size" ]
-  }
-
-  sources = []
-
-  deps = [
-    "//base",
-    "//third_party/blink/renderer/platform/wtf",
-  ]
-  public_deps = [ "//third_party/blink/renderer/platform:platform_export" ]
-}
-
 blink_platform_sources("heap") {
   sources = [
+    "blink_gc_memory_dump_provider.cc",
     "blink_gc_memory_dump_provider.h",
     "collection_support/clear_collection_scope.h",
     "collection_support/heap_deque.h",
@@ -55,6 +33,7 @@ blink_platform_sources("heap") {
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_vector.h",
     "collection_support/heap_vector_backing.h",
+    "custom_spaces.cc",
     "custom_spaces.h",
     "disallow_new_wrapper.h",
     "forward.h",
@@ -64,55 +43,27 @@ blink_platform_sources("heap") {
     "heap.h",
     "heap_allocator.h",
     "heap_allocator_impl.h",
-    "heap_stats_collector.h",
     "heap_traits.h",
     "member.h",
     "persistent.h",
     "process_heap.h",
     "self_keep_alive.h",
+    "thread_local.h",
+    "thread_state.cc",
     "thread_state.h",
     "thread_state_scopes.h",
     "trace_traits.h",
-    "unified_heap_controller.h",
     "unified_heap_marking_visitor.h",
     "visitor.h",
+    "write_barrier.h",
   ]
 
   deps = [
     ":blink_heap_buildflags",
     "//base",
-    "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/heap:heap_unsanitized",
-    "//third_party/icu",
-    "//v8",
-  ]
-
-  sources += [
-    "v8_wrapper/blink_gc.h",
-    "v8_wrapper/blink_gc_memory_dump_provider.cc",
-    "v8_wrapper/blink_gc_memory_dump_provider.h",
-    "v8_wrapper/collection_support/heap_hash_table_backing.h",
-    "v8_wrapper/collection_support/heap_vector_backing.h",
-    "v8_wrapper/custom_spaces.cc",
-    "v8_wrapper/custom_spaces.h",
-    "v8_wrapper/garbage_collected.h",
-    "v8_wrapper/heap.h",
-    "v8_wrapper/heap_allocator_impl.h",
-    "v8_wrapper/member.h",
-    "v8_wrapper/persistent.h",
-    "v8_wrapper/process_heap.h",
-    "v8_wrapper/thread_local.h",
-    "v8_wrapper/thread_state.cc",
-    "v8_wrapper/thread_state.h",
-    "v8_wrapper/thread_state_scopes.h",
-    "v8_wrapper/trace_traits.h",
-    "v8_wrapper/unified_heap_marking_visitor.h",
-    "v8_wrapper/visitor.h",
-    "v8_wrapper/write_barrier.h",
-  ]
-
-  deps += [
     "//gin:gin",
+    "//third_party/blink/renderer/platform:make_platform_generated",
+    "//third_party/icu",
 
     # Dependency on V8 which transitively depends on cppgc but exposes
     # JS-related C++ heap through V8's Isolate.
@@ -141,12 +92,8 @@ source_set("test_support") {
     "heap_test_objects.cc",
     "heap_test_objects.h",
     "heap_test_platform.h",
+    "heap_test_utilities.cc",
     "heap_test_utilities.h",
-  ]
-
-  sources += [
-    "v8_wrapper/heap_test_utilities.cc",
-    "v8_wrapper/heap_test_utilities.h",
   ]
 
   deps = [

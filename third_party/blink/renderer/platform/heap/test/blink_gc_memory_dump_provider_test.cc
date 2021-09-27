@@ -8,9 +8,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
 
 namespace blink {
 

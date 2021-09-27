@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/blink_gc_memory_dump_provider.h"
+#include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
 
 #include <inttypes.h>
 #include <ios>
@@ -13,7 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "v8/include/cppgc/heap-statistics.h"
 
 namespace blink {
