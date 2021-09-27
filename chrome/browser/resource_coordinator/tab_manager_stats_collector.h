@@ -90,6 +90,8 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
                            HistogramsTabSwitchLoadTime);
   FRIEND_TEST_ALL_PREFIXES(TabManagerStatsCollectorParameterizedTest,
                            HistogramsTabCount);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerStatsCollectorPrerenderingTest,
+                           KeepingWebContentsMapInPrerendering);
 
   // Create and initialize the swap metrics driver if needed.
   void CreateAndInitSwapMetricsDriverIfNeeded();
