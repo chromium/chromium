@@ -58,12 +58,25 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NewTabPageConcretePage {
+  kOther = 0,
+  k1PWebUiNtp = 1,
+  k3PWebUiNtp = 2,
+  k3PRemoteNtp = 3,
+  kExtensionNtp = 4,
+  kOffTheRecordNtp = 5,
+  kMaxValue = kOffTheRecordNtp,
+};
 
 bool IsCacheableNTP(content::WebContents* contents) {
   content::NavigationEntry* entry =
@@ -106,6 +119,29 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
     UMA_HISTOGRAM_TIMES("Tab.NewTabOnload.Local", duration);
   }
   core_tab_helper->set_new_tab_start_time(base::TimeTicks());
+}
+
+void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
+  NewTabPageConcretePage concrete_page = NewTabPageConcretePage::kOther;
+  if (navigation_handle->GetURL().GetOrigin() ==
+      GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
+    concrete_page = NewTabPageConcretePage::k1PWebUiNtp;
+  } else if (navigation_handle->GetURL().GetOrigin() ==
+             GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin()) {
+    concrete_page = NewTabPageConcretePage::k3PWebUiNtp;
+  } else if (search::IsInstantNTP(navigation_handle->GetWebContents())) {
+    concrete_page = NewTabPageConcretePage::k3PRemoteNtp;
+  } else if (navigation_handle->GetURL().SchemeIs(
+                 extensions::kExtensionScheme)) {
+    concrete_page = NewTabPageConcretePage::kExtensionNtp;
+  } else if (Profile::FromBrowserContext(
+                 navigation_handle->GetWebContents()->GetBrowserContext())
+                 ->IsOffTheRecord() &&
+             navigation_handle->GetURL().GetOrigin() ==
+                 GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
+    concrete_page = NewTabPageConcretePage::kOffTheRecordNtp;
+  }
+  base::UmaHistogramEnumeration("NewTabPage.ConcretePage", concrete_page);
 }
 
 }  // namespace
@@ -176,6 +212,11 @@ void SearchTabHelper::DidStartNavigation(
 
   if (navigation_handle->IsSameDocument())
     return;
+
+  if (web_contents_->GetVisibleURL().GetOrigin() ==
+      GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
+    RecordConcreteNtp(navigation_handle);
+  }
 
   // When navigating away from NTP we should revert all the unconfirmed state.
   if (search::IsInstantNTP(web_contents_) && chrome_colors_service_)

@@ -60034,6 +60034,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Renamed root partner folder"/>
 </enum>
 
+<enum name="NewTabPageConcretePage">
+  <int value="0" label="Other"/>
+  <int value="1" label="1P WebUI NTP"/>
+  <int value="2" label="3P WebUI NTP"/>
+  <int value="3" label="3P Remote NTP"/>
+  <int value="4" label="Extension NTP"/>
+  <int value="5" label="Off the record NTP"/>
+</enum>
+
 <enum name="NewTabPageLogoClick">
   <int value="0" label="Static logo clicked"/>
   <int value="1" label="CTA image clicked"/>
