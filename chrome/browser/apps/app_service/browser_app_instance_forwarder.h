@@ -11,14 +11,19 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace apps {
 
 class BrowserAppInstanceTracker;
 
-// Observers the Lacros browser apps tracker and forwards events to Ash.
-class BrowserAppInstanceForwarder : public apps::BrowserAppInstanceObserver {
+// Observes the Lacros browser apps tracker and forwards events to Ash. It
+// implements the BrowserAppInstanceController crosapi, allowing Ash to perform
+// certain operations on instances.
+class BrowserAppInstanceForwarder
+    : public apps::BrowserAppInstanceObserver,
+      public crosapi::mojom::BrowserAppInstanceController {
  public:
   // A factory method to make the creation of the forwarder optional to keep it
   // behind a flag.
@@ -37,6 +42,7 @@ class BrowserAppInstanceForwarder : public apps::BrowserAppInstanceObserver {
   BrowserAppInstanceForwarder& operator=(BrowserAppInstanceForwarder&&) =
       delete;
 
+ private:
   void OnBrowserWindowAdded(
       const apps::BrowserWindowInstance& instance) override;
   void OnBrowserWindowUpdated(
@@ -47,11 +53,19 @@ class BrowserAppInstanceForwarder : public apps::BrowserAppInstanceObserver {
   void OnBrowserAppUpdated(const apps::BrowserAppInstance& instance) override;
   void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override;
 
+  // crosapi::mojom::BrowserAppInstanceController overrides.
+  void ActivateTabInstance(const base::UnguessableToken& instance_id) override;
+
  private:
   mojo::Remote<crosapi::mojom::BrowserAppInstanceRegistry>& registry_;
 
+  BrowserAppInstanceTracker& tracker_;
+
   base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
       tracker_observation_{this};
+
+  mojo::Receiver<crosapi::mojom::BrowserAppInstanceController>
+      controller_receiver_{this};
 };
 
 }  // namespace apps

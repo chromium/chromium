@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/lacros/window_utility.h"
@@ -21,8 +22,11 @@ namespace apps {
 BrowserAppInstanceForwarder::BrowserAppInstanceForwarder(
     BrowserAppInstanceTracker& tracker)
     : registry_(chromeos::LacrosService::Get()
-                    ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>()) {
+                    ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>()),
+      tracker_(tracker) {
   tracker_observation_.Observe(&tracker);
+  registry_->RegisterController(
+      controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 BrowserAppInstanceForwarder::~BrowserAppInstanceForwarder() = default;
 
@@ -62,6 +66,11 @@ void BrowserAppInstanceForwarder::OnBrowserAppUpdated(
 void BrowserAppInstanceForwarder::OnBrowserAppRemoved(
     const apps::BrowserAppInstance& instance) {
   registry_->OnBrowserAppRemoved(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::ActivateTabInstance(
+    const base::UnguessableToken& id) {
+  tracker_.ActivateTabInstance(id);
 }
 
 }  // namespace apps

@@ -74,6 +74,17 @@ bool BrowserAppInstanceRegistry::IsAppRunning(const std::string& app_id) const {
                         }) != nullptr;
 }
 
+void BrowserAppInstanceRegistry::ActivateTabInstance(
+    const base::UnguessableToken& id) {
+  if (ash_instance_tracker_.GetAppInstanceById(id)) {
+    ash_instance_tracker_.ActivateTabInstance(id);
+    return;
+  }
+  if (controller_.is_bound()) {
+    controller_->ActivateTabInstance(id);
+  }
+}
+
 void BrowserAppInstanceRegistry::BindReceiver(
     crosapi::CrosapiId id,
     mojo::PendingReceiver<crosapi::mojom::BrowserAppInstanceRegistry>
@@ -121,6 +132,20 @@ void BrowserAppInstanceRegistry::OnBrowserAppRemoved(
   for (auto& observer : observers_) {
     observer.OnBrowserAppRemoved(instance);
   }
+}
+
+void BrowserAppInstanceRegistry::RegisterController(
+    mojo::PendingRemote<crosapi::mojom::BrowserAppInstanceController>
+        controller) {
+  // At the moment only a single controller is supported.
+  // TODO(crbug.com/1174246): Support SxS lacros.
+  if (controller_.is_bound()) {
+    return;
+  }
+  controller_.Bind(std::move(controller));
+  controller_.set_disconnect_handler(
+      base::BindOnce(&BrowserAppInstanceRegistry::OnControllerDisconnected,
+                     base::Unretained(this)));
 }
 
 void BrowserAppInstanceRegistry::OnBrowserWindowAdded(
@@ -312,6 +337,10 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceRemoved(
   for (auto& observer : observers_) {
     observer.OnBrowserAppRemoved(*instance);
   }
+}
+
+void BrowserAppInstanceRegistry::OnControllerDisconnected() {
+  controller_.reset();
 }
 
 }  // namespace apps

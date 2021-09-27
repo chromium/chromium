@@ -25,6 +25,7 @@
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -66,6 +67,10 @@ class BrowserAppInstanceRegistry
   // Checks if an app with |app_id| is running (in Ash or Lacros).
   bool IsAppRunning(const std::string& app_id) const;
 
+  // Activate the given instance within its tabstrip (in Ash or Lacros). If the
+  // instance lives in its own window, this will have no effect.
+  void ActivateTabInstance(const base::UnguessableToken& id);
+
   // Checks if any Ash tabbed browser window are opens.
   bool IsAshBrowserRunnig() const {
     return ash_instance_tracker_.IsBrowserRunning();
@@ -99,6 +104,9 @@ class BrowserAppInstanceRegistry
   void OnBrowserAppAdded(const apps::BrowserAppInstance& instance) override;
   void OnBrowserAppUpdated(const apps::BrowserAppInstance& instance) override;
   void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override;
+  void RegisterController(
+      mojo::PendingRemote<crosapi::mojom::BrowserAppInstanceController>
+          controller) override;
 
   // crosapi::mojom::BrowserAppInstanceRegistry overrides (events from Lacros):
   void OnBrowserWindowAdded(apps::BrowserWindowInstanceUpdate update) override;
@@ -141,6 +149,8 @@ class BrowserAppInstanceRegistry
   void LacrosAppInstanceRemoved(apps::BrowserAppInstanceUpdate update,
                                 aura::Window* window);
 
+  void OnControllerDisconnected();
+
   BrowserAppInstanceTracker& ash_instance_tracker_;
 
   // Lacros app instances.
@@ -159,6 +169,7 @@ class BrowserAppInstanceRegistry
   mojo::ReceiverSet<crosapi::mojom::BrowserAppInstanceRegistry,
                     crosapi::CrosapiId>
       receiver_set_;
+  mojo::Remote<crosapi::mojom::BrowserAppInstanceController> controller_;
 
   base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 
