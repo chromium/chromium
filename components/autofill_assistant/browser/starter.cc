@@ -363,14 +363,16 @@ void Starter::CheckSettings() {
       platform_delegate_->GetFeatureModuleInstalled();
   bool prev_fetch_trigger_scripts_on_navigation =
       fetch_trigger_scripts_on_navigation_;
+  // Note: the feature flag must be the last thing tested in this if-statement,
+  // to avoid tagging tabs that otherwise don't qualify for in-cct triggering,
+  // which leads to pollution of our metrics.
   fetch_trigger_scripts_on_navigation_ =
-      ((base::FeatureList::IsEnabled(
-            features::kAutofillAssistantInCCTTriggering) &&
-        is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA()) ||
-       (base::FeatureList::IsEnabled(
-            features::kAutofillAssistantInTabTriggering) &&
-        !is_custom_tab_)) &&
-      proactive_help_setting_enabled && msbb_setting_enabled;
+      proactive_help_setting_enabled && msbb_setting_enabled &&
+      ((is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillAssistantInCCTTriggering)) ||
+       (!is_custom_tab_ && base::FeatureList::IsEnabled(
+                               features::kAutofillAssistantInTabTriggering)));
 
   // If there is a pending startup, re-check that the settings are still
   // allowing the startup to proceed. If not, cancel the startup.
