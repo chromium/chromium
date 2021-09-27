@@ -50,7 +50,38 @@ struct FrameTokenWithPredecessor {
                          const FrameTokenWithPredecessor& b);
 };
 
-// Holds information about a form to be filled and/or submitted.
+// Autofill represents forms and fields as FormData and FormFieldData objects.
+//
+// On the renderer side, there are roughly one-to-one correspondences
+//  - between FormData and blink::WebFormElement, and
+//  - between FormFieldData and blink::WebFormControlElement,
+// where the Blink classes directly correspond to DOM elements.
+//
+// On the browser side, there are one-to-one correspondences
+//  - between FormData and AutofillField, and
+//  - between FormFieldData and FormStructure,
+// where AutofillField and FormStructure hold additional information, such as
+// Autofill type predictions and sectioning.
+//
+// A FormData is essentially a collection of FormFieldDatas with additional
+// metadata.
+//
+// FormDatas and FormFieldDatas are used in the renderer-browser communication:
+//  - The renderer passes a FormData and/or FormFieldData to the browser when it
+//    has found a new form in the DOM, a form was submitted, etc. (see
+//    mojom::AutofillDriver).
+//  - The browser passes a FormData and/or FormFieldData to the renderer for
+//    preview, filling, etc. (see mojom::AutofillAgent). In the preview and
+//    filling cases, the browser sets the field values to the values to be
+//    previewed or filled.
+//
+// There are a few exceptions to the aforementioned one-to-one correspondences
+// between Autofill's data types and Blink's:
+// - Autofill only supports certain types of WebFormControlElements.
+// - Autofill has the concept of an unowned form, which does not correspond to
+//   an existing blink::WebFormElement.
+// - Autofill may move FormFieldDatas to other FormDatas across shadow/main
+//   DOMs and across frames.
 struct FormData {
   // Less-than relation for STL containers. Compares only members needed to
   // uniquely identify a form.
