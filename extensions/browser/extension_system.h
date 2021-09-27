@@ -42,7 +42,6 @@ class ExtensionSet;
 class InfoMap;
 class ManagementPolicy;
 class QuotaService;
-class RuntimeData;
 class ServiceWorkerManager;
 class StateStore;
 class UserScriptManager;
@@ -75,10 +74,6 @@ class ExtensionSystem : public KeyedService {
   // The ExtensionService is created at startup. ExtensionService is only
   // defined in Chrome.
   virtual ExtensionService* extension_service() = 0;
-
-  // Per-extension data that can change during the life of the process but
-  // does not persist across restarts. Lives on UI thread. Created at startup.
-  virtual RuntimeData* runtime_data() = 0;
 
   // The class controlling whether users are permitted to perform certain
   // actions on extensions (install, uninstall, disable, etc.).

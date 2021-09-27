@@ -10,7 +10,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
-#include "extensions/browser/runtime_data.h"
+#include "extensions/browser/process_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
@@ -33,7 +33,22 @@ bool IsExtensionBackgroundPageReady(
       extensions::ExtensionSystem::Get(browser_context);
   if (!extension_system)
     return false;
-  return extension_system->runtime_data()->IsBackgroundPageReady(extension);
+
+  process_util::PersistentBackgroundPageState persistent_background_page_state =
+      process_util::GetPersistentBackgroundPageState(*extension,
+                                                     browser_context);
+  switch (persistent_background_page_state) {
+    // Probably erroneously, we return true for the kInvalid state, as well
+    // (which corresponds to the extension not having a persistent background
+    // page). This is appropriate for no background context at all, but probably
+    // wrong for event pages.
+    // ExtensionBackgroundPageWaiter handles this more robustly.
+    case process_util::PersistentBackgroundPageState::kInvalid:
+    case process_util::PersistentBackgroundPageState::kReady:
+      return true;
+    case process_util::PersistentBackgroundPageState::kNotReady:
+      return false;
+  }
 }
 
 }  // namespace

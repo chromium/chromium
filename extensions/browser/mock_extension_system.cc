@@ -25,10 +25,6 @@ ExtensionService* MockExtensionSystem::extension_service() {
   return nullptr;
 }
 
-RuntimeData* MockExtensionSystem::runtime_data() {
-  return nullptr;
-}
-
 ManagementPolicy* MockExtensionSystem::management_policy() {
   return nullptr;
 }

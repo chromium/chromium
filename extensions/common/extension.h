@@ -46,8 +46,8 @@ class PermissionsParser;
 
 // Represents a Chrome extension.
 // Once created, an Extension object is immutable, with the exception of its
-// RuntimeData. This makes it safe to use on any thread, since access to the
-// RuntimeData is protected by a lock.
+// PermissionsData. This makes it safe to use on any thread, since access to the
+// PermissionsData is protected by a lock.
 class Extension final : public base::RefCountedThreadSafe<Extension> {
  public:
   // Do not renumber or reorder these values, as they are stored on-disk in the

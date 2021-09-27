@@ -31,7 +31,6 @@
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
 #include "services/data_decoder/data_decoder_service.h"
@@ -76,8 +75,6 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(profile_));
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, command_line, install_directory, ExtensionPrefs::Get(profile_),
       Blocklist::Get(profile_), autoupdate_enabled, extensions_enabled,
@@ -98,10 +95,6 @@ void TestExtensionSystem::CreateUserScriptManager() {
 
 ExtensionService* TestExtensionSystem::extension_service() {
   return extension_service_.get();
-}
-
-RuntimeData* TestExtensionSystem::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* TestExtensionSystem::management_policy() {

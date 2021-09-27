@@ -53,7 +53,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/updater/uninstall_ping_sender.h"
@@ -203,10 +202,6 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 
-  // ExtensionService depends on RuntimeData.
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(profile_));
-
   bool autoupdate_enabled = !profile_->IsGuestSession() &&
                             !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -331,10 +326,6 @@ ExtensionService* ExtensionSystemImpl::Shared::extension_service() {
   return extension_service_.get();
 }
 
-RuntimeData* ExtensionSystemImpl::Shared::runtime_data() {
-  return runtime_data_.get();
-}
-
 ManagementPolicy* ExtensionSystemImpl::Shared::management_policy() {
   return management_policy_.get();
 }
@@ -393,10 +384,6 @@ void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
 
 ExtensionService* ExtensionSystemImpl::extension_service() {
   return shared_->extension_service();
-}
-
-RuntimeData* ExtensionSystemImpl::runtime_data() {
-  return shared_->runtime_data();
 }
 
 ManagementPolicy* ExtensionSystemImpl::management_policy() {

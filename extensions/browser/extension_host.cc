@@ -27,12 +27,10 @@
 #include "extensions/browser/extension_host_queue.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
@@ -273,9 +271,6 @@ void ExtensionHost::DocumentAvailableInMainFrame(
       ->ExtensionHostDocumentElementAvailable(this);
 
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
-    ExtensionSystem::Get(browser_context_)
-        ->runtime_data()
-        ->SetBackgroundPageReady(extension_->id(), true);
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
         content::Source<const Extension>(extension_),

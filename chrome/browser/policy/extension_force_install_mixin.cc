@@ -40,7 +40,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
-#include "extensions/browser/runtime_data.h"
+#include "extensions/browser/process_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -511,7 +511,13 @@ bool ExtensionForceInstallMixin::IsExtensionBackgroundPageReady(
   }
   auto* const extension_system = extensions::ExtensionSystem::Get(profile_);
   DCHECK(extension_system);
-  return extension_system->runtime_data()->IsBackgroundPageReady(extension);
+
+  // This ignores the kInvalid state (i.e., not a persistent background page).
+  // Thus, it really only works if the extension has a persistent background
+  // page.
+  return extensions::process_util::GetPersistentBackgroundPageState(*extension,
+                                                                    profile_) !=
+         extensions::process_util::PersistentBackgroundPageState::kNotReady;
 }
 
 void ExtensionForceInstallMixin::SetUpOnMainThread() {

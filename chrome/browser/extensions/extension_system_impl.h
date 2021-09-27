@@ -58,7 +58,6 @@ class ExtensionSystemImpl : public ExtensionSystem {
   void InitForRegularProfile(bool extensions_enabled) override;
 
   ExtensionService* extension_service() override;  // shared
-  RuntimeData* runtime_data() override;            // shared
   ManagementPolicy* management_policy() override;  // shared
   ServiceWorkerManager* service_worker_manager() override;  // shared
   UserScriptManager* user_script_manager() override;        // shared
@@ -120,7 +119,6 @@ class ExtensionSystemImpl : public ExtensionSystem {
     StateStore* dynamic_user_scripts_store();
     scoped_refptr<value_store::ValueStoreFactory> store_factory() const;
     ExtensionService* extension_service();
-    RuntimeData* runtime_data();
     ManagementPolicy* management_policy();
     ServiceWorkerManager* service_worker_manager();
     UserScriptManager* user_script_manager();
@@ -145,8 +143,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
     // Shared memory region manager for scripts statically declared in extension
     // manifests. This region is shared between all extensions.
     std::unique_ptr<UserScriptManager> user_script_manager_;
-    std::unique_ptr<RuntimeData> runtime_data_;
-    // ExtensionService depends on StateStore, Blocklist and RuntimeData.
+    // ExtensionService depends on StateStore and Blocklist.
     std::unique_ptr<ExtensionService> extension_service_;
     std::unique_ptr<ManagementPolicy> management_policy_;
     // extension_info_map_ needs to outlive process_manager_.

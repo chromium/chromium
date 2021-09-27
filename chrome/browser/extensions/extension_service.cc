@@ -94,7 +94,6 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/browser/update_observer.h"
@@ -2348,7 +2347,6 @@ void ExtensionService::UnloadAllExtensionsInternal() {
   profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForAllExtensions();
 
   registry_->ClearAll();
-  system_->runtime_data()->ClearAll();
 
   // TODO(erikkay) should there be a notification for this?  We can't use
   // EXTENSION_UNLOADED since that implies that the extension has

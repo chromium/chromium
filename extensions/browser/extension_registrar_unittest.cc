@@ -16,7 +16,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/notification_types.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension.h"
@@ -37,8 +36,7 @@ using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 class TestExtensionSystem : public MockExtensionSystem {
  public:
   explicit TestExtensionSystem(content::BrowserContext* context)
-      : MockExtensionSystem(context),
-        runtime_data_(ExtensionRegistry::Get(context)) {}
+      : MockExtensionSystem(context) {}
 
   TestExtensionSystem(const TestExtensionSystem&) = delete;
   TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
@@ -52,10 +50,6 @@ class TestExtensionSystem : public MockExtensionSystem {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(callback));
   }
-  RuntimeData* runtime_data() override { return &runtime_data_; }
-
- private:
-  RuntimeData runtime_data_;
 };
 
 class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {

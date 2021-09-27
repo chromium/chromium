@@ -21,7 +21,6 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "extensions/browser/null_app_sorting.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/app_runtime.h"
@@ -47,19 +46,16 @@ namespace {
 class TestExtensionSystem : public MockExtensionSystem {
  public:
   explicit TestExtensionSystem(content::BrowserContext* context)
-      : MockExtensionSystem(context),
-        runtime_data_(ExtensionRegistry::Get(context)) {}
+      : MockExtensionSystem(context) {}
 
   TestExtensionSystem(const TestExtensionSystem&) = delete;
   TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
 
   ~TestExtensionSystem() override = default;
 
-  RuntimeData* runtime_data() override { return &runtime_data_; }
   AppSorting* app_sorting() override { return &app_sorting_; }
 
  private:
-  RuntimeData runtime_data_;
   NullAppSorting app_sorting_;
 };
 

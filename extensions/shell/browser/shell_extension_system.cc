@@ -21,7 +21,6 @@
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
@@ -75,8 +74,6 @@ void ShellExtensionSystem::Shutdown() {
 void ShellExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(browser_context_));
   quota_service_ = std::make_unique<QuotaService>();
   app_sorting_ = std::make_unique<NullAppSorting>();
   extension_loader_ = std::make_unique<ShellExtensionLoader>(browser_context_);
@@ -85,10 +82,6 @@ void ShellExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
 
 ExtensionService* ShellExtensionSystem::extension_service() {
   return nullptr;
-}
-
-RuntimeData* ShellExtensionSystem::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* ShellExtensionSystem::management_policy() {

@@ -41,7 +41,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_messages.h"
 #include "net/cookies/cookie_util.h"

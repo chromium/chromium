@@ -23,8 +23,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/runtime_data.h"
+#include "extensions/browser/process_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -131,8 +130,9 @@ void ExtensionViewHost::OnDidStopFirstLoad() {
 }
 
 void ExtensionViewHost::LoadInitialURL() {
-  if (!ExtensionSystem::Get(browser_context())->
-          runtime_data()->IsBackgroundPageReady(extension())) {
+  if (process_util::GetPersistentBackgroundPageState(*extension(),
+                                                     browser_context()) ==
+      process_util::PersistentBackgroundPageState::kNotReady) {
     // Make sure the background page loads before any others.
     host_registry_observation_.Observe(
         ExtensionHostRegistry::Get(browser_context()));
@@ -300,9 +300,9 @@ void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
     return;
   }
 
-  DCHECK(ExtensionSystem::Get(browser_context())
-             ->runtime_data()
-             ->IsBackgroundPageReady(extension()));
+  DCHECK_EQ(process_util::PersistentBackgroundPageState::kReady,
+            process_util::GetPersistentBackgroundPageState(*extension(),
+                                                           browser_context()));
   // We only needed to wait for the background page to load, so stop observing.
   host_registry_observation_.Reset();
   LoadInitialURL();
