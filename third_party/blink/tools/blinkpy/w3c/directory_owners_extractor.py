@@ -168,18 +168,17 @@ class DirectoryOwnersExtractor(object):
         # dirmd starts with an absolute directory path, `dir_path`, traverses all
         # parent directories and stops at `root_path` to find the first available DIR_METADATA
         # file. `root_path` is the web_tests directory.
-        print(self.executive)
         json_data = self.executive.run_command([
             self.finder.path_from_depot_tools_base('dirmd'), 'compute',
             '-root', root_path, dir_path
         ])
-        print(json_data)
         try:
             data = json.loads(json_data)
         except ValueError:
             return None
 
-        relative_path = self.filesystem.relpath(dir_path, root_path)
+        relative_path = self.filesystem.relpath(
+            dir_path, self.finder.chromium_base())
         return WPTDirMetadata(data, relative_path)
 
 

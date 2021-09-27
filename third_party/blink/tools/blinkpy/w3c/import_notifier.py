@@ -258,9 +258,17 @@ class ImportNotifier(object):
                 self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
             metadata_file = self.host.filesystem.join(full_directory,
-                                                      'WPT_METADATA')
-            is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
-                metadata_file)
+                                                      'DIR_METADATA')
+            is_wpt_notify_enabled = False
+            try:
+                is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
+                    metadata_file)
+            except KeyError:
+                _log.info('KeyError when parsing %s' % metadata_file)
+
+            if not is_wpt_notify_enabled:
+                _log.info("WPT-NOTIFY disabled in %s." % full_directory)
+                continue
 
             owners = self.owners_extractor.extract_owners(owners_file)
             # owners may be empty but not None.
@@ -298,16 +306,8 @@ class ImportNotifier(object):
                                                    components,
                                                    labels=['Test-WebTest'])
             _log.info(unicode(bug))
-
-            if is_wpt_notify_enabled:
-                _log.info(
-                    "WPT-NOTIFY enabled in this directory; adding the bug to the pending list."
-                )
-                bugs.append(bug)
-            else:
-                _log.info(
-                    "WPT-NOTIFY disabled in this directory; discarding the bug."
-                )
+            _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
+            bugs.append(bug)
         return bugs
 
     def format_commit_list(self, imported_commits, directory):

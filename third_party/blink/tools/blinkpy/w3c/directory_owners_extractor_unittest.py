@@ -178,7 +178,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
     def test_is_wpt_notify_enabled_true(self):
         data = (
-            '{"dirs":{"a/b":{"monorail":'
+            '{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
             '{"component":"foo"},"teamEmail":"bar","wpt":{"notify":"YES"}}}}')
         self.host.executive = MockExecutive(output=data)
         extractor = DirectoryOwnersExtractor(self.host)
@@ -189,7 +189,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
     def test_is_wpt_notify_enabled_false(self):
         data = (
-            '{"dirs":{"a/b":{"monorail":'
+            '{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
             '{"component":"foo"},"teamEmail":"bar","wpt":{"notify":"NO"}}}}')
         self.host.executive = MockExecutive(output=data)
         extractor = DirectoryOwnersExtractor(self.host)
@@ -208,7 +208,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
     def test_extract_component(self):
         data = (
-            '{"dirs":{"a/b":{"monorail":'
+            '{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
             '{"component":"foo"},"teamEmail":"bar","wpt":{"notify":"YES"}}}}')
         self.host.executive = MockExecutive(output=data)
         extractor = DirectoryOwnersExtractor(self.host)
@@ -219,7 +219,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
     def test_read_dir_metadata_success(self):
         data = (
-            '{"dirs":{"a/b":{"monorail":'
+            '{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
             '{"component":"foo"},"teamEmail":"bar","wpt":{"notify":"YES"}}}}')
         self.host.executive = MockExecutive(output=data)
         extractor = DirectoryOwnersExtractor(self.host)
@@ -251,8 +251,8 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
 class WPTDirMetadataTest(unittest.TestCase):
     def test_WPTDirMetadata_empty_content(self):
-        empty_data = '{"dirs":{"a/b":{}}}'
-        wpt_dir_metadata = WPTDirMetadata(json.loads(empty_data), 'a/b')
+        empty_data = '{"dirs":{"third_party/blink/web_tests/a/b":{}}}'
+        wpt_dir_metadata = WPTDirMetadata(json.loads(empty_data), 'third_party/blink/web_tests/a/b')
         self.assertEqual(wpt_dir_metadata.team_email, None)
         self.assertEqual(wpt_dir_metadata.should_notify, None)
         self.assertEqual(wpt_dir_metadata.component, None)
