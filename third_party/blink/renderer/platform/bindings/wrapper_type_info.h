@@ -138,10 +138,6 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
            kInheritFromActiveScriptWrappable;
   }
 
-  // Garbage collection support for when the type depends the WrapperTypeInfo
-  // object.
-  void Trace(Visitor*, const void*) const;
-
   // This field must be the first member of the struct WrapperTypeInfo.
   // See also static_assert() in .cpp file.
   const gin::GinEmbedder gin_embedder;

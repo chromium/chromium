@@ -49,18 +49,4 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
   return v8_template;
 }
 
-void WrapperTypeInfo::Trace(Visitor* visitor, const void* impl) const {
-  switch (wrapper_class_id) {
-    case WrapperTypeInfo::kNodeClassId:
-    case WrapperTypeInfo::kObjectClassId:
-      visitor->Trace(reinterpret_cast<const ScriptWrappable*>(impl));
-      break;
-    case WrapperTypeInfo::kCustomWrappableId:
-      visitor->Trace(reinterpret_cast<const CustomWrappable*>(impl));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 }  // namespace blink
