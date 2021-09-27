@@ -88,11 +88,11 @@ PageInfoMainView::PageInfoMainView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
-    std::u16string description = ui_delegate_->GetAboutThisSiteDescription();
-    if (!description.empty()) {
+    auto info = ui_delegate_->GetAboutThisSiteInfo();
+    if (info) {
       layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
       about_this_site_section_ =
-          layout->AddView(CreateAboutThisSiteSection(description));
+          layout->AddView(CreateAboutThisSiteSection(info));
     }
   }
 
@@ -501,7 +501,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
-    std::u16string description) {
+    const absl::optional<page_info::proto::SiteInfo> info) {
   auto about_this_site_section = std::make_unique<views::View>();
   about_this_site_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -509,6 +509,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
   // TODO(crbug.com/1250653): Update with the actual strings.
+  // TODO(crbug.com/1250653): Update checks for the data being available and
+  // logic to determine short description showed as subtitle.
   auto* about_this_site_button = about_this_site_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(
@@ -518,7 +520,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
               this),
           PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-          std::u16string(), description,
+          std::u16string(), base::ASCIIToUTF16(info->entity_description()),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   about_this_site_button->SetTitleText(u"About this site");
 

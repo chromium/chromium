@@ -1,0 +1,37 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package page_info.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+
+message SiteInfo {
+  // First-seen date information related to this host/domain.
+  // When Google first indexed this site.
+  optional optimization_guide.proto.Timestamp first_seen = 1;
+
+  // Name of the entity associated with the site.
+  optional string entity_name = 2;
+
+  // Description of the entity associated with the site.
+  optional string entity_description = 3;
+
+  // Source URL of this information.
+  optional string source_url = 4;
+
+  // Name of the source of this information.
+  optional string source_name = 5;
+}
+
+// Optimization metadata associated with SiteInfo.
+//
+// This is only populated for the ABOUT_THIS_SITE optimization type.
+message AboutThisSiteMetadata {
+  // A SiteInfo hint.
+  optional SiteInfo site_info = 1;
+}

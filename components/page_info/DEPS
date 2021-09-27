@@ -4,6 +4,7 @@ include_rules = [
   "+components/content_settings",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/password_manager",
   "+components/permissions",
   "+components/prefs",
