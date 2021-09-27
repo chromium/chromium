@@ -73,6 +73,8 @@ class CONTENT_EXPORT MediaSessionController
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
+  media::MediaContentType GetMediaContentType() const override;
+
   // Test helpers.
   int get_player_id_for_testing() const { return player_id_; }
 

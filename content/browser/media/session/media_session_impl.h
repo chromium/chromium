@@ -16,6 +16,7 @@
 #include "base/containers/id_map.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_uma_helper.h"
 #include "content/common/content_export.h"
@@ -32,10 +33,6 @@
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif  // defined(OS_ANDROID)
-
-namespace media {
-enum class MediaContentType;
-}  // namespace media
 
 namespace media_session {
 struct MediaMetadata;
@@ -100,8 +97,7 @@ class MediaSessionImpl : public MediaSession,
   // player was successfully added. If it returns false, AddPlayer() should be
   // called again later.
   CONTENT_EXPORT bool AddPlayer(MediaSessionPlayerObserver* observer,
-                                int player_id,
-                                media::MediaContentType media_content_type);
+                                int player_id);
 
   // Removes the given player from the current media session. Abandons audio
   // focus if that was the last player in the session.

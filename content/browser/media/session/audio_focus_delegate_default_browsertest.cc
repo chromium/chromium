@@ -61,8 +61,9 @@ class AudioFocusDelegateDefaultBrowserTest : public ContentBrowserTest {
   void Run(WebContents* start_contents,
            WebContents* interrupt_contents,
            bool use_separate_group_id) {
-    std::unique_ptr<MockMediaSessionPlayerObserver>
-        player_observer(new MockMediaSessionPlayerObserver);
+    std::unique_ptr<MockMediaSessionPlayerObserver> player_observer(
+        new MockMediaSessionPlayerObserver(
+            nullptr, media::MediaContentType::Persistent));
 
     MediaSessionImpl* media_session = MediaSessionImpl::Get(start_contents);
     EXPECT_TRUE(media_session);
@@ -79,8 +80,7 @@ class AudioFocusDelegateDefaultBrowserTest : public ContentBrowserTest {
 
     {
       std::unique_ptr<TestAudioFocusObserver> observer = CreateObserver();
-      media_session->AddPlayer(player_observer.get(), 0,
-                               media::MediaContentType::Persistent);
+      media_session->AddPlayer(player_observer.get(), 0);
       observer->WaitForGainedEvent();
     }
 
@@ -104,8 +104,7 @@ class AudioFocusDelegateDefaultBrowserTest : public ContentBrowserTest {
 
     {
       std::unique_ptr<TestAudioFocusObserver> observer = CreateObserver();
-      other_media_session->AddPlayer(player_observer.get(), 1,
-                                     media::MediaContentType::Persistent);
+      other_media_session->AddPlayer(player_observer.get(), 1);
       observer->WaitForGainedEvent();
     }
 

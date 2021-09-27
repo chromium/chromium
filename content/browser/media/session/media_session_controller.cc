@@ -233,7 +233,7 @@ bool MediaSessionController::AddOrRemovePlayer() {
     // Attempt to add a session even if we already have one.  MediaSession
     // expects AddPlayer() to be called after OnPlaybackPaused() to reactivate
     // the session.
-    if (!media_session_->AddPlayer(this, player_id_, media_content_type_)) {
+    if (!media_session_->AddPlayer(this, player_id_)) {
       // If a session can't be created, force a pause immediately.
       OnSuspend(player_id_);
       return false;
@@ -270,6 +270,10 @@ bool MediaSessionController::SupportsAudioOutputDeviceSwitching(
     int player_id) const {
   DCHECK_EQ(player_id_, player_id);
   return supports_audio_output_device_switching_;
+}
+
+media::MediaContentType MediaSessionController::GetMediaContentType() const {
+  return media_content_type_;
 }
 
 }  // namespace content

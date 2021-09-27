@@ -8,6 +8,10 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace media {
+enum class MediaContentType;
+}
+
 namespace media_session {
 struct MediaPosition;
 }  // namespace media_session
@@ -74,6 +78,8 @@ class MediaSessionPlayerObserver {
 
   // Returns true if the |player_id| supports audio output device switching.
   virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const = 0;
+
+  virtual media::MediaContentType GetMediaContentType() const = 0;
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.

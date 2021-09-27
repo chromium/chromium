@@ -81,6 +81,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  media::MediaContentType GetMediaContentType() const override {
+    return media::MediaContentType::Persistent;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }
@@ -132,8 +136,7 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
         shell()->web_contents()->GetMainFrame());
 
     MediaSessionImpl::Get(shell()->web_contents())
-        ->AddPlayer(player_.get(), kPlayerId,
-                    media::MediaContentType::Persistent);
+        ->AddPlayer(player_.get(), kPlayerId);
   }
 
   MediaSessionImpl* GetSession() {

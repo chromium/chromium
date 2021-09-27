@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
@@ -387,8 +386,9 @@ void MediaSessionImpl::MediaPictureInPictureChanged(
 }
 
 bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
-                                 int player_id,
-                                 media::MediaContentType media_content_type) {
+                                 int player_id) {
+  media::MediaContentType media_content_type = observer->GetMediaContentType();
+
   if (media_content_type == media::MediaContentType::OneShot)
     return AddOneShotPlayer(observer, player_id);
   if (media_content_type == media::MediaContentType::Pepper)

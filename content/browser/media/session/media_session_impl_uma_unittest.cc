@@ -28,8 +28,12 @@ static const int kPlayerId = 0;
 
 class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
  public:
-  explicit MockMediaSessionPlayerObserver(RenderFrameHost* rfh)
-      : render_frame_host_(rfh) {}
+  MockMediaSessionPlayerObserver(RenderFrameHost* rfh,
+                                 media::MediaContentType media_content_type)
+      : render_frame_host_(rfh), media_content_type_(media_content_type) {}
+  explicit MockMediaSessionPlayerObserver(
+      media::MediaContentType media_content_type)
+      : MockMediaSessionPlayerObserver(nullptr, media_content_type) {}
 
   ~MockMediaSessionPlayerObserver() override = default;
 
@@ -64,12 +68,21 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  media::MediaContentType GetMediaContentType() const override {
+    return media_content_type_;
+  }
+
+  void SetMediaContentType(media::MediaContentType media_content_type) {
+    media_content_type_ = media_content_type;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }
 
  private:
   RenderFrameHost* render_frame_host_;
+  media::MediaContentType media_content_type_;
 };
 
 struct ActionMappingEntry {
@@ -116,9 +129,8 @@ class MediaSessionImplUmaTest : public RenderViewHostImplTestHarness {
 
   void StartPlayer() {
     player_ = std::make_unique<MockMediaSessionPlayerObserver>(
-        contents()->GetMainFrame());
-    GetSession()->AddPlayer(player_.get(), kPlayerId,
-                            media::MediaContentType::Persistent);
+        contents()->GetMainFrame(), media::MediaContentType::Persistent);
+    GetSession()->AddPlayer(player_.get(), kPlayerId);
   }
 
   std::unique_ptr<base::HistogramSamples> GetHistogramSamplesSinceTestStart(

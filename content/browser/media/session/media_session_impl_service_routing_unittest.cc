@@ -42,8 +42,11 @@ static const int kPlayerId = 0;
 class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
  public:
   MockMediaSessionPlayerObserver(RenderFrameHost* rfh,
-                                 MediaAudioVideoState audio_video_state)
-      : render_frame_host_(rfh), audio_video_state_(audio_video_state) {}
+                                 MediaAudioVideoState audio_video_state,
+                                 media::MediaContentType media_content_type)
+      : render_frame_host_(rfh),
+        audio_video_state_(audio_video_state),
+        media_content_type_(media_content_type) {}
 
   ~MockMediaSessionPlayerObserver() override = default;
 
@@ -90,6 +93,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  media::MediaContentType GetMediaContentType() const override {
+    return media_content_type_;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }
@@ -98,6 +105,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   RenderFrameHost* render_frame_host_;
 
   const media_session::mojom::MediaAudioVideoState audio_video_state_;
+
+  media::MediaContentType media_content_type_;
 
   absl::optional<media_session::MediaPosition> position_;
 };
@@ -167,9 +176,9 @@ class MediaSessionImplServiceRoutingTest
                                MediaAudioVideoState::kAudioOnly) {
     players_[frame] =
         std::make_unique<NiceMock<MockMediaSessionPlayerObserver>>(
-            frame, audio_video_state);
+            frame, audio_video_state, type);
     MediaSessionImpl::Get(contents())
-        ->AddPlayer(players_[frame].get(), kPlayerId, type);
+        ->AddPlayer(players_[frame].get(), kPlayerId);
   }
 
   void ClearPlayersForFrame(TestRenderFrameHost* frame) {

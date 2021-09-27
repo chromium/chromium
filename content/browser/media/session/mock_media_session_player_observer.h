@@ -19,8 +19,10 @@ namespace content {
 // MediaSessionPlayerObserver to be used in tests.
 class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
  public:
+  MockMediaSessionPlayerObserver(RenderFrameHost* render_frame_host,
+                                 media::MediaContentType media_content_type);
   explicit MockMediaSessionPlayerObserver(
-      RenderFrameHost* render_frame_host = nullptr);
+      media::MediaContentType media_content_type);
   ~MockMediaSessionPlayerObserver() override;
 
   // Implements MediaSessionPlayerObserver.
@@ -43,6 +45,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
+  media::MediaContentType GetMediaContentType() const override;
+
+  void SetMediaContentType(media::MediaContentType media_content_type);
 
   // Simulate that a new player started.
   // Returns the player_id.
@@ -104,6 +109,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_enter_picture_in_picture_calls_ = 0;
   int received_exit_picture_in_picture_calls_ = 0;
   int received_set_audio_sink_id_calls_ = 0;
+
+  media::MediaContentType media_content_type_;
 };
 
 }  // namespace content

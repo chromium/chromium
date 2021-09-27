@@ -20,7 +20,9 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   // it can be used elsewhere.
   static const int kPlayerId;
 
-  PepperPlayerDelegate(RenderFrameHost* render_frame_host, int32_t pp_instance);
+  PepperPlayerDelegate(RenderFrameHost* render_frame_host,
+                       int32_t pp_instance,
+                       media::MediaContentType media_content_type);
 
   PepperPlayerDelegate(const PepperPlayerDelegate&) = delete;
   PepperPlayerDelegate& operator=(const PepperPlayerDelegate&) = delete;
@@ -47,12 +49,14 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
+  media::MediaContentType GetMediaContentType() const override;
 
  private:
   void SetVolume(int player_id, double volume);
 
   RenderFrameHost* render_frame_host_;
   int32_t pp_instance_;
+  const media::MediaContentType media_content_type_;
 };
 
 }  // namespace content
