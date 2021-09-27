@@ -582,6 +582,8 @@ source_set("browser") {
     "bluetooth/web_bluetooth_service_impl.h",
     "broadcast_channel/broadcast_channel_provider.cc",
     "broadcast_channel/broadcast_channel_provider.h",
+    "broadcast_channel/broadcast_channel_service.cc",
+    "broadcast_channel/broadcast_channel_service.h",
     "browser_child_process_host_impl.cc",
     "browser_child_process_host_impl.h",
     "browser_child_process_host_impl_receiver_bindings.cc",

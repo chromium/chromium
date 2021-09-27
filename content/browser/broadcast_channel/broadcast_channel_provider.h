@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -18,7 +19,8 @@ namespace content {
 class CONTENT_EXPORT BroadcastChannelProvider
     : public blink::mojom::BroadcastChannelProvider {
  public:
-  BroadcastChannelProvider();
+  explicit BroadcastChannelProvider(base::WeakPtr<StoragePartitionImpl>);
+  BroadcastChannelProvider() = delete;
   ~BroadcastChannelProvider() override;
 
   using SecurityPolicyHandle = ChildProcessSecurityPolicyImpl::Handle;
@@ -37,17 +39,11 @@ class CONTENT_EXPORT BroadcastChannelProvider
   auto& receivers_for_testing() { return receivers_; }
 
  private:
-  class Connection;
-
-  void UnregisterConnection(Connection*);
-  void ReceivedMessageOnConnection(Connection*,
-                                   const blink::CloneableMessage& message);
-
   mojo::ReceiverSet<blink::mojom::BroadcastChannelProvider,
                     std::unique_ptr<SecurityPolicyHandle>>
       receivers_;
-  std::map<url::Origin, std::multimap<std::string, std::unique_ptr<Connection>>>
-      connections_;
+
+  base::WeakPtr<StoragePartitionImpl> storage_partition_impl_;
 };
 
 }  // namespace content

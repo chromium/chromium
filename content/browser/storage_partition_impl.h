@@ -22,6 +22,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
@@ -213,6 +214,7 @@ class CONTENT_EXPORT StoragePartitionImpl
           network_context_remote) override;
   BackgroundFetchContext* GetBackgroundFetchContext();
   PaymentAppContextImpl* GetPaymentAppContext();
+  BroadcastChannelService* GetBroadcastChannelService();
   BroadcastChannelProvider* GetBroadcastChannelProvider();
   BluetoothAllowedDevicesMap* GetBluetoothAllowedDevicesMap();
   BlobRegistryWrapper* GetBlobRegistry();
@@ -555,6 +557,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;
   scoped_refptr<PaymentAppContextImpl> payment_app_context_;
+  std::unique_ptr<BroadcastChannelService> broadcast_channel_service_;
   std::unique_ptr<BroadcastChannelProvider> broadcast_channel_provider_;
   std::unique_ptr<BluetoothAllowedDevicesMap> bluetooth_allowed_devices_map_;
   scoped_refptr<BlobRegistryWrapper> blob_registry_;
