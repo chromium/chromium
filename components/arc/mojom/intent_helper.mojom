@@ -265,13 +265,6 @@ interface IntentHelperHost {
   // navigate to as well. No special URLs that allow access to privileged functions are allowed.
   OnOpenUrl@0(string url);
 
-  // DEPRECATED: Please use OnOpenCustomTab@17 instead.
-  [MinVersion=25] OnOpenCustomTabDeprecated@10(string url,
-                                               int32 task_id,
-                                               int32 surface_id,
-                                               int32 top_margin)
-      => (pending_remote<CustomTabSession>? session);
-
   // Opens the |url| with a custom tab.
   // |task_id| specifies the Android task on which the custom tab should be
   // shown.
@@ -280,10 +273,6 @@ interface IntentHelperHost {
 
   // Opens the wallpaper picker dialog.
   [MinVersion=6] OpenWallpaperPicker@3();
-
-  // Sets an image as the wallpaper.
-  // |jpeg_data| is a JPEG encoded wallpaper image.
-  [MinVersion=8] SetWallpaperDeprecated@4(array<uint8> jpeg_data);
 
   // Opens the volume control.
   [MinVersion=16] OpenVolumeControl@6();
@@ -356,7 +345,7 @@ interface IntentHelperHost {
 };
 
 // Sends intents to ARC on behalf of Chrome.
-// Deprecated method ID: 7, 18
+// Deprecated method ID: 0, 7, 11, 12, 14, 18
 // Next method ID: 22
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
@@ -386,9 +375,6 @@ interface IntentHelperInstance {
   [MinVersion=46] SetVerifiedLinks@21(array<string> package_names,
                                       bool always_open);
 
-  // DEPRECATED. Use FileSystemInstance.GetFileSize() instead.
-  [MinVersion=15] GetFileSizeDeprecated@11(string url) => (int64 size);
-
   // DEPRECATED. Use HandleIntentWithWindowInfo() instead.
   [MinVersion=12] HandleIntent@10(IntentInfo intent, ActivityName activity);
 
@@ -400,14 +386,8 @@ interface IntentHelperInstance {
   // most suitable activity for the URL within the package will be started.
   [MinVersion=2] HandleUrl@2(string url, string package_name);
 
-  // DEPRECATED: Please use Init@13 instead.
-  InitDeprecated@0(pending_remote<IntentHelperHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=19] Init@13(pending_remote<IntentHelperHost> host_remote) => ();
-
-  // DEPRECATED. Use FileSystemInstance.OpenFileToRead() instead.
-  [MinVersion=15] OpenFileToReadDeprecated@12(string url) => (handle? fd);
 
   // Requests 48dp * 48dp icons of the |activities| suitable for the
   // |scale_factor|. An array of icon data will be returned.
@@ -437,12 +417,6 @@ interface IntentHelperInstance {
                                  string package_name,
                                  string cls,
                                  string extras);
-
-  // Asks TextClassifier to generate an action that can handle the |text|.
-  // |scale_factor| is used to find a suitable icon to show in the context menu.
-  [MinVersion=21] ClassifySelectionDeprecated@14(string text,
-                                                 ScaleFactor scale_factor)
-      => (TextSelectionAction? action);
 
   // Asks ChromeTextSelectionDelegate to generate actions that can handle the
   // |text|. |scale_factor| is used to find a suitable icon to show in the

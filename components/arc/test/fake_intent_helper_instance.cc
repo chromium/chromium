@@ -66,10 +66,6 @@ void FakeIntentHelperInstance::SetVerifiedLinks(
     const std::vector<std::string>& package_names,
     bool always_open) {}
 
-void FakeIntentHelperInstance::GetFileSizeDeprecated(
-    const std::string& url,
-    GetFileSizeDeprecatedCallback callback) {}
-
 void FakeIntentHelperInstance::HandleIntent(mojom::IntentInfoPtr intent,
                                             mojom::ActivityNamePtr activity) {
   handled_intents_.emplace_back(std::move(intent), std::move(activity));
@@ -85,11 +81,6 @@ void FakeIntentHelperInstance::HandleIntentWithWindowInfo(
 void FakeIntentHelperInstance::HandleUrl(const std::string& url,
                                          const std::string& package_name) {}
 
-void FakeIntentHelperInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::IntentHelperHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeIntentHelperInstance::Init(
     mojo::PendingRemote<mojom::IntentHelperHost> host_remote,
     InitCallback callback) {
@@ -98,10 +89,6 @@ void FakeIntentHelperInstance::Init(
   host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
-
-void FakeIntentHelperInstance::OpenFileToReadDeprecated(
-    const std::string& url,
-    OpenFileToReadDeprecatedCallback callback) {}
 
 void FakeIntentHelperInstance::RequestActivityIcons(
     std::vector<mojom::ActivityNamePtr> activities,
@@ -143,11 +130,6 @@ void FakeIntentHelperInstance::SendBroadcast(const std::string& action,
                                              const std::string& extras) {
   broadcasts_.emplace_back(action, package_name, cls, extras);
 }
-
-void FakeIntentHelperInstance::ClassifySelectionDeprecated(
-    const std::string& text,
-    ::arc::mojom::ScaleFactor scale_factor,
-    ClassifySelectionDeprecatedCallback callback) {}
 
 void FakeIntentHelperInstance::RequestTextSelectionActions(
     const std::string& text,

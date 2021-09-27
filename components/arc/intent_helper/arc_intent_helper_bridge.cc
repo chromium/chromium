@@ -202,15 +202,6 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
     g_open_url_delegate->OpenUrlFromArc(gurl);
 }
 
-void ArcIntentHelperBridge::OnOpenCustomTabDeprecated(
-    const std::string& url,
-    int32_t task_id,
-    int32_t surface_id,
-    int32_t top_margin,
-    OnOpenCustomTabCallback callback) {
-  OnOpenCustomTab(url, task_id, std::move(callback));
-}
-
 void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             int32_t task_id,
                                             OnOpenCustomTabCallback callback) {
@@ -244,12 +235,6 @@ void ArcIntentHelperBridge::OpenWallpaperPicker() {
   ash::WallpaperController::Get()->OpenWallpaperPickerIfAllowed();
 }
 
-void ArcIntentHelperBridge::SetWallpaperDeprecated(
-    const std::vector<uint8_t>& jpeg_data) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LOG(ERROR) << "IntentHelper.SetWallpaper is deprecated";
-}
-
 void ArcIntentHelperBridge::OpenVolumeControl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordOpenType(ArcIntentHelperOpenType::VOLUME_CONTROL);
@@ -269,6 +254,7 @@ void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
     g_open_url_delegate->OpenWebAppFromArc(gurl);
 }
 
+// TODO(b/200873831): Delete this anytime on 2022.
 void ArcIntentHelperBridge::RecordShareFilesMetricsDeprecated(
     mojom::ShareFiles flag) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
