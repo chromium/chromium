@@ -12,6 +12,9 @@
 
 # Tests that fail in legacy but pass in NG
 
+# ====== New tests from wpt-importer added here ======
+
+
 # accessibility/
 crbug.com/1159730 accessibility/inline-text-box-next-on-line.html [ Failure ]
 crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]

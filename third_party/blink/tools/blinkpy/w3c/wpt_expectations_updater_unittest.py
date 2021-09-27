@@ -22,6 +22,7 @@ from blinkpy.w3c.wpt_manifest import (
     WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME)
 
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 
@@ -66,6 +67,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Win7': {
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release'],
+                'is_try_builder': True,
+            },
+            'MOCK highdpi': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'flag_specific': 'highdpi',
                 'is_try_builder': True,
             },
         })
@@ -465,6 +472,53 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         value = host.filesystem.read_text_file(expectations_path)
         self.assertMultiLineEqual(value, final_expectations)
 
+    def test_create_line_dict_for_flag_specific(self):
+        # In this example, there are three unexpected results for wpt tests.
+        # One of them has match results in generic test expectations,
+        # another one has non-match results, and the last one has no
+        # corresponding line in generic test expectations.
+        host = self.mock_host()
+        port = host.port_factory.get()
+
+        # Fill in an initial value for TestExpectations
+        expectations_path = port.path_to_generic_test_expectations_file()
+        content = (
+            "# results: [ Timeout Crash Pass Failure Skip ]\n"
+            "external/wpt/reftest.html [ Failure ]\n"
+            "external/wpt/test/path.html [ Failure ]\n")
+        host.filesystem.write_text_file(expectations_path, content)
+
+        updater = WPTExpectationsUpdater(host)
+
+        results = {
+            'external/wpt/reftest.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='FAIL', actual='FAIL', bug='crbug.com/test'),
+            },
+            'external/wpt/test/path.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='FAIL', actual='CRASH', bug='crbug.com/test'),
+            },
+            'external/wpt/test/zzzz.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='PASS', actual='CRASH', bug='crbug.com/test'),
+            }
+        }
+        generic_expectations = TestExpectations(port)
+        line_dict, configs_to_remove = updater.create_line_dict_for_flag_specific(
+            results,
+            generic_expectations)
+        self.assertEqual(
+            line_dict, {
+                'external/wpt/test/path.html': [
+                    'crbug.com/test external/wpt/test/path.html [ Crash ]'],
+                'external/wpt/test/zzzz.html': [
+                    'crbug.com/test external/wpt/test/zzzz.html [ Crash ]']})
+        self.assertEqual(configs_to_remove, {})
+
     def test_create_line_dict_old_tests(self):
         # In this example, there are two failures that are not in wpt.
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -591,7 +645,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(
             updater.skipped_specifiers('external/wpt/test.html'),
-            ['Precise', 'Trusty'])
+            ['Precise', 'Trusty', 'Trusty'])
 
     def test_specifiers_can_extend_to_all_platforms(self):
         host = self.mock_host()
@@ -827,7 +881,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             if '--diff-filter=D' in cmd:
                 return 'external/wpt/fake/file/deleted_path.html'
             if '--diff-filter=R' in cmd:
-                return 'C external/wpt/fake/some_test.html external/wpt/fake/new.html'
+                return 'C\texternal/wpt/fake/some_test.html\texternal/wpt/fake/new.html'
             return ''
 
         updater.git.run = _git_command_return_val
@@ -917,7 +971,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             if '--diff-filter=D' in cmd:
                 return 'external/wpt/fake/file/deleted_path.html'
             if '--diff-filter=R' in cmd:
-                return 'C external/wpt/fake/some_test.html external/wpt/fake/new.html'
+                return 'C\texternal/wpt/fake/some_test.html\texternal/wpt/fake/new.html'
             return ''
 
         updater.git.run = _git_command_return_val

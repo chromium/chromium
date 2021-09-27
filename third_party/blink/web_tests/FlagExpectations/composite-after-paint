@@ -5,6 +5,8 @@
 # Expectations for CompositeAfterPaint
 # See: https://docs.google.com/document/d/1QCM912Dr6u38DqyQqd7pxQxDy8FFOoWMMDq7uAXqKdA/view
 
+# ====== New tests from wpt-importer added here ======
+
 virtual/composite-after-paint/* [ Skip ]
 virtual/stable/* [ Skip ]
 

@@ -98,9 +98,15 @@ class BuilderList(object):
         for b in self._builders:
             builder_specifiers = _lower_specifiers(
                 self._builders[b].get('specifiers', {}))
-            if flag_specific and self._builders[b].get('flag_specific',
-                                                       None) != flag_specific:
-                continue
+            if flag_specific:
+                if (flag_specific == '*' and
+                        not self._builders[b].get('flag_specific', None)):
+                    # Skip non flag_specific builders
+                    continue
+                if (flag_specific != '*' and
+                        self._builders[b].get('flag_specific', None) != flag_specific):
+                    # Skip if not an exact match
+                    continue
             if is_try and self._builders[b].get('is_try_builder', False) != is_try:
                 continue
             if is_cq and self._builders[b].get('is_cq_builder', False) != is_cq:
