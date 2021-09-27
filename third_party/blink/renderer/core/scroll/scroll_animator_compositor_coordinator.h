@@ -178,7 +178,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // The element id to which the compositor animation is attached when
   // the animation is present.
   CompositorElementId element_id_;
-  RunState run_state_ = RunState::kIdle;
+  RunState run_state_;
   int compositor_animation_id() const { return compositor_animation_id_; }
 
   // An adjustment to the scroll offset on the main thread that may affect
@@ -188,7 +188,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // If set to true, sends a cc::ScrollOffsetAnimationUpdate to cc which will
   // abort the impl-only scroll offset animation and continue it on main
   // thread.
-  bool impl_only_animation_takeover_ = false;
+  bool impl_only_animation_takeover_;
 
  private:
   CompositorElementId GetScrollElementId() const;
@@ -198,10 +198,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // DocumentLifecycle::LifecycleState::CompositingClean.
   void TakeOverImplOnlyScrollOffsetAnimation();
 
-  void CancelImplOnlyScrollOffsetAnimation();
-
-  int compositor_animation_id_ = 0;
-  int compositor_animation_group_id_ = 0;
+  int compositor_animation_id_;
+  int compositor_animation_group_id_;
 };
 
 }  // namespace blink

@@ -102,7 +102,6 @@ class MockMutatorHost : public MutatorHost {
   MOCK_CONST_METHOD0(HasCanvasInvalidation, bool());
   MOCK_CONST_METHOD0(HasJSAnimation, bool());
   MOCK_CONST_METHOD0(MinimumTickInterval, base::TimeDelta());
-  MOCK_CONST_METHOD1(WillCancelScrollAnimation, bool(ElementId element_id));
 };
 
 }  // namespace cc
