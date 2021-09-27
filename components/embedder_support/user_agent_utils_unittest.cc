@@ -23,7 +23,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/re2/src/re2/re2.h"
 
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
 #include <sys/utsname.h>
 #endif
 
@@ -128,7 +128,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_LE(0, value);
   ASSERT_TRUE(base::StringToInt(pieces[2], &value));
   ASSERT_LE(0, value);
-#elif defined(USE_X11) || defined(USE_OZONE)
+#elif defined(USE_OZONE)
   // X11; Linux x86_64
   // X11; CrOS armv7l 4537.56.0
   struct utsname unixinfo;
