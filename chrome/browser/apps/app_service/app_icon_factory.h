@@ -79,6 +79,10 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   return a;
 }
 
+static const int kInvalidIconResource = 0;
+
+apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia);
+
 // Returns a callback that converts compressed data to an ImageSkia.
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>
 CompressedDataToImageSkiaCallback(

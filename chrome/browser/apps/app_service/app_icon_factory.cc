@@ -65,8 +65,6 @@
 
 namespace {
 
-static const int kInvalidIconResource = 0;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Copy from Android code, all four sides of the ARC foreground and background
@@ -116,18 +114,6 @@ const gfx::ImageSkiaRep& GetMaskAsImageSkiaRep(float scale,
                                     size_hint_in_dip, size_hint_in_dip),
       scale);
   return image_rep;
-}
-
-apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
-  apps::ScaleToSize scale_to_size;
-  if (image_skia.image_reps().empty()) {
-    scale_to_size[1.0f] = image_skia.size().width();
-  } else {
-    for (const auto& rep : image_skia.image_reps()) {
-      scale_to_size[rep.scale()] = rep.pixel_width();
-    }
-  }
-  return scale_to_size;
 }
 
 bool IsConsistentPixelSize(const gfx::ImageSkiaRep& rep,
@@ -585,7 +571,7 @@ void IconLoadingPipeline::ApplyIconEffects(apps::IconEffects icon_effects,
 
   gfx::ImageSkia mask_image;
   if (icon_effects & apps::IconEffects::kCrOsStandardMask) {
-    mask_image = apps::LoadMaskImage(GetScaleToSize(iv->uncompressed));
+    mask_image = apps::LoadMaskImage(apps::GetScaleToSize(iv->uncompressed));
     mask_image.MakeThreadSafe();
   }
 
@@ -827,7 +813,7 @@ void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
   }
 #endif
 
-  if (icon_resource == kInvalidIconResource) {
+  if (icon_resource == apps::kInvalidIconResource) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
   }
@@ -1163,10 +1149,10 @@ void IconLoadingPipeline::MaybeLoadFallbackOrCompleteEmpty() {
     return;
   }
 
-  if (fallback_icon_resource_ != kInvalidIconResource) {
+  if (fallback_icon_resource_ != apps::kInvalidIconResource) {
     int icon_resource = fallback_icon_resource_;
     // Resetting default icon resource to ensure no infinite loops.
-    fallback_icon_resource_ = kInvalidIconResource;
+    fallback_icon_resource_ = apps::kInvalidIconResource;
     LoadIconFromResource(icon_resource);
     return;
   }
@@ -1177,6 +1163,18 @@ void IconLoadingPipeline::MaybeLoadFallbackOrCompleteEmpty() {
 }  // namespace
 
 namespace apps {
+
+apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
+  apps::ScaleToSize scale_to_size;
+  if (image_skia.image_reps().empty()) {
+    scale_to_size[1.0f] = image_skia.size().width();
+  } else {
+    for (const auto& rep : image_skia.image_reps()) {
+      scale_to_size[rep.scale()] = rep.pixel_width();
+    }
+  }
+  return scale_to_size;
+}
 
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>
 CompressedDataToImageSkiaCallback(
