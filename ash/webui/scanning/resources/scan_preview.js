@@ -55,6 +55,12 @@ Polymer({
   /** @private {?Function} */
   onDialogActionClick_: null,
 
+  /** @private {number} */
+  actionToolbarHeight_: 0,
+
+  /** @private {number} */
+  actionToolbarWidth_: 0,
+
   properties: {
     /** @type {!AppState} */
     appState: {
@@ -197,6 +203,13 @@ Polymer({
   ready() {
     this.style.setProperty(
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
+
+    // parseFloat() is used to convert the string returned by
+    // getComputedStyleValue() into a number ("642px" --> 642).
+    this.actionToolbarHeight_ =
+        parseFloat(this.getComputedStyleValue('--action-toolbar-height'));
+    this.actionToolbarWidth_ =
+        parseFloat(this.getComputedStyleValue('--action-toolbar-width'));
   },
 
   /** @override */
@@ -457,17 +470,16 @@ Polymer({
       return;
     }
 
-    const actionToolbar = this.$$('action-toolbar');
     const scannedImageRect = scannedImage.getBoundingClientRect();
 
     // Set the toolbar position from the bottom edge of the viewport.
     const topPosition = this.$$('#previewDiv').offsetHeight -
-        ACTION_TOOLBAR_BOTTOM_MARGIN_PX - (actionToolbar.offsetHeight / 2);
+        ACTION_TOOLBAR_BOTTOM_MARGIN_PX - (this.actionToolbarHeight_ / 2);
     this.style.setProperty('--action-toolbar-top', topPosition + 'px');
 
     // Position the toolbar in the middle of the viewport.
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
-        (actionToolbar.offsetWidth / 2);
+        (this.actionToolbarWidth_ / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
   },
 
