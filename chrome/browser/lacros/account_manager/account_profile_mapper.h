@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ACCOUNT_PROFILE_MAPPER_H_
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ACCOUNT_PROFILE_MAPPER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -15,6 +16,12 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace account_manager {
+struct Account;
+struct AccountKey;
+}  // namespace account_manager
 
 namespace base {
 class FilePath;
@@ -80,6 +87,12 @@ class AccountProfileMapper
       const account_manager::AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer);
+  // `callback` is called with nullopt if the operation failed.
+  void ShowAddAccountDialog(
+      const base::FilePath& profile_path,
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
+      base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+          callback);
 
   // account_manager::AccountManagerFacade::Observer:
   void OnAccountUpserted(const account_manager::Account& account) override;
@@ -100,6 +113,13 @@ class AccountProfileMapper
   // Update the `ProfileAttributesStorage` to match the system accounts.
   void OnGetAccountsCompleted(const std::vector<account_manager::Account>&);
 
+  // Assigns the newly added account to the specified profile.
+  void OnShowAddAccountDialogCompleted(
+      const base::FilePath& profile_path,
+      base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+          client_callback,
+      const account_manager::AccountAdditionResult& result);
+
   // Returns whether the profile at `profile_path` contains `account`.
   bool ProfileContainsAccount(const base::FilePath& profile_path,
                               const account_manager::AccountKey& account) const;
@@ -112,6 +132,10 @@ class AccountProfileMapper
   // All requests are delayed until the first `GetAccounts()` call completes.
   bool initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;
+
+  // Number of `ShowAddAccountDialog()` calls is in progress. Accounts are not
+  // auto-assigned to the main profile for this flow.
+  int account_addition_in_progress_ = 0;
 
   account_manager::AccountManagerFacade* const account_manager_facade_;
   ProfileAttributesStorage* const profile_attributes_storage_;

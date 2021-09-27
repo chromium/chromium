@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
@@ -20,14 +21,20 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using account_manager::Account;
+using account_manager::AccountAdditionResult;
+using account_manager::AccountKey;
+using account_manager::AccountManagerFacade;
 using testing::Field;
 
 namespace {
@@ -53,6 +60,13 @@ class MockAccountProfileMapperObserver : public AccountProfileMapper::Observer {
               (const base::FilePath& profile_path, const Account&),
               (override));
 };
+
+MATCHER_P(OptionalAccountEqual, other, "optional<Account> equality matcher") {
+  if (arg == absl::nullopt && other == absl::nullopt)
+    return true;
+  return std::tie(arg->raw_email, arg->key.account_type, arg->key.id) ==
+         std::tie(other->raw_email, other->key.account_type, other->key.id);
+}
 
 // Synthetizes a non-Gaia `Account` from an id.
 Account NonGaiaAccountFromID(const std::string& id) {
@@ -85,10 +99,10 @@ class AccountProfileMapperTest : public testing::Test {
  public:
   AccountProfileMapperTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    CHECK(testing_profile_manager_.SetUp(base::FilePath("UserDataDir")));
+    CHECK(testing_profile_manager_.SetUp(base::FilePath(".")));
     ON_CALL(mock_facade_, GetPersistentErrorForAccount)
         .WillByDefault(
-            [](const account_manager::AccountKey&,
+            [](const AccountKey&,
                base::OnceCallback<void(const GoogleServiceAuthError&)>
                    callback) {
               std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
@@ -121,12 +135,11 @@ class AccountProfileMapperTest : public testing::Test {
 
   // Triggers an update of the accounts and checks observer calls, and the end
   // state of the storage.
-  void TestMapperUpdate(
-      AccountProfileMapper* mapper,
-      const std::vector<account_manager::Account>& accounts_in_facade,
-      const AccountMapping& expected_accounts_upserted,
-      const AccountMapping& expected_accounts_removed,
-      const AccountMapping& expected_accounts_in_storage) {
+  void TestMapperUpdate(AccountProfileMapper* mapper,
+                        const std::vector<Account>& accounts_in_facade,
+                        const AccountMapping& expected_accounts_upserted,
+                        const AccountMapping& expected_accounts_removed,
+                        const AccountMapping& expected_accounts_in_storage) {
     MockAccountProfileMapperObserver mock_observer;
     base::ScopedObservation<AccountProfileMapper,
                             AccountProfileMapper::Observer>
@@ -183,7 +196,7 @@ class AccountProfileMapperTest : public testing::Test {
     for (const auto& path_accounts_pair : accounts_map) {
       const base::FilePath profile_path = path_accounts_pair.first;
       for (const std::string& gaia_id : path_accounts_pair.second) {
-        account_manager::AccountKey key = {gaia_id, kGaiaType};
+        AccountKey key = {gaia_id, kGaiaType};
         EXPECT_CALL(*mock_observer,
                     OnAccountUpserted(profile_path, Field(&Account::key, key)));
       }
@@ -201,7 +214,7 @@ class AccountProfileMapperTest : public testing::Test {
     for (const auto& path_accounts_pair : accounts_map) {
       const base::FilePath profile_path = path_accounts_pair.first;
       for (const std::string& gaia_id : path_accounts_pair.second) {
-        account_manager::AccountKey key = {gaia_id, kGaiaType};
+        AccountKey key = {gaia_id, kGaiaType};
         EXPECT_CALL(*mock_observer,
                     OnAccountRemoved(profile_path, Field(&Account::key, key)));
       }
@@ -242,6 +255,24 @@ class AccountProfileMapperTest : public testing::Test {
         });
   }
 
+  // Sets an expectation that `ShowAddAccountDialog()` is called on the facade,
+  // and immediately returns with a new account.
+  void ExpectFacadeShowAddAccountDialogCalled(
+      AccountManagerFacade::AccountAdditionSource source,
+      Account new_account) {
+    EXPECT_CALL(mock_facade_, ShowAddAccountDialog(source, testing::_))
+        .WillOnce(
+            [new_account](AccountManagerFacade::AccountAdditionSource,
+                          base::OnceCallback<void(const AccountAdditionResult&)>
+                              callback) {
+              std::move(callback).Run(
+                  new_account.key.IsValid()
+                      ? AccountAdditionResult::FromAccount(new_account)
+                      : AccountAdditionResult::FromStatus(
+                            AccountAdditionResult::Status::kCancelledByUser));
+            });
+  }
+
   void CompleteFacadeGetAccountsGaia(const std::vector<std::string>& gaia_ids) {
     CompleteFacadeGetAccounts(AccountsFromGaiaIDs(gaia_ids));
   }
@@ -273,7 +304,7 @@ class AccountProfileMapperTest : public testing::Test {
   }
 
  private:
-  const base::FilePath main_path_ = base::FilePath("UserDataDir/Default");
+  const base::FilePath main_path_ = base::FilePath("Default");
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   account_manager::MockAccountManagerFacade mock_facade_;
@@ -286,7 +317,7 @@ class AccountProfileMapperTest : public testing::Test {
 // - returns no accounts when called on non-existing profile
 // - does not trigger a call to GetAccounts() on the facade.
 TEST_F(AccountProfileMapperTest, GetAccounts) {
-  base::FilePath other_path("UserDataDir/Other");
+  base::FilePath other_path("Other");
   std::unique_ptr<AccountProfileMapper> mapper =
       GetMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
 
@@ -298,16 +329,14 @@ TEST_F(AccountProfileMapperTest, GetAccounts) {
 
   // Non-existing profile.
   EXPECT_CALL(mock_callback, Run(testing::IsEmpty()));
-  mapper->GetAccounts(base::FilePath("UserDataDir/MissingAccount"),
-                      mock_callback.Get());
+  mapper->GetAccounts(base::FilePath("MissingAccount"), mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   // Existing profile.
-  EXPECT_CALL(
-      mock_callback,
-      Run(testing::UnorderedElementsAre(
-          Field(&Account::key, account_manager::AccountKey{"B", kGaiaType}),
-          Field(&Account::key, account_manager::AccountKey{"C", kGaiaType}))));
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"B", kGaiaType}),
+                  Field(&Account::key, AccountKey{"C", kGaiaType}))));
   mapper->GetAccounts(other_path, mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
@@ -330,7 +359,7 @@ TEST_F(AccountProfileMapperTest, UpdateSingleProfile) {
 
 // Tests that new accounts are left unassigned when there are multiple profiles.
 TEST_F(AccountProfileMapperTest, UpdateMulltiProfile) {
-  base::FilePath other_path("UserDataDir/Other");
+  base::FilePath other_path("Other");
   std::unique_ptr<AccountProfileMapper> mapper =
       GetMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
   TestMapperUpdateGaia(
@@ -345,7 +374,7 @@ TEST_F(AccountProfileMapperTest, UpdateMulltiProfile) {
 // Checks that `GetPersistentErrorForAccount()` returns an error when the
 // account is not in this profile.
 TEST_F(AccountProfileMapperTest, GetPersistentErrorForAccount) {
-  base::FilePath other_path("UserDataDir/Other");
+  base::FilePath other_path("Other");
   std::unique_ptr<AccountProfileMapper> mapper =
       GetMapper({{main_path(), {"A"}}, {other_path, {"B"}}});
   base::MockRepeatingCallback<void(const GoogleServiceAuthError&)>
@@ -382,11 +411,10 @@ TEST_F(AccountProfileMapperTest, WaitForInitialization) {
   testing::Mock::VerifyAndClearExpectations(&accounts_callback);
   // Complete initialization: callback is invoked.
   EXPECT_CALL(error_callback, Run(GoogleServiceAuthError::AuthErrorNone()));
-  EXPECT_CALL(
-      accounts_callback,
-      Run(testing::UnorderedElementsAre(
-          Field(&Account::key, account_manager::AccountKey{"A", kGaiaType}),
-          Field(&Account::key, account_manager::AccountKey{"B", kGaiaType}))));
+  EXPECT_CALL(accounts_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"A", kGaiaType}),
+                  Field(&Account::key, AccountKey{"B", kGaiaType}))));
   CompleteFacadeGetAccountsGaia({"A", "B"});
   testing::Mock::VerifyAndClearExpectations(&error_callback);
   testing::Mock::VerifyAndClearExpectations(&accounts_callback);
@@ -430,4 +458,73 @@ TEST_F(AccountProfileMapperTest, NonGaia) {
                    /*expected_accounts_removed=*/{},
                    /*expected_accounts_in_storage=*/
                    {{main_path(), {"A"}}});
+}
+
+TEST_F(AccountProfileMapperTest, ShowAddAccountDialogBeforeInit) {
+  std::unique_ptr<AccountProfileMapper> mapper =
+      GetMapperNonInitialized({{main_path(), {"A"}}});
+  AccountManagerFacade::AccountAdditionSource source =
+      AccountManagerFacade::AccountAdditionSource::kArc;
+  // The facade is not called before initialization.
+  EXPECT_CALL(*mock_facade(), ShowAddAccountDialog(testing::_, testing::_))
+      .Times(0);
+  mapper->ShowAddAccountDialog(
+      main_path(), source,
+      base::OnceCallback<void(const absl::optional<Account>&)>());
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  // Complete initialization, and check that the facade was called.
+  EXPECT_CALL(*mock_facade(), ShowAddAccountDialog(source, testing::_));
+  CompleteFacadeGetAccountsGaia({"A"});
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+}
+
+TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
+  base::FilePath other_path("Other");
+  std::unique_ptr<AccountProfileMapper> mapper =
+      GetMapper({{main_path(), {"A"}}, {other_path, {"B"}}});
+  base::MockOnceCallback<void(const absl::optional<Account>&)>
+      account_added_callback;
+  AccountManagerFacade::AccountAdditionSource source =
+      AccountManagerFacade::AccountAdditionSource::kArc;
+  Account account_c = AccountFromGaiaID("C");
+  // Add account to existing profile.
+  ExpectFacadeShowAddAccountDialogCalled(source, account_c);
+  EXPECT_CALL(account_added_callback,
+              Run(OptionalAccountEqual(absl::make_optional(account_c))));
+  mapper->ShowAddAccountDialog(other_path, source,
+                               account_added_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&account_added_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  // Add account that already exists.
+  ExpectFacadeShowAddAccountDialogCalled(source, account_c);
+  EXPECT_CALL(account_added_callback,
+              Run(OptionalAccountEqual(absl::optional<Account>())));
+  mapper->ShowAddAccountDialog(other_path, source,
+                               account_added_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&account_added_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  // Add account to non-existing profile.
+  ExpectFacadeShowAddAccountDialogCalled(source, AccountFromGaiaID("D"));
+  EXPECT_CALL(account_added_callback,
+              Run(OptionalAccountEqual(absl::optional<Account>())));
+  mapper->ShowAddAccountDialog(base::FilePath("UnknownProfile"), source,
+                               account_added_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&account_added_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  // Non-Gaia account.
+  ExpectFacadeShowAddAccountDialogCalled(source, NonGaiaAccountFromID("D"));
+  EXPECT_CALL(account_added_callback,
+              Run(OptionalAccountEqual(absl::optional<Account>())));
+  mapper->ShowAddAccountDialog(other_path, source,
+                               account_added_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&account_added_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  // Flow aborted.
+  ExpectFacadeShowAddAccountDialogCalled(source, Account());
+  EXPECT_CALL(account_added_callback,
+              Run(OptionalAccountEqual(absl::optional<Account>())));
+  mapper->ShowAddAccountDialog(other_path, source,
+                               account_added_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&account_added_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
 }

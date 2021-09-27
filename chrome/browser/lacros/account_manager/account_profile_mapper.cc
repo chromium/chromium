@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
@@ -32,6 +33,33 @@ account_manager::Account FindAccountByGaiaID(
     return account_manager::Account();
   }
   return it->second;
+}
+
+// Adds the account specified in `result` to the profile associated with
+// `profile_path`, and returns whether the operation succeeded.
+bool TryAddAccountToProfile(
+    ProfileAttributesStorage* storage,
+    const base::FilePath& profile_path,
+    const account_manager::AccountAdditionResult& result) {
+  ProfileAttributesEntry* entry =
+      storage->GetProfileAttributesWithPath(profile_path);
+  if (!entry)
+    return false;  // The profile no longer exists.
+  if (result.status() !=
+      account_manager::AccountAdditionResult::Status::kSuccess) {
+    return false;  // The OS flow failed.
+  }
+  const account_manager::Account& account = *result.account();
+  if (account.key.account_type != account_manager::AccountType::kGaia)
+    return false;  // The account is not Gaia.
+  const std::string& gaia_id = account.key.id;
+  DCHECK(!gaia_id.empty());
+  auto profile_accounts = entry->GetGaiaIds();
+  auto inserted = profile_accounts.insert(gaia_id);
+  if (!inserted.second)
+    return false;  // The account already exists in the profile.
+  entry->SetGaiaIds(profile_accounts);
+  return true;
 }
 
 }  // namespace
@@ -115,6 +143,27 @@ AccountProfileMapper::CreateAccessTokenFetcher(
 
   return account_manager_facade_->CreateAccessTokenFetcher(
       account, oauth_consumer_name, consumer);
+}
+
+void AccountProfileMapper::ShowAddAccountDialog(
+    const base::FilePath& profile_path,
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
+    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+        callback) {
+  if (!initialized_) {
+    initialization_callbacks_.push_back(base::BindOnce(
+        &AccountProfileMapper::ShowAddAccountDialog, weak_factory_.GetWeakPtr(),
+        profile_path, source, std::move(callback)));
+    return;
+  }
+
+  DCHECK_GE(account_addition_in_progress_, 0);
+  ++account_addition_in_progress_;
+  account_manager_facade_->ShowAddAccountDialog(
+      source,
+      base::BindOnce(&AccountProfileMapper::OnShowAddAccountDialogCompleted,
+                     weak_factory_.GetWeakPtr(), profile_path,
+                     std::move(callback)));
 }
 
 void AccountProfileMapper::OnAccountUpserted(
@@ -235,6 +284,28 @@ void AccountProfileMapper::OnGetAccountsCompleted(
   }
 }
 
+void AccountProfileMapper::OnShowAddAccountDialogCompleted(
+    const base::FilePath& profile_path,
+    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+        client_callback,
+    const account_manager::AccountAdditionResult& result) {
+  DCHECK(initialized_);
+  bool added_to_profile =
+      TryAddAccountToProfile(profile_attributes_storage_, profile_path, result);
+  if (added_to_profile) {
+    for (auto& obs : observers_)
+      obs.OnAccountUpserted(profile_path, result.account().value());
+  }
+
+  if (client_callback) {
+    std::move(client_callback)
+        .Run(added_to_profile ? result.account() : absl::nullopt);
+  }
+
+  --account_addition_in_progress_;
+  DCHECK_GE(account_addition_in_progress_, 0);
+}
+
 bool AccountProfileMapper::ProfileContainsAccount(
     const base::FilePath& profile_path,
     const account_manager::AccountKey& account) const {
@@ -247,6 +318,13 @@ bool AccountProfileMapper::ProfileContainsAccount(
 
 ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
     const {
+  // `AccountManagerFacade` may call `OnAccountUpserted()` before the
+  // `ShowAddAccountDialog()` callback, which may result in this function being
+  // called during the account addition. In this case, do not assign the new
+  // account here, as this will be done in `OnShowAddAccountDialogCompleted()`.
+  if (account_addition_in_progress_ > 0)
+    return nullptr;
+
   std::vector<ProfileAttributesEntry*> entries =
       profile_attributes_storage_->GetAllProfilesAttributes();
   // Ignore omitted profiles.
