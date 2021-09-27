@@ -447,9 +447,15 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
     FillStatusDetailsWithError(
         required_field, element_click_status.proto_status(), &client_status_);
 
-    // Fallback failed: we stop the script without checking the other fields.
-    std::move(status_update_callback_)
-        .Run(ErrorStatusWithDefault(client_status_));
+    // Main element to click does not exist. We either continue or stop the
+    // script without checking the other fields.
+    if (required_field.proto.is_optional() &&
+        element_click_status.proto_status() == ELEMENT_RESOLUTION_FAILED) {
+      std::move(set_next_field).Run();
+    } else {
+      std::move(status_update_callback_)
+          .Run(ErrorStatusWithDefault(client_status_));
+    }
     return;
   }
 
@@ -473,8 +479,14 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
     base::TimeDelta wait_time) {
   total_wait_time_ += wait_time;
   if (!find_element_status.ok()) {
+    // We're looking for the option element to click, if it cannot be found,
+    // change the error status to reflect that.
     FillStatusDetailsWithError(
-        required_field, find_element_status.proto_status(), &client_status_);
+        required_field,
+        find_element_status.proto_status() == ELEMENT_RESOLUTION_FAILED
+            ? OPTION_VALUE_NOT_FOUND
+            : find_element_status.proto_status(),
+        &client_status_);
 
     // Fallback failed: we stop the script without checking the other fields.
     std::move(status_update_callback_)
