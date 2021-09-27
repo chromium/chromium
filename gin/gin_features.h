@@ -18,6 +18,7 @@ GIN_EXPORT extern const base::Feature kV8FlushBaselineCode;
 GIN_EXPORT extern const base::Feature kV8FlushEmbeddedBlobICache;
 GIN_EXPORT extern const base::Feature kV8LazyFeedbackAllocation;
 GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;
+GIN_EXPORT extern const base::Feature kV8CodeMemoryWriteProtection;
 GIN_EXPORT extern const base::Feature kV8OffThreadFinalization;
 GIN_EXPORT extern const base::Feature kV8OptimizeJavascript;
 GIN_EXPORT extern const base::Feature kV8PerContextMarkingWorklist;

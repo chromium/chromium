@@ -47,6 +47,12 @@ const base::Feature kV8ReduceConcurrentMarkingTasks{
 const base::Feature kV8NoReclaimUnmodifiedWrappers{
     "V8NoReclaimUnmodifiedWrappers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables W^X code memory protection in V8.
+// This is enabled in V8 by default. To test the performance impact, we are
+// going to disable this feature in a finch experiment.
+const base::Feature kV8CodeMemoryWriteProtection{
+    "V8CodeMemoryWriteProtection", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables fallback to a breadth-first regexp engine on excessive backtracking.
 const base::Feature kV8ExperimentalRegexpEngine{
     "V8ExperimentalRegexpEngine", base::FEATURE_ENABLED_BY_DEFAULT};

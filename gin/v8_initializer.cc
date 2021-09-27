@@ -302,6 +302,9 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
                          "--no-sparkplug-needs-short-builtins");
   SetV8FlagsIfOverridden(features::kV8ShortBuiltinCalls,
                          "--short-builtin-calls", "--no-short-builtin-calls");
+  SetV8FlagsIfOverridden(features::kV8CodeMemoryWriteProtection,
+                         "--write-protect-code-memory",
+                         "--no-write-protect-code-memory");
   SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
                          "--no-slow-histograms");
 
