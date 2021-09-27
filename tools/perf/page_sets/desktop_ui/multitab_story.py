@@ -14,9 +14,14 @@ class MultiTabStory(page.Page):
   """Base class for stories to open tabs with a list of urls"""
 
   def __init__(self, story_set, extra_browser_args=None):
+    tags = []
+    if hasattr(self, 'TAGS'):
+      for t in self.TAGS:
+        tags.append(t.name)
     super(MultiTabStory, self).__init__(
         url=self.URL,
         name=self.NAME,
+        tags=tags,
         page_set=story_set,
         extra_browser_args=extra_browser_args,
         shared_page_state_class=desktop_ui_shared_state.DesktopUISharedState)
