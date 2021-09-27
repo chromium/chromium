@@ -5601,7 +5601,7 @@ void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
       frame_tree_->controller().GoToOffsetInSandboxedFrame(
           offset, GetFrameTreeNodeId());
     } else {
-      frame_tree_->controller().GoToOffsetFromRenderer(offset);
+      frame_tree_->controller().GoToOffset(offset);
     }
   }
 }
