@@ -14,7 +14,6 @@ namespace android_webview {
 AwRenderViewExt::AwRenderViewExt(blink::WebView* web_view)
     : blink::WebViewObserver(web_view) {
   DCHECK(web_view != nullptr);
-  web_view->GetSettings()->SetNeedsMinPreferredLogicalWidth(true);
 }
 
 AwRenderViewExt::~AwRenderViewExt() {}

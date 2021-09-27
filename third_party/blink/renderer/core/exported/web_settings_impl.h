@@ -233,7 +233,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAccessibilityIncludeSvgGElement(bool) override;
   void SetWebXRImmersiveArAllowed(bool webxr_immersive_ar_allowed) override;
   void SetLitePageSubresourceRedirectOrigin(const WebString&) override;
-  void SetNeedsMinPreferredLogicalWidth(bool) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;
