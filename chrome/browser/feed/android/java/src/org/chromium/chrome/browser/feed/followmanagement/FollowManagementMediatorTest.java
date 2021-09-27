@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed.followmanagement;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
@@ -14,26 +15,32 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.TestWebFeedFaviconFetcher;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Tests {@link FollowManagementMediator}.
@@ -44,6 +51,19 @@ public class FollowManagementMediatorTest {
     private ModelList mModelList;
     private FollowManagementMediator mFollowManagementMediator;
 
+    static final byte[] ID1 = "ID1".getBytes(StandardCharsets.US_ASCII);
+    static final byte[] ID2 = "ID2".getBytes(StandardCharsets.US_ASCII);
+    static final GURL URL1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    static final GURL FAVICON1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    static final GURL URL2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    static final GURL FAVICON2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
+
+    @Captor
+    ArgumentCaptor<Callback<WebFeedBridge.UnfollowResults>> mUnfollowCallbackCaptor;
+
+    @Captor
+    ArgumentCaptor<Callback<WebFeedBridge.FollowResults>> mFollowCallbackCaptor;
+
     @Rule
     public JniMocker mocker = new JniMocker();
 
@@ -51,7 +71,7 @@ public class FollowManagementMediatorTest {
     WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Mock
-    SimpleRecyclerViewAdapter mAdapter;
+    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
     TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
@@ -61,9 +81,10 @@ public class FollowManagementMediatorTest {
         mModelList = new ModelList();
         MockitoAnnotations.initMocks(this);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
+        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
         mFollowManagementMediator =
-                new FollowManagementMediator(mActivity, mModelList, mAdapter, mFaviconFetcher);
+                new FollowManagementMediator(mActivity, mModelList, mFaviconFetcher);
 
         // WebFeedBridge.refreshFollowedWebFeeds() gets called once with non-null pointer to a
         // callback.
@@ -73,53 +94,167 @@ public class FollowManagementMediatorTest {
     @Test
     public void testLoadingState() {
         // Loading state is set upon construction.
-        ModelList modelList = mFollowManagementMediator.getModelListForTest();
-        assertEquals(1, modelList.size());
-        ListItem item = modelList.get(0);
-        assertEquals(FollowManagementItemProperties.LOADING_ITEM_TYPE, item.type);
+        assertEquals("<loading>", modelListToString());
     }
 
     @Test
     public void testEmptyWebFeedList() {
         mFollowManagementMediator.fillRecyclerView(new ArrayList<WebFeedMetadata>());
 
-        ModelList modelList = mFollowManagementMediator.getModelListForTest();
-
-        // For an empty list of feeds, we should see the empty state item.
-        assertEquals(1, modelList.size());
-        ListItem item = modelList.get(0);
-        assertEquals(FollowManagementItemProperties.EMPTY_ITEM_TYPE, item.type);
+        assertEquals("<empty>", modelListToString());
     }
 
     @Test
     public void testWebFeedList() {
-        List<WebFeedMetadata> metadataList = new ArrayList<WebFeedMetadata>();
-        byte[] id1 = new byte[] {(byte) 0x11, (byte) 0x11};
-        byte[] id2 = new byte[] {(byte) 0x22, (byte) 0x22};
-        GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-        GURL favicon1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-        GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-        GURL favicon2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
-        metadataList.add(new WebFeedMetadata(id1, "Programmers at work", url1,
-                WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE, false,
-                favicon1));
-        metadataList.add(new WebFeedMetadata(id1, "Programmers at play", url2,
-                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, WebFeedAvailabilityStatus.INACTIVE, false,
-                favicon2));
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1),
+                new WebFeedMetadata(ID2, "Title2", URL2, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                        WebFeedAvailabilityStatus.INACTIVE, false, FAVICON2)}));
 
-        mFollowManagementMediator.fillRecyclerView(metadataList);
-
-        ModelList modelList = mFollowManagementMediator.getModelListForTest();
-
-        // We should see two items in the list.
-        assertEquals(2, modelList.size());
-
-        // The item type should be DEFAULT_ITEM_TYPE.
-        ListItem item = modelList.get(0);
-        assertEquals(FollowManagementItemProperties.DEFAULT_ITEM_TYPE, item.type);
+        // clang-format off
+        assertEquals(
+          "ID1 title=Title1 url=https://www.one.com/ subscribed\n"
+        + "ID2 title=Title2 url=https://www.two.com/ status=Updates Unavailable not-subscribed",
+                modelListToString());
+        // clang-format on
     }
 
-    // Future tests we could write:
-    // Test the click listener is set up properly.
-    // Test that the favicon is being set properly asynchronously.
+    @Test
+    public void testUnsubscribeInProgressAfterClick() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1),
+                new WebFeedMetadata(ID2, "Title2", URL2, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON2)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        // clang-format off
+        assertEquals(
+          "ID1 title=Title1 url=https://www.one.com/ not-subscribed disabled\n"
+        + "ID2 title=Title2 url=https://www.two.com/ not-subscribed",
+                modelListToString());
+        // clang-format on
+    }
+
+    @Test
+    public void testUnsubscribeFailure() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        verify(mWebFeedBridgeJni).unfollowWebFeed(eq(ID1), mUnfollowCallbackCaptor.capture());
+        mUnfollowCallbackCaptor.getValue().onResult(
+                new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
+
+        assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed", modelListToString());
+    }
+
+    @Test
+    public void testUnsubscribeSuccess() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        verify(mWebFeedBridgeJni).unfollowWebFeed(eq(ID1), mUnfollowCallbackCaptor.capture());
+        mUnfollowCallbackCaptor.getValue().onResult(
+                new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
+
+        assertEquals(
+                "ID1 title=Title1 url=https://www.one.com/ not-subscribed", modelListToString());
+    }
+
+    @Test
+    public void testSubscribeInProgress() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed disabled",
+                modelListToString());
+    }
+
+    @Test
+    public void testSubscribeFailure() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        verify(mWebFeedBridgeJni).followWebFeedById(eq(ID1), mFollowCallbackCaptor.capture());
+        mFollowCallbackCaptor.getValue().onResult(new WebFeedBridge.FollowResults(
+                WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, null));
+
+        assertEquals(
+                "ID1 title=Title1 url=https://www.one.com/ not-subscribed", modelListToString());
+    }
+
+    @Test
+    public void testSubscribeSuccess() {
+        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
+                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+
+        mFollowManagementMediator.clickHandler(mModelList.get(0).model);
+
+        verify(mWebFeedBridgeJni).followWebFeedById(eq(ID1), mFollowCallbackCaptor.capture());
+        mFollowCallbackCaptor.getValue().onResult(
+                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
+
+        assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed", modelListToString());
+    }
+
+    private String modelListToString() {
+        ModelList modelList = mModelList;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < modelList.size(); i++) {
+            int type = modelList.get(i).type;
+            if (type == FollowManagementItemProperties.EMPTY_ITEM_TYPE) {
+                builder.append("<empty>");
+            } else if (type == FollowManagementItemProperties.LOADING_ITEM_TYPE) {
+                builder.append("<loading>");
+            } else {
+                assertEquals(FollowManagementItemProperties.DEFAULT_ITEM_TYPE, type);
+                builder.append(modelToString(modelList.get(i).model));
+            }
+            if (i + 1 < modelList.size()) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+
+    private String modelToString(PropertyModel itemModel) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(new String(itemModel.get(FollowManagementItemProperties.ID_KEY)));
+        builder.append(" title=");
+        builder.append(itemModel.get(FollowManagementItemProperties.TITLE_KEY));
+        builder.append(" url=");
+        builder.append(itemModel.get(FollowManagementItemProperties.URL_KEY));
+        String statusString = itemModel.get(FollowManagementItemProperties.STATUS_KEY);
+        if (!statusString.isEmpty()) {
+            builder.append(" status=");
+            builder.append(statusString);
+        }
+        builder.append(" ");
+        if (itemModel.get(FollowManagementItemProperties.SUBSCRIBED_KEY)) {
+            builder.append("subscribed");
+        } else {
+            builder.append("not-subscribed");
+        }
+        if (!itemModel.get(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY)) {
+            builder.append(" disabled");
+        }
+        return builder.toString();
+    }
+
+    // TODO(harringtond): Test favicons.
 }

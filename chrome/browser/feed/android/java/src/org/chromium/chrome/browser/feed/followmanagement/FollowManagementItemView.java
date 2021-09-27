@@ -53,25 +53,18 @@ public class FollowManagementItemView extends LinearLayout {
         mFavicon.setImageBitmap(favicon);
     }
 
-    /** Gets the current subscription state based on the checkbox status. */
-    public boolean isSubscribed() {
-        return mSubscribedCheckbox.isChecked();
-    }
-
     /** Updates the checkbox state, enable it and starts listenint to clicks.  */
     public void setSubscribed(boolean subscribed) {
         mSubscribedCheckbox.setChecked(subscribed);
-        mSubscribedCheckbox.setClickable(true);
-        mSubscribedCheckbox.setEnabled(true);
     }
 
-    /* Present the checkbox as disabled and checked while transitioning. And
-     * stop listening for clicks to prevent duplicate events.
-     */
-    public void setTransitioning() {
-        mSubscribedCheckbox.setChecked(true);
-        mSubscribedCheckbox.setClickable(false);
-        mSubscribedCheckbox.setEnabled(false);
+    public void setCheckboxEnabled(boolean checkboxEnabled) {
+        mSubscribedCheckbox.setClickable(checkboxEnabled);
+        mSubscribedCheckbox.setEnabled(checkboxEnabled);
+    }
+
+    public void setCheckboxClickListener(Runnable onClick) {
+        mSubscribedCheckbox.setOnClickListener((v) -> onClick.run());
     }
 
     @Override

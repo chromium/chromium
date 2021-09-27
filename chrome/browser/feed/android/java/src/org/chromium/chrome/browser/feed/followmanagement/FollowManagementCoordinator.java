@@ -60,7 +60,7 @@ public class FollowManagementCoordinator {
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FollowManagementMediator(
-                activity, listItems, adapter, WebFeedFaviconFetcher.createDefault());
+                activity, listItems, WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {

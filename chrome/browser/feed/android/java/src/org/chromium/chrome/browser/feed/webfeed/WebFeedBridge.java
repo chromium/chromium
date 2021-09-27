@@ -140,7 +140,7 @@ public class WebFeedBridge {
         public final @Nullable WebFeedMetadata metadata;
 
         @CalledByNative("FollowResults")
-        FollowResults(
+        public FollowResults(
                 @WebFeedSubscriptionRequestStatus int requestStatus, WebFeedMetadata metadata) {
             this.requestStatus = requestStatus;
             this.metadata = metadata;
@@ -150,7 +150,7 @@ public class WebFeedBridge {
     /** Container for results from an Unfollow request. */
     public static class UnfollowResults {
         @CalledByNative("UnfollowResults")
-        UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
+        public UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
             this.requestStatus = requestStatus;
         }
         // Result of the operation.
