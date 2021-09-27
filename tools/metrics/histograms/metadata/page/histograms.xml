@@ -788,6 +788,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.ServiceWorker2.PageTransition"
     enum="CorePageTransition" expires_after="M85">
+  <obsolete>
+    Expired in October 2020. Removed from the code in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <summary>
     The core transition type for main frame page loads controlled by a service
