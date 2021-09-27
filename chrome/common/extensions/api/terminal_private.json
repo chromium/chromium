@@ -36,20 +36,19 @@
             "name": "args",
             "optional": true,
             "description": "Command line arguments to pass to the process."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Returns id of the launched process. If no process was launched returns -1.",
-            "parameters": [
-              {
-                "name": "id",
-                "description": "Id of the launched process.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns id of the launched process. If no process was launched returns -1.",
+          "parameters": [
+            {
+              "name": "id",
+              "description": "Id of the launched process.",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "openVmshellProcess",
@@ -64,20 +63,19 @@
             "name": "args",
             "optional": true,
             "description": "Command line arguments to pass to vmshell."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
-            "parameters": [
-              {
-                "name": "id",
-                "description": "Id of the launched vmshell process.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
+          "parameters": [
+            {
+              "name": "id",
+              "description": "Id of the launched vmshell process.",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "closeTerminalProcess",
@@ -88,20 +86,19 @@
             "name": "id",
             "type": "string",
             "description": "Unique id of the process we want to close."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Function that gets called when close operation is started for the process. Returns success of the function.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Function that gets called when close operation is started for the process. Returns success of the function.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "sendInput",
@@ -117,20 +114,19 @@
             "name": "input",
             "type": "string",
             "description": "Input we are sending to the process."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback that will be called when sendInput method ends. Returns success.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "onTerminalResize",
@@ -151,20 +147,19 @@
             "name": "height",
             "type": "integer",
             "description": "New window height (as row count)."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback that will be called when sendInput method ends. Returns success.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "ackOutput",
@@ -182,52 +177,46 @@
         "name": "openWindow",
         "type": "function",
         "description": "Open the Terminal tabbed window.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       },
       {
         "name": "openOptionsPage",
         "type": "function",
         "description": "Open the Terminal Settings page.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       },
       {
         "name": "getSettings",
         "type": "function",
         "description": "Returns an object (DictionaryValue) containing UI settings such as font style and colors used by terminal and stored as a syncable pref.  The UI currently has ~70 properties and we wish to allow flexibility for these to change in the UI without updating this API, so we allow any properties.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called with settings.",
-            "parameters": [
-              {
-                "name": "settings",
-                "type": "object",
-                "additionalProperties":
-                  {
-                    "type": "any" ,
-                    "preserveNull": true
-                  },
-                "description": "Settings from prefs.",
-                "preserveNull": true
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with settings.",
+          "parameters": [
+            {
+              "name": "settings",
+              "type": "object",
+              "additionalProperties":
+                {
+                  "type": "any" ,
+                  "preserveNull": true
+                },
+              "description": "Settings from prefs.",
+              "preserveNull": true
+            }
+          ]
+        }
       },
       {
         "name": "setSettings",
@@ -244,33 +233,30 @@
                 "preserveNull": true
               },
             "preserveNull": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       },
       {
         "name": "getA11yStatus",
         "type": "function",
         "description": "Returns a boolean indicating whether the accessibility spoken feedback is on.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called with the a11y status.",
-            "parameters": [
-              {
-                "name": "a11yStatus",
-                "type": "boolean",
-                "description": "True if a11y spoken feedback is on."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with the a11y status.",
+          "parameters": [
+            {
+              "name": "a11yStatus",
+              "type": "boolean",
+              "description": "True if a11y spoken feedback is on."
+            }
+          ]
+        }
       }
     ],
     "events": [
