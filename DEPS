@@ -390,7 +390,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    'c883cb129d0ed07c4ac457666f8d4ea4d7d3d565',
+  'libcxxabi_revision':    '50e90b8650bbc87d3b1d07dadb2381dc6dd1816e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1691,7 +1691,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@09bbf7cddfce7b6d31901c6bd5082639fa318243',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@492c38b1b6a4a95c76117cb05db00058cd8d5ce3',
     'condition': 'checkout_src_internal',
   },
 
