@@ -5,6 +5,7 @@
 source_set("ntp") {
   sources = [
     "discover_feed_delegate.h",
+    "discover_feed_preview_delegate.h",
     "new_tab_page_commands.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
@@ -14,6 +15,7 @@ source_set("ntp") {
   public_deps = [
     ":constants",
     ":feature_flags",
+    "//ios/chrome/browser/ui/ntp/discover_feed_preview",
   ]
   deps = [ "//ios/chrome/browser/ui/util" ]
 }
