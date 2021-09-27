@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -30,6 +31,8 @@ class WebAppInternalsSource : public content::URLDataSource {
 
  private:
   Profile* const profile_;
+
+  base::WeakPtrFactory<WebAppInternalsSource> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_
