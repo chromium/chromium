@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
+#include "ui/ozone/platform/wayland/test/test_overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
@@ -144,6 +145,7 @@ class TestWaylandServerThread : public base::Thread,
   TestAlphaCompositing alpha_compositing_;
   TestDataDeviceManager data_device_manager_;
   TestOutput output_;
+  TestOverlayPrioritizer overlay_prioritizer_;
   TestSeat seat_;
   MockXdgShell xdg_shell_;
   MockZxdgShellV6 zxdg_shell_v6_;

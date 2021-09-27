@@ -40,6 +40,9 @@ class WaylandSurface {
   ~WaylandSurface();
 
   WaylandWindow* root_window() const { return root_window_; }
+  overlay_prioritized_surface* overlay_priority_surface() {
+    return overlay_priority_surface_.get();
+  }
   wl_surface* surface() const { return surface_.get(); }
   wp_viewport* viewport() const { return viewport_.get(); }
   zcr_blending_v1* blending() const { return blending_.get(); }
@@ -176,6 +179,7 @@ class WaylandSurface {
   wl::Object<wp_viewport> viewport_;
   wl::Object<zcr_blending_v1> blending_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
+  wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;
   ExplicitReleaseCallback explicit_release_callback_;

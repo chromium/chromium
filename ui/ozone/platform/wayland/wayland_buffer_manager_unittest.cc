@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/overlay_priority_hint.h"
-#include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
-#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
-
 #include <drm_fourcc.h>
+#include <overlay-prioritizer-client-protocol.h>
+
+#include <cstdint>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -16,12 +14,18 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/gfx/overlay_priority_hint.h"
+#include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
@@ -1939,6 +1943,68 @@ TEST_P(WaylandBufferManagerTest,
   window_->Hide();
 
   Sync();
+}
+
+TEST_P(WaylandBufferManagerTest, HasOverlayPrioritizer) {
+  EXPECT_TRUE(connection_->overlay_prioritizer());
+}
+
+TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
+  std::vector<uint32_t> kBufferIds = {1, 2, 3};
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                  window_->GetWidget());
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
+  for (auto id : kBufferIds) {
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, id);
+  }
+
+  Sync();
+
+  for (size_t i = 0; i < kBufferIds.size(); i++) {
+    zwp_linux_buffer_params_v1_send_created(
+        linux_dmabuf->buffer_params()[i]->resource(),
+        linux_dmabuf->buffer_params()[i]->buffer_resource());
+  }
+
+  Sync();
+
+  std::vector<std::pair<gfx::OverlayPriorityHint, uint32_t>> priorities = {
+      {gfx::OverlayPriorityHint::kNone,
+       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE},
+      {gfx::OverlayPriorityHint::kRegular,
+       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REGULAR},
+      {gfx::OverlayPriorityHint::kLowLatencyCanvas,
+       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_PREFERRED_LOW_LATENCY_CANVAS},
+      {gfx::OverlayPriorityHint::kHardwareProtection,
+       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REQUIRED_HARDWARE_PROTECTION}};
+
+  for (const auto& priority : priorities) {
+    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    for (auto id : kBufferIds) {
+      overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+          id == 1 ? INT32_MIN : id,
+          gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
+          window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
+          gfx::GpuFenceHandle(), priority.first));
+    }
+
+    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                        std::move(overlay_configs));
+
+    Sync();
+
+    for (auto& subsurface : window_->wayland_subsurfaces_) {
+      auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+          subsurface->wayland_surface()->GetSurfaceId());
+      EXPECT_TRUE(mock_surface_of_subsurface);
+      EXPECT_EQ(
+          mock_surface_of_subsurface->prioritized_surface()->overlay_priority(),
+          priority.second);
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

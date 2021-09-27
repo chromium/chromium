@@ -15,6 +15,7 @@
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
+#include <overlay-prioritizer-client-protocol.h>
 #include <pointer-constraints-unstable-v1-client-protocol.h>
 #include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
@@ -107,6 +108,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_shell1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_surface1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle_timeout)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritizer)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritized_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_buffer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_callback)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_compositor)

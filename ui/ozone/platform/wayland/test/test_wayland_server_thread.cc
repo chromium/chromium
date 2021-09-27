@@ -92,6 +92,8 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
     return false;
+  if (!overlay_prioritizer_.Initialize(display_.get()))
+    return false;
 
   client_ = wl_client_create(display_.get(), server_fd.release());
   if (!client_)

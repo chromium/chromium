@@ -60,6 +60,7 @@ class GtkShell1;
 class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
 class XdgForeignWrapper;
+class OverlayPrioritizer;
 
 // These values are persisted to logs.  Entries should not be renumbered and
 // numeric values should never be reused.
@@ -236,6 +237,10 @@ class WaylandConnection {
     return zwp_idle_inhibit_manager_.get();
   }
 
+  OverlayPrioritizer* overlay_prioritizer() const {
+    return overlay_prioritizer_.get();
+  }
+
   // Returns whether protocols that support setting window geometry are
   // available.
   bool SupportsSetWindowGeometry() const;
@@ -276,6 +281,7 @@ class WaylandConnection {
   friend class GtkPrimarySelectionDeviceManager;
   friend class GtkShell1;
   friend class OrgKdeKwinIdle;
+  friend class OverlayPrioritizer;
   friend class WaylandDataDeviceManager;
   friend class WaylandDrm;
   friend class WaylandOutput;
@@ -373,6 +379,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
+  std::unique_ptr<OverlayPrioritizer> overlay_prioritizer_;
 
   // Clipboard-related objects. |clipboard_| must be declared after all
   // DeviceManager instances it depends on, otherwise tests may crash with

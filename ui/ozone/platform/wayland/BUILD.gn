@@ -54,6 +54,8 @@ source_set("wayland") {
     "host/gtk_surface1.h",
     "host/org_kde_kwin_idle.cc",
     "host/org_kde_kwin_idle.h",
+    "host/overlay_prioritizer.cc",
+    "host/overlay_prioritizer.h",
     "host/shell_object_factory.cc",
     "host/shell_object_factory.h",
     "host/shell_popup_wrapper.cc",
@@ -202,6 +204,7 @@ source_set("wayland") {
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
@@ -389,6 +392,10 @@ source_set("test_support") {
     "test/test_keyboard.h",
     "test/test_output.cc",
     "test/test_output.h",
+    "test/test_overlay_prioritized_surface.cc",
+    "test/test_overlay_prioritized_surface.h",
+    "test/test_overlay_prioritizer.cc",
+    "test/test_overlay_prioritizer.h",
     "test/test_positioner.cc",
     "test/test_positioner.h",
     "test/test_region.cc",
@@ -428,6 +435,7 @@ source_set("test_support") {
   ]
 
   public_deps = [
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//skia",
     "//testing/gmock",
     "//third_party/wayland:wayland_server",

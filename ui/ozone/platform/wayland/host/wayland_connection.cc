@@ -30,6 +30,7 @@
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
+#include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
@@ -159,6 +160,7 @@ bool WaylandConnection::Initialize() {
   GtkPrimarySelectionDeviceManager::Register(this);
   GtkShell1::Register(this);
   OrgKdeKwinIdle::Register(this);
+  OverlayPrioritizer::Register(this);
   WaylandDataDeviceManager::Register(this);
   WaylandDrm::Register(this);
   WaylandOutput::Register(this);

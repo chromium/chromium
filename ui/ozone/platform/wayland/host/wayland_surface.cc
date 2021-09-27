@@ -6,6 +6,7 @@
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
+#include <overlay-prioritizer-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <algorithm>
 
@@ -16,12 +17,38 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
+
+namespace {
+
+uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
+  uint32_t priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
+  switch (priority_hint) {
+    case gfx::OverlayPriorityHint::kNone:
+      priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
+      break;
+    case gfx::OverlayPriorityHint::kRegular:
+      priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REGULAR;
+      break;
+    case gfx::OverlayPriorityHint::kLowLatencyCanvas:
+      priority =
+          OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_PREFERRED_LOW_LATENCY_CANVAS;
+      break;
+    case gfx::OverlayPriorityHint::kHardwareProtection:
+      priority =
+          OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REQUIRED_HARDWARE_PROTECTION;
+      break;
+  }
+  return priority;
+}
+
+}  // namespace
 
 WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
     wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
@@ -84,6 +111,17 @@ bool WaylandSurface::Initialize() {
     }
   } else {
     LOG(WARNING) << "Server doesn't support zcr_alpha_compositing_v1.";
+  }
+
+  if (auto* overlay_prioritizer = connection_->overlay_prioritizer()) {
+    overlay_priority_surface_ =
+        overlay_prioritizer->CreateOverlayPrioritizedSurface(surface());
+    if (!overlay_priority_surface_) {
+      LOG(ERROR) << "Failed to create overlay_priority_surface";
+      return false;
+    }
+  } else {
+    LOG(WARNING) << "Server doesn't support overlay_prioritizer.";
   }
 
   return true;
@@ -439,7 +477,10 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 
 void WaylandSurface::SetOverlayPriority(
     gfx::OverlayPriorityHint priority_hint) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (overlay_priority_surface()) {
+    overlay_prioritized_surface_set_overlay_priority(
+        overlay_priority_surface(), TranslatePriority(priority_hint));
+  }
 }
 
 // static
