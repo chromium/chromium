@@ -217,8 +217,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
       enable_brp |= process_type == switches::kRendererProcess;
     }
-    base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_brp);
   }
+  base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_brp);
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
