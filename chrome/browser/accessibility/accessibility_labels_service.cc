@@ -238,12 +238,17 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
   if (!web_contents)
     return;
   // Fire an AXAction on the active tab to enable this feature once only.
+  // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-  for (content::RenderFrameHost* frame : web_contents->GetAllFrames()) {
-    if (frame->IsRenderFrameLive())
-      frame->AccessibilityPerformAction(action_data);
-  }
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const ui::AXActionData& action_data,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          render_frame_host->AccessibilityPerformAction(action_data);
+        }
+      },
+      action_data));
 #endif
 }
 
@@ -356,13 +361,16 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
   if (!web_contents)
     return;
 
+  // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-
-  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames) {
-    if (frame->IsRenderFrameLive())
-      frame->AccessibilityPerformAction(action_data);
-  }
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const ui::AXActionData& action_data,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          render_frame_host->AccessibilityPerformAction(action_data);
+        }
+      },
+      action_data));
 }
 #endif
