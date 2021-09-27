@@ -43,9 +43,6 @@
 -RenderWidgetHostViewAuraTest.SyntheticFlingCancelAtTouchpadScrollBegin
 -RenderWidgetHostViewAuraTest.TimerBasedWheelEventPhaseInfo
 
-# Flaky, https://crbug.com/884250.
--ReferrerSanitizerTest.SanitizesPolicyForNonEmptyReferrers
-
 # TODO(crbug.com/1231509): These tests require
 # OSExchangeDataProviderFactory::CreateProvider to be implemented.
 -WebContentsViewAuraTest.DragDropFiles
