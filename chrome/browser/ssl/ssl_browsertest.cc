@@ -3769,16 +3769,9 @@ IN_PROC_BROWSER_TEST_P(
 // from a dedicated worker by changing the settings in WebPreferences
 // with allow_running_insecure_content = false.
 // Disabled due to being flaky. crbug.com/1116670
-#if defined(OS_MAC)
-#define MAYBE_MixedContentSettings_DisallowRunningInsecureContent \
-  DISABLED_MixedContentSettings_DisallowRunningInsecureContent
-#else
-#define MAYBE_MixedContentSettings_DisallowRunningInsecureContent \
-  MixedContentSettings_DisallowRunningInsecureContent
-#endif
 IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
-    MAYBE_MixedContentSettings_DisallowRunningInsecureContent) {
+    DISABLED_MixedContentSettings_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
   ScopedContentBrowserClientSetting setting(browser_client);
 
