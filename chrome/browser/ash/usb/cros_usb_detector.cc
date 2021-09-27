@@ -575,9 +575,10 @@ void CrosUsbDetector::OnDeviceChecked(
     }
   }
 
-  // Copy strings prior to moving |device_info| and |new_device|.
+  // Copy fields prior to moving |device_info| and |new_device|.
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
+  uint32_t allowed_interfaces_mask = new_device.allowed_interfaces_mask;
 
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
@@ -594,7 +595,7 @@ void CrosUsbDetector::OnDeviceChecked(
   // is integrated in |ShowNotificationForDevice|.
   if (arc::IsArcVmEnabled() &&
       base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
-    if (has_supported_interface || new_device.allowed_interfaces_mask != 0) {
+    if (has_supported_interface || allowed_interfaces_mask != 0) {
       // USB devices not claimed by Chrome OS get automatically attached to the
       // ARCVM. Note that this relies on the underlying VM (ARCVM) having
       // its own permission model to restrict access to the device.
