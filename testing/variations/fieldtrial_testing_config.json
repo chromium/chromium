@@ -5765,34 +5765,6 @@
             ]
         }
     ],
-    "OutOfBlinkCors": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "extra-safelisted-request-headers": "x-googapps-allowed-domains",
-                        "extra-safelisted-request-headers-for-enterprise": "x-googapps-allowed-domains"
-                    },
-                    "enable_features": [
-                        "ExtraSafelistedRequestHeadersForOutOfBlinkCors",
-                        "OutOfBlinkCors"
-                    ]
-                }
-            ]
-        }
-    ],
     "OverlayPrioritizationExtended": [
         {
             "platforms": [
