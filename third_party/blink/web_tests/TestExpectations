@@ -5082,8 +5082,6 @@ crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-o
 # Sheriff 2019-12-02
 crbug.com/1029528 [ Linux ] http/tests/devtools/network/oopif-content.js [ Failure Pass ]
 
-crbug.com/833100 [ Mac ] external/wpt/battery-status/battery-full-manual.https.html [ Failure Pass ]
-
 crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Pass Timeout ]
 
 # Temporary SkiaRenderer regressions

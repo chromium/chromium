@@ -1096,6 +1096,8 @@ external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-undefined-na
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-undefined-url-manual.html [ Skip ]
 external/wpt/audio-output/setSinkId-manual.https.html [ Skip ]
 external/wpt/battery-status/battery-charging-manual.https.html [ Skip ]
+external/wpt/battery-status/battery-discharging-manual.https.html [ Skip ]
+external/wpt/battery-status/battery-full-manual.https.html [ Skip ]
 external/wpt/battery-status/battery-plugging-in-manual.https.html [ Skip ]
 external/wpt/battery-status/battery-unplugging-manual.https.html [ Skip ]
 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Skip ]
