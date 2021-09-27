@@ -611,7 +611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
-    expires_after="2021-09-21">
+    expires_after="2022-10-21">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
