@@ -753,10 +753,10 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
   if (wl_resource_get_version(resource) >=
       event_mapping_.send_bounds_changed_since_version) {
     if (needs_send_display_metrics_) {
-      pending_bounds_changes_.emplace(
-          std::make_pair<wl_resource*, BoundsChangeData>(
-              std::move(resource),
-              BoundsChangeData(display_id, bounds_in_display, reason)));
+      // We store only the latest bounds for each |resource|.
+      pending_bounds_changes_.insert_or_assign(
+          std::move(resource),
+          BoundsChangeData(display_id, bounds_in_display, reason));
       return;
     }
     SendBoundsChanged(resource, display_id, bounds_in_display, reason);
