@@ -170,6 +170,16 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+desks_storage::DeskModel* DesksClient::GetDeskModel() {
+  if (chromeos::features::IsDeskTemplateSyncEnabled()) {
+    return DeskSyncServiceFactory::GetForProfile(active_profile_)
+        ->GetDeskModel();
+  }
+
+  DCHECK(storage_manager_.get());
+  return storage_manager_.get();
+}
+
 void DesksClient::MaybeCreateAppLaunchHandler() {
   if (app_launch_handler_ &&
       app_launch_handler_->profile() == active_profile_) {
@@ -328,14 +338,4 @@ void DesksClient::OnGetAllTemplates(
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
                       ? kStorageError
                       : ""));
-}
-
-desks_storage::DeskModel* DesksClient::GetDeskModel() {
-  if (chromeos::features::IsDeskTemplateSyncEnabled()) {
-    return DeskSyncServiceFactory::GetForProfile(active_profile_)
-        ->GetDeskModel();
-  } else {
-    DCHECK(storage_manager_.get());
-    return storage_manager_.get();
-  }
 }

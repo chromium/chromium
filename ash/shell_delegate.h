@@ -31,6 +31,10 @@ namespace app_restore {
 struct AppLaunchInfo;
 }
 
+namespace desks_storage {
+class DeskModel;
+}
+
 namespace ash {
 
 class AccessibilityDelegate;
@@ -141,6 +145,10 @@ class ASH_EXPORT ShellDelegate {
   // session.
   virtual std::unique_ptr<app_restore::AppLaunchInfo>
   GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
+
+  // Returns either the local desk storage backend or Chrome sync desk storage
+  // backend depending on the feature flag DeskTemplateSync.
+  virtual desks_storage::DeskModel* GetDeskModel();
 };
 
 }  // namespace ash

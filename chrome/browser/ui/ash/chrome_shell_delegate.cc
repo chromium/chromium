@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
+#include "chrome/browser/ui/ash/desks_client.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/tab_scrubber.h"
@@ -430,4 +431,8 @@ void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
 // static
 void ChromeShellDelegate::ResetDisableLoggingRedirectForTesting() {
   disable_logging_redirect_for_testing.reset();
+}
+
+desks_storage::DeskModel* ChromeShellDelegate::GetDeskModel() {
+  return DesksClient::Get()->GetDeskModel();
 }

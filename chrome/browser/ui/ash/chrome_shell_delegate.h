@@ -59,6 +59,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void OpenFeedbackPageForPersistentDesksBar() override;
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
+  desks_storage::DeskModel* GetDeskModel() override;
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
