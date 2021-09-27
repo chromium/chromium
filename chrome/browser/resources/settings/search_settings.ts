@@ -18,7 +18,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
   declare global {
     interface Window {
       // https://github.com/microsoft/TypeScript/issues/40807
-      requestIdleCallback(callback: () => void): void;
+      requestIdleCallback(callback: () => void): number;
     }
   }
 

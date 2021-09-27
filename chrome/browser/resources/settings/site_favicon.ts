@@ -28,8 +28,10 @@ class SiteFaviconElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  getBackgroundImage_() {
+  faviconUrl: string;
+  url: string;
+
+  private getBackgroundImage_() {
     let backgroundImage = getFavicon('');
     if (this.faviconUrl) {
       const url = this.ensureUrlHasScheme_(this.faviconUrl);
@@ -44,11 +46,10 @@ class SiteFaviconElement extends PolymerElement {
 
   /**
    * Removes the wildcard prefix from a pattern string.
-   * @param {string} pattern The pattern to remove the wildcard from.
-   * @return {string} The resulting pattern.
-   * @private
+   * @param pattern The pattern to remove the wildcard from.
+   * @return The resulting pattern.
    */
-  removePatternWildcard_(pattern) {
+  private removePatternWildcard_(pattern: string): string {
     if (!pattern || pattern.length === 0) {
       return pattern;
     }
@@ -65,11 +66,10 @@ class SiteFaviconElement extends PolymerElement {
 
   /**
    * Ensures the URL has a scheme (assumes http if omitted).
-   * @param {string} url The URL with or without a scheme.
-   * @return {string} The URL with a scheme, or an empty string.
-   * @private
+   * @param url The URL with or without a scheme.
+   * @return The URL with a scheme, or an empty string.
    */
-  ensureUrlHasScheme_(url) {
+  private ensureUrlHasScheme_(url: string): string {
     if (!url || url.length === 0) {
       return url;
     }

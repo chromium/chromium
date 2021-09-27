@@ -13,7 +13,14 @@ import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resource
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
-/** @polymer */
+declare global {
+  interface Window {
+    // https://github.com/microsoft/TypeScript/issues/40807
+    requestIdleCallback(callback: () => void): number;
+    cancelIdleCallback(id: number): void;
+  }
+}
+
 export class SettingsIdleLoadElement extends PolymerElement {
   static get is() {
     return 'settings-idle-load';
@@ -33,50 +40,39 @@ export class SettingsIdleLoadElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  url: string;
+  private child_: Element|null = null;
+  private instance_: TemplateInstanceBase|null = null;
+  private idleCallback_: number = 0;
+  private loading_: Promise<Element>|null = null;
 
-    /** @private {?Element} */
-    this.child_ = null;
-
-    /** @private {?Element|?TemplateInstanceBase} */
-    this.instance_ = null;
-
-    /** @private {number} */
-    this.idleCallback_ = 0;
-
-    /** @private {?Promise<!Element>} */
-    this.loading_ = null;
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    this.idleCallback_ = requestIdleCallback(() => {
+    this.idleCallback_ = window.requestIdleCallback(() => {
       this.get();
     });
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
-    cancelIdleCallback(this.idleCallback_);
+    window.cancelIdleCallback(this.idleCallback_);
   }
 
   /**
-   * @return {!Promise<!Element>} Resolves with the stamped child element after
+   * @return Resolves with the stamped child element after
    *     the lazy module has been loaded.
    */
-  requestLazyModule_() {
+  private requestLazyModule_(): Promise<Element> {
     return new Promise((resolve, reject) => {
       ensureLazyLoaded().then(() => {
-        const template = /** @type {!HTMLTemplateElement} */ (
-            this.shadowRoot.querySelector('slot')
-                .assignedNodes({flatten: true})
-                .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]);
+        const template =
+            (this.shadowRoot!.querySelector('slot')!
+                 .assignedNodes({flatten: true})
+                 .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]) as
+            HTMLTemplateElement;
 
         const TemplateClass = templatize(template, this, {
           mutableData: false,
@@ -88,8 +84,8 @@ export class SettingsIdleLoadElement extends PolymerElement {
         assert(!this.child_);
         this.child_ = this.instance_.root.firstElementChild;
 
-        this.parentNode.insertBefore(this.instance_.root, this);
-        resolve(this.child_);
+        this.parentNode!.insertBefore(this.instance_.root, this);
+        resolve(this.child_!);
 
         this.dispatchEvent(
             new CustomEvent('lazy-loaded', {bubbles: true, composed: true}));
@@ -98,10 +94,9 @@ export class SettingsIdleLoadElement extends PolymerElement {
   }
 
   /**
-   * @return {!Promise<!Element>} Child element which has been stamped into the
-   *     DOM tree.
+   * @return Child element which has been stamped into the DOM tree.
    */
-  get() {
+  get(): Promise<Element> {
     if (this.loading_) {
       return this.loading_;
     }
@@ -110,11 +105,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     return this.loading_;
   }
 
-  /**
-   * @param {string} prop
-   * @param {Object} value
-   */
-  _forwardHostPropV2(prop, value) {
+  private _forwardHostPropV2(prop: string, value: any) {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }

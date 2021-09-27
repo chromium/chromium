@@ -135,7 +135,6 @@ js_type_check("closure_compile") {
 
     #":test_extension_control_browser_proxy",
     ":test_lifetime_browser_proxy",
-    ":test_open_window_proxy",
 
     #":test_password_manager_proxy",
 
@@ -155,13 +154,6 @@ js_library("fake_settings_private") {
   deps = [
     "..:chai_assert",
     "..:fake_chrome_event.m",
-  ]
-}
-
-js_library("test_open_window_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
   ]
 }
 

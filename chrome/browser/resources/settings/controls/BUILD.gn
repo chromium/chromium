@@ -18,7 +18,6 @@ js_type_check("closure_compile") {
     ":settings_boolean_control_behavior",
     ":settings_checkbox",
     ":settings_dropdown_menu",
-    ":settings_idle_load",
     ":settings_radio_group",
     ":settings_slider",
     ":settings_textarea",
@@ -96,13 +95,6 @@ js_library("settings_dropdown_menu") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("settings_idle_load") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 

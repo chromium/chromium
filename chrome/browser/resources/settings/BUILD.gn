@@ -121,9 +121,9 @@ preprocess_if_expr("preprocess") {
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
-    "controls/settings_idle_load.js",
+    "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
-    "ensure_lazy_loaded.js",
+    "ensure_lazy_loaded.ts",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
@@ -134,7 +134,7 @@ preprocess_if_expr("preprocess") {
     "metrics_browser_proxy.ts",
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
-    "open_window_proxy.js",
+    "open_window_proxy.ts",
     "page_visibility.js",
     "people_page/sync_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
@@ -311,7 +311,7 @@ preprocess_if_expr("preprocess_generated") {
     "settings_page_css.ts",
     "settings_shared_css.ts",
     "settings_vars_css.ts",
-    "site_favicon.js",
+    "site_favicon.ts",
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites.ts",
     "site_settings/all_sites_icons.ts",
@@ -409,14 +409,12 @@ js_type_check("closure_compile_local") {
     ":extension_control_browser_proxy",
     ":i18n_setup",
     ":lifetime_browser_proxy",
-    ":open_window_proxy",
     ":page_visibility",
     ":route",
     ":router",
     ":setting_id_param_util",
     ":settings",
     ":settings_routes",
-    ":site_favicon",
   ]
 }
 
@@ -426,7 +424,6 @@ js_library("settings") {
   deps = [
     ":i18n_setup",
     ":lifetime_browser_proxy",
-    ":open_window_proxy",
     "people_page:sync_browser_proxy",
     "prefs:prefs",
     "prefs:prefs_behavior",
@@ -453,9 +450,6 @@ js_library("lifetime_browser_proxy") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
   extra_deps = [ ":build_ts" ]
-}
-
-js_library("open_window_proxy") {
 }
 
 js_library("page_visibility") {
@@ -490,13 +484,6 @@ js_library("setting_id_param_util") {
 
 js_library("settings_routes") {
   deps = [ ":router" ]
-}
-
-js_library("site_favicon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon",
-  ]
 }
 
 group("polymer3_elements") {
@@ -555,7 +542,7 @@ html_to_js("web_components_local") {
     "settings_vars_css.ts",
     "settings_page_css.ts",
     "settings_shared_css.ts",
-    "site_favicon.js",
+    "site_favicon.ts",
   ]
 }
 
@@ -623,14 +610,14 @@ ts_library("build_ts") {
     "controls/settings_boolean_control_behavior.js",
     "controls/settings_checkbox.js",
     "controls/settings_dropdown_menu.js",
-    "controls/settings_idle_load.js",
+    "controls/settings_idle_load.ts",
     "controls/settings_radio_group.js",
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
     "downloads_page/downloads_browser_proxy.ts",
     "downloads_page/downloads_page.ts",
-    "ensure_lazy_loaded.js",
+    "ensure_lazy_loaded.ts",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
@@ -645,7 +632,7 @@ ts_library("build_ts") {
     "on_startup_page/startup_url_entry.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "on_startup_page/startup_urls_page.ts",
-    "open_window_proxy.js",
+    "open_window_proxy.ts",
     "page_visibility.js",
     "people_page/people_page.ts",
     "people_page/profile_info_browser_proxy.js",
@@ -721,7 +708,7 @@ ts_library("build_ts") {
     "settings_shared_css.ts",
     "settings_ui/settings_ui.ts",
     "settings_vars_css.ts",
-    "site_favicon.js",
+    "site_favicon.ts",
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites_icons.ts",
     "site_settings/all_sites.ts",

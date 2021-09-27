@@ -7,32 +7,25 @@
  * the browser.
  */
 
-/** @interface */
-export class OpenWindowProxy {
+export interface OpenWindowProxy {
   /**
    * Opens the specified URL in a new tab.
-   * @param {string} url
    */
-  openURL(url) {}
+  openURL(url: string): void;
 }
 
-/** @implements {OpenWindowProxy} */
-export class OpenWindowProxyImpl {
-  /** @override */
-  openURL(url) {
+export class OpenWindowProxyImpl implements OpenWindowProxy {
+  openURL(url: string) {
     window.open(url);
   }
 
-  /** @return {!OpenWindowProxy} */
-  static getInstance() {
+  static getInstance(): OpenWindowProxy {
     return instance || (instance = new OpenWindowProxyImpl());
   }
 
-  /** @param {!OpenWindowProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: OpenWindowProxy) {
     instance = obj;
   }
 }
 
-/** @type {?OpenWindowProxy} */
-let instance = null;
+let instance: OpenWindowProxy|null = null;
