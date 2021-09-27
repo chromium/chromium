@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {AppType, ArcPermissionType, Bool, OptionalBool, PermissionValueType, PwaPermissionType, TriState} from './constants.js';
 import {AppManagementStore} from './store.js';
 import {createPermission} from './util.js';
@@ -132,8 +132,46 @@ export class FakePageHandler {
     /** @type {!Array<App>} */
     this.apps_ = [];
 
+    /** @type {Array<!string>} */
+    this.overlappingAppIds = [];
+
     /** @type {number} */
     this.guid = 0;
+
+    /** @private {!Map<string, !PromiseResolver>} */
+    this.resolverMap_ = new Map();
+    this.resolverMap_.set('setPreferredApp', new PromiseResolver());
+    this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!PromiseResolver}
+   * @private
+   */
+  getResolver_(methodName) {
+    const method = this.resolverMap_.get(methodName);
+    assert(!!method, `Method '${methodName}' not found.`);
+    return method;
+  }
+
+  /**
+   * @param {string} methodName
+   * @protected
+   */
+  methodCalled(methodName) {
+    this.getResolver_(methodName).resolve();
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!Promise}
+   */
+  whenCalled(methodName) {
+    return this.getResolver_(methodName).promise.then(() => {
+      // Support sequential calls to whenCalled by replacing the promise.
+      this.resolverMap_.set(methodName, new PromiseResolver());
+    });
   }
 
   /**
@@ -147,16 +185,20 @@ export class FakePageHandler {
     await this.page.$.flushForTesting();
   }
 
+  /**
+   * @return {!Promise<{apps: !Array<!appManagement.mojom.App>}>}
+   */
   async getApps() {
     return {apps: this.apps_};
   }
 
   /**
-   * @param {string} appId
-   * @return {!Promise}
+   * @param {!string} appId
+   * @return {!Promise<{messages:
+   *     !Array<!appManagement.mojom.ExtensionAppPermissionMessage>}>}
    */
   async getExtensionAppPermissionMessages(appId) {
-    return [];
+    return {messages: []};
   }
 
   /**
@@ -237,12 +279,25 @@ export class FakePageHandler {
         /** @type {!App} */ (
             Object.assign({}, app, {isPreferredApp: preferredAppValue}));
     this.page.onAppChanged(newApp);
+    this.methodCalled('setPreferredApp');
   }
 
   /**
    * @param {string} appId
    */
   openNativeSettings(appId) {}
+
+  /**
+   * @param {string} appId
+   * @return {!Promise<{ appIds: !Array<!string> }>}
+   */
+  async getOverlappingPreferredApps(appId) {
+    this.methodCalled('getOverlappingPreferredApps');
+    if (!this.overlappingAppIds) {
+      return {appIds: []};
+    }
+    return {appIds: this.overlappingAppIds};
+  }
 
   /**
    * @param {string} optId

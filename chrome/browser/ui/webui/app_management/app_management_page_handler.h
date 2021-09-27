@@ -49,6 +49,9 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void OpenNativeSettings(const std::string& app_id) override;
   void SetPreferredApp(const std::string& app_id,
                        bool is_preferred_app) override;
+  void GetOverlappingPreferredApps(
+      const std::string& app_id,
+      GetOverlappingPreferredAppsCallback callback) override;
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

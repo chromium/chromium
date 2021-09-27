@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -74,6 +75,11 @@ class PreferredAppsList {
 
   // Find preferred app id for an |url|.
   absl::optional<std::string> FindPreferredAppForUrl(const GURL& url);
+
+  // Returns a list of app IDs that are set as preferred app to an intent
+  // filter in the |intent_filters| list.
+  base::flat_set<std::string> FindPreferredAppsForFilters(
+      const std::vector<apps::mojom::IntentFilterPtr>& intent_filters);
 
   // Add a preferred app for an |intent_filter|, and returns a group of
   // |app_ids| that is no longer preferred app of their corresponding
