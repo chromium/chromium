@@ -1126,10 +1126,10 @@
   },
   {
     "name": "disable-cancel-all-touches",
-    "owners": [ "chrome-knowledge-eng@google.com" ],
+    "owners": [ "chrome-knowledge-eng@google.com", "chromeos-touch-ml@google.com" ],
     // This flag is use to disable CancelAllTouches() function, which enable the
     // testing for implementation of canceling single touches.
-    "expiry_milestone": 86
+    "expiry_milestone": 104
   },
   {
     "name": "disable-explicit-dma-fences",
