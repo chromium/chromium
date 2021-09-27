@@ -458,7 +458,8 @@ void ShareRanking::OnRankGetAllDone(std::unique_ptr<PendingRankCall> pending,
                                     std::vector<ShareHistory::Target> history) {
   pending->all_history = history;
   if (pending->history_db) {
-    pending->history_db->GetFlatShareHistory(
+    auto history_db = pending->history_db;
+    history_db->GetFlatShareHistory(
         base::BindOnce(&ShareRanking::OnRankGetRecentDone,
                        weak_factory_.GetWeakPtr(), std::move(pending)),
         kRecentWindowDays);
