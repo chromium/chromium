@@ -109,6 +109,37 @@ std::unique_ptr<HttpResponse> HandleEchoHeader(const std::string& url,
   return http_response;
 }
 
+// /echo-cookie-with-status?status=###
+// Responds with the given status code and echos the cookies sent in the request
+std::unique_ptr<HttpResponse> HandleEchoCookieWithStatus(
+    const std::string& url,
+    const HttpRequest& request) {
+  if (!ShouldHandle(request, url))
+    return nullptr;
+
+  auto http_response = std::make_unique<BasicHttpResponse>();
+
+  GURL request_url = request.GetURL();
+  RequestQuery query = ParseQuery(request_url);
+
+  int status_code = 400;
+  const auto given_status = query.find("status");
+
+  if (given_status != query.end() && !given_status->second.empty() &&
+      !base::StringToInt(given_status->second.front(), &status_code)) {
+    status_code = 400;
+  }
+
+  http_response->set_code(static_cast<HttpStatusCode>(status_code));
+
+  const auto given_cookie = request.headers.find("Cookie");
+  std::string content =
+      (given_cookie == request.headers.end()) ? "None" : given_cookie->second;
+  http_response->set_content(content);
+  http_response->set_content_type("text/plain");
+  return http_response;
+}
+
 // TODO(https://crbug.com/1138913): Remove when request handlers are
 // implementable in Android's embedded test server implementation
 std::unique_ptr<HttpResponse> HandleEchoCriticalHeader(
@@ -916,6 +947,8 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
       PREFIXED_HANDLER("/cachetime", &HandleCacheTime));
   server->RegisterDefaultHandler(
       base::BindRepeating(&HandleEchoHeader, "/echoheader", "no-cache"));
+  server->RegisterDefaultHandler(base::BindRepeating(
+      &HandleEchoCookieWithStatus, "/echo-cookie-with-status"));
   server->RegisterDefaultHandler(base::BindRepeating(
       &HandleEchoHeader, "/echoheadercache", "max-age=60000"));
   server->RegisterDefaultHandler(PREFIXED_HANDLER("/echo", &HandleEcho));
