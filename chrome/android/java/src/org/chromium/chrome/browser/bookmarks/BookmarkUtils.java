@@ -143,8 +143,7 @@ public class BookmarkUtils {
 
     private static BookmarkId addBookmarkAndShowSaveFlow(Activity activity,
             BookmarkModel bookmarkModel, Tab tab, BottomSheetController bottomSheetController) {
-        BookmarkId bookmarkId =
-                addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
+        BookmarkId bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab);
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(activity, bottomSheetController);
         bookmarkSaveFlowCoordinator.show(bookmarkId);
@@ -155,8 +154,7 @@ public class BookmarkUtils {
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
     private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel, Tab tab,
             SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
-        BookmarkId bookmarkId =
-                addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
+        BookmarkId bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab);
 
         if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
             @BrowserProfileType
@@ -235,11 +233,15 @@ public class BookmarkUtils {
     }
 
     /**
-     * An internal version of {@link #addBookmarkSilently(Context, BookmarkModel, String, String)}.
-     * Will reset last used parent if it fails to add a bookmark
+     * Adds a bookmark with the given {@link Tab}. This will reset last used parent if it fails to
+     * add a bookmark.
+     *
+     * @param context The current Android {@link Context}.
+     * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
+     * @param tab The current {@link Tab} which bookmark properties are pulled.
      */
     private static BookmarkId addBookmarkInternal(
-            Context context, BookmarkModel bookmarkModel, String title, GURL url) {
+            Context context, BookmarkModel bookmarkModel, Tab tab) {
         BookmarkId parent = getLastUsedParent(context);
         BookmarkItem parentItem = null;
         if (parent != null) {
@@ -249,9 +251,17 @@ public class BookmarkUtils {
                 || !parentItem.isFolder()) {
             parent = bookmarkModel.getDefaultFolder();
         }
-        BookmarkId bookmarkId =
-                bookmarkModel.addBookmark(parent, bookmarkModel.getChildCount(parent), title, url);
 
+        BookmarkId bookmarkId = null;
+        // The shopping list experiment saves extra metadata along with the bookmark.
+        if (ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)) {
+            bookmarkId = bookmarkModel.addPowerBookmark(tab.getWebContents(), parent,
+                    bookmarkModel.getChildCount(parent), tab.getTitle(), tab.getUrl());
+        } else {
+            bookmarkId = bookmarkModel.addBookmark(
+                    parent, bookmarkModel.getChildCount(parent), tab.getTitle(), tab.getUrl());
+        }
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
             Log.e(TAG,
