@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.OfflineLoginWithHiddenUserPods"
-    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="M95">
+    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="M105">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
