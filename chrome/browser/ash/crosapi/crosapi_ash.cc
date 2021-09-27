@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
+#include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
@@ -127,6 +128,7 @@ CrosapiAsh::CrosapiAsh()
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
+      identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -272,6 +274,11 @@ void CrosapiAsh::BindHoldingSpaceService(
           GetAshProfile());
   if (holding_space_keyed_service)
     holding_space_keyed_service->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindIdentityManager(
+    mojo::PendingReceiver<crosapi::mojom::IdentityManager> receiver) {
+  identity_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindIdleService(

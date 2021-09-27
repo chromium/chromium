@@ -32,6 +32,7 @@
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
+#include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
@@ -251,6 +252,9 @@ LacrosService::LacrosService()
       crosapi::mojom::HoldingSpaceService,
       &crosapi::mojom::Crosapi::BindHoldingSpaceService,
       Crosapi::MethodMinVersions::kBindHoldingSpaceServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::IdentityManager,
+                  &crosapi::mojom::Crosapi::BindIdentityManager,
+                  Crosapi::MethodMinVersions::kBindIdentityManagerMinVersion>();
   ConstructRemote<crosapi::mojom::IdleService,
                   &crosapi::mojom::Crosapi::BindIdleService,
                   Crosapi::MethodMinVersions::kBindIdleServiceMinVersion>();

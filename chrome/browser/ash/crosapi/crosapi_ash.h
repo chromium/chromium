@@ -34,6 +34,7 @@ class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
 class GeolocationServiceAsh;
+class IdentityManagerAsh;
 class IdleServiceAsh;
 class ImageWriterAsh;
 class KeystoreServiceAsh;
@@ -113,6 +114,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
   void BindGeolocationService(
       mojo::PendingReceiver<mojom::GeolocationService> receiver) override;
+  void BindIdentityManager(
+      mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindIdleService(
       mojo::PendingReceiver<mojom::IdleService> receiver) override;
   void BindImageWriter(
@@ -237,6 +240,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;
+  std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;

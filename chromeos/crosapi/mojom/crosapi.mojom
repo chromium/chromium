@@ -23,6 +23,7 @@ import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
+import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
@@ -76,8 +77,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 51
-// Next method id: 55
+// Next version: 52
+// Next method id: 56
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -196,6 +197,11 @@ interface Crosapi {
   // Added in M92.
   [MinVersion=27]
   BindHoldingSpaceService@32(pending_receiver<HoldingSpaceService> receiver);
+
+  // Binds the IdentityManager interface for reading identity information.
+  // Added in M96.
+  [MinVersion=51]
+  BindIdentityManager@55(pending_receiver<IdentityManager> receiver);
 
   // Binds the IdleService interface for reading idle states.
   // Added in M90.

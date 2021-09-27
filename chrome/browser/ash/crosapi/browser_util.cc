@@ -64,6 +64,7 @@
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
+#include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
@@ -357,6 +358,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::GeolocationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::HoldingSpaceService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::IdentityManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::IdleService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ImageWriter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
@@ -434,7 +436,7 @@ bool IsDataWipeRequiredInternal(base::Version data_version,
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 50,
+    crosapi::mojom::Crosapi::Version_ == 51,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

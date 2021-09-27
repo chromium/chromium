@@ -59,6 +59,8 @@ source_set("crosapi") {
     "file_manager_ash.h",
     "geolocation_service_ash.cc",
     "geolocation_service_ash.h",
+    "identity_manager_ash.cc",
+    "identity_manager_ash.h",
     "idle_service_ash.cc",
     "idle_service_ash.h",
     "image_writer_ash.cc",

@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_LACROS_IDENTITY_MANAGER_LACROS_H_
+#define CHROME_BROWSER_LACROS_IDENTITY_MANAGER_LACROS_H_
+
+#include "chromeos/crosapi/mojom/identity_manager.mojom.h"
+
+// This class can be used by lacros to access the identity manager crosapi.
+// This API can be used to access properties of the identity manager which lives
+// in ash, e.g. to access the name of an account that is not yet known by
+// lacros.
+class IdentityManagerLacros {
+ public:
+  IdentityManagerLacros();
+  IdentityManagerLacros(const IdentityManagerLacros&) = delete;
+  IdentityManagerLacros& operator=(const IdentityManagerLacros&) = delete;
+  ~IdentityManagerLacros();
+
+  static void GetAccountFullName(
+      const std::string& gaia_id,
+      crosapi::mojom::IdentityManager::GetAccountFullNameCallback callback);
+  static void GetAccountImage(
+      const std::string& gaia_id,
+      crosapi::mojom::IdentityManager::GetAccountImageCallback callback);
+};
+
+#endif  // CHROME_BROWSER_LACROS_IDENTITY_MANAGER_LACROS_H_
