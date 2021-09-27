@@ -43,6 +43,7 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
+#include "ios/web/web_state/web_state_policy_decider_test_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -537,11 +538,7 @@ TEST_F(WebStateImplTest, GlobalObserverTest) {
 // This is needed because WebStatePolicyDecider::RequestInfo doesn't support
 // operator==.
 MATCHER_P(RequestInfoMatch, expected_request_info, /* argument_name = */ "") {
-  return ui::PageTransitionTypeIncludingQualifiersIs(
-             arg.transition_type, expected_request_info.transition_type) &&
-         arg.target_frame_is_main ==
-             expected_request_info.target_frame_is_main &&
-         arg.has_user_gesture == expected_request_info.has_user_gesture;
+  return ::web::RequestInfoMatch(expected_request_info, arg);
 }
 
 // Verifies that policy deciders are correctly called by the web state.
@@ -558,7 +555,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
                                               textEncodingName:nil];
 
   // Test that ShouldAllowRequest() is called for the same parameters.
-  WebStatePolicyDecider::RequestInfo request_info_main_frame(
+  const WebStatePolicyDecider::RequestInfo request_info_main_frame(
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/true,
       /*target_frame_is_cross_origin=*/false,
@@ -588,7 +585,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
   EXPECT_FALSE(policy_decision.ShouldCancelNavigation());
 
-  WebStatePolicyDecider::RequestInfo request_info_iframe(
+  const WebStatePolicyDecider::RequestInfo request_info_iframe(
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/false,
       /*target_frame_is_cross_origin=*/false,
@@ -668,7 +665,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
                    expectedContentLength:0
                         textEncodingName:nil];
 
-  WebStatePolicyDecider::RequestInfo error_request_info_main_frame(
+  const WebStatePolicyDecider::RequestInfo error_request_info_main_frame(
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/true,
       /*target_frame_is_cross_origin=*/false,

@@ -12,12 +12,20 @@
 
 namespace web {
 
-FakeShouldAllowRequestInfo::FakeShouldAllowRequestInfo()
-    : request_info(ui::PageTransition::PAGE_TRANSITION_FIRST,
-                   /*target_frame_is_main=*/false,
-                   /*target_frame_is_cross_origin=*/false,
-                   /*has_user_gesture=*/false) {}
+FakeShouldAllowRequestInfo::FakeShouldAllowRequestInfo(
+    NSURLRequest* request,
+    const WebStatePolicyDecider::RequestInfo& request_info)
+    : request(request), request_info(request_info) {}
+
 FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
+
+FakeDecidePolicyForNavigationResponseInfo::
+    FakeDecidePolicyForNavigationResponseInfo(NSURLResponse* response,
+                                              BOOL for_main_frame)
+    : response(response), for_main_frame(for_main_frame) {}
+
+FakeDecidePolicyForNavigationResponseInfo::
+    ~FakeDecidePolicyForNavigationResponseInfo() = default;
 
 }  // namespace web
 
@@ -30,11 +38,11 @@ FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
       _decidePolicyForNavigationResponseInfo;
 }
 
-- (web::FakeShouldAllowRequestInfo*)shouldAllowRequestInfo {
+- (const web::FakeShouldAllowRequestInfo*)shouldAllowRequestInfo {
   return _shouldAllowRequestInfo.get();
 }
 
-- (web::FakeDecidePolicyForNavigationResponseInfo*)
+- (const web::FakeDecidePolicyForNavigationResponseInfo*)
     decidePolicyForNavigationResponseInfo {
   return _decidePolicyForNavigationResponseInfo.get();
 }
@@ -45,9 +53,8 @@ FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
                requestInfo:
                    (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
-  _shouldAllowRequestInfo = std::make_unique<web::FakeShouldAllowRequestInfo>();
-  _shouldAllowRequestInfo->request = request;
-  _shouldAllowRequestInfo->request_info = requestInfo;
+  _shouldAllowRequestInfo =
+      std::make_unique<web::FakeShouldAllowRequestInfo>(request, requestInfo);
   decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
@@ -56,9 +63,8 @@ FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
                           decisionHandler:
                               (PolicyDecisionHandler)decisionHandler {
   _decidePolicyForNavigationResponseInfo =
-      std::make_unique<web::FakeDecidePolicyForNavigationResponseInfo>();
-  _decidePolicyForNavigationResponseInfo->response = response;
-  _decidePolicyForNavigationResponseInfo->for_main_frame = forMainFrame;
+      std::make_unique<web::FakeDecidePolicyForNavigationResponseInfo>(
+          response, forMainFrame);
   decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 

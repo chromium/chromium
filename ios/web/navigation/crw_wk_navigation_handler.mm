@@ -436,7 +436,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin));
     isCrossOriginTargetFrame = !sourceOrigin.IsSameOriginWith(targetOrigin);
   }
-  web::WebStatePolicyDecider::RequestInfo requestInfo(
+  const web::WebStatePolicyDecider::RequestInfo requestInfo(
       transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
       userInteractedWithRequestMainFrame);
 
