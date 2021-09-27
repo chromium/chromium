@@ -506,7 +506,7 @@
   {
     "name": "back-forward-cache",
     "owners": [ "bfcache-dev@chromium.org" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 110
   },
   {
     "name": "bento-offline",
