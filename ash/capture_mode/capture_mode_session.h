@@ -387,6 +387,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // is done.
   CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
       nullptr;
+
+  // This helps indicating whether located events should be handled by the
+  // capture mode settings menu view or the capture mode Pre-EventHandler. When
+  // it's true, settings menu view should handle the event. Set it to true when
+  // the event is a press event and is located on the settings menu view. Set it
+  // to false when the event is a release event and "event_on_settings_menu_" is
+  // true.
+  bool located_press_event_on_settings_menu_ = false;
 };
 
 }  // namespace ash

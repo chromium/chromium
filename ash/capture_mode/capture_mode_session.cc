@@ -34,6 +34,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_util.h"
@@ -1258,6 +1259,11 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       !(capture_mode_settings_widget_ &&
         capture_mode_settings_widget_->GetWindowBoundsInScreen().Contains(
             screen_location))) {
+    if (capture_mode_settings_widget_ &&
+        located_press_event_on_settings_menu_) {
+      capture_mode_settings_widget_->GetNativeWindow()->delegate()->OnEvent(
+          event);
+    }
     event->SetHandled();
     event->StopPropagation();
   }
@@ -1278,6 +1284,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_TOUCH_PRESSED:
+      if (is_event_on_settings_menu)
+        located_press_event_on_settings_menu_ = true;
       old_mouse_warp_status_ = SetMouseWarpEnabled(false);
       OnLocatedEventPressed(location_in_root, is_touch,
                             is_event_on_capture_bar_or_menu);
@@ -1294,6 +1302,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       old_mouse_warp_status_.reset();
       OnLocatedEventReleased(is_event_on_capture_bar_or_menu,
                              region_intersects_capture_bar);
+      located_press_event_on_settings_menu_ = false;
       break;
     case ui::ET_MOUSE_MOVED:
       if (region_intersects_capture_bar) {
