@@ -22,6 +22,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/permissions_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webrtc/media_stream_devices_controller.h"
@@ -110,11 +111,22 @@ void UpdatePageSpecificContentSettings(
              : content_settings::PageSpecificContentSettings::CAMERA_BLOCKED);
   }
 
+  // TODO(crbug.com/698985): Use `GetLastCommittedURL` if web_contents represent
+  // NTP.
+  GURL embedding_origin;
+  if (permissions::PermissionsClient::Get()->DoOriginsMatchNewTabPage(
+          request.security_origin,
+          web_contents->GetLastCommittedURL().GetOrigin())) {
+    embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+  } else {
+    embedding_origin =
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  }
+
   content_settings->OnMediaStreamPermissionSet(
       PermissionManagerFactory::GetForProfile(profile)->GetCanonicalOrigin(
           ContentSettingsType::MEDIASTREAM_CAMERA, request.security_origin,
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents)),
+          embedding_origin),
       microphone_camera_state, selected_audio_device, selected_video_device,
       requested_audio_device, requested_video_device);
 }
