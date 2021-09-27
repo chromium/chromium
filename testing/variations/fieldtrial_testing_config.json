@@ -2578,29 +2578,6 @@
             ]
         }
     ],
-    "DataCompressionProxyPromoVisibility": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:data_saver_milestone_promo_iph_would_have_triggered;comparator:<2;window:90;storage:360",
-                        "event_used": "name:data_saver_milestone_promo;comparator:<2;window:90;storage:360",
-                        "session_rate": "==0",
-                        "x_milestone_promo_data_savings_in_megabytes": "1024;100"
-                    },
-                    "enable_features": [
-                        "IPH_DataSaverMilestonePromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DataReductionProxyFREPromo": [
         {
             "platforms": [
