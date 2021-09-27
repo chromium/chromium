@@ -15,8 +15,6 @@ namespace bluetooth_config {
 
 // Provides system Bluetooth properties, including Bluetooth availability and
 // on/off state.
-//
-// TODO(khorimoto): Also add other properties such as paired devices.
 class SystemPropertiesProvider {
  public:
   virtual ~SystemPropertiesProvider();
@@ -31,6 +29,8 @@ class SystemPropertiesProvider {
   SystemPropertiesProvider();
 
   virtual mojom::BluetoothSystemState ComputeSystemState() const = 0;
+  virtual mojom::BluetoothModificationState ComputeModificationState()
+      const = 0;
   virtual std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
   GetPairedDevices() const = 0;
 

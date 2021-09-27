@@ -11,6 +11,9 @@
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +51,12 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+
     provider_ = std::make_unique<SystemPropertiesProviderImpl>(
         &fake_adapter_state_controller_, &fake_device_cache_);
   }
@@ -68,6 +77,32 @@ class SystemPropertiesProviderImplTest : public testing::Test {
     provider_->FlushForTesting();
   }
 
+  const user_manager::User* LogIn(const std::string email) {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+
+    // Create a session in SessionManager. This will also login the user in
+    // UserManager.
+    session_manager_->CreateSession(user->GetAccountId(), user->username_hash(),
+                                    /*is_child=*/false);
+    session_manager_->SessionStarted();
+
+    // Logging in doesn't set the user in UserManager as the active user if
+    // there already is an active user, do so manually.
+    SwitchActiveUser(account_id);
+    return user;
+  }
+
+  void SwitchActiveUser(const AccountId& account_id) {
+    fake_user_manager_->SwitchActiveUser(account_id);
+    SetSessionState(session_manager::SessionState::ACTIVE);
+  }
+
+  void SetSessionState(session_manager::SessionState session_state) {
+    session_manager_->SetSessionState(session_state);
+    provider_->FlushForTesting();
+  }
+
   std::unique_ptr<FakeSystemPropertiesObserver> Observe() {
     auto observer = std::make_unique<FakeSystemPropertiesObserver>();
     provider_->Observe(observer->GeneratePendingRemote());
@@ -79,8 +114,11 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::FakeUserManager* fake_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  std::unique_ptr<SystemPropertiesProvider> provider_;
+  std::unique_ptr<SystemPropertiesProviderImpl> provider_;
 };
 
 TEST_F(SystemPropertiesProviderImplTest, SystemStateChanges) {
@@ -126,6 +164,47 @@ TEST_F(SystemPropertiesProviderImplTest, PairedDeviceChanges) {
   SetPairedDevices(paired_devices);
   ASSERT_EQ(3u, observer->received_properties_list().size());
   EXPECT_EQ(2u, observer->received_properties_list()[2]->paired_devices.size());
+}
+
+TEST_F(SystemPropertiesProviderImplTest, ModificationStateChanges) {
+  std::unique_ptr<FakeSystemPropertiesObserver> observer = Observe();
+
+  // Once Observe() is called, the observer should immediately receive one
+  // update with the current state. Bluetooth is modifiable before any user logs
+  // in.
+  ASSERT_EQ(1u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
+            observer->received_properties_list()[0]->modification_state);
+
+  // Log in as the first user. They should be able to modify Bluetooth.
+  const user_manager::User* user1 = LogIn("email1@example.com");
+  ASSERT_EQ(2u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
+            observer->received_properties_list()[1]->modification_state);
+
+  // Lock the screen. They should not be able to modify Bluetooth.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  ASSERT_EQ(3u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
+            observer->received_properties_list()[2]->modification_state);
+
+  // Log in as a second user. They should not be able to modify Bluetooth.
+  LogIn("email2@example.com");
+  ASSERT_EQ(4u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
+            observer->received_properties_list()[3]->modification_state);
+
+  // Lock the screen. They should not be able to modify Bluetooth.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  ASSERT_EQ(5u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
+            observer->received_properties_list()[4]->modification_state);
+
+  // Switch to the first user again. They should be able to modify Bluetooth.
+  SwitchActiveUser(user1->GetAccountId());
+  ASSERT_EQ(6u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
+            observer->received_properties_list()[5]->modification_state);
 }
 
 TEST_F(SystemPropertiesProviderImplTest, DisconnectToStopObserving) {

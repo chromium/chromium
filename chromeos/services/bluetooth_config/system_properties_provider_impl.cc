@@ -4,6 +4,9 @@
 
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
 
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -14,11 +17,18 @@ SystemPropertiesProviderImpl::SystemPropertiesProviderImpl(
       device_cache_(device_cache) {
   adapter_state_controller_observation_.Observe(adapter_state_controller_);
   device_cache_observation_.Observe(device_cache_);
+  session_manager::SessionManager::Get()->AddObserver(this);
 }
 
-SystemPropertiesProviderImpl::~SystemPropertiesProviderImpl() = default;
+SystemPropertiesProviderImpl::~SystemPropertiesProviderImpl() {
+  session_manager::SessionManager::Get()->RemoveObserver(this);
+}
 
 void SystemPropertiesProviderImpl::OnAdapterStateChanged() {
+  NotifyPropertiesChanged();
+}
+
+void SystemPropertiesProviderImpl::OnSessionStateChanged() {
   NotifyPropertiesChanged();
 }
 
@@ -34,6 +44,27 @@ mojom::BluetoothSystemState SystemPropertiesProviderImpl::ComputeSystemState()
 std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
 SystemPropertiesProviderImpl::GetPairedDevices() const {
   return device_cache_->GetPairedDevices();
+}
+
+mojom::BluetoothModificationState
+SystemPropertiesProviderImpl::ComputeModificationState() const {
+  // Bluetooth power setting is always mutable in login screen before any
+  // user logs in. The changes will affect local state preferences.
+  //
+  // Otherwise, the bluetooth setting should be mutable only if:
+  // * the active user is the primary user, and
+  // * the session is not in lock screen
+  // The changes will affect the primary user's preferences.
+  if (!session_manager::SessionManager::Get()->IsSessionStarted())
+    return mojom::BluetoothModificationState::kCanModifyBluetooth;
+
+  if (session_manager::SessionManager::Get()->IsScreenLocked())
+    return mojom::BluetoothModificationState::kCannotModifyBluetooth;
+
+  return user_manager::UserManager::Get()->GetPrimaryUser() ==
+                 user_manager::UserManager::Get()->GetActiveUser()
+             ? mojom::BluetoothModificationState::kCanModifyBluetooth
+             : mojom::BluetoothModificationState::kCannotModifyBluetooth;
 }
 
 }  // namespace bluetooth_config

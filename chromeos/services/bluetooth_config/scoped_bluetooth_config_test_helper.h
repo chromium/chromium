@@ -7,6 +7,8 @@
 
 #include "chromeos/services/bluetooth_config/initializer.h"
 
+#include "components/session_manager/core/session_manager.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -37,6 +39,10 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
     return fake_discovery_session_manager_;
   }
 
+  const session_manager::SessionManager& session_manager() {
+    return session_manager_;
+  }
+
  private:
   // Initializer:
   std::unique_ptr<AdapterStateController> CreateAdapterStateController(
@@ -56,6 +62,7 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
   FakeDeviceCache* fake_device_cache_;
   FakeDiscoverySessionManager* fake_discovery_session_manager_;
   FakeDeviceOperationHandler* fake_device_operation_handler_;
+  session_manager::SessionManager session_manager_;
 };
 
 }  // namespace bluetooth_config

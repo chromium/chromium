@@ -54,6 +54,8 @@ export class FakeBluetoothConfig {
     this.systemProperties_ = {
       systemState:
           chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled,
+      modificationState: chromeos.bluetoothConfig.mojom
+                             .BluetoothModificationState.kCannotModifyBluetooth,
       pairedDevices: [],
     };
 
@@ -229,6 +231,20 @@ export class FakeBluetoothConfig {
               bluetoothSystemState.kEnabled :
               bluetoothSystemState.kDisabled);
     }
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothModificationState}
+   *     modificationState
+   */
+  setModificationState(modificationState) {
+    this.systemProperties_.modificationState = modificationState;
+    this.systemProperties_ =
+        /**
+         * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
+    this.notifyObserversPropertiesUpdated_();
   }
 
   /**

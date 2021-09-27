@@ -9,6 +9,8 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // #import {flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
@@ -87,6 +89,11 @@ suite('OsSettingsPageTests', function() {
         loadTimeData.overrideValues({
           enableBluetoothRevamp: true,
         });
+
+        // Using the real CrosBluetoothConfig will crash due to no
+        // SessionManager.
+        setBluetoothConfigForTesting(new FakeBluetoothConfig());
+
         init();
         const settingsBluetoothPage =
             settingsPage.$$('settings-bluetooth-page');

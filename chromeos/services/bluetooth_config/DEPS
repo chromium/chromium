@@ -1,5 +1,7 @@
 include_rules = [
   "+components/device_event_log",
+  "+components/user_manager",
+  "+components/session_manager/core",
   "+device/bluetooth",
   "+mojo/public",
 ]

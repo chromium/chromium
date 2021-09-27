@@ -44,6 +44,8 @@ static_library("bluetooth_config") {
     "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
     "//components/device_event_log",
+    "//components/session_manager/core",
+    "//components/user_manager",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]
@@ -100,6 +102,7 @@ static_library("test_support") {
     ":in_process_bluetooth_config",
     "//base",
     "//chromeos/services/bluetooth_config/public/mojom",
+    "//components/session_manager/core",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]
@@ -124,6 +127,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/session_manager/core",
+    "//components/user_manager:test_support",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

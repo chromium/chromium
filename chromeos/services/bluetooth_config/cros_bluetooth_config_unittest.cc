@@ -11,6 +11,7 @@
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
+#include "components/session_manager/core/session_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,6 +49,7 @@ class CrosBluetoothConfigTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<CrosBluetoothConfig> cros_bluetooth_config_;
