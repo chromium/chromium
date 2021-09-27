@@ -334,6 +334,13 @@ TEST_F(ManifestParserTest, IdParseRules) {
     ASSERT_EQ(0u, GetErrorCount());
     EXPECT_EQ("", manifest->id);
   }
+  // url with fragment
+  {
+    auto& manifest = ParseManifest(
+        "{ \"start_url\": \"/start?query=a\", \"id\": \"/#abc\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("", manifest->id);
+  }
   // Smoke test.
   {
     auto& manifest =

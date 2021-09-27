@@ -409,6 +409,7 @@ String ManifestParser::ParseId(const JSONObject* object,
         ManifestUmaUtil::ParseIdResultType::kDefaultToStartUrl);
     id = start_url;
   }
+  id.RemoveFragmentIdentifier();
   // TODO(https://crbug.com/1231765): rename the field to relative_id to reflect
   // the actual value.
   return id.GetString().Substring(id.PathStart() + 1);
