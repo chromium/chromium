@@ -43,8 +43,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Tracks whether a permission was granted, rejected, etc. The suffix of the
-    histogram indicates which particular permission.
+    Tracks user interactions on permission prompts, aggregated across all UI
+    dispositions, including quiet permission prompts due to CPSS or Crowd Deny.
+
+    One sample is recorded each time a permission request triggers a prompt,
+    even if the prompt UI is never seen by the user. This histogram does not
+    include permission requests that are granted/denied because the user had
+    previously made a decision; nor requests that are denied by Permission
+    Policy, per-site permission embargo, or are cancelled while queued.
+
+    The suffix of the histogram indicates which particular permission.
   </summary>
 </histogram>
 
