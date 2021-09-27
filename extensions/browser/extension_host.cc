@@ -80,6 +80,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
 
   ExtensionWebContentsObserver::GetForWebContents(host_contents())->
       dispatcher()->set_delegate(this);
+  ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
 }
 
 ExtensionHost::~ExtensionHost() {
@@ -418,7 +419,8 @@ void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {
 }
 
 void ExtensionHost::NotifyRenderProcessReady() {
-  ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
+  ExtensionHostRegistry::Get(browser_context_)
+      ->ExtensionHostRenderProcessReady(this);
 }
 
 void ExtensionHost::RenderFrameDeleted(content::RenderFrameHost* frame_host) {
