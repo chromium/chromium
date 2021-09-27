@@ -43,22 +43,22 @@ class DevicePolicyCrosTestHelper;
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// A mixin that allows to force-install an extension/app via the device policy.
+// A mixin that allows to force-install an extension/app via user or device
+// policy.
 //
 // Encapsulates the following operations:
 // * generating a CRX file,
 // * generating an update manifest,
 // * hosting the update manifest and the CRX via an embedded test server,
-// * configuring the force installation in the device policy.
+// * configuring the force installation in the user/device policy.
 //
-// Example usage (for force-installing into the sign-in profile using the device
-// policy):
+// Example usage (for force-installing using the user-level policy):
 //
 //   class MyTestFixture : ... {
 //    protected:
 //     void SetUpOnMainThread() override {
 //       ...
-//       force_install_mixin_.InitWithDevicePolicyCrosTestHelper(...);
+//       force_install_mixin_.InitWithMockPolicyProvider(...);
 //     }
 //     ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
 //   };
@@ -72,7 +72,7 @@ class DevicePolicyCrosTestHelper;
 // * "/<extension_id>-<version>.crx" - CRX packages referred to by the update
 //   manifests.
 //
-// TODO(crbug.com/1090941): Add user policy, auto update.
+// TODO(crbug.com/1090941): Add auto update.
 class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
  public:
   // The type of the waiting mode for the force installation operation.
