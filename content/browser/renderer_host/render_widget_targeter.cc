@@ -13,7 +13,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
-#include "content/browser/renderer_host/input/one_shot_timeout_monitor.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -316,13 +315,13 @@ void RenderWidgetTargeter::QueryClient(
   async_depth_++;
 
   TracingUmaTracker tracker("Event.AsyncTargeting.ResponseTime");
-  async_hit_test_timeout_ = std::make_unique<OneShotTimeoutMonitor>(
+  async_hit_test_timeout_.Start(
+      FROM_HERE, async_hit_test_timeout_delay_,
       base::BindOnce(
           &RenderWidgetTargeter::AsyncHitTestTimedOut,
           weak_ptr_factory_.GetWeakPtr(), target->GetWeakPtr(), target_location,
           last_request_target ? last_request_target->GetWeakPtr() : nullptr,
-          last_target_location),
-      async_hit_test_timeout_delay_);
+          last_target_location));
 
   target_client.set_disconnect_handler(base::BindOnce(
       &RenderWidgetTargeter::OnInputTargetDisconnect,
@@ -386,7 +385,7 @@ void RenderWidgetTargeter::FoundFrameSinkId(
   TargetingRequest request = std::move(request_in_flight_.value());
 
   request_in_flight_.reset();
-  async_hit_test_timeout_.reset(nullptr);
+  async_hit_test_timeout_.Stop();
   target->host()->input_target_client().set_disconnect_handler(
       base::OnceClosure());
 
@@ -499,10 +498,10 @@ void RenderWidgetTargeter::AsyncHitTestTimedOut(
 void RenderWidgetTargeter::OnInputTargetDisconnect(
     base::WeakPtr<RenderWidgetHostViewBase> target,
     const gfx::PointF& location) {
-  if (!async_hit_test_timeout_)
+  if (!async_hit_test_timeout_.IsRunning())
     return;
 
-  async_hit_test_timeout_.reset(nullptr);
+  async_hit_test_timeout_.Stop();
   TargetingRequest request = std::move(request_in_flight_.value());
   request_in_flight_.reset();
 

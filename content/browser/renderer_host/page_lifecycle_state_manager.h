@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/input/one_shot_timeout_monitor.h"
+#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -125,7 +125,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // This is the per-page state that is sent to renderer most lately.
   blink::mojom::PageLifecycleStatePtr last_state_sent_to_renderer_;
 
-  std::unique_ptr<OneShotTimeoutMonitor> back_forward_cache_timeout_monitor_;
+  base::OneShotTimer back_forward_cache_timeout_monitor_;
 
   TestDelegate* test_delegate_{nullptr};
   // NOTE: This must be the last member.

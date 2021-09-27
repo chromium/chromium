@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
@@ -27,7 +28,6 @@ class PointF;
 namespace content {
 
 class RenderWidgetHostViewBase;
-class OneShotTimeoutMonitor;
 
 // TODO(sunxd): Make |RenderWidgetTargetResult| a class. Merge the booleans into
 // a mask to reduce the size. Make the constructor take in enums for better
@@ -254,7 +254,7 @@ class RenderWidgetTargeter {
   // process before giving up and resuming event processing.
   base::TimeDelta async_hit_test_timeout_delay_;
 
-  std::unique_ptr<OneShotTimeoutMonitor> async_hit_test_timeout_;
+  base::OneShotTimer async_hit_test_timeout_;
 
   uint64_t trace_id_;
 

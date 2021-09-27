@@ -1456,8 +1456,6 @@ source_set("browser") {
     "renderer_host/input/mouse_wheel_event_queue.h",
     "renderer_host/input/mouse_wheel_phase_handler.cc",
     "renderer_host/input/mouse_wheel_phase_handler.h",
-    "renderer_host/input/one_shot_timeout_monitor.cc",
-    "renderer_host/input/one_shot_timeout_monitor.h",
     "renderer_host/input/passthrough_touch_event_queue.cc",
     "renderer_host/input/passthrough_touch_event_queue.h",
     "renderer_host/input/render_widget_host_latency_tracker.cc",

@@ -82,12 +82,10 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     // When a page is put into BackForwardCache, the page can run a busy loop.
     // Set a timeout monitor to check that the transition finishes within the
     // time limit.
-    back_forward_cache_timeout_monitor_ =
-        std::make_unique<OneShotTimeoutMonitor>(
-            base::BindOnce(
-                &PageLifecycleStateManager::OnBackForwardCacheTimeout,
-                weak_ptr_factory_.GetWeakPtr()),
-            kBackForwardCacheTimeoutInSeconds);
+    back_forward_cache_timeout_monitor_.Start(
+        FROM_HERE, kBackForwardCacheTimeoutInSeconds,
+        base::BindOnce(&PageLifecycleStateManager::OnBackForwardCacheTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kDispatchedPersisted;
   } else {
     DCHECK(page_restore_params);
@@ -241,7 +239,7 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
   render_view_host_impl_->EnforceBackForwardCacheSizeLimit();
 
   if (last_acknowledged_state_->is_in_back_forward_cache) {
-    back_forward_cache_timeout_monitor_.reset(nullptr);
+    back_forward_cache_timeout_monitor_.Stop();
   }
 
   if (test_delegate_) {
@@ -255,7 +253,7 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
 void PageLifecycleStateManager::OnBackForwardCacheTimeout() {
   DCHECK(!last_acknowledged_state_->is_in_back_forward_cache);
   render_view_host_impl_->OnBackForwardCacheTimeout();
-  back_forward_cache_timeout_monitor_.reset(nullptr);
+  back_forward_cache_timeout_monitor_.Stop();
 }
 
 void PageLifecycleStateManager::SetDelegateForTesting(
