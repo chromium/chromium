@@ -165,7 +165,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kPaintOpBufferMakeFromMemoryFailure = 32,
     kPaintRecordForbidden = 33,
     kReadImageFailure = 34,
-    kSharedImageOpenFailure = 35,
+    kSharedImageOpenFailure = 35,  // Obsolete
     kSkColorFilterUnflattenFailure = 36,
     kSkColorSpaceDeserializeFailure = 37,
     kSkDrawLooperUnflattenFailure = 38,
@@ -179,8 +179,11 @@ class CC_PAINT_EXPORT PaintOpReader {
     kZeroMailbox = 46,
     kZeroRegionBytes = 47,
     kZeroSkPathBytes = 48,
+    kSharedImageProviderUnknownMailbox = 49,
+    kSharedImageProviderNoAccess = 50,
+    kSharedImageProviderSkImageCreationFailed = 51,
 
-    kMaxValue = kZeroSkPathBytes,
+    kMaxValue = kSharedImageProviderSkImageCreationFailed,
   };
 
   template <typename T>

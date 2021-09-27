@@ -63730,7 +63730,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="32" label="PaintOpBuffer MakeFromMemory failure"/>
   <int value="33" label="PaintRecord forbidden"/>
   <int value="34" label="ReadImage failure"/>
-  <int value="35" label="SharedImage open failure"/>
+  <int value="35" label="SharedImage open failure (obsolete)"/>
   <int value="36" label="SkColorFilter unflatten failure"/>
   <int value="37" label="SkColorSpace deserialize failure"/>
   <int value="38" label="SkDrawLooper unflatten failure"/>
@@ -63744,6 +63744,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="46" label="Zero mailbox"/>
   <int value="47" label="Zero region bytes"/>
   <int value="48" label="Zero SkPath bytes"/>
+  <int value="49" label="SharedImageProvider unknown mailbox"/>
+  <int value="50" label="SharedImageProvider no access"/>
+  <int value="51" label="SharedImageProvider SkImage creation failed"/>
 </enum>
 
 <enum name="PaletteModeCancelType">

@@ -399,12 +399,29 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       return;
     }
 
+    SharedImageProvider::Error error;
     sk_sp<SkImage> sk_image =
-        options_.shared_image_provider->OpenSharedImageForRead(mailbox);
-    if (!sk_image) {
+        options_.shared_image_provider->OpenSharedImageForRead(mailbox, error);
+    if (error != SharedImageProvider::Error::kNoError) {
+      switch (error) {
+        case SharedImageProvider::Error::kNoAccess:
+          SetInvalid(DeserializationError::kSharedImageProviderNoAccess);
+          break;
+        case SharedImageProvider::Error::kSkImageCreationFailed:
+          SetInvalid(
+              DeserializationError::kSharedImageProviderSkImageCreationFailed);
+          break;
+        case SharedImageProvider::Error::kUnknownMailbox:
+          SetInvalid(DeserializationError::kSharedImageProviderUnknownMailbox);
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
       SetInvalid(DeserializationError::kSharedImageOpenFailure);
       return;
     }
+    DCHECK(sk_image);
 
     *image = PaintImageBuilder::WithDefault()
                  .set_id(PaintImage::GetNextId())

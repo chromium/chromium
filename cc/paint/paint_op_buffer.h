@@ -58,9 +58,16 @@ class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
 
 class CC_PAINT_EXPORT SharedImageProvider {
  public:
+  enum class Error {
+    kNoError,
+    kUnknownMailbox,
+    kNoAccess,
+    kSkImageCreationFailed,
+  };
+
   virtual ~SharedImageProvider() = default;
-  virtual sk_sp<SkImage> OpenSharedImageForRead(
-      const gpu::Mailbox& mailbox) = 0;
+  virtual sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox,
+                                                Error& error) = 0;
 };
 
 // See PaintOp::Serialize/Deserialize for comments.  Derived Serialize types

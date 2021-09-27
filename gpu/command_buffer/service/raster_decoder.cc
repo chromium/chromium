@@ -244,10 +244,13 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
 
   ~SharedImageProviderImpl() override { read_accessors_.clear(); }
 
-  sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox) override {
+  sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox,
+                                        Error& error) override {
     auto it = read_accessors_.find(mailbox);
-    if (it != read_accessors_.end())
+    error = Error::kNoError;
+    if (it != read_accessors_.end()) {
       return it->second.read_access_sk_image;
+    }
 
     auto shared_image_skia =
         shared_image_factory_->ProduceSkia(mailbox, shared_context_state_);
@@ -257,6 +260,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
                               ("Attempting to operate on unknown mailbox:" +
                                mailbox.ToDebugString())
                                   .c_str());
+      error = Error::kUnknownMailbox;
       return nullptr;
     }
 
@@ -271,6 +275,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
                               ("Couldn't access shared image for mailbox:" +
                                mailbox.ToDebugString())
                                   .c_str());
+      error = Error::kNoAccess;
       return nullptr;
     }
 
@@ -287,6 +292,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
       ERRORSTATE_SET_GL_ERROR(error_state_, GL_INVALID_OPERATION,
                               "SharedImageProviderImpl::OpenSharedImageForRead",
                               "Couldn't create output SkImage.");
+      error = Error::kSkImageCreationFailed;
       return nullptr;
     }
 
