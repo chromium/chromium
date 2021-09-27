@@ -92,6 +92,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetPermissionsPolicyHeader(
       blink::ParsedPermissionsPolicy permissions_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
+  void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void SetResponseBody(
@@ -363,6 +365,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
+  scoped_refptr<net::HttpResponseHeaders> redirect_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   blink::ParsedPermissionsPolicy permissions_policy_header_;
   mojo::ScopedDataPipeConsumerHandle response_body_;

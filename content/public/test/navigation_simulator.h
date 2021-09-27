@@ -281,6 +281,12 @@ class NavigationSimulator {
   // specified before calling |ReadyToCommit| or |Commit|.
   virtual void SetContentsMimeType(const std::string& contents_mime_type) = 0;
 
+  // Provides the response headers that should be received during the next
+  // |Redirect| call. These headers will only be applied to the next
+  // |Redirect| call, and will be reset afterwards.
+  virtual void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) = 0;
+
   // Provides the response headers received during |ReadyToCommit| specified
   // before calling |ReadyToCommit| or |Commit|.
   // Note that the mime type should be specified separately with

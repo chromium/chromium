@@ -307,6 +307,18 @@ ContentBrowserClient::GetAdditionalSiteIsolationModes() {
   return std::vector<std::string>();
 }
 
+bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  // For short-term testing, use kDirectSockets to enable isolated application
+  // level. DirectSocket WPT and browser tests require application isolation
+  // level.
+  //
+  // TODO(crbug.com/1206150): Figure out a better way to enable isolated
+  // application level in tests.
+  return base::FeatureList::IsEnabled(features::kDirectSockets);
+}
+
 size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {
   return 0u;
 }

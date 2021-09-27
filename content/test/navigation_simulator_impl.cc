@@ -491,6 +491,11 @@ void NavigationSimulatorImpl::Redirect(const GURL& new_url) {
   response->connection_info = http_connection_info_;
   response->ssl_info = ssl_info_;
 
+  if (redirect_headers_) {
+    response->headers = redirect_headers_;
+    redirect_headers_ = nullptr;
+  }
+
   url_loader->CallOnRequestRedirected(redirect_info, std::move(response));
 
   MaybeWaitForThrottleChecksComplete(base::BindOnce(
@@ -546,6 +551,9 @@ void NavigationSimulatorImpl::ReadyToCommit() {
         return;
     }
   }
+
+  CHECK_EQ(nullptr, redirect_headers_)
+      << "Redirect headers were set but never used in a Redirect call";
 
   if (!response_headers_) {
     response_headers_ =
@@ -982,6 +990,13 @@ void NavigationSimulatorImpl::SetContentsMimeType(
   CHECK_LE(state_, STARTED) << "The contents mime type cannot be set after the "
                                "navigation has committed or failed";
   contents_mime_type_ = contents_mime_type;
+}
+
+void NavigationSimulatorImpl::SetRedirectHeaders(
+    scoped_refptr<net::HttpResponseHeaders> redirect_headers) {
+  CHECK_LE(state_, STARTED) << "The redirect headers cannot be set after the "
+                               "navigation has committed or failed";
+  redirect_headers_ = redirect_headers;
 }
 
 void NavigationSimulatorImpl::SetResponseHeaders(

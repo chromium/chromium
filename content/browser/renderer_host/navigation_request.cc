@@ -5704,6 +5704,12 @@ bool NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL() {
          common_params_->history_url_for_data_url.is_valid();
 }
 
+url::Origin NavigationRequest::GetTentativeOriginAtRequestTime() {
+  DCHECK_LT(state_, WILL_PROCESS_RESPONSE);
+  return GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+      commit_params_->frame_policy.sandbox_flags);
+}
+
 url::Origin NavigationRequest::GetOriginToCommit() {
   return GetOriginForURLLoaderFactoryWithFinalFrameHost();
 }
@@ -6997,14 +7003,11 @@ WebExposedIsolationInfo NavigationRequest::ComputeWebExposedIsolationInfo() {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 
-  url::Origin origin = url::Origin::Create(common_params().url);
+  const GURL& url = common_params().url;
+  url::Origin origin = url::Origin::Create(url);
 
-  // For short-term testing, we'll treat COI as "good enough" to treat as
-  // an isolated application iff the kDirectSockets feature is also
-  // enabled.
-  //
-  // TODO(mkwst): Build a better distinction: https://crbug.com/1206150.
-  return base::FeatureList::IsEnabled(features::kDirectSockets)
+  return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
+             GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);
 }

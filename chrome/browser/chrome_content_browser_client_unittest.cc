@@ -821,4 +821,27 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, FeatureEnabled) {
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
 }
+
+TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationLevel_App) {
+  web_app::WebApp app(kAppId);
+  app.SetScope(GURL(kScope));
+  app.SetStorageIsolated(true);
+  web_app::RecordOrRemoveAppIsolationState(profile_.GetPrefs(), app);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  bool isolated =
+      test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+          &profile_, GURL(kScope));
+
+  EXPECT_TRUE(isolated);
+}
+
+TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationLevel_NonApp) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  bool isolated =
+      test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+          &profile_, GURL(kScope));
+
+  EXPECT_FALSE(isolated);
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

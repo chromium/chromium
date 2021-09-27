@@ -2008,6 +2008,27 @@ void ChromeContentBrowserClient::PersistIsolatedOrigin(
                                                              source);
 }
 
+bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // For short-term testing, also use kDirectSockets to enable isolated
+  // application level. DirectSocket WPT and browser tests require application
+  // isolation level.
+  //
+  // TODO(crbug.com/1206150): Figure out a better way to enable isolated
+  // application level in tests.
+  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  bool is_isolated_storage_enabled = base::FeatureList::IsEnabled(
+      blink::features::kWebAppEnableIsolatedStorage);
+  return base::FeatureList::IsEnabled(features::kDirectSockets) ||
+         (is_isolated_storage_enabled &&
+          web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url)));
+#else
+  return false;
+#endif
+}
+
 bool ChromeContentBrowserClient::IsFileAccessAllowed(
     const base::FilePath& path,
     const base::FilePath& absolute_path,

@@ -609,6 +609,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& origin,
       ChildProcessSecurityPolicy::IsolatedOriginSource source) {}
 
+  // Returns true if the given URL needs be loaded with the "isolated
+  // application" isolation level. COOP/COEP headers must also be properly set
+  // in order to enable the application isolation level.
+  virtual bool ShouldUrlUseApplicationIsolationLevel(
+      BrowserContext* browser_context,
+      const GURL& url);
+
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
   // existing processes will be reused whenever possible, see

@@ -739,6 +739,16 @@ class CONTENT_EXPORT NavigationRequest
   // send history URL to the renderer for loadDataWithBaseUrl navigations.
   bool IsLoadDataWithBaseURLAndHasUnreachableURL();
 
+  // Calculates the origin that this NavigationRequest may commit.
+  //
+  // GetTentativeOriginAtRequestTime must be called before the final HTTP
+  // response is received (unlike GetOriginToCommit), but the returned origin
+  // may differ from the final origin committed by this navigation (e.g. the
+  // origin may change because of subsequent redirects, or because of CSP
+  // headers in the final response). Prefer to use GetOriginToCommit if
+  // possible.
+  url::Origin GetTentativeOriginAtRequestTime();
+
   // Will calculate the origin that this NavigationRequest will commit. (This
   // should be reasonably accurate, but some browser-vs-renderer inconsistencies
   // might still exist - they are currently tracked in
