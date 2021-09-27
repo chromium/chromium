@@ -279,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
 }
 
 // https://crbug.com/1250386
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    defined(OS_LINUX) && defined(USE_OZONE)
 #define MAYBE_OriginNameTest DISABLED_OriginNameTest
 #else
 #define MAYBE_OriginNameTest OriginNameTest
