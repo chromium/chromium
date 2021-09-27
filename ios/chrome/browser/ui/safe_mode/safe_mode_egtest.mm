@@ -66,7 +66,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeSendingCrashReport {
   // Mocks the +hasReportToUpload method by swizzling to return positively that
   // there are crash reports to upload.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler hasReport(@"SafeModeViewController",
                                         @"hasReportToUpload", ^{
                                           return YES;
@@ -87,7 +86,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeDetectedThirdPartyMods {
   // Mocks the +detectedThirdPartyMods method by swizzling to return positively
   // that device appears to be jailbroken and contains third party mods.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler thirdParty(@"SafeModeViewController",
                                          @"detectedThirdPartyMods", ^{
                                            return YES;
@@ -114,7 +112,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeBothThirdPartyModsAndHasReport {
   // Mocks the +detectedThirdPartyMods method by swizzling to return positively
   // that device appears to be jailbroken and contains third party mods.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler thirdParty(@"SafeModeViewController",
                                          @"detectedThirdPartyMods", ^{
                                            return YES;
