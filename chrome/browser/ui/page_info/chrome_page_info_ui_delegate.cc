@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
@@ -94,13 +93,12 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
   return std::u16string();
 }
 
-absl::optional<page_info::proto::SiteInfo>
-ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
+std::u16string ChromePageInfoUiDelegate::GetAboutThisSiteDescription() {
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
-    return service->GetAboutThisSiteInfo(site_url_);
+    return service->GetAboutThisSiteDescription(site_url_);
   }
-  return absl::nullopt;
+  return std::u16string();
 }
 
 bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
