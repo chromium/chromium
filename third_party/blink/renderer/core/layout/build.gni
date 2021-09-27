@@ -783,6 +783,7 @@ blink_core_tests_layout = [
   "geometry/writing_mode_converter_test.cc",
   "grid_test.cc",
   "hit_testing_test.cc",
+  "layout_block_flow_test.cc",
   "layout_block_test.cc",
   "layout_box_model_object_test.cc",
   "layout_box_test.cc",
