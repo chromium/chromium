@@ -3071,10 +3071,10 @@ extern const char kUserDataSnapshotName[];
 extern const char kUserDataSnapshotDescription[];
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
 extern const char kWebShareName[];
 extern const char kWebShareDescription[];
-#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#endif  // defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
 
 // Feature flags --------------------------------------------------------------
 

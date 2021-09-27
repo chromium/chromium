@@ -1060,7 +1060,7 @@ const base::Feature kWebRtcRemoteEventLogGzipped{
     "WebRtcRemoteEventLogGzipped", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 // Enables Web Share (navigator.share)
 const base::Feature kWebShare{"WebShare", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
