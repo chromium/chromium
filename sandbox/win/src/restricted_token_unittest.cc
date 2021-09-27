@@ -856,4 +856,22 @@ TEST(RestrictedTokenTest, LowBoxToken) {
                                         &object_handle));
 }
 
+// Checks the functionality of CanLowIntegrityAccessDesktop
+TEST(RestrictedTokenTest, MediumIlDesktop) {
+  ASSERT_TRUE(CanLowIntegrityAccessDesktop());
+
+  // Create a desktop using the default security descriptor (the last parameter)
+  // which doesn't allow low IL to access it in practice.
+  HDESK hdesk = ::CreateDesktopW(L"medium_il_desktop", nullptr, nullptr, 0,
+                                 GENERIC_ALL, nullptr);
+  ASSERT_TRUE(hdesk);
+
+  HDESK old_hdesk = ::GetThreadDesktop(::GetCurrentThreadId());
+  ASSERT_TRUE(hdesk);
+  ASSERT_TRUE(::SetThreadDesktop(hdesk));
+  ASSERT_FALSE(CanLowIntegrityAccessDesktop());
+  ASSERT_TRUE(::SetThreadDesktop(old_hdesk));
+  ASSERT_TRUE(::CloseDesktop(hdesk));
+}
+
 }  // namespace sandbox

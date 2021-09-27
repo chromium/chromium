@@ -1173,6 +1173,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.ProcessIntegrityResult" enum="ProcessIntegrityResult"
+    expires_after="2021-12-12">
+  <owner>zmo@chromium.org</owner>
+  <owner>ssmole@microsoft.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Summarize the configurations for the integrity level of GPU process, logged
+    by the Browser process before launching GPU process, used for configuring
+    the GPU sandbox.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ProcessLifetimeEvents.DisplayCompositor"
     enum="GPUProcessLifetimeEvent" expires_after="M85">
   <owner>vmiura@chromium.org</owner>
