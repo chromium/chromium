@@ -101,18 +101,16 @@ def SetupWindowsCrossCompileToolchain(target_arch):
   return target_env
 
 
-def CopyConfigsAndCleanup(config_dir, dest_dir):
+def CopyConfigs(src_dir, dest_dir):
   if not os.path.exists(dest_dir):
     os.makedirs(dest_dir)
 
-  shutil.copy(os.path.join(config_dir, 'config.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'config.h'), dest_dir)
 
   # The .asm file will not be present for all configurations.
-  asm_file = os.path.join(config_dir, 'config.asm')
+  asm_file = os.path.join(src_dir, 'config.asm')
   if os.path.exists(asm_file):
     shutil.copy(asm_file, dest_dir)
-
-  shutil.rmtree(config_dir)
 
 
 def GenerateConfig(config_dir, env, special_args=[]):
@@ -146,7 +144,9 @@ def GenerateConfig(config_dir, env, special_args=[]):
         [(r'(%define STACK_ALIGNMENT \d{1,2})',
           r'; \1 -- Stack alignment is controlled by Chromium')])
 
-  CopyConfigsAndCleanup(temp_dir, config_dir)
+  CopyConfigs(temp_dir, config_dir)
+
+  shutil.rmtree(temp_dir)
 
 
 def GenerateWindowsArm64Config(src_dir):
