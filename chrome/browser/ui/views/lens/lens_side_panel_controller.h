@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -19,7 +20,8 @@ class SidePanel;
 namespace lens {
 
 // Controller for the Lens side panel.
-class LensSidePanelController : public content::WebContentsObserver {
+class LensSidePanelController : public content::WebContentsObserver,
+                                public content::WebContentsDelegate {
  public:
   LensSidePanelController(SidePanel* side_panel, BrowserView* browser_view);
   LensSidePanelController(const LensSidePanelController&) = delete;
@@ -34,6 +36,10 @@ class LensSidePanelController : public content::WebContentsObserver {
 
   // Launches the Lens URL in a new tab and closes the side panel.
   void LoadResultsInNewTab();
+
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
  private:
   // content::WebContentsObserver:
