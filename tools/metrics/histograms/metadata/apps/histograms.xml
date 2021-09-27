@@ -1835,9 +1835,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
     enum="FileHandlerRegistrationLinuxRecreateShortcutResult"
-    expires_after="M95">
-  <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+    expires_after="M100">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the result of re-creating shortcut during file handler registration
     process for PWA on Linux
@@ -1845,20 +1845,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="M95">
-  <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M100">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
-    Records the result of file handler registration for PWA on Linux
+    Records the result of MIME info database update when enabling an app's use
+    of the PWA File Handling API
   </summary>
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Win.Result"
-    enum="FileHandlerRegistrationWinResult" expires_after="M95">
-  <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+    enum="FileHandlerRegistrationWinResult" expires_after="M100">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the result of file handler registration for PWA on Windows
+  </summary>
+</histogram>
+
+<histogram name="Apps.FileHandler.Unregistration.Linux.Result"
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M100">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of MIME info database update when disabling an app's use
+    of the PWA File Handling API
   </summary>
 </histogram>
 

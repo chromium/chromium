@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1851,6 +1852,16 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
+
+#if defined(OS_LINUX)
+  // Make sure that blocking the permission also unregisters the MIME type on
+  // Linux.
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
+      [](base::FilePath filename, std::string file_contents) {
+        EXPECT_TRUE(file_contents.empty());
+        return true;
+      }));
+#endif
 
   // Block the permission, update manifest, permission should still be block.
   map->SetContentSettingDefaultScope(origin, origin,

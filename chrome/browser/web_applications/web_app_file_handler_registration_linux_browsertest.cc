@@ -72,8 +72,9 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
 
 // Verify that the MIME type registration callback is called and that
 // the caller behaves as expected.
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
-                       RegisterMimeTypesOnLinuxCallbackCalledSuccessfully) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppFileHandlerRegistrationLinuxBrowserTest,
+    UpdateMimeInfoDatabaseOnLinuxCallbackCalledSuccessfully) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
       "/banners/"
@@ -91,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
           file_handlers);
   bool path_reached = false;
   base::RunLoop run_loop;
-  RegisterMimeTypesOnLinuxCallback callback = base::BindLambdaForTesting(
+  UpdateMimeInfoDatabaseOnLinuxCallback callback = base::BindLambdaForTesting(
       [&expected_file_contents, &path_reached, &run_loop](
           base::FilePath filename, std::string file_contents) {
         EXPECT_EQ(file_contents, expected_file_contents);
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
         run_loop.Quit();
         return true;
       });
-  SetRegisterMimeTypesOnLinuxCallbackForTesting(std::move(callback));
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
 
   // Override the source as default apps don't get file handlers registered.
   ExternalInstallOptions install_options = CreateInstallOptions(url);

@@ -42,7 +42,7 @@ apps::FileHandler GetTestFileHandler(const std::string& action,
 }  // namespace
 
 TEST_F(WebAppFileHandlerRegistrationLinuxTest,
-       RegisterMimeTypesLocalVariablesAreCorrect) {
+       UpdateMimeInfoDatabaseLocalVariablesAreCorrect) {
   Profile* test_profile = profile();
   const AppId& app_id("app-id");
 
@@ -60,16 +60,15 @@ TEST_F(WebAppFileHandlerRegistrationLinuxTest,
       shell_integration_linux::GetMimeTypesRegistrationFileContents(
           file_handlers);
 
-  RegisterMimeTypesOnLinuxCallback callback = base::BindLambdaForTesting(
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
       [expected_filename, expected_file_contents](base::FilePath filename,
                                                   std::string file_contents) {
         EXPECT_EQ(filename, expected_filename);
         EXPECT_EQ(file_contents, expected_file_contents);
         return true;
-      });
+      }));
 
-  RegisterMimeTypesOnLinux(app_id, test_profile, file_handlers,
-                           std::move(callback));
+  InstallMimeInfoOnLinux(app_id, test_profile, file_handlers);
 }
 
 }  // namespace web_app
