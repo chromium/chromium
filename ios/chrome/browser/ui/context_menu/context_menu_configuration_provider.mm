@@ -328,6 +328,8 @@ const CGFloat kFaviconWidthHeight = 24;
       menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
           stringByAppendingString:kContextMenuEllipsis];
     }
+  } else if (!isLink) {
+    menuTitle = GetContextMenuTitle(params);
   }
 
   UIContextMenuActionProvider actionProvider =
