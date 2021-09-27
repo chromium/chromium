@@ -254,10 +254,6 @@ void ServiceWorkerMetrics::RecordStartWorkerTime(base::TimeDelta time,
   }
 }
 
-void ServiceWorkerMetrics::RecordWorkerStopped(StopStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.WorkerStopped", status);
-}
-
 void ServiceWorkerMetrics::RecordStopWorkerTime(base::TimeDelta time) {
   UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.StopWorker.Time", time);
 }

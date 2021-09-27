@@ -34,15 +34,6 @@ class ServiceWorkerMetrics {
   };
 
   // Used for UMA. Append-only.
-  enum class StopStatus {
-    NORMAL,
-    DETACH_BY_REGISTRY,
-    TIMEOUT,
-    // Add new types here.
-    kMaxValue = TIMEOUT,
-  };
-
-  // Used for UMA. Append-only.
   // This class is used to indicate which event is fired/finished. Most events
   // have only one request that starts the event and one response that finishes
   // the event, but the fetch event has two responses, so there are two types of
@@ -172,9 +163,6 @@ class ServiceWorkerMetrics {
                                     bool is_installed,
                                     StartSituation start_situation,
                                     EventType purpose);
-
-  // Records the result of trying to stop a worker.
-  static void RecordWorkerStopped(StopStatus status);
 
   // Records the time taken to successfully stop a worker.
   static void RecordStopWorkerTime(base::TimeDelta time);

@@ -1256,10 +1256,6 @@ void ServiceWorkerVersion::OnStopping() {
 }
 
 void ServiceWorkerVersion::OnStopped(EmbeddedWorkerStatus old_status) {
-  if (IsInstalled(status())) {
-    ServiceWorkerMetrics::RecordWorkerStopped(
-        ServiceWorkerMetrics::StopStatus::NORMAL);
-  }
   if (!stop_time_.is_null())
     ServiceWorkerMetrics::RecordStopWorkerTime(GetTickDuration(stop_time_));
 
@@ -1267,10 +1263,6 @@ void ServiceWorkerVersion::OnStopped(EmbeddedWorkerStatus old_status) {
 }
 
 void ServiceWorkerVersion::OnDetached(EmbeddedWorkerStatus old_status) {
-  if (IsInstalled(status())) {
-    ServiceWorkerMetrics::RecordWorkerStopped(
-        ServiceWorkerMetrics::StopStatus::DETACH_BY_REGISTRY);
-  }
   OnStoppedInternal(old_status);
 }
 
@@ -2002,10 +1994,6 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
   // Stopping the worker hasn't finished within a certain period.
   if (GetTickDuration(stop_time_) > kStopWorkerTimeout) {
     DCHECK_EQ(EmbeddedWorkerStatus::STOPPING, running_status());
-    if (IsInstalled(status())) {
-      ServiceWorkerMetrics::RecordWorkerStopped(
-          ServiceWorkerMetrics::StopStatus::TIMEOUT);
-    }
     ReportError(blink::ServiceWorkerStatusCode::kErrorTimeout,
                 "DETACH_STALLED_IN_STOPPING");
 
