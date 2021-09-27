@@ -4771,8 +4771,6 @@ crbug.com/936165 media/autoplay-muted.html [ Pass Skip Timeout ]
 # Sheriff 2019-02-28
 crbug.com/936827 external/wpt/fullscreen/api/element-request-fullscreen-and-remove-manual.html [ Failure Pass ]
 
-crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass ]
-
 # Paint Timing failures
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-gradient.html [ Failure ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure ]
@@ -6722,16 +6720,11 @@ crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Crash Failure Pass ]
 # Also reported as failing via crbug.com/1233766:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-timing.https.html [ Crash Failure Pass ]
-crbug.com/1233826 [ Mac ] external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Pass ]
-# Previously reported as failing on all platforms via crbug.com/626703:
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Failure Pass ]
 # Previously reported as failing via crbug.com/1233766 on Mac11.0:
 # Previously reported as failing via crbug.com/626703 on Mac10.15:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Crash Failure Pass ]
 # Also reported as failing via crbug.com/1233766:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Crash Failure Pass ]
-# Also reported as failing via crbug.com/1233766:
-crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Failure Pass ]
 crbug.com/1250666 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Pass Timeout ]
 crbug.com/1250666 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
 # Previously reported as failing via crbug.com/626703:
@@ -6952,5 +6945,13 @@ crbug.com/1164568 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/repo
 crbug.com/1164568 [ Mac10.13 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
 
 # Sheriff 2021-09-27
-crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass ]
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass ]
+# Revisit once crbug.com/1123886 is addressed.
+# Likely has the same root cause for crashes.
+crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Skip ]
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Skip ]
+crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Skip ]
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Skip ]
+crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Skip ]
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Skip ]
+crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
+crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
