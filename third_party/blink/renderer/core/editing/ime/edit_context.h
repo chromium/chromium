@@ -21,6 +21,7 @@ enum class EditContextInputPanelPolicy { kAuto, kManual };
 class DOMRect;
 class EditContext;
 class EditContextInit;
+class Element;
 class ExceptionState;
 class InputMethodController;
 
@@ -48,17 +49,6 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(compositionend, kCompositionend)
 
   // Public APIs for an EditContext (called from JS).
-
-  // When focus is called on an EditContext, it sets the active EditContext in
-  // the document so it can use the text input state to send info about the
-  // EditContext to text input clients in the browser process which will also
-  // set focus of the text input clients on the corresponding context document.
-  void focus();
-
-  // This API sets the active EditContext to null in the document that results
-  // in a focus change event to the text input clients in the browser process
-  // which will also remove focus from the corresponding context document.
-  void blur();
 
   // This API should be called when the selection has changed.
   // It takes as parameters a start and end character offsets, which are based
@@ -89,6 +79,9 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
                   uint32_t end,
                   const String& new_text,
                   ExceptionState& exception_state);
+
+  // Get elements that are associated with this EditContext.
+  const HeapVector<Member<Element>>& attachedElements();
 
   // Returns the text of the EditContext.
   String text() const;
@@ -131,6 +124,8 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // Auto raises the VK automatically, Manual suppresses it.
   void setInputPanelPolicy(const String& input_policy);
 
+  // Internal APIs (called from Blink).
+
   // EventTarget overrides
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
@@ -159,6 +154,17 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   WebRange CompositionRange() override;
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
+
+  // When focus is called on an EditContext, it sets the active EditContext in
+  // the document so it can use the text input state to send info about the
+  // EditContext to text input clients in the browser process which will also
+  // set focus of the text input clients on the corresponding context document.
+  void Focus();
+
+  // This API sets the active EditContext to null in the document that results
+  // in a focus change event to the text input clients in the browser process
+  // which will also remove focus from the corresponding context document.
+  void Blur();
 
   // Populate |control_bounds| and |selection_bounds| with the bounds fetched
   // from the active EditContext.
@@ -194,6 +200,9 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+
+  void AttachElement(Element* element_to_attach);
+  void DetachElement(Element* element_to_detach);
 
  private:
   // Returns the enter key action attribute set in the EditContext.
@@ -262,6 +271,8 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // It is reset once the composition ends.
   uint32_t composition_range_start_ = 0;
   uint32_t composition_range_end_ = 0;
+  // Elements that are associated with this EditContext.
+  HeapVector<Member<Element>> attached_elements_;
 };
 
 }  // namespace blink

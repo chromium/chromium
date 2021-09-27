@@ -58,12 +58,84 @@ test(function() {
 
   const new_div = document.createElement("DIV");
   assert_equals(new_div.editContext, null);
+  document.body.appendChild(new_div);
+
+  new_div.editContext = editContext;
+  assert_equals(new_div.editContext, editContext);
+  new_div.editContext = null;
+  assert_equals(new_div.editContext, null);
+  document.body.removeChild(new_div);
+}, 'Testing Element.editContext');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+
+  const disconnected_div = document.createElement("DIV");
+  assert_equals(disconnected_div.editContext, null);
+
+  disconnected_div.editContext = editContext;
+  assert_equals(disconnected_div.editContext, null);
+  assert_equals(editContext.attachedElements().length, 0);
+}, 'EditContext can only be associated with an element that is in an active document.');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+
+  const div = document.createElement("DIV");
+  assert_equals(div.editContext, null);
+
+  document.body.appendChild(div);
+  div.editContext = editContext;
+  assert_equals(div.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div);
+
+  document.body.removeChild(div);
+  assert_equals(div.editContext, null);
+  assert_equals(editContext.attachedElements().length, 0);
+}, 'If an element is removed from tree, it will disconnect its associated EditContext.');
+
+test(function() {
+  const editContext = new EditContext();
+
+  const div_parent = document.createElement("DIV");
+  const div_child = document.createElement("DIV");
+  document.body.appendChild(div_parent);
+  div_parent.appendChild(div_child);
+
+  div_child.editContext = editContext;
+  assert_equals(div_child.editContext, editContext);
+  assert_equals(div_parent.editContext, null);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div_child);
+
+  document.body.removeChild(div_parent);
+  assert_equals(div_child.editContext, null);
+  assert_equals(editContext.attachedElements().length, 0);
+}, 'If an element\'s ancestor is removed from tree, the element will disconnect its associated EditContext.');
+
+test(function() {
+  const editContext = new EditContext();
+
+  const test = document.getElementById("test");
+  const test2 = document.getElementById("test2");
 
   test.editContext = editContext;
+  test2.editContext = editContext;
+
   assert_equals(test.editContext, editContext);
+  assert_equals(test2.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 2);
+  assert_equals(editContext.attachedElements()[0], test);
+  assert_equals(editContext.attachedElements()[1], test2);
+
   test.editContext = null;
-  assert_equals(test.editContext, null);
-}, 'Testing Element.editContext');
+
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], test2);
+}, '.attachedElements() should return associated elements');
 
 test(function() {
   const editContext = new EditContext();

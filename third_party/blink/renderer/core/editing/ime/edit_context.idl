@@ -15,6 +15,7 @@
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
     void updateBounds(DOMRect controlBounds, DOMRect selectionBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
+    sequence<Element> attachedElements();
 
     attribute DOMString text;
     [RaisesException=Setter] attribute unsigned long selectionStart;

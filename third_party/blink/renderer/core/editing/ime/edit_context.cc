@@ -176,7 +176,7 @@ void EditContext::DispatchTextFormatEvent(
   }
 }
 
-void EditContext::focus() {
+void EditContext::Focus() {
   EditContext* current_active_edit_context =
       GetInputMethodController().GetActiveEditContext();
   if (current_active_edit_context && current_active_edit_context != this) {
@@ -188,7 +188,7 @@ void EditContext::focus() {
   GetInputMethodController().SetActiveEditContext(this);
 }
 
-void EditContext::blur() {
+void EditContext::Blur() {
   if (GetInputMethodController().GetActiveEditContext() != this)
     return;
   // Clean up the state of the |this| EditContext.
@@ -290,6 +290,10 @@ String EditContext::inputPanelPolicy() const {
   if (input_panel_policy_ == EditContextInputPanelPolicy::kAuto)
     return "auto";
   return "manual";
+}
+
+const HeapVector<Member<Element>>& EditContext::attachedElements() {
+  return attached_elements_;
 }
 
 void EditContext::setInputPanelPolicy(const String& input_policy) {
@@ -615,6 +619,26 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
                           selection_start_, selection_end_);
 }
 
+void EditContext::AttachElement(Element* element_to_attach) {
+  if (std::any_of(attached_elements_.begin(), attached_elements_.end(),
+                  [element_to_attach](const auto& element) {
+                    return element.Get() == element_to_attach;
+                  }))
+    return;
+
+  attached_elements_.push_back(element_to_attach);
+}
+
+void EditContext::DetachElement(Element* element_to_detach) {
+  auto* it = std::find_if(attached_elements_.begin(), attached_elements_.end(),
+                          [element_to_detach](const auto& element) {
+                            return element.Get() == element_to_detach;
+                          });
+
+  if (it != attached_elements_.end())
+    attached_elements_.erase(it);
+}
+
 WebTextInputType EditContext::TextInputType() {
   switch (input_mode_) {
     case WebTextInputMode::kWebTextInputModeText:
@@ -697,6 +721,7 @@ void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+  visitor->Trace(attached_elements_);
 }
 
 }  // namespace blink

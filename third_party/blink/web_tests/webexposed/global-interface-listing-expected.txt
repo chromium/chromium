@@ -2151,6 +2151,7 @@ interface EditContext : EventTarget
     getter selectionEnd
     getter selectionStart
     getter text
+    method attachedElements
     method constructor
     method updateBounds
     method updateSelection

@@ -2685,6 +2685,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   if (HasRareData()) {
     ElementRareData* data = GetElementRareData();
 
+    if (data->GetEditContext()) {
+      data->GetEditContext()->DetachElement(this);
+      data->SetEditContext(nullptr);
+    }
+
     data->ClearRestyleFlags();
 
     if (ElementAnimations* element_animations = data->GetElementAnimations())
@@ -3529,15 +3534,24 @@ EditContext* Element::editContext() const {
 }
 
 void Element::setEditContext(EditContext* edit_context) {
+  if (!InActiveDocument())
+    return;
+
   // If an element is in focus when being attached to a new EditContext,
   // its old EditContext, if it has any, will get blurred,
   // and the new EditContext will automatically get focused.
   if (edit_context && IsFocusedElementInDocument()) {
     if (auto* old_edit_context = editContext())
-      old_edit_context->blur();
+      old_edit_context->Blur();
 
-    edit_context->focus();
+    edit_context->Focus();
   }
+
+  if (auto* old_edit_context = editContext())
+    old_edit_context->DetachElement(this);
+
+  if (edit_context)
+    edit_context->AttachElement(this);
 
   EnsureElementRareData().SetEditContext(edit_context);
 

@@ -1317,11 +1317,11 @@ bool FocusController::SetFocusedElement(Element* element,
     // is deactivated. If getting focus, the EditContext is activated.
     if (old_focused_element) {
       if (auto* old_editContext = old_focused_element->editContext())
-        old_editContext->blur();
+        old_editContext->Blur();
     }
     if (element) {
       if (auto* editContext = element->editContext())
-        editContext->focus();
+        editContext->Focus();
     }
   }
 
