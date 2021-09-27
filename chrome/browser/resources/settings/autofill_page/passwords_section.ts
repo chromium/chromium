@@ -195,13 +195,13 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
       },
 
       /**
-       * Whether the edit dialog and removal notification should show
+       * If true, the edit dialog and removal notification show
        * information about which location(s) a password is stored.
        */
-      shouldShowStorageDetails_: {
+      isAccountStoreUser_: {
         type: Boolean,
         value: false,
-        computed: 'computeShouldShowStorageDetails_(' +
+        computed: 'computeIsAccountStoreUser_(' +
             'eligibleForAccountStorage_, isOptedInForAccountStorage_)',
       },
 
@@ -283,7 +283,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   private numberOfDevicePasswords_: number;
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
-  private shouldShowStorageDetails_: boolean;
+  private isAccountStoreUser_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private shouldOfferTrustedVaultOptIn_: boolean;
   private hasLeakedCredentials_: boolean;
@@ -446,7 +446,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
         this.hasNeverCheckedPasswords_ && !this.hasLeakedCredentials_;
   }
 
-  private computeShouldShowStorageDetails_(): boolean {
+  private computeIsAccountStoreUser_(): boolean {
     return this.eligibleForAccountStorage_ && this.isOptedInForAccountStorage_;
   }
 

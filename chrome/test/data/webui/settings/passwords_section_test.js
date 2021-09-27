@@ -1192,7 +1192,7 @@ suite('PasswordsSection', function() {
     assertTrue(accountPasswordDialog.$.storageDetails.hidden);
 
     // Display the message.
-    accountPasswordDialog.shouldShowStorageDetails = true;
+    accountPasswordDialog.isAccountStoreUser = true;
     flush();
     assertFalse(accountPasswordDialog.$.storageDetails.hidden);
     assertEquals(
@@ -1212,7 +1212,7 @@ suite('PasswordsSection', function() {
     assertTrue(devicePasswordDialog.$.storageDetails.hidden);
 
     // Display the message.
-    devicePasswordDialog.shouldShowStorageDetails = true;
+    devicePasswordDialog.isAccountStoreUser = true;
     flush();
     assertFalse(devicePasswordDialog.$.storageDetails.hidden);
     assertEquals(
@@ -1233,7 +1233,7 @@ suite('PasswordsSection', function() {
         assertTrue(accountAndDevicePasswordDialog.$.storageDetails.hidden);
 
         // Display the message.
-        accountAndDevicePasswordDialog.shouldShowStorageDetails = true;
+        accountAndDevicePasswordDialog.isAccountStoreUser = true;
         flush();
         assertFalse(accountAndDevicePasswordDialog.$.storageDetails.hidden);
         assertEquals(

@@ -78,10 +78,10 @@ export class PasswordsListHandlerElement extends
       },
 
       /**
-       * Whether the edit dialog and removal notification should show
+       * If true, the edit dialog and removal notification show
        * information about which location(s) a password is stored.
        */
-      shouldShowStorageDetails: {
+      isAccountStoreUser: {
         type: Boolean,
         value: false,
       },
@@ -148,7 +148,7 @@ export class PasswordsListHandlerElement extends
   }
 
   savedPasswords: Array<MultiStorePasswordUiEntry>;
-  shouldShowStorageDetails: boolean;
+  isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
 
   // <if expr="chromeos">
@@ -329,7 +329,7 @@ export class PasswordsListHandlerElement extends
       removedFromAccount: boolean, removedFromDevice: boolean) {
     assert(removedFromAccount || removedFromDevice);
     this.removalNotification_ = this.i18n('passwordDeleted');
-    if (this.shouldShowStorageDetails) {
+    if (this.isAccountStoreUser) {
       if (removedFromAccount && removedFromDevice) {
         this.removalNotification_ =
             this.i18n('passwordDeletedFromAccountAndDevice');

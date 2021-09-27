@@ -51,7 +51,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     return {
       entry: Object,
 
-      shouldShowStorageDetails: {type: Boolean, value: false},
+      isAccountStoreUser: {type: Boolean, value: false},
 
       /**
        * Saved passwords after deduplicating versions that are repeated in the
@@ -110,7 +110,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     };
   }
 
-  shouldShowStorageDetails: boolean;
+  isAccountStoreUser: boolean;
   entry: MultiStorePasswordUiEntry;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
   private usernamesForSameOrigin_: Set<string>|null;
