@@ -21,10 +21,13 @@ class GtkPrimarySelectionDeviceManager
   using DataSource = GtkPrimarySelectionSource;
   using DataDevice = GtkPrimarySelectionDevice;
 
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] =
+      "gtk_primary_selection_device_manager";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   GtkPrimarySelectionDeviceManager(

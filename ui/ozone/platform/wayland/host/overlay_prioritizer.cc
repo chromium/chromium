@@ -16,16 +16,16 @@ constexpr uint32_t kMaxOverlayPrioritizerVersion = 1;
 }
 
 // static
-void OverlayPrioritizer::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("overlay_prioritizer",
-                                          &OverlayPrioritizer::Instantiate);
-}
+constexpr char OverlayPrioritizer::kInterfaceName[];
 
 // static
 void OverlayPrioritizer::Instantiate(WaylandConnection* connection,
                                      wl_registry* registry,
                                      uint32_t name,
+                                     const std::string& interface,
                                      uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->overlay_prioritizer_)
     return;
 

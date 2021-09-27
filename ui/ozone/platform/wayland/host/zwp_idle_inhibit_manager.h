@@ -16,10 +16,12 @@ class WaylandConnection;
 class ZwpIdleInhibitManager
     : public wl::GlobalObjectRegistrar<ZwpIdleInhibitManager> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zwp_idle_inhibit_manager_v1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   explicit ZwpIdleInhibitManager(zwp_idle_inhibit_manager_v1* manager,

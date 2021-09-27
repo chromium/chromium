@@ -20,18 +20,17 @@ constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
 }  // namespace
 
 // static
-void ZwpPrimarySelectionDeviceManager::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "zwp_primary_selection_device_manager_v1",
-      &ZwpPrimarySelectionDeviceManager::Instantiate);
-}
+constexpr char ZwpPrimarySelectionDeviceManager::kInterfaceName[];
 
 // static
 void ZwpPrimarySelectionDeviceManager::Instantiate(
     WaylandConnection* connection,
     wl_registry* registry,
     uint32_t name,
+    const std::string& interface,
     uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->zwp_primary_selection_device_manager_)
     return;
 

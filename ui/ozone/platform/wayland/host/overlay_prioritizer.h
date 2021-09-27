@@ -16,10 +16,12 @@ class WaylandConnection;
 class OverlayPrioritizer
     : public wl::GlobalObjectRegistrar<OverlayPrioritizer> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "overlay_prioritizer";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   explicit OverlayPrioritizer(overlay_prioritizer* prioritizer,

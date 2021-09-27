@@ -20,10 +20,12 @@ class XDGOutput;
 // that are available to the application.
 class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "wl_output";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   class Delegate {

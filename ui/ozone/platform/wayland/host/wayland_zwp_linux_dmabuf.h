@@ -30,10 +30,12 @@ class WaylandConnection;
 class WaylandZwpLinuxDmabuf
     : public wl::GlobalObjectRegistrar<WaylandZwpLinuxDmabuf> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zwp_linux_dmabuf_v1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   WaylandZwpLinuxDmabuf(zwp_linux_dmabuf_v1* zwp_linux_dmabuf,

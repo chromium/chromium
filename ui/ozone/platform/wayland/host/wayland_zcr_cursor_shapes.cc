@@ -22,16 +22,16 @@ constexpr uint32_t kMaxCursorShapesVersion = 1;
 using mojom::CursorType;
 
 // static
-void WaylandZcrCursorShapes::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("zcr_cursor_shapes_v1",
-                                          &WaylandZcrCursorShapes::Instantiate);
-}
+constexpr char WaylandZcrCursorShapes::kInterfaceName[];
 
 // static
 void WaylandZcrCursorShapes::Instantiate(WaylandConnection* connection,
                                          wl_registry* registry,
                                          uint32_t name,
+                                         const std::string& interface,
                                          uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->zcr_cursor_shapes_)
     return;
 

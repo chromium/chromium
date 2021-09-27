@@ -15,15 +15,16 @@ constexpr uint32_t kShmFormat = WL_SHM_FORMAT_ARGB8888;
 }  // namespace
 
 // static
-void WaylandShm::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("wl_shm", &WaylandShm::Instantiate);
-}
+constexpr char WaylandShm::kInterfaceName[];
 
 // static
 void WaylandShm::Instantiate(WaylandConnection* connection,
                              wl_registry* registry,
                              uint32_t name,
+                             const std::string& interface,
                              uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->shm_)
     return;
 

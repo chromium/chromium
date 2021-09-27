@@ -18,16 +18,16 @@ constexpr uint32_t kMaxLinuxDmabufVersion = 3;
 }
 
 // static
-void WaylandZwpLinuxDmabuf::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("zwp_linux_dmabuf_v1",
-                                          &WaylandZwpLinuxDmabuf::Instantiate);
-}
+constexpr char WaylandZwpLinuxDmabuf::kInterfaceName[];
 
 // static
 void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
                                         wl_registry* registry,
                                         uint32_t name,
+                                        const std::string& interface,
                                         uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->zwp_dmabuf())
     return;
 

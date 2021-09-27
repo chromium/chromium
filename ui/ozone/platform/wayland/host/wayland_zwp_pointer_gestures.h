@@ -22,10 +22,12 @@ class WaylandConnection;
 class WaylandZwpPointerGestures
     : public wl::GlobalObjectRegistrar<WaylandZwpPointerGestures> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zwp_pointer_gestures_v1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   class Delegate;

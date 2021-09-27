@@ -29,10 +29,12 @@ class WaylandConnection;
 // |wl_buffer|s backed by dmabuf prime file descriptors.
 class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "wl_drm";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   WaylandDrm(wl_drm* drm, WaylandConnection* connection);

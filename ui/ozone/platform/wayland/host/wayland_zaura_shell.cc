@@ -22,16 +22,16 @@ constexpr uint32_t kMaxAuraShellVersion = 24;
 }
 
 // static
-void WaylandZAuraShell::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("zaura_shell",
-                                          &WaylandZAuraShell::Instantiate);
-}
+constexpr char WaylandZAuraShell::kInterfaceName[];
 
 // static
 void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
                                     wl_registry* registry,
                                     uint32_t name,
+                                    const std::string& interface,
                                     uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->zaura_shell_)
     return;
 

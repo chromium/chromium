@@ -16,16 +16,16 @@ constexpr uint32_t kMaxZwpIdleInhibitManagerVersion = 1;
 }
 
 // static
-void ZwpIdleInhibitManager::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("zwp_idle_inhibit_manager_v1",
-                                          &ZwpIdleInhibitManager::Instantiate);
-}
+constexpr char ZwpIdleInhibitManager::kInterfaceName[];
 
 // static
 void ZwpIdleInhibitManager::Instantiate(WaylandConnection* connection,
                                         wl_registry* registry,
                                         uint32_t name,
+                                        const std::string& interface,
                                         uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->zwp_idle_inhibit_manager_)
     return;
 

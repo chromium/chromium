@@ -16,10 +16,12 @@ class WaylandSurface;
 class WaylandZwpPointerConstraints
     : public wl::GlobalObjectRegistrar<WaylandZwpPointerConstraints> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zwp_pointer_constraints_v1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   WaylandZwpPointerConstraints(zwp_pointer_constraints_v1* pointer_constraints,

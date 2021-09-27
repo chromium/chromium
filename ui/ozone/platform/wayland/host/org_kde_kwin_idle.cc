@@ -48,16 +48,16 @@ class OrgKdeKwinIdle::Timeout {
 };
 
 // static
-void OrgKdeKwinIdle::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("org_kde_kwin_idle",
-                                          &OrgKdeKwinIdle::Instantiate);
-}
+constexpr char OrgKdeKwinIdle::kInterfaceName[];
 
 // static
 void OrgKdeKwinIdle::Instantiate(WaylandConnection* connection,
                                  wl_registry* registry,
                                  uint32_t name,
+                                 const std::string& interface,
                                  uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->org_kde_kwin_idle_)
     return;
 

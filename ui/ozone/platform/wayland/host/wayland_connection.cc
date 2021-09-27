@@ -157,23 +157,40 @@ bool WaylandConnection::Initialize() {
 
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
-  GtkPrimarySelectionDeviceManager::Register(this);
-  GtkShell1::Register(this);
-  OrgKdeKwinIdle::Register(this);
-  OverlayPrioritizer::Register(this);
-  WaylandDataDeviceManager::Register(this);
-  WaylandDrm::Register(this);
-  WaylandOutput::Register(this);
-  WaylandShm::Register(this);
-  WaylandZAuraShell::Register(this);
-  WaylandZcrCursorShapes::Register(this);
-  WaylandZwpLinuxDmabuf::Register(this);
-  WaylandZwpPointerConstraints::Register(this);
-  WaylandZwpPointerGestures::Register(this);
-  WaylandZwpRelativePointerManager::Register(this);
-  XdgForeignWrapper::Register(this);
-  ZwpIdleInhibitManager::Register(this);
-  ZwpPrimarySelectionDeviceManager::Register(this);
+  RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,
+                              &GtkPrimarySelectionDeviceManager::Instantiate);
+  RegisterGlobalObjectFactory(GtkShell1::kInterfaceName,
+                              &GtkShell1::Instantiate);
+  RegisterGlobalObjectFactory(OrgKdeKwinIdle::kInterfaceName,
+                              &OrgKdeKwinIdle::Instantiate);
+  RegisterGlobalObjectFactory(OverlayPrioritizer::kInterfaceName,
+                              &OverlayPrioritizer::Instantiate);
+  RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
+                              &WaylandDataDeviceManager::Instantiate);
+  RegisterGlobalObjectFactory(WaylandDrm::kInterfaceName,
+                              &WaylandDrm::Instantiate);
+  RegisterGlobalObjectFactory(WaylandOutput::kInterfaceName,
+                              &WaylandOutput::Instantiate);
+  RegisterGlobalObjectFactory(WaylandShm::kInterfaceName,
+                              &WaylandShm::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZAuraShell::kInterfaceName,
+                              &WaylandZAuraShell::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
+                              &WaylandZcrCursorShapes::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
+                              &WaylandZwpLinuxDmabuf::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
+                              &WaylandZwpPointerConstraints::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZwpPointerGestures::kInterfaceName,
+                              &WaylandZwpPointerGestures::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZwpRelativePointerManager::kInterfaceName,
+                              &WaylandZwpRelativePointerManager::Instantiate);
+  RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceName,
+                              &XdgForeignWrapper::Instantiate);
+  RegisterGlobalObjectFactory(ZwpIdleInhibitManager::kInterfaceName,
+                              &ZwpIdleInhibitManager::Instantiate);
+  RegisterGlobalObjectFactory(ZwpPrimarySelectionDeviceManager::kInterfaceName,
+                              &ZwpPrimarySelectionDeviceManager::Instantiate);
 
   static constexpr wl_registry_listener registry_listener = {
       &Global,
@@ -446,7 +463,7 @@ void WaylandConnection::Global(void* data,
 
   auto factory_it = connection->global_object_factories_.find(interface);
   if (factory_it != connection->global_object_factories_.end()) {
-    (*factory_it->second)(connection, registry, name, version);
+    (*factory_it->second)(connection, registry, name, interface, version);
   } else if (!connection->compositor_ &&
              strcmp(interface, "wl_compositor") == 0) {
     connection->compositor_ = wl::Bind<wl_compositor>(

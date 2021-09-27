@@ -19,10 +19,12 @@ class WaylandConnection;
 // org_kde_kwin_idle interface.
 class OrgKdeKwinIdle : public wl::GlobalObjectRegistrar<OrgKdeKwinIdle> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "org_kde_kwin_idle";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   OrgKdeKwinIdle(org_kde_kwin_idle* idle, WaylandConnection* connection);

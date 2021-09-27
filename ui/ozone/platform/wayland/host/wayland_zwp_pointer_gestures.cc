@@ -23,16 +23,16 @@ constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
 }
 
 // static
-void WaylandZwpPointerGestures::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "zwp_pointer_gestures_v1", &WaylandZwpPointerGestures::Instantiate);
-}
+constexpr char WaylandZwpPointerGestures::kInterfaceName[];
 
 // static
 void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
                                             wl_registry* registry,
                                             uint32_t name,
+                                            const std::string& interface,
                                             uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->wayland_zwp_pointer_gestures_ ||
       version < kMinZwpPointerGesturesVersion)
     return;

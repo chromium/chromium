@@ -18,18 +18,17 @@ constexpr uint32_t kMinZwpRelativePointerManagerVersion = 1;
 }
 
 // static
-void WaylandZwpRelativePointerManager::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "zwp_relative_pointer_manager_v1",
-      &WaylandZwpRelativePointerManager::Instantiate);
-}
+constexpr char WaylandZwpRelativePointerManager::kInterfaceName[];
 
 // static
 void WaylandZwpRelativePointerManager::Instantiate(
     WaylandConnection* connection,
     wl_registry* registry,
     uint32_t name,
+    const std::string& interface,
     uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->wayland_zwp_relative_pointer_manager_ ||
       version < kMinZwpRelativePointerManagerVersion)
     return;

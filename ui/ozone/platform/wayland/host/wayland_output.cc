@@ -20,16 +20,16 @@ constexpr uint32_t kMinWlOutputVersion = 2;
 }
 
 // static
-void WaylandOutput::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("wl_output",
-                                          &WaylandOutput::Instantiate);
-}
+constexpr char WaylandOutput::kInterfaceName[];
 
 // static
 void WaylandOutput::Instantiate(WaylandConnection* connection,
                                 wl_registry* registry,
                                 uint32_t name,
+                                const std::string& interface,
                                 uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (version < kMinWlOutputVersion) {
     LOG(ERROR)
         << "Unable to bind to the unsupported wl_output object with version= "

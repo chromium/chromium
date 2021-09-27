@@ -14,16 +14,16 @@
 namespace ui {
 
 // static
-void XdgForeignWrapper::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("zxdg_exporter_v1",
-                                          &XdgForeignWrapper::Instantiate);
-}
+constexpr char XdgForeignWrapper::kInterfaceName[];
 
 // static
 void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
                                     wl_registry* registry,
                                     uint32_t name,
+                                    const std::string& interface,
                                     uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->xdg_foreign_)
     return;
 

@@ -15,10 +15,12 @@ class WaylandConnection;
 // Wraps the zaura_shell object.
 class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zaura_shell";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   WaylandZAuraShell(zaura_shell* aura_shell, WaylandConnection* connection);

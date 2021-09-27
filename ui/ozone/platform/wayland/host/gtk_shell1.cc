@@ -22,16 +22,16 @@ constexpr uint32_t kMaxGtkShell1Version = 4;
 }  // namespace
 
 // static
-void GtkShell1::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory("gtk_shell1",
-                                          &GtkShell1::Instantiate);
-}
+constexpr char GtkShell1::kInterfaceName[];
 
 // static
 void GtkShell1::Instantiate(WaylandConnection* connection,
                             wl_registry* registry,
                             uint32_t name,
+                            const std::string& interface,
                             uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->gtk_shell1_ || version < kMinGtkShell1Version)
     return;
 

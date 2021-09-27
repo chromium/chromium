@@ -20,18 +20,17 @@ constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
 }
 
 // static
-void GtkPrimarySelectionDeviceManager::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "gtk_primary_selection_device_manager",
-      &GtkPrimarySelectionDeviceManager::Instantiate);
-}
+constexpr char GtkPrimarySelectionDeviceManager::kInterfaceName[];
 
 // static
 void GtkPrimarySelectionDeviceManager::Instantiate(
     WaylandConnection* connection,
     wl_registry* registry,
     uint32_t name,
+    const std::string& interface,
     uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->gtk_primary_selection_device_manager())
     return;
 

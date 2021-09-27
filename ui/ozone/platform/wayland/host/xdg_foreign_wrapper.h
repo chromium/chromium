@@ -24,10 +24,12 @@ class WaylandConnection;
 class XdgForeignWrapper : public wl::GlobalObjectRegistrar<XdgForeignWrapper>,
                           public WaylandWindowObserver {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "zxdg_exporter_v1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   using OnHandleExported = base::OnceCallback<void(const std::string&)>;

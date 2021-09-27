@@ -18,16 +18,16 @@ constexpr uint32_t kMaxDeviceManagerVersion = 3;
 }
 
 // static
-void WaylandDataDeviceManager::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "wl_data_device_manager", &WaylandDataDeviceManager::Instantiate);
-}
+constexpr char WaylandDataDeviceManager::kInterfaceName[];
 
 // static
 void WaylandDataDeviceManager::Instantiate(WaylandConnection* connection,
                                            wl_registry* registry,
                                            uint32_t name,
+                                           const std::string& interface,
                                            uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->data_device_manager_)
     return;
 

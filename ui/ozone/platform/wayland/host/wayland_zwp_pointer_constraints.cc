@@ -19,16 +19,16 @@ constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
 }
 
 // static
-void WaylandZwpPointerConstraints::Register(WaylandConnection* connection) {
-  connection->RegisterGlobalObjectFactory(
-      "zwp_pointer_constraints_v1", &WaylandZwpPointerConstraints::Instantiate);
-}
+constexpr char WaylandZwpPointerConstraints::kInterfaceName[];
 
 // static
 void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
                                                wl_registry* registry,
                                                uint32_t name,
+                                               const std::string& interface,
                                                uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
   if (connection->wayland_zwp_pointer_constraints_ ||
       version < kMinZwpPointerConstraintsVersion) {
     return;

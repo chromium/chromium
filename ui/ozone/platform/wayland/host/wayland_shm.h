@@ -20,10 +20,12 @@ class WaylandConnection;
 // |wl_buffer|s backed by a fd to a shared memory.
 class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "wl_shm";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   WaylandShm(wl_shm* shm, WaylandConnection* connection);

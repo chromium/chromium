@@ -18,10 +18,12 @@ class WaylandDataDevice;
 class WaylandDataDeviceManager
     : public wl::GlobalObjectRegistrar<WaylandDataDeviceManager> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "wl_data_device_manager";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   using DataSource = WaylandDataSource;

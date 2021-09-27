@@ -15,10 +15,12 @@ class GtkSurface1;
 
 class GtkShell1 : public wl::GlobalObjectRegistrar<GtkShell1> {
  public:
-  static void Register(WaylandConnection* connection);
+  static constexpr char kInterfaceName[] = "gtk_shell1";
+
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
                           uint32_t name,
+                          const std::string& interface,
                           uint32_t version);
 
   explicit GtkShell1(gtk_shell1* shell1);
