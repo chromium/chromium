@@ -779,7 +779,6 @@ void NavigationURLLoaderImpl::FollowRedirectInternal(
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // Early Hints should not come after actual response.
-  DCHECK(on_receive_response_time_.is_null());
   DCHECK(!received_response_);
   DCHECK_NE(early_hints->ip_address_space,
             network::mojom::IPAddressSpace::kUnknown);
@@ -809,19 +808,12 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_main_frame);
   head_ = std::move(head);
-  on_receive_response_time_ = base::TimeTicks::Now();
 }
 
 void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   LogQueueTimeHistogram("Navigation.QueueTime.OnStartLoadingResponseBody",
                         resource_request_->is_main_frame);
-  if (!on_receive_response_time_.is_null()) {
-    UMA_HISTOGRAM_TIMES(
-        "Navigation.OnReceiveResponseToOnStartLoadingResponseBody",
-        base::TimeTicks::Now() - on_receive_response_time_);
-  }
-
   response_body_ = std::move(response_body);
   received_response_ = true;
 

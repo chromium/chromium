@@ -115,9 +115,6 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   KURL last_loaded_url_;
   WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper_;
 
-  // For UMA.
-  base::TimeTicks on_receive_response_time_;
-
   base::WeakPtrFactory<MojoURLLoaderClient> weak_factory_{this};
 };
 

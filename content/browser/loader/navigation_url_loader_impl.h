@@ -262,9 +262,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // URLLoaderClient::OnStartLoadingResponseBody() is called.
   bool received_response_ = false;
 
-  // When URLLoaderClient::OnReceiveResponse() is called. For UMA.
-  base::TimeTicks on_receive_response_time_;
-
   bool started_ = false;
 
   // The completion status if it has been received. This is needed to handle

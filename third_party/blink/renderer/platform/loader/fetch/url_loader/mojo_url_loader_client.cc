@@ -332,7 +332,6 @@ void MojoURLLoaderClient::OnReceiveResponse(
                last_loaded_url_.GetString().Utf8());
 
   has_received_response_head_ = true;
-  on_receive_response_time_ = base::TimeTicks::Now();
 
   if (NeedsStoringMessage()) {
     StoreAndDispatch(
@@ -448,12 +447,6 @@ void MojoURLLoaderClient::OnStartLoadingResponseBody(
   DCHECK(has_received_response_head_);
   DCHECK(!has_received_response_body_);
   has_received_response_body_ = true;
-
-  if (!on_receive_response_time_.is_null()) {
-    UMA_HISTOGRAM_TIMES(
-        "Renderer.OnReceiveResponseToOnStartLoadingResponseBody",
-        base::TimeTicks::Now() - on_receive_response_time_);
-  }
 
   if (!NeedsStoringMessage()) {
     // Send the message immediately.

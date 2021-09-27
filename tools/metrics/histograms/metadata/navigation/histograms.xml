@@ -1039,6 +1039,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.OnReceiveResponseToOnStartLoadingResponseBody"
     units="ms" expires_after="M85">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
