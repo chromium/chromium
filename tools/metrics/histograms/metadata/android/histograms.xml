@@ -1611,7 +1611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Jank.FrameDuration{Scenario}" units="ms"
-    expires_after="2021-09-30">
+    expires_after="2022-03-31">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1635,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Jank.JankBursts{Scenario}" units="ms"
-    expires_after="2021-09-30">
+    expires_after="2022-03-31">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1661,7 +1661,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Jank.MissedFrames{Scenario}" units="frames"
-    expires_after="2021-09-30">
+    expires_after="2022-03-31">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
