@@ -264,11 +264,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "arc-web-app-share",
-    "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "ash-bento-bar",
     "owners": [ "minch", "janetmac" ],
     "expiry_milestone": 100

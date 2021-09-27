@@ -2343,9 +2343,6 @@ extern const char kArcUseHighMemoryDalvikProfileDesc[];
 extern const char kArcVmBalloonPolicyName[];
 extern const char kArcVmBalloonPolicyDesc[];
 
-extern const char kArcWebAppShareName[];
-extern const char kArcWebAppShareDescription[];
-
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 

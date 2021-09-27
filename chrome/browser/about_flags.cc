@@ -7456,12 +7456,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kExtensionWorkflowJustification)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"arc-web-app-share", flag_descriptions::kArcWebAppShareName,
-     flag_descriptions::kArcWebAppShareDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableWebAppShareFeature)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"tab-restore-sub-menus", flag_descriptions::kTabRestoreSubMenusName,
      flag_descriptions::kTabRestoreSubMenusDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabRestoreSubMenus)},
