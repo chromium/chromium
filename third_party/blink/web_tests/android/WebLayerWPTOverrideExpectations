@@ -806,6 +806,7 @@ crbug.com/1050754 external/wpt/eventsource/shared-worker/eventsource-prototype.h
 crbug.com/1050754 external/wpt/eventsource/shared-worker/eventsource-url.htm [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/fetch/api/headers/headers-normalize.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-disturbed-1.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-disturbed-2.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-disturbed-3.any.sharedworker.html [ Failure ]

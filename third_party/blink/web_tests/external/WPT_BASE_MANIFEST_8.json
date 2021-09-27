@@ -42290,6 +42290,19 @@
         {}
        ]
       ],
+      "block-in-inline-float-in-layer-001.html": [
+       "f177aca160a3735dc0d6e8e3cd9bc29734e6c17b",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/normal-flow/block-in-inline-float-in-layer-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-in-inline-insert-001-nosplit-ref.xht": [
        "363ed9eefd444d2d8b2779f53367e3f8cccaeb9d",
        [
@@ -222748,6 +222761,10 @@
        "bdb5963e8944bf23cab77b089626e098944bd35f",
        []
       ],
+      "block-in-inline-float-in-layer-001-ref.html": [
+       "cbaf7ccb23f11e5f201620d9dcab0541464c036d",
+       []
+      ],
       "block-in-inline-insert-017-ref.xht": [
        "cc5b6d24560351be10dc17ca6ec48e37d76932b6",
        []
@@ -388368,7 +388385,7 @@
        ]
       ],
       "headers-normalize.any.js": [
-       "621cee0ff0bdaf1a9004a49e3bbaeee213330dde",
+       "68cf5b85f3acb7fcfe6275ffa0c4d37843ac2935",
        [
         "fetch/api/headers/headers-normalize.any.html",
         {
