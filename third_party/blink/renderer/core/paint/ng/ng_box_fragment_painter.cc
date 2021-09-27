@@ -817,6 +817,7 @@ void NGBoxFragmentPainter::PaintBlockChild(
 }
 
 void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
+                                              const PaintInfo& float_paint_info,
                                               NGInlineCursor* cursor) {
   while (*cursor) {
     const NGFragmentItem* item = cursor->Current().Item();
@@ -832,14 +833,14 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
     }
     if (child_fragment->IsFloating()) {
       if (child_fragment->CanTraverse()) {
-        NGBoxFragmentPainter(*child_fragment).Paint(paint_info);
+        NGBoxFragmentPainter(*child_fragment).Paint(float_paint_info);
       } else {
         ObjectPainter(*child_fragment->GetLayoutObject())
-            .PaintAllPhasesAtomically(paint_info);
+            .PaintAllPhasesAtomically(float_paint_info);
       }
     } else if (child_fragment->IsBlockInInline() &&
                child_fragment->HasFloatingDescendantsForPaint()) {
-      PaintFloatingChildren(*child_fragment, paint_info);
+      NGBoxFragmentPainter(*child_fragment).Paint(paint_info);
     }
     DCHECK(child_fragment->IsInlineBox() || !cursor->Current().HasChildren());
     cursor->MoveToNext();
@@ -947,13 +948,13 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
           DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
       NGInlineCursor cursor(*box, *items);
-      PaintFloatingItems(float_paint_info, &cursor);
+      PaintFloatingItems(paint_info, float_paint_info, &cursor);
       return;
     }
     if (inline_box_cursor_) {
       DCHECK(box->IsInlineBox());
       NGInlineCursor descendants = inline_box_cursor_->CursorForDescendants();
-      PaintFloatingItems(float_paint_info, &descendants);
+      PaintFloatingItems(paint_info, float_paint_info, &descendants);
       return;
     }
     DCHECK(!box->IsInlineBox());
