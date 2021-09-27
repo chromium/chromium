@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -456,6 +457,10 @@ class VolumeManager : public KeyedService,
 
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
+  io_task::IOTaskController* io_task_controller() {
+    return &io_task_controller_;
+  }
+
  private:
   void OnDiskMountManagerRefreshed(bool success);
   void OnStorageMonitorInitialized();
@@ -489,6 +494,7 @@ class VolumeManager : public KeyedService,
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   bool arc_volumes_mounted_ = false;
+  io_task::IOTaskController io_task_controller_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
