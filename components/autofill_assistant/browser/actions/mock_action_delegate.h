@@ -129,7 +129,6 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
-  MOCK_CONST_METHOD0(GetLocale, std::string());
   MOCK_METHOD2(SetDetails,
                void(std::unique_ptr<Details> details, base::TimeDelta delay));
   MOCK_METHOD2(AppendDetails,

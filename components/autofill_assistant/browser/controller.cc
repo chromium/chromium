@@ -158,14 +158,10 @@ std::string Controller::GetEmailAddressForAccessTokenAccount() {
   return client_->GetEmailAddressForAccessTokenAccount();
 }
 
-std::string Controller::GetLocale() {
-  return client_->GetLocale();
-}
-
 std::string Controller::GetDisplayStringsLocale() {
   if (GetSettings().display_strings_locale.empty()) {
     // Fallback locale
-    return GetLocale();
+    return client_->GetLocale();
   }
   return GetSettings().display_strings_locale;
 }

@@ -650,10 +650,6 @@ std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() const {
   return delegate_->GetEmailAddressForAccessTokenAccount();
 }
 
-std::string ScriptExecutor::GetLocale() const {
-  return delegate_->GetLocale();
-}
-
 void ScriptExecutor::SetDetails(std::unique_ptr<Details> details,
                                 base::TimeDelta delay) {
   return delegate_->SetDetails(std::move(details), delay);

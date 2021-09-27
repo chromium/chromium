@@ -66,7 +66,6 @@ class ScriptExecutorDelegate {
   virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;
   virtual content::WebContents* GetWebContents() = 0;
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
-  virtual std::string GetLocale() = 0;
 
   // Enters the given state. Returns true if the state was changed.
   virtual bool EnterState(AutofillAssistantState state) = 0;

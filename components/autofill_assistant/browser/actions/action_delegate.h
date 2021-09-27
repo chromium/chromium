@@ -286,9 +286,6 @@ class ActionDelegate {
   // string.
   virtual std::string GetEmailAddressForAccessTokenAccount() const = 0;
 
-  // Returns the locale for the current device or platform.
-  virtual std::string GetLocale() const = 0;
-
   // Sets or updates contextual information.
   // Passing nullptr clears the contextual information.
   virtual void SetDetails(std::unique_ptr<Details> details,
