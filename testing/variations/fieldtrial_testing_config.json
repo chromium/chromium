@@ -688,21 +688,6 @@
             ]
         }
     ],
-    "ArcUseHighMemoryDalvikProfile": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcUseHighMemoryDalvikProfile"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmMemorySize": [
         {
             "platforms": [
