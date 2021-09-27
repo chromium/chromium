@@ -345,7 +345,6 @@ void PepperUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   pp::URLRequestInfo pp_request(plugin_instance_);
   pp_request.SetURL(request.url);
   pp_request.SetMethod(request.method);
-  pp_request.SetCustomReferrerURL(request.url);
 
   if (request.ignore_redirects)
     pp_request.SetFollowRedirects(false);
