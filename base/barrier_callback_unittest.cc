@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,7 +25,7 @@ TEST(BarrierCallbackTest, RunsImmediatelyForZeroCallbacks) {
 
 TEST(BarrierCallbackTest, ErrorToCallCallbackWithZeroCallbacks) {
   auto barrier_callback =
-      base::BarrierCallback<int>(0, base::DoNothing::Once<std::vector<int>>());
+      base::BarrierCallback<int>(0, base::BindOnce([](std::vector<int>) {}));
   EXPECT_FALSE(barrier_callback.is_null());
 
   EXPECT_CHECK_DEATH(barrier_callback.Run(3));
@@ -109,17 +108,17 @@ TEST(BarrierCallbackTest, SupportsMoveonlyTypes) {
   // No need to assert anything here, since if BarrierCallback didn't work with
   // move-only types, this wouldn't compile.
   auto barrier_callback = base::BarrierCallback<MoveOnly>(
-      1, base::DoNothing::Once<std::vector<MoveOnly>>());
+      1, base::BindOnce([](std::vector<MoveOnly>) {}));
   barrier_callback.Run(MoveOnly());
 
   auto barrier_callback2 = base::BarrierCallback<MoveOnly>(
-      1, base::DoNothing::Once<const std::vector<MoveOnly>&>());
+      1, base::BindOnce([](const std::vector<MoveOnly>&) {}));
   barrier_callback2.Run(MoveOnly());
 }
 
 TEST(BarrierCallbackTest, SupportsConstRefResults) {
   auto barrier_callback = base::BarrierCallback<int>(
-      1, base::DoNothing::Once<const std::vector<int>&>());
+      1, base::BindOnce([](const std::vector<int>&) {}));
 
   barrier_callback.Run(1);
 }
@@ -133,11 +132,11 @@ TEST(BarrierCallbackTest, SupportsReferenceTypes) {
   // No need to assert anything here, since if BarrierCallback didn't work with
   // by-reference args, this wouldn't compile.
   auto barrier_callback = base::BarrierCallback<const Referenceable&>(
-      1, base::DoNothing::Once<std::vector<Referenceable>>());
+      1, base::BindOnce([](std::vector<Referenceable>) {}));
   barrier_callback.Run(ref);
 
   auto barrier_callback2 = base::BarrierCallback<const Referenceable&>(
-      1, base::DoNothing::Once<const std::vector<Referenceable>&>());
+      1, base::BindOnce([](const std::vector<Referenceable>&) {}));
   barrier_callback2.Run(ref);
 }
 
