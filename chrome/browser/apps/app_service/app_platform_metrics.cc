@@ -321,6 +321,52 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
   }
 }
 
+// Returns AppTypeNameV2 used for app launch metrics.
+apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
+                                     apps::mojom::AppType app_type,
+                                     const std::string& app_id,
+                                     apps::mojom::LaunchContainer container) {
+  switch (app_type) {
+    case apps::mojom::AppType::kUnknown:
+      return apps::AppTypeNameV2::kUnknown;
+    case apps::mojom::AppType::kArc:
+      return apps::AppTypeNameV2::kArc;
+    case apps::mojom::AppType::kBuiltIn:
+      return apps::AppTypeNameV2::kBuiltIn;
+    case apps::mojom::AppType::kCrostini:
+      return apps::AppTypeNameV2::kCrostini;
+    case apps::mojom::AppType::kExtension:
+      return container == apps::mojom::LaunchContainer::kLaunchContainerWindow
+                 ? apps::AppTypeNameV2::kChromeAppWindow
+                 : apps::AppTypeNameV2::kChromeAppTab;
+    case apps::mojom::AppType::kWeb: {
+      apps::AppTypeName app_type_name =
+          GetAppTypeNameForWebApp(profile, app_id, container);
+      if (app_type_name == apps::AppTypeName::kChromeBrowser) {
+        return apps::AppTypeNameV2::kWebTab;
+      } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
+        return apps::AppTypeNameV2::kSystemWeb;
+      } else {
+        return apps::AppTypeNameV2::kWebWindow;
+      }
+    }
+    case apps::mojom::AppType::kMacOs:
+      return apps::AppTypeNameV2::kMacOs;
+    case apps::mojom::AppType::kPluginVm:
+      return apps::AppTypeNameV2::kPluginVm;
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return apps::AppTypeNameV2::kStandaloneBrowser;
+    case apps::mojom::AppType::kRemote:
+      return apps::AppTypeNameV2::kRemote;
+    case apps::mojom::AppType::kBorealis:
+      return apps::AppTypeNameV2::kBorealis;
+    case apps::mojom::AppType::kSystemWeb:
+      return apps::AppTypeNameV2::kSystemWeb;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
+  }
+}
+
 // Records the number of times Chrome OS apps are launched grouped by the launch
 // source.
 void RecordAppLaunchSource(apps::mojom::LaunchSource launch_source) {
@@ -334,7 +380,19 @@ void RecordAppLaunchPerAppType(apps::AppTypeName app_type_name) {
     return;
   }
 
-  base::UmaHistogramEnumeration("Apps.AppLaunchPerAppType", app_type_name);
+  base::UmaHistogramEnumeration(apps::kAppLaunchPerAppTypeHistogramName,
+                                app_type_name);
+}
+
+// Records the number of times Chrome OS apps are launched grouped by the app
+// type V2.
+void RecordAppLaunchPerAppTypeV2(apps::AppTypeNameV2 app_type_name_v2) {
+  if (app_type_name_v2 == apps::AppTypeNameV2::kUnknown) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(apps::kAppLaunchPerAppTypeV2HistogramName,
+                                app_type_name_v2);
 }
 
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
@@ -394,6 +452,10 @@ constexpr char kAppRunningDuration[] =
     "app_platform_metrics.app_running_duration";
 constexpr char kAppActivatedCount[] =
     "app_platform_metrics.app_activated_count";
+
+constexpr char kAppLaunchPerAppTypeHistogramName[] = "Apps.AppLaunchPerAppType";
+constexpr char kAppLaunchPerAppTypeV2HistogramName[] =
+    "Apps.AppLaunchPerAppTypeV2";
 
 constexpr char kArcHistogramName[] = "Arc";
 constexpr char kBuiltInHistogramName[] = "BuiltIn";
@@ -535,6 +597,8 @@ void RecordAppLaunchMetrics(Profile* profile,
   RecordAppLaunchSource(launch_source);
   RecordAppLaunchPerAppType(
       GetAppTypeName(profile, app_type, app_id, container));
+  RecordAppLaunchPerAppTypeV2(
+      GetAppTypeNameV2(profile, app_type, app_id, container));
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy && proxy->AppPlatformMetrics()) {

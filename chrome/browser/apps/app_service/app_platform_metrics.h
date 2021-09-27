@@ -90,6 +90,9 @@ enum class InstallTime {
 extern const char kAppRunningDuration[];
 extern const char kAppActivatedCount[];
 
+extern const char kAppLaunchPerAppTypeHistogramName[];
+extern const char kAppLaunchPerAppTypeV2HistogramName[];
+
 extern const char kArcHistogramName[];
 extern const char kBuiltInHistogramName[];
 extern const char kCrostiniHistogramName[];

@@ -408,6 +408,18 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     return window;
   }
 
+  void VerifyAppLaunchPerAppTypeHistogram(base::HistogramBase::Count count,
+                                          AppTypeName app_type_name) {
+    histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeHistogramName,
+                                         app_type_name, count);
+  }
+
+  void VerifyAppLaunchPerAppTypeV2Histogram(base::HistogramBase::Count count,
+                                            AppTypeNameV2 app_type_name_v2) {
+    histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeV2HistogramName,
+                                         app_type_name_v2, count);
+  }
+
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
                                 AppTypeName app_type_name) {
     DictionaryPrefUpdate update(GetPrefService(), kAppRunningDuration);
@@ -1407,7 +1419,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
                          InstallTime::kRunning);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
+TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
@@ -1419,17 +1431,33 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
       test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
   ASSERT_EQ(0U, entries.size());
 
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kCrostini);
+
   proxy->Launch(
       /*app_id=*/"a", ui::EventFlags::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://com.google.A", AppTypeName::kArc,
                       apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
 
   proxy->LaunchAppWithUrl(
       /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
   VerifyAppsLaunchUkm("https://foo.com", AppTypeName::kWeb,
                       apps::mojom::LaunchSource::kFromFileManager);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kWeb);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebWindow);
+
+  proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
+      "w2", apps::mojom::LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      apps::mojom::AppLaunchSource::kSourceTest));
+  VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
+                      apps::mojom::LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
       "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
@@ -1437,6 +1465,8 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
       apps::mojom::AppLaunchSource::kSourceTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {

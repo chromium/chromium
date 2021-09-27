@@ -3601,6 +3601,25 @@ Unknown properties are collapsed to zero. -->
       label="Shortcut install, menu showed 'Install' (failure mode)"/>
 </enum>
 
+<enum name="AppTypeV2">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Android app"/>
+  <int value="2" label="Built-in app"/>
+  <int value="3" label="Linux app"/>
+  <int value="4" label="Chrome app opened in a window"/>
+  <int value="5" label="Chrome app opened in a tab"/>
+  <int value="6" label="Web app in a window"/>
+  <int value="7" label="Web app in a tab"/>
+  <int value="8" label="Mac OS app"/>
+  <int value="9" label="Plugin VM"/>
+  <int value="10" label="Standalone browser"/>
+  <int value="11" label="Remote app"/>
+  <int value="12" label="Borealis app"/>
+  <int value="13" label="System web app"/>
+  <int value="14" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
+  <int value="15" label="Chrome app opened in Standalone browser"/>
+</enum>
+
 <enum name="AppWillTerminateReceived">
   <int value="0" label="WasNotReceivedForXte">
     ApplicationWillTerminate notification was not received for this XTE.

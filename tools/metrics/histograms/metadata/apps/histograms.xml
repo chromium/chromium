@@ -209,7 +209,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2022-07-01">
   <owner>dominickn@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
-  <summary>Records an app launch grouped by app type.</summary>
+  <summary>
+    Records an app launch grouped by app type. This is recorded when an app is
+    launched.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppLaunchPerAppTypeV2" enum="AppTypeV2"
+    expires_after="2022-07-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records an app launch grouped by app type V2. This is recorded when an app
+    is launched.
+  </summary>
 </histogram>
 
 <histogram name="Apps.AppLaunchSource" enum="LaunchSource"
