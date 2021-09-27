@@ -37,6 +37,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace autofill_assistant {
 
@@ -61,21 +62,7 @@ const char kExampleDeeplink[] = "https://www.example.com";
 
 class StarterTest : public testing::Test {
  public:
-  StarterTest() = default;
-
-  void SetUp() override {
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        &browser_context_, nullptr);
-    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
-    SimulateNavigateToUrl(GURL(kExampleDeeplink));
-    PrepareTriggerScriptUiDelegate();
-    PrepareTriggerScriptRequestSender();
-    fake_platform_delegate_.website_login_manager_ =
-        &mock_website_login_manager_;
-    ON_CALL(mock_website_login_manager_, GetLoginsForUrl)
-        .WillByDefault(
-            RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
-
+  StarterTest() {
     // Must be initialized before |starter_| is instantiated to take effect.
     enable_fake_heuristic_ = std::make_unique<base::test::ScopedFeatureList>();
     enable_fake_heuristic_->InitAndEnableFeatureWithParameters(
@@ -92,6 +79,20 @@ class StarterTest : public testing::Test {
             ]
           }
           )"}});
+  }
+
+  void SetUp() override {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+    SimulateNavigateToUrl(GURL(kExampleDeeplink));
+    PrepareTriggerScriptUiDelegate();
+    PrepareTriggerScriptRequestSender();
+    fake_platform_delegate_.website_login_manager_ =
+        &mock_website_login_manager_;
+    ON_CALL(mock_website_login_manager_, GetLoginsForUrl)
+        .WillByDefault(
+            RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
 
     starter_ = std::make_unique<Starter>(
         web_contents(), &fake_platform_delegate_, &ukm_recorder_,
@@ -2035,6 +2036,63 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsAllMatchingIntents) {
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("https://example.com/intent_a/intent_b"));
   task_environment.RunUntilIdle();
+}
+
+class StarterPrerenderTest : public StarterTest {
+ public:
+  StarterPrerenderTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+  ~StarterPrerenderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
+  SetupPlatformDelegateForFirstTimeUser();
+
+  fake_platform_delegate_.feature_module_installed_ = true;
+  // Empty callback to keep the onboarding open indefinitely.
+  fake_platform_delegate_.on_show_onboarding_callback_ =
+      base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
+
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
+
+  TriggerContext::Options options;
+  options.initial_url = kExampleDeeplink;
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"REQUEST_TRIGGER_SCRIPT", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+
+  SimulateNavigateToUrl(GURL("https://www.different.com"));
+
+  // Trigger scripts wait for navigation to the deeplink domain.
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+
+  // Start prerendering a page.
+  const GURL prerendering_url("https://www.different.com/prerendering");
+  auto* prerender_rfh = content::WebContentsTester::For(web_contents())
+                            ->AddPrerenderAndCommitNavigation(prerendering_url);
+  ASSERT_TRUE(prerender_rfh);
+
+  // Prerendering should not affect any trigger script's behaviour and not
+  // record anything.
+  EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptOnboarding(ukm_recorder_), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 0u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
 }
 
 }  // namespace autofill_assistant
