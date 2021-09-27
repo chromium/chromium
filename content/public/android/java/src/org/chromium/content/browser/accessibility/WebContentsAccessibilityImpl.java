@@ -97,7 +97,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     // Constants defined in the N SDK. (API Level 24+25, Android 7)
     public static final int ACTION_SET_PROGRESS = 0x0102003d;
-    private static final String ACTION_ARGUMENT_PROGRESS_VALUE =
+    public static final String ACTION_ARGUMENT_PROGRESS_VALUE =
             "android.view.accessibility.action.ARGUMENT_PROGRESS_VALUE";
 
     // Constants defined in the O SDK. (API Level 26+27, Android 8)

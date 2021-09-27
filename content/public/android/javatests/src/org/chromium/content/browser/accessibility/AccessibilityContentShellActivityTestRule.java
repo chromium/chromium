@@ -176,12 +176,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @param action int                   desired AccessibilityNodeInfo action
      * @param args Bundle                  action bundle
      * @param criteria Callable<Boolean>   criteria to poll against to verify completion
+     * @return boolean                     return value of performAction
      * @throws ExecutionException          Error
+     * @throws Throwable                   Error
      */
-    public void performActionOnUiThread(int viewId, int action, Bundle args,
+    public boolean performActionOnUiThread(int viewId, int action, Bundle args,
             Callable<Boolean> criteria) throws ExecutionException, Throwable {
-        performActionOnUiThread(viewId, action, args);
+        boolean returnValue = performActionOnUiThread(viewId, action, args);
         CriteriaHelper.pollUiThread(criteria, NODE_TIMEOUT_ERROR);
+        return returnValue;
     }
 
     /**

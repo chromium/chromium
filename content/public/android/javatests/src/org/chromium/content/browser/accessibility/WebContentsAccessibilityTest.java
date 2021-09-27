@@ -5,12 +5,14 @@
 package org.chromium.content.browser.accessibility;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_HTML_ELEMENT_STRING;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_COPY;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CUT;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_PASTE;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_LONG_CLICK;
@@ -32,6 +34,8 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextOrContentDescriptionMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_ARGUMENT_PROGRESS_VALUE;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_SET_PROGRESS;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CHROME_ROLE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_OFFSCREEN;
@@ -190,9 +194,9 @@ public class WebContentsAccessibilityTest {
         return mActivityTestRule.performActionOnUiThread(viewId, action, args);
     }
 
-    private void performActionOnUiThread(int viewId, int action, Bundle args,
+    private boolean performActionOnUiThread(int viewId, int action, Bundle args,
             Callable<Boolean> criteria) throws ExecutionException, Throwable {
-        mActivityTestRule.performActionOnUiThread(viewId, action, args, criteria);
+        return mActivityTestRule.performActionOnUiThread(viewId, action, args, criteria);
     }
 
     private void executeJS(String method) {
@@ -1610,8 +1614,8 @@ public class WebContentsAccessibilityTest {
 
         // Send a proper action and poll for update.
         bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
-        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, bundle,
-                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty());
+        Assert.assertTrue(performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT,
+                bundle, () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1646,10 +1650,11 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 5);
-        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        });
+        Assert.assertTrue(performActionOnUiThread(
+                vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                            && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                }));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1678,18 +1683,19 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        });
+        Assert.assertTrue(performActionOnUiThread(
+                vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                            && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                }));
 
         // Perform the "cut" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
                     CLIPBOARD_SERVICE);
         });
-        performActionOnUiThread(
-                vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null);
+        Assert.assertTrue(performActionOnUiThread(
+                vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null));
 
         // Send end of test signal and refresh input node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1724,18 +1730,19 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        });
+        Assert.assertTrue(performActionOnUiThread(
+                vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                            && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                }));
 
         // Perform the "copy" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
                     CLIPBOARD_SERVICE);
         });
-        performActionOnUiThread(
-                vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null);
+        Assert.assertTrue(performActionOnUiThread(
+                vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null));
 
         // Send end of test signal and refresh input node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1779,8 +1786,8 @@ public class WebContentsAccessibilityTest {
         focusNode(vvid);
 
         // Perform a paste action and poll for the text to change.
-        performActionOnUiThread(vvid, ACTION_PASTE, null,
-                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty());
+        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_PASTE, null,
+                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
 
         // Send end of test signal and update node info.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1798,6 +1805,149 @@ public class WebContentsAccessibilityTest {
 
         // Verify text has been properly pasted into the input field.
         Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testPerformAction_setProgress() throws Throwable {
+        // Build a simple web page with an element that supports range values.
+        setupTestWithHTML("<input id='id1' type='range' min='0' max='50' value='10'>");
+
+        // Find the relevant node.
+        int vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Verify that bad requests have no effect.
+        Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, null));
+        Bundle bundle = new Bundle();
+        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -1);
+        Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle));
+
+        // Send a proper action and poll for update.
+        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 20);
+        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
+            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 20)
+                    < 0.01;
+        }));
+
+        // Update node.
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify results.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 20, mNodeInfo.getRangeInfo().getCurrent(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
+
+        // Send action that exceeds max value to test clamping.
+        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 55);
+        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
+            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 50)
+                    < 0.01;
+        }));
+
+        // Update node.
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify results.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getCurrent(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
+
+        // Send action that is less than minimum value to test clamping.
+        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -5);
+        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
+            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 0)
+                    < 0.01;
+        }));
+
+        // Update node.
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify results.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getCurrent(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.01);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
+    }
+
+    @Test
+    @SmallTest
+    public void testPerformAction_nextHtmlElement() throws Throwable {
+        // Build a simple web page with elements that can be traversed.
+        setupTestWithHTML("<p id='id1'>Example1</p><p id='id2'>Example2</p>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Focus our first node.
+        focusNode(vvid1);
+
+        // Verify that bad requests have no effect.
+        Assert.assertFalse(performActionOnUiThread(vvid1, ACTION_NEXT_HTML_ELEMENT, null));
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, null);
+        Assert.assertFalse(performActionOnUiThread(vvid1, ACTION_NEXT_HTML_ELEMENT, bundle));
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "landmark");
+        Assert.assertFalse(performActionOnUiThread(vvid1, ACTION_NEXT_HTML_ELEMENT, bundle));
+
+        // Send a proper action and poll for update.
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "p");
+        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_NEXT_HTML_ELEMENT, bundle,
+                () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+
+        // Send of test signal and update node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+
+        // Verify results.
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+    }
+
+    @Test
+    @SmallTest
+    public void testPerformAction_previousHtmlElement() throws Throwable {
+        // Build a simple web page with elements that can be traversed.
+        setupTestWithHTML("<p id='id1'>Example1</p><p id='id2'>Example2</p>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Focus our second node.
+        focusNode(vvid2);
+
+        // Verify that bad requests have no effect.
+        Assert.assertFalse(performActionOnUiThread(vvid2, ACTION_PREVIOUS_HTML_ELEMENT, null));
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, null);
+        Assert.assertFalse(performActionOnUiThread(vvid2, ACTION_PREVIOUS_HTML_ELEMENT, bundle));
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "landmark");
+        Assert.assertFalse(performActionOnUiThread(vvid2, ACTION_PREVIOUS_HTML_ELEMENT, bundle));
+
+        // Send a proper action and poll for update.
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "p");
+        Assert.assertTrue(performActionOnUiThread(vvid2, ACTION_PREVIOUS_HTML_ELEMENT, bundle,
+                () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        // Send of test signal and update node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+
+        // Verify results.
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
