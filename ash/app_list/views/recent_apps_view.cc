@@ -23,7 +23,9 @@
 #include "extensions/common/constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -150,9 +152,12 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   AppListItemView* selected_view_ = nullptr;
 };
 
-RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
-    : view_delegate_(view_delegate),
+RecentAppsView::RecentAppsView(Delegate* delegate,
+                               AppListViewDelegate* view_delegate)
+    : delegate_(delegate),
+      view_delegate_(view_delegate),
       grid_delegate_(std::make_unique<GridDelegateImpl>(view_delegate_)) {
+  DCHECK(delegate_);
   DCHECK(view_delegate_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -193,6 +198,47 @@ RecentAppsView::~RecentAppsView() = default;
 void RecentAppsView::DisableFocusForShowingActiveFolder(bool disabled) {
   for (views::View* child : children())
     child->SetEnabled(!disabled);
+}
+
+bool RecentAppsView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_UP) {
+    MoveFocusUp();
+    return true;
+  }
+  if (event.key_code() == ui::VKEY_DOWN) {
+    MoveFocusDown();
+    return true;
+  }
+  return false;
+}
+
+void RecentAppsView::MoveFocusUp() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  DCHECK(!children().empty());
+  delegate_->MoveFocusUpFromRecents();
+}
+
+void RecentAppsView::MoveFocusDown() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  int column = GetColumnOfFocusedChild();
+  DCHECK_GE(column, 0);
+  delegate_->MoveFocusDownFromRecents(column);
+}
+
+int RecentAppsView::GetColumnOfFocusedChild() const {
+  int column = 0;
+  for (views::View* child : children()) {
+    if (!views::IsViewClass<AppListItemView>(child))
+      continue;
+    if (child->HasFocus())
+      return column;
+    ++column;
+  }
+  return -1;
 }
 
 BEGIN_METADATA(RecentAppsView, views::View)

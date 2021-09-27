@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -25,7 +26,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 using views::BoxLayout;
 
@@ -92,7 +95,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(
-      std::make_unique<RecentAppsView>(view_delegate));
+      std::make_unique<RecentAppsView>(this, view_delegate));
 
   // Horizontal separator.
   auto* separator =
@@ -123,6 +126,31 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
   continue_section_->DisableFocusForShowingActiveFolder(disabled);
   recent_apps_->DisableFocusForShowingActiveFolder(disabled);
   scrollable_apps_grid_view_->DisableFocusForShowingActiveFolder(disabled);
+}
+
+void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
+  DCHECK(!recent_apps_->children().empty());
+  views::View* first_recent = recent_apps_->children()[0];
+  DCHECK(views::IsViewClass<AppListItemView>(first_recent));
+  // Find the view one step in reverse from the first recent app.
+  views::View* previous_view = GetFocusManager()->GetNextFocusableView(
+      first_recent, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
+  DCHECK(previous_view);
+  previous_view->RequestFocus();
+}
+
+void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
+  int top_level_item_count =
+      scrollable_apps_grid_view_->view_model()->view_size();
+  if (top_level_item_count <= 0)
+    return;
+  // Attempt to focus the item at `column` in the first row, or the last item if
+  // there aren't enough items. This could happen if the user's apps are in a
+  // small number of folders.
+  int index = std::min(column, top_level_item_count - 1);
+  AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
+  DCHECK(item);
+  item->RequestFocus();
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -95,15 +94,6 @@ class RecentAppsViewTest : public AshTestBase {
       AddAppListItem(id);
       AddSearchResult(id, AppListSearchResultType::kInstalledApp);
     }
-  }
-
-  std::vector<AppListItemView*> GetAppListItemViews(RecentAppsView* view) {
-    std::vector<AppListItemView*> app_list_item_views;
-    for (auto* child : view->children()) {
-      if (views::IsViewClass<AppListItemView>(child))
-        app_list_item_views.push_back(static_cast<AppListItemView*>(child));
-    }
-    return app_list_item_views;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

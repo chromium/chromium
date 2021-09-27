@@ -16,6 +16,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/folder_background_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"

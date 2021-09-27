@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -19,6 +20,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/continue_section_view.h"
+#include "ash/app_list/views/continue_task_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -30,6 +32,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -38,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 using views::Widget;
@@ -58,7 +62,9 @@ void AddRecentApps(int num_apps) {
   auto* search_model = Shell::Get()->app_list_controller()->GetSearchModel();
   for (int i = 0; i < num_apps; i++) {
     auto result = std::make_unique<TestSearchResult>();
-    result->set_result_id(base::NumberToString(i));
+    // Use the same "Item #" convention as AppListTestModel uses. The search
+    // result IDs must match app item IDs in the app list data model.
+    result->set_result_id(base::StringPrintf("Item %d", i));
     result->set_result_type(AppListSearchResultType::kInstalledApp);
     // TODO(crbug.com/1216662): Replace with a real display type after the ML
     // team gives us a way to query directly for recent apps.
@@ -117,7 +123,7 @@ class AppListBubbleViewTest : public AshTestBase {
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
 
   void AddAppItems(int num_items) {
-    GetAppListTestHelper()->AddAppItems(num_items);
+    app_list_test_model_->PopulateApps(num_items);
   }
 
   void LeftClickOn(views::View* view) {
@@ -131,6 +137,10 @@ class AppListBubbleViewTest : public AshTestBase {
 
   AppListBubbleAppsPage* GetAppsPage() {
     return GetAppListTestHelper()->GetBubbleAppsPage();
+  }
+
+  RecentAppsView* GetRecentAppsView() {
+    return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
   ScrollableAppsGridView* GetAppsGridView() {
@@ -444,19 +454,84 @@ TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
   AddRecentApps(kNumRecentApps);
   ShowAppList();
 
-  // Pressing down arrow moves focus through the recent apps. It does not
-  // trigger ScrollView scrolling.
-  auto* recent_apps = GetAppListTestHelper()->GetBubbleRecentAppsView();
+  // Pressing down arrow once moves focus into recent apps.
   auto* focus_manager = GetAppsPage()->GetFocusManager();
-  for (int i = 0; i < kNumRecentApps; i++) {
-    PressAndReleaseKey(ui::VKEY_DOWN);
-    EXPECT_TRUE(recent_apps->Contains(focus_manager->GetFocusedView()));
-  }
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(GetRecentAppsView()->Contains(focus_manager->GetFocusedView()));
 
   // Pressing down arrow again moves focus into the apps grid.
   PressAndReleaseKey(ui::VKEY_DOWN);
   auto* apps_grid = GetAppListTestHelper()->GetScrollableAppsGridView();
   EXPECT_TRUE(apps_grid->Contains(focus_manager->GetFocusedView()));
+}
+
+TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsSameColumnInAppsGrid) {
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  std::vector<AppListItemView*> recent_apps =
+      GetAppListItemViews(GetRecentAppsView());
+  for (int column = 0; column < 5; column++) {
+    // Pressing down arrow from an item in recent apps selects the app in the
+    // same column in the apps grid.
+    recent_apps[column]->RequestFocus();
+    ASSERT_TRUE(recent_apps[column]->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_DOWN);
+
+    AppListItemView* app = GetAppsGridView()->GetItemViewAt(column);
+    EXPECT_TRUE(app->HasFocus()) << "Focus mismatch for column " << column;
+  }
+}
+
+TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsLastColumnInAppsGrid) {
+  AddRecentApps(5);
+  app_list_test_model_->CreateAndPopulateFolderWithApps(2);
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  // There are only 2 folders, and hence 2 columns, in the top level apps grid.
+  auto* apps_grid_view = GetAppsGridView();
+  ASSERT_EQ(2, apps_grid_view->view_model()->view_size());
+
+  // Focus the 5th recent app.
+  std::vector<AppListItemView*> recent_apps =
+      GetAppListItemViews(GetRecentAppsView());
+  ASSERT_EQ(5u, recent_apps.size());
+  recent_apps[4]->RequestFocus();
+
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  // There's no 5th column in the apps grid, so the 2nd item is selected.
+  AppListItemView* item = GetAppsGridView()->GetItemViewAt(1);
+  EXPECT_TRUE(item->HasFocus());
+}
+
+TEST_F(AppListBubbleViewTest, UpArrowFromRecentsSelectsContinueTasks) {
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  ContinueTaskView* last_continue_task =
+      GetAppListTestHelper()->GetContinueSectionView()->GetTaskViewAtForTesting(
+          3);
+  std::vector<AppListItemView*> recent_apps =
+      GetAppListItemViews(GetRecentAppsView());
+  ASSERT_EQ(5u, recent_apps.size());
+
+  // Pressing 'up' from any column in recent apps moves to the last continue
+  // task.
+  for (int column = 0; column < 5; ++column) {
+    recent_apps[column]->RequestFocus();
+
+    PressAndReleaseKey(ui::VKEY_UP);
+
+    EXPECT_TRUE(views::IsViewClass<ContinueTaskView>(GetFocusedView()))
+        << GetFocusedViewName();
+    EXPECT_TRUE(last_continue_task->HasFocus());
+  }
 }
 
 TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToContinueTasks) {

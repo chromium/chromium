@@ -24,7 +24,20 @@ class ASH_EXPORT RecentAppsView : public views::View {
  public:
   METADATA_HEADER(RecentAppsView);
 
-  explicit RecentAppsView(AppListViewDelegate* view_delegate);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Requests that focus move up and out (usually to the continue tasks).
+    virtual void MoveFocusUpFromRecents() = 0;
+
+    // Requests that focus move down and out (usually to the apps grid).
+    // `column` is the column of the items that was focused in the recent apps
+    // list. The delegate should choose an appropriate item to focus.
+    virtual void MoveFocusDownFromRecents(int column) = 0;
+  };
+
+  RecentAppsView(Delegate* delegate, AppListViewDelegate* view_delegate);
   RecentAppsView(const RecentAppsView&) = delete;
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
@@ -32,7 +45,20 @@ class ASH_EXPORT RecentAppsView : public views::View {
   // See AppsGridView::DisableFocusForShowingActiveFolder().
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // views::View:
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+
  private:
+  // Requests that focus move up and out (usually to the continue tasks).
+  void MoveFocusUp();
+
+  // Requests that focus move down and out (usually to the apps grid).
+  void MoveFocusDown();
+
+  // Returns the visual column of the child with focus, or -1 if there is none.
+  int GetColumnOfFocusedChild() const;
+
+  Delegate* const delegate_;
   AppListViewDelegate* const view_delegate_;
 
   // The grid delegate for each AppListItemView.
