@@ -54,6 +54,7 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/optimization_guide/model_validator_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -253,6 +254,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 
   AboutSigninInternalsFactory::GetInstance();
+  AboutThisSiteServiceFactory::GetInstance();
   AccessContextAuditServiceFactory::GetInstance();
   AccountConsistencyModeManagerFactory::GetInstance();
   AccountInvestigatorFactory::GetInstance();

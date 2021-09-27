@@ -60,6 +60,8 @@ std::string GetStringNameForOptimizationType(
       return "PriceTracking";
     case proto::OptimizationType::BLOOM_FILTER_VALIDATION:
       return "BloomFilterValidation";
+    case proto::OptimizationType::ABOUT_THIS_SITE:
+      return "AboutThisSite";
   }
   NOTREACHED();
   return std::string();

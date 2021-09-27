@@ -152,6 +152,8 @@ enum OptimizationType {
   PRICE_TRACKING = 18;
   // This optimization does validation of bloom filter.
   BLOOM_FILTER_VALIDATION = 19;
+  // Provides 'About this site' data about the site being visited.
+  ABOUT_THIS_SITE = 20;
 }
 
 // Presents semantics for how page load URLs should be matched.

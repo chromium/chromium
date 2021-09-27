@@ -11189,6 +11189,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTypes" separator=".">
+  <suffix name="AboutThisSite"
+      label="Provides 'About this site' data about the site being visited"/>
   <suffix name="BloomFilterValidation"
       label="Validates bloom filer allowlist/blocklist based hints"/>
   <suffix name="CompressPublicImages" label="Compresses public images"/>
