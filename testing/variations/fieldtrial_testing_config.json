@@ -800,47 +800,6 @@
             ]
         }
     ],
-    "AutoScreenBrightness": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_11062019",
-                    "params": {
-                        "auto_brightness_als_horizon_seconds": "3",
-                        "brightness_sample_delay_seconds": "3",
-                        "brightness_step_size": "1.5",
-                        "enabled": "true",
-                        "model_als_horizon_seconds": "3",
-                        "model_brightness_step_size": "2.0",
-                        "model_curve": "2",
-                        "user_adjustment_effect": "1"
-                    },
-                    "enable_features": [
-                        "AutoScreenBrightness"
-                    ]
-                },
-                {
-                    "name": "Enabled_11102019",
-                    "params": {
-                        "auto_brightness_als_horizon_seconds": "3",
-                        "brightness_sample_delay_seconds": "3",
-                        "brightness_step_size": "1.5",
-                        "enabled": "true",
-                        "model_als_horizon_seconds": "3",
-                        "model_brightness_step_size": "2.0",
-                        "model_curve": "2",
-                        "user_adjustment_effect": "1"
-                    },
-                    "enable_features": [
-                        "AutoScreenBrightness"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutocompleteFilterForMeaningfulNames": [
         {
             "platforms": [
