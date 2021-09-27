@@ -356,11 +356,6 @@ void ScenicWindow::UpdateSize() {
   bounds_ = gfx::Rect(ceilf(width * device_pixel_ratio_),
                       ceilf(height * device_pixel_ratio_));
 
-  // Update this window's Screen's dimensions to match the new size.
-  ScenicScreen* screen = manager_->screen();
-  if (screen)
-    screen->OnWindowBoundsChanged(window_id_, bounds_);
-
   // Update the root node to be shown, or hidden, based on the View state.
   // If the root node is not visible then skip resizing content, etc.
   if (!UpdateRootNodeVisibility())

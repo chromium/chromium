@@ -54,14 +54,10 @@ class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
   // Called by ScenicWindow destructor to unregister |window|.
   void RemoveWindow(int32_t window_id, ScenicWindow* window);
 
-  ScenicScreen* screen() { return screen_.get(); }
-
   ScenicWindow* GetWindow(int32_t window_id);
 
  private:
   base::IDMap<ScenicWindow*> windows_;
-
-  base::WeakPtr<ScenicScreen> screen_;
 
   fuchsia::ui::scenic::ScenicPtr scenic_;
 };

@@ -213,11 +213,6 @@ void FlatlandWindow::UpdateSize() {
   bounds_ = gfx::Rect(ceilf(width * device_pixel_ratio_),
                       ceilf(height * device_pixel_ratio_));
 
-  // Update this window's Screen's dimensions to match the new size.
-  FlatlandScreen* screen = manager_->screen();
-  if (screen)
-    screen->OnWindowBoundsChanged(window_id_, bounds_);
-
   // TODO(crbug.com/1230150): Handle zero size scenario.
 
   // Translate the node by half of the view dimensions to put it in the center

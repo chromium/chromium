@@ -23,24 +23,17 @@ void FlatlandWindowManager::Shutdown() {
 
 std::unique_ptr<PlatformScreen> FlatlandWindowManager::CreateScreen() {
   DCHECK(windows_.IsEmpty());
-  auto screen = std::make_unique<FlatlandScreen>();
-  screen_ = screen->GetWeakPtr();
-  return screen;
+  return std::make_unique<FlatlandScreen>();
 }
 
 int32_t FlatlandWindowManager::AddWindow(FlatlandWindow* window) {
-  int32_t id = windows_.Add(window);
-  if (screen_)
-    screen_->OnWindowAdded(id);
-  return id;
+  return windows_.Add(window);
 }
 
 void FlatlandWindowManager::RemoveWindow(int32_t window_id,
                                          FlatlandWindow* window) {
   DCHECK_EQ(window, windows_.Lookup(window_id));
   windows_.Remove(window_id);
-  if (screen_)
-    screen_->OnWindowRemoved(window_id);
 }
 
 FlatlandWindow* FlatlandWindowManager::GetWindow(int32_t window_id) {

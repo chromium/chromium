@@ -14,71 +14,22 @@ namespace ui {
 // TODO(crbug.com/1242052): Integrate with platform APIs for screen enumeration
 // and management, when available.
 
-FlatlandScreen::FlatlandScreen() : weak_factory_(this) {}
+FlatlandScreen::FlatlandScreen()
+    : displays_({display::Display::GetDefaultDisplay()}) {}
 
 FlatlandScreen::~FlatlandScreen() = default;
-
-void FlatlandScreen::OnWindowAdded(int32_t window_id) {
-  // Ensure that |window_id| is greater than the id of all other windows. This
-  // allows pushing the new entry to the end of the list while keeping it
-  // sorted.
-  DCHECK(displays_.empty() || (window_id > displays_.back().id()));
-  displays_.push_back(display::Display(window_id));
-
-  for (auto& observer : observers_)
-    observer.OnDisplayAdded(displays_.back());
-}
-
-void FlatlandScreen::OnWindowRemoved(int32_t window_id) {
-  auto display_it = std::find_if(displays_.begin(), displays_.end(),
-                                 [window_id](display::Display& display) {
-                                   return display.id() == window_id;
-                                 });
-  DCHECK(display_it != displays_.end());
-  display::Display removed_display = *display_it;
-  displays_.erase(display_it);
-
-  for (auto& observer : observers_) {
-    observer.OnDisplayRemoved(removed_display);
-    observer.OnDidRemoveDisplays();
-  }
-}
-
-void FlatlandScreen::OnWindowBoundsChanged(int32_t window_id,
-                                           gfx::Rect bounds) {
-  auto display_it = std::find_if(displays_.begin(), displays_.end(),
-                                 [window_id](display::Display& display) {
-                                   return display.id() == window_id;
-                                 });
-  DCHECK(display_it != displays_.end());
-  display_it->set_bounds(bounds);
-}
-
-base::WeakPtr<FlatlandScreen> FlatlandScreen::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
 
 const std::vector<display::Display>& FlatlandScreen::GetAllDisplays() const {
   return displays_;
 }
 
 display::Display FlatlandScreen::GetPrimaryDisplay() const {
-  // There is no primary display.
-  return display::Display();
+  return displays_[0];
 }
 
 display::Display FlatlandScreen::GetDisplayForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  auto display_it = std::find_if(displays_.begin(), displays_.end(),
-                                 [widget](const display::Display& display) {
-                                   return display.id() == widget;
-                                 });
-  if (display_it == displays_.end()) {
-    NOTREACHED();
-    return display::Display();
-  }
-
-  return *display_it;
+  return displays_[0];
 }
 
 gfx::Point FlatlandScreen::GetCursorScreenPoint() const {
@@ -94,22 +45,16 @@ gfx::AcceleratedWidget FlatlandScreen::GetAcceleratedWidgetAtScreenPoint(
 
 display::Display FlatlandScreen::GetDisplayNearestPoint(
     const gfx::Point& point) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return display::Display();
+  return displays_[0];
 }
 
 display::Display FlatlandScreen::GetDisplayMatching(
     const gfx::Rect& match_rect) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return display::Display();
+  return displays_[0];
 }
 
-void FlatlandScreen::AddObserver(display::DisplayObserver* observer) {
-  observers_.AddObserver(observer);
-}
+void FlatlandScreen::AddObserver(display::DisplayObserver* observer) {}
 
-void FlatlandScreen::RemoveObserver(display::DisplayObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
+void FlatlandScreen::RemoveObserver(display::DisplayObserver* observer) {}
 
 }  // namespace ui

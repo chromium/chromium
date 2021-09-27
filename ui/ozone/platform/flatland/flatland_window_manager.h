@@ -46,14 +46,10 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindowManager {
   // Called by FlatlandWindow destructor to unregister |window|.
   void RemoveWindow(int32_t window_id, FlatlandWindow* window);
 
-  FlatlandScreen* screen() { return screen_.get(); }
-
   FlatlandWindow* GetWindow(int32_t window_id);
 
  private:
   base::IDMap<FlatlandWindow*> windows_;
-
-  base::WeakPtr<FlatlandScreen> screen_;
 };
 
 }  // namespace ui

@@ -23,13 +23,6 @@ class FlatlandScreen : public PlatformScreen {
   FlatlandScreen(const FlatlandScreen&) = delete;
   FlatlandScreen& operator=(const FlatlandScreen&) = delete;
 
-  // Processes window state change events for the FlatlandWindow |window_id_|.
-  void OnWindowAdded(int32_t window_id);
-  void OnWindowRemoved(int32_t window_id);
-  void OnWindowBoundsChanged(int32_t window_id, gfx::Rect bounds);
-
-  base::WeakPtr<FlatlandScreen> GetWeakPtr();
-
   // display::Screen implementation.
   const std::vector<display::Display>& GetAllDisplays() const override;
   display::Display GetPrimaryDisplay() const override;
@@ -46,13 +39,7 @@ class FlatlandScreen : public PlatformScreen {
   void RemoveObserver(display::DisplayObserver* observer) override;
 
  private:
-  using DisplayVector = std::vector<display::Display>;
-
-  DisplayVector displays_;
-
-  base::ObserverList<display::DisplayObserver> observers_;
-
-  base::WeakPtrFactory<FlatlandScreen> weak_factory_;
+  std::vector<display::Display> displays_;
 };
 
 }  // namespace ui
