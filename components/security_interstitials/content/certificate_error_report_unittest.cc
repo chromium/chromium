@@ -389,6 +389,15 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_trust_impl =
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
 #endif
+#if defined(OS_WIN)
+  debug_info->win_platform_debug_info =
+      cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
+  debug_info->win_platform_debug_info->authroot_this_update =
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::TimeDelta::FromMicroseconds(8675309));
+  debug_info->win_platform_debug_info->authroot_sequence_number = {
+      'J', 'E', 'N', 'N', 'Y'};
+#endif
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
   debug_info->trial_der_verification_time = "it's just a string";
@@ -453,9 +462,22 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE,
             trial_info.mac_trust_impl());
 #else
+  EXPECT_FALSE(trial_info.has_mac_platform_debug_info());
   EXPECT_EQ(0, trial_info.mac_combined_trust_debug_info_size());
   EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
+
+#if defined(OS_WIN)
+  ASSERT_TRUE(trial_info.has_win_platform_debug_info());
+  EXPECT_EQ(
+      8675309,
+      trial_info.win_platform_debug_info().authroot_this_update_time_usec());
+  EXPECT_EQ("JENNY",
+            trial_info.win_platform_debug_info().authroot_sequence_number());
+#else
+  EXPECT_FALSE(trial_info.has_win_platform_debug_info());
+#endif
+
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());
   EXPECT_EQ(time.ToDeltaSinceWindowsEpoch().InMicroseconds(),
             trial_info.trial_verification_time_usec());

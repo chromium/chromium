@@ -41,6 +41,15 @@ struct MacPlatformVerifierDebugInfo {
   array<MacCertEvidenceInfo> status_chain;
 };
 
+[EnableIf=is_win]
+struct WinPlatformVerifierDebugInfo {
+  // The ThisUpdate date for AuthRoot, as reflected in the registry.
+  mojo_base.mojom.Time authroot_this_update;
+
+  // The sequence number for AuthRoot, as reflected in the registry.
+  array<uint8> authroot_sequence_number;
+};
+
 // Contains additional debugging data about the verification. This information
 // does not change the meaning of the results.
 struct CertVerifierDebugInfo {
@@ -63,6 +72,9 @@ struct CertVerifierDebugInfo {
 
   [EnableIf=is_mac]
   MacPlatformVerifierDebugInfo? mac_platform_debug_info;
+
+  [EnableIf=is_win]
+  WinPlatformVerifierDebugInfo? win_platform_debug_info;
 
   // The time as seen by CertVerifyProcBuiltin, in raw timestamp and in
   // exploded & encoded GeneralizedTime string.

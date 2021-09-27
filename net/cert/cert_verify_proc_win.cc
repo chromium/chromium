@@ -7,14 +7,19 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_local.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "crypto/capi_util.h"
 #include "crypto/scoped_capi_types.h"
@@ -41,6 +46,8 @@
 namespace net {
 
 namespace {
+
+const void* kResultDebugDataKey = &kResultDebugDataKey;
 
 int MapSecurityError(SECURITY_STATUS err) {
   // There are numerous security error codes, but these are the ones we thus
@@ -837,7 +844,217 @@ class ScopedThreadLocalCRLSet {
   ~ScopedThreadLocalCRLSet() { g_revocation_injector.Get().SetCRLSet(nullptr); }
 };
 
+// Helper class to determine the current version of AuthRoot, as stored in the
+// registry. Because calling `RegNotifyChangeKeyValue` associates the event
+// with the current thread, and `CertVerifyProc` exists to be used on
+// short-lived worker threads, this class handles the thread management to
+// ensure a cached, current value is always available.
+class AuthRootVersionChecker {
+ public:
+  struct AuthRootVersion {
+    // The sequence number of the CTL.
+    // Note: This is sorted big endian, similar to the encoded representation,
+    // and not little-endian, like CRYPT_INTEGER_BLOBs are stored by Windows.
+    std::vector<uint8_t> sequence_number;
+
+    // The ThisUpdate of the AuthRoot CTL.
+    // Note: If the AuthRoot version could not be determined, this will be the
+    // default time, and is_null() will return true.
+    base::Time this_update;
+  };
+
+  // Initializes the AuthRootVersionChecker. Note that this will open a
+  // registry key on the current thread, which is expected to be persistent,
+  // and begin monitoring for changes. This can be simplified once Windows 7
+  // support is dropped.
+  AuthRootVersionChecker();
+
+  // Returns the current (potentially cached) version details from the
+  // AuthRoot stored in the registry (if any).
+  AuthRootVersion GetAuthRootVersion();
+
+ private:
+  ~AuthRootVersionChecker() = default;
+
+  // Begins monitoring the registry for subsequent changes (e.g. to refresh
+  // the cached value).
+  void RefreshWatch();
+
+  // Returns true if the currently cached value may be stale and requires
+  // re-processing. If it returns true, the caller is responsible for calling
+  // `UpdateAuthRootVersion()` and `RefreshWatch()` (in any order).
+  bool ShouldUpdate() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Updates the current AuthRoot version, which may block due to reading
+  // the registry and parsing AuthRoot. Should only be called on a worker,
+  // and while holding `lock_`.
+  void UpdateAuthRootVersion() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  base::win::RegKey key_;
+
+  // On >= Win 8, the event signalled by Windows whenever the registry has
+  // changed.
+  const base::win::ScopedHandle event_;
+
+  base::Lock lock_;
+  AuthRootVersion auth_root_version_ GUARDED_BY(lock_);
+
+  // On <= Win 7, stores the last update time of the registry key; used to
+  // avoid needing to constantly reparse the registry value.
+  base::Time last_update_ GUARDED_BY(lock_);
+};
+
+AuthRootVersionChecker::AuthRootVersionChecker()
+    : event_(CreateEvent(nullptr, FALSE, TRUE, nullptr)) {
+  DCHECK(event_.IsValid());
+
+  constexpr wchar_t kAuthRootPath[] =
+      L"SOFTWARE\\Microsoft\\SystemCertificates\\AuthRoot\\AutoUpdate";
+  if (key_.Open(HKEY_LOCAL_MACHINE, kAuthRootPath, KEY_READ) != ERROR_SUCCESS)
+    return;
+
+  // On Win 7, last_update_ is the zero time, and thus will dirty the cache.
+  // On Win 8+, event_ is initially signalled, simulating a dirty cache.
+}
+
+AuthRootVersionChecker::AuthRootVersion
+AuthRootVersionChecker::GetAuthRootVersion() {
+  base::AutoLock guard(lock_);
+
+  if (ShouldUpdate()) {
+    UpdateAuthRootVersion();
+    RefreshWatch();
+  }
+
+  return auth_root_version_;
+}
+
+void AuthRootVersionChecker::RefreshWatch() {
+  // If the registry is corrupted, don't bother.
+  if (!key_.Valid())
+    return;
+
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    // On Windows 7 and earlier, using RegNotifyChangeKeyValue from a worker
+    // thread will abandon the notification if that thread ends. Rather than
+    // marshalling to a persistent thread, on these versions, `ShouldUpdate()`
+    // just takes a less-optimized path.
+    return;
+  }
+
+  // On Windows 8 or later, any thread can monitor the registry for changes,
+  // and monitoring is not abandoned if the thread ends.
+  DWORD flags = REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_THREAD_AGNOSTIC;
+  RegNotifyChangeKeyValue(key_.Handle(), FALSE, flags, event_.Get(), TRUE);
+}
+
+bool AuthRootVersionChecker::ShouldUpdate() {
+  lock_.AssertAcquired();
+
+  // If the registry is corrupted, don't bother.
+  if (!key_.Valid())
+    return false;
+
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    // On Win 8+, just check if the event is signaled.
+    return WaitForSingleObject(event_.Get(), 0) == WAIT_OBJECT_0;
+  }
+
+  // On Win 7 and earlier, check the last modification time of the registry.
+  // This is less efficient than using the event, but a simpler implementation
+  // than needing to marshal RegNotifyChangeKeyValue to a persistent thread.
+  FILETIME current_timestamp = {0, 0};
+  LSTATUS result = RegQueryInfoKeyW(key_.Handle(), nullptr, nullptr, nullptr,
+                                    nullptr, nullptr, nullptr, nullptr, nullptr,
+                                    nullptr, nullptr, &current_timestamp);
+
+  // If for some reason things failed, rather than constantly querying the
+  // registry every time, fail closed and just use the stale value.
+  if (result != ERROR_SUCCESS)
+    return false;
+
+  base::Time update_time = base::Time::FromFileTime(current_timestamp);
+  if (update_time > last_update_) {
+    last_update_ = update_time;
+    return true;
+  }
+  return false;
+}
+
+void AuthRootVersionChecker::UpdateAuthRootVersion() {
+  lock_.AssertAcquired();
+
+  if (!key_.Valid())
+    return;
+
+  constexpr wchar_t kCtlValueName[] = L"EncodedCtl";
+
+  DWORD data_type = REG_BINARY;
+  DWORD value_size = 0;
+  LONG rv = key_.ReadValue(kCtlValueName, nullptr, &value_size, &data_type);
+  if (rv != ERROR_SUCCESS || !value_size || data_type != REG_BINARY)
+    return;
+
+  std::vector<uint8_t> value(value_size);
+  rv = key_.ReadValue(kCtlValueName, value.data(), &value_size, &data_type);
+  if (rv != ERROR_SUCCESS || value_size == 0 || data_type != REG_BINARY)
+    return;
+
+  value.resize(value_size);
+
+  crypto::ScopedPCCTL_CONTEXT ctl_context(
+      CertCreateCTLContext(PKCS_7_ASN_ENCODING, value.data(), value.size()));
+  if (!ctl_context || ctl_context->pCtlInfo->SequenceNumber.cbData == 0)
+    return;
+
+  auth_root_version_.sequence_number.assign(
+      ctl_context->pCtlInfo->SequenceNumber.pbData,
+      ctl_context->pCtlInfo->SequenceNumber.pbData +
+          ctl_context->pCtlInfo->SequenceNumber.cbData);
+  // Convert from Windows' little-endian representation to the expected (as
+  // encoded) big-endian form.
+  std::reverse(std::begin(auth_root_version_.sequence_number),
+               std::end(auth_root_version_.sequence_number));
+  auth_root_version_.this_update =
+      base::Time::FromFileTime(ctl_context->pCtlInfo->ThisUpdate);
+}
+
 }  // namespace
+
+CertVerifyProcWin::ResultDebugData::ResultDebugData(
+    base::Time authroot_this_update,
+    std::vector<uint8_t> authroot_sequence_number)
+    : authroot_this_update_(authroot_this_update),
+      authroot_sequence_number_(std::move(authroot_sequence_number)) {}
+
+CertVerifyProcWin::ResultDebugData::ResultDebugData(
+    const ResultDebugData& other) = default;
+
+CertVerifyProcWin::ResultDebugData::~ResultDebugData() = default;
+
+// static
+const CertVerifyProcWin::ResultDebugData*
+CertVerifyProcWin::ResultDebugData::Get(
+    const base::SupportsUserData* debug_data) {
+  return static_cast<ResultDebugData*>(
+      debug_data->GetUserData(kResultDebugDataKey));
+}
+
+// static
+void CertVerifyProcWin::ResultDebugData::Create(
+    base::Time authroot_this_update,
+    std::vector<uint8_t> authroot_sequence_number,
+    base::SupportsUserData* debug_data) {
+  debug_data->SetUserData(
+      kResultDebugDataKey,
+      std::make_unique<ResultDebugData>(authroot_this_update,
+                                        std::move(authroot_sequence_number)));
+}
+
+std::unique_ptr<base::SupportsUserData::Data>
+CertVerifyProcWin::ResultDebugData::Clone() {
+  return std::make_unique<ResultDebugData>(*this);
+}
 
 CertVerifyProcWin::CertVerifyProcWin() {}
 
@@ -1016,6 +1233,14 @@ int CertVerifyProcWin::VerifyInternal(
     verify_result->cert_status |= CERT_STATUS_INVALID;
     return MapSecurityError(GetLastError());
   }
+
+  // Include diagnostics about the current AuthRoot version.
+  static base::NoDestructor<AuthRootVersionChecker> authroot_version_checker;
+  AuthRootVersionChecker::AuthRootVersion authroot_version =
+      authroot_version_checker->GetAuthRootVersion();
+  ResultDebugData::Create(std::move(authroot_version.this_update),
+                          std::move(authroot_version.sequence_number),
+                          verify_result);
 
   // Perform a second check with CRLSets. Although the Revocation Provider
   // should have prevented invalid paths from being built, the behaviour and

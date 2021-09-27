@@ -168,6 +168,25 @@ TrustImplTypeFromMojom(
   }
 }
 #endif  // defined(OS_APPLE)
+
+#if defined(OS_WIN)
+void AddWinPlatformDebugInfoToReport(
+    const cert_verifier::mojom::WinPlatformVerifierDebugInfoPtr&
+        win_platform_debug_info,
+    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
+  if (!win_platform_debug_info)
+    return;
+  chrome_browser_ssl::WinPlatformDebugInfo* report_info =
+      trial_report->mutable_win_platform_debug_info();
+  report_info->set_authroot_this_update_time_usec(
+      win_platform_debug_info->authroot_this_update.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  report_info->mutable_authroot_sequence_number()->assign(
+      std::begin(win_platform_debug_info->authroot_sequence_number),
+      std::end(win_platform_debug_info->authroot_sequence_number));
+}
+#endif  // defined(OS_WIN)
+
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 bool CertificateChainToString(const net::X509Certificate& cert,
@@ -245,6 +264,10 @@ CertificateErrorReport::CertificateErrorReport(
       trial_report->mutable_mac_combined_trust_debug_info());
   trial_report->set_mac_trust_impl(
       TrustImplTypeFromMojom(debug_info->mac_trust_impl));
+#endif
+#if defined(OS_WIN)
+  AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
+                                  trial_report);
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(

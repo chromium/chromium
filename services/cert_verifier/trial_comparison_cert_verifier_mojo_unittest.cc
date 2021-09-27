@@ -19,6 +19,9 @@
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
+#if defined(OS_WIN)
+#include "net/cert/cert_verify_proc_win.h"
+#endif
 
 struct ReceivedReport {
   std::string hostname;
@@ -104,6 +107,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   net::CertVerifyResult trial_result;
   trial_result.verified_cert = chain2;
 
+  base::Time time = base::Time::Now();
+
 #if defined(OS_MAC)
   constexpr uint32_t kExpectedTrustResult = 4;
   constexpr int32_t kExpectedResultCode = -12345;
@@ -131,8 +136,12 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   mac_trust_debug_info->UpdateTrustDebugInfo(
       kExpectedTrustDebugInfo, net::TrustStoreMac::TrustImplType::kSimple);
 #endif
+#if defined(OS_WIN)
+  std::vector<uint8_t> authroot_sequence{'T', 'E', 'S', 'T'};
+  net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
+                                                  &primary_result);
+#endif
 
-  base::Time time = base::Time::Now();
   net::der::GeneralizedTime der_time;
   der_time.year = 2019;
   der_time.month = 9;
@@ -193,6 +202,14 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   EXPECT_EQ(
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
       report.debug_info->mac_trust_impl);
+#endif
+#if defined(OS_WIN)
+  ASSERT_TRUE(report.debug_info->win_platform_debug_info);
+  EXPECT_EQ(time,
+            report.debug_info->win_platform_debug_info->authroot_this_update);
+  EXPECT_EQ(
+      authroot_sequence,
+      report.debug_info->win_platform_debug_info->authroot_sequence_number);
 #endif
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);

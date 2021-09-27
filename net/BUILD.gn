@@ -4444,6 +4444,7 @@ test("net_unittests") {
     sources += [
       "base/network_change_notifier_win_unittest.cc",
       "base/network_interfaces_win_unittest.cc",
+      "cert/cert_verify_proc_win_unittest.cc",
       "http/http_auth_sspi_win_unittest.cc",
       "http/mock_sspi_library_win.cc",
       "http/mock_sspi_library_win.h",

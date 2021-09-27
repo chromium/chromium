@@ -88,6 +88,16 @@ struct FreeCertChainContextFunctor {
 using ScopedPCCERT_CHAIN_CONTEXT =
     std::unique_ptr<const CERT_CHAIN_CONTEXT, FreeCertChainContextFunctor>;
 
+struct FreeCtlContextFunctor {
+  void operator()(PCCTL_CONTEXT ctl_context) const {
+    if (ctl_context)
+      CertFreeCTLContext(ctl_context);
+  }
+};
+
+using ScopedPCCTL_CONTEXT =
+    std::unique_ptr<const CTL_CONTEXT, FreeCtlContextFunctor>;
+
 }  // namespace crypto
 
 #endif  // CRYPTO_SCOPED_CAPI_TYPES_H_

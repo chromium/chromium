@@ -236,6 +236,15 @@ message MacPlatformDebugInfo {
   repeated MacCertEvidenceInfo status_chain = 3;
 }
 
+message WinPlatformDebugInfo {
+  // The ThisUpdate of AuthRoot, as reflected in the registry, in usec since
+  // the Windows epoch.
+  optional int64 authroot_this_update_time_usec = 1;
+
+  // The Sequence Number of AuthRoot, as reflected in the registry.
+  optional bytes authroot_sequence_number = 2;
+}
+
 // Contains the results of verification by the trial verifier. All fields
 // have the same meaning as those of the same name in CertLoggerRequest.
 message TrialVerificationInfo {
@@ -310,4 +319,7 @@ message TrialVerificationInfo {
   // DER encoded SignedCertificateTimestampList from the TLS extension, if
   // present.
   optional bytes sct_list = 12;
+
+  // Debug information from CertVerifyProcWin (if it was the primary verifier).
+  optional WinPlatformDebugInfo win_platform_debug_info = 14;
 }

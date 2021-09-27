@@ -18,6 +18,10 @@
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
+#if defined(OS_WIN)
+#include "net/cert/cert_verify_proc_win.h"
+#endif
+
 namespace {
 
 #if defined(OS_MAC)
@@ -98,6 +102,7 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     const net::CertVerifyResult& trial_result) {
   mojom::CertVerifierDebugInfoPtr debug_info =
       mojom::CertVerifierDebugInfo::New();
+
 #if defined(OS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(&primary_result);
@@ -125,7 +130,21 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     debug_info->mac_trust_impl =
         TrustImplTypeToMojom(mac_trust_debug_info->trust_impl());
   }
-#endif
+#endif  // defined(OS_MAC)
+
+#if defined(OS_WIN)
+  auto* win_platform_debug_info =
+      net::CertVerifyProcWin::ResultDebugData::Get(&primary_result);
+  if (win_platform_debug_info) {
+    debug_info->win_platform_debug_info =
+        mojom::WinPlatformVerifierDebugInfo::New();
+    debug_info->win_platform_debug_info->authroot_this_update =
+        win_platform_debug_info->authroot_this_update();
+    debug_info->win_platform_debug_info->authroot_sequence_number =
+        win_platform_debug_info->authroot_sequence_number();
+  }
+#endif  // defined(OS_WIN)
+
   auto* cert_verify_proc_builtin_debug_data =
       net::CertVerifyProcBuiltinResultDebugData::Get(&trial_result);
   if (cert_verify_proc_builtin_debug_data) {
