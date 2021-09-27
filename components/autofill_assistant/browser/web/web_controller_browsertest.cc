@@ -1711,6 +1711,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOption) {
                          /* strict= */ true)
                 .proto_status());
 
+  // Selecting with an invalid regular expression.
+  EXPECT_EQ(INVALID_ACTION,
+            SelectOption(selector, "*",
+                         /* case_sensitive= */ false, SelectOptionProto::LABEL,
+                         /* strict= */ true)
+                .proto_status());
+
   // Fails if no comparison attribute is set.
   EXPECT_EQ(INVALID_ACTION,
             SelectOption(selector, "one", /* case_sensitive= */ false,

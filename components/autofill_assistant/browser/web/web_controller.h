@@ -510,14 +510,9 @@ class WebController {
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
   // Handling a JS result for a "SelectOption" action. This expects the JS
-  // result to contain an integer and returns the following status:
-  // * -1 -> INVALID_TARGET
-  // *  0 -> OPTION_ELEMENT_NOT_FOUND
-  // *  1 -> ACTION_APPLIED
-  // *  n -> TOO_MANY_OPTION_VALUES_FOUND
+  // result to contain an integer mapped to a ClientStatus.
   void OnSelectOptionJavascriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
-      ProcessedActionStatusProto status_if_zero,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
   void SendKeyEvents(WebControllerErrorInfoProto::WebAction web_action,

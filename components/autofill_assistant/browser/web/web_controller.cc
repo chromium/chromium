@@ -135,8 +135,13 @@ const char* const kScrollContainerScript =
 // See |WebController::OnSelectOptionJavascriptResult| for result handling.
 const char* const kSelectOptionScript =
     R"(function(re2, valueSourceAttribute, caseSensitive, strict) {
-      if (this.options == null) return -1;
-      const regexp = RegExp(re2, caseSensitive ? '' : 'i');
+      if (this.options == null) return 31; // INVALID_TARGET
+      let regexp;
+      try {
+        regexp = RegExp(re2, caseSensitive ? '' : 'i');
+      } catch (e) {
+        return 11; // INVALID_ACTION
+      }
       let numResults = 0;
       let newIndex = -1;
       for (let i = 0; i < this.options.length; ++i) {
@@ -148,14 +153,17 @@ const char* const kSelectOptionScript =
           }
         }
       }
-      if (numResults == 1 || (numResults > 1 && !strict)) {
+      if (numResults === 0) {
+        return 16; // OPTION_VALUE_NOT_FOUND
+      }
+      if (numResults == 1 || !strict) {
         this.options.selectedIndex = newIndex;
         const e = document.createEvent('HTMLEvents');
         e.initEvent('change', true, true);
         this.dispatchEvent(e);
-        return 1;
+        return 2; // ACTION_APPLIED
       }
-      return numResults;
+      return 30; // TOO_MANY_OPTION_VALUES_FOUND
     })";
 
 // Javascript to select the option element in a select element. This does *not*
@@ -163,14 +171,14 @@ const char* const kSelectOptionScript =
 // See |WebController::OnSelectOptionJavascriptResult| for result handling.
 const char* const kSelectOptionElementScript =
     R"(function(option) {
-      if (this.options == null) return -1;
+      if (this.options == null) return 31; // INVALID_TARGET
       for (let i = 0; i < this.options.length; ++i) {
         if (this.options[i] === option) {
           this.options.selectedIndex = i;
-          return 1;
+          return 2; // ACTION_APPLIED
         }
       }
-      return 0;
+      return 16; // OPTION_VALUE_NOT_FOUND
     })";
 
 // Javascript to check the option element in a select element against an
@@ -178,8 +186,11 @@ const char* const kSelectOptionElementScript =
 // See |WebController::OnSelectOptionJavascriptResult| for result handling.
 const char* const kCheckOptionElementScript =
     R"(function(option) {
-      if (this.options == null) return -1;
-      return (this.options[this.options.selectedIndex] === option) ? 1 : 0;
+      if (this.options == null) return 31; // INVALID_TARGET
+      if (this.options[this.options.selectedIndex] === option) {
+        return 2; // ACTION_APPLIED
+      }
+      return 26; // ELEMENT_MISMATCH
     })";
 
 // Javascript to highlight an element.
@@ -1137,8 +1148,7 @@ void WebController::SelectOption(
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus,
                                     WebControllerErrorInfoProto::SELECT_OPTION,
-                                    std::move(callback)),
-                     /* status_if_false= */ OPTION_VALUE_NOT_FOUND));
+                                    std::move(callback))));
 }
 
 void WebController::SelectOptionElement(
@@ -1160,8 +1170,7 @@ void WebController::SelectOptionElement(
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SELECT_OPTION_ELEMENT,
-                         std::move(callback)),
-          /* status_if_false= */ OPTION_VALUE_NOT_FOUND));
+                         std::move(callback))));
 }
 
 void WebController::CheckSelectedOptionElement(
@@ -1183,13 +1192,11 @@ void WebController::CheckSelectedOptionElement(
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::CHECK_OPTION_ELEMENT,
-                         std::move(callback)),
-          /* status_if_false= */ ELEMENT_MISMATCH));
+                         std::move(callback))));
 }
 
 void WebController::OnSelectOptionJavascriptResult(
     base::OnceCallback<void(const ClientStatus&)> callback,
-    ProcessedActionStatusProto status_if_zero,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
   ClientStatus status =
@@ -1198,25 +1205,14 @@ void WebController::OnSelectOptionJavascriptResult(
     std::move(callback).Run(status);
     return;
   }
-  int int_result;
-  if (!SafeGetIntValue(result->GetResult(), &int_result)) {
+  int status_result;
+  if (!SafeGetIntValue(result->GetResult(), &status_result)) {
     std::move(callback).Run(
         UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
     return;
   }
-  if (int_result < 0) {
-    std::move(callback).Run(ClientStatus(INVALID_TARGET));
-    return;
-  }
-  if (int_result == 0) {
-    std::move(callback).Run(ClientStatus(status_if_zero));
-    return;
-  }
-  if (int_result > 1) {
-    std::move(callback).Run(ClientStatus(TOO_MANY_OPTION_VALUES_FOUND));
-    return;
-  }
-  std::move(callback).Run(OkClientStatus());
+  std::move(callback).Run(
+      ClientStatus(static_cast<ProcessedActionStatusProto>(status_result)));
 }
 
 void WebController::HighlightElement(
