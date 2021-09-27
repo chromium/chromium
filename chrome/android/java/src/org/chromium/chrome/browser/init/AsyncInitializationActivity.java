@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
@@ -94,6 +95,9 @@ public abstract class AsyncInitializationActivity
 
     private Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
+
+    // See enableHardwareAcceleration()
+    private boolean mSetWindowHWA;
 
     private static boolean sInterceptMoveTaskToBackForTesting;
     private static boolean sBackInterceptedForTesting;
@@ -917,5 +921,42 @@ public abstract class AsyncInitializationActivity
 
     public static boolean wasMoveTaskToBackInterceptedForTesting() {
         return sBackInterceptedForTesting;
+    }
+
+    private boolean shouldDisableHardwareAcceleration() {
+        // Low end devices should disable hardware acceleration for memory gains.
+        return SysUtils.isLowEndDevice();
+    }
+
+    protected void enableHardwareAcceleration() {
+        // HW acceleration is disabled in the manifest and may be re-enabled here.
+        if (!shouldDisableHardwareAcceleration()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+
+            // When HW acceleration is enabled manually for an activity, child windows (e.g.
+            // dialogs) don't inherit HW acceleration state. However, when HW acceleration is
+            // enabled in the manifest, child windows do inherit HW acceleration state. That
+            // looks like a bug, so I filed b/23036374
+            //
+            // In the meanwhile the workaround is to call
+            //   window.setWindowManager(..., hardwareAccelerated=true)
+            // to let the window know that it's HW accelerated. However, since there is no way
+            // to know 'appToken' argument until window's view is attached to the window (!!),
+            // we have to do the workaround in onAttachedToWindow()
+            mSetWindowHWA = true;
+        }
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        // See enableHardwareAcceleration()
+        if (mSetWindowHWA) {
+            mSetWindowHWA = false;
+            getWindow().setWindowManager(getWindow().getWindowManager(),
+                    getWindow().getAttributes().token, getComponentName().flattenToString(),
+                    true /* hardwareAccelerated */);
+        }
     }
 }
