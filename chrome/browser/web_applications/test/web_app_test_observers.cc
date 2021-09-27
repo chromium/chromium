@@ -168,7 +168,6 @@ void WebAppTestInstallObserver::BeginListening(
 }
 
 AppId WebAppTestInstallObserver::Wait() {
-  DCHECK(is_listening_);
   wait_loop_.Run();
   return last_app_id_;
 }
@@ -199,7 +198,6 @@ void WebAppTestInstallWithOsHooksObserver::BeginListening(
 }
 
 AppId WebAppTestInstallWithOsHooksObserver::Wait() {
-  DCHECK(is_listening_);
   wait_loop_.Run();
   return last_app_id_;
 }
@@ -230,7 +228,6 @@ void WebAppTestManifestUpdatedObserver::BeginListening(
 }
 
 AppId WebAppTestManifestUpdatedObserver::Wait() {
-  DCHECK(is_listening_);
   wait_loop_.Run();
   return last_app_id_;
 }
@@ -260,7 +257,6 @@ void WebAppTestUninstallObserver::BeginListening(
 }
 
 AppId WebAppTestUninstallObserver::Wait() {
-  DCHECK(is_listening_);
   wait_loop_.Run();
   return last_app_id_;
 }

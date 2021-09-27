@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -402,15 +403,21 @@ void WebAppIntegrationBrowserTestBase::InstallMenuOption(
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  WebAppTestInstallWithOsHooksObserver observer(profile());
-  observer.BeginListening();
+  WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-  active_app_id_ = observer.Wait();
   app_loaded_observer.Wait();
+  active_app_id_ = install_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
-  auto* browser_list = BrowserList::GetInstance();
-  app_browser_ = browser_list->GetLastActive();
-  DCHECK(AppBrowserController::IsWebApp(app_browser_));
+  BrowserList* browser_list = BrowserList::GetInstance();
+  app_browser_ = nullptr;
+  for (Browser* browser : *browser_list) {
+    if (AppBrowserController::IsForWebApp(browser, active_app_id_)) {
+      app_browser_ = browser;
+      return;
+    }
+  }
+  NOTREACHED() << "Unable to find app browser for app " << active_app_id_;
 }
 
 void WebAppIntegrationBrowserTestBase::InstallLocally(
@@ -452,16 +459,26 @@ void WebAppIntegrationBrowserTestBase::InstallOmniboxIcon(
       content::NotificationService::AllSources());
 
   ASSERT_TRUE(pwa_install_view()->GetVisible());
+  WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
   pwa_install_view()->ExecuteForTesting();
 
   run_loop.Run();
   app_loaded_observer.Wait();
+  active_app_id_ = install_observer.Wait();
+  DCHECK_EQ(app_id, active_app_id_);
 
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
-  active_app_id_ = app_id;
+
   auto* browser_list = BrowserList::GetInstance();
-  app_browser_ = browser_list->GetLastActive();
-  DCHECK(AppBrowserController::IsWebApp(app_browser_));
+  app_browser_ = nullptr;
+  for (Browser* browser : *browser_list) {
+    if (AppBrowserController::IsForWebApp(browser, active_app_id_)) {
+      app_browser_ = browser;
+      return;
+    }
+  }
+  NOTREACHED() << "Unable to find app browser for app " << active_app_id_;
 }
 
 void WebAppIntegrationBrowserTestBase::InstallPolicyAppTabbedNoShortcut(
