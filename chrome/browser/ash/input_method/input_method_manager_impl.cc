@@ -879,6 +879,40 @@ void InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions() {
   }
 }
 
+const InputMethodDescriptor*
+InputMethodManagerImpl::StateImpl::LookupInputMethod(
+    const std::string& input_method_id) {
+  std::string input_method_id_to_switch = input_method_id;
+
+  // Sanity check
+  if (!InputMethodIsEnabled(input_method_id)) {
+    std::unique_ptr<InputMethodDescriptors> input_methods(
+        GetEnabledInputMethods());
+    DCHECK(!input_methods->empty());
+    input_method_id_to_switch = input_methods->at(0).id();
+    if (!input_method_id.empty()) {
+      DVLOG(1) << "Can't change the current input method to " << input_method_id
+               << " since the engine is not enabled. "
+               << "Switch to " << input_method_id_to_switch << " instead.";
+    }
+  }
+
+  const InputMethodDescriptor* descriptor = NULL;
+  if (extension_ime_util::IsExtensionIME(input_method_id_to_switch) ||
+      extension_ime_util::IsArcIME(input_method_id_to_switch)) {
+    DCHECK(available_input_methods_.find(input_method_id_to_switch) !=
+           available_input_methods_.end());
+    descriptor = &(available_input_methods_[input_method_id_to_switch]);
+  } else {
+    descriptor = manager_->util_.GetInputMethodDescriptorFromId(
+        input_method_id_to_switch);
+    if (!descriptor)
+      LOG(ERROR) << "Unknown input method id: " << input_method_id_to_switch;
+  }
+  DCHECK(descriptor);
+  return descriptor;
+}
+
 // ------------------------ InputMethodManagerImpl
 bool InputMethodManagerImpl::IsLoginKeyboard(
     const std::string& layout) const {
@@ -1018,41 +1052,6 @@ void InputMethodManagerImpl::RemoveCandidateWindowObserver(
 void InputMethodManagerImpl::RemoveImeMenuObserver(
     InputMethodManager::ImeMenuObserver* observer) {
   ime_menu_observers_.RemoveObserver(observer);
-}
-
-// TODO(crbug/1134465): Move this to "StateImpl" section of this .cc file.
-const InputMethodDescriptor*
-InputMethodManagerImpl::StateImpl::LookupInputMethod(
-    const std::string& input_method_id) {
-  std::string input_method_id_to_switch = input_method_id;
-
-  // Sanity check
-  if (!InputMethodIsEnabled(input_method_id)) {
-    std::unique_ptr<InputMethodDescriptors> input_methods(
-        GetEnabledInputMethods());
-    DCHECK(!input_methods->empty());
-    input_method_id_to_switch = input_methods->at(0).id();
-    if (!input_method_id.empty()) {
-      DVLOG(1) << "Can't change the current input method to "
-               << input_method_id << " since the engine is not enabled. "
-               << "Switch to " << input_method_id_to_switch << " instead.";
-    }
-  }
-
-  const InputMethodDescriptor* descriptor = NULL;
-  if (extension_ime_util::IsExtensionIME(input_method_id_to_switch) ||
-      extension_ime_util::IsArcIME(input_method_id_to_switch)) {
-    DCHECK(available_input_methods_.find(input_method_id_to_switch) !=
-           available_input_methods_.end());
-    descriptor = &(available_input_methods_[input_method_id_to_switch]);
-  } else {
-    descriptor = manager_->util_.GetInputMethodDescriptorFromId(
-        input_method_id_to_switch);
-    if (!descriptor)
-      LOG(ERROR) << "Unknown input method id: " << input_method_id_to_switch;
-  }
-  DCHECK(descriptor);
-  return descriptor;
 }
 
 void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
