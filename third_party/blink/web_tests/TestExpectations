@@ -6254,7 +6254,6 @@ crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-002.html [ 
 
 external/wpt/css/css-transforms/2d-rotate-001.html [ Failure ]
 external/wpt/css/css-transforms/css-skew-002.html [ Failure ]
-external/wpt/css/css-transforms/css-transforms-transformlist.html [ Failure ]
 external/wpt/css/css-transforms/group/svg-transform-nested-009.html [ Failure ]
 external/wpt/css/css-transforms/rotate_45deg.html [ Failure ]
 external/wpt/css/css-transforms/skew-test1.html [ Failure ]
