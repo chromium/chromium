@@ -554,9 +554,9 @@ const internal::SchemaData* GetChromeSchemaData();
 
   # Declare arrays of metapolicies.
   f.write('// Arrays of metapolicies.\n' 'namespace metapolicy {\n\n')
-  f.write('extern const char* kMerge[%s];\n' %
+  f.write('extern const char* const kMerge[%s];\n' %
           len(_GetMetapoliciesOfType(policies, METAPOLICY_TYPE['merge'])))
-  f.write('extern const char* kPrecedence[%s];\n\n' %
+  f.write('extern const char* const kPrecedence[%s];\n\n' %
           len(_GetMetapoliciesOfType(policies, METAPOLICY_TYPE['precedence'])))
   f.write('}  // namespace metapolicy\n\n')
 
@@ -1292,7 +1292,7 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   # Populate merge metapolicy array.
   merge_metapolicies = _GetMetapoliciesOfType(policies,
                                               METAPOLICY_TYPE['merge'])
-  f.write('const char* kMerge[%s] = {\n' % len(merge_metapolicies))
+  f.write('const char* const kMerge[%s] = {\n' % len(merge_metapolicies))
   for metapolicy in merge_metapolicies:
     f.write('  key::k%s,\n' % metapolicy)
   f.write('};\n\n')
@@ -1300,7 +1300,8 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   # Populate precedence metapolicy array.
   precedence_metapolicies = _GetMetapoliciesOfType(
       policies, METAPOLICY_TYPE['precedence'])
-  f.write('const char* kPrecedence[%s] = {\n' % len(precedence_metapolicies))
+  f.write('const char* const kPrecedence[%s] = {\n' %
+          len(precedence_metapolicies))
   for metapolicy in precedence_metapolicies:
     f.write('  key::k%s,\n' % metapolicy)
   f.write('};\n\n')

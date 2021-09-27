@@ -161,8 +161,8 @@ extern const size_t kPolicyAtomicGroupMappingsLength;
 // Arrays of metapolicies.
 namespace metapolicy {
 
-extern const char* kMerge[1];
-extern const char* kPrecedence[1];
+extern const char* const kMerge[1];
+extern const char* const kPrecedence[1];
 
 }  // namespace metapolicy
 
@@ -368,11 +368,11 @@ const size_t kPolicyAtomicGroupMappingsLength = 0;
 
 namespace metapolicy {
 
-const char* kMerge[1] = {
+const char* const kMerge[1] = {
   key::kExampleBoolMergeMetapolicy,
 };
 
-const char* kPrecedence[1] = {
+const char* const kPrecedence[1] = {
   key::kExampleBoolPrecedenceMetapolicy,
 };
 

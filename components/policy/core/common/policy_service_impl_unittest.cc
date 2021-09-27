@@ -1422,6 +1422,95 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
   EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
 }
 
+#if !defined(OS_CHROMEOS)
+// The cloud user policy merging metapolicy is not applicable in Chrome OS.
+TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  // Initialize affiliation IDs. User and device ID is identical.
+  base::flat_set<std::string> affiliation_ids;
+  affiliation_ids.insert(kAffiliationId1);
+
+  base::Value list1(base::Value::Type::LIST);
+  list1.Append(base::Value(kUrl1));
+  list1.Append(base::Value(kUrl2));
+  base::Value list2 = base::Value(base::Value::Type::LIST);
+  list2.Append(base::Value(kUrl2));
+  list2.Append(base::Value(kUrl3));
+  base::Value list3 = base::Value(base::Value::Type::LIST);
+  list2.Append(base::Value(kUrl3));
+  list2.Append(base::Value(kUrl4));
+  base::Value result = base::Value(base::Value::Type::LIST);
+  result.Append(base::Value(kUrl1));
+  result.Append(base::Value(kUrl2));
+  result.Append(base::Value(kUrl3));
+  result.Append(base::Value(kUrl4));
+
+  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
+  policy->Append(base::Value(policy::key::kExtensionInstallForcelist));
+
+  // policy_bundle1 is treated as a machine platform bundle.
+  auto policy_bundle1 = std::make_unique<PolicyBundle>();
+  PolicyMap& policy_map1 = policy_bundle1->Get(chrome_namespace);
+  PolicyMap::Entry entry_list_1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_PLATFORM, std::move(list1),
+                                nullptr);
+  policy_map1.Set(key::kExtensionInstallForcelist, entry_list_1.DeepCopy());
+
+  // policy_bundle2 is treated as a machine cloud bundle. In addition to the
+  // device affiliation IDs, the metapolicies are also defined here to simulate
+  // being set through CBCM.
+  auto policy_bundle2 = std::make_unique<PolicyBundle>();
+  PolicyMap& policy_map2 = policy_bundle2->Get(chrome_namespace);
+  policy_map2.Set(key::kPolicyListMultipleSourceMergeList,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD, policy->Clone(), nullptr);
+  policy_map2.Set(key::kCloudUserPolicyMerge, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(true),
+                  nullptr);
+  PolicyMap::Entry entry_list_2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_CLOUD, std::move(list2), nullptr);
+  policy_map2.Set(key::kExtensionInstallForcelist, entry_list_2.DeepCopy());
+  policy_map2.SetDeviceAffiliationIds(affiliation_ids);
+
+  // policy_bundle3 is treated as a user cloud bundle. The user affiliation IDs
+  // are defined here to reflect what would happen in reality.
+  auto policy_bundle3 = std::make_unique<PolicyBundle>();
+  PolicyMap& policy_map3 = policy_bundle3->Get(chrome_namespace);
+  PolicyMap::Entry entry_list_3(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                                POLICY_SOURCE_CLOUD, std::move(list3), nullptr);
+  policy_map3.Set(key::kExtensionInstallForcelist, entry_list_3.DeepCopy());
+  policy_map3.SetUserAffiliationIds(affiliation_ids);
+
+  // The expected_chrome PolicyMap contains the combined URLs from all three
+  // policy bundles. The affiliation IDs don't need to be added as they're not
+  // compared in the PolicyMap equality check.
+  PolicyMap expected_chrome;
+  expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, policy->Clone(), nullptr);
+  expected_chrome.Set(key::kCloudUserPolicyMerge, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                      base::Value(true), nullptr);
+  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+
+  PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+  merged.AddConflictingPolicy(entry_list_3.DeepCopy());
+  merged.AddConflictingPolicy(entry_list_2.DeepCopy());
+  merged.AddConflictingPolicy(entry_list_1.DeepCopy());
+  expected_chrome.Set(key::kExtensionInstallForcelist, std::move(merged));
+
+  provider0_.UpdatePolicy(std::move(policy_bundle3));
+  provider1_.UpdatePolicy(std::move(policy_bundle2));
+  provider2_.UpdatePolicy(std::move(policy_bundle1));
+  RunUntilIdle();
+
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+}
+#endif  // !defined(OS_CHROMEOS)
+
 TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 

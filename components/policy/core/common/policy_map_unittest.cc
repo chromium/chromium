@@ -356,6 +356,108 @@ TEST_F(PolicyMapTest, Swap) {
   EXPECT_FALSE(b.Equals(empty));
 }
 
+#if !defined(OS_CHROMEOS)
+// Policy precedence changes are not supported on Chrome OS.
+TEST_F(PolicyMapTest, MergeFrom_CloudMetapolicies) {
+  // The two precedence metapolicies, CloudPolicyOverridesPlatformPolicy and
+  // CloudUserPolicyOverridesCloudMachinePolicy, are set as cloud policies in
+  // the incoming |policy_map_2|.
+  PolicyMap policy_map_1;
+  policy_map_1.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                   base::Value("platform_machine"), nullptr);
+  policy_map_1.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                   POLICY_SOURCE_CLOUD, base::Value("cloud_user"), nullptr);
+  policy_map_1.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                   POLICY_SOURCE_CLOUD, base::Value("cloud_user"), nullptr);
+  policy_map_1.Set(kTestPolicyName4, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                   base::Value("cloud_machine"), nullptr);
+
+  PolicyMap policy_map_2;
+  // Set matching user and device affiliation IDs to allow cloud user policies
+  // to take precedence over cloud machine policies.
+  base::flat_set<std::string> affiliation_ids;
+  affiliation_ids.insert("a");
+  policy_map_2.SetUserAffiliationIds(affiliation_ids);
+  policy_map_2.SetDeviceAffiliationIds(affiliation_ids);
+
+  policy_map_2.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policy_map_2.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policy_map_2.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                   base::Value("cloud_machine"), nullptr);
+  policy_map_2.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                   POLICY_SOURCE_PLATFORM, base::Value("platform_user"),
+                   nullptr);
+  policy_map_2.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                   base::Value("platform_machine"), nullptr);
+  policy_map_2.Set(kTestPolicyName4, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                   POLICY_SOURCE_CLOUD, base::Value("cloud_user"), nullptr);
+
+  auto conflicting_policy_1 = policy_map_1.Get(kTestPolicyName1)->DeepCopy();
+  auto conflicting_policy_2 = policy_map_2.Get(kTestPolicyName2)->DeepCopy();
+  auto conflicting_policy_3 = policy_map_2.Get(kTestPolicyName3)->DeepCopy();
+  auto conflicting_policy_4 = policy_map_1.Get(kTestPolicyName4)->DeepCopy();
+
+  policy_map_1.MergeFrom(policy_map_2);
+
+  PolicyMap policy_map_expected;
+
+  policy_map_expected.SetUserAffiliationIds(affiliation_ids);
+  policy_map_expected.SetDeviceAffiliationIds(affiliation_ids);
+  policy_map_expected.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policy_map_expected.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  // Cloud machine overrides platform machine.
+  policy_map_expected.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                          base::Value("cloud_machine"), nullptr);
+  policy_map_expected.GetMutable(kTestPolicyName1)
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
+  policy_map_expected.GetMutable(kTestPolicyName1)
+      ->AddConflictingPolicy(std::move(conflicting_policy_1));
+  // Cloud user overrides platform user.
+  policy_map_expected.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                          base::Value("cloud_user"), nullptr);
+  policy_map_expected.GetMutable(kTestPolicyName2)
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
+  policy_map_expected.GetMutable(kTestPolicyName2)
+      ->AddConflictingPolicy(std::move(conflicting_policy_2));
+  // Cloud user overrides platform machine.
+  policy_map_expected.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                          base::Value("cloud_user"), nullptr);
+  policy_map_expected.GetMutable(kTestPolicyName3)
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
+  policy_map_expected.GetMutable(kTestPolicyName3)
+      ->AddConflictingPolicy(std::move(conflicting_policy_3));
+  // Cloud user overrides cloud machine.
+  policy_map_expected.Set(kTestPolicyName4, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                          base::Value("cloud_user"), nullptr);
+  policy_map_expected.GetMutable(kTestPolicyName4)
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
+  policy_map_expected.GetMutable(kTestPolicyName4)
+      ->AddConflictingPolicy(std::move(conflicting_policy_4));
+
+  EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
+}
+#endif  // defined(OS_CHROMEOS)
+
 TEST_F(PolicyMapTest, MergeValuesList) {
   std::vector<base::Value> abcd =
       GetListStorage<std::string>({"a", "b", "c", "d"});
@@ -1119,15 +1221,20 @@ class PolicyMapMergeTest
       public testing::TestWithParam<
           std::tuple</*cloud_policy_overrides_platform_policy=*/bool,
                      /*cloud_user_policy_overrides_cloud_machine_policy=*/bool,
-                     /*is_user_affiliated=*/bool>> {
+                     /*is_user_affiliated=*/bool,
+                     /*metapolicies_are_incoming=*/bool>> {
  public:
-  bool CloudPolicyOverridesPlatformPolicy() { return std::get<0>(GetParam()); }
+  bool CloudPolicyOverridesPlatformPolicy() const {
+    return std::get<0>(GetParam());
+  }
 
-  bool CloudUserPolicyOverridesCloudMachinePolicy() {
+  bool CloudUserPolicyOverridesCloudMachinePolicy() const {
     return std::get<1>(GetParam());
   }
 
-  bool IsUserAffiliated() { return std::get<2>(GetParam()); }
+  bool IsUserAffiliated() const { return std::get<2>(GetParam()); }
+
+  bool MetapoliciesAreIncoming() const { return std::get<3>(GetParam()); }
 
   void PopulateExpectedPolicyMap(PolicyMap& policy_map_expected,
                                  const PolicyMap& policy_map_1,
@@ -1288,6 +1395,80 @@ class PolicyMapMergeTest
     }
 #endif  // !defined(OS_CHROMEOS)
   }
+
+  void PopulateExpectedMetapolicyMap(
+      PolicyMap& policy_map_expected,
+      const PolicyMap& policy_map_1,
+      const PolicyMap& policy_map_2,
+      std::unique_ptr<base::ListValue> merge_list_1,
+      std::unique_ptr<base::ListValue> merge_list_2) {
+    // Platform machine overrides cloud machine because modified priorities
+    // don't apply to precedence metapolicies.
+    policy_map_expected.Set(
+        key::kCloudPolicyOverridesPlatformPolicy, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+    policy_map_expected.GetMutable(key::kCloudPolicyOverridesPlatformPolicy)
+        ->AddMessage(CloudPolicyOverridesPlatformPolicy()
+                         ? PolicyMap::MessageType::kWarning
+                         : PolicyMap::MessageType::kInfo,
+                     CloudPolicyOverridesPlatformPolicy()
+                         ? IDS_POLICY_CONFLICT_DIFF_VALUE
+                         : IDS_POLICY_CONFLICT_SAME_VALUE);
+    policy_map_expected.GetMutable(key::kCloudPolicyOverridesPlatformPolicy)
+        ->AddConflictingPolicy(
+            policy_map_2.Get(key::kCloudPolicyOverridesPlatformPolicy)
+                ->DeepCopy());
+    policy_map_expected.Set(
+        key::kCloudUserPolicyOverridesCloudMachinePolicy,
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+    policy_map_expected
+        .GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+        ->AddMessage(CloudUserPolicyOverridesCloudMachinePolicy()
+                         ? PolicyMap::MessageType::kWarning
+                         : PolicyMap::MessageType::kInfo,
+                     CloudUserPolicyOverridesCloudMachinePolicy()
+                         ? IDS_POLICY_CONFLICT_DIFF_VALUE
+                         : IDS_POLICY_CONFLICT_SAME_VALUE);
+    policy_map_expected
+        .GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+        ->AddConflictingPolicy(
+            policy_map_1.Get(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+                ->DeepCopy());
+#if !defined(OS_CHROMEOS)
+    if (CloudPolicyOverridesPlatformPolicy()) {
+      // Cloud machine overrides platform machine because modified priorities
+      // apply to merging metapolicies.
+      policy_map_expected.Set(key::kPolicyListMultipleSourceMergeList,
+                              POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                              POLICY_SOURCE_CLOUD, merge_list_2->Clone(),
+                              nullptr);
+      policy_map_expected.GetMutable(key::kPolicyListMultipleSourceMergeList)
+          ->AddMessage(PolicyMap::MessageType::kWarning,
+                       IDS_POLICY_CONFLICT_DIFF_VALUE);
+      policy_map_expected.GetMutable(key::kPolicyListMultipleSourceMergeList)
+          ->AddConflictingPolicy(
+              policy_map_1.Get(key::kPolicyListMultipleSourceMergeList)
+                  ->DeepCopy());
+    } else {
+#endif  // !defined(OS_CHROMEOS)
+      // Platform machine overrides cloud machine with default precedence.
+      policy_map_expected.Set(key::kPolicyListMultipleSourceMergeList,
+                              POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                              POLICY_SOURCE_PLATFORM, merge_list_1->Clone(),
+                              nullptr);
+      policy_map_expected.GetMutable(key::kPolicyListMultipleSourceMergeList)
+          ->AddMessage(PolicyMap::MessageType::kWarning,
+                       IDS_POLICY_CONFLICT_DIFF_VALUE);
+      policy_map_expected.GetMutable(key::kPolicyListMultipleSourceMergeList)
+          ->AddConflictingPolicy(
+              policy_map_2.Get(key::kPolicyListMultipleSourceMergeList)
+                  ->DeepCopy());
+#if !defined(OS_CHROMEOS)
+    }
+#endif  // !defined(OS_CHROMEOS)
+  }
 };
 
 TEST_P(PolicyMapMergeTest, MergeFrom) {
@@ -1299,14 +1480,17 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
     policy_map_1.SetUserAffiliationIds(affiliation_ids);
     policy_map_1.SetDeviceAffiliationIds(affiliation_ids);
   }
-  policy_map_1.Set(key::kCloudPolicyOverridesPlatformPolicy,
-                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                   POLICY_SOURCE_PLATFORM,
-                   base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
-  policy_map_1.Set(
-      key::kCloudUserPolicyOverridesCloudMachinePolicy, POLICY_LEVEL_MANDATORY,
-      POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-      base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+  if (!MetapoliciesAreIncoming()) {
+    // Metapolicies are set in the base PolicyMap.
+    policy_map_1.Set(
+        key::kCloudPolicyOverridesPlatformPolicy, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+    policy_map_1.Set(
+        key::kCloudUserPolicyOverridesCloudMachinePolicy,
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+  }
   policy_map_1.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                    POLICY_SOURCE_CLOUD, base::Value("google.com"), nullptr);
   policy_map_1.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY,
@@ -1329,6 +1513,17 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
                    base::Value("blocked platform policy"), nullptr);
 
   PolicyMap policy_map_2;
+  if (MetapoliciesAreIncoming()) {
+    // Metapolicies are set in the incoming PolicyMap.
+    policy_map_2.Set(
+        key::kCloudPolicyOverridesPlatformPolicy, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+    policy_map_2.Set(
+        key::kCloudUserPolicyOverridesCloudMachinePolicy,
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+  }
   policy_map_2.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                    base::Value("chromium.org"), nullptr);
@@ -1364,9 +1559,59 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
 }
 
+TEST_P(PolicyMapMergeTest, MergeFrom_Metapolicies) {
+  // Define the lists of policies that will be used by the merging metapolicies.
+  std::unique_ptr<base::ListValue> merge_list_1 =
+      std::make_unique<base::ListValue>();
+  merge_list_1->Append(base::Value(kTestPolicyName1));
+  std::unique_ptr<base::ListValue> merge_list_2 =
+      std::make_unique<base::ListValue>();
+  merge_list_2->Append(base::Value(kTestPolicyName2));
+
+  PolicyMap policy_map_1;
+  if (IsUserAffiliated()) {
+    base::flat_set<std::string> affiliation_ids;
+    affiliation_ids.insert("12345");
+    policy_map_1.SetUserAffiliationIds(affiliation_ids);
+    policy_map_1.SetDeviceAffiliationIds(affiliation_ids);
+  }
+  policy_map_1.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_PLATFORM,
+                   base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+  policy_map_1.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policy_map_1.Set(key::kPolicyListMultipleSourceMergeList,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_PLATFORM, merge_list_1->Clone(), nullptr);
+
+  PolicyMap policy_map_2;
+  policy_map_2.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policy_map_2.Set(
+      key::kCloudUserPolicyOverridesCloudMachinePolicy, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+  policy_map_2.Set(key::kPolicyListMultipleSourceMergeList,
+                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                   POLICY_SOURCE_CLOUD, merge_list_2->Clone(), nullptr);
+
+  PolicyMap policy_map_expected;
+  PopulateExpectedMetapolicyMap(policy_map_expected, policy_map_1, policy_map_2,
+                                std::move(merge_list_1),
+                                std::move(merge_list_2));
+
+  policy_map_1.MergeFrom(policy_map_2);
+
+  EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
+}
+
 INSTANTIATE_TEST_SUITE_P(PolicyMapMergeTestInstance,
                          PolicyMapMergeTest,
                          testing::Combine(testing::Values(false, true),
+                                          testing::Values(false, true),
                                           testing::Values(false, true),
                                           testing::Values(false, true)));
 
