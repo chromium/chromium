@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
@@ -55,6 +56,7 @@
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
@@ -406,6 +408,25 @@
   DefaultBrowserSceneAgent* agent =
       [DefaultBrowserSceneAgent agentFromScene:sceneState];
   [agent.nonModalScheduler logUserPastedInOmnibox];
+}
+
+- (void)searchCopiedImage {
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        web::NavigationManager::WebLoadParams webParams =
+            ImageSearchParamGenerator::LoadParamsForImage(
+                image, ios::TemplateURLServiceFactory::GetForBrowserState(
+                           self.browser->GetBrowserState()));
+        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+
+        UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+
+        [self cancelOmniboxEdit];
+      }));
 }
 
 #pragma mark - LocationBarConsumer

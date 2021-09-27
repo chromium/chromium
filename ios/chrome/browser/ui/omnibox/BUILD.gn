@@ -160,6 +160,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui/orchestrator:orchestrator",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url_loading",
     "//ios/chrome/common",
     "//ios/chrome/common/intents",
     "//ios/chrome/common/ui/colors",

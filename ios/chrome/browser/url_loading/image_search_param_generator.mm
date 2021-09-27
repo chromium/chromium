@@ -16,6 +16,7 @@
 web::NavigationManager::WebLoadParams
 ImageSearchParamGenerator::LoadParamsForImageData(
     NSData* data,
+    const GURL& url,
     TemplateURLService* template_url_service) {
   NSData* image_data = data;
   UIImage* image = [UIImage imageWithData:image_data];
@@ -24,8 +25,7 @@ ImageSearchParamGenerator::LoadParamsForImageData(
   // we still want to do the image search with nil data because that gives
   // the user the best error experience.
   if (gfx_image.IsEmpty()) {
-    return LoadParamsForResizedImageData(image_data, GURL(),
-                                         template_url_service);
+    return LoadParamsForResizedImageData(image_data, url, template_url_service);
   }
   UIImage* resized_image =
       gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
@@ -33,26 +33,24 @@ ImageSearchParamGenerator::LoadParamsForImageData(
     image_data = UIImageJPEGRepresentation(resized_image, 1.0);
   }
 
-  return LoadParamsForResizedImageData(image_data, GURL(),
-                                       template_url_service);
+  return LoadParamsForResizedImageData(image_data, url, template_url_service);
 }
 
 web::NavigationManager::WebLoadParams
 ImageSearchParamGenerator::LoadParamsForImage(
     UIImage* image,
-    const GURL& url,
     TemplateURLService* template_url_service) {
   gfx::Image gfx_image(image);
   // Converting to gfx::Image creates an empty image if UIImage is nil. However,
   // we still want to do the image search with nil data because that gives
   // the user the best error experience.
   if (gfx_image.IsEmpty()) {
-    return LoadParamsForResizedImageData(nil, url, template_url_service);
+    return LoadParamsForResizedImageData(nil, GURL(), template_url_service);
   }
   UIImage* resized_image =
       gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
   NSData* data = UIImageJPEGRepresentation(resized_image, 1.0);
-  return LoadParamsForResizedImageData(data, url, template_url_service);
+  return LoadParamsForResizedImageData(data, GURL(), template_url_service);
 }
 
 // This method does all the work of constructing the parameters. Internally,

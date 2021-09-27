@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/search_by_image_command.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
@@ -34,6 +33,7 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
@@ -293,23 +293,8 @@ const CGFloat kFaviconWidthHeight = 24;
                                  DCHECK(imageFetcher);
                                  imageFetcher->GetImageData(
                                      imageUrl, referrer, ^(NSData* data) {
-                                       ContextMenuConfigurationProvider*
-                                           strongSelf = weakSelf;
-                                       if (!strongSelf)
-                                         return;
-
-                                       SearchByImageCommand* command =
-                                           [[SearchByImageCommand alloc]
-                                               initWithImage:
-                                                   [UIImage imageWithData:data]
-                                                         URL:imageUrl
-                                                    inNewTab:YES];
-
-                                       id<BrowserCommands> handler =
-                                           static_cast<id<BrowserCommands>>(
-                                               strongSelf.browser
-                                                   ->GetCommandDispatcher());
-                                       [handler searchByImage:command];
+                                       [weakSelf searchByImageData:data
+                                                          imageURL:imageUrl];
                                      });
                                }];
       [menuElements addObject:searchByImage];
@@ -675,18 +660,7 @@ const CGFloat kFaviconWidthHeight = 24;
             ImageFetchTabHelper::FromWebState(self.currentWebState);
         DCHECK(imageFetcher);
         imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
-          ContextMenuConfigurationProvider* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-
-          SearchByImageCommand* command = [[SearchByImageCommand alloc]
-              initWithImage:[UIImage imageWithData:data]
-                        URL:imageUrl
-                   inNewTab:YES];
-
-          id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-              strongSelf.browser->GetCommandDispatcher());
-          [handler searchByImage:command];
+          [weakSelf searchByImageData:data imageURL:imageUrl];
         });
       };
       [self.legacyContextMenuCoordinator
@@ -708,6 +682,22 @@ const CGFloat kFaviconWidthHeight = 24;
 - (web::WebState*)currentWebState {
   return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
                       : nullptr;
+}
+
+#pragma mark - Private
+
+// Starts a reverse image search based on |imageData| and |imageURL| in a new
+// tab.
+- (void)searchByImageData:(NSData*)imageData imageURL:(const GURL&)URL {
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForImageData(
+          imageData, URL,
+          ios::TemplateURLServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState()));
+
+  UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
+  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 @end

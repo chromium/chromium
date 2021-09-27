@@ -38,7 +38,7 @@ TEST_F(ImageSearchParamGeneratorTest, TestNilImage) {
       ios::TemplateURLServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   web::NavigationManager::WebLoadParams load_params =
-      ImageSearchParamGenerator::LoadParamsForImageData(nil,
+      ImageSearchParamGenerator::LoadParamsForImageData(nil, GURL(),
                                                         template_url_service);
   ASSERT_EQ(load_params.url,
             GURL("https://www.google.com/searchbyimage/upload"));

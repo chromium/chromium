@@ -42,6 +42,9 @@
 // action.
 - (void)locationBarVisitCopyLinkTapped;
 
+// Starts a reverse image search for the image currently in the pasteboard.
+- (void)searchCopiedImage;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of

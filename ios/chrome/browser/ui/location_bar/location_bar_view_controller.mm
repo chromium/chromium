@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
-#import "ios/chrome/browser/ui/commands/search_by_image_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
@@ -648,19 +647,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)searchCopiedImage:(id)sender {
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
-  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        dispatch_async(dispatch_get_main_queue(), ^{
-          SearchByImageCommand* command =
-              [[SearchByImageCommand alloc] initWithImage:image];
-          [self.dispatcher searchByImage:command];
-          [self.dispatcher cancelOmniboxEdit];
-        });
-      }));
+  [self.delegate searchCopiedImage];
 }
 
 - (void)visitCopiedLink:(id)sender {

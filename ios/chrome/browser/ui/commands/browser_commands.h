@@ -85,9 +85,6 @@ class GURL;
 // omnibox.
 - (void)focusFakebox;
 
-// Searches for an image, using |command| parameters.
-- (void)searchByImage:(SearchByImageCommand*)command;
-
 // Shows/Hides the activity indicator overlay that appears over the view to
 // prevent interaction with the web page.
 - (void)showActivityOverlay:(BOOL)show;

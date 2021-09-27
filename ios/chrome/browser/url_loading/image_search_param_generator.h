@@ -15,17 +15,16 @@ class TemplateURLService;
 class ImageSearchParamGenerator {
  public:
   // Create loading parameters using the given |data|, which should represent
-  // an image.
+  // an image and |url|, the web url the image came from. If the image data
+  // didn't come from a url, use an empty GURL to indicate that.
   static web::NavigationManager::WebLoadParams LoadParamsForImageData(
       NSData* data,
+      const GURL& url,
       TemplateURLService* template_url_service);
 
-  // Create loading parameters using the given |image| and |url|, the web url
-  // the image came from. If the image data didn't come from a url, use an empty
-  // GURL to indicate that.
+  // Create loading parameters using the given |image|.
   static web::NavigationManager::WebLoadParams LoadParamsForImage(
       UIImage* image,
-      const GURL& url,
       TemplateURLService* template_url_service);
 
  private:

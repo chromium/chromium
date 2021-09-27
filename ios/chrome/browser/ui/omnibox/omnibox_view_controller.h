@@ -29,6 +29,10 @@ class OmniboxTextChangeDelegate;
 - (void)omniboxViewControllerUserDidVisitCopiedLink:
     (OmniboxViewController*)omniboxViewController;
 
+// Starts a reverse image search for the image currently in the pasteboard.
+- (void)omniboxViewControllerSearchCopiedImage:
+    (OmniboxViewController*)omniboxViewController;
+
 @end
 
 @interface OmniboxViewController : UIViewController<EditViewAnimatee,

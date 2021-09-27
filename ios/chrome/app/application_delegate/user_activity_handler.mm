@@ -540,7 +540,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       NSData* imageData =
           connectionInformation.startupParameters.imageSearchData;
       web::NavigationManager::WebLoadParams webLoadParams =
-          ImageSearchParamGenerator::LoadParamsForImageData(imageData,
+          ImageSearchParamGenerator::LoadParamsForImageData(imageData, GURL(),
                                                             templateURLService);
 
       params.web_params = webLoadParams;

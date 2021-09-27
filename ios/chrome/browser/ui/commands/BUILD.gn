@@ -35,8 +35,6 @@ source_set("commands") {
     "qr_scanner_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
-    "search_by_image_command.h",
-    "search_by_image_command.mm",
     "security_alert_commands.h",
     "share_highlight_command.h",
     "share_highlight_command.mm",

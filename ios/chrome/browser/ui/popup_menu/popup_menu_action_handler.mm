@@ -183,18 +183,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionSearchCopiedImage: {
       RecordAction(UserMetricsAction("MobileMenuSearchCopiedImage"));
-      ClipboardRecentContent* clipboardRecentContent =
-          ClipboardRecentContent::GetInstance();
-      clipboardRecentContent->GetRecentImageFromClipboard(
-          base::BindOnce(^(absl::optional<gfx::Image> image) {
-            // Sometimes, the image can be nil even though the clipboard said it
-            // had an image. This most likely a UIKit issue, but practice
-            // defensive coding.
-            if (!image) {
-              return;
-            }
-            [self.dispatcher searchByImage:[image.value().ToUIImage() copy]];
-          }));
+      [self.delegate searchCopiedImage];
       break;
     }
     case PopupMenuActionSearchCopiedText: {

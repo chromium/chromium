@@ -84,7 +84,6 @@
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/search_by_image_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -158,7 +157,6 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #include "ios/chrome/browser/upgrade/upgrade_center.h"
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
@@ -172,6 +170,7 @@
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web/web_state_delegate_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
@@ -4155,23 +4154,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)focusFakebox {
   if (self.isNTPActiveForCurrentWebState) {
     [[self ntpCoordinatorForWebState:self.currentWebState] focusFakebox];
-  }
-}
-
-- (void)searchByImage:(SearchByImageCommand*)command {
-  web::NavigationManager::WebLoadParams webParams =
-      ImageSearchParamGenerator::LoadParamsForImage(
-          command.image, command.URL,
-          ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.browserState));
-
-  if (command.inNewTab) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
-    params.in_incognito = self.isOffTheRecord;
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-  } else {
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)
-        ->Load(UrlLoadParams::InCurrentTab(webParams));
   }
 }
 
