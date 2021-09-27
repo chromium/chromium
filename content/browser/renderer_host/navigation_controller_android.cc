@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "content/browser/conversions/conversion_host_utils.h"
+#include "content/browser/attribution_reporting/conversion_host_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/common/url_utils.h"

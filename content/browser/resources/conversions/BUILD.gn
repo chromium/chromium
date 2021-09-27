@@ -5,19 +5,18 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" +
-            rebase_path("$root_gen_dir/mojom-webui/content/browser/conversions",
-                        root_build_dir),
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/content/browser/attribution_reporting",
+                            root_build_dir),
+                  ]
   deps = [ ":conversion_internals" ]
 }
 
 js_library("conversion_internals") {
   deps = [
-    "//content/browser/conversions:mojo_bindings_webui_js",
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
   ]

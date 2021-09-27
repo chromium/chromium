@@ -136,7 +136,7 @@ grit("dev_ui_content_resources") {
     "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//content/browser/conversions:mojo_bindings_webui_js",
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//content/browser/process_internals:mojo_bindings_webui_js",
   ]
 }

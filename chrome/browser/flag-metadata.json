@@ -877,7 +877,7 @@
   },
   {
     "name": "conversion-measurement-debug-mode",
-    "owners": [ "//content/browser/conversions/OWNERS" ],
+    "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 98
   },
   {

@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "content/browser/appcache/appcache_internals_ui.h"
-#include "content/browser/conversions/conversion_internals_ui.h"
+#include "content/browser/attribution_reporting/conversion_internals_ui.h"
 #include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
 #include "content/browser/media/media_internals_ui.h"
