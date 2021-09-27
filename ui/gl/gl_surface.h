@@ -55,6 +55,9 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
  public:
   GLSurface();
 
+  GLSurface(const GLSurface&) = delete;
+  GLSurface& operator=(const GLSurface&) = delete;
+
   // Non-virtual initialization, this always calls Initialize with a
   // default GLSurfaceFormat. Subclasses should override the format-
   // specific Initialize method below and interpret the default format
@@ -345,8 +348,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   friend class base::RefCounted<GLSurface>;
   friend class GLContext;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurface);
 };
 
 // Implementation of GLSurface that forwards all calls through to another
@@ -354,6 +355,9 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 class GL_EXPORT GLSurfaceAdapter : public GLSurface {
  public:
   explicit GLSurfaceAdapter(GLSurface* surface);
+
+  GLSurfaceAdapter(const GLSurfaceAdapter&) = delete;
+  GLSurfaceAdapter& operator=(const GLSurfaceAdapter&) = delete;
 
   bool Initialize(GLSurfaceFormat format) override;
   void PrepareToDestroy(bool have_context) override;
@@ -450,8 +454,6 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
 
  private:
   scoped_refptr<GLSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceAdapter);
 };
 
 // Wraps GLSurface in scoped_refptr and tries to initializes it. Returns a

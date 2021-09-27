@@ -22,6 +22,9 @@ class ScreenIos : public ScreenBase {
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 
+  ScreenIos(const ScreenIos&) = delete;
+  ScreenIos& operator=(const ScreenIos&) = delete;
+
   gfx::Point GetCursorScreenPoint() override {
     NOTIMPLEMENTED();
     return gfx::Point(0, 0);
@@ -45,9 +48,6 @@ class ScreenIos : public ScreenBase {
     return [[UIScreen screens] count];
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenIos);
 };
 
 }  // namespace

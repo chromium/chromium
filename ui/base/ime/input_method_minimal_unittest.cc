@@ -38,6 +38,10 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
 };
 
 class InputMethodMinimalTest : public testing::Test {
+ public:
+  InputMethodMinimalTest(const InputMethodMinimalTest&) = delete;
+  InputMethodMinimalTest& operator=(const InputMethodMinimalTest&) = delete;
+
  protected:
   InputMethodMinimalTest() = default;
   ~InputMethodMinimalTest() override = default;
@@ -51,8 +55,6 @@ class InputMethodMinimalTest : public testing::Test {
 
   std::unique_ptr<InputMethodMinimal> input_method_minimal_;
   std::unique_ptr<InputMethodDelegateForTesting> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMinimalTest);
 };
 
 TEST_F(InputMethodMinimalTest, StopPropagationTest) {

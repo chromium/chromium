@@ -28,6 +28,9 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
                           ui::TouchSelectionMenuClient* client,
                           aura::Window* context);
 
+  TouchSelectionMenuViews(const TouchSelectionMenuViews&) = delete;
+  TouchSelectionMenuViews& operator=(const TouchSelectionMenuViews&) = delete;
+
   void ShowMenu(const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size);
 
@@ -64,8 +67,6 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
 
   TouchSelectionMenuRunnerViews* owner_;
   ui::TouchSelectionMenuClient* const client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuViews);
 };
 
 }  // namespace views

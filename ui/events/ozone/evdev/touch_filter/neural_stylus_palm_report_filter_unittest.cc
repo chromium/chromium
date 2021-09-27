@@ -21,6 +21,10 @@ class NeuralStylusReportFilterTest : public testing::Test {
  public:
   NeuralStylusReportFilterTest() = default;
 
+  NeuralStylusReportFilterTest(const NeuralStylusReportFilterTest&) = delete;
+  NeuralStylusReportFilterTest& operator=(const NeuralStylusReportFilterTest&) =
+      delete;
+
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     palm_detection_filter_ =
@@ -35,8 +39,6 @@ class NeuralStylusReportFilterTest : public testing::Test {
   std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
   EventDeviceInfo nocturne_touchscreen_info_, nocturne_stylus_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusReportFilterTest);
 };
 
 TEST_F(NeuralStylusReportFilterTest, TestSetsToZero) {

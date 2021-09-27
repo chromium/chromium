@@ -59,6 +59,9 @@ class EVENTS_EXPORT Event {
    public:
     explicit DispatcherApi(Event* event) : event_(event) {}
 
+    DispatcherApi(const DispatcherApi&) = delete;
+    DispatcherApi& operator=(const DispatcherApi&) = delete;
+
     void set_target(EventTarget* target) { event_->target_ = target; }
 
     void set_phase(EventPhase phase) { event_->phase_ = phase; }
@@ -69,8 +72,6 @@ class EVENTS_EXPORT Event {
 
    private:
     Event* event_;
-
-    DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };
 
   void SetNativeEvent(const PlatformEvent& event);
@@ -478,6 +479,9 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
    public:
     explicit DispatcherApi(MouseEvent* event) : event_(event) {}
 
+    DispatcherApi(const DispatcherApi&) = delete;
+    DispatcherApi& operator=(const DispatcherApi&) = delete;
+
     // TODO(eirage): convert this to builder pattern.
     void set_movement(const gfx::Vector2dF& movement) {
       event_->movement_ = movement;
@@ -486,8 +490,6 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
 
    private:
     MouseEvent* event_;
-
-    DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };
 
   // Conveniences to quickly test what button is down

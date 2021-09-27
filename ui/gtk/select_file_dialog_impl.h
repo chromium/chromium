@@ -47,6 +47,9 @@ class SelectFileDialogImpl : public ui::SelectFileDialog {
       Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy);
 
+  SelectFileDialogImpl(const SelectFileDialogImpl&) = delete;
+  SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
+
   // Returns true if the SelectFileDialog class returned by
   // NewSelectFileDialogImplKDE will actually work.
   static bool CheckKDEDialogWorksOnUIThread(std::string& kdialog_version);
@@ -90,8 +93,6 @@ class SelectFileDialogImpl : public ui::SelectFileDialog {
   // file so that we can display future dialogs with the same starting path.
   static base::FilePath* last_saved_path_;
   static base::FilePath* last_opened_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImpl);
 };
 
 }  // namespace gtk

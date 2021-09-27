@@ -37,6 +37,9 @@ class CanvasPainterTest : public ::testing::TestWithParam<float> {
  public:
   CanvasPainterTest() : device_scale_factor_(GetParam()) {}
 
+  CanvasPainterTest(const CanvasPainterTest&) = delete;
+  CanvasPainterTest& operator=(const CanvasPainterTest&) = delete;
+
   float device_scale_factor() const { return device_scale_factor_; }
 
   const gfx::Size& pixel_output_size(const CanvasPainter& painter) const {
@@ -71,8 +74,6 @@ class CanvasPainterTest : public ::testing::TestWithParam<float> {
 
  private:
   float device_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasPainterTest);
 };
 
 TEST_P(CanvasPainterTest, Initialization) {

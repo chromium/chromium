@@ -14,6 +14,9 @@ namespace ui {
 // Android implementation of native theme support.
 class NativeThemeAndroid : public NativeThemeBase {
  public:
+  NativeThemeAndroid(const NativeThemeAndroid&) = delete;
+  NativeThemeAndroid& operator=(const NativeThemeAndroid&) = delete;
+
   // NativeThemeBase:
   gfx::Size GetPartSize(Part part,
                         State state,
@@ -49,8 +52,6 @@ class NativeThemeAndroid : public NativeThemeBase {
  private:
   NativeThemeAndroid();
   ~NativeThemeAndroid() override;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeAndroid);
 };
 
 }  // namespace ui

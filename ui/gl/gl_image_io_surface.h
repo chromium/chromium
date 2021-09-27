@@ -31,6 +31,9 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   static GLImageIOSurface* Create(const gfx::Size& size,
                                   unsigned internalformat);
 
+  GLImageIOSurface(const GLImageIOSurface&) = delete;
+  GLImageIOSurface& operator=(const GLImageIOSurface&) = delete;
+
   // Initialize to wrap of |io_surface|. The format of the plane to wrap is
   // specified in |format|. The index of the plane to wrap is
   // |io_surface_plane|. If |format| is a multi-planar format (e.g,
@@ -130,8 +133,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   gfx::ColorSpace color_space_for_yuv_to_rgb_ = gfx::ColorSpace::CreateREC601();
 
   bool disable_in_use_by_window_server_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageIOSurface);
 };
 
 }  // namespace gl

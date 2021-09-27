@@ -60,6 +60,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
  public:
   explicit ThunkNotificationDelegate(base::WeakPtr<NotificationObserver> impl);
 
+  ThunkNotificationDelegate(const ThunkNotificationDelegate&) = delete;
+  ThunkNotificationDelegate& operator=(const ThunkNotificationDelegate&) =
+      delete;
+
   // NotificationDelegate:
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
@@ -72,8 +76,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
 
  private:
   base::WeakPtr<NotificationObserver> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThunkNotificationDelegate);
 };
 
 // A simple notification delegate which invokes the passed closure when the body
@@ -94,6 +96,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT HandleNotificationClickDelegate
   explicit HandleNotificationClickDelegate(
       const base::RepeatingClosure& closure);
 
+  HandleNotificationClickDelegate(const HandleNotificationClickDelegate&) =
+      delete;
+  HandleNotificationClickDelegate& operator=(
+      const HandleNotificationClickDelegate&) = delete;
+
   // Overrides the callback with one that handles clicks on a button or on the
   // body.
   void SetCallback(const ButtonClickCallback& callback);
@@ -111,8 +118,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT HandleNotificationClickDelegate
 
  private:
   ButtonClickCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleNotificationClickDelegate);
 };
 
 }  //  namespace message_center

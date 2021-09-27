@@ -51,6 +51,9 @@ class CastPixmap : public gfx::NativePixmap {
  public:
   CastPixmap() {}
 
+  CastPixmap(const CastPixmap&) = delete;
+  CastPixmap& operator=(const CastPixmap&) = delete;
+
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
   uint32_t GetDmaBufPitch(size_t plane) const override { return 0; }
@@ -84,8 +87,6 @@ class CastPixmap : public gfx::NativePixmap {
 
  private:
   ~CastPixmap() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(CastPixmap);
 };
 
 }  // namespace

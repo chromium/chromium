@@ -181,8 +181,8 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
     CreateCompositor();
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTreeHost);
+  TestWindowTreeHost(const TestWindowTreeHost&) = delete;
+  TestWindowTreeHost& operator=(const TestWindowTreeHost&) = delete;
 };
 
 TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {

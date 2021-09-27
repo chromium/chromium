@@ -25,6 +25,9 @@ class ThrobberView : public View {
     throbber_->Start();
   }
 
+  ThrobberView(const ThrobberView&) = delete;
+  ThrobberView& operator=(const ThrobberView&) = delete;
+
   // View::
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(width(), height());
@@ -53,8 +56,6 @@ class ThrobberView : public View {
  private:
   Throbber* throbber_;
   bool is_checked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrobberView);
 };
 
 }  // namespace

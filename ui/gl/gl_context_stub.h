@@ -20,6 +20,9 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   GLContextStub();
   explicit GLContextStub(GLShareGroup* share_group);
 
+  GLContextStub(const GLContextStub&) = delete;
+  GLContextStub& operator=(const GLContextStub&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
@@ -49,8 +52,6 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   bool use_stub_api_;
   std::string version_str_;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextStub);
 };
 
 }  // namespace gl

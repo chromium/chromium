@@ -36,6 +36,9 @@ class WaylandKeyboardTest : public WaylandTest {
  public:
   WaylandKeyboardTest() {}
 
+  WaylandKeyboardTest(const WaylandKeyboardTest&) = delete;
+  WaylandKeyboardTest& operator=(const WaylandKeyboardTest&) = delete;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
@@ -108,8 +111,6 @@ class WaylandKeyboardTest : public WaylandTest {
   std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap_;
   std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardTest);
 };
 
 ACTION_P(CloneEvent, ptr) {

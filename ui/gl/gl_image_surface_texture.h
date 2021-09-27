@@ -22,6 +22,9 @@ class GL_EXPORT GLImageSurfaceTexture : public GLImage {
  public:
   explicit GLImageSurfaceTexture(const gfx::Size& size);
 
+  GLImageSurfaceTexture(const GLImageSurfaceTexture&) = delete;
+  GLImageSurfaceTexture& operator=(const GLImageSurfaceTexture&) = delete;
+
   bool Initialize(SurfaceTexture* surface_texture);
 
   // Overridden from GLImage:
@@ -54,8 +57,6 @@ class GL_EXPORT GLImageSurfaceTexture : public GLImage {
   const gfx::Size size_;
   GLint texture_id_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageSurfaceTexture);
 };
 
 }  // namespace gl

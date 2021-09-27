@@ -27,6 +27,9 @@ class TestUserActivityObserver : public UserActivityObserver {
  public:
   TestUserActivityObserver() : num_invocations_(0) {}
 
+  TestUserActivityObserver(const TestUserActivityObserver&) = delete;
+  TestUserActivityObserver& operator=(const TestUserActivityObserver&) = delete;
+
   int num_invocations() const { return num_invocations_; }
   void reset_stats() { num_invocations_ = 0; }
 
@@ -36,8 +39,6 @@ class TestUserActivityObserver : public UserActivityObserver {
  private:
   // Number of times that OnUserActivity() has been called.
   int num_invocations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUserActivityObserver);
 };
 
 // A test implementation of PlatformEventSource that we can instantiate to make

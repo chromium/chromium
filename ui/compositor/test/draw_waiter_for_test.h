@@ -20,6 +20,9 @@ namespace ui {
 // potential for re-entrancy).
 class DrawWaiterForTest : public CompositorObserver {
  public:
+  DrawWaiterForTest(const DrawWaiterForTest&) = delete;
+  DrawWaiterForTest& operator=(const DrawWaiterForTest&) = delete;
+
   // Waits for a draw to be issued by the compositor. If the test times out
   // here, there may be a logic error in the compositor code causing it
   // not to draw.
@@ -51,8 +54,6 @@ class DrawWaiterForTest : public CompositorObserver {
   std::unique_ptr<base::RunLoop> wait_run_loop_;
 
   WaitEvent wait_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrawWaiterForTest);
 };
 
 }  // namespace ui

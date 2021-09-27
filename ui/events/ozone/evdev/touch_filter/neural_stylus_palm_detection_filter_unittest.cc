@@ -28,6 +28,12 @@ class MockNeuralModel : public NeuralStylusPalmDetectionFilterModel {
 class NeuralStylusPalmDetectionFilterTest : public testing::Test {
  public:
   NeuralStylusPalmDetectionFilterTest() = default;
+
+  NeuralStylusPalmDetectionFilterTest(
+      const NeuralStylusPalmDetectionFilterTest&) = delete;
+  NeuralStylusPalmDetectionFilterTest& operator=(
+      const NeuralStylusPalmDetectionFilterTest&) = delete;
+
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     model_ = new testing::StrictMock<MockNeuralModel>;
@@ -62,7 +68,6 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
   MockNeuralModel* model_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilterTest);
 };
 
 class NeuralStylusPalmDetectionFilterDeathTest

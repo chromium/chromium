@@ -21,6 +21,10 @@ namespace ui {
 // ui::GrabWindowSnapshot callback.
 class SnapshotAsync {
  public:
+  SnapshotAsync() = delete;
+  SnapshotAsync(const SnapshotAsync&) = delete;
+  SnapshotAsync& operator=(const SnapshotAsync&) = delete;
+
   static void ScaleCopyOutputResult(
       GrabWindowSnapshotAsyncCallback callback,
       const gfx::Size& target_size,
@@ -29,9 +33,6 @@ class SnapshotAsync {
   static void RunCallbackWithCopyOutputResult(
       GrabWindowSnapshotAsyncCallback callback,
       std::unique_ptr<viz::CopyOutputResult> result);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SnapshotAsync);
 };
 
 }  // namespace ui

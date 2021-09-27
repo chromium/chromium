@@ -39,6 +39,9 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
   explicit TestCaptureDelegate(NSWindow* window)
       : event_count_(0), capture_lost_count_(0), window_(window) {}
 
+  TestCaptureDelegate(const TestCaptureDelegate&) = delete;
+  TestCaptureDelegate& operator=(const TestCaptureDelegate&) = delete;
+
   void Acquire() { mouse_capture_ = std::make_unique<CocoaMouseCapture>(this); }
   bool IsActive() { return mouse_capture_ && mouse_capture_->IsActive(); }
   void SimulateDestroy() { mouse_capture_.reset(); }
@@ -56,8 +59,6 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
   int event_count_;
   int capture_lost_count_;
   NSWindow* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCaptureDelegate);
 };
 
 }  // namespace

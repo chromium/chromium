@@ -140,6 +140,9 @@ class WaylandWindowTest : public WaylandTest {
                           EF_LEFT_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
                           EF_LEFT_MOUSE_BUTTON) {}
 
+  WaylandWindowTest(const WaylandWindowTest&) = delete;
+  WaylandWindowTest& operator=(const WaylandWindowTest&) = delete;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
@@ -279,9 +282,6 @@ class WaylandWindowTest : public WaylandTest {
   wl::MockXdgSurface* xdg_surface_;
 
   MouseEvent test_mouse_event_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandWindowTest);
 };
 
 TEST_P(WaylandWindowTest, SetTitle) {

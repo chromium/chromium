@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
 
   static CursorController* GetInstance();
 
+  CursorController(const CursorController&) = delete;
+  CursorController& operator=(const CursorController&) = delete;
+
   void AddCursorObserver(CursorObserver* observer);
   void RemoveCursorObserver(CursorObserver* observer);
 
@@ -94,8 +97,6 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
 
   base::ObserverList<CursorObserver>::Unchecked cursor_observers_;
   mutable base::Lock cursor_observers_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorController);
 };
 
 }  // namespace ui

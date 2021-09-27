@@ -58,6 +58,9 @@ class MockDrmDevice : public DrmDevice {
 
   explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
 
+  MockDrmDevice(const MockDrmDevice&) = delete;
+  MockDrmDevice& operator=(const MockDrmDevice&) = delete;
+
   static ScopedDrmPropertyBlobPtr AllocateInFormatsBlob(
       uint32_t id,
       const std::vector<uint32_t>& supported_formats,
@@ -268,8 +271,6 @@ class MockDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDrmDevice);
 };
 
 }  // namespace ui

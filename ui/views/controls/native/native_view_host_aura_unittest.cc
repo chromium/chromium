@@ -97,6 +97,9 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
  public:
   NativeViewHostAuraTest() = default;
 
+  NativeViewHostAuraTest(const NativeViewHostAuraTest&) = delete;
+  NativeViewHostAuraTest& operator=(const NativeViewHostAuraTest&) = delete;
+
   NativeViewHostAura* native_host() {
     return static_cast<NativeViewHostAura*>(GetNativeWrapper());
   }
@@ -123,8 +126,6 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
  private:
   std::unique_ptr<Widget> child_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAuraTest);
 };
 
 // Verifies NativeViewHostAura stops observing native view on destruction.

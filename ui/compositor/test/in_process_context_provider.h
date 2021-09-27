@@ -52,6 +52,9 @@ class InProcessContextProvider
       gpu::ImageFactory* image_factory,
       bool support_locking);
 
+  InProcessContextProvider(const InProcessContextProvider&) = delete;
+  InProcessContextProvider& operator=(const InProcessContextProvider&) = delete;
+
   // viz::ContextProvider / viz::RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
@@ -118,8 +121,6 @@ class InProcessContextProvider
   base::Lock context_lock_;
 
   base::ObserverList<viz::ContextLostObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessContextProvider);
 };
 
 }  // namespace ui

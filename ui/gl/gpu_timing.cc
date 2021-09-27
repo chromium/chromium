@@ -105,6 +105,9 @@ class QueryResult : public base::RefCounted<QueryResult> {
  public:
   QueryResult() {}
 
+  QueryResult(const QueryResult&) = delete;
+  QueryResult& operator=(const QueryResult&) = delete;
+
   bool IsAvailable() const { return available_; }
   int64_t GetDelta() const { return end_value_ - start_value_; }
   int64_t GetStartValue() const { return start_value_; }
@@ -120,13 +123,15 @@ class QueryResult : public base::RefCounted<QueryResult> {
   bool available_ = false;
   int64_t start_value_ = 0;
   int64_t end_value_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResult);
 };
 
 class TimerQuery : public base::RefCounted<TimerQuery> {
  public:
   explicit TimerQuery(uint32_t next_id);
+
+  TimerQuery(const TimerQuery&) = delete;
+  TimerQuery& operator=(const TimerQuery&) = delete;
+
   virtual void Destroy() = 0;
 
   // Returns true when UpdateQueryResults() is ready to be called.
@@ -144,7 +149,6 @@ class TimerQuery : public base::RefCounted<TimerQuery> {
  protected:
   friend class base::RefCounted<TimerQuery>;
   virtual ~TimerQuery();
-  DISALLOW_COPY_AND_ASSIGN(TimerQuery);
 };
 
 TimerQuery::TimerQuery(uint32_t next_id)

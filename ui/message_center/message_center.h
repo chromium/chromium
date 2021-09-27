@@ -67,6 +67,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Destroys the global message_center object.
   static void Shutdown();
 
+  MessageCenter(const MessageCenter&) = delete;
+  MessageCenter& operator=(const MessageCenter&) = delete;
+
   // Management of the observer list.
   virtual void AddObserver(MessageCenterObserver* observer) = 0;
   virtual void RemoveObserver(MessageCenterObserver* observer) = 0;
@@ -240,9 +243,6 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
 
   MessageCenter();
   virtual ~MessageCenter();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageCenter);
 };
 
 }  // namespace message_center

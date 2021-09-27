@@ -124,6 +124,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // shown to the user, rather its use as the parent for all menu items.
   explicit MenuItemView(MenuDelegate* delegate = nullptr);
 
+  MenuItemView(const MenuItemView&) = delete;
+  MenuItemView& operator=(const MenuItemView&) = delete;
+
   // Overridden from View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -648,8 +651,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemView);
 };
 
 }  // namespace views

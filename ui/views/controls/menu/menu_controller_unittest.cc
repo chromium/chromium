@@ -168,6 +168,9 @@ class TestEventHandler : public ui::EventHandler {
  public:
   TestEventHandler() = default;
 
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   void OnTouchEvent(ui::TouchEvent* event) override {
     switch (event->type()) {
       case ui::ET_TOUCH_PRESSED:
@@ -186,7 +189,6 @@ class TestEventHandler : public ui::EventHandler {
 
  private:
   int outstanding_touches_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 // A test widget that counts gesture events.
@@ -194,13 +196,15 @@ class GestureTestWidget : public Widget {
  public:
   GestureTestWidget() = default;
 
+  GestureTestWidget(const GestureTestWidget&) = delete;
+  GestureTestWidget& operator=(const GestureTestWidget&) = delete;
+
   void OnGestureEvent(ui::GestureEvent* event) override { ++gesture_count_; }
 
   int gesture_count() const { return gesture_count_; }
 
  private:
   int gesture_count_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(GestureTestWidget);
 };
 
 #if defined(USE_AURA)

@@ -22,13 +22,13 @@ class ShellDialogsTestSuite : public base::TestSuite {
  public:
   ShellDialogsTestSuite(int argc, char** argv);
 
+  ShellDialogsTestSuite(const ShellDialogsTestSuite&) = delete;
+  ShellDialogsTestSuite& operator=(const ShellDialogsTestSuite&) = delete;
+
  protected:
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellDialogsTestSuite);
 };
 
 ShellDialogsTestSuite::ShellDialogsTestSuite(int argc, char** argv)

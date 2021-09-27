@@ -15,6 +15,9 @@ class GLContext;
 
 class GL_EXPORT DualGPUState {
  public:
+  DualGPUState(const DualGPUState&) = delete;
+  DualGPUState& operator=(const DualGPUState&) = delete;
+
   void RegisterHighPerformanceContext(GLContext* context);
   void RemoveHighPerformanceContext(GLContext* context);
 
@@ -29,8 +32,6 @@ class GL_EXPORT DualGPUState {
   virtual void CancelDelayedSwitchToLowPowerGPU() = 0;
 
   base::flat_set<GLContext*> contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DualGPUState);
 };
 
 }  // namespace gl

@@ -68,6 +68,9 @@ class GFX_EXPORT SurfaceControl {
     Surface(const Surface& parent, const char* name);
     Surface(ANativeWindow* parent, const char* name);
 
+    Surface(const Surface&) = delete;
+    Surface& operator=(const Surface&) = delete;
+
     ASurfaceControl* surface() const { return surface_; }
 
    private:
@@ -76,8 +79,6 @@ class GFX_EXPORT SurfaceControl {
 
     ASurfaceControl* surface_ = nullptr;
     ASurfaceControl* owned_surface_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(Surface);
   };
 
   struct GFX_EXPORT SurfaceStats {

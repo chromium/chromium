@@ -1328,6 +1328,9 @@ class CaptureLostState {
  public:
   CaptureLostState() = default;
 
+  CaptureLostState(const CaptureLostState&) = delete;
+  CaptureLostState& operator=(const CaptureLostState&) = delete;
+
   bool GetAndClearGotCaptureLost() {
     bool value = got_capture_lost_;
     got_capture_lost_ = false;
@@ -1338,8 +1341,6 @@ class CaptureLostState {
 
  private:
   bool got_capture_lost_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureLostState);
 };
 
 // Used to verify OnMouseCaptureLost() has been invoked.
@@ -1347,6 +1348,10 @@ class CaptureLostTrackingWidget : public Widget {
  public:
   explicit CaptureLostTrackingWidget(CaptureLostState* capture_lost_state)
       : capture_lost_state_(capture_lost_state) {}
+
+  CaptureLostTrackingWidget(const CaptureLostTrackingWidget&) = delete;
+  CaptureLostTrackingWidget& operator=(const CaptureLostTrackingWidget&) =
+      delete;
 
   // Widget:
   void OnMouseCaptureLost() override {
@@ -1357,8 +1362,6 @@ class CaptureLostTrackingWidget : public Widget {
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
   CaptureLostState* capture_lost_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureLostTrackingWidget);
 };
 
 }  // namespace
@@ -1939,6 +1942,11 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
  public:
   WidgetInputMethodInteractiveTest() = default;
 
+  WidgetInputMethodInteractiveTest(const WidgetInputMethodInteractiveTest&) =
+      delete;
+  WidgetInputMethodInteractiveTest& operator=(
+      const WidgetInputMethodInteractiveTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     DesktopWidgetTestInteractive::SetUp();
@@ -1959,8 +1967,6 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 
  private:
   Widget* deactivate_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetInputMethodInteractiveTest);
 };
 
 #if defined(OS_MAC)

@@ -24,6 +24,9 @@ class GL_EXPORT DualGPUStateMac : public DualGPUState {
  public:
   static DualGPUStateMac* GetInstance();
 
+  DualGPUStateMac(const DualGPUStateMac&) = delete;
+  DualGPUStateMac& operator=(const DualGPUStateMac&) = delete;
+
  private:
   friend base::NoDestructor<DualGPUStateMac>;
 
@@ -40,8 +43,6 @@ class GL_EXPORT DualGPUStateMac : public DualGPUState {
 
   CGLPixelFormatObj discrete_pixelformat_ = nullptr;
   base::CancelableOnceClosure cancelable_delay_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DualGPUStateMac);
 };
 
 }  // namespace gl

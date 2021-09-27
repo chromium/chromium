@@ -115,6 +115,12 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     // start of the test here since a new process is launched for each test.
     mojo::core::Init();
   }
+
+  NativeWindowOcclusionTrackerTest(const NativeWindowOcclusionTrackerTest&) =
+      delete;
+  NativeWindowOcclusionTrackerTest& operator=(
+      const NativeWindowOcclusionTrackerTest&) = delete;
+
   void SetUp() override {
     if (gl::GetGLImplementation() == gl::kGLImplementationNone)
       gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -186,8 +192,6 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestNativeWindow> native_win_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowOcclusionTrackerTest);
 };
 
 // Simple test completely covering an aura window with a native window.

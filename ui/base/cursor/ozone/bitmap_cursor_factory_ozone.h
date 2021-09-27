@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
                     void* platform_data,
                     float cursor_image_scale_factor);
 
+  BitmapCursorOzone(const BitmapCursorOzone&) = delete;
+  BitmapCursorOzone& operator=(const BitmapCursorOzone&) = delete;
+
   mojom::CursorType type() const { return type_; }
   const gfx::Point& hotspot();
   const SkBitmap& bitmap();
@@ -78,8 +81,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   void* const platform_data_ = nullptr;
 
   float cursor_image_scale_factor_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapCursorOzone);
 };
 
 // CursorFactory implementation for bitmapped cursors.

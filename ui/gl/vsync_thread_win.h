@@ -30,6 +30,9 @@ class GL_EXPORT VSyncThreadWin {
  public:
   static VSyncThreadWin* GetInstance();
 
+  VSyncThreadWin(const VSyncThreadWin&) = delete;
+  VSyncThreadWin& operator=(const VSyncThreadWin&) = delete;
+
   // These methods are not rentrancy safe, and shouldn't be called inside
   // VSyncObserver::OnVSync.  It's safe to assume that these can be called only
   // from the main thread.
@@ -57,8 +60,6 @@ class GL_EXPORT VSyncThreadWin {
   base::Lock lock_;
   bool GUARDED_BY(lock_) is_idle_ = true;
   base::flat_set<VSyncObserver*> GUARDED_BY(lock_) observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncThreadWin);
 };
 }  // namespace gl
 

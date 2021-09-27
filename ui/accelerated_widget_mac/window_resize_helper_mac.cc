@@ -66,6 +66,9 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
       const EventTimedWaitCallback& event_timed_wait_callback,
       const scoped_refptr<base::SingleThreadTaskRunner>& target_task_runner);
 
+  PumpableTaskRunner(const PumpableTaskRunner&) = delete;
+  PumpableTaskRunner& operator=(const PumpableTaskRunner&) = delete;
+
   // Enqueue WrappedTask and post it to |target_task_runner_|.
   bool EnqueueAndPostWrappedTask(const base::Location& from_here,
                                  std::unique_ptr<WrappedTask> task,
@@ -106,8 +109,6 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
   EventTimedWaitCallback event_timed_wait_callback_;
 
   scoped_refptr<base::SingleThreadTaskRunner> target_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PumpableTaskRunner);
 };
 
 base::LazyInstance<WindowResizeHelperMac>::Leaky g_window_resize_helper =

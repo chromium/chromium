@@ -91,6 +91,11 @@ class GamepadEventConverterEvdevTest : public testing::Test {
  public:
   GamepadEventConverterEvdevTest() {}
 
+  GamepadEventConverterEvdevTest(const GamepadEventConverterEvdevTest&) =
+      delete;
+  GamepadEventConverterEvdevTest& operator=(
+      const GamepadEventConverterEvdevTest&) = delete;
+
   // Overriden from testing::Test:
   void SetUp() override {
     device_manager_ = ui::CreateDeviceManagerForTest();
@@ -127,8 +132,6 @@ class GamepadEventConverterEvdevTest : public testing::Test {
   std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<ui::EventFactoryEvdev> event_factory_;
   std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadEventConverterEvdevTest);
 };
 
 struct ExpectedEvent {

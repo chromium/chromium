@@ -42,6 +42,9 @@ class TableViewTestHelper {
  public:
   explicit TableViewTestHelper(TableView* table) : table_(table) {}
 
+  TableViewTestHelper(const TableViewTestHelper&) = delete;
+  TableViewTestHelper& operator=(const TableViewTestHelper&) = delete;
+
   std::string GetPaintRegion(const gfx::Rect& bounds) {
     TableView::PaintRegion region(table_->GetPaintRegion(bounds));
     return "rows=" + base::NumberToString(region.min_row) + " " +
@@ -135,8 +138,6 @@ class TableViewTestHelper {
 
  private:
   TableView* table_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableViewTestHelper);
 };
 
 namespace {
@@ -161,6 +162,9 @@ constexpr int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
 class TestTableModel2 : public ui::TableModel {
  public:
   TestTableModel2();
+
+  TestTableModel2(const TestTableModel2&) = delete;
+  TestTableModel2& operator=(const TestTableModel2&) = delete;
 
   // Adds a new row at index |row| with values |c1_value| and |c2_value|.
   void AddRow(int row, int c1_value, int c2_value);
@@ -199,8 +203,6 @@ class TestTableModel2 : public ui::TableModel {
 
   // The data.
   std::vector<std::vector<int>> rows_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTableModel2);
 };
 
 TestTableModel2::TestTableModel2() {
@@ -425,6 +427,9 @@ class TableViewTest : public ViewsTestBase,
  public:
   TableViewTest() = default;
 
+  TableViewTest(const TableViewTest&) = delete;
+  TableViewTest& operator=(const TableViewTest&) = delete;
+
   void SetUp() override {
     ViewsTestBase::SetUp();
 
@@ -614,8 +619,6 @@ class TableViewTest : public ViewsTestBase,
     const int y = (row + 0.5) * table_->GetRowHeight();
     return table_->GetBoundsInScreen().origin() + gfx::Vector2d(5, y);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TableViewTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, TableViewTest, testing::Values(false, true));
@@ -1142,6 +1145,9 @@ class TableGrouperImpl : public TableGrouper {
  public:
   TableGrouperImpl() = default;
 
+  TableGrouperImpl(const TableGrouperImpl&) = delete;
+  TableGrouperImpl& operator=(const TableGrouperImpl&) = delete;
+
   void SetRanges(const std::vector<int>& ranges) { ranges_ = ranges; }
 
   // TableGrouper overrides:
@@ -1162,8 +1168,6 @@ class TableGrouperImpl : public TableGrouper {
 
  private:
   std::vector<int> ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableGrouperImpl);
 };
 
 }  // namespace
@@ -1248,6 +1252,9 @@ class TableViewObserverImpl : public TableViewObserver {
  public:
   TableViewObserverImpl() = default;
 
+  TableViewObserverImpl(const TableViewObserverImpl&) = delete;
+  TableViewObserverImpl& operator=(const TableViewObserverImpl&) = delete;
+
   int GetChangedCountAndClear() {
     const int count = selection_changed_count_;
     selection_changed_count_ = 0;
@@ -1259,8 +1266,6 @@ class TableViewObserverImpl : public TableViewObserver {
 
  private:
   int selection_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TableViewObserverImpl);
 };
 
 }  // namespace
@@ -2140,6 +2145,9 @@ class TableViewFocusTest : public TableViewTest {
  public:
   TableViewFocusTest() = default;
 
+  TableViewFocusTest(const TableViewFocusTest&) = delete;
+  TableViewFocusTest& operator=(const TableViewFocusTest&) = delete;
+
  protected:
   WidgetDelegate* GetWidgetDelegate(Widget* widget) override;
 
@@ -2149,8 +2157,6 @@ class TableViewFocusTest : public TableViewTest {
 
  private:
   std::unique_ptr<RemoveFocusChangeListenerDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableViewFocusTest);
 };
 
 WidgetDelegate* TableViewFocusTest::GetWidgetDelegate(Widget* widget) {

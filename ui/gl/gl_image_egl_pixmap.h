@@ -22,6 +22,9 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
  public:
   GLImageEGLPixmap(const gfx::Size& size, gfx::BufferFormat format);
 
+  GLImageEGLPixmap(const GLImageEGLPixmap&) = delete;
+  GLImageEGLPixmap& operator=(const GLImageEGLPixmap&) = delete;
+
   bool Initialize(x11::Pixmap pixmap);
 
   // Overridden from GLImage:
@@ -46,8 +49,6 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
   const gfx::Size size_;
   gfx::BufferFormat format_;
   EGLDisplay display_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageEGLPixmap);
 };
 
 }  // namespace gl

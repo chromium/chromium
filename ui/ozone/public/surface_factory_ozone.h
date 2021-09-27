@@ -68,6 +68,9 @@ class PlatformWindowSurface;
 // modes (See comments below for descriptions).
 class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
  public:
+  SurfaceFactoryOzone(const SurfaceFactoryOzone&) = delete;
+  SurfaceFactoryOzone& operator=(const SurfaceFactoryOzone&) = delete;
+
   // Returns a list of allowed GL implementations. The default implementation
   // will be the first item.
   virtual std::vector<gl::GLImplementationParts> GetAllowedGLImplementations();
@@ -199,9 +202,6 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
  protected:
   SurfaceFactoryOzone();
   virtual ~SurfaceFactoryOzone();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurfaceFactoryOzone);
 };
 
 }  // namespace ui

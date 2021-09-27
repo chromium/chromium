@@ -17,6 +17,9 @@ class PlatformFontIOS : public PlatformFont {
   PlatformFontIOS(const std::string& font_name,
                   int font_size);
 
+  PlatformFontIOS(const PlatformFontIOS&) = delete;
+  PlatformFontIOS& operator=(const PlatformFontIOS&) = delete;
+
   // Overridden from PlatformFont:
   Font DeriveFont(int size_delta,
                   int style,
@@ -60,8 +63,6 @@ class PlatformFontIOS : public PlatformFont {
   int ascent_;
   int cap_height_;
   int average_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformFontIOS);
 };
 
 }  // namespace gfx

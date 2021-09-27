@@ -60,6 +60,9 @@ class GPUTiming {
     kTimerTypeDisjoint  // EXT_disjoint_timer_query
   };
 
+  GPUTiming(const GPUTiming&) = delete;
+  GPUTiming& operator=(const GPUTiming&) = delete;
+
  protected:
   friend std::default_delete<GPUTiming>;
   friend class GLContextReal;
@@ -70,8 +73,6 @@ class GPUTiming {
   virtual ~GPUTiming();
 
   virtual scoped_refptr<GPUTimingClient> CreateGPUTimingClient() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTiming);
 };
 
 // Class to compute the amount of time it takes to fully
@@ -129,6 +130,9 @@ class GL_EXPORT GPUTimingClient
  public:
   explicit GPUTimingClient(GPUTimingImpl* gpu_timing = nullptr);
 
+  GPUTimingClient(const GPUTimingClient&) = delete;
+  GPUTimingClient& operator=(const GPUTimingClient&) = delete;
+
   std::unique_ptr<GPUTimer> CreateGPUTimer(bool prefer_elapsed_time);
   bool IsAvailable();
 
@@ -156,8 +160,6 @@ class GL_EXPORT GPUTimingClient
   GPUTimingImpl* gpu_timing_;
   GPUTiming::TimerType timer_type_ = GPUTiming::kTimerTypeInvalid;
   uint32_t disjoint_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimingClient);
 };
 
 }  // namespace gl

@@ -34,6 +34,9 @@ class ANIMATION_EXPORT LinearAnimation : public Animation {
                   int frame_rate,
                   AnimationDelegate* delegate);
 
+  LinearAnimation(const LinearAnimation&) = delete;
+  LinearAnimation& operator=(const LinearAnimation&) = delete;
+
   // Gets the value for the current state, according to the animation curve in
   // use. This class provides only for a linear relationship, however subclasses
   // can override this to provide others.
@@ -80,8 +83,6 @@ class ANIMATION_EXPORT LinearAnimation : public Animation {
   // If true, we're in end. This is used to determine if the animation should
   // be advanced to the end from AnimationStopped.
   bool in_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearAnimation);
 };
 
 }  // namespace gfx

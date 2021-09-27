@@ -37,6 +37,10 @@ class WaylandDataDeviceBase {
   };
 
   explicit WaylandDataDeviceBase(WaylandConnection* connection);
+
+  WaylandDataDeviceBase(const WaylandDataDeviceBase&) = delete;
+  WaylandDataDeviceBase& operator=(const WaylandDataDeviceBase&) = delete;
+
   virtual ~WaylandDataDeviceBase();
 
   // Sets the delegate instance responsible for handling section events.
@@ -97,8 +101,6 @@ class WaylandDataDeviceBase {
   // Before blocking on read(), make sure server has written data on the pipe.
   base::OnceClosure deferred_read_closure_;
   wl::Object<wl_callback> deferred_read_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceBase);
 };
 
 }  // namespace ui

@@ -429,6 +429,9 @@ class HarfBuzzLineBreaker {
     AdvanceLine();
   }
 
+  HarfBuzzLineBreaker(const HarfBuzzLineBreaker&) = delete;
+  HarfBuzzLineBreaker& operator=(const HarfBuzzLineBreaker&) = delete;
+
   // Constructs a single line for |text_| using |run_list_|.
   void ConstructSingleLine() {
     for (size_t i = 0; i < run_list_.size(); i++) {
@@ -760,8 +763,6 @@ class HarfBuzzLineBreaker {
 
   // The current RTL run segments, to be applied by |UpdateRTLSegmentRanges()|.
   std::vector<SegmentHandle> rtl_segments_;
-
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzLineBreaker);
 };
 
 // Applies a forced text rendering direction if specified by a command-line

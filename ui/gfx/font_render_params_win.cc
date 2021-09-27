@@ -52,6 +52,9 @@ class CachedFontRenderParams {
     return base::Singleton<CachedFontRenderParams>::get();
   }
 
+  CachedFontRenderParams(const CachedFontRenderParams&) = delete;
+  CachedFontRenderParams& operator=(const CachedFontRenderParams&) = delete;
+
   const FontRenderParams& GetParams() {
     if (params_)
       return *params_;
@@ -98,8 +101,6 @@ class CachedFontRenderParams {
 
   std::unique_ptr<FontRenderParams> params_;
   std::unique_ptr<SingletonHwndObserver> singleton_hwnd_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontRenderParams);
 };
 
 }  // namespace

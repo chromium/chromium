@@ -354,6 +354,9 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
  public:
   MenuRunnerWidgetTest() = default;
 
+  MenuRunnerWidgetTest(const MenuRunnerWidgetTest&) = delete;
+  MenuRunnerWidgetTest& operator=(const MenuRunnerWidgetTest&) = delete;
+
   Widget* widget() { return widget_; }
   EventCountView* event_count_view() { return event_count_view_; }
 
@@ -394,8 +397,6 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   Widget* widget_ = nullptr;
   EventCountView* event_count_view_ = nullptr;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerWidgetTest);
 };
 
 // Tests that when a mouse press launches a menu, that the target widget does

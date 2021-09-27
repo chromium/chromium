@@ -36,6 +36,9 @@ class TSFInputScope final : public ITfInputScope {
       : input_scopes_(input_scopes),
         ref_count_(0) {}
 
+  TSFInputScope(const TSFInputScope&) = delete;
+  TSFInputScope& operator=(const TSFInputScope&) = delete;
+
   // ITfInputScope:
   IFACEMETHODIMP_(ULONG) AddRef() override {
     return InterlockedIncrement(&ref_count_);
@@ -98,8 +101,6 @@ class TSFInputScope final : public ITfInputScope {
 
   // The reference count of this instance.
   volatile ULONG ref_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFInputScope);
 };
 
 typedef HRESULT (WINAPI *SetInputScopesFunc)(HWND window_handle,

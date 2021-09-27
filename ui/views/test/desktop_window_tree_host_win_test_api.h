@@ -25,6 +25,11 @@ class DesktopWindowTreeHostWinTestApi {
  public:
   explicit DesktopWindowTreeHostWinTestApi(DesktopWindowTreeHostWin* host);
 
+  DesktopWindowTreeHostWinTestApi(const DesktopWindowTreeHostWinTestApi&) =
+      delete;
+  DesktopWindowTreeHostWinTestApi& operator=(
+      const DesktopWindowTreeHostWinTestApi&) = delete;
+
   void EnsureAXSystemCaretCreated();
   ui::AXSystemCaretWin* GetAXSystemCaret();
   gfx::NativeViewAccessible GetNativeViewAccessible();
@@ -35,8 +40,6 @@ class DesktopWindowTreeHostWinTestApi {
 
  private:
   DesktopWindowTreeHostWin* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostWinTestApi);
 };
 
 }  // namespace test

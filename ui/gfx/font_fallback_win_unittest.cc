@@ -20,12 +20,13 @@ class FontFallbackWinTest : public testing::Test {
  public:
   FontFallbackWinTest() = default;
 
+  FontFallbackWinTest(const FontFallbackWinTest&) = delete;
+  FontFallbackWinTest& operator=(const FontFallbackWinTest&) = delete;
+
  private:
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(FontFallbackWinTest);
 };
 
 }  // namespace

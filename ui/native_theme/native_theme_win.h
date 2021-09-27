@@ -51,6 +51,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
     LAST
   };
 
+  NativeThemeWin(const NativeThemeWin&) = delete;
+  NativeThemeWin& operator=(const NativeThemeWin&) = delete;
+
   // Closes cached theme handles so we can unload the DLL or update our UI
   // for a theme change.
   static void CloseHandles();
@@ -216,8 +219,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeWin);
 };
 
 }  // namespace ui

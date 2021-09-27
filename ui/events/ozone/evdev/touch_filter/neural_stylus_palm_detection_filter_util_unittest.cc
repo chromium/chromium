@@ -21,6 +21,11 @@ class NeuralStylusPalmDetectionFilterUtilTest : public testing::Test {
  public:
   NeuralStylusPalmDetectionFilterUtilTest() = default;
 
+  NeuralStylusPalmDetectionFilterUtilTest(
+      const NeuralStylusPalmDetectionFilterUtilTest&) = delete;
+  NeuralStylusPalmDetectionFilterUtilTest& operator=(
+      const NeuralStylusPalmDetectionFilterUtilTest&) = delete;
+
   void SetUp() override {
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kNocturneTouchScreen, &nocturne_touchscreen_));
@@ -36,8 +41,6 @@ class NeuralStylusPalmDetectionFilterUtilTest : public testing::Test {
   InProgressTouchEvdev touch_;
   EventDeviceInfo nocturne_touchscreen_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilterUtilTest);
 };
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, DistilledNocturneTest) {

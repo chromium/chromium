@@ -361,6 +361,9 @@ class MenuController::MenuScrollTask {
     pixels_per_second_ = MenuItemView::pref_menu_height() * 20;
   }
 
+  MenuScrollTask(const MenuScrollTask&) = delete;
+  MenuScrollTask& operator=(const MenuScrollTask&) = delete;
+
   void Update(const MenuController::MenuPart& part) {
     if (!part.is_scroll()) {
       StopScrolling();
@@ -424,8 +427,6 @@ class MenuController::MenuScrollTask {
 
   // Y-coordinate of submenu_view_ when scrolling started.
   int start_y_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollTask);
 };
 
 // MenuController:SelectByCharDetails ----------------------------------------

@@ -53,6 +53,10 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
   explicit TestSimpleMenuModelVisibility(SimpleMenuModel::Delegate* delegate)
       : SimpleMenuModel(delegate) {}
 
+  TestSimpleMenuModelVisibility(const TestSimpleMenuModelVisibility&) = delete;
+  TestSimpleMenuModelVisibility& operator=(
+      const TestSimpleMenuModelVisibility&) = delete;
+
   // SimpleMenuModel:
   bool IsVisibleAt(int index) const override {
     return items_[ValidateItemIndex(index)].visible;
@@ -88,8 +92,6 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
   }
 
   ItemVector items_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimpleMenuModelVisibility);
 };
 
 // A menu delegate that counts the number of times certain things are called
@@ -97,6 +99,9 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
 class Delegate : public SimpleMenuModel::Delegate {
  public:
   Delegate() {}
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   bool IsCommandIdChecked(int command_id) const override { return false; }
   bool IsCommandIdEnabled(int command_id) const override {
@@ -135,9 +140,6 @@ class Delegate : public SimpleMenuModel::Delegate {
   bool did_show_ = false;
   bool did_close_ = false;
   bool auto_close_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 // Just like Delegate, except the items are treated as "dynamic" so updates to
@@ -175,6 +177,9 @@ class OwningDelegate : public Delegate {
     [controller_ setDeallocCalled:did_dealloc];
   }
 
+  OwningDelegate(const OwningDelegate&) = delete;
+  OwningDelegate& operator=(const OwningDelegate&) = delete;
+
   MenuControllerCocoa* controller() { return controller_; }
 
   // Delegate:
@@ -199,8 +204,6 @@ class OwningDelegate : public Delegate {
   bool* did_delete_;
   SimpleMenuModel model_;
   base::scoped_nsobject<WatchedLifetimeMenuController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwningDelegate);
 };
 
 // Menu model that returns a gfx::FontList object for one of the items in the

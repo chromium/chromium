@@ -32,6 +32,9 @@ class VIEWS_EXPORT ContextMenuController {
  public:
   ContextMenuController();
 
+  ContextMenuController(const ContextMenuController&) = delete;
+  ContextMenuController& operator=(const ContextMenuController&) = delete;
+
   // Invoked to show the context menu for |source|. |point| is in screen
   // coordinates. This method also prevents reentrant calls.
   void ShowContextMenuForView(View* source,
@@ -54,8 +57,6 @@ class VIEWS_EXPORT ContextMenuController {
   bool is_opening_ = false;
 
   base::WeakPtrFactory<ContextMenuController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
 
 }  // namespace views

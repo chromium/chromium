@@ -69,6 +69,9 @@ class MultilineExample::RenderTextView : public View {
     SetBorder(CreateSolidBorder(2, SK_ColorGRAY));
   }
 
+  RenderTextView(const RenderTextView&) = delete;
+  RenderTextView& operator=(const RenderTextView&) = delete;
+
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
     render_text_->Draw(canvas);
@@ -126,8 +129,6 @@ class MultilineExample::RenderTextView : public View {
   }
 
   std::unique_ptr<gfx::RenderText> render_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextView);
 };
 
 MultilineExample::MultilineExample()

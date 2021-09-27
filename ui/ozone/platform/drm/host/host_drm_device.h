@@ -36,6 +36,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
  public:
   explicit HostDrmDevice(DrmCursor* cursor);
 
+  HostDrmDevice(const HostDrmDevice&) = delete;
+  HostDrmDevice& operator=(const HostDrmDevice&) = delete;
+
   void SetDisplayManager(DrmDisplayHostManager* display_manager);
 
   void OnGpuServiceLaunchedOnProcessThread(
@@ -124,8 +127,6 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
 
   bool connected_ = false;
   base::ObserverList<GpuThreadObserver>::Unchecked gpu_thread_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostDrmDevice);
 };
 
 }  // namespace ui

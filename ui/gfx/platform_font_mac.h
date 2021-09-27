@@ -45,6 +45,9 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
                   int font_size_pixels,
                   const absl::optional<FontRenderParams>& params);
 
+  PlatformFontMac(const PlatformFontMac&) = delete;
+  PlatformFontMac& operator=(const PlatformFontMac&) = delete;
+
   // Overridden from PlatformFont:
   Font DeriveFont(int size_delta,
                   int style,
@@ -111,8 +114,6 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
 
   // Details about how the font should be rendered.
   FontRenderParams render_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformFontMac);
 };
 
 }  // namespace gfx

@@ -66,6 +66,11 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
         eat_key_(false),
         focused_(false) {}
 
+  LinuxInputMethodContextForTesting(const LinuxInputMethodContextForTesting&) =
+      delete;
+  LinuxInputMethodContextForTesting& operator=(
+      const LinuxInputMethodContextForTesting&) = delete;
+
   void SetSyncMode(bool is_sync_mode) { is_sync_mode_ = is_sync_mode; }
   void SetEatKey(bool eat_key) { eat_key_ = eat_key; }
 
@@ -155,8 +160,6 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool eat_key_;
   bool focused_;
   gfx::Rect cursor_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinuxInputMethodContextForTesting);
 };
 
 class LinuxInputMethodContextFactoryForTesting
@@ -164,15 +167,17 @@ class LinuxInputMethodContextFactoryForTesting
  public:
   LinuxInputMethodContextFactoryForTesting() {}
 
+  LinuxInputMethodContextFactoryForTesting(
+      const LinuxInputMethodContextFactoryForTesting&) = delete;
+  LinuxInputMethodContextFactoryForTesting& operator=(
+      const LinuxInputMethodContextFactoryForTesting&) = delete;
+
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
       LinuxInputMethodContextDelegate* delegate,
       bool is_simple) const override {
     return std::unique_ptr<ui::LinuxInputMethodContext>(
         new LinuxInputMethodContextForTesting(delegate));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LinuxInputMethodContextFactoryForTesting);
 };
 
 class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
@@ -280,6 +285,10 @@ class TextInputClientForTesting : public DummyTextInputClient {
 };
 
 class InputMethodAuraLinuxTest : public testing::Test {
+ public:
+  InputMethodAuraLinuxTest(const InputMethodAuraLinuxTest&) = delete;
+  InputMethodAuraLinuxTest& operator=(const InputMethodAuraLinuxTest&) = delete;
+
  protected:
   InputMethodAuraLinuxTest()
       : factory_(nullptr),
@@ -329,8 +338,6 @@ class InputMethodAuraLinuxTest : public testing::Test {
   LinuxInputMethodContextForTesting* context_;
   LinuxInputMethodContextForTesting* context_simple_;
   TestResult* test_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAuraLinuxTest);
 };
 
 TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {

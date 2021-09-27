@@ -23,6 +23,9 @@ class GL_EXPORT GLImageMemory : public GLImage {
  public:
   explicit GLImageMemory(const gfx::Size& size);
 
+  GLImageMemory(const GLImageMemory&) = delete;
+  GLImageMemory& operator=(const GLImageMemory&) = delete;
+
   bool Initialize(const unsigned char* memory,
                   gfx::BufferFormat format,
                   size_t stride);
@@ -73,8 +76,6 @@ class GL_EXPORT GLImageMemory : public GLImage {
   base::WeakPtr<GLSurface> original_surface_;
   size_t buffer_bytes_ = 0;
   int memcpy_tasks_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageMemory);
 };
 
 }  // namespace gl

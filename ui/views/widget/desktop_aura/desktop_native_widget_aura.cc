@@ -156,6 +156,11 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     return native_window;
   }
 
+  DesktopNativeWidgetTopLevelHandler(
+      const DesktopNativeWidgetTopLevelHandler&) = delete;
+  DesktopNativeWidgetTopLevelHandler& operator=(
+      const DesktopNativeWidgetTopLevelHandler&) = delete;
+
   // aura::WindowObserver overrides
   void OnWindowDestroying(aura::Window* window) override {
     window->RemoveObserver(this);
@@ -197,8 +202,6 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
 
   Widget* top_level_widget_ = nullptr;
   aura::Window* child_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetTopLevelHandler);
 };
 
 class DesktopNativeWidgetAuraWindowParentingClient

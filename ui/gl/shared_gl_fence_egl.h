@@ -28,6 +28,9 @@ class GL_EXPORT SharedGLFenceEGL
  public:
   SharedGLFenceEGL();
 
+  SharedGLFenceEGL(const SharedGLFenceEGL&) = delete;
+  SharedGLFenceEGL& operator=(const SharedGLFenceEGL&) = delete;
+
   // Issues a ServerWait on the |egl_fence_|.
   void ServerWait();
 
@@ -44,8 +47,6 @@ class GL_EXPORT SharedGLFenceEGL
 
   // GLApi on which all the consumers for this object should be on.
   gl::GLApi* gl_api_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedGLFenceEGL);
 };
 
 }  // namespace gl

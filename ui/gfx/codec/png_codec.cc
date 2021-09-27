@@ -58,6 +58,9 @@ class PngDecoderState {
         height(0),
         done(false) {}
 
+  PngDecoderState(const PngDecoderState&) = delete;
+  PngDecoderState& operator=(const PngDecoderState&) = delete;
+
   PNGCodec::ColorFormat output_format;
   int output_channels;
 
@@ -78,9 +81,6 @@ class PngDecoderState {
 
   // Set to true when we've found the end of the data.
   bool done;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngDecoderState);
 };
 
 // User transform (passed to libpng) which converts a row decoded by libpng to

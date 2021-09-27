@@ -44,6 +44,9 @@ class VIEWS_EXPORT PathInkDropMask : public InkDropMask {
  public:
   PathInkDropMask(const gfx::Size& layer_size, const SkPath& path);
 
+  PathInkDropMask(const PathInkDropMask&) = delete;
+  PathInkDropMask& operator=(const PathInkDropMask&) = delete;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(InkDropMaskTest, PathInkDropMaskPaintsTriangle);
 
@@ -51,8 +54,6 @@ class VIEWS_EXPORT PathInkDropMask : public InkDropMask {
   void OnPaintLayer(const ui::PaintContext& context) override;
 
   SkPath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(PathInkDropMask);
 };
 
 }  // namespace views

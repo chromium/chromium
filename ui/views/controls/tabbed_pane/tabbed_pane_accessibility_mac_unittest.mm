@@ -44,6 +44,11 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
  public:
   TabbedPaneAccessibilityMacTest() = default;
 
+  TabbedPaneAccessibilityMacTest(const TabbedPaneAccessibilityMacTest&) =
+      delete;
+  TabbedPaneAccessibilityMacTest& operator=(
+      const TabbedPaneAccessibilityMacTest&) = delete;
+
   // WidgetTest:
   void SetUp() override {
     WidgetTest::SetUp();
@@ -85,9 +90,6 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
  protected:
   Widget* widget_ = nullptr;
   TabbedPane* tabbed_pane_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabbedPaneAccessibilityMacTest);
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.

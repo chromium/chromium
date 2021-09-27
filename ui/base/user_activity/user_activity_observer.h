@@ -18,6 +18,9 @@ namespace ui {
 // Implementations should register themselves with UserActivityDetector.
 class COMPONENT_EXPORT(UI_BASE) UserActivityObserver {
  public:
+  UserActivityObserver(const UserActivityObserver&) = delete;
+  UserActivityObserver& operator=(const UserActivityObserver&) = delete;
+
   // Invoked periodically while the user is active (i.e. generating input
   // events). |event| is the event that triggered the notification; it may
   // be NULL in some cases (e.g. testing or synthetic invocations).
@@ -26,8 +29,6 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityObserver {
  protected:
   UserActivityObserver() {}
   virtual ~UserActivityObserver() {}
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityObserver);
 };
 
 }  // namespace ui

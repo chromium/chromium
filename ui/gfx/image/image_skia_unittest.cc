@@ -110,6 +110,9 @@ class TestOnThread : public base::SimpleThread {
         can_modify_(false) {
   }
 
+  TestOnThread(const TestOnThread&) = delete;
+  TestOnThread& operator=(const TestOnThread&) = delete;
+
   void Run() override {
     can_read_ = image_skia_->CanRead();
     can_modify_ = image_skia_->CanModify();
@@ -131,8 +134,6 @@ class TestOnThread : public base::SimpleThread {
 
   bool can_read_;
   bool can_modify_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOnThread);
 };
 
 }  // namespace test

@@ -238,6 +238,10 @@ class TouchEventConverterEvdevTest : public testing::Test {
  public:
   TouchEventConverterEvdevTest() {}
 
+  TouchEventConverterEvdevTest(const TouchEventConverterEvdevTest&) = delete;
+  TouchEventConverterEvdevTest& operator=(const TouchEventConverterEvdevTest&) =
+      delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     // By default, tests disable single-cancel and enable palm on touch_major ==
@@ -335,7 +339,6 @@ class TouchEventConverterEvdevTest : public testing::Test {
     dispatched_events_.push_back(params);
   }
   std::vector<GenericEventParams> dispatched_events_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventConverterEvdevTest);
 };
 
 TEST_F(TouchEventConverterEvdevTest, NoEvents) {

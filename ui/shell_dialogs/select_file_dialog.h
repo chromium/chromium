@@ -113,6 +113,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       Listener* listener,
       std::unique_ptr<SelectFilePolicy> policy);
 
+  SelectFileDialog(const SelectFileDialog&) = delete;
+  SelectFileDialog& operator=(const SelectFileDialog&) = delete;
+
   // Holds information about allowed extensions on a file save dialog.
   struct SHELL_DIALOGS_EXPORT FileTypeInfo {
     FileTypeInfo();
@@ -240,8 +243,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   virtual bool HasMultipleFileTypeChoicesImpl() = 0;
 
   std::unique_ptr<SelectFilePolicy> select_file_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
 
 SelectFileDialog* CreateSelectFileDialog(

@@ -17,6 +17,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
  public:
   FakeInputMethodContext();
 
+  FakeInputMethodContext(const FakeInputMethodContext&) = delete;
+  FakeInputMethodContext& operator=(const FakeInputMethodContext&) = delete;
+
   // Overriden from ui::LinuxInputMethodContext
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
   bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
@@ -26,9 +29,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeInputMethodContext);
 };
 
 }  // namespace ui

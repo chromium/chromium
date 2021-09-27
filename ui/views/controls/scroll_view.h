@@ -464,6 +464,10 @@ class FixedRowHeightScrollHelper : public VariableRowHeightScrollHelper {
   // height of each row.
   FixedRowHeightScrollHelper(int top_margin, int row_height);
 
+  FixedRowHeightScrollHelper(const FixedRowHeightScrollHelper&) = delete;
+  FixedRowHeightScrollHelper& operator=(const FixedRowHeightScrollHelper&) =
+      delete;
+
  protected:
   // Calculates the bounds of the row from the top margin and row height.
   RowInfo GetRowInfo(int y) override;
@@ -471,8 +475,6 @@ class FixedRowHeightScrollHelper : public VariableRowHeightScrollHelper {
  private:
   int top_margin_;
   int row_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedRowHeightScrollHelper);
 };
 
 }  // namespace views

@@ -217,6 +217,9 @@ class MockNSEventClassMethods {
     }
   }
 
+  MockNSEventClassMethods(const MockNSEventClassMethods&) = delete;
+  MockNSEventClassMethods& operator=(const MockNSEventClassMethods&) = delete;
+
  private:
   MockNSEventClassMethods()
       : mouse_location_swizzler_([NSEvent class],
@@ -228,8 +231,6 @@ class MockNSEventClassMethods {
 
   base::mac::ScopedObjCClassSwizzler mouse_location_swizzler_;
   base::mac::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNSEventClassMethods);
 };
 
 }  // namespace

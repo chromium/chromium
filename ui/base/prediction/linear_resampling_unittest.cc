@@ -16,6 +16,9 @@ class LinearResamplingTest : public InputPredictorTest {
  public:
   explicit LinearResamplingTest() {}
 
+  LinearResamplingTest(const LinearResamplingTest&) = delete;
+  LinearResamplingTest& operator=(const LinearResamplingTest&) = delete;
+
   void SetUp() override { predictor_ = std::make_unique<LinearResampling>(); }
 
   void ValidatePredictorFrameBased(
@@ -62,8 +65,6 @@ class LinearResamplingTest : public InputPredictorTest {
   }
 
   base::test::ScopedFeatureList feature_list;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearResamplingTest);
 };
 
 // Test if the output name of the predictor is taking account of the

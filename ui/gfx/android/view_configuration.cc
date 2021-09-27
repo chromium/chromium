@@ -49,6 +49,9 @@ struct ViewConfigurationData {
                env, j_view_configuration_helper_));
   }
 
+  ViewConfigurationData(const ViewConfigurationData&) = delete;
+  ViewConfigurationData& operator=(const ViewConfigurationData&) = delete;
+
   ~ViewConfigurationData() {}
 
   void SynchronizedUpdate(float maximum_fling_velocity,
@@ -120,9 +123,6 @@ struct ViewConfigurationData {
   int touch_slop_in_dips_;
   int double_tap_slop_in_dips_;
   int min_scaling_span_in_dips_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewConfigurationData);
 };
 
 // Leaky to allow access from any thread.

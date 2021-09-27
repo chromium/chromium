@@ -15,24 +15,29 @@ class LinearPredictorFirstOrderTest : public InputPredictorTest {
  public:
   explicit LinearPredictorFirstOrderTest() {}
 
+  LinearPredictorFirstOrderTest(const LinearPredictorFirstOrderTest&) = delete;
+  LinearPredictorFirstOrderTest& operator=(
+      const LinearPredictorFirstOrderTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LinearPredictor>(
         LinearPredictor::EquationOrder::kFirstOrder);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LinearPredictorFirstOrderTest);
 };
 
 class LinearPredictorSecondOrderTest : public InputPredictorTest {
  public:
   explicit LinearPredictorSecondOrderTest() {}
 
+  LinearPredictorSecondOrderTest(const LinearPredictorSecondOrderTest&) =
+      delete;
+  LinearPredictorSecondOrderTest& operator=(
+      const LinearPredictorSecondOrderTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LinearPredictor>(
         LinearPredictor::EquationOrder::kSecondOrder);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LinearPredictorSecondOrderTest);
 };
 
 // Test if the output name of the predictor is taking account of the

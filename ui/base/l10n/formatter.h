@@ -43,6 +43,8 @@ class Formatter {
     TWO_UNITS_COUNT      // Enum size counter, not a unit pair.  Must be last.
   };
 
+  Formatter() = delete;
+
   Formatter(const Pluralities& sec_pluralities,
             const Pluralities& min_pluralities,
             const Pluralities& hour_pluralities,
@@ -63,6 +65,9 @@ class Formatter {
             const Pluralities& day_hour_pluralities1,
             const Pluralities& day_hour_pluralities2);
 
+  Formatter(const Formatter&) = delete;
+  Formatter& operator=(const Formatter&) = delete;
+
   void Format(Unit unit, int value, icu::UnicodeString* formatted_string) const;
 
   void Format(TwoUnits units,
@@ -82,8 +87,6 @@ class Formatter {
 
   std::unique_ptr<icu::MessageFormat> simple_format_[UNIT_COUNT];
   std::unique_ptr<icu::MessageFormat> detailed_format_[TWO_UNITS_COUNT][2];
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Formatter);
 };
 
 // Class to hold all Formatters, intended to be used in a global LazyInstance.

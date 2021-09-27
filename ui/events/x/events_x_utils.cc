@@ -48,6 +48,9 @@ class XModifierStateWatcher {
     return base::Singleton<XModifierStateWatcher>::get();
   }
 
+  XModifierStateWatcher(const XModifierStateWatcher&) = delete;
+  XModifierStateWatcher& operator=(const XModifierStateWatcher&) = delete;
+
   x11::KeyButMask StateFromKeyboardCode(ui::KeyboardCode keyboard_code) {
     switch (keyboard_code) {
       case ui::VKEY_CONTROL:
@@ -93,8 +96,6 @@ class XModifierStateWatcher {
   XModifierStateWatcher() = default;
 
   unsigned int state_{};
-
-  DISALLOW_COPY_AND_ASSIGN(XModifierStateWatcher);
 };
 
 // Detects if a touch event is a driver-generated 'special event'.

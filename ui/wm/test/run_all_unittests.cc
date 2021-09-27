@@ -22,6 +22,9 @@ class WMTestSuite : public base::TestSuite {
  public:
   WMTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  WMTestSuite(const WMTestSuite&) = delete;
+  WMTestSuite& operator=(const WMTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -47,7 +50,6 @@ class WMTestSuite : public base::TestSuite {
  private:
   std::unique_ptr<aura::Env> env_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-  DISALLOW_COPY_AND_ASSIGN(WMTestSuite);
 };
 
 int main(int argc, char** argv) {

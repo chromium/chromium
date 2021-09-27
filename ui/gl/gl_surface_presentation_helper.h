@@ -54,6 +54,11 @@ class GL_EXPORT GLSurfacePresentationHelper {
   // For using fixed VSync provider.
   GLSurfacePresentationHelper(const base::TimeTicks timebase,
                               const base::TimeDelta interval);
+
+  GLSurfacePresentationHelper(const GLSurfacePresentationHelper&) = delete;
+  GLSurfacePresentationHelper& operator=(const GLSurfacePresentationHelper&) =
+      delete;
+
   ~GLSurfacePresentationHelper();
 
   void OnMakeCurrent(GLContext* context, GLSurface* surface);
@@ -113,8 +118,6 @@ class GL_EXPORT GLSurfacePresentationHelper {
   bool update_vsync_pending_ = false;
 
   base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfacePresentationHelper);
 };
 
 }  // namespace gl

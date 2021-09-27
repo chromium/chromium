@@ -417,6 +417,10 @@ class GestureEventSynthDelegate : public TestWindowDelegate {
         double_click_(false) {
   }
 
+  GestureEventSynthDelegate(const GestureEventSynthDelegate&) = delete;
+  GestureEventSynthDelegate& operator=(const GestureEventSynthDelegate&) =
+      delete;
+
   void Reset() {
     mouse_enter_ = false;
     mouse_exit_ = false;
@@ -464,8 +468,6 @@ class GestureEventSynthDelegate : public TestWindowDelegate {
   bool mouse_release_;
   bool mouse_move_;
   bool double_click_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventSynthDelegate);
 };
 
 class TimedEvents {
@@ -650,19 +652,24 @@ class GestureRecognizerTest : public AuraTestBase {
  public:
   GestureRecognizerTest() {}
 
+  GestureRecognizerTest(const GestureRecognizerTest&) = delete;
+  GestureRecognizerTest& operator=(const GestureRecognizerTest&) = delete;
+
   void SetUp() override {
     AuraTestBase::SetUp();
     ui::GestureConfiguration::GetInstance()->set_show_press_delay_in_ms(2);
     ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(3);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerTest);
 };
 
 class GestureRecognizerWithSwitchTest : public GestureRecognizerTest {
  public:
   GestureRecognizerWithSwitchTest() {}
+
+  GestureRecognizerWithSwitchTest(const GestureRecognizerWithSwitchTest&) =
+      delete;
+  GestureRecognizerWithSwitchTest& operator=(
+      const GestureRecognizerWithSwitchTest&) = delete;
 
   void SetUp() override {
     GestureRecognizerTest::SetUp();
@@ -670,9 +677,6 @@ class GestureRecognizerWithSwitchTest : public GestureRecognizerTest {
         switches::kCompensateForUnstablePinchZoom);
     ui::GestureConfiguration::GetInstance()->set_min_pinch_update_span_delta(5);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerWithSwitchTest);
 };
 
 // Verify that we do not crash when removing a window during a cancel touch
@@ -4262,6 +4266,11 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
  public:
   GestureEventDeleteWindowOnLongPress() : window_(nullptr) {}
 
+  GestureEventDeleteWindowOnLongPress(
+      const GestureEventDeleteWindowOnLongPress&) = delete;
+  GestureEventDeleteWindowOnLongPress& operator=(
+      const GestureEventDeleteWindowOnLongPress&) = delete;
+
   void set_window(aura::Window** window) { window_ = window; }
 
   void OnGestureEvent(ui::GestureEvent* gesture) override {
@@ -4274,7 +4283,6 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
 
  private:
   aura::Window** window_;
-  DISALLOW_COPY_AND_ASSIGN(GestureEventDeleteWindowOnLongPress);
 };
 
 // Check that deleting the window in response to a long press gesture doesn't

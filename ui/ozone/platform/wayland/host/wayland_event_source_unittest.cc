@@ -27,6 +27,9 @@ class WaylandEventSourceTest : public WaylandTest {
  public:
   WaylandEventSourceTest() {}
 
+  WaylandEventSourceTest(const WaylandEventSourceTest&) = delete;
+  WaylandEventSourceTest& operator=(const WaylandEventSourceTest&) = delete;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
@@ -50,9 +53,6 @@ class WaylandEventSourceTest : public WaylandTest {
   }
 
   WaylandPointer::Delegate* pointer_delegate_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandEventSourceTest);
 };
 
 // Verify WaylandEventSource properly manages its internal state as pointer

@@ -24,6 +24,9 @@ class GL_EXPORT SurfaceTexture
  public:
   static scoped_refptr<SurfaceTexture> Create(int texture_id);
 
+  SurfaceTexture(const SurfaceTexture&) = delete;
+  SurfaceTexture& operator=(const SurfaceTexture&) = delete;
+
   // Set the listener callback, which will be invoked on the same thread that
   // is being called from here for registration.
   // Note: Since callbacks come in from Java objects that might outlive objects
@@ -80,8 +83,6 @@ class GL_EXPORT SurfaceTexture
 
   // Java SurfaceTexture instance.
   base::android::ScopedJavaGlobalRef<jobject> j_surface_texture_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTexture);
 };
 
 }  // namespace gl

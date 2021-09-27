@@ -24,6 +24,9 @@ class MenuScrollViewContainer : public View {
 
   explicit MenuScrollViewContainer(SubmenuView* content_view);
 
+  MenuScrollViewContainer(const MenuScrollViewContainer&) = delete;
+  MenuScrollViewContainer& operator=(const MenuScrollViewContainer&) = delete;
+
   // Returns the buttons for scrolling up/down.
   View* scroll_down_button() const { return scroll_down_button_; }
   View* scroll_up_button() const { return scroll_up_button_; }
@@ -80,8 +83,6 @@ class MenuScrollViewContainer : public View {
 
   // Corner radius of the background.
   int corner_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollViewContainer);
 };
 
 }  // namespace views

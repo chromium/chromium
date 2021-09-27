@@ -19,6 +19,11 @@ class MediaKeyboardHookWinInteractiveTest : public testing::Test {
   MediaKeyboardHookWinInteractiveTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
+  MediaKeyboardHookWinInteractiveTest(
+      const MediaKeyboardHookWinInteractiveTest&) = delete;
+  MediaKeyboardHookWinInteractiveTest& operator=(
+      const MediaKeyboardHookWinInteractiveTest&) = delete;
+
  protected:
   void SetUp() override {
     keyboard_hook_ = KeyboardHook::CreateMediaKeyboardHook(base::BindRepeating(
@@ -86,8 +91,6 @@ class MediaKeyboardHookWinInteractiveTest : public testing::Test {
   base::RunLoop key_event_wait_loop_;
   uint32_t num_key_events_to_wait_for_ = 0;
   DWORD time_stamp_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeyboardHookWinInteractiveTest);
 };
 
 // Test that we catch the different media key events.

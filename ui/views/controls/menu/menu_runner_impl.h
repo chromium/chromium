@@ -38,6 +38,9 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
  public:
   explicit MenuRunnerImpl(MenuItemView* menu);
 
+  MenuRunnerImpl(const MenuRunnerImpl&) = delete;
+  MenuRunnerImpl& operator=(const MenuRunnerImpl&) = delete;
+
   bool IsRunning() const override;
   void Release() override;
   void RunMenuAt(Widget* parent,
@@ -96,8 +99,6 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
 
   // Used to detect deletion of |this| when notifying delegate of success.
   base::WeakPtrFactory<MenuRunnerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerImpl);
 };
 
 }  // namespace internal

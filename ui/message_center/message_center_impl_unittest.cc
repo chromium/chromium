@@ -46,6 +46,9 @@ class CheckObserver : public MessageCenterObserver {
     DCHECK(!target_id.empty());
   }
 
+  CheckObserver(const CheckObserver&) = delete;
+  CheckObserver& operator=(const CheckObserver&) = delete;
+
   void OnNotificationUpdated(const std::string& notification_id) override {
     EXPECT_TRUE(message_center_->FindVisibleNotificationById(target_id_));
   }
@@ -53,8 +56,6 @@ class CheckObserver : public MessageCenterObserver {
  private:
   MessageCenter* message_center_;
   std::string target_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckObserver);
 };
 
 class RemoveObserver : public MessageCenterObserver {
@@ -65,6 +66,9 @@ class RemoveObserver : public MessageCenterObserver {
     DCHECK(!target_id.empty());
   }
 
+  RemoveObserver(const RemoveObserver&) = delete;
+  RemoveObserver& operator=(const RemoveObserver&) = delete;
+
   void OnNotificationUpdated(const std::string& notification_id) override {
     message_center_->RemoveNotification(target_id_, false);
   }
@@ -72,8 +76,6 @@ class RemoveObserver : public MessageCenterObserver {
  private:
   MessageCenter* message_center_;
   std::string target_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveObserver);
 };
 
 class TestAddObserver : public MessageCenterObserver {
@@ -114,6 +116,10 @@ class TestDelegate : public NotificationDelegate {
     log_ += "Close_";
     log_ += (by_user ? "by_user_" : "programmatically_");
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     if (button_index) {
@@ -134,8 +140,6 @@ class TestDelegate : public NotificationDelegate {
  private:
   ~TestDelegate() override = default;
   std::string log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class DeleteOnCloseDelegate : public NotificationDelegate {
@@ -168,6 +172,9 @@ const std::string kDefaultAppId = "app1";
 class MessageCenterImplTest : public testing::Test {
  public:
   MessageCenterImplTest() = default;
+
+  MessageCenterImplTest(const MessageCenterImplTest&) = delete;
+  MessageCenterImplTest& operator=(const MessageCenterImplTest&) = delete;
 
   void SetUp() override {
     MessageCenter::Initialize(std::make_unique<FakeLockScreenController>());
@@ -259,8 +266,6 @@ class MessageCenterImplTest : public testing::Test {
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::RepeatingClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterImplTest);
 };
 
 namespace {

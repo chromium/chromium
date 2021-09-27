@@ -140,6 +140,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
                       const gfx::ColorSpace& color_space,
                       uint32_t bits_per_channel,
                       const gfx::HDRStaticMetadata& hdr_static_metadata);
+
+  FakeDisplaySnapshot(const FakeDisplaySnapshot&) = delete;
+  FakeDisplaySnapshot& operator=(const FakeDisplaySnapshot&) = delete;
+
   ~FakeDisplaySnapshot() override;
 
   // Creates a display snapshot from the provided |spec| string. Returns null if
@@ -148,9 +152,6 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
   static std::unique_ptr<DisplaySnapshot> CreateFromSpec(
       int64_t id,
       const std::string& spec);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplaySnapshot);
 };
 
 }  // namespace display

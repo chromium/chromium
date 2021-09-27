@@ -27,12 +27,13 @@ class SelfDestroyingEventProcessor : public TestEventProcessor {
  public:
   SelfDestroyingEventProcessor() {}
 
+  SelfDestroyingEventProcessor(const SelfDestroyingEventProcessor&) = delete;
+  SelfDestroyingEventProcessor& operator=(const SelfDestroyingEventProcessor&) =
+      delete;
+
  protected:
   EventDispatchDetails PostDispatchEvent(EventTarget* target,
                                          const Event& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingEventProcessor);
 };
 
 class SelfDestroyingTestEventTarget : public TestEventTarget {
@@ -40,14 +41,16 @@ class SelfDestroyingTestEventTarget : public TestEventTarget {
   SelfDestroyingTestEventTarget()
       : processor_(new SelfDestroyingEventProcessor()) {}
 
+  SelfDestroyingTestEventTarget(const SelfDestroyingTestEventTarget&) = delete;
+  SelfDestroyingTestEventTarget& operator=(
+      const SelfDestroyingTestEventTarget&) = delete;
+
   TestEventProcessor* processor() { return processor_.get(); }
 
   void DestroyProcessor() { processor_.reset(); }
 
  private:
   std::unique_ptr<SelfDestroyingEventProcessor> processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingTestEventTarget);
 };
 
 EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(

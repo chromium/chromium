@@ -20,6 +20,11 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
  public:
   ComponentExtensionIMEManagerTest() : mock_delegate_(NULL) {}
 
+  ComponentExtensionIMEManagerTest(const ComponentExtensionIMEManagerTest&) =
+      delete;
+  ComponentExtensionIMEManagerTest& operator=(
+      const ComponentExtensionIMEManagerTest&) = delete;
+
   virtual void SetUp() {
     ime_list_.clear();
 
@@ -124,10 +129,6 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
   MockComponentExtIMEManagerDelegate* mock_delegate_;
   std::unique_ptr<ComponentExtensionIMEManager> component_ext_mgr_;
   std::vector<ComponentExtensionIME> ime_list_;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManagerTest);
 };
 
 TEST_F(ComponentExtensionIMEManagerTest, LoadComponentExtensionIMETest) {

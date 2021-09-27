@@ -47,6 +47,11 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
 
   static void DeleteInstanceForTesting();
 
+  NativeWindowOcclusionTrackerWin(const NativeWindowOcclusionTrackerWin&) =
+      delete;
+  NativeWindowOcclusionTrackerWin& operator=(
+      const NativeWindowOcclusionTrackerWin&) = delete;
+
   // Enables notifying the host of |window| via SetNativeWindowOcclusionState()
   // when the occlusion state has been computed.
   void Enable(Window* window);
@@ -86,6 +91,10 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // Deletes |instance_| and signals |done_event|. Must be called on COMSTA
     // thread.
     static void DeleteInstanceForTesting(base::WaitableEvent* done_event);
+
+    WindowOcclusionCalculator(const WindowOcclusionCalculator&) = delete;
+    WindowOcclusionCalculator& operator=(const WindowOcclusionCalculator&) =
+        delete;
 
     void EnableOcclusionTrackingForWindow(HWND hwnd);
     void DisableOcclusionTrackingForWindow(HWND hwnd);
@@ -251,8 +260,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     SEQUENCE_CHECKER(sequence_checker_);
 
     base::WeakPtrFactory<WindowOcclusionCalculator> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(WindowOcclusionCalculator);
   };
 
   NativeWindowOcclusionTrackerWin();
@@ -307,8 +314,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   bool display_on_ = true;
 
   base::WeakPtrFactory<NativeWindowOcclusionTrackerWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowOcclusionTrackerWin);
 };
 
 }  // namespace aura

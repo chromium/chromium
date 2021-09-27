@@ -164,6 +164,9 @@ class SGIVideoSyncThread : public base::Thread,
     return g_video_sync_thread;
   }
 
+  SGIVideoSyncThread(const SGIVideoSyncThread&) = delete;
+  SGIVideoSyncThread& operator=(const SGIVideoSyncThread&) = delete;
+
   x11::Connection* GetConnection() {
     DCHECK(task_runner()->BelongsToCurrentThread());
     return GetConnectionImpl();
@@ -221,8 +224,6 @@ class SGIVideoSyncThread : public base::Thread,
   GLXContext context_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncThread);
 };
 
 class SGIVideoSyncProviderThreadShim {

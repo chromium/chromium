@@ -30,6 +30,9 @@ class CursorState {
         mouse_events_enabled_(true),
         visible_on_mouse_events_enabled_(true) {}
 
+  CursorState(const CursorState&) = delete;
+  CursorState& operator=(const CursorState&) = delete;
+
   gfx::NativeCursor cursor() const { return cursor_; }
   void set_cursor(gfx::NativeCursor cursor) { cursor_ = cursor; }
 
@@ -68,8 +71,6 @@ class CursorState {
 
   // The visibility to set when mouse events are enabled.
   bool visible_on_mouse_events_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorState);
 };
 
 }  // namespace internal

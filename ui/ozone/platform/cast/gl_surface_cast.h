@@ -24,6 +24,9 @@ class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
  public:
   GLSurfaceCast(gfx::AcceleratedWidget widget, GLOzoneEglCast* parent);
 
+  GLSurfaceCast(const GLSurfaceCast&) = delete;
+  GLSurfaceCast& operator=(const GLSurfaceCast&) = delete;
+
   // gl::GLSurface:
   bool SupportsSwapBuffersWithBounds() override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
@@ -52,9 +55,6 @@ class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
   GLOzoneEglCast* parent_;
   bool supports_swap_buffer_with_bounds_;
   bool uses_triple_buffering_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceCast);
 };
 
 }  // namespace ui

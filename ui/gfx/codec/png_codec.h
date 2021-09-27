@@ -53,6 +53,9 @@ class CODEC_EXPORT PNGCodec {
     std::string text;
   };
 
+  PNGCodec(const PNGCodec&) = delete;
+  PNGCodec& operator=(const PNGCodec&) = delete;
+
   // Encodes the given raw 'input' data, with each pixel being represented as
   // given in 'format'. The encoded PNG data will be written into the supplied
   // vector and true will be returned on success. On failure (false), the
@@ -122,9 +125,6 @@ class CODEC_EXPORT PNGCodec {
   // otherwise.
   static bool Decode(const unsigned char* input, size_t input_size,
                      SkBitmap* bitmap);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PNGCodec);
 };
 
 }  // namespace gfx

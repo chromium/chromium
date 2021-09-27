@@ -20,6 +20,9 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
     root_window_->AddObserver(this);
   }
 
+  Deleter(const Deleter&) = delete;
+  Deleter& operator=(const Deleter&) = delete;
+
  private:
   ~Deleter() override {}
 
@@ -33,8 +36,6 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
 
   DefaultActivationClient* client_;
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(Deleter);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -376,6 +376,10 @@ class DestroyedTrackingDelegate : public aura::test::TestWindowDelegate {
       : name_(name),
         results_(results) {}
 
+  DestroyedTrackingDelegate(const DestroyedTrackingDelegate&) = delete;
+  DestroyedTrackingDelegate& operator=(const DestroyedTrackingDelegate&) =
+      delete;
+
   void OnWindowDestroyed(aura::Window* window) override {
     results_->push_back(name_);
   }
@@ -383,8 +387,6 @@ class DestroyedTrackingDelegate : public aura::test::TestWindowDelegate {
  private:
   const std::string name_;
   std::vector<std::string>* results_;
-
-  DISALLOW_COPY_AND_ASSIGN(DestroyedTrackingDelegate);
 };
 
 }  // namespace

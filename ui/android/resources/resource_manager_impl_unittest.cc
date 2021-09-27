@@ -76,11 +76,11 @@ class MockUIResourceManager : public cc::UIResourceManager {
  public:
   MockUIResourceManager() {}
 
+  MockUIResourceManager(const MockUIResourceManager&) = delete;
+  MockUIResourceManager& operator=(const MockUIResourceManager&) = delete;
+
   MOCK_METHOD1(CreateUIResource, cc::UIResourceId(cc::UIResourceClient*));
   MOCK_METHOD1(DeleteUIResource, void(cc::UIResourceId));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUIResourceManager);
 };
 
 }  // namespace

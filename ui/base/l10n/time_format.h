@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
     LENGTH_COUNT   // Enum size counter, not a length.  Must be last.
   };
 
+  TimeFormat() = delete;
+  TimeFormat(const TimeFormat&) = delete;
+  TimeFormat& operator=(const TimeFormat&) = delete;
+
   // Equivalent to SimpleWithMonthAndYear(format, length, delta, false);
   static std::u16string Simple(Format format,
                                Length length,
@@ -111,9 +115,6 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   // time once at the beginning and pass it for each computation.
   static std::u16string RelativeDate(const base::Time& time,
                                      const base::Time* optional_midnight_today);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TimeFormat);
 };
 
 }  // namespace ui

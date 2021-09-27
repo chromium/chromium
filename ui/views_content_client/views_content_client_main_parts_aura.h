@@ -17,6 +17,12 @@ class WMState;
 namespace ui {
 
 class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
+ public:
+  ViewsContentClientMainPartsAura(const ViewsContentClientMainPartsAura&) =
+      delete;
+  ViewsContentClientMainPartsAura& operator=(
+      const ViewsContentClientMainPartsAura&) = delete;
+
  protected:
   ViewsContentClientMainPartsAura(
       const content::MainFunctionParams& content_params,
@@ -29,8 +35,6 @@ class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
 
  private:
   std::unique_ptr<::wm::WMState> wm_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsAura);
 };
 
 }  // namespace ui

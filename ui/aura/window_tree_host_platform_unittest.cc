@@ -42,12 +42,12 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
     CreateCompositor();
   }
 
+  TestWindowTreeHost(const TestWindowTreeHost&) = delete;
+  TestWindowTreeHost& operator=(const TestWindowTreeHost&) = delete;
+
   ui::PlatformWindow* platform_window() {
     return WindowTreeHostPlatform::platform_window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTreeHost);
 };
 
 // WindowTreeHostObserver that tracks calls to

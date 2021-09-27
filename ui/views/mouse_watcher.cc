@@ -36,6 +36,9 @@ class MouseWatcher::Observer : public ui::EventObserver {
          ui::ET_MOUSE_DRAGGED});
   }
 
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
     using EventType = MouseWatcherHost::EventType;
@@ -95,8 +98,6 @@ class MouseWatcher::Observer : public ui::EventObserver {
 
   // A factory that is used to construct a delayed callback to the listener.
   base::WeakPtrFactory<Observer> notify_listener_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 MouseWatcherListener::~MouseWatcherListener() = default;

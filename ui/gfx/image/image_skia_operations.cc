@@ -64,6 +64,10 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
         second_(second),
         source_name_(source_name) {
   }
+
+  BinaryImageSource(const BinaryImageSource&) = delete;
+  BinaryImageSource& operator=(const BinaryImageSource&) = delete;
+
   ~BinaryImageSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -107,8 +111,6 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
   // The name of a class that implements the BinaryImageSource.
   // The subclass is responsible for managing the memory.
   const char* source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(BinaryImageSource);
 };
 
 class BlendingImageSource : public BinaryImageSource {

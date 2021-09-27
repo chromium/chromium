@@ -54,6 +54,9 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
 
   explicit TextServicesContextMenu(Delegate* delegate);
 
+  TextServicesContextMenu(const TextServicesContextMenu&) = delete;
+  TextServicesContextMenu& operator=(const TextServicesContextMenu&) = delete;
+
   // Methods for speaking.
   static void SpeakText(const std::u16string& text);
   static void StopSpeaking();
@@ -83,8 +86,6 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
   ui::SimpleMenuModel bidi_submenu_model_;
 
   Delegate* delegate_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(TextServicesContextMenu);
 };
 
 }  // namespace ui

@@ -87,6 +87,9 @@ class TreeViewTest : public ViewsTestBase {
     Add(model_.GetRoot(), 2, "c");
   }
 
+  TreeViewTest(const TreeViewTest&) = delete;
+  TreeViewTest& operator=(const TreeViewTest&) = delete;
+
   // ViewsTestBase
   void SetUp() override;
   void TearDown() override;
@@ -157,8 +160,6 @@ class TreeViewTest : public ViewsTestBase {
   // Keeps a record of all accessibility events that have been fired on the tree
   // view.
   AccessibilityEventsVector accessibility_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeViewTest);
 };
 
 void TreeViewTest::SetUp() {

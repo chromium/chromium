@@ -53,6 +53,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
       VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);
 
+  DirectCompositionSurfaceWin(const DirectCompositionSurfaceWin&) = delete;
+  DirectCompositionSurfaceWin& operator=(const DirectCompositionSurfaceWin&) =
+      delete;
+
   // Returns true if direct composition is supported.  We prefer to use direct
   // composition even without hardware overlays, because it allows us to bypass
   // blitting by DWM to the window redirection surface by using a flip mode swap
@@ -216,8 +220,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectCompositionSurfaceWin);
 };
 
 }  // namespace gl

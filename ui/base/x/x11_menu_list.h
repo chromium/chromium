@@ -24,6 +24,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XMenuList {
  public:
   static XMenuList* GetInstance();
 
+  XMenuList(const XMenuList&) = delete;
+  XMenuList& operator=(const XMenuList&) = delete;
+
   // Checks if |menu| has _NET_WM_WINDOW_TYPE property set to
   // "_NET_WM_WINDOW_TYPE_MENU" atom and if so caches it.
   void MaybeRegisterMenu(x11::Window menu);
@@ -41,7 +44,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XMenuList {
 
   std::vector<x11::Window> menus_;
   x11::Atom menu_type_atom_;
-  DISALLOW_COPY_AND_ASSIGN(XMenuList);
 };
 
 }  // namespace ui

@@ -443,6 +443,9 @@ class RemoveViewOnEvent : public View {
   explicit RemoveViewOnEvent(ui::EventType remove_event_type)
       : remove_event_type_(remove_event_type) {}
 
+  RemoveViewOnEvent(const RemoveViewOnEvent&) = delete;
+  RemoveViewOnEvent& operator=(const RemoveViewOnEvent&) = delete;
+
   void OnEvent(ui::Event* event) override {
     if (event->type() == remove_event_type_)
       parent()->RemoveChildView(this);
@@ -451,8 +454,6 @@ class RemoveViewOnEvent : public View {
  private:
   // The event type which causes the view to remove itself.
   ui::EventType remove_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveViewOnEvent);
 };
 
 // View class which generates a nested event the first time it gets an event of
@@ -462,6 +463,9 @@ class NestedEventOnEvent : public View {
  public:
   NestedEventOnEvent(ui::EventType nested_event_type, View* root_view)
       : nested_event_type_(nested_event_type), root_view_(root_view) {}
+
+  NestedEventOnEvent(const NestedEventOnEvent&) = delete;
+  NestedEventOnEvent& operator=(const NestedEventOnEvent&) = delete;
 
   void OnEvent(ui::Event* event) override {
     if (event->type() == nested_event_type_) {
@@ -479,8 +483,6 @@ class NestedEventOnEvent : public View {
   ui::EventType nested_event_type_;
   // root view of this view; owned by widget.
   View* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NestedEventOnEvent);
 };
 
 }  // namespace

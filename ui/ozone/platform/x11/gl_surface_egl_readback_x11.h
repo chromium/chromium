@@ -15,6 +15,9 @@ class GLSurfaceEglReadbackX11 : public GLSurfaceEglReadback {
  public:
   explicit GLSurfaceEglReadbackX11(gfx::AcceleratedWidget window);
 
+  GLSurfaceEglReadbackX11(const GLSurfaceEglReadbackX11&) = delete;
+  GLSurfaceEglReadbackX11& operator=(const GLSurfaceEglReadbackX11&) = delete;
+
   // gl::GLSurface:
   bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
@@ -29,8 +32,6 @@ class GLSurfaceEglReadbackX11 : public GLSurfaceEglReadback {
   x11::Connection* const connection_;
   x11::GraphicsContext window_graphics_context_{};
   x11::VisualId visual_{};
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceEglReadbackX11);
 };
 
 }  // namespace ui

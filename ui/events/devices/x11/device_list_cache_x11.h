@@ -30,6 +30,9 @@ class EVENTS_DEVICES_X11_EXPORT DeviceListCacheX11 {
  public:
   static DeviceListCacheX11* GetInstance();
 
+  DeviceListCacheX11(const DeviceListCacheX11&) = delete;
+  DeviceListCacheX11& operator=(const DeviceListCacheX11&) = delete;
+
   void UpdateDeviceList(x11::Connection* connection);
 
   // Returns the list of devices associated with |display|. Uses the old X11
@@ -51,8 +54,6 @@ class EVENTS_DEVICES_X11_EXPORT DeviceListCacheX11 {
   bool updated_ = false;
   XDeviceList x_dev_list_;
   XIDeviceList xi_dev_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListCacheX11);
 };
 
 }  // namespace ui

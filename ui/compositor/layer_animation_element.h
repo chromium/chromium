@@ -73,6 +73,8 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   LayerAnimationElement(AnimatableProperties properties,
                         base::TimeDelta duration);
 
+  LayerAnimationElement& operator=(const LayerAnimationElement&) = delete;
+
   virtual ~LayerAnimationElement();
 
   static std::string AnimatablePropertiesToString(
@@ -254,8 +256,6 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   double last_progressed_fraction_;
 
   base::WeakPtrFactory<LayerAnimationElement> weak_ptr_factory_{this};
-
-  DISALLOW_ASSIGN(LayerAnimationElement);
 };
 
 }  // namespace ui

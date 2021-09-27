@@ -88,6 +88,11 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
  public:
   NativeWindowOcclusionTrackerTest() {}
 
+  NativeWindowOcclusionTrackerTest(const NativeWindowOcclusionTrackerTest&) =
+      delete;
+  NativeWindowOcclusionTrackerTest& operator=(
+      const NativeWindowOcclusionTrackerTest&) = delete;
+
   TestNativeWindow* native_win() { return native_win_.get(); }
 
   HWND CreateNativeWindow(DWORD style, DWORD ex_style) {
@@ -128,8 +133,6 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
 
  private:
   std::unique_ptr<TestNativeWindow> native_win_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowOcclusionTrackerTest);
 };
 
 TEST_F(NativeWindowOcclusionTrackerTest, VisibleOpaqueWindow) {

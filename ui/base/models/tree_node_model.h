@@ -192,12 +192,13 @@ class TreeNodeWithValue : public TreeNode<TreeNodeWithValue<ValueType>> {
   TreeNodeWithValue(const std::u16string& title, const ValueType& value)
       : ParentType(title), value(value) {}
 
+  TreeNodeWithValue(const TreeNodeWithValue&) = delete;
+  TreeNodeWithValue& operator=(const TreeNodeWithValue&) = delete;
+
   ValueType value;
 
  private:
   using ParentType = TreeNode<TreeNodeWithValue<ValueType>>;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeWithValue);
 };
 
 // TreeNodeModel --------------------------------------------------------------

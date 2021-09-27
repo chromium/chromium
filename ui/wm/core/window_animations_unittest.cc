@@ -50,8 +50,8 @@ class WindowAnimationsTest : public aura::test::AuraTestBase {
  public:
   WindowAnimationsTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowAnimationsTest);
+  WindowAnimationsTest(const WindowAnimationsTest&) = delete;
+  WindowAnimationsTest& operator=(const WindowAnimationsTest&) = delete;
 };
 
 TEST_F(WindowAnimationsTest, LayerTargetVisibility) {

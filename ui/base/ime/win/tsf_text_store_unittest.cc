@@ -484,6 +484,10 @@ class SyncRequestLockTestCallback : public TSFTextStoreTestCallback {
   explicit SyncRequestLockTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  SyncRequestLockTestCallback(const SyncRequestLockTestCallback&) = delete;
+  SyncRequestLockTestCallback& operator=(const SyncRequestLockTestCallback&) =
+      delete;
+
   HRESULT LockGranted1(DWORD flags) {
     EXPECT_TRUE(HasReadLock());
     EXPECT_FALSE(HasReadWriteLock());
@@ -533,9 +537,6 @@ class SyncRequestLockTestCallback : public TSFTextStoreTestCallback {
     EXPECT_EQ(TS_E_SYNCHRONOUS, result);
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncRequestLockTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, SynchronousRequestLockTest) {
@@ -576,6 +577,10 @@ class AsyncRequestLockTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit AsyncRequestLockTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store), state_(0) {}
+
+  AsyncRequestLockTestCallback(const AsyncRequestLockTestCallback&) = delete;
+  AsyncRequestLockTestCallback& operator=(const AsyncRequestLockTestCallback&) =
+      delete;
 
   HRESULT LockGranted1(DWORD flags) {
     EXPECT_EQ(0, state_);
@@ -636,8 +641,6 @@ class AsyncRequestLockTestCallback : public TSFTextStoreTestCallback {
 
  private:
   int state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncRequestLockTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, AsynchronousRequestLockTest) {
@@ -658,6 +661,11 @@ class RequestLockTextChangeTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit RequestLockTextChangeTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store), state_(0) {}
+
+  RequestLockTextChangeTestCallback(const RequestLockTextChangeTestCallback&) =
+      delete;
+  RequestLockTextChangeTestCallback& operator=(
+      const RequestLockTextChangeTestCallback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     EXPECT_EQ(0, state_);
@@ -720,8 +728,6 @@ class RequestLockTextChangeTestCallback : public TSFTextStoreTestCallback {
 
  private:
   int state_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestLockTextChangeTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, RequestLockOnTextChangeTest) {
@@ -855,6 +861,9 @@ class SetGetTextTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit SetGetTextTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  SetGetTextTestCallback(const SetGetTextTestCallback&) = delete;
+  SetGetTextTestCallback& operator=(const SetGetTextTestCallback&) = delete;
 
   HRESULT ReadLockGranted(DWORD flags) {
     SetTextTest(0, 0, L"", TF_E_NOLOCK);
@@ -1027,9 +1036,6 @@ class SetGetTextTestCallback : public TSFTextStoreTestCallback {
 
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SetGetTextTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, SetGetTextTest) {
@@ -1059,6 +1065,11 @@ class InsertTextAtSelectionTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit InsertTextAtSelectionTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  InsertTextAtSelectionTestCallback(const InsertTextAtSelectionTestCallback&) =
+      delete;
+  InsertTextAtSelectionTestCallback& operator=(
+      const InsertTextAtSelectionTestCallback&) = delete;
 
   HRESULT ReadLockGranted(DWORD flags) {
     const wchar_t kBuffer[] = L"0123456789";
@@ -1116,9 +1127,6 @@ class InsertTextAtSelectionTestCallback : public TSFTextStoreTestCallback {
 
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InsertTextAtSelectionTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, InsertTextAtSelectionTest) {
@@ -1141,6 +1149,9 @@ class ScenarioTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit ScenarioTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  ScenarioTestCallback(const ScenarioTestCallback&) = delete;
+  ScenarioTestCallback& operator=(const ScenarioTestCallback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"abc", S_OK);
@@ -1304,7 +1315,6 @@ class ScenarioTestCallback : public TSFTextStoreTestCallback {
 
  private:
   bool has_composition_text_;
-  DISALLOW_COPY_AND_ASSIGN(ScenarioTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, ScenarioTest) {
@@ -1352,6 +1362,9 @@ class GetTextExtTestCallback : public TSFTextStoreTestCallback {
   explicit GetTextExtTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store),
         layout_prepared_character_num_(0) {}
+
+  GetTextExtTestCallback(const GetTextExtTestCallback&) = delete;
+  GetTextExtTestCallback& operator=(const GetTextExtTestCallback&) = delete;
 
   HRESULT LockGranted(DWORD flags) {
     SetInternalState(u"0123456789012", 0, 0, 0);
@@ -1419,8 +1432,6 @@ class GetTextExtTestCallback : public TSFTextStoreTestCallback {
  private:
   uint32_t layout_prepared_character_num_;
   bool has_composition_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetTextExtTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, GetTextExtTest) {
@@ -1520,6 +1531,9 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit KeyEventTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  KeyEventTestCallback(const KeyEventTestCallback&) = delete;
+  KeyEventTestCallback& operator=(const KeyEventTestCallback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
@@ -1652,9 +1666,6 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
     text_store_->OnKeyTraceUp(66u, 3145729u);
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyEventTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, KeyEventTest) {
@@ -1707,6 +1718,11 @@ class AccessibilityEventTestCallback : public TSFTextStoreTestCallback {
   explicit AccessibilityEventTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  AccessibilityEventTestCallback(const AccessibilityEventTestCallback&) =
+      delete;
+  AccessibilityEventTestCallback& operator=(
+      const AccessibilityEventTestCallback&) = delete;
+
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
 
@@ -1754,9 +1770,6 @@ class AccessibilityEventTestCallback : public TSFTextStoreTestCallback {
     EXPECT_EQ(0u, range.start());
     EXPECT_EQ(1u, range.end());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, AccessibilityEventTest) {
@@ -1801,6 +1814,10 @@ class DiffingAlgorithmTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit DiffingAlgorithmTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  DiffingAlgorithmTestCallback(const DiffingAlgorithmTestCallback&) = delete;
+  DiffingAlgorithmTestCallback& operator=(const DiffingAlgorithmTestCallback&) =
+      delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"", S_OK);
@@ -2295,9 +2312,6 @@ class DiffingAlgorithmTestCallback : public TSFTextStoreTestCallback {
     GetSelectionTest(4, 4);
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiffingAlgorithmTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, DiffingAlgorithmTest) {
@@ -2479,6 +2493,9 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTestCallback(const RegressionTestCallback&) = delete;
+  RegressionTestCallback& operator=(const RegressionTestCallback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
@@ -2706,9 +2723,6 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"e", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest) {
@@ -2778,6 +2792,9 @@ class RegressionTest2Callback : public TSFTextStoreTestCallback {
   explicit RegressionTest2Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  RegressionTest2Callback(const RegressionTest2Callback&) = delete;
+  RegressionTest2Callback& operator=(const RegressionTest2Callback&) = delete;
+
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"abc", S_OK);
     SetSelectionTest(3, 3, S_OK);
@@ -2844,9 +2861,6 @@ class RegressionTest2Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"DE", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest2Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest2) {
@@ -2884,6 +2898,9 @@ class RegressionTest3Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest3Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest3Callback(const RegressionTest3Callback&) = delete;
+  RegressionTest3Callback& operator=(const RegressionTest3Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     GetTextTest(0, -1, L"", 0);
@@ -2946,9 +2963,6 @@ class RegressionTest3Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(0u, composition.selection.end());
     ASSERT_EQ(0u, composition.ime_text_spans.size());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest3Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest3) {
@@ -2984,6 +2998,9 @@ class RegressionTest4Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest4Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest4Callback(const RegressionTest4Callback&) = delete;
+  RegressionTest4Callback& operator=(const RegressionTest4Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     GetTextTest(0, -1, L"", 0);
@@ -3044,9 +3061,6 @@ class RegressionTest4Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest4Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest4) {
@@ -3082,6 +3096,9 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest5Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest5Callback(const RegressionTest5Callback&) = delete;
+  RegressionTest5Callback& operator=(const RegressionTest5Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"aa", S_OK);
@@ -3188,9 +3205,6 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"aa", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest5Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest5) {
@@ -3232,6 +3246,9 @@ class RegressionTest6Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest6Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest6Callback(const RegressionTest6Callback&) = delete;
+  RegressionTest6Callback& operator=(const RegressionTest6Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     EXPECT_EQ(false, *new_text_inserted());
@@ -3287,9 +3304,6 @@ class RegressionTest6Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest6Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest6) {
@@ -3321,6 +3335,10 @@ class UnderlineStyleTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit UnderlineStyleTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  UnderlineStyleTestCallback(const UnderlineStyleTestCallback&) = delete;
+  UnderlineStyleTestCallback& operator=(const UnderlineStyleTestCallback&) =
+      delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
@@ -3363,9 +3381,6 @@ class UnderlineStyleTestCallback : public TSFTextStoreTestCallback {
               composition.ime_text_spans[0].underline_style);
     SetHasCompositionText(true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnderlineStyleTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, UnderlineStyleTest) {
@@ -3392,6 +3407,9 @@ class RegressionTest7Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest7Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest7Callback(const RegressionTest7Callback&) = delete;
+  RegressionTest7Callback& operator=(const RegressionTest7Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"aaaa", S_OK);
@@ -3454,9 +3472,6 @@ class RegressionTest7Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest7Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest7) {
@@ -3495,6 +3510,9 @@ class RegressionTest8Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest8Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest8Callback(const RegressionTest8Callback&) = delete;
+  RegressionTest8Callback& operator=(const RegressionTest8Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"bbbb", S_OK);
@@ -3545,9 +3563,6 @@ class RegressionTest8Callback : public TSFTextStoreTestCallback {
   }
 
   void ClearCompositionText2() { EXPECT_EQ(false, *has_composition_range()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest8Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest8) {
@@ -3582,6 +3597,9 @@ class RegressionTest9Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest9Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest9Callback(const RegressionTest9Callback&) = delete;
+  RegressionTest9Callback& operator=(const RegressionTest9Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
@@ -3681,9 +3699,6 @@ class RegressionTest9Callback : public TSFTextStoreTestCallback {
     GetTextTest(0, -1, L"abbcc", 5);
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest9Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest9) {
@@ -3730,6 +3745,9 @@ class RegressionTest10Callback : public TSFTextStoreTestCallback {
  public:
   explicit RegressionTest10Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest10Callback(const RegressionTest10Callback&) = delete;
+  RegressionTest10Callback& operator=(const RegressionTest10Callback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"abcd", S_OK);
@@ -3819,9 +3837,6 @@ class RegressionTest10Callback : public TSFTextStoreTestCallback {
     GetSelectionTest(4, 4);
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest10Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest10) {
@@ -3881,6 +3896,9 @@ class RegressionTest11Callback : public TSFTextStoreTestCallback {
   explicit RegressionTest11Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  RegressionTest11Callback(const RegressionTest11Callback&) = delete;
+  RegressionTest11Callback& operator=(const RegressionTest11Callback&) = delete;
+
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"abcd", S_OK);
     SetSelectionTest(0, 4, S_OK);
@@ -3923,9 +3941,6 @@ class RegressionTest11Callback : public TSFTextStoreTestCallback {
     ResetCompositionStateTest();
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest11Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest11) {
@@ -3982,6 +3997,9 @@ class RegressionTest12Callback : public TSFTextStoreTestCallback {
   explicit RegressionTest12Callback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  RegressionTest12Callback(const RegressionTest12Callback&) = delete;
+  RegressionTest12Callback& operator=(const RegressionTest12Callback&) = delete;
+
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
     SetSelectionTest(1, 1, S_OK);
@@ -4003,9 +4021,6 @@ class RegressionTest12Callback : public TSFTextStoreTestCallback {
 
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegressionTest12Callback);
 };
 
 TEST_F(TSFTextStoreTest, RegressionTest12) {
@@ -4135,6 +4150,9 @@ class MultipleSetTextCallback : public TSFTextStoreTestCallback {
   explicit MultipleSetTextCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
 
+  MultipleSetTextCallback(const MultipleSetTextCallback&) = delete;
+  MultipleSetTextCallback& operator=(const MultipleSetTextCallback&) = delete;
+
   HRESULT LockGranted1(DWORD flags) {
     SetTextRange(0, 6);
     SetTextBuffer(u"123456");
@@ -4177,9 +4195,6 @@ class MultipleSetTextCallback : public TSFTextStoreTestCallback {
     *composition_start() = 5;
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultipleSetTextCallback);
 };
 
 TEST_F(TSFTextStoreTest, MultipleSetText) {
@@ -4221,6 +4236,11 @@ class TextInputClientReentrancyTestCallback : public TSFTextStoreTestCallback {
  public:
   explicit TextInputClientReentrancyTestCallback(TSFTextStore* text_store)
       : TSFTextStoreTestCallback(text_store) {}
+
+  TextInputClientReentrancyTestCallback(
+      const TextInputClientReentrancyTestCallback&) = delete;
+  TextInputClientReentrancyTestCallback& operator=(
+      const TextInputClientReentrancyTestCallback&) = delete;
 
   HRESULT LockGranted1(DWORD flags) {
     SetTextTest(0, 0, L"a", S_OK);
@@ -4293,9 +4313,6 @@ class TextInputClientReentrancyTestCallback : public TSFTextStoreTestCallback {
     *edit_flag() = false;
     return S_OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextInputClientReentrancyTestCallback);
 };
 
 TEST_F(TSFTextStoreTest, TextInputClientReentrancTest) {

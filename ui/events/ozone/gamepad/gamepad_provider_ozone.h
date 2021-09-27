@@ -25,6 +25,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE) GamepadProviderOzone {
   // Get the GamepadProviderOzone instance.
   static GamepadProviderOzone* GetInstance();
 
+  GamepadProviderOzone(const GamepadProviderOzone&) = delete;
+  GamepadProviderOzone& operator=(const GamepadProviderOzone&) = delete;
+
   // Dispatch GamepadDevicesUpdate event when gamepad device is connected or
   // disconnected. This function must be called on UI thread.
   void DispatchGamepadDevicesUpdated(
@@ -62,8 +65,6 @@ class COMPONENT_EXPORT(EVENTS_OZONE) GamepadProviderOzone {
 
   // List of current connected gamepad events.
   std::vector<GamepadDevice> gamepad_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadProviderOzone);
 };
 
 }  // namespace ui

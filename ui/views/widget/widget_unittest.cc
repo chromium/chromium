@@ -1859,14 +1859,15 @@ class MousePressEventConsumer : public ui::EventHandler {
  public:
   MousePressEventConsumer() = default;
 
+  MousePressEventConsumer(const MousePressEventConsumer&) = delete;
+  MousePressEventConsumer& operator=(const MousePressEventConsumer&) = delete;
+
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
     if (event->type() == ui::ET_MOUSE_PRESSED)
       event->SetHandled();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MousePressEventConsumer);
 };
 
 }  // namespace
@@ -2010,6 +2011,9 @@ class ClosingEventObserver : public ui::EventObserver {
  public:
   explicit ClosingEventObserver(Widget* widget) : widget_(widget) {}
 
+  ClosingEventObserver(const ClosingEventObserver&) = delete;
+  ClosingEventObserver& operator=(const ClosingEventObserver&) = delete;
+
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
     // Guard against attempting to close the widget twice.
@@ -2020,13 +2024,14 @@ class ClosingEventObserver : public ui::EventObserver {
 
  private:
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosingEventObserver);
 };
 
 class ClosingView : public View {
  public:
   explicit ClosingView(Widget* widget) : widget_(widget) {}
+
+  ClosingView(const ClosingView&) = delete;
+  ClosingView& operator=(const ClosingView&) = delete;
 
   // View:
   void OnEvent(ui::Event* event) override {
@@ -2040,8 +2045,6 @@ class ClosingView : public View {
 
  private:
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosingView);
 };
 
 // Ensures that when multiple objects are intercepting OS-level events, that one
@@ -3330,6 +3333,10 @@ class WidgetChildDestructionTest : public DesktopWidgetTest {
  public:
   WidgetChildDestructionTest() = default;
 
+  WidgetChildDestructionTest(const WidgetChildDestructionTest&) = delete;
+  WidgetChildDestructionTest& operator=(const WidgetChildDestructionTest&) =
+      delete;
+
   // Creates a top level and a child, destroys the child and verifies the views
   // of the child are destroyed before the views of the parent.
   void RunDestroyChildWidgetsTest(bool top_level_has_desktop_native_widget_aura,
@@ -3370,9 +3377,6 @@ class WidgetChildDestructionTest : public DesktopWidgetTest {
     EXPECT_EQ("child", destroyed[0]);
     EXPECT_EQ("parent", destroyed[1]);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidgetChildDestructionTest);
 };
 
 // See description of RunDestroyChildWidgetsTest(). Parent uses
@@ -3834,6 +3838,9 @@ class ScaleFactorView : public View {
  public:
   ScaleFactorView() = default;
 
+  ScaleFactorView(const ScaleFactorView&) = delete;
+  ScaleFactorView& operator=(const ScaleFactorView&) = delete;
+
   // Overridden from ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
@@ -3846,8 +3853,6 @@ class ScaleFactorView : public View {
 
  private:
   float last_scale_factor_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaleFactorView);
 };
 
 }  // namespace
@@ -4023,12 +4028,12 @@ class WidgetShadowTest : public WidgetTest {
    public:
     TestFocusRules() = default;
 
+    TestFocusRules(const TestFocusRules&) = delete;
+    TestFocusRules& operator=(const TestFocusRules&) = delete;
+
     bool SupportsChildActivation(const aura::Window* window) const override {
       return true;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
   };
 
   void InitControllers() {

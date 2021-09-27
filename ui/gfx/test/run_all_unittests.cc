@@ -34,6 +34,9 @@ class GfxTestSuite : public base::TestSuite {
   GfxTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
 
+  GfxTestSuite(const GfxTestSuite&) = delete;
+  GfxTestSuite& operator=(const GfxTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -68,8 +71,6 @@ class GfxTestSuite : public base::TestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
-
-  DISALLOW_COPY_AND_ASSIGN(GfxTestSuite);
 };
 
 }  // namespace

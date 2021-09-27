@@ -371,6 +371,9 @@ class TestWidget : public Widget {
  public:
   TestWidget() = default;
 
+  TestWidget(const TestWidget&) = delete;
+  TestWidget& operator=(const TestWidget&) = delete;
+
   // Returns true if the size changes to a non-empty size, and then to another
   // size.
   bool did_size_change_more_than_once() const {
@@ -388,8 +391,6 @@ class TestWidget : public Widget {
  private:
   bool did_size_change_more_than_once_ = false;
   gfx::Size last_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidget);
 };
 
 // Verifies the size of the widget doesn't change more than once during Init if
@@ -476,6 +477,9 @@ class GestureTrackingView : public View {
  public:
   GestureTrackingView() = default;
 
+  GestureTrackingView(const GestureTrackingView&) = delete;
+  GestureTrackingView& operator=(const GestureTrackingView&) = delete;
+
   void set_consume_gesture_event(bool value) { consume_gesture_event_ = value; }
 
   void clear_got_gesture_event() { got_gesture_event_ = false; }
@@ -494,8 +498,6 @@ class GestureTrackingView : public View {
 
   // Dictates what OnGestureEvent() returns.
   bool consume_gesture_event_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureTrackingView);
 };
 
 // Verifies a capture isn't set on touch press and that the view that gets

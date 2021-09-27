@@ -15,6 +15,9 @@ class WindowTestApi {
  public:
   explicit WindowTestApi(Window* window);
 
+  WindowTestApi(const WindowTestApi&) = delete;
+  WindowTestApi& operator=(const WindowTestApi&) = delete;
+
   bool OwnsLayer() const;
 
   bool ContainsMouse() const;
@@ -25,8 +28,6 @@ class WindowTestApi {
 
  private:
   Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTestApi);
 };
 
 }  // namespace test

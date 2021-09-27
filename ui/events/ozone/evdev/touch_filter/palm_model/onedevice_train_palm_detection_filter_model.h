@@ -22,11 +22,15 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
   OneDeviceTrainNeuralStylusPalmDetectionFilterModel();
   explicit OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
       const std::vector<float>& radius_poly);
+
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel& operator=(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+
   float Inference(const std::vector<float>& features) const override;
 
   const NeuralStylusPalmDetectionFilterModelConfig& config() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OneDeviceTrainNeuralStylusPalmDetectionFilterModel);
 
  private:
   NeuralStylusPalmDetectionFilterModelConfig config_;

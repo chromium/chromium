@@ -122,6 +122,9 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // Returns the DeviceDataManagerX11 singleton.
   static DeviceDataManagerX11* GetInstance();
 
+  DeviceDataManagerX11(const DeviceDataManagerX11&) = delete;
+  DeviceDataManagerX11& operator=(const DeviceDataManagerX11&) = delete;
+
   // Returns if XInput2 is available on the system.
   bool IsXInput2Available() const;
 
@@ -400,8 +403,6 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   std::map<x11::Input::DeviceId, ui::InputDevice> blocked_keyboard_devices_;
 
   std::vector<uint8_t> button_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerX11);
 };
 
 }  // namespace ui

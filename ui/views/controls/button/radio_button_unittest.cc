@@ -23,6 +23,9 @@ class RadioButtonTest : public ViewsTestBase {
  public:
   RadioButtonTest() = default;
 
+  RadioButtonTest(const RadioButtonTest&) = delete;
+  RadioButtonTest& operator=(const RadioButtonTest&) = delete;
+
   void SetUp() override {
     ViewsTestBase::SetUp();
 
@@ -49,8 +52,6 @@ class RadioButtonTest : public ViewsTestBase {
  private:
   View* button_container_ = nullptr;
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(RadioButtonTest);
 };
 
 TEST_F(RadioButtonTest, Basics) {

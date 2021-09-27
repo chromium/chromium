@@ -79,8 +79,8 @@ class ImageMacTest : public testing::Test {
     gfx::ImageSkia::SetSupportedScales(gfx::test::Get1xAnd2xScales());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageMacTest);
+  ImageMacTest(const ImageMacTest&) = delete;
+  ImageMacTest& operator=(const ImageMacTest&) = delete;
 };
 
 namespace gt = gfx::test;

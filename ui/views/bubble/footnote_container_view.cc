@@ -29,6 +29,12 @@ class HalfRoundedRectBackground : public Background {
       : radius_(radius) {
     SetNativeControlColor(color);
   }
+
+  HalfRoundedRectBackground() = delete;
+  HalfRoundedRectBackground(const HalfRoundedRectBackground&) = delete;
+  HalfRoundedRectBackground& operator=(const HalfRoundedRectBackground&) =
+      delete;
+
   ~HalfRoundedRectBackground() override = default;
 
   // Background:
@@ -47,8 +53,6 @@ class HalfRoundedRectBackground : public Background {
 
  private:
   float radius_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(HalfRoundedRectBackground);
 };
 
 }  // namespace

@@ -43,6 +43,10 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   MenuButtonController(Button* button,
                        Button::PressedCallback callback,
                        std::unique_ptr<ButtonControllerDelegate> delegate);
+
+  MenuButtonController(const MenuButtonController&) = delete;
+  MenuButtonController& operator=(const MenuButtonController&) = delete;
+
   ~MenuButtonController() override;
 
   // view::ButtonController
@@ -119,8 +123,6 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   base::CallbackListSubscription state_changed_subscription_;
 
   base::WeakPtrFactory<MenuButtonController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MenuButtonController);
 };
 
 }  // namespace views

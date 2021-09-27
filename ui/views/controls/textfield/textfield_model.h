@@ -62,6 +62,10 @@ class VIEWS_EXPORT TextfieldModel {
   };
 
   explicit TextfieldModel(Delegate* delegate);
+
+  TextfieldModel(const TextfieldModel&) = delete;
+  TextfieldModel& operator=(const TextfieldModel&) = delete;
+
   virtual ~TextfieldModel();
 
   // Edit related methods.
@@ -358,8 +362,6 @@ class VIEWS_EXPORT TextfieldModel {
   //   2) new edit is added. (redo history is cleared)
   //   3) redone all undone edits.
   EditHistory::iterator current_edit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldModel);
 };
 
 }  // namespace views

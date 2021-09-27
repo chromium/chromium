@@ -157,6 +157,9 @@ class SelectFileDialogImpl : public ui::SelectFileDialog,
       std::unique_ptr<ui::SelectFilePolicy> policy,
       const ExecuteSelectFileCallback& execute_select_file_callback);
 
+  SelectFileDialogImpl(const SelectFileDialogImpl&) = delete;
+  SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
+
   // BaseShellDialog implementation:
   bool IsRunning(gfx::NativeWindow owning_window) const override;
   void ListenerDestroyed() override;
@@ -197,8 +200,6 @@ class SelectFileDialogImpl : public ui::SelectFileDialog,
 
   bool has_multiple_file_type_choices_;
   ExecuteSelectFileCallback execute_select_file_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImpl);
 };
 
 SelectFileDialogImpl::SelectFileDialogImpl(

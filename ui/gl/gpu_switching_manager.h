@@ -19,6 +19,9 @@ class GL_EXPORT GpuSwitchingManager {
   // Getter for the singleton. This will return NULL on failure.
   static GpuSwitchingManager* GetInstance();
 
+  GpuSwitchingManager(const GpuSwitchingManager&) = delete;
+  GpuSwitchingManager& operator=(const GpuSwitchingManager&) = delete;
+
   void AddObserver(GpuSwitchingObserver* observer);
   void RemoveObserver(GpuSwitchingObserver* observer);
 
@@ -51,8 +54,6 @@ class GL_EXPORT GpuSwitchingManager {
   virtual ~GpuSwitchingManager();
 
   base::ObserverList<GpuSwitchingObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuSwitchingManager);
 };
 
 }  // namespace ui

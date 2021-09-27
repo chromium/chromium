@@ -25,6 +25,9 @@ class GbmPixmapWayland : public gfx::NativePixmap {
  public:
   explicit GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager);
 
+  GbmPixmapWayland(const GbmPixmapWayland&) = delete;
+  GbmPixmapWayland& operator=(const GbmPixmapWayland&) = delete;
+
   // Creates a buffer object and initializes the pixmap buffer.
   // |visible_area_size| represents a 'visible size', i.e., a buffer
   // of size |size| may actually contain visible data only in the
@@ -92,8 +95,6 @@ class GbmPixmapWayland : public gfx::NativePixmap {
 
   // Size of the visible area of the buffer.
   gfx::Size visible_area_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(GbmPixmapWayland);
 };
 
 }  // namespace ui

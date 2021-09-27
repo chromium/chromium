@@ -23,11 +23,11 @@ class TestEventTargetIterator : public EventTargetIterator {
  public:
   TestEventTargetIterator() {}
 
+  TestEventTargetIterator(const TestEventTargetIterator&) = delete;
+  TestEventTargetIterator& operator=(const TestEventTargetIterator&) = delete;
+
   // EventTargetIterator:
   EventTarget* GetNextTarget() override { return nullptr; }
-
-private:
-  DISALLOW_COPY_AND_ASSIGN(TestEventTargetIterator);
 };
 
 // An EventTarget that holds ownership of its target and delegate EventHandlers.

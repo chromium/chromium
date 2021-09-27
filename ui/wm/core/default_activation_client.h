@@ -28,6 +28,9 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
  public:
   explicit DefaultActivationClient(aura::Window* root_window);
 
+  DefaultActivationClient(const DefaultActivationClient&) = delete;
+  DefaultActivationClient& operator=(const DefaultActivationClient&) = delete;
+
   // Overridden from ActivationClient:
   void AddObserver(ActivationChangeObserver* observer) override;
   void RemoveObserver(ActivationChangeObserver* observer) override;
@@ -61,8 +64,6 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
   aura::Window* last_active_;
 
   base::ObserverList<ActivationChangeObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultActivationClient);
 };
 
 }  // namespace wm

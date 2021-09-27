@@ -53,6 +53,9 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
  public:
   GLImage() = default;
 
+  GLImage(const GLImage&) = delete;
+  GLImage& operator=(const GLImage&) = delete;
+
   // Get the size of the image.
   virtual gfx::Size GetSize();
 
@@ -174,8 +177,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
  private:
   friend class base::RefCounted<GLImage>;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImage);
 };
 
 }  // namespace gl

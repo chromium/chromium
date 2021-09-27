@@ -46,6 +46,9 @@ class GFX_EXPORT StringSlicer {
                bool elide_at_beginning,
                absl::optional<bool> elide_whitespace = absl::nullopt);
 
+  StringSlicer(const StringSlicer&) = delete;
+  StringSlicer& operator=(const StringSlicer&) = delete;
+
   // Cuts |text_| to be at most |length| UTF-16 code units long. If
   // |elide_in_middle_| is true, the middle of the string is removed to leave
   // equal-length pieces from the beginning and end of the string; otherwise,
@@ -72,8 +75,6 @@ class GFX_EXPORT StringSlicer {
 
   // How whitespace around an elision point is handled.
   const bool elide_whitespace_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringSlicer);
 };
 
 // Elides |text| to fit the |available_pixel_width| with the specified behavior.

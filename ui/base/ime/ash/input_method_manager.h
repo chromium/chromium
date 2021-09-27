@@ -115,6 +115,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   // bar.
   class ImeMenuObserver {
    public:
+    ImeMenuObserver& operator=(const ImeMenuObserver&) = delete;
+
     virtual ~ImeMenuObserver() = default;
 
     // Called when the IME menu is activated or deactivated.
@@ -126,8 +128,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // is called.
     virtual void ImeMenuItemsChanged(const std::string& engine_id,
                                      const std::vector<MenuItem>& items) = 0;
-
-    DISALLOW_ASSIGN(ImeMenuObserver);
   };
 
   class State : public base::RefCounted<InputMethodManager::State> {

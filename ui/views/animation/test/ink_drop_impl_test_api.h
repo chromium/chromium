@@ -39,6 +39,11 @@ class InkDropImplTestApi
     explicit AccessFactoryOnExitHighlightState(
         InkDropImpl::HighlightStateFactory* state_factory);
 
+    AccessFactoryOnExitHighlightState(
+        const AccessFactoryOnExitHighlightState&) = delete;
+    AccessFactoryOnExitHighlightState& operator=(
+        const AccessFactoryOnExitHighlightState&) = delete;
+
     // HighlightState:
     void Exit() override;
     void ShowOnHoverChanged() override;
@@ -48,9 +53,6 @@ class InkDropImplTestApi
     void AnimationStarted(InkDropState ink_drop_state) override;
     void AnimationEnded(InkDropState ink_drop_state,
                         InkDropAnimationEndedReason reason) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AccessFactoryOnExitHighlightState);
   };
 
   // Highlight state that attempts to set a new highlight state during Exit().
@@ -62,6 +64,10 @@ class InkDropImplTestApi
     explicit SetStateOnExitHighlightState(
         InkDropImpl::HighlightStateFactory* state_factory);
 
+    SetStateOnExitHighlightState(const SetStateOnExitHighlightState&) = delete;
+    SetStateOnExitHighlightState& operator=(
+        const SetStateOnExitHighlightState&) = delete;
+
     // HighlightState:
     void Exit() override;
     void ShowOnHoverChanged() override;
@@ -71,12 +77,13 @@ class InkDropImplTestApi
     void AnimationStarted(InkDropState ink_drop_state) override;
     void AnimationEnded(InkDropState ink_drop_state,
                         InkDropAnimationEndedReason reason) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SetStateOnExitHighlightState);
   };
 
   explicit InkDropImplTestApi(InkDropImpl* ink_drop);
+
+  InkDropImplTestApi(const InkDropImplTestApi&) = delete;
+  InkDropImplTestApi& operator=(const InkDropImplTestApi&) = delete;
+
   ~InkDropImplTestApi() override;
 
   // Ensures that |ink_drop_|->ShouldHighlight() returns the same value as
@@ -104,8 +111,6 @@ class InkDropImplTestApi
  private:
   // The InkDrop to provide internal access to.
   InkDropImpl* ink_drop_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropImplTestApi);
 };
 
 }  // namespace test

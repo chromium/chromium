@@ -42,6 +42,9 @@ class EventMonitorTest : public WidgetTest {
  public:
   EventMonitorTest() = default;
 
+  EventMonitorTest(const EventMonitorTest&) = delete;
+  EventMonitorTest& operator=(const EventMonitorTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     WidgetTest::SetUp();
@@ -61,9 +64,6 @@ class EventMonitorTest : public WidgetTest {
   Widget* widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorTest);
 };
 
 TEST_F(EventMonitorTest, ShouldReceiveAppEventsWhileInstalled) {
@@ -136,6 +136,10 @@ class DeleteOtherOnEventObserver : public ui::EventObserver {
         this, context, {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED});
   }
 
+  DeleteOtherOnEventObserver(const DeleteOtherOnEventObserver&) = delete;
+  DeleteOtherOnEventObserver& operator=(const DeleteOtherOnEventObserver&) =
+      delete;
+
   bool DidDelete() const { return !observer_to_delete_; }
 
   void set_monitor_to_delete(
@@ -151,8 +155,6 @@ class DeleteOtherOnEventObserver : public ui::EventObserver {
  private:
   std::unique_ptr<EventMonitor> monitor_;
   std::unique_ptr<DeleteOtherOnEventObserver> observer_to_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOtherOnEventObserver);
 };
 }  // namespace
 

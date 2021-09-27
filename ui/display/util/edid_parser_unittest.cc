@@ -752,10 +752,10 @@ class EDIDParserTest : public TestWithParam<TestParams> {
             GetParam().edid_blob,
             GetParam().edid_blob + GetParam().edid_blob_length)) {}
 
-  const EdidParser parser_;
+  EDIDParserTest(const EDIDParserTest&) = delete;
+  EDIDParserTest& operator=(const EDIDParserTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EDIDParserTest);
+  const EdidParser parser_;
 };
 
 TEST_P(EDIDParserTest, ParseEdids) {

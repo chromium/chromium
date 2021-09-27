@@ -29,6 +29,9 @@ class UIControlsWin : public UIControlsAura {
  public:
   UIControlsWin() {}
 
+  UIControlsWin(const UIControlsWin&) = delete;
+  UIControlsWin& operator=(const UIControlsWin&) = delete;
+
   // UIControlsAura overrides:
   bool SendKeyPress(gfx::NativeWindow native_window,
                     ui::KeyboardCode key,
@@ -84,9 +87,6 @@ class UIControlsWin : public UIControlsAura {
   bool SendTouchEvents(int action, int num, int x, int y) override {
     return ui_controls::internal::SendTouchEventsImpl(action, num, x, y);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIControlsWin);
 };
 
 }  // namespace

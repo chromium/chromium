@@ -61,6 +61,10 @@ class EventConverterEvdevImplTest : public testing::Test {
  public:
   EventConverterEvdevImplTest() {}
 
+  EventConverterEvdevImplTest(const EventConverterEvdevImplTest&) = delete;
+  EventConverterEvdevImplTest& operator=(const EventConverterEvdevImplTest&) =
+      delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     // Set up pipe to satisfy message pump (unused).
@@ -143,8 +147,6 @@ class EventConverterEvdevImplTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdevImplTest);
 };
 
 TEST_F(EventConverterEvdevImplTest, KeyPress) {

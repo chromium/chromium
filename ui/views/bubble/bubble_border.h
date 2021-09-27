@@ -262,13 +262,14 @@ class VIEWS_EXPORT BubbleBackground : public Background {
  public:
   explicit BubbleBackground(BubbleBorder* border) : border_(border) {}
 
+  BubbleBackground(const BubbleBackground&) = delete;
+  BubbleBackground& operator=(const BubbleBackground&) = delete;
+
   // Overridden from Background:
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
   BubbleBorder* border_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleBackground);
 };
 
 }  // namespace views

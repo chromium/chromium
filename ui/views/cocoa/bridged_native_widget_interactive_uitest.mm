@@ -26,6 +26,10 @@ class BridgedNativeWidgetUITest : public WidgetTest {
  public:
   BridgedNativeWidgetUITest() = default;
 
+  BridgedNativeWidgetUITest(const BridgedNativeWidgetUITest&) = delete;
+  BridgedNativeWidgetUITest& operator=(const BridgedNativeWidgetUITest&) =
+      delete;
+
   // testing::Test:
   void SetUp() override {
     SetUpForInteractiveTests();
@@ -60,9 +64,6 @@ class BridgedNativeWidgetUITest : public WidgetTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetUITest);
 };
 
 // Tests for correct fullscreen tracking, regardless of whether it is initiated

@@ -32,6 +32,9 @@ class GFX_EXPORT CrashIdHelper {
  public:
   static CrashIdHelper* Get();
 
+  CrashIdHelper(const CrashIdHelper&) = delete;
+  CrashIdHelper& operator=(const CrashIdHelper&) = delete;
+
   // Registers the thread used for logging.
   static void RegisterMainThread(base::PlatformThreadId thread_id);
 
@@ -80,8 +83,6 @@ class GFX_EXPORT CrashIdHelper {
   crash_reporter::CrashKeyString<128> debugging_crash_key_{"widget-id"};
 
   static base::PlatformThreadId main_thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashIdHelper);
 };
 
 }  // namespace gfx

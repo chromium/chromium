@@ -76,6 +76,9 @@ class DrmWindowTest : public testing::Test {
  public:
   DrmWindowTest() = default;
 
+  DrmWindowTest(const DrmWindowTest&) = delete;
+  DrmWindowTest& operator=(const DrmWindowTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -118,8 +121,6 @@ class DrmWindowTest : public testing::Test {
   struct CrtcState {
     std::vector<PlaneState> planes;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindowTest);
 };
 
 void DrmWindowTest::SetUp() {

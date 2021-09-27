@@ -968,12 +968,13 @@ class TestAnchor {
     widget_.Show();
   }
 
+  TestAnchor(const TestAnchor&) = delete;
+  TestAnchor& operator=(const TestAnchor&) = delete;
+
   Widget& widget() { return widget_; }
 
  private:
   Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAnchor);
 };
 
 // BubbleDialogDelegate with no margins to test width snapping.
@@ -988,8 +989,8 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
     GetWidget()->Show();
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidthSnapDelegate);
+  TestWidthSnapDelegate(const TestWidthSnapDelegate&) = delete;
+  TestWidthSnapDelegate& operator=(const TestWidthSnapDelegate&) = delete;
 };
 
 }  // namespace

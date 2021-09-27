@@ -19,6 +19,9 @@ class UIAndroidTestSuite : public base::TestSuite {
  public:
   UIAndroidTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  UIAndroidTestSuite(const UIAndroidTestSuite&) = delete;
+  UIAndroidTestSuite& operator=(const UIAndroidTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -32,9 +35,6 @@ class UIAndroidTestSuite : public base::TestSuite {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIAndroidTestSuite);
 };
 
 }  // namespace

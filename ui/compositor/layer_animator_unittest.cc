@@ -119,6 +119,10 @@ class TestImplicitAnimationObserver : public ImplicitAnimationObserver {
       notify_when_animator_destructed_(notify_when_animator_destructed) {
   }
 
+  TestImplicitAnimationObserver(const TestImplicitAnimationObserver&) = delete;
+  TestImplicitAnimationObserver& operator=(
+      const TestImplicitAnimationObserver&) = delete;
+
   bool animations_completed() const { return animations_completed_; }
   void set_animations_completed(bool completed) {
     animations_completed_ = completed;
@@ -160,8 +164,6 @@ class TestImplicitAnimationObserver : public ImplicitAnimationObserver {
   bool notify_when_animator_destructed_;
 
   base::OnceClosure quit_wait_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImplicitAnimationObserver);
 };
 
 // When notified that an animation has ended, stops all other animations.
@@ -169,6 +171,11 @@ class DeletingLayerAnimationObserver : public LayerAnimationObserver {
  public:
   explicit DeletingLayerAnimationObserver(LayerAnimator* animator)
       : animator_(animator) {}
+
+  DeletingLayerAnimationObserver(const DeletingLayerAnimationObserver&) =
+      delete;
+  DeletingLayerAnimationObserver& operator=(
+      const DeletingLayerAnimationObserver&) = delete;
 
   void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override {
     animator_->StopAnimating();
@@ -182,8 +189,6 @@ class DeletingLayerAnimationObserver : public LayerAnimationObserver {
 
  private:
   LayerAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletingLayerAnimationObserver);
 };
 
 // When notified that an animation has started, aborts all animations.
@@ -193,6 +198,11 @@ class AbortAnimationsOnStartedLayerAnimationObserver
   explicit AbortAnimationsOnStartedLayerAnimationObserver(
       LayerAnimator* animator)
       : animator_(animator) {}
+
+  AbortAnimationsOnStartedLayerAnimationObserver(
+      const AbortAnimationsOnStartedLayerAnimationObserver&) = delete;
+  AbortAnimationsOnStartedLayerAnimationObserver& operator=(
+      const AbortAnimationsOnStartedLayerAnimationObserver&) = delete;
 
   void OnLayerAnimationStarted(LayerAnimationSequence* sequence) override {
     animator_->AbortAllAnimations();
@@ -206,8 +216,6 @@ class AbortAnimationsOnStartedLayerAnimationObserver
 
  private:
   LayerAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AbortAnimationsOnStartedLayerAnimationObserver);
 };
 
 class LayerAnimatorDestructionObserver {
@@ -239,6 +247,9 @@ class TestLayerAnimator : public LayerAnimator {
       : LayerAnimator(base::TimeDelta::FromSeconds(0)),
         destruction_observer_(nullptr) {}
 
+  TestLayerAnimator(const TestLayerAnimator&) = delete;
+  TestLayerAnimator& operator=(const TestLayerAnimator&) = delete;
+
   void SetDestructionObserver(
       LayerAnimatorDestructionObserver* observer) {
     destruction_observer_ = observer;
@@ -259,8 +270,6 @@ class TestLayerAnimator : public LayerAnimator {
 
  private:
   LayerAnimatorDestructionObserver* destruction_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimator);
 };
 
 // The test layer animation sequence updates a live instances count when it is
@@ -295,6 +304,11 @@ class CountCheckingLayerAnimationObserver : public LayerAnimationObserver {
  public:
   explicit CountCheckingLayerAnimationObserver(LayerAnimationObserver* observer)
       : observer_(observer) {}
+
+  CountCheckingLayerAnimationObserver(
+      const CountCheckingLayerAnimationObserver&) = delete;
+  CountCheckingLayerAnimationObserver& operator=(
+      const CountCheckingLayerAnimationObserver&) = delete;
 
   void OnLayerAnimationStarted(LayerAnimationSequence* sequence) override {
     ++started_count_;
@@ -375,8 +389,6 @@ class CountCheckingLayerAnimationObserver : public LayerAnimationObserver {
 
   // The number of animation sequences that completed successfully.
   int successful_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CountCheckingLayerAnimationObserver);
 };
 
 }  // namespace test
@@ -2926,12 +2938,13 @@ class AnimatorOwner {
  public:
   AnimatorOwner() : animator_(CreateDefaultTestAnimator()) {}
 
+  AnimatorOwner(const AnimatorOwner&) = delete;
+  AnimatorOwner& operator=(const AnimatorOwner&) = delete;
+
   LayerAnimator* animator() { return animator_.get(); }
 
  private:
   scoped_refptr<LayerAnimator> animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatorOwner);
 };
 
 class DeletingObserver : public LayerAnimationObserver {

@@ -112,6 +112,11 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
  public:
   StylusButtonEventConverterEvdevTest() {}
 
+  StylusButtonEventConverterEvdevTest(
+      const StylusButtonEventConverterEvdevTest&) = delete;
+  StylusButtonEventConverterEvdevTest& operator=(
+      const StylusButtonEventConverterEvdevTest&) = delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     device_manager_ = ui::CreateDeviceManagerForTest();
@@ -162,8 +167,6 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(StylusButtonEventConverterEvdevTest);
 };
 
 TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenSingleClick) {

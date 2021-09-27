@@ -25,6 +25,9 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  public:
   GLSurfaceEglReadback();
 
+  GLSurfaceEglReadback(const GLSurfaceEglReadback&) = delete;
+  GLSurfaceEglReadback& operator=(const GLSurfaceEglReadback&) = delete;
+
   // GLSurface implementation.
   bool Resize(const gfx::Size& size,
               float scale_factor,
@@ -50,8 +53,6 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<uint8_t[]> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceEglReadback);
 };
 
 }  // namespace ui

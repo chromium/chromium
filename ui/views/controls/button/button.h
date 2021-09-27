@@ -113,6 +113,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   METADATA_HEADER(Button);
 
+  Button(const Button&) = delete;
+  Button& operator=(const Button&) = delete;
+
   ~Button() override;
 
   static const Button* AsButton(const View* view);
@@ -347,8 +350,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   base::CallbackListSubscription enabled_changed_subscription_{
       AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
                                                     base::Unretained(this)))};
-
-  DISALLOW_COPY_AND_ASSIGN(Button);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, View)

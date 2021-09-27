@@ -60,18 +60,21 @@ class TestLabelButton : public LabelButton {
                            int button_context = style::CONTEXT_BUTTON)
       : LabelButton(Button::PressedCallback(), text, button_context) {}
 
+  TestLabelButton(const TestLabelButton&) = delete;
+  TestLabelButton& operator=(const TestLabelButton&) = delete;
+
   using LabelButton::GetVisualState;
   using LabelButton::image;
   using LabelButton::label;
   using LabelButton::OnThemeChanged;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLabelButton);
 };
 
 class LabelButtonTest : public test::WidgetTest {
  public:
   LabelButtonTest() = default;
+
+  LabelButtonTest(const LabelButtonTest&) = delete;
+  LabelButtonTest& operator=(const LabelButtonTest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -129,8 +132,6 @@ class LabelButtonTest : public test::WidgetTest {
 
  private:
   Widget* test_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonTest);
 };
 
 TEST_F(LabelButtonTest, FocusBehavior) {
@@ -763,6 +764,9 @@ class InkDropLabelButtonTest : public ViewsTestBase {
  public:
   InkDropLabelButtonTest() = default;
 
+  InkDropLabelButtonTest(const InkDropLabelButtonTest&) = delete;
+  InkDropLabelButtonTest& operator=(const InkDropLabelButtonTest&) = delete;
+
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -798,9 +802,6 @@ class InkDropLabelButtonTest : public ViewsTestBase {
 
   // Weak ptr, |button_| owns the instance.
   test::TestInkDrop* test_ink_drop_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropLabelButtonTest);
 };
 
 TEST_F(InkDropLabelButtonTest, HoverStateAfterMouseEnterAndExitEvents) {

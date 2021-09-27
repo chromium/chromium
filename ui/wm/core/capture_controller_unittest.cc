@@ -57,6 +57,9 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
  public:
   CaptureControllerTest() {}
 
+  CaptureControllerTest(const CaptureControllerTest&) = delete;
+  CaptureControllerTest& operator=(const CaptureControllerTest&) = delete;
+
   void SetUp() override {
     AuraTestBase::SetUp();
     capture_controller_ = std::make_unique<ScopedCaptureClient>(root_window());
@@ -106,8 +109,6 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
   std::unique_ptr<ScopedCaptureClient> capture_controller_;
   std::unique_ptr<aura::WindowTreeHost> second_host_;
   std::unique_ptr<ScopedCaptureClient> second_capture_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureControllerTest);
 };
 
 // Makes sure that internal details that are set on mouse down (such as
@@ -206,6 +207,11 @@ class GestureEventDeleteWindowOnScrollEnd
  public:
   GestureEventDeleteWindowOnScrollEnd() {}
 
+  GestureEventDeleteWindowOnScrollEnd(
+      const GestureEventDeleteWindowOnScrollEnd&) = delete;
+  GestureEventDeleteWindowOnScrollEnd& operator=(
+      const GestureEventDeleteWindowOnScrollEnd&) = delete;
+
   void SetWindow(std::unique_ptr<aura::Window> window) {
     window_ = std::move(window);
   }
@@ -221,7 +227,6 @@ class GestureEventDeleteWindowOnScrollEnd
 
  private:
   std::unique_ptr<aura::Window> window_;
-  DISALLOW_COPY_AND_ASSIGN(GestureEventDeleteWindowOnScrollEnd);
 };
 
 // Tests a scenario when a window gets deleted while a capture is being set on

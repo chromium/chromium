@@ -16,6 +16,10 @@ class LayerAnimationObserverTestApi {
  public:
   explicit LayerAnimationObserverTestApi(LayerAnimationObserver* observer);
 
+  LayerAnimationObserverTestApi(const LayerAnimationObserverTestApi&) = delete;
+  LayerAnimationObserverTestApi& operator=(
+      const LayerAnimationObserverTestApi&) = delete;
+
   // Wrappers for LayerAnimationObserver.
   void AttachedToSequence(LayerAnimationSequence* sequence);
   void DetachedFromSequence(LayerAnimationSequence* sequence,
@@ -24,8 +28,6 @@ class LayerAnimationObserverTestApi {
  private:
   // The instance to provide internal access to.
   LayerAnimationObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerAnimationObserverTestApi);
 };
 
 }  // namespace test

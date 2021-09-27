@@ -100,6 +100,10 @@ class BridgedNativeWidgetTestApi {
                   ->GetInProcessNSWindowBridge();
   }
 
+  BridgedNativeWidgetTestApi(const BridgedNativeWidgetTestApi&) = delete;
+  BridgedNativeWidgetTestApi& operator=(const BridgedNativeWidgetTestApi&) =
+      delete;
+
   // Simulate a frame swap from the compositor.
   void SimulateFrameSwap(const gfx::Size& size) {
     const float kScaleFactor = 1.0f;
@@ -121,8 +125,6 @@ class BridgedNativeWidgetTestApi {
 
  private:
   remote_cocoa::NativeWidgetNSWindowBridge* bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTestApi);
 };
 
 // Custom native_widget to create a NativeWidgetMacTestWindow.
@@ -130,6 +132,10 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
  public:
   explicit TestWindowNativeWidgetMac(Widget* delegate)
       : NativeWidgetMac(delegate) {}
+
+  TestWindowNativeWidgetMac(const TestWindowNativeWidgetMac&) = delete;
+  TestWindowNativeWidgetMac& operator=(const TestWindowNativeWidgetMac&) =
+      delete;
 
  protected:
   // NativeWidgetMac:
@@ -151,9 +157,6 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
                     backing:NSBackingStoreBuffered
                       defer:NO] autorelease];
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowNativeWidgetMac);
 };
 
 // Tests for parts of NativeWidgetMac not covered by NativeWidgetNSWindowBridge,
@@ -161,6 +164,9 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
 class NativeWidgetMacTest : public WidgetTest {
  public:
   NativeWidgetMacTest() = default;
+
+  NativeWidgetMacTest(const NativeWidgetMacTest&) = delete;
+  NativeWidgetMacTest& operator=(const NativeWidgetMacTest&) = delete;
 
   // Make an NSWindow with a close button and a title bar to use as a parent.
   // This NSWindow is backed by a widget that is not exposed to the caller.
@@ -201,14 +207,14 @@ class NativeWidgetMacTest : public WidgetTest {
   FocusManager* GetFocusManager(NativeWidgetMac* native_widget) const {
     return native_widget->focus_manager_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacTest);
 };
 
 class WidgetChangeObserver : public TestWidgetObserver {
  public:
   explicit WidgetChangeObserver(Widget* widget) : TestWidgetObserver(widget) {}
+
+  WidgetChangeObserver(const WidgetChangeObserver&) = delete;
+  WidgetChangeObserver& operator=(const WidgetChangeObserver&) = delete;
 
   void WaitForVisibleCounts(int gained, int lost) {
     if (gained_visible_count_ >= gained && lost_visible_count_ >= lost)
@@ -243,8 +249,6 @@ class WidgetChangeObserver : public TestWidgetObserver {
   int target_gained_visible_count_ = 0;
   int target_lost_visible_count_ = 0;
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetChangeObserver);
 };
 
 // This class gives public access to the protected ctor of
@@ -264,6 +268,9 @@ class CustomTooltipView : public View {
   CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler)
       : tooltip_(tooltip), tooltip_handler_(tooltip_handler) {}
 
+  CustomTooltipView(const CustomTooltipView&) = delete;
+  CustomTooltipView& operator=(const CustomTooltipView&) = delete;
+
   // View:
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     return tooltip_;
@@ -276,8 +283,6 @@ class CustomTooltipView : public View {
  private:
   std::u16string tooltip_;
   View* tooltip_handler_;  // Weak
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTooltipView);
 };
 
 // A Widget subclass that exposes counts to calls made to OnMouseEvent().
@@ -388,6 +393,9 @@ class PaintCountView : public View {
  public:
   PaintCountView() { SetBounds(0, 0, 100, 100); }
 
+  PaintCountView(const PaintCountView&) = delete;
+  PaintCountView& operator=(const PaintCountView&) = delete;
+
   // View:
   void OnPaint(gfx::Canvas* canvas) override {
     EXPECT_TRUE(GetWidget()->IsVisible());
@@ -413,8 +421,6 @@ class PaintCountView : public View {
   int paint_count_ = 0;
   int target_paint_count_ = 0;
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCountView);
 };
 
 
@@ -566,6 +572,9 @@ class CursorView : public View {
     SetBounds(x, 0, 100, 300);
   }
 
+  CursorView(const CursorView&) = delete;
+  CursorView& operator=(const CursorView&) = delete;
+
   // View:
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
     return cursor_;
@@ -573,8 +582,6 @@ class CursorView : public View {
 
  private:
   NSCursor* cursor_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorView);
 };
 
 // Test for Widget::SetCursor(). There is no Widget::GetCursor(), so this uses
@@ -1756,6 +1763,10 @@ class CustomTitleWidgetDelegate : public WidgetDelegate {
   CustomTitleWidgetDelegate(Widget* widget)
       : widget_(widget), should_show_title_(true) {}
 
+  CustomTitleWidgetDelegate(const CustomTitleWidgetDelegate&) = delete;
+  CustomTitleWidgetDelegate& operator=(const CustomTitleWidgetDelegate&) =
+      delete;
+
   void set_title(const std::u16string& title) { title_ = title; }
   void set_should_show_title(bool show) { should_show_title_ = show; }
 
@@ -1769,8 +1780,6 @@ class CustomTitleWidgetDelegate : public WidgetDelegate {
   Widget* widget_;
   std::u16string title_;
   bool should_show_title_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTitleWidgetDelegate);
 };
 
 // Test that undocumented title-hiding API we're using does the job.
@@ -2119,6 +2128,10 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
  public:
   NativeWidgetMacViewsOrderTest() {}
 
+  NativeWidgetMacViewsOrderTest(const NativeWidgetMacViewsOrderTest&) = delete;
+  NativeWidgetMacViewsOrderTest& operator=(
+      const NativeWidgetMacViewsOrderTest&) = delete;
+
  protected:
   class NativeHostHolder {
    public:
@@ -2130,6 +2143,9 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
       return holder;
     }
 
+    NativeHostHolder(const NativeHostHolder&) = delete;
+    NativeHostHolder& operator=(const NativeHostHolder&) = delete;
+
     NSView* view() const { return view_.get(); }
     NativeViewHost* host() const { return host_; }
 
@@ -2139,8 +2155,6 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
 
     NativeViewHost* const host_;
     base::scoped_nsobject<NSView> view_;
-
-    DISALLOW_COPY_AND_ASSIGN(NativeHostHolder);
   };
 
   // testing::Test:
@@ -2183,9 +2197,6 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
   View* native_host_parent_ = nullptr;
   std::vector<std::unique_ptr<NativeHostHolder>> hosts_;
   base::scoped_nsobject<NSArray<NSView*>> starting_subviews_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacViewsOrderTest);
 };
 
 // Test that NativeViewHost::Attach()/Detach() method saves the NativeView

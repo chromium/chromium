@@ -18,11 +18,13 @@ class FooItem {
  public:
   explicit FooItem(int id) : id_(id) {}
 
+  FooItem(const FooItem&) = delete;
+  FooItem& operator=(const FooItem&) = delete;
+
   int id() const { return id_; }
 
  private:
   int id_;
-  DISALLOW_COPY_AND_ASSIGN(FooItem);
 };
 
 class ListModelTest : public testing::Test,
@@ -34,6 +36,9 @@ class ListModelTest : public testing::Test,
         moved_count_(0),
         changed_count_(0) {
   }
+
+  ListModelTest(const ListModelTest&) = delete;
+  ListModelTest& operator=(const ListModelTest&) = delete;
 
   void ExpectCountsEqual(size_t added_count,
                          size_t removed_count,
@@ -68,8 +73,6 @@ class ListModelTest : public testing::Test,
   size_t removed_count_;
   size_t moved_count_;
   size_t changed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListModelTest);
 };
 
 TEST_F(ListModelTest, Add) {

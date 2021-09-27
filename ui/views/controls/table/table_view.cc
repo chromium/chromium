@@ -143,6 +143,9 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
  public:
   HighlightPathGenerator() = default;
 
+  HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+  HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
     if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
@@ -159,9 +162,6 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
     bounds.set_x(table->GetMirroredXForRect(bounds));
     return SkPath().addRect(gfx::RectToSkRect(bounds));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlightPathGenerator);
 };
 
 TableView::TableView() : weak_factory_(this) {

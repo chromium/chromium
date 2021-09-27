@@ -206,6 +206,9 @@ class ComboboxTest : public ViewsTestBase {
  public:
   ComboboxTest() = default;
 
+  ComboboxTest(const ComboboxTest&) = delete;
+  ComboboxTest& operator=(const ComboboxTest&) = delete;
+
   void TearDown() override {
     widget_.reset();
     ViewsTestBase::TearDown();
@@ -287,9 +290,6 @@ class ComboboxTest : public ViewsTestBase {
   int menu_show_count_ = 0;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComboboxTest);
 };
 
 #if defined(OS_MAC)

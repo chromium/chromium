@@ -43,6 +43,9 @@ class TestTickClock : public base::TickClock {
  public:
   TestTickClock() = default;
 
+  TestTickClock(const TestTickClock&) = delete;
+  TestTickClock& operator=(const TestTickClock&) = delete;
+
   // Unconditionally returns a tick count that is 1ms later than the previous
   // call, starting at 1ms.
   base::TimeTicks NowTicks() const override {
@@ -53,8 +56,6 @@ class TestTickClock : public base::TickClock {
 
  private:
   mutable base::TimeTicks ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTickClock);
 };
 
 namespace {
@@ -78,8 +79,8 @@ class TestTouchEvent : public ui::TouchEvent {
                                       /* force */ 0.0f),
                    flags) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTouchEvent);
+  TestTouchEvent(const TestTouchEvent&) = delete;
+  TestTouchEvent& operator=(const TestTouchEvent&) = delete;
 };
 
 const int kAllButtonMask = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON;

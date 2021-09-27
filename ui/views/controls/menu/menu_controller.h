@@ -369,6 +369,9 @@ class VIEWS_EXPORT MenuController
   // Creates a MenuController. See |for_drop_| member for details on |for_drop|.
   MenuController(bool for_drop, internal::MenuControllerDelegate* delegate);
 
+  MenuController(const MenuController&) = delete;
+  MenuController& operator=(const MenuController&) = delete;
+
   ~MenuController() override;
 
   // Invokes AcceleratorPressed() on the hot tracked view if there is one.
@@ -811,8 +814,6 @@ class VIEWS_EXPORT MenuController
 
   // Currently showing alerted menu items. Updated when submenus open and close.
   base::flat_set<MenuItemView*> alerted_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuController);
 };
 
 }  // namespace views

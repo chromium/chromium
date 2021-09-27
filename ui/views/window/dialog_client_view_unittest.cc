@@ -37,6 +37,9 @@ class DialogClientViewTest : public test::WidgetTest {
  public:
   DialogClientViewTest() = default;
 
+  DialogClientViewTest(const DialogClientViewTest&) = delete;
+  DialogClientViewTest& operator=(const DialogClientViewTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     WidgetTest::SetUp();
@@ -175,8 +178,6 @@ class DialogClientViewTest : public test::WidgetTest {
   gfx::Size preferred_size_;
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogClientViewTest);
 };
 
 TEST_F(DialogClientViewTest, UpdateButtons) {

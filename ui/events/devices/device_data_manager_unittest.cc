@@ -63,6 +63,10 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
  public:
   TestInputDeviceEventObserver() = default;
 
+  TestInputDeviceEventObserver(const TestInputDeviceEventObserver&) = delete;
+  TestInputDeviceEventObserver& operator=(const TestInputDeviceEventObserver&) =
+      delete;
+
   int on_touch_device_associations_changed_call_count() const {
     return on_touch_device_associations_changed_call_count_;
   }
@@ -74,8 +78,6 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
 
  private:
   int on_touch_device_associations_changed_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputDeviceEventObserver);
 };
 
 }  // namespace

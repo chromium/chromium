@@ -48,6 +48,9 @@ class DialogExample::Delegate : public virtual DialogType {
     WidgetDelegate::SetModalType(parent_->GetModalType());
   }
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   void InitDelegate() {
     this->SetLayoutManager(std::make_unique<FillLayout>());
     auto body = std::make_unique<Label>(parent_->body_->GetText());
@@ -72,8 +75,6 @@ class DialogExample::Delegate : public virtual DialogType {
 
  private:
   DialogExample* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {
@@ -84,11 +85,11 @@ class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {
     set_close_on_deactivate(!parent->persistent_bubble_->GetChecked());
   }
 
+  Bubble(const Bubble&) = delete;
+  Bubble& operator=(const Bubble&) = delete;
+
   // BubbleDialogDelegateView:
   void Init() override { InitDelegate(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Bubble);
 };
 
 class DialogExample::Dialog : public Delegate<DialogDelegateView> {
@@ -100,8 +101,8 @@ class DialogExample::Dialog : public Delegate<DialogDelegateView> {
     SetCanResize(true);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Dialog);
+  Dialog(const Dialog&) = delete;
+  Dialog& operator=(const Dialog&) = delete;
 };
 
 DialogExample::DialogExample()

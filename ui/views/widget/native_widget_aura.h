@@ -47,6 +47,9 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
  public:
   explicit NativeWidgetAura(internal::NativeWidgetDelegate* delegate);
 
+  NativeWidgetAura(const NativeWidgetAura&) = delete;
+  NativeWidgetAura& operator=(const NativeWidgetAura&) = delete;
+
   // Called internally by NativeWidgetAura and DesktopNativeWidgetAura to
   // associate |native_widget| with |window|.
   static void RegisterNativeWidgetForWindow(
@@ -260,8 +263,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
   base::WeakPtrFactory<NativeWidgetAura> close_widget_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetAura);
 };
 
 }  // namespace views

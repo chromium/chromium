@@ -17,6 +17,9 @@ class TestAnimationDelegate : public AnimationDelegate {
  public:
   TestAnimationDelegate() = default;
 
+  TestAnimationDelegate(const TestAnimationDelegate&) = delete;
+  TestAnimationDelegate& operator=(const TestAnimationDelegate&) = delete;
+
   virtual void AnimationEnded(const Animation* animation) {
     finished_ = true;
     if (base::RunLoop::IsRunningOnCurrentThread())
@@ -34,8 +37,6 @@ class TestAnimationDelegate : public AnimationDelegate {
  private:
   bool canceled_ = false;
   bool finished_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAnimationDelegate);
 };
 
 }  // namespace gfx

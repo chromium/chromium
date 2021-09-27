@@ -24,6 +24,9 @@ class TestLabel : public internal::LabelButtonLabel {
       : LabelButtonLabel(std::u16string(), views::style::CONTEXT_BUTTON),
         last_color_(last_color) {}
 
+  TestLabel(const TestLabel&) = delete;
+  TestLabel& operator=(const TestLabel&) = delete;
+
   // LabelButtonLabel:
   void OnDidSchedulePaint(const gfx::Rect& r) override {
     LabelButtonLabel::OnDidSchedulePaint(r);
@@ -32,8 +35,6 @@ class TestLabel : public internal::LabelButtonLabel {
 
  private:
   SkColor* last_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLabel);
 };
 
 }  // namespace
@@ -41,6 +42,9 @@ class TestLabel : public internal::LabelButtonLabel {
 class LabelButtonLabelTest : public ViewsTestBase {
  public:
   LabelButtonLabelTest() = default;
+
+  LabelButtonLabelTest(const LabelButtonLabelTest&) = delete;
+  LabelButtonLabelTest& operator=(const LabelButtonLabelTest&) = delete;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -68,9 +72,6 @@ class LabelButtonLabelTest : public ViewsTestBase {
   SkColor last_color_ = gfx::kPlaceholderColor;
   std::unique_ptr<views::Widget> widget_;
   TestLabel* label_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonLabelTest);
 };
 
 // Test that LabelButtonLabel reacts properly to themed and overridden colors.

@@ -39,6 +39,12 @@ namespace {
 // Layout information for a specific child view in a proposed layout.
 struct FlexChildData {
   explicit FlexChildData(const FlexSpecification& flex) : flex(flex) {}
+
+  // Copying this struct would be expensive and they only ever live in a vector
+  // in Layout (see below) so we'll only allow move semantics.
+  FlexChildData(const FlexChildData&) = delete;
+  FlexChildData& operator=(const FlexChildData&) = delete;
+
   FlexChildData(FlexChildData&& other) = default;
 
   std::string ToString() const {
@@ -58,11 +64,6 @@ struct FlexChildData {
   NormalizedInsets internal_padding;
   NormalizedRect actual_bounds;
   FlexSpecification flex;
-
- private:
-  // Copying this struct would be expensive and they only ever live in a vector
-  // in Layout (see below) so we'll only allow move semantics.
-  DISALLOW_COPY_AND_ASSIGN(FlexChildData);
 };
 
 template <typename T>
@@ -264,6 +265,10 @@ int FlexLayout::ChildViewSpacing::GetAddDelta(size_t view_index) const {
 // Represents a specific stored layout given a set of size bounds.
 struct FlexLayout::FlexLayoutData {
   FlexLayoutData() = default;
+
+  FlexLayoutData(const FlexLayoutData&) = delete;
+  FlexLayoutData& operator=(const FlexLayoutData&) = delete;
+
   ~FlexLayoutData() = default;
 
   size_t num_children() const { return child_data.size(); }
@@ -293,9 +298,6 @@ struct FlexLayout::FlexLayoutData {
   NormalizedSize total_size;
   NormalizedInsets interior_margin;
   NormalizedInsets host_insets;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FlexLayoutData);
 };
 
 FlexLayout::PropertyHandler::PropertyHandler(FlexLayout* layout)

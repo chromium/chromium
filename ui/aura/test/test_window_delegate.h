@@ -106,20 +106,24 @@ class MaskedWindowDelegate : public TestWindowDelegate {
  public:
   explicit MaskedWindowDelegate(const gfx::Rect mask_rect);
 
+  MaskedWindowDelegate(const MaskedWindowDelegate&) = delete;
+  MaskedWindowDelegate& operator=(const MaskedWindowDelegate&) = delete;
+
   // Overridden from TestWindowDelegate:
   bool HasHitTestMask() const override;
   void GetHitTestMask(SkPath* mask) const override;
 
  private:
   gfx::Rect mask_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaskedWindowDelegate);
 };
 
 // Keeps track of mouse/key events.
 class EventCountDelegate : public TestWindowDelegate {
  public:
   EventCountDelegate();
+
+  EventCountDelegate(const EventCountDelegate&) = delete;
+  EventCountDelegate& operator=(const EventCountDelegate&) = delete;
 
   // Overridden from TestWindowDelegate:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -150,8 +154,6 @@ class EventCountDelegate : public TestWindowDelegate {
   int key_press_count_;
   int key_release_count_;
   int gesture_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCountDelegate);
 };
 
 }  // namespace test

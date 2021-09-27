@@ -62,6 +62,9 @@ class TestView : public View {
  public:
   TestView() = default;
 
+  TestView(const TestView&) = delete;
+  TestView& operator=(const TestView&) = delete;
+
   void OnDidSchedulePaint(const gfx::Rect& r) override {
     ++repaint_count_;
 
@@ -79,8 +82,6 @@ class TestView : public View {
  private:
   gfx::Rect dirty_rect_;
   int repaint_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestView);
 };
 
 class RTLAnimationTestDelegate : public gfx::AnimationDelegate {
@@ -146,6 +147,9 @@ class BoundsAnimatorTest : public testing::Test {
     RecreateAnimator(/*use_transforms=*/false);
   }
 
+  BoundsAnimatorTest(const BoundsAnimatorTest&) = delete;
+  BoundsAnimatorTest& operator=(const BoundsAnimatorTest&) = delete;
+
   TestView* parent() { return &parent_; }
   TestView* child() { return child_; }
   BoundsAnimator* animator() { return animator_.get(); }
@@ -198,8 +202,6 @@ class BoundsAnimatorTest : public testing::Test {
   TestView parent_;
   TestView* child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsAnimatorTest);
 };
 
 // Checks animate view to.

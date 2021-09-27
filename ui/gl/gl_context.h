@@ -114,6 +114,9 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
  public:
   explicit GLContext(GLShareGroup* share_group);
 
+  GLContext(const GLContext&) = delete;
+  GLContext& operator=(const GLContext&) = delete;
+
   static int32_t TotalGLContexts();
 
   static bool SwitchableGPUsSupported();
@@ -337,13 +340,15 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   std::map<uint64_t, std::unique_ptr<GLFence>> backpressure_fences_;
   uint64_t next_backpressure_fence_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GLContext);
 };
 
 class GL_EXPORT GLContextReal : public GLContext {
  public:
   explicit GLContextReal(GLShareGroup* share_group);
+
+  GLContextReal(const GLContextReal&) = delete;
+  GLContextReal& operator=(const GLContextReal&) = delete;
+
   scoped_refptr<GPUTimingClient> CreateGPUTimingClient() override;
   const gfx::ExtensionSet& GetExtensions() override;
 
@@ -361,7 +366,6 @@ class GL_EXPORT GLContextReal : public GLContext {
   std::string extensions_string_;
   gfx::ExtensionSet extensions_;
   bool extensions_initialized_ = false;
-  DISALLOW_COPY_AND_ASSIGN(GLContextReal);
 };
 
 // Wraps GLContext in scoped_refptr and tries to initializes it. Returns a

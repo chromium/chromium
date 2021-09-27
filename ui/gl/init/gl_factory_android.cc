@@ -30,6 +30,9 @@ class GLNonOwnedContext : public GLContextReal {
  public:
   explicit GLNonOwnedContext(GLShareGroup* share_group);
 
+  GLNonOwnedContext(const GLNonOwnedContext&) = delete;
+  GLNonOwnedContext& operator=(const GLNonOwnedContext&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
@@ -43,8 +46,6 @@ class GLNonOwnedContext : public GLContextReal {
 
  private:
   EGLDisplay display_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLNonOwnedContext);
 };
 
 GLNonOwnedContext::GLNonOwnedContext(GLShareGroup* share_group)

@@ -64,6 +64,11 @@ class HardwareDisplayPlaneManagerTest
  public:
   HardwareDisplayPlaneManagerTest() = default;
 
+  HardwareDisplayPlaneManagerTest(const HardwareDisplayPlaneManagerTest&) =
+      delete;
+  HardwareDisplayPlaneManagerTest& operator=(
+      const HardwareDisplayPlaneManagerTest&) = delete;
+
   void InitializeDrmState(size_t crtc_count, size_t planes_per_crtc);
 
   uint64_t GetObjectPropertyValue(uint32_t object_id,
@@ -101,9 +106,6 @@ class HardwareDisplayPlaneManagerTest
   std::map<uint32_t, std::string> property_names_;
 
   bool use_atomic_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManagerTest);
 };
 
 void HardwareDisplayPlaneManagerTest::SetUp() {
@@ -1237,6 +1239,11 @@ class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
  protected:
   HardwareDisplayPlaneManagerPlanesReadyTest() = default;
 
+  HardwareDisplayPlaneManagerPlanesReadyTest(
+      const HardwareDisplayPlaneManagerPlanesReadyTest&) = delete;
+  HardwareDisplayPlaneManagerPlanesReadyTest& operator=(
+      const HardwareDisplayPlaneManagerPlanesReadyTest&) = delete;
+
   void SetUp() override {
     auto gbm_device = std::make_unique<ui::MockGbmDevice>();
     fake_drm_ = new ui::MockDrmDevice(std::move(gbm_device));
@@ -1286,9 +1293,6 @@ class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
 
   ui::DrmOverlayPlaneList planes_without_fences_;
   ui::DrmOverlayPlaneList planes_with_fences_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManagerPlanesReadyTest);
 };
 
 void HardwareDisplayPlaneManagerPlanesReadyTest::RequestPlanesReady(

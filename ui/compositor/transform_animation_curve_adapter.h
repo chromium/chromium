@@ -28,6 +28,9 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
 
   TransformAnimationCurveAdapter(const TransformAnimationCurveAdapter& other);
 
+  TransformAnimationCurveAdapter& operator=(
+      const TransformAnimationCurveAdapter&) = delete;
+
   ~TransformAnimationCurveAdapter() override;
 
   // TransformAnimationCurve implementation.
@@ -46,8 +49,6 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
   gfx::DecomposedTransform decomposed_initial_value_;
   gfx::DecomposedTransform decomposed_target_value_;
   base::TimeDelta duration_;
-
-  DISALLOW_ASSIGN(TransformAnimationCurveAdapter);
 };
 
 }  // namespace ui

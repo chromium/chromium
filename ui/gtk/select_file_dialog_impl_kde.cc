@@ -49,6 +49,9 @@ class SelectFileDialogImplKDE : public SelectFileDialogImpl {
                           base::nix::DesktopEnvironment desktop,
                           const std::string& kdialog_version);
 
+  SelectFileDialogImplKDE(const SelectFileDialogImplKDE&) = delete;
+  SelectFileDialogImplKDE& operator=(const SelectFileDialogImplKDE&) = delete;
+
  protected:
   ~SelectFileDialogImplKDE() override;
 
@@ -181,8 +184,6 @@ class SelectFileDialogImplKDE : public SelectFileDialogImpl {
   scoped_refptr<base::SequencedTaskRunner> pipe_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImplKDE);
 };
 
 // static

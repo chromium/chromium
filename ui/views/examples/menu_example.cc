@@ -33,6 +33,9 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
  public:
   ExampleMenuModel();
 
+  ExampleMenuModel(const ExampleMenuModel&) = delete;
+  ExampleMenuModel& operator=(const ExampleMenuModel&) = delete;
+
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -57,8 +60,6 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
   std::set<int> checked_fruits_;
   int current_encoding_command_id_ = COMMAND_SELECT_ASCII;
-
-  DISALLOW_COPY_AND_ASSIGN(ExampleMenuModel);
 };
 
 class ExampleMenuButton : public MenuButton {

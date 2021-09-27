@@ -54,6 +54,9 @@ class InputDispatcher {
   static void CreateForMouseMove(base::OnceClosure callback,
                                  const gfx::Point& screen_point);
 
+  InputDispatcher(const InputDispatcher&) = delete;
+  InputDispatcher& operator=(const InputDispatcher&) = delete;
+
  private:
   // Generic message
   InputDispatcher(base::OnceClosure callback,
@@ -129,8 +132,6 @@ class InputDispatcher {
   const gfx::Point expected_mouse_location_;
 
   base::WeakPtrFactory<InputDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputDispatcher);
 };
 
 // static

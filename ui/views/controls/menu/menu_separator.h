@@ -22,6 +22,9 @@ class VIEWS_EXPORT MenuSeparator : public View {
       ui::MenuSeparatorType type = ui::MenuSeparatorType::NORMAL_SEPARATOR)
       : type_(type) {}
 
+  MenuSeparator(const MenuSeparator&) = delete;
+  MenuSeparator& operator=(const MenuSeparator&) = delete;
+
   // View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -34,8 +37,6 @@ class VIEWS_EXPORT MenuSeparator : public View {
  private:
   // The type of the separator.
   ui::MenuSeparatorType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuSeparator);
 };
 
 }  // namespace views

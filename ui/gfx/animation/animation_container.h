@@ -34,6 +34,9 @@ class ANIMATION_EXPORT AnimationContainer
  public:
   AnimationContainer();
 
+  AnimationContainer(const AnimationContainer&) = delete;
+  AnimationContainer& operator=(const AnimationContainer&) = delete;
+
   // Invoked by Animation when it needs to start. Starts the timer if necessary.
   // NOTE: This is invoked by Animation for you, you shouldn't invoke this
   // directly.
@@ -112,8 +115,6 @@ class ANIMATION_EXPORT AnimationContainer
   bool has_custom_animation_runner_ = false;
 
   AnimationContainerObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationContainer);
 };
 
 }  // namespace gfx

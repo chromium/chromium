@@ -19,6 +19,9 @@ class SelectFileDialogImpl : public SelectFileDialog {
   static SelectFileDialogImpl* Create(Listener* listener,
                                       std::unique_ptr<SelectFilePolicy> policy);
 
+  SelectFileDialogImpl(const SelectFileDialogImpl&) = delete;
+  SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
+
   void OnFileSelected(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& java_object,
                       const base::android::JavaParamRef<jstring>& filepath,
@@ -65,8 +68,6 @@ class SelectFileDialogImpl : public SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImpl);
 };
 
 }  // namespace ui

@@ -118,6 +118,10 @@ class SetSurroundingTextVerifier {
         expected_cursor_position_(expected_cursor_position),
         expected_anchor_position_(expected_anchor_position) {}
 
+  SetSurroundingTextVerifier(const SetSurroundingTextVerifier&) = delete;
+  SetSurroundingTextVerifier& operator=(const SetSurroundingTextVerifier&) =
+      delete;
+
   void Verify(const std::string& text,
               uint32_t cursor_pos,
               uint32_t anchor_pos) {
@@ -130,8 +134,6 @@ class SetSurroundingTextVerifier {
   const std::string expected_surrounding_text_;
   const uint32_t expected_cursor_position_;
   const uint32_t expected_anchor_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetSurroundingTextVerifier);
 };
 
 class TestInputMethodManager
@@ -139,6 +141,9 @@ class TestInputMethodManager
   class TestState : public MockInputMethodManager::State {
    public:
     TestState() { Reset(); }
+
+    TestState(const TestState&) = delete;
+    TestState& operator=(const TestState&) = delete;
 
     // InputMethodManager::State:
     void ChangeInputMethodToJpKeyboard() override {
@@ -171,8 +176,6 @@ class TestInputMethodManager
    private:
     bool is_jp_kbd_ = false;
     bool is_jp_ime_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TestState);
   };
 
  private:
@@ -183,13 +186,14 @@ class TestInputMethodManager
     state_ = scoped_refptr<TestState>(new TestState());
   }
 
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
+
   TestState* state() { return state_.get(); }
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
     return scoped_refptr<InputMethodManager::State>(state_.get());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 class NiceMockIMEEngine : public ash::MockIMEEngineHandler {

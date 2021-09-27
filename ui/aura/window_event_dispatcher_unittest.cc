@@ -534,6 +534,9 @@ class EventFilterRecorder : public ui::EventHandler {
       : wait_until_event_(ui::ET_UNKNOWN),
         last_touch_may_cause_scrolling_(false) {}
 
+  EventFilterRecorder(const EventFilterRecorder&) = delete;
+  EventFilterRecorder& operator=(const EventFilterRecorder&) = delete;
+
   const Events& events() const { return events_; }
 
   const EventLocations& mouse_locations() const { return mouse_locations_; }
@@ -605,8 +608,6 @@ class EventFilterRecorder : public ui::EventHandler {
   EventLocations gesture_locations_;
   EventFlags mouse_event_flags_;
   bool last_touch_may_cause_scrolling_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventFilterRecorder);
 };
 
 // Converts an EventType to a string.
@@ -1930,6 +1931,11 @@ class ValidRootDuringDestructionWindowObserver : public aura::WindowObserver {
                                            bool* has_valid_root)
       : got_destroying_(got_destroying), has_valid_root_(has_valid_root) {}
 
+  ValidRootDuringDestructionWindowObserver(
+      const ValidRootDuringDestructionWindowObserver&) = delete;
+  ValidRootDuringDestructionWindowObserver& operator=(
+      const ValidRootDuringDestructionWindowObserver&) = delete;
+
   // WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     *got_destroying_ = true;
@@ -1939,8 +1945,6 @@ class ValidRootDuringDestructionWindowObserver : public aura::WindowObserver {
  private:
   bool* got_destroying_;
   bool* has_valid_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidRootDuringDestructionWindowObserver);
 };
 
 }  // namespace
@@ -2953,6 +2957,9 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
   AsyncWindowDelegate(WindowEventDispatcher* dispatcher)
       : dispatcher_(dispatcher), window_(nullptr) {}
 
+  AsyncWindowDelegate(const AsyncWindowDelegate&) = delete;
+  AsyncWindowDelegate& operator=(const AsyncWindowDelegate&) = delete;
+
   void set_window(Window* window) { window_ = window; }
 
  private:
@@ -2968,8 +2975,6 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
 
   WindowEventDispatcher* dispatcher_;
   Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncWindowDelegate);
 };
 
 // Tests that gesture events dispatched through the asynchronous flow have

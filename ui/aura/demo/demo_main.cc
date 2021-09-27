@@ -53,6 +53,9 @@ class DemoWindowDelegate : public aura::WindowDelegate {
  public:
   explicit DemoWindowDelegate(SkColor color) : color_(color) {}
 
+  DemoWindowDelegate(const DemoWindowDelegate&) = delete;
+  DemoWindowDelegate& operator=(const DemoWindowDelegate&) = delete;
+
   // Overridden from WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
 
@@ -98,8 +101,6 @@ class DemoWindowDelegate : public aura::WindowDelegate {
  private:
   SkColor color_;
   gfx::Rect window_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindowDelegate);
 };
 
 class DemoWindowParentingClient : public aura::client::WindowParentingClient {
@@ -139,13 +140,15 @@ void RunRunLoopUntilOnHostCloseRequested(aura::WindowTreeHost* host) {
     explicit Observer(base::OnceClosure quit_closure)
         : quit_closure_(std::move(quit_closure)) {}
 
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     void OnHostCloseRequested(aura::WindowTreeHost* host) override {
       std::move(quit_closure_).Run();
     }
 
    private:
     base::OnceClosure quit_closure_;
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   base::RunLoop run_loop;

@@ -28,13 +28,13 @@ class UIBaseTestSuite : public base::TestSuite {
  public:
   UIBaseTestSuite(int argc, char** argv);
 
+  UIBaseTestSuite(const UIBaseTestSuite&) = delete;
+  UIBaseTestSuite& operator=(const UIBaseTestSuite&) = delete;
+
  protected:
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIBaseTestSuite);
 };
 
 UIBaseTestSuite::UIBaseTestSuite(int argc, char** argv)

@@ -22,6 +22,9 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
   SelectFileDialogImplGTK(Listener* listener,
                           std::unique_ptr<ui::SelectFilePolicy> policy);
 
+  SelectFileDialogImplGTK(const SelectFileDialogImplGTK&) = delete;
+  SelectFileDialogImplGTK& operator=(const SelectFileDialogImplGTK&) = delete;
+
  protected:
   ~SelectFileDialogImplGTK() override;
 
@@ -143,8 +146,6 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
 
   // The set of all parent windows for which we are currently running dialogs.
   std::set<aura::Window*> parents_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImplGTK);
 };
 
 }  // namespace gtk

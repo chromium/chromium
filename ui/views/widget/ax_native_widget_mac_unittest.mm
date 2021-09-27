@@ -49,6 +49,10 @@ bool AXObjectHandlesSelector(id<NSAccessibility> ax_obj, SEL action) {
 class FlexibleRoleTestView : public View {
  public:
   explicit FlexibleRoleTestView(ax::mojom::Role role) : role_(role) {}
+
+  FlexibleRoleTestView(const FlexibleRoleTestView&) = delete;
+  FlexibleRoleTestView& operator=(const FlexibleRoleTestView&) = delete;
+
   void set_role(ax::mojom::Role role) { role_ = role; }
 
   // Add a child view and resize to fit the child.
@@ -74,8 +78,6 @@ class FlexibleRoleTestView : public View {
  private:
   ax::mojom::Role role_;
   bool mouse_was_pressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FlexibleRoleTestView);
 };
 
 class TestLabelButton : public LabelButton {
@@ -85,15 +87,18 @@ class TestLabelButton : public LabelButton {
     label()->SetSize(gfx::Size(1, 1));
   }
 
-  using LabelButton::label;
+  TestLabelButton(const TestLabelButton&) = delete;
+  TestLabelButton& operator=(const TestLabelButton&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLabelButton);
+  using LabelButton::label;
 };
 
 class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
  public:
   TestWidgetDelegate() = default;
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
 
   static constexpr char16_t kAccessibleWindowTitle[] = u"My Accessible Window";
 
@@ -101,9 +106,6 @@ class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
   std::u16string GetAccessibleWindowTitle() const override {
     return kAccessibleWindowTitle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 constexpr char16_t TestWidgetDelegate::kAccessibleWindowTitle[];
@@ -114,6 +116,9 @@ constexpr char16_t TestWidgetDelegate::kAccessibleWindowTitle[];
 class AXNativeWidgetMacTest : public test::WidgetTest {
  public:
   AXNativeWidgetMacTest() = default;
+
+  AXNativeWidgetMacTest(const AXNativeWidgetMacTest&) = delete;
+  AXNativeWidgetMacTest& operator=(const AXNativeWidgetMacTest&) = delete;
 
   void SetUp() override {
     test::WidgetTest::SetUp();
@@ -150,8 +155,6 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
 
  private:
   TestWidgetDelegate widget_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXNativeWidgetMacTest);
 };
 
 }  // namespace
@@ -769,15 +772,15 @@ class TestComboboxModel : public ui::ComboboxModel {
  public:
   TestComboboxModel() = default;
 
+  TestComboboxModel(const TestComboboxModel&) = delete;
+  TestComboboxModel& operator=(const TestComboboxModel&) = delete;
+
   // ui::ComboboxModel:
   int GetItemCount() const override { return 2; }
   std::u16string GetItemAt(int index) const override {
     return index == 0 ? base::SysNSStringToUTF16(kTestStringValue)
                       : u"Second Item";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModel);
 };
 
 // Test a11y attributes of Comboboxes.

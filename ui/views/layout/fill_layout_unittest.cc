@@ -25,6 +25,9 @@ class FillLayoutTest : public testing::Test {
     SetHostSize(kDefaultHostWidth, kDefaultHostHeight);
   }
 
+  FillLayoutTest(const FillLayoutTest&) = delete;
+  FillLayoutTest& operator=(const FillLayoutTest&) = delete;
+
  protected:
   // Convenience function to get the preferred size from |layout_|.
   gfx::Size GetPreferredSize() const {
@@ -56,9 +59,6 @@ class FillLayoutTest : public testing::Test {
   FillLayout* layout_ = nullptr;
 
   std::unique_ptr<View> host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FillLayoutTest);
 };
 
 }  // namespace

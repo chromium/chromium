@@ -17,6 +17,12 @@ namespace ui {
 class HeuristicStylusPalmDetectionFilterTest : public testing::Test {
  public:
   HeuristicStylusPalmDetectionFilterTest() = default;
+
+  HeuristicStylusPalmDetectionFilterTest(
+      const HeuristicStylusPalmDetectionFilterTest&) = delete;
+  HeuristicStylusPalmDetectionFilterTest& operator=(
+      const HeuristicStylusPalmDetectionFilterTest&) = delete;
+
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     palm_detection_filter_ =
@@ -39,8 +45,6 @@ class HeuristicStylusPalmDetectionFilterTest : public testing::Test {
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
   std::vector<InProgressTouchEvdev> touches_;
   base::TimeTicks test_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeuristicStylusPalmDetectionFilterTest);
 };
 
 class HeuristicStylusPalmDetectionFilterDeathTest

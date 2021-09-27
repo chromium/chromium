@@ -33,6 +33,10 @@ struct GFX_EXPORT TextRunHarfBuzz {
   // Construct the run with |template_font| since determining the details of a
   // default-constructed gfx::Font is expensive, but it will always be replaced.
   explicit TextRunHarfBuzz(const Font& template_font);
+
+  TextRunHarfBuzz(const TextRunHarfBuzz&) = delete;
+  TextRunHarfBuzz& operator=(const TextRunHarfBuzz&) = delete;
+
   ~TextRunHarfBuzz();
 
   // Returns the corresponding glyph range of the given character range.
@@ -142,9 +146,6 @@ struct GFX_EXPORT TextRunHarfBuzz {
   FontParams font_params;
   ShapeOutput shape;
   float preceding_run_widths = 0.0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextRunHarfBuzz);
 };
 
 // Manages the list of TextRunHarfBuzz and its logical <-> visual index mapping.

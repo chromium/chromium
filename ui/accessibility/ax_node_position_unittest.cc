@@ -168,10 +168,13 @@ class AXPositionExpandToEnclosingTextBoundaryTestWithParam
           ExpandToEnclosingTextBoundaryTestParam> {
  public:
   AXPositionExpandToEnclosingTextBoundaryTestWithParam() = default;
-  ~AXPositionExpandToEnclosingTextBoundaryTestWithParam() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(
-      AXPositionExpandToEnclosingTextBoundaryTestWithParam);
+  AXPositionExpandToEnclosingTextBoundaryTestWithParam(
+      const AXPositionExpandToEnclosingTextBoundaryTestWithParam&) = delete;
+  AXPositionExpandToEnclosingTextBoundaryTestWithParam& operator=(
+      const AXPositionExpandToEnclosingTextBoundaryTestWithParam&) = delete;
+
+  ~AXPositionExpandToEnclosingTextBoundaryTestWithParam() override = default;
 };
 
 // Used by AXPositionCreatePositionAtTextBoundaryTestWithParam.

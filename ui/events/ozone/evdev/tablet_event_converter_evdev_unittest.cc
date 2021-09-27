@@ -212,6 +212,10 @@ class TabletEventConverterEvdevTest : public testing::Test {
  public:
   TabletEventConverterEvdevTest() {}
 
+  TabletEventConverterEvdevTest(const TabletEventConverterEvdevTest&) = delete;
+  TabletEventConverterEvdevTest& operator=(
+      const TabletEventConverterEvdevTest&) = delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     cursor_ = std::make_unique<ui::MockTabletCursorEvdev>();
@@ -274,8 +278,6 @@ class TabletEventConverterEvdevTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletEventConverterEvdevTest);
 };
 
 #define EPSILON 20

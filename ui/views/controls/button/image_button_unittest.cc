@@ -22,6 +22,9 @@ class Parent : public views::View {
  public:
   Parent() = default;
 
+  Parent(const Parent&) = delete;
+  Parent& operator=(const Parent&) = delete;
+
   void ChildPreferredSizeChanged(views::View* view) override {
     pref_size_changed_calls_++;
   }
@@ -30,8 +33,6 @@ class Parent : public views::View {
 
  private:
   int pref_size_changed_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Parent);
 };
 
 }  // namespace

@@ -27,6 +27,9 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
                      gfx::BufferFormat format,
                      gfx::NativePixmapHandle handle);
 
+  NativePixmapDmaBuf(const NativePixmapDmaBuf&) = delete;
+  NativePixmapDmaBuf& operator=(const NativePixmapDmaBuf&) = delete;
+
   // NativePixmap:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
@@ -58,8 +61,6 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
   gfx::Size size_;
   gfx::BufferFormat format_;
   gfx::NativePixmapHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativePixmapDmaBuf);
 };
 
 }  // namespace gfx

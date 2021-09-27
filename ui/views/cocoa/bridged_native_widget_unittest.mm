@@ -298,6 +298,10 @@ class MockNativeWidgetMac : public NativeWidgetMac {
  public:
   explicit MockNativeWidgetMac(internal::NativeWidgetDelegate* delegate)
       : NativeWidgetMac(delegate) {}
+
+  MockNativeWidgetMac(const MockNativeWidgetMac&) = delete;
+  MockNativeWidgetMac& operator=(const MockNativeWidgetMac&) = delete;
+
   using NativeWidgetMac::GetInProcessNSWindowBridge;
   using NativeWidgetMac::GetNSWindowHost;
 
@@ -330,9 +334,6 @@ class MockNativeWidgetMac : public NativeWidgetMac {
   void ReorderNativeViews() override {
     // Called via Widget::Init to set the content view. No-op in these tests.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNativeWidgetMac);
 };
 
 // Helper test base to construct a NativeWidgetNSWindowBridge with a valid
@@ -347,6 +348,10 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
   explicit BridgedNativeWidgetTestBase(SkipInitialization tag)
       : native_widget_mac_(nullptr) {}
+
+  BridgedNativeWidgetTestBase(const BridgedNativeWidgetTestBase&) = delete;
+  BridgedNativeWidgetTestBase& operator=(const BridgedNativeWidgetTestBase&) =
+      delete;
 
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() {
     return native_widget_mac_->GetInProcessNSWindowBridge();
@@ -420,8 +425,6 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTestBase);
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
@@ -861,6 +864,10 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
   BridgedNativeWidgetInitTest()
       : BridgedNativeWidgetTestBase(SkipInitialization()) {}
 
+  BridgedNativeWidgetInitTest(const BridgedNativeWidgetInitTest&) = delete;
+  BridgedNativeWidgetInitTest& operator=(const BridgedNativeWidgetInitTest&) =
+      delete;
+
   // Prepares a new |window_| and |widget_| for a call to PerformInit().
   void CreateNewWidgetToInit() {
     widget_ = std::make_unique<Widget>();
@@ -877,9 +884,6 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
     init_params.shadow_type = shadow_type_;
     widget_->Init(std::move(init_params));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetInitTest);
 };
 
 // Test that NativeWidgetNSWindowBridge remains sane if Init() is never called.

@@ -32,6 +32,9 @@ class EventsMacTest : public CocoaTest {
  public:
   EventsMacTest() {}
 
+  EventsMacTest(const EventsMacTest&) = delete;
+  EventsMacTest& operator=(const EventsMacTest&) = delete;
+
   gfx::Point Flip(gfx::Point window_location) {
     NSRect window_frame = [test_window() frame];
     CGFloat content_height =
@@ -81,9 +84,6 @@ class EventsMacTest : public CocoaTest {
 
  protected:
   const gfx::Point default_location_ = gfx::Point(10, 20);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventsMacTest);
 };
 
 // Trackpad scroll sequences below determined empirically on OSX 10.11 (linking

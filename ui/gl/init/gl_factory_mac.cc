@@ -36,6 +36,9 @@ class NoOpGLSurface : public GLSurface {
  public:
   explicit NoOpGLSurface(const gfx::Size& size) : size_(size) {}
 
+  NoOpGLSurface(const NoOpGLSurface&) = delete;
+  NoOpGLSurface& operator=(const NoOpGLSurface&) = delete;
+
   // Implement GLSurface.
   bool Initialize(GLSurfaceFormat format) override { return true; }
   void Destroy() override {}
@@ -55,8 +58,6 @@ class NoOpGLSurface : public GLSurface {
 
  private:
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoOpGLSurface);
 };
 
 }  // namespace

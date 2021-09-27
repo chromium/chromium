@@ -19,6 +19,9 @@ struct GL_EXPORT GLVersionInfo {
                 const char* renderer_str,
                 const gfx::ExtensionSet& exts);
 
+  GLVersionInfo(const GLVersionInfo&) = delete;
+  GLVersionInfo& operator=(const GLVersionInfo&) = delete;
+
   bool IsAtLeastGL(unsigned major, unsigned minor) const {
     return !is_es && (major_version > major ||
                       (major_version == major && minor_version >= minor));
@@ -87,8 +90,6 @@ struct GL_EXPORT GLVersionInfo {
   void ParseDriverInfo(const char* version_str);
   void ExtractDriverVendorANGLE(const char* renderer_str);
   bool IsES3Capable(const gfx::ExtensionSet& extensions) const;
-
-  DISALLOW_COPY_AND_ASSIGN(GLVersionInfo);
 };
 
 }  // namespace gl

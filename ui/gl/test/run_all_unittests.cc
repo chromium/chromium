@@ -28,6 +28,9 @@ class GlTestSuite : public base::TestSuite {
   GlTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
 
+  GlTestSuite(const GlTestSuite&) = delete;
+  GlTestSuite& operator=(const GlTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -63,8 +66,6 @@ class GlTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlTestSuite);
 };
 
 }  // namespace

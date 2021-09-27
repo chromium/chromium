@@ -88,19 +88,22 @@ struct PathElement {
 struct VectorIconRep {
   VectorIconRep() = default;
 
+  VectorIconRep(const VectorIconRep&) = delete;
+  VectorIconRep& operator=(const VectorIconRep&) = delete;
+
   const PathElement* path = nullptr;
 
   // The length of |path|.
   size_t path_size = 0u;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIconRep);
 };
 
 // A vector icon that stores one or more representations to be used for various
 // scale factors and pixel dimensions.
 struct VectorIcon {
   VectorIcon() = default;
+
+  VectorIcon(const VectorIcon&) = delete;
+  VectorIcon& operator=(const VectorIcon&) = delete;
 
   bool is_empty() const { return !reps; }
 
@@ -113,9 +116,6 @@ struct VectorIcon {
   const char* name = nullptr;
 
   bool operator<(const VectorIcon& other) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIcon);
 };
 
 }  // namespace gfx

@@ -20,6 +20,10 @@ namespace ui {
 class UI_ANDROID_EXPORT HandleViewResources {
  public:
   HandleViewResources();
+
+  HandleViewResources(const HandleViewResources&) = delete;
+  HandleViewResources& operator=(const HandleViewResources&) = delete;
+
   void LoadIfNecessary(const JavaRef<jobject>& context);
   const SkBitmap& GetBitmap(ui::TouchHandleOrientation orientation);
   float GetDrawableHorizontalPaddingRatio() const;
@@ -30,8 +34,6 @@ class UI_ANDROID_EXPORT HandleViewResources {
   SkBitmap center_bitmap_;
   float drawable_horizontal_padding_ratio_;
   bool loaded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleViewResources);
 };
 
 }  // namespace ui

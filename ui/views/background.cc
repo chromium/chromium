@@ -31,14 +31,14 @@ class SolidBackground : public Background {
  public:
   explicit SolidBackground(SkColor color) { SetNativeControlColor(color); }
 
+  SolidBackground(const SolidBackground&) = delete;
+  SolidBackground& operator=(const SolidBackground&) = delete;
+
   void Paint(gfx::Canvas* canvas, View* view) const override {
     // Fill the background. Note that we don't constrain to the bounds as
     // canvas is already clipped for us.
     canvas->DrawColor(get_color());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SolidBackground);
 };
 
 // RoundedRectBackground is a filled solid colored background that has
@@ -48,6 +48,9 @@ class RoundedRectBackground : public Background {
   RoundedRectBackground(SkColor color, float radius) : radius_(radius) {
     SetNativeControlColor(color);
   }
+
+  RoundedRectBackground(const RoundedRectBackground&) = delete;
+  RoundedRectBackground& operator=(const RoundedRectBackground&) = delete;
 
   void Paint(gfx::Canvas* canvas, View* view) const override {
     cc::PaintFlags flags;
@@ -59,8 +62,6 @@ class RoundedRectBackground : public Background {
 
  private:
   float radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedRectBackground);
 };
 
 // ThemedVectorIconBackground is an image drawn on the view's background using
@@ -74,6 +75,10 @@ class ThemedVectorIconBackground : public Background, public ViewObserver {
     observation_.Observe(view);
     OnViewThemeChanged(view);
   }
+
+  ThemedVectorIconBackground(const ThemedVectorIconBackground&) = delete;
+  ThemedVectorIconBackground& operator=(const ThemedVectorIconBackground&) =
+      delete;
 
   // ViewObserver:
   void OnViewThemeChanged(View* view) override { view->SchedulePaint(); }
@@ -89,8 +94,6 @@ class ThemedVectorIconBackground : public Background, public ViewObserver {
  private:
   const ui::ThemedVectorIcon icon_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThemedVectorIconBackground);
 };
 
 // ThemedSolidBackground is a solid background that stays in sync with a view's

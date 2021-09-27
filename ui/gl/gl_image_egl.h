@@ -19,6 +19,9 @@ class GL_EXPORT GLImageEGL : public GLImage {
  public:
   explicit GLImageEGL(const gfx::Size& size);
 
+  GLImageEGL(const GLImageEGL&) = delete;
+  GLImageEGL& operator=(const GLImageEGL&) = delete;
+
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   BindOrCopy ShouldBindOrCopy() override;
@@ -47,9 +50,6 @@ class GL_EXPORT GLImageEGL : public GLImage {
   void* egl_image_ /* EGLImageKHR */;
   const gfx::Size size_;
   base::ThreadChecker thread_checker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLImageEGL);
 };
 
 }  // namespace gl

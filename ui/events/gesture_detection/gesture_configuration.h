@@ -16,6 +16,9 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   // Returns the singleton GestureConfiguration.
   static GestureConfiguration* GetInstance();
 
+  GestureConfiguration(const GestureConfiguration&) = delete;
+  GestureConfiguration& operator=(const GestureConfiguration&) = delete;
+
   // Ordered alphabetically ignoring underscores.
   float default_radius() const { return default_radius_; }
   void set_default_radius(float radius) {
@@ -256,8 +259,6 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   bool swipe_enabled_;
   bool two_finger_tap_enabled_;
   VelocityTracker::Strategy velocity_tracker_strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureConfiguration);
 };
 
 }  // namespace ui

@@ -164,6 +164,9 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
     HighlightStateFactory(AutoHighlightMode highlight_mode,
                           InkDropImpl* ink_drop);
 
+    HighlightStateFactory(const HighlightStateFactory&) = delete;
+    HighlightStateFactory& operator=(const HighlightStateFactory&) = delete;
+
     // Returns the initial state.
     std::unique_ptr<HighlightState> CreateStartState();
 
@@ -181,8 +184,6 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
     // The ink drop to invoke highlight changes on.
     InkDropImpl* ink_drop_;
-
-    DISALLOW_COPY_AND_ASSIGN(HighlightStateFactory);
   };
 
   class DestroyingHighlightState;

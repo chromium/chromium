@@ -13,11 +13,12 @@ class LSQPredictorTest : public InputPredictorTest {
  public:
   explicit LSQPredictorTest() {}
 
+  LSQPredictorTest(const LSQPredictorTest&) = delete;
+  LSQPredictorTest& operator=(const LSQPredictorTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LeastSquaresPredictor>();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LSQPredictorTest);
 };
 
 TEST_F(LSQPredictorTest, ShouldHasPrediction) {

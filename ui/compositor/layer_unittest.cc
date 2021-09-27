@@ -376,6 +376,9 @@ class TestCompositorObserver : public CompositorObserver {
  public:
   TestCompositorObserver() = default;
 
+  TestCompositorObserver(const TestCompositorObserver&) = delete;
+  TestCompositorObserver& operator=(const TestCompositorObserver&) = delete;
+
   bool committed() const { return committed_; }
   bool notified() const { return started_ && ended_; }
 
@@ -400,8 +403,6 @@ class TestCompositorObserver : public CompositorObserver {
   bool committed_ = false;
   bool started_ = false;
   bool ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorObserver);
 };
 
 class TestCompositorAnimationObserver : public CompositorAnimationObserver {
@@ -2842,6 +2843,11 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
   LayerRemovingLayerAnimationObserver(Layer* root, Layer* child)
       : root_(root), child_(child) {}
 
+  LayerRemovingLayerAnimationObserver(
+      const LayerRemovingLayerAnimationObserver&) = delete;
+  LayerRemovingLayerAnimationObserver& operator=(
+      const LayerRemovingLayerAnimationObserver&) = delete;
+
   // LayerAnimationObserver:
   void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override {
     root_->Remove(child_);
@@ -2856,8 +2862,6 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
  private:
   Layer* root_;
   Layer* child_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerRemovingLayerAnimationObserver);
 };
 
 // Verifies that empty LayerAnimators are not left behind when removing child

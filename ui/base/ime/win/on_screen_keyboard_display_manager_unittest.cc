@@ -49,6 +49,9 @@ class MockInputPane
 
   MockInputPane() = default;
 
+  MockInputPane(const MockInputPane&) = delete;
+  MockInputPane& operator=(const MockInputPane&) = delete;
+
   IFACEMETHODIMP TryShow(boolean*) override {
     if (showing_)
       return S_OK;
@@ -106,11 +109,13 @@ class MockInputPane
   bool showing_ = false;
   Microsoft::WRL::ComPtr<InputPaneEventHandler> show_handler_;
   Microsoft::WRL::ComPtr<InputPaneEventHandler> hide_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputPane);
 };
 
 class OnScreenKeyboardTest : public ::testing::Test {
+ public:
+  OnScreenKeyboardTest(const OnScreenKeyboardTest&) = delete;
+  OnScreenKeyboardTest& operator=(const OnScreenKeyboardTest&) = delete;
+
  protected:
   OnScreenKeyboardTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
@@ -133,8 +138,6 @@ class OnScreenKeyboardTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardTest);
 };
 
 // This test validates the on screen keyboard path (tabtip.exe) which is read

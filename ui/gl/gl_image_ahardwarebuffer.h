@@ -25,6 +25,9 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
  public:
   explicit GLImageAHardwareBuffer(const gfx::Size& size);
 
+  GLImageAHardwareBuffer(const GLImageAHardwareBuffer&) = delete;
+  GLImageAHardwareBuffer& operator=(const GLImageAHardwareBuffer&) = delete;
+
   // Create an EGLImage from a given Android hardware buffer.
   bool Initialize(AHardwareBuffer* buffer, bool preserved);
 
@@ -59,8 +62,6 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
   base::android::ScopedHardwareBufferHandle handle_;
   unsigned internal_format_ = GL_RGBA;
   unsigned data_type_ = GL_UNSIGNED_BYTE;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageAHardwareBuffer);
 };
 
 }  // namespace gl

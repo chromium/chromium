@@ -26,6 +26,9 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
  public:
   NativePixmap() {}
 
+  NativePixmap(const NativePixmap&) = delete;
+  NativePixmap& operator=(const NativePixmap&) = delete;
+
   virtual bool AreDmaBufFdsValid() const = 0;
   virtual int GetDmaBufFd(size_t plane) const = 0;
   virtual uint32_t GetDmaBufPitch(size_t plane) const = 0;
@@ -89,8 +92,6 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
  private:
   friend class base::RefCountedThreadSafe<NativePixmap>;
-
-  DISALLOW_COPY_AND_ASSIGN(NativePixmap);
 };
 
 }  // namespace gfx

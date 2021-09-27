@@ -22,6 +22,9 @@ class AuraTestSuite : public base::TestSuite {
  public:
   AuraTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  AuraTestSuite(const AuraTestSuite&) = delete;
+  AuraTestSuite& operator=(const AuraTestSuite&) = delete;
+
   void DestroyEnv() { env_.reset(); }
   void CreateEnv() { env_ = aura::Env::CreateInstance(); }
 
@@ -42,7 +45,6 @@ class AuraTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-  DISALLOW_COPY_AND_ASSIGN(AuraTestSuite);
 };
 
 namespace aura {

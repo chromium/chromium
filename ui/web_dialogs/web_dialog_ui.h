@@ -31,6 +31,9 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
 
   WebDialogUIBase(content::WebUI* web_ui);
 
+  WebDialogUIBase(const WebDialogUIBase&) = delete;
+  WebDialogUIBase& operator=(const WebDialogUIBase&) = delete;
+
   // Close the dialog, passing the specified arguments to the close handler.
   void CloseDialog(const base::ListValue* args);
 
@@ -48,8 +51,6 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   void OnDialogClosed(const base::ListValue* args);
 
   content::WebUI* web_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogUIBase);
 };
 
 // Displays file URL contents inside a modal web dialog.

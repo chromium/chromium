@@ -112,7 +112,10 @@ class VIEWS_EXPORT ViewModelBase {
 template <class T>
 class ViewModelT : public ViewModelBase {
  public:
-  ViewModelT<T>() = default;
+  ViewModelT() = default;
+
+  ViewModelT(const ViewModelT&) = delete;
+  ViewModelT& operator=(const ViewModelT&) = delete;
 
   // Adds |view| to this model. This does not add |view| to a view hierarchy,
   // only to this model.
@@ -120,9 +123,6 @@ class ViewModelT : public ViewModelBase {
 
   // Returns the view at the specified index.
   T* view_at(int index) const { return static_cast<T*>(ViewAtBase(index)); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewModelT<T>);
 };
 
 // ViewModel is a collection of views with no specfic type. If all views have

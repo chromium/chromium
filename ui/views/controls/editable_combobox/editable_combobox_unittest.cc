@@ -76,6 +76,9 @@ class EditableComboboxTest : public ViewsTestBase {
  public:
   EditableComboboxTest() { views::test::DisableMenuClosureAnimations(); }
 
+  EditableComboboxTest(const EditableComboboxTest&) = delete;
+  EditableComboboxTest& operator=(const EditableComboboxTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -133,9 +136,6 @@ class EditableComboboxTest : public ViewsTestBase {
   int change_count_ = 0;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EditableComboboxTest);
 };
 
 void EditableComboboxTest::SetUp() {

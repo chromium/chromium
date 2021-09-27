@@ -58,25 +58,29 @@ namespace ui {
 // NSAutoreleasePool set up and initialized prior to execution and drained upon
 // exit.  The tests will leak otherwise.
 class FoundationHost {
+ public:
+  FoundationHost(const FoundationHost&) = delete;
+  FoundationHost& operator=(const FoundationHost&) = delete;
+
  protected:
   FoundationHost() { pool_ = [[NSAutoreleasePool alloc] init]; }
   virtual ~FoundationHost() { [pool_ drain]; }
 
  private:
   NSAutoreleasePool* pool_;
-  DISALLOW_COPY_AND_ASSIGN(FoundationHost);
 };
 
 // Tests that use the AppKit framework need to have the NSApplication
 // initialized prior to doing anything with display objects such as windows,
 // views, or controls.
 class AppKitHost : public FoundationHost {
+ public:
+  AppKitHost(const AppKitHost&) = delete;
+  AppKitHost& operator=(const AppKitHost&) = delete;
+
  protected:
   AppKitHost() { [NSApplication sharedApplication]; }
   ~AppKitHost() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppKitHost);
 };
 
 class TestAcceleratedWidgetMacNSView : public AcceleratedWidgetMacNSView {

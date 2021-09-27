@@ -40,6 +40,9 @@ class AX_EXPORT AtkUtilAuraLinux {
 
   AtkUtilAuraLinux() = default;
 
+  AtkUtilAuraLinux(const AtkUtilAuraLinux&) = delete;
+  AtkUtilAuraLinux& operator=(const AtkUtilAuraLinux&) = delete;
+
   void InitializeAsync();
   void InitializeForTesting();
 
@@ -62,8 +65,6 @@ class AX_EXPORT AtkUtilAuraLinux {
   void PlatformInitializeAsync();
 
   bool at_spi_ready_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AtkUtilAuraLinux);
 };
 
 }  // namespace ui

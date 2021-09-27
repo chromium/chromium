@@ -23,6 +23,9 @@ class ClientChangeVerifier {
  public:
   ClientChangeVerifier() = default;
 
+  ClientChangeVerifier(const ClientChangeVerifier&) = delete;
+  ClientChangeVerifier& operator=(const ClientChangeVerifier&) = delete;
+
   // Expects that focused text input client will not be changed.
   void ExpectClientDoesNotChange() {
     previous_client_ = nullptr;
@@ -105,8 +108,6 @@ class ClientChangeVerifier {
   bool on_will_change_focused_client_called_ = false;
   bool on_did_change_focused_client_called_ = false;
   bool on_text_input_state_changed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientChangeVerifier);
 };
 
 class InputMethodBaseTest : public testing::Test {

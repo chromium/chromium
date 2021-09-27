@@ -79,6 +79,9 @@ class ANIMATION_EXPORT Tween {
                            // sooner.
   };
 
+  Tween(const Tween&) = delete;
+  Tween& operator=(const Tween&) = delete;
+
   // Returns the value based on the tween type. |state| is from 0-1.
   static double CalculateValue(Type type, double state);
 
@@ -134,8 +137,6 @@ class ANIMATION_EXPORT Tween {
  private:
   Tween();
   ~Tween();
-
-  DISALLOW_COPY_AND_ASSIGN(Tween);
 };
 
 }  // namespace gfx

@@ -24,6 +24,9 @@ class FontTest : public testing::Test {
  public:
   FontTest() = default;
 
+  FontTest(const FontTest&) = delete;
+  FontTest& operator=(const FontTest&) = delete;
+
  protected:
   void SetUp() override {
 #if defined(OS_WIN)
@@ -34,9 +37,6 @@ class FontTest : public testing::Test {
     win::ResetSystemFontsForTesting();
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontTest);
 };
 
 TEST_F(FontTest, DefaultFont) {

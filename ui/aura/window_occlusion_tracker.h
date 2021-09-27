@@ -131,6 +131,9 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     SkRegion occluded_region;
   };
 
+  WindowOcclusionTracker(const WindowOcclusionTracker&) = delete;
+  WindowOcclusionTracker& operator=(const WindowOcclusionTracker&) = delete;
+
   // Start tracking the occlusion state of |window|.
   void Track(Window* window);
 
@@ -401,8 +404,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // values. If the occlusion tracker is not computing for a specific window
   // (most of the time it is not), this will be nullptr.
   Window* target_occlusion_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowOcclusionTracker);
 };
 
 }  // namespace aura

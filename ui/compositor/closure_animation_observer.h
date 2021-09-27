@@ -19,6 +19,9 @@ class COMPOSITOR_EXPORT ClosureAnimationObserver
  public:
   explicit ClosureAnimationObserver(base::OnceClosure closure);
 
+  ClosureAnimationObserver(const ClosureAnimationObserver&) = delete;
+  ClosureAnimationObserver& operator=(const ClosureAnimationObserver&) = delete;
+
  private:
   ~ClosureAnimationObserver() override;
 
@@ -26,8 +29,6 @@ class COMPOSITOR_EXPORT ClosureAnimationObserver
   void OnImplicitAnimationsCompleted() override;
 
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosureAnimationObserver);
 };
 
 }  // namespace ui

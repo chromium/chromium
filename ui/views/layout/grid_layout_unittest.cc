@@ -59,6 +59,9 @@ class LayoutOnAddView : public View {
  public:
   LayoutOnAddView() { SetPreferredSize(gfx::Size(10, 10)); }
 
+  LayoutOnAddView(const LayoutOnAddView&) = delete;
+  LayoutOnAddView& operator=(const LayoutOnAddView&) = delete;
+
   void set_target_size(const gfx::Size& target_size) {
     target_size_ = target_size;
   }
@@ -79,8 +82,6 @@ class LayoutOnAddView : public View {
 
  private:
   gfx::Size target_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutOnAddView);
 };
 
 // A view with fixed circumference that trades height for width.

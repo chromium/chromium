@@ -26,6 +26,9 @@ class GFX_EXPORT RenderingWindowManager {
   // The first call to GetInstance() should happen on the UI thread.
   static RenderingWindowManager* GetInstance();
 
+  RenderingWindowManager(const RenderingWindowManager&) = delete;
+  RenderingWindowManager& operator=(const RenderingWindowManager&) = delete;
+
   void RegisterParent(HWND parent);
   // Registers |child| as child window for |parent|. Allows the GPU process to
   // draw into the |child| HWND instead of |parent|. This will fail and do
@@ -43,8 +46,6 @@ class GFX_EXPORT RenderingWindowManager {
   friend class base::NoDestructor<RenderingWindowManager>;
 
   RenderingWindowManager();
-  RenderingWindowManager(const RenderingWindowManager&) = delete;
-  RenderingWindowManager& operator=(const RenderingWindowManager&) = delete;
   ~RenderingWindowManager();
 
   // UI thread task runner.

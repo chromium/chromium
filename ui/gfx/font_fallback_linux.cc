@@ -116,6 +116,9 @@ class FallbackFontKey {
       : locale_(locale), font_(font) {}
 
   FallbackFontKey(const FallbackFontKey&) = default;
+
+  FallbackFontKey& operator=(const FallbackFontKey&) = delete;
+
   ~FallbackFontKey() = default;
 
   bool operator<(const FallbackFontKey& other) const {
@@ -131,8 +134,6 @@ class FallbackFontKey {
  private:
   std::string locale_;
   Font font_;
-
-  DISALLOW_ASSIGN(FallbackFontKey);
 };
 
 class FallbackFontEntry {
@@ -151,6 +152,8 @@ class FallbackFontEntry {
         ttc_index_(other.ttc_index_),
         font_params_(other.font_params_),
         charset_(FcCharSetCopy(other.charset_)) {}
+
+  FallbackFontEntry& operator=(const FallbackFontEntry&) = delete;
 
   ~FallbackFontEntry() { FcCharSetDestroy(charset_); }
 
@@ -173,8 +176,6 @@ class FallbackFontEntry {
 
   // Font code points coverage.
   FcCharSet* charset_;
-
-  DISALLOW_ASSIGN(FallbackFontEntry);
 };
 
 using FallbackFontEntries = std::vector<FallbackFontEntry>;

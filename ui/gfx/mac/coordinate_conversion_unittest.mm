@@ -36,14 +36,16 @@ class MacCoordinateConversionTest : public PlatformTest {
  public:
   MacCoordinateConversionTest() {}
 
+  MacCoordinateConversionTest(const MacCoordinateConversionTest&) = delete;
+  MacCoordinateConversionTest& operator=(const MacCoordinateConversionTest&) =
+      delete;
+
   // Overridden from testing::Test:
   void SetUp() override;
   void TearDown() override;
 
  private:
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(MacCoordinateConversionTest);
 };
 
 void MacCoordinateConversionTest::SetUp() {

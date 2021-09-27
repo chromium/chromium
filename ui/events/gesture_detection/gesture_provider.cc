@@ -121,6 +121,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         max_diameter_before_show_press_(0),
         show_press_event_sent_(false) {}
 
+  GestureListenerImpl(const GestureListenerImpl&) = delete;
+  GestureListenerImpl& operator=(const GestureListenerImpl&) = delete;
+
   void OnTouchEvent(const MotionEvent& event) {
     const bool in_scale_gesture = IsScaleGestureDetectionInProgress();
     snap_scroll_controller_.SetSnapScrollMode(event, in_scale_gesture);
@@ -838,7 +841,6 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   // The scroll focus point is set to the first touch down point when scroll
   // begins and is later updated based on the delta of touch points.
   gfx::PointF scroll_focus_point_;
-  DISALLOW_COPY_AND_ASSIGN(GestureListenerImpl);
 };
 
 // GestureProvider

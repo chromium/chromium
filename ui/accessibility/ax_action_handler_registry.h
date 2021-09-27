@@ -49,6 +49,9 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
   // Get the single instance of this class.
   static AXActionHandlerRegistry* GetInstance();
 
+  AXActionHandlerRegistry(const AXActionHandlerRegistry&) = delete;
+  AXActionHandlerRegistry& operator=(const AXActionHandlerRegistry&) = delete;
+
   // Gets the frame id based on an ax tree id.
   FrameID GetFrameID(const AXTreeID& ax_tree_id);
 
@@ -98,8 +101,6 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
 
   // Tracks all observers.
   base::ObserverList<AXActionHandlerObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXActionHandlerRegistry);
 };
 
 }  // namespace ui

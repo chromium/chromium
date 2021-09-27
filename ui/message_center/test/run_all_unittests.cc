@@ -22,6 +22,9 @@ class MessageCenterTestSuite : public base::TestSuite {
  public:
   MessageCenterTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  MessageCenterTestSuite(const MessageCenterTestSuite&) = delete;
+  MessageCenterTestSuite& operator=(const MessageCenterTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -43,8 +46,6 @@ class MessageCenterTestSuite : public base::TestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterTestSuite);
 };
 
 }  // namespace

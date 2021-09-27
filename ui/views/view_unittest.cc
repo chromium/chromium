@@ -2209,14 +2209,15 @@ class TestViewWidget {
     EXPECT_TRUE(widget_.GetFocusManager());
   }
 
+  TestViewWidget(const TestViewWidget&) = delete;
+  TestViewWidget& operator=(const TestViewWidget&) = delete;
+
   TestView* view() { return view_; }
   Widget* widget() { return &widget_; }
 
  private:
   TestView* view_;
   Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewWidget);
 };
 
 }  // namespace
@@ -3839,6 +3840,9 @@ class TestLayerAnimator : public ui::LayerAnimator {
  public:
   TestLayerAnimator();
 
+  TestLayerAnimator(const TestLayerAnimator&) = delete;
+  TestLayerAnimator& operator=(const TestLayerAnimator&) = delete;
+
   const gfx::Rect& last_bounds() const { return last_bounds_; }
 
   // LayerAnimator.
@@ -3849,8 +3853,6 @@ class TestLayerAnimator : public ui::LayerAnimator {
 
  private:
   gfx::Rect last_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimator);
 };
 
 TestLayerAnimator::TestLayerAnimator()
@@ -4326,6 +4328,9 @@ class PaintTrackingView : public View {
  public:
   PaintTrackingView() = default;
 
+  PaintTrackingView(const PaintTrackingView&) = delete;
+  PaintTrackingView& operator=(const PaintTrackingView&) = delete;
+
   bool painted() const { return painted_; }
   void set_painted(bool value) { painted_ = value; }
 
@@ -4333,8 +4338,6 @@ class PaintTrackingView : public View {
 
  private:
   bool painted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintTrackingView);
 };
 
 // Makes sure child views with layers aren't painted when paint starts at an
@@ -4932,6 +4935,9 @@ class PaintLayerView : public View {
  public:
   PaintLayerView() = default;
 
+  PaintLayerView(const PaintLayerView&) = delete;
+  PaintLayerView& operator=(const PaintLayerView&) = delete;
+
   void PaintChildren(const PaintInfo& info) override {
     last_paint_info_ = std::make_unique<PaintInfo>(info);
     View::PaintChildren(info);
@@ -4943,8 +4949,6 @@ class PaintLayerView : public View {
 
  private:
   std::unique_ptr<PaintInfo> last_paint_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintLayerView);
 };
 
 }  // namespace
@@ -5258,6 +5262,9 @@ class NoLayerWhenHiddenView : public View {
     SetBounds(0, 0, 100, 100);
   }
 
+  NoLayerWhenHiddenView(const NoLayerWhenHiddenView&) = delete;
+  NoLayerWhenHiddenView& operator=(const NoLayerWhenHiddenView&) = delete;
+
   bool was_hidden() const { return was_hidden_; }
 
   // View:
@@ -5276,8 +5283,6 @@ class NoLayerWhenHiddenView : public View {
  private:
   bool was_hidden_ = false;
   RemovedFromWidgetCallback removed_from_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoLayerWhenHiddenView);
 };
 
 // Test that Views can safely manipulate Layers during Widget closure.
@@ -5798,6 +5803,9 @@ class TestParentView : public View {
  public:
   TestParentView() = default;
 
+  TestParentView(const TestParentView&) = delete;
+  TestParentView& operator=(const TestParentView&) = delete;
+
   void Reset() {
     received_layer_change_notification_ = false;
     layer_change_count_ = 0;
@@ -5822,8 +5830,6 @@ class TestParentView : public View {
 
   // Contains the number of OnChildLayerChanged() notifications for a child.
   int layer_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestParentView);
 };
 
 // Tests the following cases.

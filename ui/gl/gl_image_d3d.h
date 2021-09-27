@@ -36,6 +36,9 @@ class GL_EXPORT GLImageD3D : public GLImage {
              size_t plane_index = 0,
              Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
 
+  GLImageD3D(const GLImageD3D&) = delete;
+  GLImageD3D& operator=(const GLImageD3D&) = delete;
+
   // Safe downcast. Returns nullptr on failure.
   static GLImageD3D* FromGLImage(GLImage* image);
 
@@ -91,8 +94,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   ~GLImageD3D() override;
 
   void* egl_image_ = nullptr;  // EGLImageKHR
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageD3D);
 };
 
 }  // namespace gl

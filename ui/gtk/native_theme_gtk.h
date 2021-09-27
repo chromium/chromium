@@ -26,6 +26,9 @@ class NativeThemeGtk : public ui::NativeThemeBase {
  public:
   static NativeThemeGtk* instance();
 
+  NativeThemeGtk(const NativeThemeGtk&) = delete;
+  NativeThemeGtk& operator=(const NativeThemeGtk&) = delete;
+
   // ui::NativeThemeBase:
   void PaintArrowButton(cc::PaintCanvas* canvas,
                         const gfx::Rect& rect,
@@ -91,8 +94,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   mutable absl::optional<SkColor> color_cache_[kColorId_NumColors];
 
   ScopedCssProvider theme_css_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeGtk);
 };
 
 }  // namespace gtk

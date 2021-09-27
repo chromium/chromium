@@ -38,6 +38,9 @@ class WaylandPointerTest : public WaylandTest {
  public:
   WaylandPointerTest() {}
 
+  WaylandPointerTest(const WaylandPointerTest&) = delete;
+  WaylandPointerTest& operator=(const WaylandPointerTest&) = delete;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
@@ -58,9 +61,6 @@ class WaylandPointerTest : public WaylandTest {
 
  protected:
   wl::MockPointer* pointer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointerTest);
 };
 
 void SendAxisEvents(struct wl_resource* resource,

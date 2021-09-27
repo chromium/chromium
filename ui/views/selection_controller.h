@@ -38,6 +38,9 @@ class VIEWS_EXPORT SelectionController {
   // |delegate| must be non-null.
   explicit SelectionController(SelectionControllerDelegate* delegate);
 
+  SelectionController(const SelectionController&) = delete;
+  SelectionController& operator=(const SelectionController&) = delete;
+
   // Handle mouse events forwarded by |delegate_|. |handled| specifies whether
   // the event has already been handled by the |delegate_|. If |handled| is
   // true, the mouse event is just used to update the internal state without
@@ -109,8 +112,6 @@ class VIEWS_EXPORT SelectionController {
 
   // Whether the selection clipboard is handled.
   bool handles_selection_clipboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionController);
 };
 
 }  // namespace views

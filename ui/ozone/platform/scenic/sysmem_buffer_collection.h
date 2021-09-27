@@ -45,6 +45,9 @@ class SysmemBufferCollection
   SysmemBufferCollection();
   explicit SysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 
+  SysmemBufferCollection(const SysmemBufferCollection&) = delete;
+  SysmemBufferCollection& operator=(const SysmemBufferCollection&) = delete;
+
   // Initializes the buffer collection and registers it with Vulkan using the
   // specified |vk_device|. If |token_handle| is null then a new collection
   // collection is created. |size| may be empty. In that case |token_handle|
@@ -149,8 +152,6 @@ class SysmemBufferCollection
   bool is_protected_ = false;
 
   base::OnceClosure on_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferCollection);
 };
 
 }  // namespace ui

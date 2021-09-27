@@ -28,14 +28,19 @@ class EVENTS_EXPORT EventTarget {
    public:
     explicit DispatcherApi(EventTarget* target) : target_(target) {}
 
+    DispatcherApi(const DispatcherApi&) = delete;
+    DispatcherApi& operator=(const DispatcherApi&) = delete;
+
    private:
     DispatcherApi();
     EventTarget* target_;
-
-    DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };
 
   EventTarget();
+
+  EventTarget(const EventTarget&) = delete;
+  EventTarget& operator=(const EventTarget&) = delete;
+
   virtual ~EventTarget();
 
   virtual bool CanAcceptEvent(const Event& event) = 0;
@@ -127,8 +132,6 @@ class EVENTS_EXPORT EventTarget {
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
   EventHandler* target_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTarget);
 };
 
 }  // namespace ui

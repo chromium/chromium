@@ -21,6 +21,9 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
  public:
   explicit GLContextGLX(GLShareGroup* share_group);
 
+  GLContextGLX(const GLContextGLX&) = delete;
+  GLContextGLX& operator=(const GLContextGLX&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
@@ -39,8 +42,6 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
   void* context_ = nullptr;
   x11::Connection* connection_ = nullptr;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextGLX);
 };
 
 }  // namespace gl

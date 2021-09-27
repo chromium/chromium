@@ -43,6 +43,9 @@ class XWindowEventManager {
  public:
   static XWindowEventManager* GetInstance();
 
+  XWindowEventManager(const XWindowEventManager&) = delete;
+  XWindowEventManager& operator=(const XWindowEventManager&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<XWindowEventManager>;
   friend class XScopedEventSelector;
@@ -70,8 +73,6 @@ class XWindowEventManager {
   // destroyed before any XScopedEventSelector, the |event_manager_| will become
   // invalidated.
   base::WeakPtrFactory<XWindowEventManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(XWindowEventManager);
 };
 
 }  // namespace x11

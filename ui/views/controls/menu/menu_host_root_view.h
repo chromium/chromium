@@ -25,6 +25,9 @@ class MenuHostRootView : public internal::RootView {
 
   MenuHostRootView(Widget* widget, SubmenuView* submenu);
 
+  MenuHostRootView(const MenuHostRootView&) = delete;
+  MenuHostRootView& operator=(const MenuHostRootView&) = delete;
+
   void ClearSubmenu() { submenu_ = nullptr; }
 
   // Overridden from View:
@@ -53,8 +56,6 @@ class MenuHostRootView : public internal::RootView {
 
   // The SubmenuView we contain.
   SubmenuView* submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuHostRootView);
 };
 
 }  // namespace views

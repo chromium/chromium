@@ -25,6 +25,10 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
   explicit AccessiblePaneViewFocusSearch(AccessiblePaneView* pane_view)
       : FocusSearch(pane_view, true, true), accessible_pane_view_(pane_view) {}
 
+  AccessiblePaneViewFocusSearch(const AccessiblePaneViewFocusSearch&) = delete;
+  AccessiblePaneViewFocusSearch& operator=(
+      const AccessiblePaneViewFocusSearch&) = delete;
+
  protected:
   View* GetParent(View* v) override {
     return accessible_pane_view_->ContainsForFocusSearch(root(), v)
@@ -40,7 +44,6 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
 
  private:
   AccessiblePaneView* accessible_pane_view_;
-  DISALLOW_COPY_AND_ASSIGN(AccessiblePaneViewFocusSearch);
 };
 
 AccessiblePaneView::AccessiblePaneView()

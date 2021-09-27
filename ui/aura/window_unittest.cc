@@ -195,6 +195,9 @@ class WindowTest : public AuraTestBase {
   WindowTest() : max_separation_(0) {
   }
 
+  WindowTest(const WindowTest&) = delete;
+  WindowTest& operator=(const WindowTest&) = delete;
+
   void SetUp() override {
     AuraTestBase::SetUp();
     // TODO: there needs to be an easier way to do this.
@@ -212,8 +215,6 @@ class WindowTest : public AuraTestBase {
 
  private:
   float max_separation_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTest);
 };
 
 // Used for verifying destruction methods are invoked.
@@ -223,6 +224,10 @@ class DestroyTrackingDelegateImpl : public TestWindowDelegate {
       : destroying_count_(0),
         destroyed_count_(0),
         in_destroying_(false) {}
+
+  DestroyTrackingDelegateImpl(const DestroyTrackingDelegateImpl&) = delete;
+  DestroyTrackingDelegateImpl& operator=(const DestroyTrackingDelegateImpl&) =
+      delete;
 
   void clear_destroying_count() { destroying_count_ = 0; }
   int destroying_count() const { return destroying_count_; }
@@ -248,8 +253,6 @@ class DestroyTrackingDelegateImpl : public TestWindowDelegate {
   int destroying_count_;
   int destroyed_count_;
   bool in_destroying_;
-
-  DISALLOW_COPY_AND_ASSIGN(DestroyTrackingDelegateImpl);
 };
 
 // Used to verify that when OnWindowDestroying is invoked the parent is also
@@ -261,6 +264,9 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
       : parent_delegate_(parent_delegate) {
   }
 
+  ChildWindowDelegateImpl(const ChildWindowDelegateImpl&) = delete;
+  ChildWindowDelegateImpl& operator=(const ChildWindowDelegateImpl&) = delete;
+
   void OnWindowDestroying(Window* window) override {
     EXPECT_TRUE(parent_delegate_->in_destroying());
     DestroyTrackingDelegateImpl::OnWindowDestroying(window);
@@ -268,8 +274,6 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
 
  private:
   DestroyTrackingDelegateImpl* parent_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildWindowDelegateImpl);
 };
 
 // Used to verify that a Window is removed from its parent when
@@ -277,6 +281,9 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
 class DestroyOrphanDelegate : public TestWindowDelegate {
  public:
   DestroyOrphanDelegate() : window_(nullptr) {}
+
+  DestroyOrphanDelegate(const DestroyOrphanDelegate&) = delete;
+  DestroyOrphanDelegate& operator=(const DestroyOrphanDelegate&) = delete;
 
   void set_window(Window* window) { window_ = window; }
 
@@ -286,7 +293,6 @@ class DestroyOrphanDelegate : public TestWindowDelegate {
 
  private:
   Window* window_;
-  DISALLOW_COPY_AND_ASSIGN(DestroyOrphanDelegate);
 };
 
 // Used in verifying mouse capture.
@@ -295,6 +301,10 @@ class CaptureWindowDelegateImpl : public TestWindowDelegate {
   CaptureWindowDelegateImpl() {
     ResetCounts();
   }
+
+  CaptureWindowDelegateImpl(const CaptureWindowDelegateImpl&) = delete;
+  CaptureWindowDelegateImpl& operator=(const CaptureWindowDelegateImpl&) =
+      delete;
 
   void ResetCounts() {
     capture_changed_event_count_ = 0;
@@ -329,14 +339,16 @@ class CaptureWindowDelegateImpl : public TestWindowDelegate {
   int mouse_event_count_;
   int touch_event_count_;
   int gesture_event_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureWindowDelegateImpl);
 };
 
 // Keeps track of the location of the gesture.
 class GestureTrackPositionDelegate : public TestWindowDelegate {
  public:
   GestureTrackPositionDelegate() {}
+
+  GestureTrackPositionDelegate(const GestureTrackPositionDelegate&) = delete;
+  GestureTrackPositionDelegate& operator=(const GestureTrackPositionDelegate&) =
+      delete;
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     position_ = event->location();
@@ -347,8 +359,6 @@ class GestureTrackPositionDelegate : public TestWindowDelegate {
 
  private:
   gfx::Point position_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureTrackPositionDelegate);
 };
 
 base::TimeTicks getTime() {
@@ -359,14 +369,16 @@ class SelfEventHandlingWindowDelegate : public TestWindowDelegate {
  public:
   SelfEventHandlingWindowDelegate() {}
 
+  SelfEventHandlingWindowDelegate(const SelfEventHandlingWindowDelegate&) =
+      delete;
+  SelfEventHandlingWindowDelegate& operator=(
+      const SelfEventHandlingWindowDelegate&) = delete;
+
   bool ShouldDescendIntoChildForEventHandling(
       Window* child,
       const gfx::Point& location) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelfEventHandlingWindowDelegate);
 };
 
 // The delegate deletes itself when the window is being destroyed.
@@ -374,13 +386,14 @@ class DestroyWindowDelegate : public TestWindowDelegate {
  public:
   DestroyWindowDelegate() {}
 
+  DestroyWindowDelegate(const DestroyWindowDelegate&) = delete;
+  DestroyWindowDelegate& operator=(const DestroyWindowDelegate&) = delete;
+
  private:
   ~DestroyWindowDelegate() override {}
 
   // Overridden from WindowDelegate.
   void OnWindowDestroyed(Window* window) override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(DestroyWindowDelegate);
 };
 
 void OffsetBounds(Window* window, int horizontal, int vertical) {
@@ -786,14 +799,16 @@ class AddedToRootWindowObserver : public WindowObserver {
  public:
   AddedToRootWindowObserver() : called_(false) {}
 
+  AddedToRootWindowObserver(const AddedToRootWindowObserver&) = delete;
+  AddedToRootWindowObserver& operator=(const AddedToRootWindowObserver&) =
+      delete;
+
   void OnWindowAddedToRootWindow(Window* window) override { called_ = true; }
 
   bool called() const { return called_; }
 
  private:
   bool called_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddedToRootWindowObserver);
 };
 
 TEST_F(WindowTest, WindowAddedToRootWindowShouldNotifyChildAndNotParent) {
@@ -1362,6 +1377,10 @@ class MouseEnterExitWindowDelegate : public TestWindowDelegate {
  public:
   MouseEnterExitWindowDelegate() : entered_(false), exited_(false) {}
 
+  MouseEnterExitWindowDelegate(const MouseEnterExitWindowDelegate&) = delete;
+  MouseEnterExitWindowDelegate& operator=(const MouseEnterExitWindowDelegate&) =
+      delete;
+
   void OnMouseEvent(ui::MouseEvent* event) override {
     switch (event->type()) {
       case ui::ET_MOUSE_ENTERED:
@@ -1389,8 +1408,6 @@ class MouseEnterExitWindowDelegate : public TestWindowDelegate {
  private:
   bool entered_;
   bool exited_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEnterExitWindowDelegate);
 };
 
 // Verifies that the WindowDelegate receives MouseExit and MouseEnter events for
@@ -1643,6 +1660,9 @@ class VisibilityWindowDelegate : public TestWindowDelegate {
         hidden_(0) {
   }
 
+  VisibilityWindowDelegate(const VisibilityWindowDelegate&) = delete;
+  VisibilityWindowDelegate& operator=(const VisibilityWindowDelegate&) = delete;
+
   int shown() const { return shown_; }
   int hidden() const { return hidden_; }
   void Clear() {
@@ -1660,8 +1680,6 @@ class VisibilityWindowDelegate : public TestWindowDelegate {
  private:
   int shown_;
   int hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisibilityWindowDelegate);
 };
 
 // Verifies show/hide propagate correctly to children and the layer.
@@ -2847,6 +2865,10 @@ class BoundsChangedWindowObserver : public WindowObserver {
  public:
   BoundsChangedWindowObserver() : root_set_(false) {}
 
+  BoundsChangedWindowObserver(const BoundsChangedWindowObserver&) = delete;
+  BoundsChangedWindowObserver& operator=(const BoundsChangedWindowObserver&) =
+      delete;
+
   void OnWindowBoundsChanged(Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
@@ -2858,8 +2880,6 @@ class BoundsChangedWindowObserver : public WindowObserver {
 
  private:
   bool root_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsChangedWindowObserver);
 };
 
 TEST_F(WindowTest, RootWindowSetWhenReparenting) {
@@ -2923,6 +2943,9 @@ class OwningWindowDelegate : public TestWindowDelegate {
  public:
   OwningWindowDelegate() {}
 
+  OwningWindowDelegate(const OwningWindowDelegate&) = delete;
+  OwningWindowDelegate& operator=(const OwningWindowDelegate&) = delete;
+
   void SetOwnedWindow(Window* window) {
     owned_window_.reset(window);
   }
@@ -2931,8 +2954,6 @@ class OwningWindowDelegate : public TestWindowDelegate {
 
  private:
   std::unique_ptr<Window> owned_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwningWindowDelegate);
 };
 
 // Creates a window with two child windows. When the first child window is
@@ -3011,6 +3032,9 @@ class BoundsChangeDelegate : public TestWindowDelegate {
  public:
   BoundsChangeDelegate() : bounds_changed_(false) {}
 
+  BoundsChangeDelegate(const BoundsChangeDelegate&) = delete;
+  BoundsChangeDelegate& operator=(const BoundsChangeDelegate&) = delete;
+
   void clear_bounds_changed() { bounds_changed_ = false; }
   bool bounds_changed() const {
     return bounds_changed_;
@@ -3025,8 +3049,6 @@ class BoundsChangeDelegate : public TestWindowDelegate {
  private:
   // Was OnBoundsChanged() invoked?
   bool bounds_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsChangeDelegate);
 };
 
 // Verifies the delegate is notified when the actual bounds of the layer
@@ -3112,6 +3134,10 @@ class AddChildNotificationsObserver : public WindowObserver {
  public:
   AddChildNotificationsObserver() : added_count_(0), removed_count_(0) {}
 
+  AddChildNotificationsObserver(const AddChildNotificationsObserver&) = delete;
+  AddChildNotificationsObserver& operator=(
+      const AddChildNotificationsObserver&) = delete;
+
   std::string CountStringAndReset() {
     std::string result = base::NumberToString(added_count_) + " " +
                          base::NumberToString(removed_count_);
@@ -3129,8 +3155,6 @@ class AddChildNotificationsObserver : public WindowObserver {
  private:
   int added_count_;
   int removed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddChildNotificationsObserver);
 };
 
 // Assertions around when root window notifications are sent.

@@ -59,6 +59,9 @@ class NativeViewHostMacTest : public test::NativeViewHostTestBase {
  public:
   NativeViewHostMacTest() = default;
 
+  NativeViewHostMacTest(const NativeViewHostMacTest&) = delete;
+  NativeViewHostMacTest& operator=(const NativeViewHostMacTest&) = delete;
+
   // testing::Test:
   void TearDown() override {
     // On Aura, the compositor is destroyed when the WindowTreeHost provided by
@@ -88,9 +91,6 @@ class NativeViewHostMacTest : public test::NativeViewHostTestBase {
 
  protected:
   base::scoped_nsobject<NSView> native_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostMacTest);
 };
 
 // Test destroying the top level widget before destroying the NativeViewHost.

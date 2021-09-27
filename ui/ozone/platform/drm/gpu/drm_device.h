@@ -78,6 +78,9 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
             bool is_primary_device,
             std::unique_ptr<GbmDevice> gbm_device);
 
+  DrmDevice(const DrmDevice&) = delete;
+  DrmDevice& operator=(const DrmDevice&) = delete;
+
   bool is_primary_device() const { return is_primary_device_; }
 
   bool is_atomic() const { return is_atomic_; }
@@ -282,8 +285,6 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
   bool allow_addfb2_modifiers_ = false;
 
   const std::unique_ptr<GbmDevice> gbm_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDevice);
 };
 
 }  // namespace ui

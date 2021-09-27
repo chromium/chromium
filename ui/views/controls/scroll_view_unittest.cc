@@ -263,6 +263,9 @@ class ScrollViewTest : public ViewsTestBase {
  public:
   ScrollViewTest() = default;
 
+  ScrollViewTest(const ScrollViewTest&) = delete;
+  ScrollViewTest& operator=(const ScrollViewTest&) = delete;
+
   void SetUp() override {
     ViewsTestBase::SetUp();
     scroll_view_ = std::make_unique<ScrollView>();
@@ -304,9 +307,6 @@ class ScrollViewTest : public ViewsTestBase {
   }
 
   std::unique_ptr<ScrollView> scroll_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollViewTest);
 };
 
 // Test harness that includes a Widget to help test ui::Event handling.
@@ -317,6 +317,9 @@ class WidgetScrollViewTest : public test::WidgetTest,
   static constexpr int kDefaultWidth = 100;
 
   WidgetScrollViewTest() = default;
+
+  WidgetScrollViewTest(const WidgetScrollViewTest&) = delete;
+  WidgetScrollViewTest& operator=(const WidgetScrollViewTest&) = delete;
 
   // Call this before adding the ScrollView to test with overlay scrollbars.
   void SetUseOverlayScrollers() { use_overlay_scrollers_ = true; }
@@ -403,8 +406,6 @@ class WidgetScrollViewTest : public test::WidgetTest,
 #if defined(OS_MAC)
   std::unique_ptr<ui::test::ScopedPreferredScrollerStyle> scroller_style_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetScrollViewTest);
 };
 
 constexpr int WidgetScrollViewTest::kDefaultHeight;
@@ -428,6 +429,11 @@ class WidgetScrollViewTestRTLAndLayers
           ::features::kUiCompositorScrollWithLayers);
     }
   }
+
+  WidgetScrollViewTestRTLAndLayers(const WidgetScrollViewTestRTLAndLayers&) =
+      delete;
+  WidgetScrollViewTestRTLAndLayers& operator=(
+      const WidgetScrollViewTestRTLAndLayers&) = delete;
 
   bool IsTestingRtl() const {
     return GetParam() == UiConfig::kRtl ||
@@ -457,8 +463,6 @@ class WidgetScrollViewTestRTLAndLayers
  private:
   base::test::ScopedRestoreICUDefaultLocale locale_;
   base::test::ScopedFeatureList layer_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetScrollViewTestRTLAndLayers);
 };
 
 std::string UiConfigToString(const testing::TestParamInfo<UiConfig>& info) {

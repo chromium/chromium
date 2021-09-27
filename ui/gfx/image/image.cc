@@ -248,6 +248,9 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   {
   }
 
+  ImageStorage(const ImageStorage&) = delete;
+  ImageStorage& operator=(const ImageStorage&) = delete;
+
   Image::RepresentationType default_representation_type() const {
     DCHECK(IsOnValidSequence());
     return default_representation_type_;
@@ -317,8 +320,6 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   // All the representations of an Image. Size will always be at least one, with
   // more for any converted representations.
   mutable RepresentationMap representations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageStorage);
 };
 
 }  // namespace internal

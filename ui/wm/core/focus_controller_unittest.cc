@@ -482,6 +482,9 @@ class TestFocusRules : public BaseFocusRules {
  public:
   TestFocusRules() : focus_restriction_(nullptr) {}
 
+  TestFocusRules(const TestFocusRules&) = delete;
+  TestFocusRules& operator=(const TestFocusRules&) = delete;
+
   // Restricts focus and activation to this window and its child hierarchy.
   void set_focus_restriction(aura::Window* focus_restriction) {
     focus_restriction_ = focus_restriction;
@@ -527,12 +530,14 @@ class TestFocusRules : public BaseFocusRules {
   }
 
   aura::Window* focus_restriction_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
 };
 
 // Common infrastructure shared by all FocusController test types.
 class FocusControllerTestBase : public aura::test::AuraTestBase {
+ public:
+  FocusControllerTestBase(const FocusControllerTestBase&) = delete;
+  FocusControllerTestBase& operator=(const FocusControllerTestBase&) = delete;
+
  protected:
   FocusControllerTestBase() {}
 
@@ -638,12 +643,15 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
  private:
   std::unique_ptr<FocusController> focus_controller_;
   TestFocusRules* test_focus_rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerTestBase);
 };
 
 // Test base for tests where focus is directly set to a target window.
 class FocusControllerDirectTestBase : public FocusControllerTestBase {
+ public:
+  FocusControllerDirectTestBase(const FocusControllerDirectTestBase&) = delete;
+  FocusControllerDirectTestBase& operator=(
+      const FocusControllerDirectTestBase&) = delete;
+
  protected:
   FocusControllerDirectTestBase() {}
 
@@ -1192,15 +1200,15 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
           "");
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerDirectTestBase);
 };
 
 // Focus and Activation changes via ActivationClient API.
 class FocusControllerApiTest : public FocusControllerDirectTestBase {
  public:
   FocusControllerApiTest() {}
+
+  FocusControllerApiTest(const FocusControllerApiTest&) = delete;
+  FocusControllerApiTest& operator=(const FocusControllerApiTest&) = delete;
 
  private:
   // Overridden from FocusControllerTestBase:
@@ -1217,14 +1225,16 @@ class FocusControllerApiTest : public FocusControllerDirectTestBase {
       const override {
     return ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerApiTest);
 };
 
 // Focus and Activation changes via input events.
 class FocusControllerMouseEventTest : public FocusControllerDirectTestBase {
  public:
   FocusControllerMouseEventTest() {}
+
+  FocusControllerMouseEventTest(const FocusControllerMouseEventTest&) = delete;
+  FocusControllerMouseEventTest& operator=(
+      const FocusControllerMouseEventTest&) = delete;
 
   // Tests that a handled mouse or gesture event does not trigger a window
   // activation.
@@ -1266,8 +1276,6 @@ class FocusControllerMouseEventTest : public FocusControllerDirectTestBase {
       const override {
     return ActivationChangeObserver::ActivationReason::INPUT_EVENT;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerMouseEventTest);
 };
 
 class FocusControllerMouseEnterEventTest
@@ -1309,6 +1317,11 @@ class FocusControllerGestureEventTest : public FocusControllerDirectTestBase {
  public:
   FocusControllerGestureEventTest() {}
 
+  FocusControllerGestureEventTest(const FocusControllerGestureEventTest&) =
+      delete;
+  FocusControllerGestureEventTest& operator=(
+      const FocusControllerGestureEventTest&) = delete;
+
  private:
   // Overridden from FocusControllerTestBase:
   void FocusWindowDirect(aura::Window* window) override {
@@ -1330,14 +1343,18 @@ class FocusControllerGestureEventTest : public FocusControllerDirectTestBase {
       const override {
     return ActivationChangeObserver::ActivationReason::INPUT_EVENT;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerGestureEventTest);
 };
 
 // Test base for tests where focus is implicitly set to a window as the result
 // of a disposition change to the focused window or the hierarchy that contains
 // it.
 class FocusControllerImplicitTestBase : public FocusControllerTestBase {
+ public:
+  FocusControllerImplicitTestBase(const FocusControllerImplicitTestBase&) =
+      delete;
+  FocusControllerImplicitTestBase& operator=(
+      const FocusControllerImplicitTestBase&) = delete;
+
  protected:
   explicit FocusControllerImplicitTestBase(bool parent) : parent_(parent) {}
 
@@ -1461,14 +1478,15 @@ class FocusControllerImplicitTestBase : public FocusControllerTestBase {
   // instead of to the window. This verifies that changes occurring in the
   // hierarchy that contains the window affect the window's focus.
   bool parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerImplicitTestBase);
 };
 
 // Focus and Activation changes in response to window visibility changes.
 class FocusControllerHideTest : public FocusControllerImplicitTestBase {
  public:
   FocusControllerHideTest() : FocusControllerImplicitTestBase(false) {}
+
+  FocusControllerHideTest(const FocusControllerHideTest&) = delete;
+  FocusControllerHideTest& operator=(const FocusControllerHideTest&) = delete;
 
  protected:
   FocusControllerHideTest(bool parent)
@@ -1478,9 +1496,6 @@ class FocusControllerHideTest : public FocusControllerImplicitTestBase {
   void ChangeWindowDisposition(aura::Window* window) override {
     GetDispositionWindow(window)->Hide();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerHideTest);
 };
 
 // Focus and Activation changes in response to window parent visibility
@@ -1488,6 +1503,10 @@ class FocusControllerHideTest : public FocusControllerImplicitTestBase {
 class FocusControllerParentHideTest : public FocusControllerHideTest {
  public:
   FocusControllerParentHideTest() : FocusControllerHideTest(true) {}
+
+  FocusControllerParentHideTest(const FocusControllerParentHideTest&) = delete;
+  FocusControllerParentHideTest& operator=(
+      const FocusControllerParentHideTest&) = delete;
 
   // The parent window's visibility change should not change its transient child
   // window's modality property.
@@ -1508,15 +1527,17 @@ class FocusControllerParentHideTest : public FocusControllerHideTest {
     EXPECT_EQ(ui::MODAL_TYPE_NONE, w1->GetProperty(aura::client::kModalKey));
     EXPECT_EQ(ui::MODAL_TYPE_WINDOW, w11->GetProperty(aura::client::kModalKey));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerParentHideTest);
 };
 
 // Focus and Activation changes in response to window destruction.
 class FocusControllerDestructionTest : public FocusControllerImplicitTestBase {
  public:
   FocusControllerDestructionTest() : FocusControllerImplicitTestBase(false) {}
+
+  FocusControllerDestructionTest(const FocusControllerDestructionTest&) =
+      delete;
+  FocusControllerDestructionTest& operator=(
+      const FocusControllerDestructionTest&) = delete;
 
  protected:
   FocusControllerDestructionTest(bool parent)
@@ -1526,9 +1547,6 @@ class FocusControllerDestructionTest : public FocusControllerImplicitTestBase {
   void ChangeWindowDisposition(aura::Window* window) override {
     delete GetDispositionWindow(window);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerDestructionTest);
 };
 
 // Focus and Activation changes in response to window parent destruction.
@@ -1538,14 +1556,20 @@ class FocusControllerParentDestructionTest
   FocusControllerParentDestructionTest()
       : FocusControllerDestructionTest(true) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerParentDestructionTest);
+  FocusControllerParentDestructionTest(
+      const FocusControllerParentDestructionTest&) = delete;
+  FocusControllerParentDestructionTest& operator=(
+      const FocusControllerParentDestructionTest&) = delete;
 };
 
 // Focus and Activation changes in response to window removal.
 class FocusControllerRemovalTest : public FocusControllerImplicitTestBase {
  public:
   FocusControllerRemovalTest() : FocusControllerImplicitTestBase(false) {}
+
+  FocusControllerRemovalTest(const FocusControllerRemovalTest&) = delete;
+  FocusControllerRemovalTest& operator=(const FocusControllerRemovalTest&) =
+      delete;
 
  protected:
   FocusControllerRemovalTest(bool parent)
@@ -1564,8 +1588,6 @@ class FocusControllerRemovalTest : public FocusControllerImplicitTestBase {
 
  private:
   std::unique_ptr<aura::Window> window_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerRemovalTest);
 };
 
 // Focus and Activation changes in response to window parent removal.
@@ -1573,8 +1595,10 @@ class FocusControllerParentRemovalTest : public FocusControllerRemovalTest {
  public:
   FocusControllerParentRemovalTest() : FocusControllerRemovalTest(true) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusControllerParentRemovalTest);
+  FocusControllerParentRemovalTest(const FocusControllerParentRemovalTest&) =
+      delete;
+  FocusControllerParentRemovalTest& operator=(
+      const FocusControllerParentRemovalTest&) = delete;
 };
 
 #define FOCUS_CONTROLLER_TEST(TESTCLASS, TESTNAME) \

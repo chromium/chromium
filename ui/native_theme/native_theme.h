@@ -329,6 +329,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     TrackbarExtraParams trackbar;
   };
 
+  NativeTheme(const NativeTheme&) = delete;
+  NativeTheme& operator=(const NativeTheme&) = delete;
+
   // Return the size of the part.
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
@@ -576,8 +579,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NativeTheme);
 };
 
 }  // namespace ui

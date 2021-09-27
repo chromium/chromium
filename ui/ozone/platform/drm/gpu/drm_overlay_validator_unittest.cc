@@ -49,6 +49,9 @@ class DrmOverlayValidatorTest : public testing::Test {
  public:
   DrmOverlayValidatorTest() = default;
 
+  DrmOverlayValidatorTest(const DrmOverlayValidatorTest&) = delete;
+  DrmOverlayValidatorTest& operator=(const DrmOverlayValidatorTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -124,8 +127,6 @@ class DrmOverlayValidatorTest : public testing::Test {
 
  private:
   void SetupControllers();
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayValidatorTest);
 };
 
 void DrmOverlayValidatorTest::SetUp() {

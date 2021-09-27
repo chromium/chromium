@@ -378,6 +378,9 @@ class TestRectangleBuffer {
         stride_(stride),
         row_count_(row_count) {}
 
+  TestRectangleBuffer(const TestRectangleBuffer&) = delete;
+  TestRectangleBuffer& operator=(const TestRectangleBuffer&) = delete;
+
   // Test if any values in the rectangular area are anything other than |color|.
   void EnsureSolidRect(SkColor color,
                        int left,
@@ -413,8 +416,6 @@ class TestRectangleBuffer {
   const SkColor* buffer_;
   int stride_;
   int row_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRectangleBuffer);
 };
 
 }  // namespace
@@ -429,6 +430,9 @@ class RenderTextTest : public testing::Test {
         render_text_(std::make_unique<RenderTextHarfBuzz>()),
         test_api_(new test::RenderTextTestApi(render_text_.get())),
         renderer_(canvas()) {}
+
+  RenderTextTest(const RenderTextTest&) = delete;
+  RenderTextTest& operator=(const RenderTextTest&) = delete;
 
  protected:
   const cc::PaintFlags& GetRendererPaint() {
@@ -658,8 +662,6 @@ class RenderTextTest : public testing::Test {
   std::vector<TextLog> text_log_;
   Canvas canvas_;
   TestSkiaTextRenderer renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextTest);
 };
 
 TEST_F(RenderTextTest, DefaultStyles) {

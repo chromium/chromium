@@ -25,6 +25,10 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
  public:
   explicit TestMenuRunnerHandler(int* show_counter)
       : show_counter_(show_counter) {}
+
+  TestMenuRunnerHandler(const TestMenuRunnerHandler&) = delete;
+  TestMenuRunnerHandler& operator=(const TestMenuRunnerHandler&) = delete;
+
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
@@ -36,8 +40,6 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
 
  private:
   int* show_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMenuRunnerHandler);
 };
 
 }  // namespace

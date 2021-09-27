@@ -93,8 +93,8 @@ class GestureEventForTest : public ui::GestureEvent {
   GestureEventForTest(int x, int y, ui::GestureEventDetails details)
       : GestureEvent(x, y, ui::EF_NONE, base::TimeTicks(), details) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureEventForTest);
+  GestureEventForTest(const GestureEventForTest&) = delete;
+  GestureEventForTest& operator=(const GestureEventForTest&) = delete;
 };
 
 // This controller will happily destroy the target field passed on
@@ -104,6 +104,10 @@ class TextfieldDestroyerController : public TextfieldController {
   explicit TextfieldDestroyerController(Textfield* target) : target_(target) {
     target_->set_controller(this);
   }
+
+  TextfieldDestroyerController(const TextfieldDestroyerController&) = delete;
+  TextfieldDestroyerController& operator=(const TextfieldDestroyerController&) =
+      delete;
 
   Textfield* target() { return target_.get(); }
 
@@ -118,8 +122,6 @@ class TextfieldDestroyerController : public TextfieldController {
 
  private:
   std::unique_ptr<Textfield> target_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldDestroyerController);
 };
 
 // Class that focuses a textfield when it sees a KeyDown event.
@@ -128,6 +130,9 @@ class TextfieldFocuser : public View {
   explicit TextfieldFocuser(Textfield* textfield) : textfield_(textfield) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
   }
+
+  TextfieldFocuser(const TextfieldFocuser&) = delete;
+  TextfieldFocuser& operator=(const TextfieldFocuser&) = delete;
 
   void set_consume(bool consume) { consume_ = consume; }
 
@@ -140,8 +145,6 @@ class TextfieldFocuser : public View {
  private:
   bool consume_ = true;
   Textfield* textfield_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldFocuser);
 };
 
 class MockInputMethod : public ui::InputMethodBase {

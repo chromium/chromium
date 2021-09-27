@@ -94,6 +94,10 @@ class WM_CORE_EXPORT ScopedCaptureClient : public aura::WindowObserver {
   };
 
   explicit ScopedCaptureClient(aura::Window* root);
+
+  ScopedCaptureClient(const ScopedCaptureClient&) = delete;
+  ScopedCaptureClient& operator=(const ScopedCaptureClient&) = delete;
+
   ~ScopedCaptureClient() override;
 
   // Overridden from aura::WindowObserver:
@@ -105,8 +109,6 @@ class WM_CORE_EXPORT ScopedCaptureClient : public aura::WindowObserver {
 
   // RootWindow this ScopedCaptureClient was create for.
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCaptureClient);
 };
 
 }  // namespace wm

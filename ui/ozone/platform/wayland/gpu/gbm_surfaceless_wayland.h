@@ -33,6 +33,9 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   GbmSurfacelessWayland(WaylandBufferManagerGpu* buffer_manager,
                         gfx::AcceleratedWidget widget);
 
+  GbmSurfacelessWayland(const GbmSurfacelessWayland&) = delete;
+  GbmSurfacelessWayland& operator=(const GbmSurfacelessWayland&) = delete;
+
   void QueueOverlayPlane(OverlayPlane plane, BufferId buffer_id);
 
   // gl::GLSurface:
@@ -153,8 +156,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   float surface_scale_factor_ = 1.f;
 
   base::WeakPtrFactory<GbmSurfacelessWayland> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GbmSurfacelessWayland);
 };
 
 }  // namespace ui

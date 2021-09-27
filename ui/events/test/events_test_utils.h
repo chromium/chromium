@@ -85,6 +85,9 @@ class EventTargetTestApi {
  public:
   explicit EventTargetTestApi(EventTarget* target);
 
+  EventTargetTestApi(const EventTargetTestApi&) = delete;
+  EventTargetTestApi& operator=(const EventTargetTestApi&) = delete;
+
   ui::EventHandlerList GetPreTargetHandlers() {
     ui::EventHandlerList list;
     target_->GetPreTargetHandlers(&list);
@@ -95,13 +98,14 @@ class EventTargetTestApi {
   EventTargetTestApi();
 
   EventTarget* target_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTargetTestApi);
 };
 
 class EventSourceTestApi {
  public:
   explicit EventSourceTestApi(EventSource* event_source);
+
+  EventSourceTestApi(const EventSourceTestApi&) = delete;
+  EventSourceTestApi& operator=(const EventSourceTestApi&) = delete;
 
   EventDispatchDetails SendEventToSink(Event* event) WARN_UNUSED_RESULT;
 
@@ -109,8 +113,6 @@ class EventSourceTestApi {
   EventSourceTestApi();
 
   EventSource* event_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventSourceTestApi);
 };
 
 }  // namespace ui

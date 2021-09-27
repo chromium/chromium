@@ -43,12 +43,13 @@ class KalmanPredictorTest : public InputPredictorTest {
  public:
   explicit KalmanPredictorTest() {}
 
+  KalmanPredictorTest(const KalmanPredictorTest&) = delete;
+  KalmanPredictorTest& operator=(const KalmanPredictorTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<KalmanPredictor>(
         KalmanPredictor::PredictionOptions::kNone);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KalmanPredictorTest);
 };
 
 // Test the a single axle kalman filter behavior with preset datas.

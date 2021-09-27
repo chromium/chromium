@@ -25,6 +25,9 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
  public:
   explicit GLContextEGL(GLShareGroup* share_group);
 
+  GLContextEGL(const GLContextEGL&) = delete;
+  GLContextEGL& operator=(const GLContextEGL&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
@@ -53,8 +56,6 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   bool lost_ = false;
   std::map<gfx::ColorSpace, std::unique_ptr<YUVToRGBConverter>>
       yuv_to_rgb_converters_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextEGL);
 };
 
 }  // namespace gl

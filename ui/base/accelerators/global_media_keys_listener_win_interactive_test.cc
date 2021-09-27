@@ -74,6 +74,11 @@ class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
   GlobalMediaKeysListenerWinInteractiveTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
+  GlobalMediaKeysListenerWinInteractiveTest(
+      const GlobalMediaKeysListenerWinInteractiveTest&) = delete;
+  GlobalMediaKeysListenerWinInteractiveTest& operator=(
+      const GlobalMediaKeysListenerWinInteractiveTest&) = delete;
+
  protected:
   void SendKeyDown(KeyboardCode code) {
     INPUT input;
@@ -96,8 +101,6 @@ class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   DWORD time_stamp_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalMediaKeysListenerWinInteractiveTest);
 };
 
 TEST_F(GlobalMediaKeysListenerWinInteractiveTest, SimplePlayPauseTest) {

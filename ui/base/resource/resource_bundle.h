@@ -191,6 +191,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
 
+  ResourceBundle(const ResourceBundle&) = delete;
+  ResourceBundle& operator=(const ResourceBundle&) = delete;
+
   // Loads a secondary locale data pack using the given file region.
   void LoadSecondaryLocaleDataWithPakFileRegion(
       base::File pak_file,
@@ -525,8 +528,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   std::string loaded_locale_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundle);
 };
 
 }  // namespace ui

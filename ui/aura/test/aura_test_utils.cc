@@ -17,6 +17,9 @@ class WindowTreeHostTestApi {
  public:
   explicit WindowTreeHostTestApi(WindowTreeHost* host) : host_(host) {}
 
+  WindowTreeHostTestApi(const WindowTreeHostTestApi&) = delete;
+  WindowTreeHostTestApi& operator=(const WindowTreeHostTestApi&) = delete;
+
   const gfx::Point& last_cursor_request_position_in_host() {
     return host_->last_cursor_request_position_in_host_;
   }
@@ -29,8 +32,6 @@ class WindowTreeHostTestApi {
 
  private:
   WindowTreeHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostTestApi);
 };
 
 const gfx::Point& QueryLatestMousePositionRequestInHost(WindowTreeHost* host) {

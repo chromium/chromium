@@ -73,13 +73,14 @@ class CloseWidgetView : public View {
  public:
   explicit CloseWidgetView(ui::EventType event_type);
 
+  CloseWidgetView(const CloseWidgetView&) = delete;
+  CloseWidgetView& operator=(const CloseWidgetView&) = delete;
+
   // ui::EventHandler override:
   void OnEvent(ui::Event* event) override;
 
  private:
   const ui::EventType event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseWidgetView);
 };
 
 // A view that keeps track of the events it receives, optionally consuming them.
@@ -128,11 +129,11 @@ class ResizeAwareParentView : public View {
  public:
   ResizeAwareParentView();
 
+  ResizeAwareParentView(const ResizeAwareParentView&) = delete;
+  ResizeAwareParentView& operator=(const ResizeAwareParentView&) = delete;
+
   // Overridden from View:
   void ChildPreferredSizeChanged(View* child) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResizeAwareParentView);
 };
 
 }  // namespace views

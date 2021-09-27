@@ -16,15 +16,17 @@ namespace test {
 
 class MultiLayerAnimatorTestControllerDelegate {
  public:
+  MultiLayerAnimatorTestControllerDelegate(
+      const MultiLayerAnimatorTestControllerDelegate&) = delete;
+  MultiLayerAnimatorTestControllerDelegate& operator=(
+      const MultiLayerAnimatorTestControllerDelegate&) = delete;
+
   // Get a list of all the LayerAnimator's used by the animation.
   virtual std::vector<ui::LayerAnimator*> GetLayerAnimators() = 0;
 
  protected:
   MultiLayerAnimatorTestControllerDelegate() {}
   virtual ~MultiLayerAnimatorTestControllerDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiLayerAnimatorTestControllerDelegate);
 };
 
 }  // namespace test

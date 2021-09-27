@@ -16,6 +16,9 @@ namespace views {
 // Observer to attach to an InkDropRipple.
 class VIEWS_EXPORT InkDropRippleObserver {
  public:
+  InkDropRippleObserver(const InkDropRippleObserver&) = delete;
+  InkDropRippleObserver& operator=(const InkDropRippleObserver&) = delete;
+
   // An animation for the given |ink_drop_state| has started.
   virtual void AnimationStarted(InkDropState ink_drop_state) = 0;
 
@@ -30,9 +33,6 @@ class VIEWS_EXPORT InkDropRippleObserver {
  protected:
   InkDropRippleObserver() = default;
   virtual ~InkDropRippleObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropRippleObserver);
 };
 
 }  // namespace views

@@ -74,15 +74,15 @@ class ExampleBubble : public BubbleDialogDelegateView {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   }
 
+  ExampleBubble(const ExampleBubble&) = delete;
+  ExampleBubble& operator=(const ExampleBubble&) = delete;
+
  protected:
   void Init() override {
     SetLayoutManager(std::make_unique<BoxLayout>(
         BoxLayout::Orientation::kVertical, gfx::Insets(50)));
     AddChildView(std::make_unique<Label>(GetArrowName(arrow())));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExampleBubble);
 };
 
 }  // namespace

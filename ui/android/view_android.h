@@ -106,6 +106,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
   explicit ViewAndroid(LayoutType layout_type);
 
   ViewAndroid();
+
+  ViewAndroid(const ViewAndroid&) = delete;
+  ViewAndroid& operator=(const ViewAndroid&) = delete;
+
   virtual ~ViewAndroid();
 
   void UpdateFrameInfo(const FrameInfo& frame_info);
@@ -313,8 +317,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
   CopyViewCallback copy_view_callback_;
 
   bool controls_resize_view_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewAndroid);
 };
 
 }  // namespace ui

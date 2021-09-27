@@ -104,6 +104,11 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
  public:
   TestCallbacksThatExplicitlyDeletesObserver();
 
+  TestCallbacksThatExplicitlyDeletesObserver(
+      const TestCallbacksThatExplicitlyDeletesObserver&) = delete;
+  TestCallbacksThatExplicitlyDeletesObserver& operator=(
+      const TestCallbacksThatExplicitlyDeletesObserver&) = delete;
+
   void set_observer_to_delete_in_animation_started(
       CallbackLayerAnimationObserver* observer) {
     observer_to_delete_in_animation_started_ = observer;
@@ -127,8 +132,6 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
   // The observer to delete, if non-NULL, in AnimationsEnded().
   CallbackLayerAnimationObserver* observer_to_delete_in_animation_ended_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCallbacksThatExplicitlyDeletesObserver);
 };
 
 TestCallbacksThatExplicitlyDeletesObserver::
@@ -269,13 +272,15 @@ class CallbackLayerAnimationObserverTestOverwrite
  public:
   CallbackLayerAnimationObserverTestOverwrite();
 
+  CallbackLayerAnimationObserverTestOverwrite(
+      const CallbackLayerAnimationObserverTestOverwrite&) = delete;
+  CallbackLayerAnimationObserverTestOverwrite& operator=(
+      const CallbackLayerAnimationObserverTestOverwrite&) = delete;
+
  protected:
   void AnimationStarted(const CallbackLayerAnimationObserver& observer);
 
   std::unique_ptr<CallbackLayerAnimationObserver> CreateAnimationObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CallbackLayerAnimationObserverTestOverwrite);
 };
 
 CallbackLayerAnimationObserverTestOverwrite::

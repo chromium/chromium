@@ -88,6 +88,9 @@ class BubbleWidget : public Widget {
  public:
   BubbleWidget() = default;
 
+  BubbleWidget(const BubbleWidget&) = delete;
+  BubbleWidget& operator=(const BubbleWidget&) = delete;
+
   // Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
     // TODO(pbos): Could this use Widget::parent() instead of anchor_widget()?
@@ -106,9 +109,6 @@ class BubbleWidget : public Widget {
       return Widget::GetPrimaryWindowWidget();
     return bubble_delegate->anchor_widget()->GetPrimaryWindowWidget();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BubbleWidget);
 };
 
 // The frame view for bubble dialog widgets. These are not user-sizable so have
@@ -119,12 +119,12 @@ class BubbleDialogFrameView : public BubbleFrameView {
   explicit BubbleDialogFrameView(const gfx::Insets& title_margins)
       : BubbleFrameView(title_margins, gfx::Insets()) {}
 
+  BubbleDialogFrameView(const BubbleDialogFrameView&) = delete;
+  BubbleDialogFrameView& operator=(const BubbleDialogFrameView&) = delete;
+
   // View:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
   gfx::Size GetMaximumSize() const override { return gfx::Size(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BubbleDialogFrameView);
 };
 
 bool CustomShadowsSupported() {

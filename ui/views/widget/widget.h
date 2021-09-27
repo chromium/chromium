@@ -402,6 +402,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   Widget();
   explicit Widget(InitParams params);
+
+  Widget(const Widget&) = delete;
+  Widget& operator=(const Widget&) = delete;
+
   ~Widget() override;
 
   // Creates a decorated window Widget with the specified properties. The
@@ -1268,8 +1272,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       native_theme_observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Widget);
 };
 
 }  // namespace views

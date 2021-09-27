@@ -24,6 +24,9 @@ class GbmPixmap : public gfx::NativePixmap {
             std::unique_ptr<GbmBuffer> buffer,
             scoped_refptr<DrmFramebuffer> framebuffer);
 
+  GbmPixmap(const GbmPixmap&) = delete;
+  GbmPixmap& operator=(const GbmPixmap&) = delete;
+
   // NativePixmap:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
@@ -59,8 +62,6 @@ class GbmPixmap : public gfx::NativePixmap {
   GbmSurfaceFactory* const surface_manager_;
   const std::unique_ptr<GbmBuffer> buffer_;
   const scoped_refptr<DrmFramebuffer> framebuffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GbmPixmap);
 };
 
 }  // namespace ui

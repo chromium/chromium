@@ -47,6 +47,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT WindowResizeHelperMac {
  public:
   static WindowResizeHelperMac* Get();
 
+  WindowResizeHelperMac(const WindowResizeHelperMac&) = delete;
+  WindowResizeHelperMac& operator=(const WindowResizeHelperMac&) = delete;
+
   // Initializes the pumpable task_runner(), providing it with the task runner
   // for UI thread tasks. task_runner() will be null before Init() is called,
   // and WaitForSingleTaskToRun() will immediately return false.
@@ -77,8 +80,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT WindowResizeHelperMac {
   // The task runner to which the helper will post tasks. This also maintains
   // the task queue and does the actual work for WaitForSingleTaskToRun.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowResizeHelperMac);
 };
 
 }  // namespace ui

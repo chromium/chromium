@@ -42,12 +42,14 @@ namespace {
 class StringWrapper {
  public:
   explicit StringWrapper(const std::u16string& string) : string_(string) {}
+
+  StringWrapper(const StringWrapper&) = delete;
+  StringWrapper& operator=(const StringWrapper&) = delete;
+
   const std::u16string& string() const { return string_; }
 
  private:
   std::u16string string_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringWrapper);
 };
 
 }  // namespace

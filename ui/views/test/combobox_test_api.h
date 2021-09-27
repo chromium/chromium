@@ -25,6 +25,9 @@ class ComboboxTestApi {
  public:
   explicit ComboboxTestApi(Combobox* combobox) : combobox_(combobox) {}
 
+  ComboboxTestApi(const ComboboxTestApi&) = delete;
+  ComboboxTestApi& operator=(const ComboboxTestApi&) = delete;
+
   // Activates the Combobox menu item at |index|, as if selected by the user.
   void PerformActionAt(int index);
 
@@ -39,8 +42,6 @@ class ComboboxTestApi {
 
  private:
   Combobox* combobox_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComboboxTestApi);
 };
 
 }  // namespace test

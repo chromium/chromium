@@ -77,6 +77,9 @@ class TestTableModel : public ui::TableModel {
  public:
   TestTableModel() = default;
 
+  TestTableModel(const TestTableModel&) = delete;
+  TestTableModel& operator=(const TestTableModel&) = delete;
+
   // ui::TableModel:
   int RowCount() override { return 10; }
 
@@ -96,9 +99,6 @@ class TestTableModel : public ui::TableModel {
   }
 
   void SetObserver(ui::TableModelObserver* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
 };
 
 class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {

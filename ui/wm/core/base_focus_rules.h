@@ -14,6 +14,10 @@ namespace wm {
 // A set of basic focus and activation rules. Specializations should most likely
 // subclass this and call up to these methods rather than reimplementing them.
 class WM_CORE_EXPORT BaseFocusRules : public FocusRules {
+ public:
+  BaseFocusRules(const BaseFocusRules&) = delete;
+  BaseFocusRules& operator=(const BaseFocusRules&) = delete;
+
  protected:
   BaseFocusRules();
   ~BaseFocusRules() override;
@@ -42,8 +46,6 @@ class WM_CORE_EXPORT BaseFocusRules : public FocusRules {
         GetToplevelWindow(const_cast<const aura::Window*>(window)));
   }
   const aura::Window* GetActivatableWindow(const aura::Window* window) const;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseFocusRules);
 };
 
 }  // namespace wm

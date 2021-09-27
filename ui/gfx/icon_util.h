@@ -79,6 +79,11 @@ class GFX_EXPORT IconUtil {
   // The number of elements in kIconDimensions <= kMediumIconSize.
   static const size_t kNumIconDimensionsUpToMediumSize;
 
+  // Prevent clients from instantiating objects of that class.
+  IconUtil() = delete;
+  IconUtil(const IconUtil&) = delete;
+  IconUtil& operator=(const IconUtil&) = delete;
+
   // Given an SkBitmap object, the function converts the bitmap to a Windows
   // icon and returns the corresponding HICON handle. If the function cannot
   // convert the bitmap, NULL is returned.
@@ -262,10 +267,6 @@ class GFX_EXPORT IconUtil {
   // A helper function of CreateSkBitmapFromHICON.
   static SkBitmap CreateSkBitmapFromHICONHelper(HICON icon,
                                                 const gfx::Size& s);
-
-  // Prevent clients from instantiating objects of that class by declaring the
-  // ctor/dtor as private.
-  DISALLOW_IMPLICIT_CONSTRUCTORS(IconUtil);
 };
 
 #endif  // UI_GFX_ICON_UTIL_H_

@@ -68,6 +68,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
 
   static CATransactionCoordinator& Get();
 
+  CATransactionCoordinator(const CATransactionCoordinator&) = delete;
+  CATransactionCoordinator& operator=(const CATransactionCoordinator&) = delete;
+
   void Synchronize();
   void DisableForTesting() { disabled_for_testing_ = true; }
 
@@ -90,8 +93,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   bool disabled_for_testing_ = false;
   base::ObserverList<PreCommitObserver>::Unchecked pre_commit_observers_;
   std::set<scoped_refptr<PostCommitObserver>> post_commit_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CATransactionCoordinator);
 };
 
 }  // namespace ui

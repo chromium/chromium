@@ -78,13 +78,13 @@ class EmptyMenuMenuItem : public MenuItemView {
     SetEnabled(false);
   }
 
+  EmptyMenuMenuItem(const EmptyMenuMenuItem&) = delete;
+  EmptyMenuMenuItem& operator=(const EmptyMenuMenuItem&) = delete;
+
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     // Empty menu items shouldn't have a tooltip.
     return std::u16string();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyMenuMenuItem);
 };
 
 // VerticalSeparator ----------------------------------------------------------

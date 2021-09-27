@@ -29,6 +29,9 @@ class MockNativeWindowIterator : public NativeWindowIterator {
       const std::vector<EvaluatorArgs>& evaluator_args_list)
       : args_list_(evaluator_args_list) {}
 
+  MockNativeWindowIterator(const MockNativeWindowIterator&) = delete;
+  MockNativeWindowIterator& operator=(const MockNativeWindowIterator&) = delete;
+
   void Iterate(WindowEvaluator* evaluator) override {
     for (EvaluatorArgs args : args_list_) {
       if (!evaluator->EvaluateWindow(args.is_relevant, args.window_rect,
@@ -39,8 +42,6 @@ class MockNativeWindowIterator : public NativeWindowIterator {
 
  private:
   std::vector<EvaluatorArgs> args_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNativeWindowIterator);
 };
 
 // Test implementation of WindowBoundsDelegate using a flat_map of aura::Window
@@ -48,6 +49,10 @@ class MockNativeWindowIterator : public NativeWindowIterator {
 class MockWindowBoundsDelegateImpl : public WindowBoundsDelegate {
  public:
   MockWindowBoundsDelegateImpl() = default;
+
+  MockWindowBoundsDelegateImpl(const MockWindowBoundsDelegateImpl&) = delete;
+  MockWindowBoundsDelegateImpl& operator=(const MockWindowBoundsDelegateImpl&) =
+      delete;
 
   // WindowBoundsDelegate implementation:
   gfx::Rect GetBoundsInPixels(aura::WindowTreeHost* window) override {
@@ -61,8 +66,6 @@ class MockWindowBoundsDelegateImpl : public WindowBoundsDelegate {
 
  private:
   base::flat_map<aura::WindowTreeHost*, gfx::Rect> root_window_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWindowBoundsDelegateImpl);
 };
 
 // The int argument here is an offset in pixels for tests that need to offset
@@ -74,6 +77,9 @@ class WindowOcclusionWinTest
       public ::testing::WithParamInterface<OffsetAndBoundsPair> {
  public:
   WindowOcclusionWinTest() {}
+
+  WindowOcclusionWinTest(const WindowOcclusionWinTest&) = delete;
+  WindowOcclusionWinTest& operator=(const WindowOcclusionWinTest&) = delete;
 
   void TearDown() override {
     Clear();
@@ -125,8 +131,6 @@ class WindowOcclusionWinTest
   std::vector<std::unique_ptr<aura::WindowTreeHost>> window_tree_hosts_;
   std::unique_ptr<MockWindowBoundsDelegateImpl> mock_bounds_delegate_ =
       std::make_unique<MockWindowBoundsDelegateImpl>();
-
-  DISALLOW_COPY_AND_ASSIGN(WindowOcclusionWinTest);
 };
 
 // An aura window completely covered by a native window should be occluded.
@@ -421,6 +425,9 @@ class EnumWindowsTest : public aura::test::AuraTestBase {
  public:
   EnumWindowsTest() {}
 
+  EnumWindowsTest(const EnumWindowsTest&) = delete;
+  EnumWindowsTest& operator=(const EnumWindowsTest&) = delete;
+
   void TearDown() override {
     window_tree_hosts_.clear();
     aura::test::AuraTestBase::TearDown();
@@ -445,8 +452,6 @@ class EnumWindowsTest : public aura::test::AuraTestBase {
   std::vector<std::unique_ptr<aura::WindowTreeHost>> window_tree_hosts_;
 
   MockWindowEvaluator evaluator_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnumWindowsTest);
 };
 
 TEST_F(EnumWindowsTest, EnumWindowsGoesFrontToBack) {

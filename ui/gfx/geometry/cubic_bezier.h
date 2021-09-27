@@ -17,6 +17,8 @@ class GEOMETRY_EXPORT CubicBezier {
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);
 
+  CubicBezier& operator=(const CubicBezier&) = delete;
+
   double SampleCurveX(double t) const {
     // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
     return ((ax_ * t + bx_) * t + cx_) * t;
@@ -98,8 +100,6 @@ class GEOMETRY_EXPORT CubicBezier {
   // may have multiple values for t for some values of x in [0, 1].
   bool monotonically_increasing_;
 #endif
-
-  DISALLOW_ASSIGN(CubicBezier);
 };
 
 }  // namespace gfx

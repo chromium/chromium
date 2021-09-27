@@ -42,6 +42,11 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   };
 
   TouchSelectionMenuRunnerViews();
+
+  TouchSelectionMenuRunnerViews(const TouchSelectionMenuRunnerViews&) = delete;
+  TouchSelectionMenuRunnerViews& operator=(
+      const TouchSelectionMenuRunnerViews&) = delete;
+
   ~TouchSelectionMenuRunnerViews() override;
 
  protected:
@@ -66,8 +71,6 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   // A pointer to the currently running menu, or |nullptr| if no menu is
   // running. The menu manages its own lifetime and deletes itself when closed.
   TouchSelectionMenuViews* menu_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViews);
 };
 
 }  // namespace views

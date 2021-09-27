@@ -19,6 +19,9 @@ class GL_EXPORT ShaderTracking {
  public:
   static ShaderTracking* GetInstance();
 
+  ShaderTracking(const ShaderTracking&) = delete;
+  ShaderTracking& operator=(const ShaderTracking&) = delete;
+
   static const size_t kMaxShaderSize = 1024;
 
   void GetShaders(std::string* shader0, std::string* shader1);
@@ -33,8 +36,6 @@ class GL_EXPORT ShaderTracking {
 
   mutable base::Lock lock_;
   std::string shaders_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderTracking);
 };
 
 }  // namespace gl

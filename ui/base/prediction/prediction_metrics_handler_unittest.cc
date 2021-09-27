@@ -30,13 +30,15 @@ class PredictionMetricsHandlerTest : public testing::Test {
  public:
   explicit PredictionMetricsHandlerTest() {}
 
+  PredictionMetricsHandlerTest(const PredictionMetricsHandlerTest&) = delete;
+  PredictionMetricsHandlerTest& operator=(const PredictionMetricsHandlerTest&) =
+      delete;
+
   void SetUp() override {
     metrics_handler_ = std::make_unique<PredictionMetricsHandler>(
         "Event.InputEventPrediction.Scroll");
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionMetricsHandlerTest);
 
   int GetInterpolatedEventForPredictedEvent(const base::TimeTicks& timestamp,
                                             gfx::PointF* interpolated) {

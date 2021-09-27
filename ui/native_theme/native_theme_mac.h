@@ -33,6 +33,9 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
     COUNT
   };
 
+  NativeThemeMac(const NativeThemeMac&) = delete;
+  NativeThemeMac& operator=(const NativeThemeMac&) = delete;
+
   // Adjusts an SkColor based on the current system control tint. For example,
   // if the current tint is "graphite", this function maps the provided value to
   // an appropriate gray.
@@ -165,8 +168,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeMac);
 };
 
 // Mac implementation of native theme support for web controls.

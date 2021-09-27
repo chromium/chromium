@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
    public:
     State();
 
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     scoped_refptr<InputMethodManager::State> Clone() const override;
     void AddInputMethodExtension(
         const std::string& extension_id,
@@ -82,11 +85,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
 
     InputMethodManager::UIStyle ui_style_ =
         InputMethodManager::UIStyle::kNormal;
-
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   MockInputMethodManager();
+
+  MockInputMethodManager(const MockInputMethodManager&) = delete;
+  MockInputMethodManager& operator=(const MockInputMethodManager&) = delete;
+
   ~MockInputMethodManager() override;
 
   // InputMethodManager:
@@ -141,8 +146,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
  private:
   scoped_refptr<State> state_;
   uint32_t features_enabled_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodManager);
 };
 
 }  // namespace input_method

@@ -110,6 +110,9 @@ class FileGLSurface : public GLSurfaceEglReadback {
   explicit FileGLSurface(const base::FilePath& location)
       : location_(location) {}
 
+  FileGLSurface(const FileGLSurface&) = delete;
+  FileGLSurface& operator=(const FileGLSurface&) = delete;
+
  private:
   ~FileGLSurface() override = default;
 
@@ -135,13 +138,14 @@ class FileGLSurface : public GLSurfaceEglReadback {
   }
 
   base::FilePath location_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileGLSurface);
 };
 
 class TestPixmap : public gfx::NativePixmap {
  public:
   explicit TestPixmap(gfx::BufferFormat format) : format_(format) {}
+
+  TestPixmap(const TestPixmap&) = delete;
+  TestPixmap& operator=(const TestPixmap&) = delete;
 
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
@@ -177,8 +181,6 @@ class TestPixmap : public gfx::NativePixmap {
   ~TestPixmap() override {}
 
   gfx::BufferFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPixmap);
 };
 
 class GLOzoneEGLHeadless : public GLOzoneEGL {

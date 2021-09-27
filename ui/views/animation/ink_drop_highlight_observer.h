@@ -16,6 +16,9 @@ namespace views {
 // Observer to attach to an InkDropHighlight animation.
 class VIEWS_EXPORT InkDropHighlightObserver {
  public:
+  InkDropHighlightObserver(const InkDropHighlightObserver&) = delete;
+  InkDropHighlightObserver& operator=(const InkDropHighlightObserver&) = delete;
+
   // An animation for the given |animation_type| has started.
   virtual void AnimationStarted(
       InkDropHighlight::AnimationType animation_type) = 0;
@@ -31,9 +34,6 @@ class VIEWS_EXPORT InkDropHighlightObserver {
  protected:
   InkDropHighlightObserver() = default;
   virtual ~InkDropHighlightObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropHighlightObserver);
 };
 
 }  // namespace views
