@@ -1953,7 +1953,7 @@
   {
     "name": "enable-generated-webapks",
     "owners": [ "tsergeant@chromium.org" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 96
   },
   {
     "name": "enable-generic-sensor-extra-classes",
