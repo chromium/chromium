@@ -18,7 +18,7 @@
     "js/init.js",
     "js/main.js",
     "js/models/barcode_worker.js",
-    "js/models/mp4_video_processor.js",
+    "js/models/ffmpeg/video_processor.js",
     "js/test_bridge.js",
     "js/untrusted_ga_helper.js",
     "js/untrusted_script_loader.js",
