@@ -793,13 +793,6 @@ void LocalFrameView::PerformLayout() {
   // functions so that a single human could understand what layout() is actually
   // doing.
 
-  if (const auto* settings = frame_->GetSettings()) {
-    if (settings->GetNeedsMinPreferredLogicalWidth()) {
-      min_preferred_logical_width_ =
-          GetLayoutView()->PreferredLogicalWidths().min_size;
-    }
-  }
-
   {
     // TODO(szager): Remove this after diagnosing crash.
     DocumentLifecycle::CheckNoTransitionScope check_no_transition(Lifecycle());

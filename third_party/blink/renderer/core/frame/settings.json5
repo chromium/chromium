@@ -1099,10 +1099,5 @@
       name: "LitePageSubresourceRedirectOrigin",
       type: "String",
     },
-    {
-      name: "needsMinPreferredLogicalWidth",
-      initial: false,
-      invalidate: ["NeedsMinPreferredLogicalWidth"],
-    },
   ],
 }
