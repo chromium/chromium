@@ -341,6 +341,22 @@ int DockedMagnifierController::GetTotalMagnifierHeight() const {
   return 0;
 }
 
+gfx::Rect DockedMagnifierController::GetTotalMagnifierBoundsForRoot(
+    aura::Window* root) const {
+  DCHECK(root);
+  DCHECK(root->IsRootWindow());
+
+  if (viewport_widget_ && current_source_root_window_ == root) {
+    gfx::Rect bounds =
+        viewport_widget_->GetNativeWindow()->GetActualBoundsInRootWindow();
+    DCHECK(separator_layer_);
+    bounds.set_height(separator_layer_->bounds().bottom());
+    return bounds;
+  }
+
+  return gfx::Rect();
+}
+
 const views::Widget*
 DockedMagnifierController::GetViewportWidgetForTesting() const {
   return viewport_widget_;

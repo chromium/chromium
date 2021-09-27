@@ -109,6 +109,11 @@ class ASH_EXPORT DockedMagnifierController
   // if disabled.
   int GetTotalMagnifierHeight() const;
 
+  // Returns the total bounds of the magnifier region (i.e. magnifier viewport
+  // plus the separator) if the magnifier is shown for the given |root|. Returns
+  // empty bounds otherwise.
+  gfx::Rect GetTotalMagnifierBoundsForRoot(aura::Window* root) const;
+
   const views::Widget* GetViewportWidgetForTesting() const;
 
   const ui::Layer* GetViewportMagnifierLayerForTesting() const;

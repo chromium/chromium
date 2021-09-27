@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -386,6 +387,11 @@ void VideoRecordingWatcher::OnWindowActivated(ActivationReason reason,
 void VideoRecordingWatcher::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
+  // A change in the work area, could mean that the docked magnifier state has
+  // changed, therefore we must update the overlay widget's bounds if any.
+  if (is_in_projector_mode_ && (metrics & DISPLAY_METRIC_WORK_AREA))
+    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
+
   if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
                    DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
     return;
@@ -717,9 +723,14 @@ void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
 }
 
 gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
-  return recording_source_ == CaptureModeSource::kRegion
-             ? partial_region_bounds_
-             : gfx::Rect(window_being_recorded_->bounds().size());
+  gfx::Rect bounds = recording_source_ == CaptureModeSource::kRegion
+                         ? partial_region_bounds_
+                         : gfx::Rect(window_being_recorded_->bounds().size());
+  bounds.Subtract(Shell::Get()
+                      ->docked_magnifier_controller()
+                      ->GetTotalMagnifierBoundsForRoot(
+                          window_being_recorded_->GetRootWindow()));
+  return bounds;
 }
 
 }  // namespace ash

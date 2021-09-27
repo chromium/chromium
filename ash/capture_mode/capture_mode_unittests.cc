@@ -36,6 +36,7 @@
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/services/recording/recording_service_test_api.h"
 #include "ash/shell.h"
@@ -4422,6 +4423,7 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
   }
 }
 
+// -----------------------------------------------------------------------------
 // TODO(afakhry): Add more cursor overlay tests.
 
 // Test fixture to verify capture mode + projector integration.
@@ -4496,14 +4498,31 @@ class ProjectorCaptureModeIntegrationTests
     }
   }
 
+  void VerifyOverlayStacking(aura::Window* overlay_window,
+                             aura::Window* window_being_recorded,
+                             CaptureModeSource source) {
+    auto* parent = overlay_window->parent();
+
+    if (source == CaptureModeSource::kWindow) {
+      // The overlay window should always be the top-most child of the window
+      // being recorded when in window mode.
+      ASSERT_EQ(parent, window_being_recorded);
+      EXPECT_EQ(window_being_recorded->children().back(), overlay_window);
+    } else {
+      auto* menu_container = overlay_window->GetRootWindow()->GetChildById(
+          kShellWindowId_MenuContainer);
+      ASSERT_EQ(parent, menu_container);
+      EXPECT_EQ(menu_container->children().front(), overlay_window);
+    }
+  }
+
   void VerifyOverlayWindow(aura::Window* overlay_window,
                            CaptureModeSource source) {
     auto* controller = CaptureModeController::Get();
     auto* recording_watcher = controller->video_recording_watcher_for_testing();
     auto* window_being_recorded = recording_watcher->window_being_recorded();
-    // The overlay window should always be the top-most child of the window
-    // being recorded.
-    EXPECT_EQ(window_being_recorded->children().back(), overlay_window);
+
+    VerifyOverlayStacking(overlay_window, window_being_recorded, source);
 
     switch (source) {
       case CaptureModeSource::kFullscreen:
@@ -4511,6 +4530,7 @@ class ProjectorCaptureModeIntegrationTests
         EXPECT_EQ(overlay_window->bounds(),
                   gfx::Rect(window_being_recorded->bounds().size()));
         break;
+
       case CaptureModeSource::kRegion:
         EXPECT_EQ(overlay_window->bounds(), kUserRegion);
         break;
@@ -4569,7 +4589,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
 
   // Hit Enter to begin recording. The recording session should be marked for
   // projector.
-  SendKey(ui::VKEY_RETURN, GetEventGenerator());
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_CALL(projector_client_, StartSpeechRecognition());
   WaitForCountDownToFinish();
 
@@ -4588,7 +4608,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
 
-  SendKey(ui::VKEY_RETURN, GetEventGenerator());
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForCountDownToFinish();
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
@@ -4605,6 +4625,43 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   projector_controller->OnMarkerPressed();
   EXPECT_FALSE(overlay_controller->is_enabled());
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
+}
+
+TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  WaitForCountDownToFinish();
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* overlay_controller =
+      test_api.GetRecordingOverlayController();
+
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  projector_controller->OnMarkerPressed();
+  EXPECT_TRUE(overlay_controller->is_enabled());
+  auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
+
+  // Before the docked magnifier gets enabled, the overlay's bounds should match
+  // the root window's bounds.
+  auto* root_window = overlay_window->GetRootWindow();
+  const gfx::Rect root_window_bounds = root_window->bounds();
+  EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
+
+  // Once the magnifier is enabled, the overlay should be pushed down so that
+  // it doesn't cover the magnifier viewport.
+  auto* docked_magnifier = Shell::Get()->docked_magnifier_controller();
+  docked_magnifier->SetEnabled(true);
+  const gfx::Rect expected_bounds = gfx::SubtractRects(
+      root_window_bounds,
+      docked_magnifier->GetTotalMagnifierBoundsForRoot(root_window));
+  EXPECT_EQ(expected_bounds, overlay_window->GetBoundsInRootWindow());
+
+  // It should go back to original bounds once the magnifier is disabled.
+  docked_magnifier->SetEnabled(false);
+  EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
 }
 
 TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
