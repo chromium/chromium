@@ -35,7 +35,7 @@ namespace content {
 //    >> .dump
 //  * Replace any rows with relevant test data needed for below.
 //  * Add newlines between statements and place in
-//  `content/test/data/conversions/databases/`.
+//  `content/test/data/attribution_reporting/databases/`.
 //
 // Add a new test to `conversion_storage_sql_migration_unittest.cc` named
 // "MigrateVersionNToCurrent" where N is the previous database version. Update

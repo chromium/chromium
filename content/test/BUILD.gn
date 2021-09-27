@@ -2348,7 +2348,7 @@ test("content_unittests") {
       "$root_out_dir/content_shell.pak",
       "data/",
       "//media/test/data/",
-      "//content/test/data/conversions/databases/",
+      "//content/test/data/attribution_reporting/databases/",
     ]
   }
 

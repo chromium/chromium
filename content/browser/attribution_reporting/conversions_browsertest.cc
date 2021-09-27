@@ -140,13 +140,13 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
@@ -178,13 +178,13 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   TestNavigationObserver observer(web_contents());
   EXPECT_TRUE(
       ExecJs(web_contents(),
@@ -221,11 +221,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
 
   // We can't use `JsReplace` directly to input the origin as it will use string
   // literals which shouldn't be provided in the window features string.
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
   GURL subframe_url = https_server()->GetURL(
-      "c.test", "/conversions/page_with_impression_creator.html");
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(ExecJs(shell(), R"(
     let frame= document.getElementById('test_iframe');
     frame.setAttribute('allow', 'attribution-reporting');)"));
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 
   // Create an impression tag in the subframe and target a popup window.
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(subframe, JsReplace(R"(
     createImpressionTag({id: 'link',
                         url: $1,
@@ -306,11 +306,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
 
   // target="_blank" navs are rel="noopener" by default.
   EXPECT_TRUE(
@@ -346,15 +346,16 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   GURL conversion_dest_url = https_server()->GetURL(
-      "sub.b.test", "/conversions/page_with_conversion_redirect.html");
+      "sub.b.test",
+      "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(
       web_contents(),
       JsReplace(R"(
@@ -389,15 +390,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_landing_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   GURL conversion_dest_url = https_server()->GetURL(
-      "sub.b.test", "/conversions/page_with_conversion_redirect.html");
+      "sub.b.test",
+      "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace(R"(
     createImpressionTag({id: 'link',
@@ -414,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to a same domain origin that is different than the landing page
   // for the click and convert there. A report should still be sent.
   GURL conversion_url = https_server()->GetURL(
-      "other.b.test", "/conversions/page_with_conversion_redirect.html");
+      "other.b.test",
+      "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
 
   // Register a conversion with the original page as the reporting origin.
@@ -437,11 +440,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server()->Start());
 
   GURL first_impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), first_impression_url));
 
   GURL second_impression_url = https_server()->GetURL(
-      "c.test", "/conversions/page_with_impression_creator.html");
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
   Shell* shell2 =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
                              GURL(), nullptr, gfx::Size(100, 100));
@@ -449,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Register impressions from both windows.
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   url::Origin reporting_origin =
       url::Origin::Create(https_server()->GetURL("d.test", "/"));
   std::string impression_js = R"(
@@ -496,11 +499,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server()->Start());
 
   GURL first_impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), first_impression_url));
 
   GURL second_impression_url = https_server()->GetURL(
-      "c.test", "/conversions/page_with_impression_creator.html");
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
   Shell* shell2 =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
                              GURL(), nullptr, gfx::Size(100, 100));
@@ -508,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Register impressions from both windows.
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   url::Origin reporting_origin =
       url::Origin::Create(https_server()->GetURL("d.test", "/"));
   std::string impression_js = R"(
@@ -555,13 +558,13 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
@@ -608,12 +611,12 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes.
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
@@ -654,12 +657,12 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes.
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
@@ -709,11 +712,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(), JsReplace(R"(
               window.attributionReporting.registerAttributionSource({
@@ -753,13 +756,13 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "a.test", "/conversions/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(

@@ -57,13 +57,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      server_.GetURL("a.test",
-                     "/conversions/page_with_impression_creator.html")));
+      server_.GetURL(
+          "a.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
 
   // Create an anchor tag with impression attributes which opens a link in a
   // new window.
   GURL link_url = server_.GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
     createImpressionTag({id: 'link',
                         url: $1,
@@ -104,8 +105,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      server_.GetURL("a.test",
-                     "/conversions/page_with_conversion_redirect.html")));
+      server_.GetURL(
+          "a.test",
+          "/attribution_reporting/page_with_conversion_redirect.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -142,14 +144,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      server_.GetURL("a.test",
-                     "/conversions/page_with_impression_creator.html")));
+      server_.GetURL(
+          "a.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
 
   // Create an observer to catch the opened WebContents.
   content::WebContentsAddedObserver window_observer;
 
   GURL link_url = server_.GetURL(
-      "b.test", "/conversions/page_with_conversion_redirect.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
   // Navigate the page using window.open and set an attribution source.
   EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
     window.open($1, "_blank",

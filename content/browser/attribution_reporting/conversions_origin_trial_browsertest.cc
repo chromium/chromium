@@ -33,7 +33,7 @@
 namespace content {
 
 namespace {
-constexpr char kBaseDataDir[] = "content/test/data/conversions/";
+constexpr char kBaseDataDir[] = "content/test/data/attribution_reporting/";
 }
 
 class ConversionsOriginTrialBrowserTest : public ContentBrowserTest {

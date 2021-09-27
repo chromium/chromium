@@ -33,7 +33,7 @@ class DevToolsConversionBrowserTest : public DevToolsProtocolTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
-        "content/test/data/conversions");
+        "content/test/data/attribution_reporting");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -42,7 +42,7 @@ class DevToolsConversionBrowserTest : public DevToolsProtocolTest {
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory(
-        "content/test/data/conversions");
+        "content/test/data/attribution_reporting");
     SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
   }
