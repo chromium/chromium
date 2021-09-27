@@ -431,4 +431,16 @@ TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
   }
   return static_cast<TestRenderFrameHost*>(host->GetPrerenderedMainFrameHost());
 }
+
+std::unique_ptr<NavigationSimulator>
+TestWebContents::AddPrerenderAndStartNavigation(const GURL& url) {
+  int host_id = AddPrerender(url);
+  PrerenderHost* host =
+      GetPrerenderHostRegistry()->FindNonReservedHostById(host_id);
+  DCHECK(host);
+
+  return NavigationSimulatorImpl::CreateFromPendingInFrame(
+      FrameTreeNode::GloballyFindByID(host->frame_tree_node_id()));
+}
+
 }  // namespace content

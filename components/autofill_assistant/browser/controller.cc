@@ -2037,9 +2037,6 @@ void Controller::OnNavigationShutdownOrError(const GURL& url,
 
 void Controller::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
@@ -2121,9 +2118,6 @@ void Controller::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(b/159871774): Rethink how we handle navigation events. The early
   // return here may prevent us from updating |navigating_to_new_document_|.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted() || !IsNavigatingToNewDocument()) {

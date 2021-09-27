@@ -147,6 +147,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   int AddPrerender(const GURL& url) override;
   TestRenderFrameHost* AddPrerenderAndCommitNavigation(
       const GURL& url) override;
+  std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
+      const GURL& url) override;
 
  protected:
   // The deprecated WebContentsTester still needs to subclass this.

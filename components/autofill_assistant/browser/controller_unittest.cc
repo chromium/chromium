@@ -38,6 +38,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
@@ -95,14 +96,14 @@ struct MockCollectUserDataOptions : public CollectUserDataOptions {
 
 class ControllerTest : public testing::Test {
  public:
-  ControllerTest() = default;
+  ControllerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillAssistantChromeEntry);
+  }
 
   void SetUp() override {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &browser_context_, nullptr);
-
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillAssistantChromeEntry);
     auto web_controller = std::make_unique<NiceMock<MockWebController>>();
     mock_web_controller_ = web_controller.get();
     auto service = std::make_unique<NiceMock<MockService>>();
@@ -3346,6 +3347,55 @@ TEST_F(ControllerTest, UpdateChipVisibility) {
 
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(_)).Times(0);
   controller_->OnInputTextFocusChanged(false);
+}
+
+class ControllerPrerenderTest : public ControllerTest {
+ public:
+  ControllerPrerenderTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~ControllerPrerenderTest() override = default;
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {
+  EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
+  EXPECT_FALSE(controller_->HasNavigationError());
+
+  NavigationStateChangeListener listener(controller_.get());
+  controller_->AddNavigationListener(&listener);
+
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+
+  EXPECT_THAT(
+      listener.events,
+      ElementsAre(
+          NavigationState{/* navigating= */ true, /* has_errors= */ false},
+          NavigationState{/* navigating= */ false, /* has_errors= */ false}));
+
+  listener.events.clear();
+
+  // Start prerendering a page.
+  const GURL prerendering_url("http://initialurl.com?prerendering");
+  auto simulator = content::WebContentsTester::For(web_contents())
+                       ->AddPrerenderAndStartNavigation(prerendering_url);
+  EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
+  EXPECT_FALSE(controller_->HasNavigationError());
+
+  simulator->Commit();
+  EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
+  EXPECT_FALSE(controller_->HasNavigationError());
+
+  controller_->RemoveNavigationListener(&listener);
+
+  EXPECT_THAT(listener.events, IsEmpty());
 }
 
 }  // namespace autofill_assistant
