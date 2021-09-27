@@ -164,6 +164,30 @@ def GenerateWindowsArm64Config(src_dir):
        (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
 
 
+def CopyVersions(src_dir, dest_dir):
+  if not os.path.exists(dest_dir):
+    os.makedirs(dest_dir)
+
+  shutil.copy(os.path.join(src_dir, 'include', 'dav1d', 'version.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'include', 'vcs_version.h'), dest_dir)
+
+
+def GenerateVersion(version_dir, env):
+  temp_dir = tempfile.mkdtemp()
+  PrintAndCheckCall(
+      MESON + DEFAULT_BUILD_ARGS + [temp_dir],
+      cwd='libdav1d',
+      env=env)
+  PrintAndCheckCall(
+      ['ninja', '-C', temp_dir, 'include/vcs_version.h'],
+      cwd='libdav1d',
+      env=env)
+
+  CopyVersions(temp_dir, version_dir)
+
+  shutil.rmtree(temp_dir)
+
+
 def main():
   linux_env = os.environ
   linux_env['CC'] = 'clang'
@@ -192,6 +216,8 @@ def main():
   # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
   # Windows arm64 config from the Windows x64 config.
   GenerateWindowsArm64Config(win_x64_dir)
+
+  GenerateVersion('version', linux_env)
 
 
 if __name__ == '__main__':
