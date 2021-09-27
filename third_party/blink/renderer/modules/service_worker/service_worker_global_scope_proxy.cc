@@ -176,11 +176,8 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
       TRACE_ID_LOCAL(this));
-  // TODO(asamidoi): Remove CountWorkerScript which is called for recording
-  // metrics if the metrics are no longer referenced, and then merge
-  // WillEvaluateClassicScript and WillEvaluateModuleScript for cleanup.
-  worker_global_scope_->CountWorkerScript(script_size, cached_metadata_size);
-
+  // TODO(https://crbug.com/1253218): Merge WillEvaluateClassicScript and
+  // WillEvaluateModuleScript for cleanup.
   ScriptState::Scope scope(
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
@@ -191,7 +188,7 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateImportedClassicScript(
     size_t script_size,
     size_t cached_metadata_size) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  worker_global_scope_->CountImportedScript(script_size, cached_metadata_size);
+  // TODO(https://crbug.com/1253218): Remove this empty function.
 }
 
 void ServiceWorkerGlobalScopeProxy::WillEvaluateModuleScript() {

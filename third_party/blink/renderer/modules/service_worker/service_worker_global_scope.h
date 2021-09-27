@@ -138,13 +138,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void Dispose() override;
   InstalledScriptsManager* GetInstalledScriptsManager() override;
 
-  // Counts an evaluated script and its size. Called for the main worker script.
-  void CountWorkerScript(size_t script_size, size_t cached_metadata_size);
-
-  // Counts an evaluated script and its size. Called for each of imported
-  // scripts.
-  void CountImportedScript(size_t script_size, size_t cached_metadata_size);
-
   // Called when the main worker script is evaluated.
   void DidEvaluateScript();
 
@@ -579,9 +572,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
               WTF::UnsignedWithZeroKeyHashTraits<int64_t>>
       service_worker_objects_;
   bool did_evaluate_script_ = false;
-  size_t script_count_ = 0;
-  size_t script_total_size_ = 0;
-  size_t script_cached_metadata_total_size_ = 0;
   bool is_installing_ = false;
   size_t cache_storage_installed_script_count_ = 0;
   uint64_t cache_storage_installed_script_total_size_ = 0;

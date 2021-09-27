@@ -361,60 +361,11 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
   return installed_scripts_manager_.get();
 }
 
-void ServiceWorkerGlobalScope::CountWorkerScript(size_t script_size,
-                                                 size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
-  base::UmaHistogramCustomCounts(
-      "ServiceWorker.ScriptSize",
-      base::saturated_cast<base::Histogram::Sample>(script_size), 1000, 5000000,
-      50);
-
-  if (cached_metadata_size) {
-    base::UmaHistogramCustomCounts(
-        "ServiceWorker.ScriptCachedMetadataSize",
-        base::saturated_cast<base::Histogram::Sample>(cached_metadata_size),
-        1000, 50000000, 50);
-  }
-
-  CountScriptInternal(script_size, cached_metadata_size);
-}
-
-void ServiceWorkerGlobalScope::CountImportedScript(
-    size_t script_size,
-    size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
-  CountScriptInternal(script_size, cached_metadata_size);
-}
-
 void ServiceWorkerGlobalScope::DidEvaluateScript() {
   DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
   event_queue_->Start();
-
-  // Skip recording UMAs for module scripts because there're no ways to get the
-  // number of static-imported scripts and the total size of the imported
-  // scripts.
-  if (GetScriptType() == mojom::blink::ScriptType::kModule) {
-    return;
-  }
-
-  // TODO(asamidoi,nhiroki): Record the UMAs for module scripts, or remove them
-  // if they're no longer used.
-  base::UmaHistogramCounts1000(
-      "ServiceWorker.ScriptCount",
-      base::saturated_cast<base::Histogram::Sample>(script_count_));
-  base::UmaHistogramCustomCounts(
-      "ServiceWorker.ScriptTotalSize",
-      base::saturated_cast<base::Histogram::Sample>(script_total_size_), 1000,
-      5000000, 50);
-  if (script_cached_metadata_total_size_) {
-    base::UmaHistogramCustomCounts(
-        "ServiceWorker.ScriptCachedMetadataTotalSize",
-        base::saturated_cast<base::Histogram::Sample>(
-            script_cached_metadata_total_size_),
-        1000, 50000000, 50);
-  }
 }
 
 void ServiceWorkerGlobalScope::DidReceiveResponseForClassicScript(
@@ -589,14 +540,6 @@ void ServiceWorkerGlobalScope::RunClassicScript(
   // running the module script script if script is a module script."
   EvaluateClassicScript(response_url, source_code, std::move(cached_meta_data),
                         stack_id);
-}
-
-void ServiceWorkerGlobalScope::CountScriptInternal(
-    size_t script_size,
-    size_t cached_metadata_size) {
-  ++script_count_;
-  script_total_size_ += script_size;
-  script_cached_metadata_total_size_ += cached_metadata_size;
 }
 
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {

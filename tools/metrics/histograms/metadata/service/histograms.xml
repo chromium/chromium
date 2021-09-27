@@ -835,6 +835,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ScriptCachedMetadataSize" units="bytes"
     expires_after="2021-12-19">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -847,6 +850,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ScriptCachedMetadataTotalSize" units="bytes"
     expires_after="2021-05-18">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -859,6 +865,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ScriptCount" units="count"
     expires_after="2021-05-18">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -870,6 +879,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ScriptSize" units="bytes"
     expires_after="2021-05-18">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -881,6 +893,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ScriptTotalSize" units="bytes"
     expires_after="2021-05-18">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
