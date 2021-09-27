@@ -862,33 +862,6 @@
             ]
         }
     ],
-    "AutofillAPIServer": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "API_Enabled",
-                    "params": {
-                        "autofill-server-url": "https://content-autofill.googleapis.com/"
-                    },
-                    "enable_features": [
-                        "AutofillServerCommunication",
-                        "AutofillUseApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAddressProfileSavePrompt": [
         {
             "platforms": [
