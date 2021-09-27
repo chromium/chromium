@@ -4,7 +4,6 @@
 
 #include "printing/printing_context_win.h"
 
-#include <windows.h>
 #include <winspool.h>
 
 #include <algorithm>
@@ -16,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/win/windows_types.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/win_helper.h"
 #include "printing/buildflags/buildflags.h"

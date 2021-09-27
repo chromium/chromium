@@ -93,6 +93,8 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
 
 source_set("native_drawing_context") {
   sources = [ "native_drawing_context.h" ]
+
+  deps = [ "//base" ]
 }
 
 component("metafile") {

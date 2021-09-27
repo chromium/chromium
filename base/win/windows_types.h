@@ -82,6 +82,7 @@ typedef LONG NTSTATUS;
 #define CHROME_DECLARE_HANDLE(name) \
   struct name##__;                  \
   typedef struct name##__* name
+CHROME_DECLARE_HANDLE(HDC);
 CHROME_DECLARE_HANDLE(HDESK);
 CHROME_DECLARE_HANDLE(HGLRC);
 CHROME_DECLARE_HANDLE(HICON);

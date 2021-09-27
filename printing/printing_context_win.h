@@ -5,6 +5,8 @@
 #ifndef PRINTING_PRINTING_CONTEXT_WIN_H_
 #define PRINTING_PRINTING_CONTEXT_WIN_H_
 
+#include <windows.h>
+
 #include <memory>
 #include <string>
 
