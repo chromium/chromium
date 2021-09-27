@@ -8003,6 +8003,13 @@ be describing additional metrics about the same event.
     <summary>
       The type of the assistive suggestion which is triggered.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
