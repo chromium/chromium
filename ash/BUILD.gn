@@ -893,6 +893,8 @@ component("ash") {
     "style/default_color_constants.h",
     "style/default_colors.cc",
     "style/default_colors.h",
+    "style/element_style.cc",
+    "style/element_style.h",
     "style/scoped_light_mode_as_default.cc",
     "system/accessibility/accessibility_feature_disable_dialog.cc",
     "system/accessibility/accessibility_feature_disable_dialog.h",
