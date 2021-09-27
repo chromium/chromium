@@ -131,6 +131,8 @@ TEST(OptimizationFilterTest, TestMatchesMinSuffix) {
 
   // Note: full host will match even if less than min size.
   EXPECT_TRUE(opt_filter.Matches(GURL("https://xy.tv")));
+
+  EXPECT_FALSE(opt_filter.Matches(GURL("http://.../foo")));
 }
 
 }  // namespace
