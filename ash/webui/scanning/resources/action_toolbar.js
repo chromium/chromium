@@ -22,7 +22,7 @@ Polymer({
 
   properties: {
     /** @type {number} */
-    currentPageInView: Number,
+    currentPageIndexInView: Number,
 
     /** @type {number} */
     numTotalPages: Number,
@@ -30,7 +30,7 @@ Polymer({
     /** @private {string} */
     pageNumberText_: {
       type: String,
-      computed: 'computePageNumberText_(currentPageInView, numTotalPages)',
+      computed: 'computePageNumberText_(currentPageIndexInView, numTotalPages)',
     },
   },
 
@@ -39,27 +39,27 @@ Polymer({
    * @private
    */
   computePageNumberText_() {
-    // |currentPageInView| is <= 0 means a page was removed from the multi-page
-    // scan session and the next page in view has not been set yet.
-    if (this.currentPageInView <= 0 || !this.numTotalPages) {
+    // |currentPageIndexInView| is < 0 means a page was removed from the
+    // multi-page scan session and the next page in view has not been set yet.
+    if (this.currentPageIndexInView < 0 || !this.numTotalPages) {
       return '';
     }
 
     assert(this.numTotalPages > 0);
-    assert(this.currentPageInView <= this.numTotalPages);
+    assert(this.currentPageIndexInView < this.numTotalPages);
 
     return this.i18n(
-        'actionToolbarPageCountText', this.currentPageInView,
+        'actionToolbarPageCountText', this.currentPageIndexInView + 1,
         this.numTotalPages);
   },
 
   /** @private */
   onRemovePageIconClick_() {
-    this.fire('show-remove-page-dialog', this.currentPageInView);
+    this.fire('show-remove-page-dialog', this.currentPageIndexInView);
   },
 
   /** @private */
   onRescanPageIconClick_() {
-    this.fire('show-rescan-page-dialog', this.currentPageInView);
+    this.fire('show-rescan-page-dialog', this.currentPageIndexInView);
   },
 });

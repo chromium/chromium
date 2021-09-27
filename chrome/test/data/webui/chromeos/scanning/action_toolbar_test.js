@@ -28,51 +28,51 @@ export function actionToolbarTest() {
   // Verify the page count text updates when the number of scanned images
   // changes.
   test('totalPageCountIncrements', () => {
-    actionToolbar.currentPageInView = 1;
+    actionToolbar.currentPageIndexInView = 0;
     assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 3;
     assertEquals('1 of 3', actionToolbar.$$('#pageNumbers').textContent.trim());
 
-    actionToolbar.currentPageInView = -1;
+    actionToolbar.currentPageIndexInView = -1;
     assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 4;
-    actionToolbar.currentPageInView = 2;
+    actionToolbar.currentPageIndexInView = 1;
     assertEquals('2 of 4', actionToolbar.$$('#pageNumbers').textContent.trim());
   });
 
   // Verify clicking the remove page button fires the 'show-remove-page-dialog'
   // event with the correct page number.
   test('removePageClick', () => {
-    const expectedPageNumber = 5;
-    let pageNumberFromEvent = -1;
+    const expectedPageIndex = 5;
+    let pageIndexFromEvent = -1;
 
-    actionToolbar.currentPageInView = expectedPageNumber;
+    actionToolbar.currentPageIndexInView = expectedPageIndex;
     actionToolbar.addEventListener('show-remove-page-dialog', (e) => {
-      pageNumberFromEvent = e.detail;
+      pageIndexFromEvent = e.detail;
     });
 
     actionToolbar.$$('#removePageIcon').click();
     return flushTasks().then(() => {
-      assertEquals(expectedPageNumber, pageNumberFromEvent);
+      assertEquals(expectedPageIndex, pageIndexFromEvent);
     });
   });
 
   // Verify clicking the rescan page button fires the 'show-rescan-page-dialog'
   // event with the correct page number.
   test('rescanPageClick', () => {
-    const expectedPageNumber = 5;
-    let pageNumberFromEvent = -1;
+    const expectedPageIndex = 5;
+    let pageIndexFromEvent = -1;
 
-    actionToolbar.currentPageInView = expectedPageNumber;
+    actionToolbar.currentPageIndexInView = expectedPageIndex;
     actionToolbar.addEventListener('show-rescan-page-dialog', (e) => {
-      pageNumberFromEvent = e.detail;
+      pageIndexFromEvent = e.detail;
     });
 
     actionToolbar.$$('#rescanPageIcon').click();
     return flushTasks().then(() => {
-      assertEquals(expectedPageNumber, pageNumberFromEvent);
+      assertEquals(expectedPageIndex, pageIndexFromEvent);
     });
   });
 }

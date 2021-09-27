@@ -135,10 +135,13 @@ Polymer({
       observer: 'onIsMultiPageScanChange_',
     },
 
-    /** @private {number} */
-    currentPageInView_: {
+    /**
+     * The index of the page currently focused on.
+     * @private {number}
+     */
+    currentPageIndexInView_: {
       type: Number,
-      value: 1,
+      value: 0,
     },
 
     /**
@@ -337,19 +340,19 @@ Polymer({
     }
 
     // If the current page in view stays the same, do nothing.
-    const pageInView = this.getCurrentPageInView_(scannedImages);
-    if (pageInView === this.currentPageInView_) {
+    const pageIndexInView = this.getCurrentPageInView_(scannedImages);
+    if (pageIndexInView === this.currentPageIndexInView_) {
       return;
     }
 
-    this.setFocusedScannedImage_(scannedImages, pageInView);
+    this.setFocusedScannedImage_(scannedImages, pageIndexInView);
   },
 
   /**
-   * Calculates the current page in view. Returns the page number of the
-   * highest page in the viewport unless that page is scrolled halfway outside
-   * the viewport, then it'll return the following page number. Assumes each
-   * scanned image is the same height.
+   * Calculates the current page in view. Returns the page index of the highest
+   * page in the viewport unless that page is scrolled halfway outside the
+   * viewport, then it'll return the following page number. Assumes each scanned
+   * image is the same height.
    * @param {!HTMLCollection} scannedImages
    * @return {number}
    * @private
@@ -363,10 +366,10 @@ Polymer({
     // This is a special case for the first page since there is no margin or
     // previous page above it.
     if (scrollTop < 0) {
-      return 1;
+      return 0;
     }
 
-    return 2 +
+    return 1 +
         Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
   },
 
@@ -374,17 +377,17 @@ Polymer({
    * Sets the CSS class for the current scanned image in view so the blue border
    * will show on the correct page when hovered.
    * @param {!HTMLCollection} scannedImages
-   * @param {number} pageInView
+   * @param {number} pageIndexInView
    * @private
    */
-  setFocusedScannedImage_(scannedImages, pageInView) {
+  setFocusedScannedImage_(scannedImages, pageIndexInView) {
     assert(this.isMultiPageScan);
 
     this.removeFocusFromScannedImage_(scannedImages);
 
-    assert(pageInView > 0 && pageInView <= scannedImages.length);
-    scannedImages[pageInView - 1].classList.add('focused-scanned-image');
-    this.currentPageInView_ = pageInView;
+    assert(pageIndexInView >= 0 && pageIndexInView < scannedImages.length);
+    scannedImages[pageIndexInView].classList.add('focused-scanned-image');
+    this.currentPageIndexInView_ = pageIndexInView;
   },
 
   /**
@@ -397,19 +400,19 @@ Polymer({
     // This condition is only true when the user chooses to remove a page from
     // the multi-page scan session. When a page gets removed, the focus is
     // cleared and not immediately set again.
-    if (this.currentPageInView_ <= 0) {
+    if (this.currentPageIndexInView_ < 0) {
       return;
     }
 
     assert(
-        this.currentPageInView_ > 0 &&
-        this.currentPageInView_ <= scannedImages.length);
-    scannedImages[this.currentPageInView_ - 1].classList.remove(
+        this.currentPageIndexInView_ >= 0 &&
+        this.currentPageIndexInView_ < scannedImages.length);
+    scannedImages[this.currentPageIndexInView_].classList.remove(
         'focused-scanned-image');
 
     // Set to -1 because the focus has been removed from the current page and no
     // other page has it.
-    this.currentPageInView_ = -1;
+    this.currentPageIndexInView_ = -1;
   },
 
   /**
@@ -450,11 +453,10 @@ Polymer({
       return;
     }
 
-    // |e.model| is populated by the dom-repeat element. Add 1 to the index to
-    // convert it to page number.
+    // |e.model| is populated by the dom-repeat element.
     const scannedImages =
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
-    this.setFocusedScannedImage_(scannedImages, e.model.index + 1);
+    this.setFocusedScannedImage_(scannedImages, e.model.index);
   },
 
   /**
@@ -515,14 +517,14 @@ Polymer({
   /**
    * @param {boolean} isRemovePageDialog Determines whether to show the
    *     'Remove Page' or 'Rescan Page' dialog.
-   * @param {number} pageNumber
+   * @param {number} pageIndex
    * @private
    */
-  showRemoveOrRescanDialog_(isRemovePageDialog, pageNumber) {
+  showRemoveOrRescanDialog_(isRemovePageDialog, pageIndex) {
     // Configure the on-click action.
     this.onDialogActionClick_ = () => {
       this.fireDialogAction_(
-          isRemovePageDialog ? 'remove-page' : 'rescan-page', pageNumber);
+          isRemovePageDialog ? 'remove-page' : 'rescan-page', pageIndex);
     };
     this.$$('#actionButton')
         .addEventListener('click', this.onDialogActionClick_, {once: true});
@@ -543,7 +545,7 @@ Polymer({
         .getPluralString(
             isRemovePageDialog ? 'removePageDialogTitle' :
                                  'rescanPageDialogTitle',
-            this.objectUrls.length === 1 ? 0 : pageNumber)
+            this.objectUrls.length === 1 ? 0 : pageIndex + 1)
         .then(
             /* @type {string} */ (pluralString) => {
               this.dialogTitleText_ = pluralString;
@@ -555,17 +557,16 @@ Polymer({
 
   /**
    * @param {string} event Either the 'remove-page' or 'rescan-page' event.
-   * @param {number} pageNumber
+   * @param {number} pageIndex
    * @private
    */
-  fireDialogAction_(event, pageNumber) {
+  fireDialogAction_(event, pageIndex) {
     const scannedImages =
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
     this.removeFocusFromScannedImage_(scannedImages);
 
-    // Subtract one from |pageNumber| to get the page's index.
-    assert(pageNumber > 0);
-    this.fire(event, pageNumber - 1);
+    assert(pageIndex >= 0);
+    this.fire(event, pageIndex);
     this.closeDialog_();
   },
 
@@ -635,7 +636,7 @@ Polymer({
 
     // Set to -1 when no pages exist after a scan is saved.
     if (this.objectUrls.length === 0) {
-      this.currentPageInView_ = -1;
+      this.currentPageIndexInView_ = -1;
     }
   },
 

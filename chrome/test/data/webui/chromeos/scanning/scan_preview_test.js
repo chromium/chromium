@@ -217,19 +217,16 @@ export function scanPreviewTest() {
   // Tests that the remove page dialog opens, shows the correct page number,
   // then fires the correct event when the action button is clicked.
   test('removePageDialog', () => {
-    const pageNumberToRemove = 5;
+    const pageIndexToRemove = 5;
     let pageIndexFromEvent;
     scanPreview.addEventListener('remove-page', (e) => {
       pageIndexFromEvent = e.detail;
     });
     scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
-
-
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
         .dispatchEvent(new CustomEvent(
-            'show-remove-page-dialog', {detail: pageNumberToRemove}));
-
+            'show-remove-page-dialog', {detail: pageIndexToRemove}));
     return flushTasks().then(() => {
       assertTrue(scanPreview.$$('#scanPreviewDialog').open);
       assertEquals(
@@ -238,18 +235,18 @@ export function scanPreviewTest() {
           'Remove', scanPreview.$$('#actionButton').textContent.trim());
       assertEquals(
           loadTimeData.getStringF(
-              'removePageConfirmationText', pageNumberToRemove),
+              'removePageConfirmationText', pageIndexToRemove + 1),
           scanPreview.$$('#dialogConfirmationText').textContent.trim());
 
       scanPreview.$$('#actionButton').click();
       assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-      assertEquals(pageNumberToRemove - 1, pageIndexFromEvent);
+      assertEquals(pageIndexToRemove, pageIndexFromEvent);
     });
   });
 
   // Tests that clicking the cancel button closes the remove page dialog.
   test('cancelRemovePageDialog', () => {
-    scanPreview.objectUrls = [];
+    scanPreview.objectUrls = ['image'];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
         .dispatchEvent(new CustomEvent('show-remove-page-dialog'));
@@ -264,20 +261,20 @@ export function scanPreviewTest() {
 
   // Tests that the rescan page dialog opens and shows the correct page number.
   test('rescanPageDialog', () => {
-    const pageNum = 6;
+    const pageIndex = 6;
     scanPreview.objectUrls = ['image1', 'image2'];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
         .dispatchEvent(
-            new CustomEvent('show-rescan-page-dialog', {detail: pageNum}));
+            new CustomEvent('show-rescan-page-dialog', {detail: pageIndex}));
 
     return flushTasks().then(() => {
       assertTrue(scanPreview.$$('#scanPreviewDialog').open);
       assertEquals(
-          'Rescan page ' + pageNum + '?',
+          'Rescan page ' + (pageIndex + 1) + '?',
           scanPreview.$$('#dialogTitle').textContent.trim());
       assertEquals(
-          loadTimeData.getStringF('rescanPageConfirmationText', pageNum),
+          loadTimeData.getStringF('rescanPageConfirmationText', pageIndex),
           scanPreview.$$('#dialogConfirmationText').textContent.trim());
     });
   });
