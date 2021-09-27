@@ -197,6 +197,7 @@ DEFINE_VARIATION_PARAM(kIPHReadingListEntryPointFeature,
 DEFINE_VARIATION_PARAM(kIPHReadingListInSidePanelFeature,
                        "IPH_ReadingListInSidePanel");
 DEFINE_VARIATION_PARAM(kIPHReopenTabFeature, "IPH_ReopenTab");
+DEFINE_VARIATION_PARAM(kIPHSideSearchFeature, "IPH_SideSearch");
 DEFINE_VARIATION_PARAM(kIPHTabSearchFeature, "IPH_TabSearch");
 DEFINE_VARIATION_PARAM(kIPHWebUITabStripFeature, "IPH_WebUITabStrip");
 DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
@@ -305,6 +306,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadingListEntryPointFeature),
         VARIATION_ENTRY(kIPHReadingListInSidePanelFeature),
         VARIATION_ENTRY(kIPHReopenTabFeature),
+        VARIATION_ENTRY(kIPHSideSearchFeature),
         VARIATION_ENTRY(kIPHTabSearchFeature),
         VARIATION_ENTRY(kIPHWebUITabStripFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),

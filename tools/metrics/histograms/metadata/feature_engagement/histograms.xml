@@ -199,6 +199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                highlights"/>
   <variant name="IPH_SharingHubLinkToggle"
       summary="turning on link sharing in the Sharing Hub"/>
+  <variant name="IPH_SideSearch" summary="side search discovery"/>
   <variant name="IPH_StartSurfaceTabSwitcherHomeButton"
       summary="home button on the tab switcher when start surface is enabled"/>
   <variant name="IPH_TabGroupsDragAndDrop"

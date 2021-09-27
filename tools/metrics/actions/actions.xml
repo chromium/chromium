@@ -29377,6 +29377,7 @@ should be able to be added at any place in this file.
       label="For SharedHighlightingReceiver feature."/>
   <suffix name="SharingHubLinkToggle"
       label="For Sharing Hub link toggle feature."/>
+  <suffix name="SideSearch" label="For the side search feature."/>
   <suffix name="StartSurfaceTabSwitcherHomeButton"
       label="For StartSurfaceTabSwitcherHomeButton feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
