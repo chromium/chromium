@@ -54,59 +54,66 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     return {features::kSideSearch};
   }
 
-  void ActivateTabAt(int index) {
-    browser()->tab_strip_model()->ActivateTabAt(index);
+  void ActivateTabAt(Browser* browser, int index) {
+    browser->tab_strip_model()->ActivateTabAt(index);
   }
 
-  void AppendTab(const std::string& url) {
-    chrome::AddTabAt(browser(), GURL(url), -1, true);
+  void AppendTab(Browser* browser, const std::string& url) {
+    chrome::AddTabAt(browser, GURL(url), -1, true);
   }
 
-  void NavigateActiveTab(const std::string& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+  void NavigateActiveTab(Browser* browser, const std::string& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
   }
 
-  void NotifyButtonClick() {
-    views::test::ButtonTestApi(side_panel_button())
+  void NotifyButtonClick(Browser* browser) {
+    views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
         .NotifyClick(GetDummyEvent());
   }
 
-  void NotifyCloseButtonClick() {
-    ASSERT_TRUE(side_panel()->GetVisible());
-    views::test::ButtonTestApi(side_panel_close_button())
+  void NotifyCloseButtonClick(Browser* browser) {
+    ASSERT_TRUE(GetSidePanelFor(browser)->GetVisible());
+    views::test::ButtonTestApi(GetSideButtonClosePanelFor(browser))
         .NotifyClick(GetDummyEvent());
   }
 
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserView* BrowserViewFor(Browser* browser) {
+    return BrowserView::GetBrowserViewForBrowser(browser);
   }
 
-  ToolbarButton* side_panel_button() {
-    return browser_view()->toolbar()->left_side_panel_button();
+  ToolbarButton* GetSidePanelButtonFor(Browser* browser) {
+    return BrowserViewFor(browser)->toolbar()->left_side_panel_button();
   }
 
-  views::ImageButton* side_panel_close_button() {
+  views::ImageButton* GetSideButtonClosePanelFor(Browser* browser) {
     return static_cast<views::ImageButton*>(
-        side_panel()->GetViewByID(static_cast<int>(
+        GetSidePanelFor(browser)->GetViewByID(static_cast<int>(
             SideSearchBrowserController::VIEW_ID_SIDE_PANEL_CLOSE_BUTTON)));
   }
 
-  SidePanel* side_panel() {
-    return browser_view()->left_aligned_side_panel_for_testing();
+  SidePanel* GetSidePanelFor(Browser* browser) {
+    return BrowserViewFor(browser)->left_aligned_side_panel_for_testing();
   }
 
-  void NavigateToSRPAndOpenSidePanel() {
-    NavigateActiveTab(kGoogleSearchURL);
-    EXPECT_FALSE(side_panel_button()->GetVisible());
-    EXPECT_FALSE(side_panel()->GetVisible());
+  void NavigateToSRPAndNonGoogleUrl(Browser* browser) {
+    // The side panel button should never be visible on the Google search page.
+    NavigateActiveTab(browser, kGoogleSearchURL);
+    EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
+    EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
 
-    NavigateActiveTab(kNonGoogleURL);
-    EXPECT_TRUE(side_panel_button()->GetVisible());
-    EXPECT_FALSE(side_panel()->GetVisible());
+    // The side panel button should be visible if on a non-Google page and the
+    // current tab has previously encountered a Google search page.
+    NavigateActiveTab(browser, kNonGoogleURL);
+    EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+    EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
+  }
 
-    NotifyButtonClick();
-    EXPECT_TRUE(side_panel_button()->GetVisible());
-    EXPECT_TRUE(side_panel()->GetVisible());
+  void NavigateToSRPAndOpenSidePanel(Browser* browser) {
+    NavigateToSRPAndNonGoogleUrl(browser);
+
+    NotifyButtonClick(browser);
+    EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+    EXPECT_TRUE(GetSidePanelFor(browser)->GetVisible());
   }
 
  private:
@@ -116,81 +123,81 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlySingleTab) {
   // The side panel button should never be visible on the Google home page.
-  NavigateActiveTab(kGoogleSearchHomePageURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchHomePageURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // If no previous Google search page has been navigated to the button should
   // not be visible.
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // The side panel button should never be visible on the Google search page.
-  NavigateActiveTab(kGoogleSearchURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // The side panel button should be visible if on a non-Google page and the
   // current tab has previously encountered a Google search page.
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // The side panel button should never be visible on the Google home page even
   // if it has already been navigated to a Google search page.
-  NavigateActiveTab(kGoogleSearchHomePageURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchHomePageURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // The side panel button should be visible if on a non-Google page and the
   // current tab has previously encountered a Google search page.
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlyMultipleTabs) {
   // The side panel button should never be visible on the Google home page.
-  AppendTab(kGoogleSearchHomePageURL);
-  ActivateTabAt(1);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  AppendTab(browser(), kGoogleSearchHomePageURL);
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // Navigate to a Google search page and then to a non-Google search page. This
   // should show the side panel button in the toolbar.
-  AppendTab(kGoogleSearchURL);
-  ActivateTabAt(2);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
+  AppendTab(browser(), kGoogleSearchURL);
+  ActivateTabAt(browser(), 2);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // Switch back to the Google search page, the side panel button should no
   // longer be visible.
-  ActivateTabAt(1);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
 
   // When switching back to the tab on the non-Google page with a previously
   // visited Google search page the button should be visible.
-  ActivateTabAt(2);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
+  ActivateTabAt(browser(), 2);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlySingleTab) {
-  NavigateActiveTab(kGoogleSearchURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // The side panel button should be visible if on a non-Google page and the
   // current tab has previously encountered a Google search page.
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Toggle the side panel.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   // Toggling the button again should close the side panel.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
@@ -199,49 +206,67 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   // independent browser tabs such that both have the side panel ready.
 
   // Tab 1.
-  NavigateActiveTab(kGoogleSearchURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Tab 2.
-  AppendTab(kGoogleSearchURL);
-  ActivateTabAt(1);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  AppendTab(browser(), kGoogleSearchURL);
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
   // still be visible.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
-  ActivateTabAt(0);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   // Hide the side panel on Tab 1 and switch to Tab 2. The side panel should be
   // hidden after the tab switch.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
-  ActivateTabAt(1);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        CloseButtonClosesSidePanel) {
   // The close button should be visible in the toggled state.
-  NavigateToSRPAndOpenSidePanel();
-  EXPECT_TRUE(side_panel()->GetVisible());
-  NotifyCloseButtonClick();
+  NavigateToSRPAndOpenSidePanel(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  NotifyCloseButtonClick(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SideSearchBrowserControllerTest,
+    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  NavigateToSRPAndNonGoogleUrl(browser2);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
+                                                    TabStripModel::ADD_ACTIVE);
+
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
 class SideSearchStatePerTabBrowserControllerTest
@@ -255,6 +280,28 @@ class SideSearchStatePerTabBrowserControllerTest
   }
 };
 
+IN_PROC_BROWSER_TEST_F(
+    SideSearchStatePerTabBrowserControllerTest,
+    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  NavigateToSRPAndNonGoogleUrl(browser2);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
+                                                    TabStripModel::ADD_ACTIVE);
+
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
                        SidePanelTogglesCorrectlyMultipleTabs) {
   // Navigate to a Google search URL followed by a non-Google URL in two
@@ -262,49 +309,49 @@ IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
   // side panel should respect the state-per-tab flag.
 
   // Tab 1.
-  NavigateActiveTab(kGoogleSearchURL);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Tab 2.
-  AppendTab(kGoogleSearchURL);
-  ActivateTabAt(1);
-  EXPECT_FALSE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
-  NavigateActiveTab(kNonGoogleURL);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  AppendTab(browser(), kGoogleSearchURL);
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), kNonGoogleURL);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
   // not be visible for Tab 1.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
-  ActivateTabAt(0);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
   // still be visible for Tab 2, respecting its per-tab state.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
-  ActivateTabAt(1);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
   // still be visible for Tab 1, respecting its per-tab state.
-  NotifyButtonClick();
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_FALSE(side_panel()->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
-  ActivateTabAt(0);
-  EXPECT_TRUE(side_panel_button()->GetVisible());
-  EXPECT_TRUE(side_panel()->GetVisible());
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
