@@ -25,18 +25,8 @@ namespace performance_monitor {
 
 namespace {
 
-constexpr mach_timebase_info_data_t kIntelTimebase = {1, 1};
-
-// A sample (not definitive) timebase for M1.
-constexpr mach_timebase_info_data_t kM1Timebase = {125, 3};
-
-// Initializes to no EI constants and the Intel timebase.
 class TestResourceCoalition : public ResourceCoalition {
  public:
-  TestResourceCoalition() {
-    SetEnergyImpactCoefficientsForTesting(absl::nullopt);
-    SetMachTimebaseForTesting(kIntelTimebase);
-  }
   // Expose as public for testing.
   using ResourceCoalition::SetCoalitionIDToCurrentProcessIdForTesting;
   using ResourceCoalition::GetDataRateFromFakeDataForTesting;
@@ -46,7 +36,6 @@ class TestResourceCoalition : public ResourceCoalition {
   using ResourceCoalition::ReadEnergyImpactOrDefaultForBoardId;
   using ResourceCoalition::MaybeGetBoardIdForThisMachine;
   using ResourceCoalition::SetEnergyImpactCoefficientsForTesting;
-  using ResourceCoalition::SetMachTimebaseForTesting;
 };
 using EnergyImpactCoefficients =
     TestResourceCoalition::EnergyImpactCoefficients;
@@ -66,7 +55,8 @@ EnergyImpactCoefficients GetEnergyImpactTestCoefficients() {
   return coefficients;
 }
 
-constexpr base::TimeDelta kIntervalLength = base::TimeDelta::FromSecondsD(2.5);
+static constexpr base::TimeDelta kIntervalLength =
+    base::TimeDelta::FromSecondsD(2.5);
 
 TEST(ResourceCoalitionTests, Basics) {
   base::HistogramTester histogram_tester;
@@ -105,63 +95,50 @@ constexpr double kExpectedPlatformIdleWakeUpPerSecond = 10;
 constexpr double kExpectedBytesReadPerSecond = 0.8;
 constexpr double kExpectedBytesWrittenPerSecond = 1.6;
 constexpr double kExpectedPowerNW = 10000.0;
-// This number will be multiplied by the int value associated with a QoS level
-// to compute the expected time spent in this QoS level. E.g.
-// |QoSLevels::kUtility == 3| so the time spent in the utility QoS state will
-// be set to 3 * 0.1 = 30%.
 constexpr double kExpectedQoSTimeBucketIdMultiplier = 0.1;
 
-// Scales a time given in ns to mach_time in |timebase|.
-uint64_t NsScaleToTimebase(const mach_timebase_info_data_t& timebase,
-                           int64_t time_ns) {
-  return time_ns * timebase.denom / timebase.numer;
-}
-
-// Returns test data with all time quantities scaled to the given time base.
-std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsageTestData(
-    const mach_timebase_info_data_t& timebase) {
-  std::unique_ptr<coalition_resource_usage> test_data =
-      std::make_unique<coalition_resource_usage>();
-
-  // Scales a time given in ns to mach_time in |timebase|.
-  auto scale_to_timebase = [&timebase](double time_ns) -> int64_t {
-    return NsScaleToTimebase(timebase, time_ns);
-  };
-
-  test_data->cpu_time = scale_to_timebase(kExpectedCPUUsagePerSecondPercent *
-                                          kIntervalLength.InNanoseconds());
-  test_data->interrupt_wakeups =
+coalition_resource_usage GetCoalitionResourceUsageTestData() {
+  coalition_resource_usage test_data{};
+  test_data.cpu_time =
+      kExpectedCPUUsagePerSecondPercent * kIntervalLength.InNanoseconds();
+  test_data.interrupt_wakeups =
       kExpectedInterruptWakeUpPerSecond * kIntervalLength.InSecondsF();
-  test_data->platform_idle_wakeups =
+  test_data.platform_idle_wakeups =
       kExpectedPlatformIdleWakeUpPerSecond * kIntervalLength.InSecondsF();
-  test_data->bytesread =
+  test_data.bytesread =
       kExpectedBytesReadPerSecond * kIntervalLength.InSecondsF();
-  test_data->byteswritten =
+  test_data.byteswritten =
       kExpectedBytesWrittenPerSecond * kIntervalLength.InSecondsF();
-  test_data->gpu_time = scale_to_timebase(kExpectedGPUUsagePerSecondPercent *
-                                          kIntervalLength.InNanoseconds());
-  test_data->energy = kExpectedPowerNW * kIntervalLength.InSecondsF();
+  test_data.gpu_time =
+      kExpectedGPUUsagePerSecondPercent * kIntervalLength.InNanoseconds();
+  test_data.energy = kExpectedPowerNW * kIntervalLength.InSecondsF();
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    test_data->cpu_time_eqos[i] =
-        scale_to_timebase(i * kExpectedQoSTimeBucketIdMultiplier *
-                          kIntervalLength.InNanoseconds());
+    test_data.cpu_time_eqos[i] = i * kExpectedQoSTimeBucketIdMultiplier *
+                                 kIntervalLength.InNanoseconds();
   }
-  test_data->cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
+  test_data.cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
 
   return test_data;
 }
 
-TEST(ResourceCoalitionTests, GetDataRate_NoEnergyImpact_Intel) {
+TEST(ResourceCoalitionTests, GetDataRate_NoEnergyImpact) {
   TestResourceCoalition coalition;
   coalition.SetCoalitionIDToCurrentProcessIdForTesting();
+  coalition.SetEnergyImpactCoefficientsForTesting(absl::nullopt);
 
   EXPECT_TRUE(coalition.IsAvailable());
+
+  // This number will be multiplied by the int value associated with a QoS level
+  // to compute the expected time spent in this QoS level. E.g.
+  // |QoSLevels::kUtility == 3| so the time spent in the utility QoS state will
+  // be set to 3 * 0.1 = 30%.
 
   // Keep the initial data zero initialized.
   std::unique_ptr<coalition_resource_usage> t0_data =
       std::make_unique<coalition_resource_usage>();
   std::unique_ptr<coalition_resource_usage> t1_data =
-      GetCoalitionResourceUsageTestData(kIntelTimebase);
+      std::make_unique<coalition_resource_usage>(
+          GetCoalitionResourceUsageTestData());
 
   auto data_rate = coalition.GetDataRateFromFakeDataForTesting(
       std::move(t0_data), std::move(t1_data), kIntervalLength);
@@ -183,44 +160,8 @@ TEST(ResourceCoalitionTests, GetDataRate_NoEnergyImpact_Intel) {
   }
 }
 
-TEST(ResourceCoalitionTests, GetDataRate_NoEnergyImpact_M1) {
-  TestResourceCoalition coalition;
-  coalition.SetCoalitionIDToCurrentProcessIdForTesting();
-  coalition.SetMachTimebaseForTesting(kM1Timebase);
-
-  EXPECT_TRUE(coalition.IsAvailable());
-
-  // Keep the initial data zero initialized.
-  std::unique_ptr<coalition_resource_usage> t0_data =
-      std::make_unique<coalition_resource_usage>();
-  std::unique_ptr<coalition_resource_usage> t1_data =
-      GetCoalitionResourceUsageTestData(kM1Timebase);
-
-  auto data_rate = coalition.GetDataRateFromFakeDataForTesting(
-      std::move(t0_data), std::move(t1_data), kIntervalLength);
-  ASSERT_TRUE(data_rate);
-  EXPECT_DOUBLE_EQ(kExpectedCPUUsagePerSecondPercent,
-                   data_rate->cpu_time_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedInterruptWakeUpPerSecond,
-                   data_rate->interrupt_wakeups_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedPlatformIdleWakeUpPerSecond,
-                   data_rate->platform_idle_wakeups_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedBytesReadPerSecond,
-                   data_rate->bytesread_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedBytesWrittenPerSecond,
-                   data_rate->byteswritten_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedGPUUsagePerSecondPercent,
-                   data_rate->gpu_time_per_second);
-  EXPECT_DOUBLE_EQ(0, data_rate->energy_impact_per_second);
-  EXPECT_DOUBLE_EQ(kExpectedPowerNW, data_rate->power_nw);
-
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     data_rate->qos_time_per_second[i]);
-  }
-}
-
-TEST(ResourceCoalitionTests, GetDataRate_WithEnergyImpact_Intel) {
+TEST(ResourceCoalitionTests, GetDataRate_WithEnergyImpact) {
+  base::HistogramTester histogram_tester;
   TestResourceCoalition coalition;
   coalition.SetCoalitionIDToCurrentProcessIdForTesting();
   coalition.SetEnergyImpactCoefficientsForTesting(
@@ -229,42 +170,8 @@ TEST(ResourceCoalitionTests, GetDataRate_WithEnergyImpact_Intel) {
   std::unique_ptr<coalition_resource_usage> t0_data =
       std::make_unique<coalition_resource_usage>();
   std::unique_ptr<coalition_resource_usage> t1_data =
-      GetCoalitionResourceUsageTestData(kIntelTimebase);
-
-  auto ei_data_rate = coalition.GetDataRateFromFakeDataForTesting(
-      std::move(t0_data), std::move(t1_data), kIntervalLength);
-  ASSERT_TRUE(ei_data_rate);
-  EXPECT_EQ(kExpectedCPUUsagePerSecondPercent,
-            ei_data_rate->cpu_time_per_second);
-  EXPECT_EQ(kExpectedInterruptWakeUpPerSecond,
-            ei_data_rate->interrupt_wakeups_per_second);
-  EXPECT_EQ(kExpectedPlatformIdleWakeUpPerSecond,
-            ei_data_rate->platform_idle_wakeups_per_second);
-  EXPECT_EQ(kExpectedBytesReadPerSecond, ei_data_rate->bytesread_per_second);
-  EXPECT_EQ(kExpectedBytesWrittenPerSecond,
-            ei_data_rate->byteswritten_per_second);
-  EXPECT_EQ(kExpectedGPUUsagePerSecondPercent,
-            ei_data_rate->gpu_time_per_second);
-  EXPECT_EQ(271.2, ei_data_rate->energy_impact_per_second);
-  EXPECT_FLOAT_EQ(kExpectedPowerNW, ei_data_rate->power_nw);
-
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     ei_data_rate->qos_time_per_second[i]);
-  }
-}
-
-TEST(ResourceCoalitionTests, GetDataRate_WithEnergyImpact_M1) {
-  TestResourceCoalition coalition;
-  coalition.SetCoalitionIDToCurrentProcessIdForTesting();
-  coalition.SetEnergyImpactCoefficientsForTesting(
-      GetEnergyImpactTestCoefficients());
-  coalition.SetMachTimebaseForTesting(kM1Timebase);
-
-  std::unique_ptr<coalition_resource_usage> t0_data =
-      std::make_unique<coalition_resource_usage>();
-  std::unique_ptr<coalition_resource_usage> t1_data =
-      GetCoalitionResourceUsageTestData(kM1Timebase);
+      std::make_unique<coalition_resource_usage>(
+          GetCoalitionResourceUsageTestData());
 
   auto ei_data_rate = coalition.GetDataRateFromFakeDataForTesting(
       std::move(t0_data), std::move(t1_data), kIntervalLength);
@@ -335,6 +242,7 @@ bool DataOverflowInvalidatesDiff(
 TEST(ResourceCoalitionTests, Overflows) {
   TestResourceCoalition coalition;
   coalition.SetCoalitionIDToCurrentProcessIdForTesting();
+  coalition.SetEnergyImpactCoefficientsForTesting(absl::nullopt);
 
   EXPECT_TRUE(coalition.IsAvailable());
 
@@ -467,13 +375,12 @@ coalition_resource_usage MakeResourceUsageWithQOS(int qos_level,
 }
 
 TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Individual) {
-  TestResourceCoalition coalition;
-  EXPECT_EQ(0.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+  EXPECT_EQ(0.0, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
                      EnergyImpactCoefficients(), coalition_resource_usage()));
 
   // Test the coefficients and sample factors individually.
   EXPECT_DOUBLE_EQ(
-      2.66, coalition.ComputeEnergyImpactForCoalitionUsage(
+      2.66, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
                 EnergyImpactCoefficients{
                     .kcpu_wakeups =
                         base::TimeDelta::FromMicroseconds(200).InSecondsF()},
@@ -481,41 +388,43 @@ TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Individual) {
 
   // Test 100 ms of CPU, which should come out to 8% of a CPU second with a
   // background QOS discount of rate of 0.8.
-  EXPECT_DOUBLE_EQ(8.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                            EnergyImpactCoefficients{.kqos_background = 0.8},
-                            MakeResourceUsageWithQOS(
-                                THREAD_QOS_BACKGROUND,
-                                base::TimeDelta::FromMilliseconds(100))));
   EXPECT_DOUBLE_EQ(
-      5.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+      8.0,
+      TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
+          EnergyImpactCoefficients{.kqos_background = 0.8},
+          MakeResourceUsageWithQOS(THREAD_QOS_BACKGROUND,
+                                   base::TimeDelta::FromMilliseconds(100))));
+  EXPECT_DOUBLE_EQ(
+      5.0, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
                EnergyImpactCoefficients{.kqos_default = 1.0},
                MakeResourceUsageWithQOS(
                    THREAD_QOS_DEFAULT, base::TimeDelta::FromMilliseconds(50))));
-  EXPECT_DOUBLE_EQ(10.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                             EnergyImpactCoefficients{.kqos_utility = 1.0},
-                             MakeResourceUsageWithQOS(
-                                 THREAD_QOS_UTILITY,
-                                 base::TimeDelta::FromMilliseconds(100))));
   EXPECT_DOUBLE_EQ(
-      1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+      10.0,
+      TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
+          EnergyImpactCoefficients{.kqos_utility = 1.0},
+          MakeResourceUsageWithQOS(THREAD_QOS_UTILITY,
+                                   base::TimeDelta::FromMilliseconds(100))));
+  EXPECT_DOUBLE_EQ(
+      1.0, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
                EnergyImpactCoefficients{.kqos_legacy = 1.0},
                MakeResourceUsageWithQOS(
                    THREAD_QOS_LEGACY, base::TimeDelta::FromMilliseconds(10))));
   EXPECT_DOUBLE_EQ(
       1.0,
-      coalition.ComputeEnergyImpactForCoalitionUsage(
+      TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
           EnergyImpactCoefficients{.kqos_user_initiated = 1.0},
           MakeResourceUsageWithQOS(THREAD_QOS_USER_INITIATED,
                                    base::TimeDelta::FromMilliseconds(10))));
   EXPECT_DOUBLE_EQ(
       1.0,
-      coalition.ComputeEnergyImpactForCoalitionUsage(
+      TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
           EnergyImpactCoefficients{.kqos_user_interactive = 1.0},
           MakeResourceUsageWithQOS(THREAD_QOS_USER_INTERACTIVE,
                                    base::TimeDelta::FromMilliseconds(10))));
 
   EXPECT_DOUBLE_EQ(
-      1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
+      1.0, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
                EnergyImpactCoefficients{.kgpu_time = 2.5},
                coalition_resource_usage{
                    .gpu_time =
@@ -536,27 +445,25 @@ TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Combined) {
   };
   coalition_resource_usage sample{
       .platform_idle_wakeups = 133,
-      .gpu_time = NsScaleToTimebase(
-          kM1Timebase, base::TimeDelta::FromMilliseconds(4).InNanoseconds()),
+      .gpu_time = base::TimeDelta::FromMilliseconds(4).InNanoseconds(),
       .cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES,
   };
-  sample.cpu_time_eqos[THREAD_QOS_BACKGROUND] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_DEFAULT] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(50).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_UTILITY] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_LEGACY] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE] = NsScaleToTimebase(
-      kM1Timebase, base::TimeDelta::FromMilliseconds(10).InNanoseconds());
+  sample.cpu_time_eqos[THREAD_QOS_BACKGROUND] =
+      base::TimeDelta::FromMilliseconds(100).InNanoseconds();
+  sample.cpu_time_eqos[THREAD_QOS_DEFAULT] =
+      base::TimeDelta::FromMilliseconds(50).InNanoseconds();
+  sample.cpu_time_eqos[THREAD_QOS_UTILITY] =
+      base::TimeDelta::FromMilliseconds(100).InNanoseconds();
+  sample.cpu_time_eqos[THREAD_QOS_LEGACY] =
+      base::TimeDelta::FromMilliseconds(10).InNanoseconds();
+  sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED] =
+      base::TimeDelta::FromMilliseconds(10).InNanoseconds();
+  sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE] =
+      base::TimeDelta::FromMilliseconds(10).InNanoseconds();
 
-  TestResourceCoalition coalition;
-  coalition.SetMachTimebaseForTesting(kM1Timebase);
-  EXPECT_DOUBLE_EQ(29.66, coalition.ComputeEnergyImpactForCoalitionUsage(
-                              coefficients, sample));
+  EXPECT_DOUBLE_EQ(29.66,
+                   TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
+                       coefficients, sample));
 }
 
 TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Unused) {
@@ -597,9 +504,8 @@ TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Unused) {
       .pm_writes = 1000,
   };
 
-  TestResourceCoalition coalition;
-  EXPECT_EQ(
-      0, coalition.ComputeEnergyImpactForCoalitionUsage(coefficients, sample));
+  EXPECT_EQ(0, TestResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
+                   coefficients, sample));
 }
 
 TEST(ResourceCoalitionTests, ReadEnergyImpactOrDefaultForBoardId_Exists) {

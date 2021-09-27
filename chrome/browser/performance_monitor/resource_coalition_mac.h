@@ -147,7 +147,7 @@ class ResourceCoalition {
   // Note that this only has relevance on Intel architecture, as it looks like
   // on M1 architecture macOS implements more granular, and hopefully more
   // accurate, energy metering on the fly.
-  double ComputeEnergyImpactForCoalitionUsage(
+  static double ComputeEnergyImpactForCoalitionUsage(
       const EnergyImpactCoefficients& coefficients,
       const coalition_resource_usage& data_sample);
 
@@ -158,14 +158,9 @@ class ResourceCoalition {
   void SetEnergyImpactCoefficientsForTesting(
       const absl::optional<EnergyImpactCoefficients>& coefficients);
 
-  // Override the machine time base for testing.
-  void SetMachTimebaseForTesting(
-      const mach_timebase_info_data_t& mach_timebase);
-
  private:
   void EnsureEnergyImpactCoefficientsIfAvailable();
   void SetCoalitionId(absl::optional<uint64_t> coalition_id);
-  uint64_t MachTimeToNs(uint64_t mach_time);
 
   // Computes the diff between two coalition_resource_usage objects and stores
   // the per-second change rate for each field in a ResourceCoalition::Data
@@ -184,10 +179,6 @@ class ResourceCoalition {
   // The coalition ID for the current process or nullopt if this isn't
   // available.
   absl::optional<uint64_t> coalition_id_;
-
-  // Used to convert coalition_resource_usage time fields from
-  // mach_absolute_time units to ns.
-  mach_timebase_info_data_t mach_timebase_;
 
   // The data sample collected during the last call to GetDataDiff or since
   // creating this object.
