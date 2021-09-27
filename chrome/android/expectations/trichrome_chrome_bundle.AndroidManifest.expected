@@ -85,7 +85,7 @@
       android:roundIcon="@drawable/ic_launcher_round"
       android:supportsRtl="true"
       android:use32bitAbi="true"
-      android:zygotePreloadName="org.chromium.content.app.ZygotePreload">
+      android:zygotePreloadName="org.chromium.chrome.app.TrichromeZygotePreload">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
         android:exported="false"

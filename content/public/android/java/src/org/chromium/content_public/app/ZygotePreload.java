@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.app;
+package org.chromium.content_public.app;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -32,13 +32,20 @@ public class ZygotePreload implements android.app.ZygotePreload {
     @SuppressLint("Override")
     @Override
     public void doPreload(ApplicationInfo appInfo) {
-        try {
-            // Using concatenation rather than %s to allow values to be inlined by R8.
-            Log.i(TAG,
-                    "Loaded Zygote. version=" + VersionConstants.PRODUCT_VERSION
-                            + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
-                            + " isBundle=" + BuildConfig.BUNDLES_SUPPORTED);
+        // APKs targeting pre-Q releases, like ChromePublic, have ZygotePreload in their manifests.
+        // Running Chrome from these APKs on Q+ creates the app zygote and performs the preload. In
+        // order to load the native library with the correct name prefix, the "linker
+        // implementation" is chosen by the LibraryLoader itself, and not overwritten here.
+        doPreloadCommon(appInfo);
+    }
 
+    protected final void doPreloadCommon(ApplicationInfo appInfo) {
+        // Using concatenation rather than %s to allow values to be inlined by R8.
+        Log.i(TAG,
+                "Loaded Zygote. version=" + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle=" + BuildConfig.BUNDLES_SUPPORTED);
+        try {
             // The current thread time is the best approximation we have of the zygote start time
             // since Process.getStartUptimeMillis() is not reliable in the zygote process. This will
             // be the total CPU time the current thread has been running, and is reset on fork so
