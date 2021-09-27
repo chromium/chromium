@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -298,6 +299,7 @@ public class TabWindowManagerTest {
     @SmallTest
     @Feature({"Multiwindow"})
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1251584")
     public void testTabExistsInAnySelector() {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
@@ -336,6 +338,7 @@ public class TabWindowManagerTest {
     @SmallTest
     @Feature({"Multiwindow"})
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1251584")
     public void testGetTabById() {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
@@ -374,6 +377,7 @@ public class TabWindowManagerTest {
     @SmallTest
     @Feature({"Multiwindow"})
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1251584")
     public void getTabModelForTab() {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
