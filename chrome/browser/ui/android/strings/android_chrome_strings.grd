@@ -739,19 +739,19 @@ Tap any word to search. To refine your search, touch &amp; hold to select more o
 Touch &amp; hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_DESCRIPTION_REVISED" desc="Description for Contextual Search preference">
-        Learn about a topic without leaving the page. Select one or more words on the page to search for them. To edit your search, look at the results and open them in a new tab.
+        Learn about topics on websites without leaving the page. Select one or more words on the page to search for them.
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_SHORT_DESCRIPTION" desc="A promo message shown to users with Touch to Search to explain the new behavior and provide an option to opt in or out">
         Touch to Search sends the selected word and the current page as context to Google Search. You can turn it off in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_PROMO_TITLE" desc="The title of the promo message for the contextual search.">
-        Get more relevant info
+        Include surrounding text in Google searches?
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_PROMO_DESCRIPTION" desc="A promo message shown to users with Touch to Search to explain the new behavior and provide an option to opt in or out">
-        See better results for the words you highlight by letting Google consider some of the page's text. You can always change your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+        By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph> to change this.
       </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_TURN_ON_BUTTON" desc="A button to confirm and dismiss opt in promo">
-        Turn on
+      <message name="IDS_CONTEXTUAL_SEARCH_INCLUDE_BUTTON" desc="A button to confirm and dismiss opt in promo">
+        Include
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_ALLOW_BUTTON" desc="A button to confirm and dismiss opt out promo">
         Allow
@@ -769,10 +769,10 @@ Touch &amp; hold any word to search. To refine your search, select more or fewer
         Tap to see search results
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_TITLE" desc="Title for the see better results switch in Contextual Search preference.">
-        See better results
+        Include surrounding text in Google searches
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_SUMMARY" desc="Summary for the see better results switch in Contextual Search preference.">
-        Let Google also consider some of the page’s text
+        By including more of a page’s text, you might see better results
       </message>
       <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for 'Do Not Track' preference">
         “Do Not Track”
