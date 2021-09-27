@@ -826,8 +826,6 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     response_params_.device_status->mutable_tpm_status_info()->MergeFrom(
         tpm_status_info);
-    LOG(WARNING) << "tpm_status_info.attestation_prepared: "
-                 << tpm_status_info.attestation_prepared();
     SetDeviceStatusReported();
   }
 
