@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
- * Responsible for notes main UI and its subcomponents.
+ * Responsible for reactions main UI and its subcomponents.
  */
 public class LightweightReactionsCoordinatorImpl
         extends BaseScreenshotCoordinator implements LightweightReactionsCoordinator {

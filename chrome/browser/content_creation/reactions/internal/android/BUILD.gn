@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsSceneCoordinator.java",
   ]
 
   deps = [
@@ -20,6 +21,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]
