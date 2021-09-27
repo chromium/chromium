@@ -67,7 +67,7 @@ void SetLockedFullscreenState(Browser* browser, bool locked) {
 }
 
 bool IsScreenshotRestricted(content::WebContents* web_contents) {
-  return policy::DlpContentManager::Get()->IsScreenshotRestricted(
+  return policy::DlpContentManager::Get()->IsScreenshotApiRestricted(
       ScreenshotArea::CreateForWindow(web_contents->GetNativeView()));
 }
 

@@ -1191,7 +1191,7 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
   policy::MockDlpContentManager mock_dlp_content_manager;
   policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
-  EXPECT_CALL(mock_dlp_content_manager, IsScreenshotRestricted(testing::_))
+  EXPECT_CALL(mock_dlp_content_manager, IsScreenshotApiRestricted(testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
 

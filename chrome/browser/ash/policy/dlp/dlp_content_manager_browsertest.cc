@@ -51,6 +51,9 @@ const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
     DlpContentRestriction::kScreenshot,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kScreenshotWarned(
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kWarn);
 const DlpContentRestrictionSet kScreenshotReported(
     DlpContentRestriction::kScreenshot,
     DlpRulesManager::Level::kReport);
@@ -162,10 +165,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
   ScreenshotArea partial_in =
       ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(
@@ -174,10 +177,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
               DlpRulesManager::Level::kBlock, 0u);
 
   helper_.ChangeConfidentiality(web_contents, kScreenshotRestricted);
-  EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
   histogram_tester_.ExpectBucketCount(
@@ -187,10 +190,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
 
   web_contents->WasHidden();
   helper_.ChangeVisibility(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 4);
   histogram_tester_.ExpectBucketCount(
@@ -200,10 +203,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
 
   web_contents->WasShown();
   helper_.ChangeVisibility(web_contents);
-  EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
   histogram_tester_.ExpectBucketCount(
@@ -212,15 +215,67 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
               DlpRulesManager::Level::kBlock, 7u);
 
   helper_.DestroyWebContents(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 12);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 7u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
+  DlpContentManager* manager = helper_.GetContentManager();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  ScreenshotArea fullscreen = ScreenshotArea::CreateForAllRootWindows();
+  ScreenshotArea window =
+      ScreenshotArea::CreateForWindow(web_contents->GetNativeView());
+  const gfx::Rect web_contents_rect = web_contents->GetContainerBounds();
+  gfx::Rect out_rect(web_contents_rect);
+  out_rect.Offset(web_contents_rect.width(), web_contents_rect.height());
+  gfx::Rect in_rect(web_contents_rect);
+  in_rect.Offset(web_contents_rect.width() / 2, web_contents_rect.height() / 2);
+  ScreenshotArea partial_out =
+      ScreenshotArea::CreateForPartialWindow(root_window, out_rect);
+  ScreenshotArea partial_in =
+      ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+
+  helper_.ChangeConfidentiality(web_contents, kScreenshotWarned);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+
+  web_contents->WasHidden();
+  helper_.ChangeVisibility(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+
+  web_contents->WasShown();
+  helper_.ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+
+  helper_.DestroyWebContents(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
@@ -245,43 +300,43 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
   ScreenshotArea partial_in =
       ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 
   helper_.ChangeConfidentiality(web_contents, kScreenshotReported);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 3u);
 
   web_contents->WasHidden();
   helper_.ChangeVisibility(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 4u);
 
   web_contents->WasShown();
   helper_.ChangeVisibility(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 7u);
 
   helper_.DestroyWebContents(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(

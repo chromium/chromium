@@ -116,6 +116,23 @@ bool DlpContentManager::IsScreenshotRestricted(
   return IsBlocked(restriction_info);
 }
 
+bool DlpContentManager::IsScreenshotApiRestricted(
+    const ScreenshotArea& area) const {
+  RestrictionLevelAndUrl restriction_info =
+      GetAreaRestrictionInfo(area, DlpContentRestriction::kScreenshot);
+  if (IsReported(restriction_info)) {
+    SYSLOG(INFO) << "DLP blocked taking a screenshot";
+    if (reporting_manager_)
+      ReportEvent(restriction_info.url,
+                  DlpRulesManager::Restriction::kScreenshot,
+                  restriction_info.level, reporting_manager_);
+  }
+  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, IsBlocked(restriction_info));
+  // TODO(crbug.com/1247190): Add reporting and metrics for WARN
+  // TODO(crbug.com/1252736): Properly handle WARN for screenshots API
+  return IsBlocked(restriction_info) || IsWarn(restriction_info);
+}
+
 bool DlpContentManager::IsVideoCaptureRestricted(
     const ScreenshotArea& area) const {
   RestrictionLevelAndUrl restriction_info =

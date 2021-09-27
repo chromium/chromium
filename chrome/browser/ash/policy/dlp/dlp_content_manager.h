@@ -59,6 +59,9 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Returns whether screenshots should be restricted.
   virtual bool IsScreenshotRestricted(const ScreenshotArea& area) const;
 
+  // Returns whether screenshots should be restricted for extensions API.
+  virtual bool IsScreenshotApiRestricted(const ScreenshotArea& area) const;
+
   // Returns whether video capture should be restricted.
   bool IsVideoCaptureRestricted(const ScreenshotArea& area) const;
 
