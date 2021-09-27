@@ -3331,57 +3331,6 @@
             ]
         }
     ],
-    "FeedActionsUpload": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:iph_feed_header_menu_triggered;comparator:==0;window:360;storage:360",
-                        "event_used": "name:feed_header_menu_clicked;comparator:==0;window:360;storage:360",
-                        "session_rate": "==0"
-                    },
-                    "enable_features": [
-                        "IPH_FeedHeaderMenu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FeedPrivacyNoticeCardAtSecondPosition": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20201207",
-                    "enable_features": [
-                        "InterestFeedV1ClickAndViewActionsConditionalUpload"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FeedPrivacyNoticeCardAutoDismiss": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210119",
-                    "enable_features": [
-                        "InterestFeedNoticeCardAutoDismiss"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedPullToRefresh": [
         {
             "platforms": [
