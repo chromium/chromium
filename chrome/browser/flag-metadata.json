@@ -201,7 +201,7 @@
   {
     "name": "arc-ghost-window",
     "owners": [ "sstan" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "arc-image-copy-paste-compat",
