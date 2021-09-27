@@ -122,6 +122,11 @@ class DeviceLocalAccountPolicyServiceTestBase
 class DeviceLocalAccountPolicyServiceTest
     : public DeviceLocalAccountPolicyServiceTestBase {
  public:
+  DeviceLocalAccountPolicyServiceTest(
+      const DeviceLocalAccountPolicyServiceTest&) = delete;
+  DeviceLocalAccountPolicyServiceTest& operator=(
+      const DeviceLocalAccountPolicyServiceTest&) = delete;
+
   MOCK_METHOD1(OnRefreshDone, void(bool));
 
   // DeviceLocalAccountPolicyServiceTestBase:
@@ -135,9 +140,6 @@ class DeviceLocalAccountPolicyServiceTest
   void InstallDevicePolicy() override;
 
   MockDeviceLocalAccountPolicyServiceObserver service_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyServiceTest);
 };
 
 DeviceLocalAccountPolicyServiceTestBase::
@@ -542,6 +544,12 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
 
 class DeviceLocalAccountPolicyExtensionCacheTest
     : public DeviceLocalAccountPolicyServiceTestBase {
+ public:
+  DeviceLocalAccountPolicyExtensionCacheTest(
+      const DeviceLocalAccountPolicyExtensionCacheTest&) = delete;
+  DeviceLocalAccountPolicyExtensionCacheTest& operator=(
+      const DeviceLocalAccountPolicyExtensionCacheTest&) = delete;
+
  protected:
   DeviceLocalAccountPolicyExtensionCacheTest();
 
@@ -555,9 +563,6 @@ class DeviceLocalAccountPolicyExtensionCacheTest
   base::FilePath cache_dir_1_;
   base::FilePath cache_dir_2_;
   base::FilePath cache_dir_3_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyExtensionCacheTest);
 };
 
 DeviceLocalAccountPolicyExtensionCacheTest::
@@ -821,6 +826,12 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RemoveAccount) {
 
 class DeviceLocalAccountPolicyProviderTest
     : public DeviceLocalAccountPolicyServiceTestBase {
+ public:
+  DeviceLocalAccountPolicyProviderTest(
+      const DeviceLocalAccountPolicyProviderTest&) = delete;
+  DeviceLocalAccountPolicyProviderTest& operator=(
+      const DeviceLocalAccountPolicyProviderTest&) = delete;
+
  protected:
   DeviceLocalAccountPolicyProviderTest();
 
@@ -831,9 +842,6 @@ class DeviceLocalAccountPolicyProviderTest
   std::unique_ptr<DeviceLocalAccountPolicyProvider> provider_;
   MockConfigurationPolicyObserver provider_observer_;
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyProviderTest);
 };
 
 DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest()
@@ -1208,6 +1216,12 @@ TEST_F(DeviceLocalAccountPolicyProviderKioskTest, WebKioskPolicy) {
 
 class DeviceLocalAccountPolicyProviderLoadImmediateTest
     : public DeviceLocalAccountPolicyServiceTestBase {
+ public:
+  DeviceLocalAccountPolicyProviderLoadImmediateTest(
+      const DeviceLocalAccountPolicyProviderLoadImmediateTest&) = delete;
+  DeviceLocalAccountPolicyProviderLoadImmediateTest& operator=(
+      const DeviceLocalAccountPolicyProviderLoadImmediateTest&) = delete;
+
  protected:
   DeviceLocalAccountPolicyProviderLoadImmediateTest();
 
@@ -1216,9 +1230,6 @@ class DeviceLocalAccountPolicyProviderLoadImmediateTest
 
   std::unique_ptr<DeviceLocalAccountPolicyProvider> provider_;
   MockDeviceLocalAccountPolicyServiceObserver service_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyProviderLoadImmediateTest);
 };
 
 DeviceLocalAccountPolicyProviderLoadImmediateTest::

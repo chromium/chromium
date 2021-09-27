@@ -100,6 +100,12 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
 }  // namespace
 
 class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
+ public:
+  DeviceOffHoursControllerSimpleTest(
+      const DeviceOffHoursControllerSimpleTest&) = delete;
+  DeviceOffHoursControllerSimpleTest& operator=(
+      const DeviceOffHoursControllerSimpleTest&) = delete;
+
  protected:
   DeviceOffHoursControllerSimpleTest()
       : ash::DeviceSettingsTestBase(
@@ -152,9 +158,6 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
 
   // The object is owned by DeviceSettingsService class.
   policy::off_hours::DeviceOffHoursController* device_off_hours_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceOffHoursControllerSimpleTest);
 };
 
 TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursUnset) {
@@ -315,6 +318,12 @@ TEST_F(DeviceOffHoursControllerSimpleTest,
 
 class DeviceOffHoursControllerFakeClockTest
     : public DeviceOffHoursControllerSimpleTest {
+ public:
+  DeviceOffHoursControllerFakeClockTest(
+      const DeviceOffHoursControllerFakeClockTest&) = delete;
+  DeviceOffHoursControllerFakeClockTest& operator=(
+      const DeviceOffHoursControllerFakeClockTest&) = delete;
+
  protected:
   DeviceOffHoursControllerFakeClockTest() {}
 
@@ -352,8 +361,6 @@ class DeviceOffHoursControllerFakeClockTest
  private:
   base::SimpleTestClock test_clock_;
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOffHoursControllerFakeClockTest);
 };
 
 TEST_F(DeviceOffHoursControllerFakeClockTest, FakeClock) {

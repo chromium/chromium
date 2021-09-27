@@ -37,6 +37,8 @@ class UploadJob {
 
   class Delegate {
    public:
+    Delegate& operator=(const Delegate&) = delete;
+
     // When the upload finishes successfully, the OnSuccess() method is invoked.
     virtual void OnSuccess() = 0;
 
@@ -46,10 +48,9 @@ class UploadJob {
 
    protected:
     virtual ~Delegate();
-
-   private:
-    DISALLOW_ASSIGN(Delegate);
   };
+
+  UploadJob& operator=(const UploadJob&) = delete;
 
   virtual ~UploadJob() {}
 
@@ -69,8 +70,6 @@ class UploadJob {
 
   // Initiates the data upload . This method must only be called once.
   virtual void Start() = 0;
-
-  DISALLOW_ASSIGN(UploadJob);
 };
 
 }  // namespace policy

@@ -130,6 +130,11 @@ class AutoEnrollmentClientImplTest
     : public testing::Test,
       public ::testing::WithParamInterface<
           std::tuple<AutoEnrollmentClientImplTestState, int>> {
+ public:
+  AutoEnrollmentClientImplTest(const AutoEnrollmentClientImplTest&) = delete;
+  AutoEnrollmentClientImplTest& operator=(const AutoEnrollmentClientImplTest&) =
+      delete;
+
  protected:
   AutoEnrollmentClientImplTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
@@ -609,7 +614,6 @@ class AutoEnrollmentClientImplTest
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<AutoEnrollmentClient> client_;
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentClientImplTest);
 };
 
 TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {

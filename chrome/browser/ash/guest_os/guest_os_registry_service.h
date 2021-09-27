@@ -131,6 +131,10 @@ class GuestOsRegistryService : public KeyedService {
   };
 
   explicit GuestOsRegistryService(Profile* profile);
+
+  GuestOsRegistryService(const GuestOsRegistryService&) = delete;
+  GuestOsRegistryService& operator=(const GuestOsRegistryService&) = delete;
+
   ~GuestOsRegistryService() override;
 
   base::WeakPtr<GuestOsRegistryService> GetWeakPtr();
@@ -277,8 +281,6 @@ class GuestOsRegistryService : public KeyedService {
   std::map<std::string, uint32_t> retry_icon_requests_;
 
   base::WeakPtrFactory<GuestOsRegistryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsRegistryService);
 };
 
 }  // namespace guest_os

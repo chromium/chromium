@@ -47,6 +47,11 @@ void CopyLockResult(base::RunLoop* loop,
 }  // namespace
 
 class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
+ public:
+  DeviceCloudPolicyStoreAshTest(const DeviceCloudPolicyStoreAshTest&) = delete;
+  DeviceCloudPolicyStoreAshTest& operator=(
+      const DeviceCloudPolicyStoreAshTest&) = delete;
+
  protected:
   DeviceCloudPolicyStoreAshTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -140,9 +145,6 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
 
   std::unique_ptr<DeviceCloudPolicyStoreAsh> store_;
   MockCloudPolicyStoreObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreAshTest);
 };
 
 TEST_F(DeviceCloudPolicyStoreAshTest, LoadNoKey) {

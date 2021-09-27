@@ -38,13 +38,13 @@ class RestoreOnStartupTest : public LoginPolicyTestBase {
  public:
   RestoreOnStartupTest() = default;
 
+  RestoreOnStartupTest(const RestoreOnStartupTest&) = delete;
+  RestoreOnStartupTest& operator=(const RestoreOnStartupTest&) = delete;
+
   // LoginPolicyTestBase:
   void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override;
 
   void VerifyStartUpURLs();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RestoreOnStartupTest);
 };
 
 void RestoreOnStartupTest::GetMandatoryPoliciesValue(

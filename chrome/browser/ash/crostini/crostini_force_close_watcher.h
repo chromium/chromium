@@ -45,6 +45,9 @@ class ForceCloseWatcher : public views::WidgetObserver {
     virtual void Hide() = 0;
   };
 
+  ForceCloseWatcher(const ForceCloseWatcher&) = delete;
+  ForceCloseWatcher& operator=(const ForceCloseWatcher&) = delete;
+
   // Creates a watcher for the given |delegate| which will wait for attempts to
   // close its associated widget and, if needed, bring up a UI allowing the user
   // to forcibly close its associated window.
@@ -92,8 +95,6 @@ class ForceCloseWatcher : public views::WidgetObserver {
   // Implements the delay between the first and second time the user tries to
   // close the window.
   absl::optional<base::ElapsedTimer> show_dialog_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForceCloseWatcher);
 };
 
 // The delegate implementation to allow exo's shell surfaces to be closed by the

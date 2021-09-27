@@ -37,6 +37,9 @@ class MagnificationManager
       public ui::EventHandler,
       public views::AXEventObserver {
  public:
+  MagnificationManager(const MagnificationManager&) = delete;
+  MagnificationManager& operator=(const MagnificationManager&) = delete;
+
   // Creates an instance of MagnificationManager. This should be called once.
   static void Initialize();
 
@@ -119,8 +122,6 @@ class MagnificationManager
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::WeakPtrFactory<MagnificationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MagnificationManager);
 };
 
 }  // namespace ash

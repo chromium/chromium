@@ -50,6 +50,9 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
   // display.
   explicit HelpAppLauncher(gfx::NativeWindow parent_window);
 
+  HelpAppLauncher(const HelpAppLauncher&) = delete;
+  HelpAppLauncher& operator=(const HelpAppLauncher&) = delete;
+
   // Shows specified help topic.
   void ShowHelpTopic(HelpTopic help_topic_id);
 
@@ -67,8 +70,6 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
 
   // Parent window which is passed to help dialog.
   gfx::NativeWindow parent_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(HelpAppLauncher);
 };
 
 }  // namespace ash

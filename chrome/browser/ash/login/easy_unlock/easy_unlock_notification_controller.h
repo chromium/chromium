@@ -54,6 +54,9 @@ class EasyUnlockNotificationController {
                          const base::WeakPtr<EasyUnlockNotificationController>&
                              notification_controller);
 
+    NotificationDelegate(const NotificationDelegate&) = delete;
+    NotificationDelegate& operator=(const NotificationDelegate&) = delete;
+
     // message_center::NotificationDelegate:
     void Click(const absl::optional<int>& button_index,
                const absl::optional<std::u16string>& reply) override;
@@ -63,8 +66,6 @@ class EasyUnlockNotificationController {
 
     std::string notification_id_;
     base::WeakPtr<EasyUnlockNotificationController> notification_controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
   };
 
   // Displays the notification to the user.

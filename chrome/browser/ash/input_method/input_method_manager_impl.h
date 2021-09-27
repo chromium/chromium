@@ -190,6 +190,10 @@ class InputMethodManagerImpl : public InputMethodManager,
                          std::unique_ptr<ComponentExtensionIMEManagerDelegate>
                              component_extension_ime_manager_delegate,
                          bool enable_extension_loading);
+
+  InputMethodManagerImpl(const InputMethodManagerImpl&) = delete;
+  InputMethodManagerImpl& operator=(const InputMethodManagerImpl&) = delete;
+
   ~InputMethodManagerImpl() override;
 
   // InputMethodManager override:
@@ -334,8 +338,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   ImeServiceConnectorMap ime_service_connectors_;
 
   content::NotificationRegistrar notification_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodManagerImpl);
 };
 
 }  // namespace input_method

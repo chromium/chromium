@@ -122,6 +122,10 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
         waiting_for_state_(false),
         final_state_(OAuth2LoginManager::SESSION_RESTORE_NOT_STARTED) {}
 
+  OAuth2LoginManagerStateWaiter(const OAuth2LoginManagerStateWaiter&) = delete;
+  OAuth2LoginManagerStateWaiter& operator=(
+      const OAuth2LoginManagerStateWaiter&) = delete;
+
   void WaitForStates(
       const std::set<OAuth2LoginManager::SessionRestoreState>& states) {
     DCHECK(!waiting_for_state_);
@@ -163,8 +167,6 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
   bool waiting_for_state_;
   OAuth2LoginManager::SessionRestoreState final_state_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManagerStateWaiter);
 };
 
 // Blocks a thread associated with a given `task_runner` on construction and
@@ -203,6 +205,9 @@ class RequestDeferrer {
         start_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  RequestDeferrer(const RequestDeferrer&) = delete;
+  RequestDeferrer& operator=(const RequestDeferrer&) = delete;
+
   void UnblockRequest() { blocking_event_.Signal(); }
 
   void WaitForRequestToStart() {
@@ -231,13 +236,15 @@ class RequestDeferrer {
   base::WaitableEvent blocking_event_;
   base::WaitableEvent start_event_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestDeferrer);
 };
 
 }  // namespace
 
 class OAuth2Test : public OobeBaseTest {
+ public:
+  OAuth2Test(const OAuth2Test&) = delete;
+  OAuth2Test& operator=(const OAuth2Test&) = delete;
+
  protected:
   OAuth2Test() = default;
   ~OAuth2Test() override = default;
@@ -475,8 +482,6 @@ class OAuth2Test : public OobeBaseTest {
  private:
   base::FilePath test_data_dir_;
   std::map<std::string, RequestDeferrer*> request_deferers_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2Test);
 };
 
 class CookieReader {
@@ -873,6 +878,10 @@ class FakeGoogle {
 
 class MergeSessionTest : public OAuth2Test,
                          public testing::WithParamInterface<bool> {
+ public:
+  MergeSessionTest(const MergeSessionTest&) = delete;
+  MergeSessionTest& operator=(const MergeSessionTest&) = delete;
+
  protected:
   MergeSessionTest() = default;
 
@@ -969,9 +978,6 @@ class MergeSessionTest : public OAuth2Test,
   RequestDeferrer merge_session_deferer_;
   GURL fake_google_page_url_;
   GURL non_google_page_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MergeSessionTest);
 };
 
 Browser* FindOrCreateVisibleBrowser(Profile* profile) {

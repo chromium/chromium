@@ -66,6 +66,9 @@ class CopyOperation {
     DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
   }
 
+  CopyOperation(const CopyOperation&) = delete;
+  CopyOperation& operator=(const CopyOperation&) = delete;
+
   void Start() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -135,8 +138,6 @@ class CopyOperation {
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   base::WeakPtr<DriveFsAsyncFileUtil> async_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOperation);
 };
 
 // Recursively deletes a folder locally. The folder will still be available in
@@ -155,6 +156,9 @@ class DeleteOperation {
         blocking_task_runner_(std::move(blocking_task_runner)) {
     DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
   }
+
+  DeleteOperation(const DeleteOperation&) = delete;
+  DeleteOperation& operator=(const DeleteOperation&) = delete;
 
   void Start() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -192,8 +196,6 @@ class DeleteOperation {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::FilePath path_in_trash_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOperation);
 };
 
 }  // namespace

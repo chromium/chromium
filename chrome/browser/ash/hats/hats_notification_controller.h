@@ -42,6 +42,10 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   HatsNotificationController(Profile* profile, const HatsConfig& config);
 
+  HatsNotificationController(const HatsNotificationController&) = delete;
+  HatsNotificationController& operator=(const HatsNotificationController&) =
+      delete;
+
   // Returns true if the survey needs to be displayed for the given |profile|.
   static bool ShouldShowSurveyToProfile(Profile* profile,
                                         const HatsConfig& config);
@@ -98,8 +102,6 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   HatsState state_ = HatsState::kDeviceSelected;
 
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HatsNotificationController);
 };
 
 }  // namespace ash

@@ -119,6 +119,9 @@ class PlatformVerificationFlow
                            AttestationClient* attestation_client,
                            Delegate* delegate);
 
+  PlatformVerificationFlow(const PlatformVerificationFlow&) = delete;
+  PlatformVerificationFlow& operator=(const PlatformVerificationFlow&) = delete;
+
   // Invokes an asynchronous operation to challenge a platform key.  Any user
   // interaction will be associated with |web_contents|.  The |service_id| is an
   // arbitrary value but it should uniquely identify the origin of the request
@@ -238,8 +241,6 @@ class PlatformVerificationFlow
   std::unique_ptr<Delegate> default_delegate_;
   base::TimeDelta timeout_delay_;
   std::set<std::string> renewals_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformVerificationFlow);
 };
 
 }  // namespace attestation

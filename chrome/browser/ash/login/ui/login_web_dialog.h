@@ -40,6 +40,10 @@ class LoginWebDialog : public ui::WebDialogDelegate {
                  gfx::NativeWindow parent_window,
                  const std::u16string& title,
                  const GURL& url);
+
+  LoginWebDialog(const LoginWebDialog&) = delete;
+  LoginWebDialog& operator=(const LoginWebDialog&) = delete;
+
   ~LoginWebDialog() override;
 
   void Show();
@@ -89,8 +93,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   std::u16string title_;
   const GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);
 };
 
 }  // namespace ash

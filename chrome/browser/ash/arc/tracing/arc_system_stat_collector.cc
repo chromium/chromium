@@ -117,12 +117,14 @@ class CpuTemperaturePathDetector {
     LOG(WARNING) << "Not detected path to read CPU temperature.";
   }
 
+  CpuTemperaturePathDetector(const CpuTemperaturePathDetector&) = delete;
+  CpuTemperaturePathDetector& operator=(const CpuTemperaturePathDetector&) =
+      delete;
+
   const base::FilePath& path() const { return path_; }
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(CpuTemperaturePathDetector);
 };
 
 const base::FilePath& GetCpuTemperaturePathOnFileThread() {

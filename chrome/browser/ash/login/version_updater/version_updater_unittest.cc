@@ -55,6 +55,9 @@ class VersionUpdaterUnitTest : public testing::Test {
  public:
   VersionUpdaterUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
+  VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
+
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
     status.set_current_operation(operation);
@@ -146,8 +149,6 @@ class VersionUpdaterUnitTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 
   int checks_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterUnitTest);
 };
 
 TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {

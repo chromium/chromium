@@ -144,6 +144,9 @@ class Observer : public ProvidedFileSystemObserver {
 
   Observer() : list_changed_counter_(0), tag_updated_counter_(0) {}
 
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   // ProvidedFileSystemInterfaceObserver overrides.
   void OnWatcherChanged(const ProvidedFileSystemInfo& file_system_info,
                         const Watcher& watcher,
@@ -186,8 +189,6 @@ class Observer : public ProvidedFileSystemObserver {
   int list_changed_counter_;
   int tag_updated_counter_;
   base::OnceClosure complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 // Stub notification manager, which works in unit tests.

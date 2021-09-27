@@ -49,6 +49,9 @@ class PrefChangeWatcher {
  public:
   PrefChangeWatcher(const char* pref_name, PrefService* prefs);
 
+  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
+  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
+
   void Wait();
 
   void OnPrefChange();
@@ -58,8 +61,6 @@ class PrefChangeWatcher {
 
   base::RunLoop run_loop_;
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
 PrefChangeWatcher::PrefChangeWatcher(const char* pref_name,
@@ -84,6 +85,12 @@ void PrefChangeWatcher::OnPrefChange() {
 
 class LoginScreenAccessibilityPolicyBrowsertest
     : public DevicePolicyCrosBrowserTest {
+ public:
+  LoginScreenAccessibilityPolicyBrowsertest(
+      const LoginScreenAccessibilityPolicyBrowsertest&) = delete;
+  LoginScreenAccessibilityPolicyBrowsertest& operator=(
+      const LoginScreenAccessibilityPolicyBrowsertest&) = delete;
+
  protected:
   LoginScreenAccessibilityPolicyBrowsertest();
   ~LoginScreenAccessibilityPolicyBrowsertest() override;
@@ -100,9 +107,6 @@ class LoginScreenAccessibilityPolicyBrowsertest
   base::Value GetPrefValue(const char* pref_name) const;
 
   Profile* login_profile_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenAccessibilityPolicyBrowsertest);
 };
 
 LoginScreenAccessibilityPolicyBrowsertest::

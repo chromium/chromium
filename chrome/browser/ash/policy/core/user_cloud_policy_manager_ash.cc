@@ -120,6 +120,11 @@ class UserCloudPolicyManagerAshNotifierFactory
     return base::Singleton<UserCloudPolicyManagerAshNotifierFactory>::get();
   }
 
+  UserCloudPolicyManagerAshNotifierFactory(
+      const UserCloudPolicyManagerAshNotifierFactory&) = delete;
+  UserCloudPolicyManagerAshNotifierFactory& operator=(
+      const UserCloudPolicyManagerAshNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       UserCloudPolicyManagerAshNotifierFactory>;
@@ -131,8 +136,6 @@ class UserCloudPolicyManagerAshNotifierFactory
   }
 
   ~UserCloudPolicyManagerAshNotifierFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAshNotifierFactory);
 };
 
 }  // namespace

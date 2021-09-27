@@ -67,6 +67,10 @@ class ExtensionEventObserver : public ProfileManagerObserver,
   };
 
   ExtensionEventObserver();
+
+  ExtensionEventObserver(const ExtensionEventObserver&) = delete;
+  ExtensionEventObserver& operator=(const ExtensionEventObserver&) = delete;
+
   ~ExtensionEventObserver() override;
 
   std::unique_ptr<TestApi> CreateTestApi();
@@ -129,8 +133,6 @@ class ExtensionEventObserver : public ProfileManagerObserver,
   base::CancelableOnceClosure suspend_readiness_callback_;
 
   base::WeakPtrFactory<ExtensionEventObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionEventObserver);
 };
 
 }  // namespace ash

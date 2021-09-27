@@ -151,6 +151,10 @@ class MockMagnificationObserver {
 class MagnificationManagerTest : public InProcessBrowserTest {
  protected:
   MagnificationManagerTest() {}
+
+  MagnificationManagerTest(const MagnificationManagerTest&) = delete;
+  MagnificationManagerTest& operator=(const MagnificationManagerTest&) = delete;
+
   ~MagnificationManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -167,8 +171,6 @@ class MagnificationManagerTest : public InProcessBrowserTest {
 
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
-
-  DISALLOW_COPY_AND_ASSIGN(MagnificationManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, PRE_LoginOffToOff) {

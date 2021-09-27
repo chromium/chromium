@@ -84,6 +84,9 @@ class AppToCategoryMapper {
     return *instance.get();
   }
 
+  AppToCategoryMapper(const AppToCategoryMapper&) = delete;
+  AppToCategoryMapper& operator=(const AppToCategoryMapper&) = delete;
+
   // Returns empty string if category is not set for app |app_id|.
   const std::string& GetCategory(const std::string& app_id) const {
     const auto& it = app_id_to_category_.find(app_id);
@@ -100,8 +103,6 @@ class AppToCategoryMapper {
   ~AppToCategoryMapper() = default;
 
   std::map<std::string, std::string> app_id_to_category_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppToCategoryMapper);
 };
 
 }  // namespace

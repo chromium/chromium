@@ -26,9 +26,11 @@ struct RequestInfo {
 
   RequestInfo(uint32_t remaining_requests, FindHostsCallback callback);
   RequestInfo(RequestInfo&& other);
-  ~RequestInfo();
 
-  DISALLOW_COPY_AND_ASSIGN(RequestInfo);
+  RequestInfo(const RequestInfo&) = delete;
+  RequestInfo& operator=(const RequestInfo&) = delete;
+
+  ~RequestInfo();
 };
 
 // NetworkScanner discovers SMB hosts in the local network by querying

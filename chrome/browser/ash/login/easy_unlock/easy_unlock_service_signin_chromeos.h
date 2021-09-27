@@ -68,6 +68,10 @@ class EasyUnlockServiceSignin
   // Structure containing a user's key data loaded from cryptohome.
   struct UserData {
     UserData();
+
+    UserData(const UserData&) = delete;
+    UserData& operator=(const UserData&) = delete;
+
     ~UserData();
 
     // The loading state of the data.
@@ -79,9 +83,6 @@ class EasyUnlockServiceSignin
     // The list of remote device dictionaries understood by Easy unlock app.
     // This will be returned by `GetRemoteDevices` method.
     base::ListValue remote_devices_value;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UserData);
   };
 
   // EasyUnlockService implementation:

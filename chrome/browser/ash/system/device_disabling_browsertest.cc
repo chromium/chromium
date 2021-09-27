@@ -70,6 +70,9 @@ class DeviceDisablingTest
  public:
   DeviceDisablingTest() = default;
 
+  DeviceDisablingTest(const DeviceDisablingTest&) = delete;
+  DeviceDisablingTest& operator=(const DeviceDisablingTest&) = delete;
+
   // Sets up a device state blob that indicates the device is disabled.
   void SetDeviceDisabledPolicy();
 
@@ -92,8 +95,6 @@ class DeviceDisablingTest
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingTest);
 };
 
 void DeviceDisablingTest::SetDeviceDisabledPolicy() {
@@ -239,15 +240,17 @@ class PresetPolicyDeviceDisablingTest : public DeviceDisablingTest {
  public:
   PresetPolicyDeviceDisablingTest() {}
 
+  PresetPolicyDeviceDisablingTest(const PresetPolicyDeviceDisablingTest&) =
+      delete;
+  PresetPolicyDeviceDisablingTest& operator=(
+      const PresetPolicyDeviceDisablingTest&) = delete;
+
  protected:
   // DeviceDisablingTest:
   void SetUpInProcessBrowserTestFixture() override {
     DeviceDisablingTest::SetUpInProcessBrowserTestFixture();
     SetDeviceDisabledPolicy();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PresetPolicyDeviceDisablingTest);
 };
 
 // Same test as the one in DeviceDisablingTest, except the policy is being set

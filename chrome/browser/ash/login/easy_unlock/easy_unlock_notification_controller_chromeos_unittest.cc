@@ -38,6 +38,11 @@ class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {
  protected:
   EasyUnlockNotificationControllerTest() {}
 
+  EasyUnlockNotificationControllerTest(
+      const EasyUnlockNotificationControllerTest&) = delete;
+  EasyUnlockNotificationControllerTest& operator=(
+      const EasyUnlockNotificationControllerTest&) = delete;
+
   ~EasyUnlockNotificationControllerTest() override {}
 
   void SetUp() override {
@@ -53,9 +58,6 @@ class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<testing::StrictMock<TestableNotificationController>>
       notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockNotificationControllerTest);
 };
 
 TEST_F(EasyUnlockNotificationControllerTest,

@@ -15,6 +15,11 @@ class AccountManagerPolicyController;
 class AccountManagerPolicyControllerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  AccountManagerPolicyControllerFactory(
+      const AccountManagerPolicyControllerFactory&) = delete;
+  AccountManagerPolicyControllerFactory& operator=(
+      const AccountManagerPolicyControllerFactory&) = delete;
+
   // Gets the instance of the service associated with |context|.
   static AccountManagerPolicyController* GetForBrowserContext(
       content::BrowserContext* context);
@@ -31,8 +36,6 @@ class AccountManagerPolicyControllerFactory
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerFactory);
 };
 
 }  // namespace ash

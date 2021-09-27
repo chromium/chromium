@@ -29,6 +29,10 @@ class CrostiniReportingUtilTest : public testing::Test {
  public:
   CrostiniReportingUtilTest() = default;
 
+  CrostiniReportingUtilTest(const CrostiniReportingUtilTest&) = delete;
+  CrostiniReportingUtilTest& operator=(const CrostiniReportingUtilTest&) =
+      delete;
+
  protected:
   void enable_crostini_reporting() {
     profile_.GetPrefs()->SetBoolean(prefs::kReportCrostiniUsageEnabled, true);
@@ -38,9 +42,6 @@ class CrostiniReportingUtilTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   TestingProfile profile_;
   component_updater::MockComponentUpdateService update_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniReportingUtilTest);
 };
 
 TEST_F(CrostiniReportingUtilTest, WriteMetricsForReportingToPrefsIfEnabled) {

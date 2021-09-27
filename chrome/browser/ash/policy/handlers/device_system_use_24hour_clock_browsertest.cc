@@ -29,6 +29,11 @@ class SystemUse24HourClockPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
   SystemUse24HourClockPolicyTest() = default;
 
+  SystemUse24HourClockPolicyTest(const SystemUse24HourClockPolicyTest&) =
+      delete;
+  SystemUse24HourClockPolicyTest& operator=(
+      const SystemUse24HourClockPolicyTest&) = delete;
+
   // DevicePolicyCrosBrowserTest:
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
@@ -72,8 +77,6 @@ class SystemUse24HourClockPolicyTest : public DevicePolicyCrosBrowserTest {
 
  private:
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemUse24HourClockPolicyTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SystemUse24HourClockPolicyTest, CheckUnset) {

@@ -41,6 +41,11 @@ class AppInstallEventLogManagerWrapperTestable
   explicit AppInstallEventLogManagerWrapperTestable(Profile* profile)
       : AppInstallEventLogManagerWrapper(profile) {}
 
+  AppInstallEventLogManagerWrapperTestable(
+      const AppInstallEventLogManagerWrapperTestable&) = delete;
+  AppInstallEventLogManagerWrapperTestable& operator=(
+      const AppInstallEventLogManagerWrapperTestable&) = delete;
+
   scoped_refptr<base::SequencedTaskRunner> log_task_runner() {
     return log_task_runner_->GetTaskRunner();
   }
@@ -51,9 +56,6 @@ class AppInstallEventLogManagerWrapperTestable
   // AppInstallEventLogManagerWrapper:
   MOCK_METHOD0(CreateManager, void());
   MOCK_METHOD0(DestroyManager, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogManagerWrapperTestable);
 };
 
 }  // namespace
@@ -62,6 +64,11 @@ class AppInstallEventLogManagerWrapperTest : public testing::Test {
  protected:
   AppInstallEventLogManagerWrapperTest()
       : log_file_path_(profile_.GetPath().Append(kLogFileName)) {}
+
+  AppInstallEventLogManagerWrapperTest(
+      const AppInstallEventLogManagerWrapperTest&) = delete;
+  AppInstallEventLogManagerWrapperTest& operator=(
+      const AppInstallEventLogManagerWrapperTest&) = delete;
 
   // testing::Test:
   void SetUp() override { app_list_.Append(kPackageName); }
@@ -131,9 +138,6 @@ class AppInstallEventLogManagerWrapperTest : public testing::Test {
   std::unique_ptr<AppInstallEventLogManagerWrapperTestable> wrapper_;
 
   scoped_refptr<base::SequencedTaskRunner> log_task_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogManagerWrapperTest);
 };
 
 // Populate a log file and the prefs holding the lists of apps for which

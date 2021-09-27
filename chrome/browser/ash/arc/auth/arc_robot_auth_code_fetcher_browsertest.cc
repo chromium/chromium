@@ -61,6 +61,12 @@ void ResponseJob(const network::ResourceRequest& request,
 }  // namespace
 
 class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
+ public:
+  ArcRobotAuthCodeFetcherBrowserTest(
+      const ArcRobotAuthCodeFetcherBrowserTest&) = delete;
+  ArcRobotAuthCodeFetcherBrowserTest& operator=(
+      const ArcRobotAuthCodeFetcherBrowserTest&) = delete;
+
  protected:
   // Test configuration for whether to set up the CloudPolicyClient connection.
   // By default, the test sets up the connection.
@@ -147,8 +153,6 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcherBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcRobotAuthCodeFetcherBrowserTest,
@@ -191,14 +195,17 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAuthCodeFetcherBrowserTest,
 
 class ArcRobotAuthCodeFetcherOfflineBrowserTest
     : public ArcRobotAuthCodeFetcherBrowserTest {
+ public:
+  ArcRobotAuthCodeFetcherOfflineBrowserTest(
+      const ArcRobotAuthCodeFetcherOfflineBrowserTest&) = delete;
+  ArcRobotAuthCodeFetcherOfflineBrowserTest& operator=(
+      const ArcRobotAuthCodeFetcherOfflineBrowserTest&) = delete;
+
  protected:
   ArcRobotAuthCodeFetcherOfflineBrowserTest()
       : ArcRobotAuthCodeFetcherBrowserTest(CloudPolicyClientSetup::kSkip) {}
 
   ~ArcRobotAuthCodeFetcherOfflineBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcherOfflineBrowserTest);
 };
 
 // Tests that the fetch fails when CloudPolicyClient has not been set up yet.

@@ -677,12 +677,13 @@ class ArcBluetoothBridge
                    std::unique_ptr<device::BluetoothGattConnection> connection,
                    bool need_hard_disconnect);
     GattConnection();
+    GattConnection(const GattConnection&) = delete;
+    GattConnection& operator=(const GattConnection&) = delete;
     ~GattConnection();
     GattConnection(GattConnection&&);
     GattConnection& operator=(GattConnection&&);
 
    private:
-    DISALLOW_COPY_AND_ASSIGN(GattConnection);
   };
   std::unordered_map<std::string, GattConnection> gatt_connections_;
 

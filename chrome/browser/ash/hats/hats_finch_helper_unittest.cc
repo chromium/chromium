@@ -27,6 +27,9 @@ class HatsFinchHelperTest : public testing::Test {
  public:
   HatsFinchHelperTest() {}
 
+  HatsFinchHelperTest(const HatsFinchHelperTest&) = delete;
+  HatsFinchHelperTest& operator=(const HatsFinchHelperTest&) = delete;
+
   void SetFeatureParams(const base::FieldTrialParams& params) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kHappinessTrackingSystem, params);
@@ -57,8 +60,6 @@ class HatsFinchHelperTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsFinchHelperTest);
 };
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {

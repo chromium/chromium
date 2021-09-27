@@ -56,6 +56,11 @@ class SyncConsentScreen : public BaseScreen,
    public:
     SyncConsentScreenTestDelegate() = default;
 
+    SyncConsentScreenTestDelegate(const SyncConsentScreenTestDelegate&) =
+        delete;
+    SyncConsentScreenTestDelegate& operator=(
+        const SyncConsentScreenTestDelegate&) = delete;
+
     // This is called from SyncConsentScreen when user consent is passed to
     // consent auditor with resource ids recorder as consent.
     virtual void OnConsentRecordedIds(
@@ -68,9 +73,6 @@ class SyncConsentScreen : public BaseScreen,
     virtual void OnConsentRecordedStrings(
         const ::login::StringList& consent_description,
         const std::string& consent_confirmation) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SyncConsentScreenTestDelegate);
   };
 
   class SyncConsentScreenExitTestDelegate {

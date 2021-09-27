@@ -29,6 +29,9 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
 
   static VolumeManagerFactory* GetInstance();
 
+  VolumeManagerFactory(const VolumeManagerFactory&) = delete;
+  VolumeManagerFactory& operator=(const VolumeManagerFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
@@ -44,8 +47,6 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
 
   VolumeManagerFactory();
   ~VolumeManagerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeManagerFactory);
 };
 
 }  // namespace file_manager

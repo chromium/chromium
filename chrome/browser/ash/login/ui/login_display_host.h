@@ -69,6 +69,9 @@ class LoginDisplayHost {
     virtual void WebDialogViewBoundsChanged(const gfx::Rect& bounds) = 0;
   };
 
+  LoginDisplayHost(const LoginDisplayHost&) = delete;
+  LoginDisplayHost& operator=(const LoginDisplayHost&) = delete;
+
   // Returns the default LoginDisplayHost instance if it has been created.
   static LoginDisplayHost* default_host() { return default_host_; }
 
@@ -253,8 +256,6 @@ class LoginDisplayHost {
 
   // Callback to be executed when WebUI is started.
   base::RepeatingClosure on_wizard_controller_created_for_tests_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHost);
 };
 
 }  // namespace ash

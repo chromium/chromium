@@ -36,6 +36,10 @@ constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 
 // Hands-off enrollment flow test.
 class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
+ public:
+  HandsOffEnrollmentTest(const HandsOffEnrollmentTest&) = delete;
+  HandsOffEnrollmentTest& operator=(const HandsOffEnrollmentTest&) = delete;
+
  protected:
   HandsOffEnrollmentTest() {}
   ~HandsOffEnrollmentTest() override = default;
@@ -84,9 +88,6 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HandsOffEnrollmentTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, NetworkConnectionReady) {

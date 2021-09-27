@@ -41,8 +41,11 @@ class AffiliationTestHelper {
       chromeos::FakeAuthPolicyClient* fake_authpolicy_client);
 
   // Allow move construction, so the static constructors can be used despite
-  // DISALLOW_COPY_AND_ASSIGN.
+  // deleted constructors.
   AffiliationTestHelper(AffiliationTestHelper&& other);
+
+  AffiliationTestHelper(const AffiliationTestHelper&) = delete;
+  AffiliationTestHelper& operator=(const AffiliationTestHelper&) = delete;
 
   // Sets device affiliation IDs to |device_affiliation_ids| in
   // |fake_session_manager_client_| and modifies |test_helper| so that it
@@ -94,8 +97,6 @@ class AffiliationTestHelper {
   chromeos::FakeSessionManagerClient*
       fake_session_manager_client_;                         // Not owned.
   chromeos::FakeAuthPolicyClient* fake_authpolicy_client_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationTestHelper);
 };
 
 }  // namespace policy

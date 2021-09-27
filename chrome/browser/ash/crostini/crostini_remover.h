@@ -15,6 +15,9 @@ class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
                   std::string vm_name,
                   CrostiniManager::RemoveCrostiniCallback callback);
 
+  CrostiniRemover(const CrostiniRemover&) = delete;
+  CrostiniRemover& operator=(const CrostiniRemover&) = delete;
+
   void RemoveCrostini();
 
  private:
@@ -29,8 +32,6 @@ class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
   Profile* profile_;
   std::string vm_name_;
   CrostiniManager::RemoveCrostiniCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniRemover);
 };
 
 }  // namespace crostini

@@ -112,6 +112,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     bool enable_banners_framework = false;
   };
 
+  FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
+  FileManagerBrowserTestBase& operator=(const FileManagerBrowserTestBase&) =
+      delete;
+
  protected:
   FileManagerBrowserTestBase();
   ~FileManagerBrowserTestBase() override;
@@ -241,8 +245,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   base::FilePath devtools_code_coverage_dir_;
   DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileManagerBrowserTestBase);
 };
 
 std::ostream& operator<<(std::ostream& out, GuestMode mode);

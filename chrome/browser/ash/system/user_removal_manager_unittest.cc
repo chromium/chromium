@@ -26,17 +26,22 @@ class FakeChromeUserRemovalManager : public FakeChromeUserManager {
  public:
   FakeChromeUserRemovalManager() = default;
 
+  FakeChromeUserRemovalManager(const FakeChromeUserRemovalManager&) = delete;
+  FakeChromeUserRemovalManager& operator=(const FakeChromeUserRemovalManager&) =
+      delete;
+
   void RemoveUser(const AccountId& account_id,
                   user_manager::UserRemovalReason reason,
                   user_manager::RemoveUserDelegate* delegate) override {
     RemoveUserFromList(account_id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeChromeUserRemovalManager);
 };
 
 class UserRemovalManagerTest : public testing::Test {
+ public:
+  UserRemovalManagerTest(const UserRemovalManagerTest&) = delete;
+  UserRemovalManagerTest& operator=(const UserRemovalManagerTest&) = delete;
+
  protected:
   UserRemovalManagerTest();
   ~UserRemovalManagerTest() override;
@@ -45,9 +50,6 @@ class UserRemovalManagerTest : public testing::Test {
 
   const ScopedTestingLocalState local_state_;
   const user_manager::ScopedUserManager scoped_user_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserRemovalManagerTest);
 };
 
 UserRemovalManagerTest::UserRemovalManagerTest()

@@ -20,6 +20,9 @@ class CrostiniManagerFactory : public BrowserContextKeyedServiceFactory {
   static CrostiniManager* GetForProfile(Profile* profile);
   static CrostiniManagerFactory* GetInstance();
 
+  CrostiniManagerFactory(const CrostiniManagerFactory&) = delete;
+  CrostiniManagerFactory& operator=(const CrostiniManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<CrostiniManagerFactory>;
 
@@ -29,8 +32,6 @@ class CrostiniManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniManagerFactory);
 };
 
 }  // namespace crostini

@@ -108,6 +108,9 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  Restrictions(const Restrictions&) = delete;
+  Restrictions& operator=(const Restrictions&) = delete;
+
   // Sets the printer cache using the policy blob |data|.
   TaskData SetData(TaskData task_data, std::unique_ptr<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -221,7 +224,6 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
   std::set<std::string> allowlist_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(Restrictions);
 };
 
 class BulkPrintersCalculatorImpl : public BulkPrintersCalculator {

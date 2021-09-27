@@ -32,6 +32,10 @@ class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static PrintJobHistoryServiceFactory* GetInstance();
 
+  PrintJobHistoryServiceFactory(const PrintJobHistoryServiceFactory&) = delete;
+  PrintJobHistoryServiceFactory& operator=(
+      const PrintJobHistoryServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PrintJobHistoryServiceFactory>;
 
@@ -43,8 +47,6 @@ class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryServiceFactory);
 };
 
 }  // namespace ash

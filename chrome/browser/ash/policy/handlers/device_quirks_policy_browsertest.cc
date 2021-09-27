@@ -25,6 +25,9 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
   DeviceQuirksPolicyTest() {}
 
+  DeviceQuirksPolicyTest(const DeviceQuirksPolicyTest&) = delete;
+  DeviceQuirksPolicyTest& operator=(const DeviceQuirksPolicyTest&) = delete;
+
   void SetUpOnMainThread() override {
     // NOTE: QuirksManager::Initialize() isn't necessary here, since it'll be
     // called in ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun().
@@ -82,9 +85,6 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   base::FilePath icc_path_;  // Path to icc file if found or downloaded.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceQuirksPolicyTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceQuirksPolicyTest, CheckUnset) {

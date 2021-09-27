@@ -200,6 +200,10 @@ class FakeAuthInstance : public mojom::AuthInstance {
 };
 
 class ArcAuthServiceTest : public InProcessBrowserTest {
+ public:
+  ArcAuthServiceTest(const ArcAuthServiceTest&) = delete;
+  ArcAuthServiceTest& operator=(const ArcAuthServiceTest&) = delete;
+
  protected:
   ArcAuthServiceTest() = default;
 
@@ -458,8 +462,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   // Not owned.
   ArcAuthService* auth_service_ = nullptr;
   ArcBridgeService* arc_bridge_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAuthServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {

@@ -212,6 +212,10 @@ class TestInputMethodManager : public im::MockInputMethodManager {
   TestInputMethodManager() {
     state_ = scoped_refptr<TestState>(new TestState());
   }
+
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
+
   ~TestInputMethodManager() override = default;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -222,8 +226,6 @@ class TestInputMethodManager : public im::MockInputMethodManager {
 
  private:
   scoped_refptr<TestState> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
@@ -231,18 +233,26 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
   explicit TestIMEInputContextHandler(ui::InputMethod* input_method)
       : input_method_(input_method) {}
 
+  TestIMEInputContextHandler(const TestIMEInputContextHandler&) = delete;
+  TestIMEInputContextHandler& operator=(const TestIMEInputContextHandler&) =
+      delete;
+
   ui::InputMethod* GetInputMethod() override { return input_method_; }
 
  private:
   ui::InputMethod* const input_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIMEInputContextHandler);
 };
 
 class ArcInputMethodManagerServiceTest : public testing::Test {
  protected:
   ArcInputMethodManagerServiceTest()
       : arc_service_manager_(std::make_unique<ArcServiceManager>()) {}
+
+  ArcInputMethodManagerServiceTest(const ArcInputMethodManagerServiceTest&) =
+      delete;
+  ArcInputMethodManagerServiceTest& operator=(
+      const ArcInputMethodManagerServiceTest&) = delete;
+
   ~ArcInputMethodManagerServiceTest() override = default;
 
   ArcInputMethodManagerService* service() { return service_; }
@@ -312,8 +322,6 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   TestInputMethodManager* input_method_manager_ = nullptr;
   TestInputMethodManagerBridge* test_bridge_ = nullptr;  // Owned by |service_|
   ArcInputMethodManagerService* service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerServiceTest);
 };
 
 }  // anonymous namespace

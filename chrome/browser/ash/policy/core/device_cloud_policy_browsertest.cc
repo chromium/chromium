@@ -67,6 +67,12 @@ namespace {
 // The test is performed against a test policy server, which is set up for
 // rotating the policy key automatically with each policy fetch.
 class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
+ public:
+  KeyRotationDeviceCloudPolicyTest(const KeyRotationDeviceCloudPolicyTest&) =
+      delete;
+  KeyRotationDeviceCloudPolicyTest& operator=(
+      const KeyRotationDeviceCloudPolicyTest&) = delete;
+
  protected:
   const int kInitialPolicyValue = 123;
   const int kSecondPolicyValue = 456;
@@ -189,8 +195,6 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   int awaited_policy_value_ = -1;
   std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyRotationDeviceCloudPolicyTest);
 };
 
 }  // namespace

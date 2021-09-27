@@ -30,6 +30,11 @@ class ArcAppLaunchThrottleObserverTest : public testing::Test {
  public:
   using testing::Test::Test;
 
+  ArcAppLaunchThrottleObserverTest(const ArcAppLaunchThrottleObserverTest&) =
+      delete;
+  ArcAppLaunchThrottleObserverTest& operator=(
+      const ArcAppLaunchThrottleObserverTest&) = delete;
+
  protected:
   ArcAppLaunchThrottleObserver* observer() { return &app_launch_observer_; }
 
@@ -39,8 +44,6 @@ class ArcAppLaunchThrottleObserverTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ArcAppLaunchThrottleObserver app_launch_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLaunchThrottleObserverTest);
 };
 
 TEST_F(ArcAppLaunchThrottleObserverTest, TestConstructDestruct) {}

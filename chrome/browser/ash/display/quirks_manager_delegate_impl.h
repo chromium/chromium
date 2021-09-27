@@ -16,6 +16,10 @@ class QuirksManagerDelegateImpl : public QuirksManager::Delegate {
  public:
   QuirksManagerDelegateImpl() = default;
 
+  QuirksManagerDelegateImpl(const QuirksManagerDelegateImpl&) = delete;
+  QuirksManagerDelegateImpl& operator=(const QuirksManagerDelegateImpl&) =
+      delete;
+
   // QuirksManager::Delegate implementation.
   std::string GetApiKey() const override;
   base::FilePath GetDisplayProfileDirectory() const override;
@@ -23,8 +27,6 @@ class QuirksManagerDelegateImpl : public QuirksManager::Delegate {
 
  private:
   ~QuirksManagerDelegateImpl() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(QuirksManagerDelegateImpl);
 };
 
 }  // namespace quirks

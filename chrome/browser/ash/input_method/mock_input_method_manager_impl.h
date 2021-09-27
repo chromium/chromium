@@ -24,6 +24,9 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
    public:
     explicit State(MockInputMethodManagerImpl* manager);
 
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     // MockInputMethodManager::State:
     scoped_refptr<InputMethodManager::State> Clone() const override;
     std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
@@ -41,11 +44,14 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
 
    private:
     MockInputMethodManager* const manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   MockInputMethodManagerImpl();
+
+  MockInputMethodManagerImpl(const MockInputMethodManagerImpl&) = delete;
+  MockInputMethodManagerImpl& operator=(const MockInputMethodManagerImpl&) =
+      delete;
+
   ~MockInputMethodManagerImpl() override;
 
   // MockInputMethodManager:
@@ -94,8 +100,6 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
   FakeImeKeyboard keyboard_;
   bool mod3_used_ = false;
   std::unique_ptr<ComponentExtensionIMEManager> comp_ime_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodManagerImpl);
 };
 
 }  // namespace input_method

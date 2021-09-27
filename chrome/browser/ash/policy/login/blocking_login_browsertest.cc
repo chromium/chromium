@@ -93,6 +93,9 @@ class BlockingLoginTest
  public:
   BlockingLoginTest() : profile_added_(NULL) {}
 
+  BlockingLoginTest(const BlockingLoginTest&) = delete;
+  BlockingLoginTest& operator=(const BlockingLoginTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ash::OobeBaseTest::SetUpCommandLine(command_line);
 
@@ -217,8 +220,6 @@ class BlockingLoginTest
  private:
   std::vector<std::unique_ptr<net::test_server::HttpResponse>> responses_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingLoginTest);
 };
 
 IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {

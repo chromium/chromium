@@ -28,6 +28,9 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
     virtual ~Observer() = default;
   };
 
+  ArcSupportMessageHost(const ArcSupportMessageHost&) = delete;
+  ArcSupportMessageHost& operator=(const ArcSupportMessageHost&) = delete;
+
   static const char kHostName[];
   static const char* const kHostOrigin[];
 
@@ -57,8 +60,6 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
 
   Observer* observer_ = nullptr;
   Client* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportMessageHost);
 };
 
 }  // namespace arc

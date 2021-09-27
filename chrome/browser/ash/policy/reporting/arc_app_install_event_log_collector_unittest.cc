@@ -107,6 +107,12 @@ int64_t TimeToTimestamp(base::Time time) {
 }  // namespace
 
 class ArcAppInstallEventLogCollectorTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogCollectorTest(
+      const ArcAppInstallEventLogCollectorTest&) = delete;
+  ArcAppInstallEventLogCollectorTest& operator=(
+      const ArcAppInstallEventLogCollectorTest&) = delete;
+
  protected:
   ArcAppInstallEventLogCollectorTest() = default;
   ~ArcAppInstallEventLogCollectorTest() override = default;
@@ -181,8 +187,6 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
   FakeAppInstallEventLogCollectorDelegate delegate_;
   TestingPrefServiceSimple pref_service_;
   ArcAppTest arc_app_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogCollectorTest);
 };
 
 // Test the case when collector is created and destroyed inside the one user

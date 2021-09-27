@@ -21,6 +21,10 @@ class ArcTracingEvent;
 class ArcTracingEventMatcher {
  public:
   ArcTracingEventMatcher();
+
+  ArcTracingEventMatcher(const ArcTracingEventMatcher&) = delete;
+  ArcTracingEventMatcher& operator=(const ArcTracingEventMatcher&) = delete;
+
   // Format category:name[*]?(arg_name=arg_value;..)
   // For example:
   // exo:Surface::Attach
@@ -60,8 +64,6 @@ class ArcTracingEventMatcher {
   bool name_prefix_match_ = false;
   // Defines set of arguments to match if needed.
   std::map<std::string, std::string> args_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingEventMatcher);
 };
 
 }  // namespace arc

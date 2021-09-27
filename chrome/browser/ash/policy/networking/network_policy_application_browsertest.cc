@@ -58,6 +58,9 @@ class ServiceConnectedWaiter {
                                                    run_loop_.QuitClosure());
   }
 
+  ServiceConnectedWaiter(const ServiceConnectedWaiter&) = delete;
+  ServiceConnectedWaiter& operator=(const ServiceConnectedWaiter&) = delete;
+
   // Waits until the |service_path| passed to the constructor has connected.
   // If it has connected since the constructor has run, will return immediately.
   void Wait() {
@@ -70,8 +73,6 @@ class ServiceConnectedWaiter {
   ash::ShillServiceClient::TestInterface* shill_service_client_test_;
   std::string service_path_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectedWaiter);
 };
 
 // Registers itself as ash::NetworkPolicyObserver and records events for
@@ -130,6 +131,10 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     login_mixin_.AppendRegularUsers(1);
     test_account_id_ = login_mixin_.users()[0].account_id;
   }
+
+  NetworkPolicyApplicationTest(const NetworkPolicyApplicationTest&) = delete;
+  NetworkPolicyApplicationTest& operator=(const NetworkPolicyApplicationTest&) =
+      delete;
 
  protected:
   // InProcessBrowserTest:
@@ -223,8 +228,6 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
  private:
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   PolicyMap current_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPolicyApplicationTest);
 };
 
 // This test applies a global network policy with

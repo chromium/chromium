@@ -38,6 +38,12 @@ class PluginVmEngagementMetricsService : public KeyedService {
   };
 
   explicit PluginVmEngagementMetricsService(Profile* profile);
+
+  PluginVmEngagementMetricsService(const PluginVmEngagementMetricsService&) =
+      delete;
+  PluginVmEngagementMetricsService& operator=(
+      const PluginVmEngagementMetricsService&) = delete;
+
   ~PluginVmEngagementMetricsService() override;
 
   // This needs to be called when Plugin Vm starts and stops being active so we
@@ -47,8 +53,6 @@ class PluginVmEngagementMetricsService : public KeyedService {
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
       guest_os_engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmEngagementMetricsService);
 };
 
 }  // namespace plugin_vm

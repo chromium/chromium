@@ -171,6 +171,11 @@ const Params kTestCases[] = {
 class SiteIsolationFlagHandlingTest
     : public ash::OobeBaseTest,
       public ::testing::WithParamInterface<Params> {
+ public:
+  SiteIsolationFlagHandlingTest(const SiteIsolationFlagHandlingTest&) = delete;
+  SiteIsolationFlagHandlingTest& operator=(
+      const SiteIsolationFlagHandlingTest&) = delete;
+
  protected:
   SiteIsolationFlagHandlingTest()
       : account_id_(AccountId::FromUserEmailGaiaId("username@examle.com",
@@ -279,9 +284,6 @@ class SiteIsolationFlagHandlingTest
 
   // Observes for user session start.
   std::unique_ptr<ash::SessionStateWaiter> user_session_started_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationFlagHandlingTest);
 };
 
 }  // namespace

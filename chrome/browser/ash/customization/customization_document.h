@@ -92,6 +92,10 @@ class StartupCustomizationDocument : public CustomizationDocument {
  public:
   static StartupCustomizationDocument* GetInstance();
 
+  StartupCustomizationDocument(const StartupCustomizationDocument&) = delete;
+  StartupCustomizationDocument& operator=(const StartupCustomizationDocument&) =
+      delete;
+
   std::string GetEULAPage(const std::string& locale) const;
 
   // These methods can be called even if !IsReady(), in this case VPD values
@@ -133,8 +137,6 @@ class StartupCustomizationDocument : public CustomizationDocument {
   std::vector<std::string> configured_locales_;
   std::string initial_timezone_;
   std::string keyboard_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupCustomizationDocument);
 };
 
 // OEM services customization document class.
@@ -146,6 +148,10 @@ class StartupCustomizationDocument : public CustomizationDocument {
 class ServicesCustomizationDocument : public CustomizationDocument {
  public:
   static ServicesCustomizationDocument* GetInstance();
+
+  ServicesCustomizationDocument(const ServicesCustomizationDocument&) = delete;
+  ServicesCustomizationDocument& operator=(
+      const ServicesCustomizationDocument&) = delete;
 
   // Registers preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -324,8 +330,6 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
   // Weak factory for callbacks.
   base::WeakPtrFactory<ServicesCustomizationDocument> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesCustomizationDocument);
 };
 
 }  // namespace ash

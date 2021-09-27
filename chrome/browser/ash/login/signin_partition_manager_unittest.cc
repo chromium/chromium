@@ -77,6 +77,11 @@ void IsEntryInHttpAuthCache(network::NetworkContext* network_context,
 }  // namespace
 
 class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SigninPartitionManagerTest(const SigninPartitionManagerTest&) = delete;
+  SigninPartitionManagerTest& operator=(const SigninPartitionManagerTest&) =
+      delete;
+
  protected:
   SigninPartitionManagerTest() {}
   ~SigninPartitionManagerTest() override {}
@@ -223,8 +228,6 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
 
   std::vector<std::pair<content::StoragePartition*, base::OnceClosure>>
       pending_clear_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninPartitionManagerTest);
 };
 
 TEST_F(SigninPartitionManagerTest, TestSubsequentAttempts) {

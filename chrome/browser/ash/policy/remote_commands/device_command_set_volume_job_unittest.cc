@@ -59,6 +59,11 @@ std::unique_ptr<RemoteCommandJob> CreateSetVolumeJob(
 }  // namespace
 
 class DeviceCommandSetVolumeTest : public ChromeAshTestBase {
+ public:
+  DeviceCommandSetVolumeTest(const DeviceCommandSetVolumeTest&) = delete;
+  DeviceCommandSetVolumeTest& operator=(const DeviceCommandSetVolumeTest&) =
+      delete;
+
  protected:
   DeviceCommandSetVolumeTest();
 
@@ -67,9 +72,6 @@ class DeviceCommandSetVolumeTest : public ChromeAshTestBase {
 
   base::RunLoop run_loop_;
   base::TimeTicks test_start_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandSetVolumeTest);
 };
 
 DeviceCommandSetVolumeTest::DeviceCommandSetVolumeTest() {}

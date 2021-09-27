@@ -54,6 +54,11 @@ class DeviceDisablingManagerTestBase : public testing::Test,
  public:
   DeviceDisablingManagerTestBase();
 
+  DeviceDisablingManagerTestBase(const DeviceDisablingManagerTestBase&) =
+      delete;
+  DeviceDisablingManagerTestBase& operator=(
+      const DeviceDisablingManagerTestBase&) = delete;
+
   // testing::Test:
   void TearDown() override;
 
@@ -80,8 +85,6 @@ class DeviceDisablingManagerTestBase : public testing::Test,
   FakeChromeUserManager fake_user_manager_;
   std::unique_ptr<DeviceDisablingManager> device_disabling_manager_;
   chromeos::system::FakeStatisticsProvider statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerTestBase);
 };
 
 DeviceDisablingManagerTestBase::DeviceDisablingManagerTestBase() {
@@ -125,6 +128,11 @@ class DeviceDisablingManagerOOBETest : public DeviceDisablingManagerTestBase {
  public:
   DeviceDisablingManagerOOBETest();
 
+  DeviceDisablingManagerOOBETest(const DeviceDisablingManagerOOBETest&) =
+      delete;
+  DeviceDisablingManagerOOBETest& operator=(
+      const DeviceDisablingManagerOOBETest&) = delete;
+
   // DeviceDisablingManagerTestBase:
   void SetUp() override;
   void TearDown() override;
@@ -143,8 +151,6 @@ class DeviceDisablingManagerOOBETest : public DeviceDisablingManagerTestBase {
 
   base::RunLoop run_loop_;
   bool device_disabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerOOBETest);
 };
 
 DeviceDisablingManagerOOBETest::DeviceDisablingManagerOOBETest()
@@ -251,6 +257,10 @@ class DeviceDisablingManagerTest : public DeviceDisablingManagerTestBase,
  public:
   DeviceDisablingManagerTest();
 
+  DeviceDisablingManagerTest(const DeviceDisablingManagerTest&) = delete;
+  DeviceDisablingManagerTest& operator=(const DeviceDisablingManagerTest&) =
+      delete;
+
   // DeviceDisablingManagerTestBase:
   void TearDown() override;
   void CreateDeviceDisablingManager() override;
@@ -269,8 +279,6 @@ class DeviceDisablingManagerTest : public DeviceDisablingManagerTestBase,
 
   FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerTest);
 };
 
 DeviceDisablingManagerTest::DeviceDisablingManagerTest() {

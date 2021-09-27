@@ -163,6 +163,9 @@ class UserSessionManager
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
 
+  UserSessionManager(const UserSessionManager&) = delete;
+  UserSessionManager& operator=(const UserSessionManager&) = delete;
+
   // Called when user is logged in to override base::DIR_HOME path.
   static void OverrideHomedir();
 
@@ -680,8 +683,6 @@ class UserSessionManager
       onboarding_user_activity_counter_;
 
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManager);
 };
 
 }  // namespace ash

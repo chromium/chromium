@@ -85,6 +85,10 @@ class HeartbeatRegistrationHelper {
       gcm::GCMDriver* gcm_driver,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  HeartbeatRegistrationHelper(const HeartbeatRegistrationHelper&) = delete;
+  HeartbeatRegistrationHelper& operator=(const HeartbeatRegistrationHelper&) =
+      delete;
+
   void Register(RegistrationHelperCallback callback);
 
  private:
@@ -106,8 +110,6 @@ class HeartbeatRegistrationHelper {
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
   base::WeakPtrFactory<HeartbeatRegistrationHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatRegistrationHelper);
 };
 
 HeartbeatRegistrationHelper::HeartbeatRegistrationHelper(

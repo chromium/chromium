@@ -28,6 +28,10 @@ class OfflineSigninLimiterFactory : public BrowserContextKeyedServiceFactory {
 
   static OfflineSigninLimiter* GetForProfile(Profile* profile);
 
+  OfflineSigninLimiterFactory(const OfflineSigninLimiterFactory&) = delete;
+  OfflineSigninLimiterFactory& operator=(const OfflineSigninLimiterFactory&) =
+      delete;
+
   // `clock` will be passed to all OfflineSigninLimiters. Ensure that their
   // Shutdown() methods have been called before destroying `clock`.
   static void SetClockForTesting(base::Clock* clock);
@@ -43,8 +47,6 @@ class OfflineSigninLimiterFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   static base::Clock* clock_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiterFactory);
 };
 
 }  // namespace ash

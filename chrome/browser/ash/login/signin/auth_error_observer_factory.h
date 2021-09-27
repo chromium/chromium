@@ -26,6 +26,9 @@ class AuthErrorObserverFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the AuthErrorObserverFactory singleton.
   static AuthErrorObserverFactory* GetInstance();
 
+  AuthErrorObserverFactory(const AuthErrorObserverFactory&) = delete;
+  AuthErrorObserverFactory& operator=(const AuthErrorObserverFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AuthErrorObserverFactory>;
 
@@ -35,8 +38,6 @@ class AuthErrorObserverFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthErrorObserverFactory);
 };
 
 }  // namespace ash

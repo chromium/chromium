@@ -42,6 +42,10 @@ class GuestOsRegistryServiceTest : public testing::Test {
     RecreateService();
   }
 
+  GuestOsRegistryServiceTest(const GuestOsRegistryServiceTest&) = delete;
+  GuestOsRegistryServiceTest& operator=(const GuestOsRegistryServiceTest&) =
+      delete;
+
  protected:
   void RecreateService() {
     service_.reset(nullptr);
@@ -87,8 +91,6 @@ class GuestOsRegistryServiceTest : public testing::Test {
   crostini::CrostiniTestHelper crostini_test_helper_;
 
   std::unique_ptr<GuestOsRegistryService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsRegistryServiceTest);
 };
 
 TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {

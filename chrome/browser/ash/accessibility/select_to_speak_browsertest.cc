@@ -49,6 +49,9 @@ namespace ash {
 
 class SelectToSpeakTest : public InProcessBrowserTest {
  public:
+  SelectToSpeakTest(const SelectToSpeakTest&) = delete;
+  SelectToSpeakTest& operator=(const SelectToSpeakTest&) = delete;
+
   void OnFocusRingChanged() {
     if (loop_runner_) {
       loop_runner_->Quit();
@@ -168,7 +171,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTest);
 };
 
 /* Test fixture enabling experimental accessibility language detection switch */

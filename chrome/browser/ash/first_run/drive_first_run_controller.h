@@ -47,6 +47,10 @@ class DriveFirstRunController {
   };
 
   explicit DriveFirstRunController(Profile* profile);
+
+  DriveFirstRunController(const DriveFirstRunController&) = delete;
+  DriveFirstRunController& operator=(const DriveFirstRunController&) = delete;
+
   ~DriveFirstRunController();
 
   // Starts the process to enable offline mode for the user's Drive account.
@@ -88,8 +92,6 @@ class DriveFirstRunController {
   int web_contents_timeout_secs_;
   std::string drive_offline_endpoint_url_;
   std::string drive_hosted_app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFirstRunController);
 };
 
 }  // namespace ash

@@ -18,14 +18,16 @@ struct CreateOptions {
                 const GURL& content_url,
                 bool can_be_closed_by_user,
                 base::OnceClosure close_callback);
+
+  CreateOptions(const CreateOptions&) = delete;
+  CreateOptions& operator=(const CreateOptions&) = delete;
+
   ~CreateOptions();
 
   const std::string extension_name;
   const GURL content_url;
   bool can_be_closed_by_user;
   base::OnceClosure close_callback;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateOptions);
 };
 
 }  // namespace login_screen_extension_ui

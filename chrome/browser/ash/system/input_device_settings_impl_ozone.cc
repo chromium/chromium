@@ -25,6 +25,10 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
  public:
   InputDeviceSettingsImplOzone();
 
+  InputDeviceSettingsImplOzone(const InputDeviceSettingsImplOzone&) = delete;
+  InputDeviceSettingsImplOzone& operator=(const InputDeviceSettingsImplOzone&) =
+      delete;
+
  protected:
   ~InputDeviceSettingsImplOzone() override {}
 
@@ -69,8 +73,6 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   TouchpadSettings current_touchpad_settings_;
   MouseSettings current_mouse_settings_;
   PointingStickSettings current_pointing_stick_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceSettingsImplOzone);
 };
 
 InputDeviceSettingsImplOzone::InputDeviceSettingsImplOzone() = default;

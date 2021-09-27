@@ -20,6 +20,9 @@ class UserAddingScreen {
     virtual ~Observer() {}
   };
 
+  UserAddingScreen(const UserAddingScreen&) = delete;
+  UserAddingScreen& operator=(const UserAddingScreen&) = delete;
+
   static UserAddingScreen* Get();
 
   virtual void Start() = 0;
@@ -32,8 +35,6 @@ class UserAddingScreen {
  protected:
   UserAddingScreen();
   virtual ~UserAddingScreen();
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreen);
 };
 
 }  // namespace ash

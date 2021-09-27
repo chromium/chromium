@@ -27,6 +27,11 @@ class EventBasedStatusReportingServiceFactory
 
   static EventBasedStatusReportingServiceFactory* GetInstance();
 
+  EventBasedStatusReportingServiceFactory(
+      const EventBasedStatusReportingServiceFactory&) = delete;
+  EventBasedStatusReportingServiceFactory& operator=(
+      const EventBasedStatusReportingServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<EventBasedStatusReportingServiceFactory>;
 
@@ -36,8 +41,6 @@ class EventBasedStatusReportingServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceFactory);
 };
 
 }  // namespace ash

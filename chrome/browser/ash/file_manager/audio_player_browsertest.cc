@@ -14,6 +14,10 @@ class AudioPlayerBrowserTestBase : public FileManagerBrowserTestBase {
  public:
   AudioPlayerBrowserTestBase() = default;
 
+  AudioPlayerBrowserTestBase(const AudioPlayerBrowserTestBase&) = delete;
+  AudioPlayerBrowserTestBase& operator=(const AudioPlayerBrowserTestBase&) =
+      delete;
+
  protected:
   Options GetOptions() const override {
     Options opts;
@@ -37,8 +41,6 @@ class AudioPlayerBrowserTestBase : public FileManagerBrowserTestBase {
 
  private:
   std::string test_case_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlayerBrowserTestBase);
 };
 
 typedef AudioPlayerBrowserTestBase<NOT_IN_GUEST_MODE> AudioPlayerBrowserTest;

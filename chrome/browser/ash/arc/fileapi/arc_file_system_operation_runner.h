@@ -125,6 +125,11 @@ class ArcFileSystemOperationRunner
 
   ArcFileSystemOperationRunner(content::BrowserContext* context,
                                ArcBridgeService* bridge_service);
+
+  ArcFileSystemOperationRunner(const ArcFileSystemOperationRunner&) = delete;
+  ArcFileSystemOperationRunner& operator=(const ArcFileSystemOperationRunner&) =
+      delete;
+
   ~ArcFileSystemOperationRunner() override;
 
   // Adds or removes observers.
@@ -237,8 +242,6 @@ class ArcFileSystemOperationRunner
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<ArcFileSystemOperationRunner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemOperationRunner);
 };
 
 }  // namespace arc

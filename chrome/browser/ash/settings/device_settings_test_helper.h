@@ -47,6 +47,10 @@ class ScopedDeviceSettingsTestHelper {
 // settings. |device_settings_service_| starts out in uninitialized state, so
 // startup code gets tested as well.
 class DeviceSettingsTestBase : public testing::Test {
+ public:
+  DeviceSettingsTestBase(const DeviceSettingsTestBase&) = delete;
+  DeviceSettingsTestBase& operator=(const DeviceSettingsTestBase&) = delete;
+
  protected:
   DeviceSettingsTestBase();
   explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
@@ -86,8 +90,6 @@ class DeviceSettingsTestBase : public testing::Test {
 
  private:
   bool teardown_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsTestBase);
 };
 
 }  // namespace ash

@@ -30,6 +30,11 @@ class CertificateProviderServiceFactory
 
   static CertificateProviderServiceFactory* GetInstance();
 
+  CertificateProviderServiceFactory(const CertificateProviderServiceFactory&) =
+      delete;
+  CertificateProviderServiceFactory& operator=(
+      const CertificateProviderServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<CertificateProviderServiceFactory>;
 
@@ -41,8 +46,6 @@ class CertificateProviderServiceFactory
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateProviderServiceFactory);
 };
 
 }  // namespace ash

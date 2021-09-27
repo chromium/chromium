@@ -38,6 +38,12 @@ class CrostiniEngagementMetricsService : public KeyedService {
   };
 
   explicit CrostiniEngagementMetricsService(Profile* profile);
+
+  CrostiniEngagementMetricsService(const CrostiniEngagementMetricsService&) =
+      delete;
+  CrostiniEngagementMetricsService& operator=(
+      const CrostiniEngagementMetricsService&) = delete;
+
   ~CrostiniEngagementMetricsService() override;
 
   // This needs to be called when Crostini starts and stops being active so we
@@ -47,8 +53,6 @@ class CrostiniEngagementMetricsService : public KeyedService {
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
       guest_os_engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniEngagementMetricsService);
 };
 
 }  // namespace crostini

@@ -32,6 +32,9 @@ class OfflineSigninLimiter : public KeyedService,
                              public base::PowerSuspendObserver,
                              public session_manager::SessionManagerObserver {
  public:
+  OfflineSigninLimiter(const OfflineSigninLimiter&) = delete;
+  OfflineSigninLimiter& operator=(const OfflineSigninLimiter&) = delete;
+
   // Called when the user successfully authenticates. `auth_flow` indicates
   // the type of authentication flow that the user went through.
   void SignedIn(UserContext::AuthFlow auth_flow);
@@ -93,8 +96,6 @@ class OfflineSigninLimiter : public KeyedService,
   std::unique_ptr<base::WallClockTimer> offline_signin_limit_timer_;
 
   std::unique_ptr<base::WallClockTimer> offline_lock_screen_signin_limit_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };
 
 }  // namespace ash

@@ -180,6 +180,10 @@ INSTANTIATE_TEST_SUITE_P(PolicyDisplayRotationDefault,
 class DisplayRotationBootTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<display::Display::Rotation> {
+ public:
+  DisplayRotationBootTest(const DisplayRotationBootTest&) = delete;
+  DisplayRotationBootTest& operator=(const DisplayRotationBootTest&) = delete;
+
  protected:
   DisplayRotationBootTest() {
     device_state_.set_skip_initial_policy_setup(true);
@@ -202,7 +206,6 @@ class DisplayRotationBootTest
  private:
   DevicePolicyCrosTestHelper policy_helper_;
   DeviceDisplayCrosTestHelper display_helper_;
-  DISALLOW_COPY_AND_ASSIGN(DisplayRotationBootTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {

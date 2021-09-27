@@ -43,6 +43,10 @@ class MockDeviceSettingsObserver : public DeviceSettingsService::Observer {
 
 class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
  public:
+  DeviceSettingsServiceTest(const DeviceSettingsServiceTest&) = delete;
+  DeviceSettingsServiceTest& operator=(const DeviceSettingsServiceTest&) =
+      delete;
+
   void SetOperationCompleted() { operation_completed_ = true; }
 
   void SetOwnershipStatus(
@@ -84,9 +88,6 @@ class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
   bool is_owner_;
   bool is_owner_set_;
   DeviceSettingsService::OwnershipStatus ownership_status_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsServiceTest);
 };
 
 TEST_F(DeviceSettingsServiceTest, LoadNoKey) {

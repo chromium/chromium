@@ -47,6 +47,10 @@ class UnaffiliatedArcAllowedTest
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
   }
 
+  UnaffiliatedArcAllowedTest(const UnaffiliatedArcAllowedTest&) = delete;
+  UnaffiliatedArcAllowedTest& operator=(const UnaffiliatedArcAllowedTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -83,9 +87,6 @@ class UnaffiliatedArcAllowedTest
   }
 
   AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnaffiliatedArcAllowedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(UnaffiliatedArcAllowedTest, PRE_ProfileTest) {

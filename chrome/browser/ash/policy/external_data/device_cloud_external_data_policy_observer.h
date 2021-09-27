@@ -53,6 +53,12 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
   DeviceCloudExternalDataPolicyObserver(PolicyService* policy_service,
                                         const std::string& policy,
                                         Delegate* delegate);
+
+  DeviceCloudExternalDataPolicyObserver(
+      const DeviceCloudExternalDataPolicyObserver&) = delete;
+  DeviceCloudExternalDataPolicyObserver& operator=(
+      const DeviceCloudExternalDataPolicyObserver&) = delete;
+
   ~DeviceCloudExternalDataPolicyObserver() override;
 
   // PolicyService::Observer:
@@ -80,8 +86,6 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
 
   base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudExternalDataPolicyObserver);
 };
 
 }  // namespace policy

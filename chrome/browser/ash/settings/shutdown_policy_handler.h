@@ -28,6 +28,10 @@ class ShutdownPolicyHandler {
   };
 
   ShutdownPolicyHandler(CrosSettings* cros_settings, Delegate* delegate);
+
+  ShutdownPolicyHandler(const ShutdownPolicyHandler&) = delete;
+  ShutdownPolicyHandler& operator=(const ShutdownPolicyHandler&) = delete;
+
   ~ShutdownPolicyHandler();
 
   // Once a trusted set of policies is established, this function notifies
@@ -42,8 +46,6 @@ class ShutdownPolicyHandler {
   base::CallbackListSubscription shutdown_policy_subscription_;
 
   base::WeakPtrFactory<ShutdownPolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyHandler);
 };
 
 }  // namespace ash

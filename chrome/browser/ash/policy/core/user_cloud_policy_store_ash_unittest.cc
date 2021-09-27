@@ -82,6 +82,9 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   explicit FakeSessionManagerClient(const base::FilePath& user_policy_dir)
       : user_policy_dir_(user_policy_dir) {}
 
+  FakeSessionManagerClient(const FakeSessionManagerClient&) = delete;
+  FakeSessionManagerClient& operator=(const FakeSessionManagerClient&) = delete;
+
   // SessionManagerClient override:
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                           const std::string& policy_blob,
@@ -114,10 +117,14 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   std::map<cryptohome::AccountIdentifier, std::string> public_key_map_;
 
   base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
 class UserCloudPolicyStoreAshTest : public testing::Test {
+ public:
+  UserCloudPolicyStoreAshTest(const UserCloudPolicyStoreAshTest&) = delete;
+  UserCloudPolicyStoreAshTest& operator=(const UserCloudPolicyStoreAshTest&) =
+      delete;
+
  protected:
   UserCloudPolicyStoreAshTest()
       : task_environment_(
@@ -249,8 +256,6 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
 
  private:
   base::ScopedTempDir tmp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreAshTest);
 };
 
 TEST_F(UserCloudPolicyStoreAshTest, InitialStore) {

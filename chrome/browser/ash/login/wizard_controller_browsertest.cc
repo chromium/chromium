@@ -355,6 +355,10 @@ Mock* MockScreenExpectLifecycle(std::unique_ptr<Mock> mock) {
 }  // namespace
 
 class WizardControllerTest : public OobeBaseTest {
+ public:
+  WizardControllerTest(const WizardControllerTest&) = delete;
+  WizardControllerTest& operator=(const WizardControllerTest&) = delete;
+
  protected:
   WizardControllerTest() = default;
   ~WizardControllerTest() override = default;
@@ -405,9 +409,6 @@ class WizardControllerTest : public OobeBaseTest {
         WizardController::default_controller()->GetScreen(
             WrongHWIDScreenView::kScreenId));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
@@ -471,6 +472,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, VolumeIsAdjustedForChromeVox) {
 }
 
 class WizardControllerFlowTest : public WizardControllerTest {
+ public:
+  WizardControllerFlowTest(const WizardControllerFlowTest&) = delete;
+  WizardControllerFlowTest& operator=(const WizardControllerFlowTest&) = delete;
+
  protected:
   WizardControllerFlowTest() {}
   // WizardControllerTest:
@@ -777,8 +782,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
   NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerFlowTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowMain) {
@@ -972,6 +975,12 @@ class WizardControllerUpdateAfterCompletedOobeTest
     : public WizardControllerFlowTest,
       public testing::WithParamInterface<UpdateScreen::Result>,
       public LocalStateMixin::Delegate {
+ public:
+  WizardControllerUpdateAfterCompletedOobeTest(
+      const WizardControllerUpdateAfterCompletedOobeTest&) = delete;
+  WizardControllerUpdateAfterCompletedOobeTest& operator=(
+      const WizardControllerUpdateAfterCompletedOobeTest&) = delete;
+
  protected:
   WizardControllerUpdateAfterCompletedOobeTest() = default;
 
@@ -982,7 +991,6 @@ class WizardControllerUpdateAfterCompletedOobeTest
 
  private:
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerUpdateAfterCompletedOobeTest);
 };
 
 // This test verifies that if WizardController reports any result after the
@@ -1046,6 +1054,12 @@ INSTANTIATE_TEST_SUITE_P(
                     UpdateScreen::Result::UPDATE_ERROR));
 
 class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerDeviceStateTest(const WizardControllerDeviceStateTest&) =
+      delete;
+  WizardControllerDeviceStateTest& operator=(
+      const WizardControllerDeviceStateTest&) = delete;
+
  protected:
   WizardControllerDeviceStateTest() {
     fake_statistics_provider_.SetMachineStatistic(
@@ -1106,8 +1120,6 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
                                  DeviceStateMixin::State::BEFORE_OOBE};
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerDeviceStateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
@@ -1227,6 +1239,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 class WizardControllerDeviceStateExplicitRequirementTest
     : public WizardControllerDeviceStateTest,
       public testing::WithParamInterface<bool /* fre_explicitly_required */> {
+ public:
+  WizardControllerDeviceStateExplicitRequirementTest(
+      const WizardControllerDeviceStateExplicitRequirementTest&) = delete;
+  WizardControllerDeviceStateExplicitRequirementTest& operator=(
+      const WizardControllerDeviceStateExplicitRequirementTest&) = delete;
+
  protected:
   WizardControllerDeviceStateExplicitRequirementTest() {
     if (IsFREExplicitlyRequired()) {
@@ -1238,9 +1256,6 @@ class WizardControllerDeviceStateExplicitRequirementTest
   // Returns true if forced re-enrollment was explicitly required (which
   // corresponds to the check_enrollment VPD value being set to "1").
   bool IsFREExplicitlyRequired() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerDeviceStateExplicitRequirementTest);
 };
 
 // Test the control flow for Forced Re-Enrollment. First, a connection error
@@ -1440,6 +1455,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class WizardControllerDeviceStateWithInitialEnrollmentTest
     : public WizardControllerDeviceStateTest {
+ public:
+  WizardControllerDeviceStateWithInitialEnrollmentTest(
+      const WizardControllerDeviceStateWithInitialEnrollmentTest&) = delete;
+  WizardControllerDeviceStateWithInitialEnrollmentTest& operator=(
+      const WizardControllerDeviceStateWithInitialEnrollmentTest&) = delete;
+
  protected:
   WizardControllerDeviceStateWithInitialEnrollmentTest() {
     fake_statistics_provider_.SetMachineStatistic(
@@ -1526,10 +1547,6 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
   SystemClockClient::TestInterface* system_clock_client() {
     return SystemClockClient::Get()->GetTestInterface();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      WizardControllerDeviceStateWithInitialEnrollmentTest);
 };
 
 // Tests that a device that is brand new properly does initial enrollment.
@@ -1958,6 +1975,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityTest, CanNavigateToTest) {
 }
 
 class WizardControllerBrokenLocalStateTest : public WizardControllerTest {
+ public:
+  WizardControllerBrokenLocalStateTest(
+      const WizardControllerBrokenLocalStateTest&) = delete;
+  WizardControllerBrokenLocalStateTest& operator=(
+      const WizardControllerBrokenLocalStateTest&) = delete;
+
  protected:
   WizardControllerBrokenLocalStateTest() = default;
   ~WizardControllerBrokenLocalStateTest() override = default;
@@ -1973,8 +1996,6 @@ class WizardControllerBrokenLocalStateTest : public WizardControllerTest {
 
  private:
   std::unique_ptr<PrefService> local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerBrokenLocalStateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerBrokenLocalStateTest,
@@ -2001,6 +2022,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerBrokenLocalStateTest,
 }
 
 class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
+ public:
+  WizardControllerProxyAuthOnSigninTest(
+      const WizardControllerProxyAuthOnSigninTest&) = delete;
+  WizardControllerProxyAuthOnSigninTest& operator=(
+      const WizardControllerProxyAuthOnSigninTest&) = delete;
+
  protected:
   WizardControllerProxyAuthOnSigninTest()
       : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
@@ -2029,8 +2056,6 @@ class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
 
  private:
   net::SpawnedTestServer proxy_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerProxyAuthOnSigninTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
@@ -2046,6 +2071,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
 }
 
 class WizardControllerKioskFlowTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerKioskFlowTest(const WizardControllerKioskFlowTest&) = delete;
+  WizardControllerKioskFlowTest& operator=(
+      const WizardControllerKioskFlowTest&) = delete;
+
  protected:
   WizardControllerKioskFlowTest() {}
 
@@ -2059,9 +2089,6 @@ class WizardControllerKioskFlowTest : public WizardControllerFlowTest {
         switches::kAppOemManifestFile,
         test_data_dir.AppendASCII("kiosk_manifest.json"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerKioskFlowTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
@@ -2160,6 +2187,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
 
 class WizardControllerEnableAdbSideloadingTest
     : public WizardControllerFlowTest {
+ public:
+  WizardControllerEnableAdbSideloadingTest(
+      const WizardControllerEnableAdbSideloadingTest&) = delete;
+  WizardControllerEnableAdbSideloadingTest& operator=(
+      const WizardControllerEnableAdbSideloadingTest&) = delete;
+
  protected:
   WizardControllerEnableAdbSideloadingTest() = default;
 
@@ -2169,9 +2202,6 @@ class WizardControllerEnableAdbSideloadingTest
     auto* const wizard_controller = WizardController::default_controller();
     wizard_controller->AdvanceToScreen(screen);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerEnableAdbSideloadingTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
@@ -2227,6 +2257,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
 }
 
 class WizardControllerEnableDebuggingTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerEnableDebuggingTest(
+      const WizardControllerEnableDebuggingTest&) = delete;
+  WizardControllerEnableDebuggingTest& operator=(
+      const WizardControllerEnableDebuggingTest&) = delete;
+
  protected:
   WizardControllerEnableDebuggingTest() {}
 
@@ -2235,9 +2271,6 @@ class WizardControllerEnableDebuggingTest : public WizardControllerFlowTest {
     WizardControllerFlowTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerEnableDebuggingTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerEnableDebuggingTest,
@@ -2264,6 +2297,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableDebuggingTest,
 }
 
 class WizardControllerDemoSetupTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerDemoSetupTest(const WizardControllerDemoSetupTest&) = delete;
+  WizardControllerDemoSetupTest& operator=(
+      const WizardControllerDemoSetupTest&) = delete;
+
  protected:
   WizardControllerDemoSetupTest() = default;
   ~WizardControllerDemoSetupTest() override = default;
@@ -2281,9 +2319,6 @@ class WizardControllerDemoSetupTest : public WizardControllerFlowTest {
     wizard_controller->SimulateDemoModeSetupForTesting();
     wizard_controller->AdvanceToScreen(screen);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerDemoSetupTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
@@ -2568,6 +2603,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, ArcTosBackPressed) {
 
 class WizardControllerDemoSetupDeviceDisabledTest
     : public WizardControllerDeviceStateTest {
+ public:
+  WizardControllerDemoSetupDeviceDisabledTest(
+      const WizardControllerDemoSetupDeviceDisabledTest&) = delete;
+  WizardControllerDemoSetupDeviceDisabledTest& operator=(
+      const WizardControllerDemoSetupDeviceDisabledTest&) = delete;
+
  protected:
   WizardControllerDemoSetupDeviceDisabledTest() = default;
   ~WizardControllerDemoSetupDeviceDisabledTest() override = default;
@@ -2577,9 +2618,6 @@ class WizardControllerDemoSetupDeviceDisabledTest
     WizardControllerDeviceStateTest::SetUpOnMainThread();
     testing::Mock::VerifyAndClearExpectations(mock_welcome_screen_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerDemoSetupDeviceDisabledTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
@@ -2671,6 +2709,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
 }
 
 class WizardControllerOobeResumeTest : public WizardControllerTest {
+ public:
+  WizardControllerOobeResumeTest(const WizardControllerOobeResumeTest&) =
+      delete;
+  WizardControllerOobeResumeTest& operator=(
+      const WizardControllerOobeResumeTest&) = delete;
+
  protected:
   WizardControllerOobeResumeTest() {}
   // WizardControllerTest:
@@ -2712,9 +2756,6 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
   MockEnrollmentScreen* mock_enrollment_screen_;
 
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerOobeResumeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
@@ -2771,6 +2812,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
 }
 
 class WizardControllerCellularFirstTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerCellularFirstTest(const WizardControllerCellularFirstTest&) =
+      delete;
+  WizardControllerCellularFirstTest& operator=(
+      const WizardControllerCellularFirstTest&) = delete;
+
  protected:
   WizardControllerCellularFirstTest() {}
 
@@ -2779,9 +2826,6 @@ class WizardControllerCellularFirstTest : public WizardControllerFlowTest {
     WizardControllerFlowTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kCellularFirst);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerCellularFirstTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerCellularFirstTest, CellularFirstFlow) {
@@ -2789,6 +2833,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerCellularFirstTest, CellularFirstFlow) {
 }
 
 class WizardControllerOobeConfigurationTest : public WizardControllerTest {
+ public:
+  WizardControllerOobeConfigurationTest(
+      const WizardControllerOobeConfigurationTest&) = delete;
+  WizardControllerOobeConfigurationTest& operator=(
+      const WizardControllerOobeConfigurationTest&) = delete;
+
  protected:
   WizardControllerOobeConfigurationTest() {}
 
@@ -2810,9 +2860,6 @@ class WizardControllerOobeConfigurationTest : public WizardControllerTest {
     // Clear portal list (as it is by default in OOBE).
     NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerOobeConfigurationTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
@@ -2826,6 +2873,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
 }
 
 class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
+ public:
+  WizardControllerRollbackFlowTest(const WizardControllerRollbackFlowTest&) =
+      delete;
+  WizardControllerRollbackFlowTest& operator=(
+      const WizardControllerRollbackFlowTest&) = delete;
+
  protected:
   WizardControllerRollbackFlowTest() {}
 
@@ -2860,9 +2913,6 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
   content::NotificationRegistrar registrar_;
 
   FakeRollbackNetworkConfig* network_config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WizardControllerRollbackFlowTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,

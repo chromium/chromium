@@ -213,6 +213,10 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
  protected:
   ExistingUserControllerTest() = default;
 
+  ExistingUserControllerTest(const ExistingUserControllerTest&) = delete;
+  ExistingUserControllerTest& operator=(const ExistingUserControllerTest&) =
+      delete;
+
   ExistingUserController* existing_user_controller() {
     return ExistingUserController::current_controller();
   }
@@ -325,9 +329,6 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
       AccountId::FromUserEmailGaiaId(kExistingUser, kExistingGaiaID)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {existing_user_}};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {
@@ -348,14 +349,16 @@ class ExistingUserControllerUntrustedTest : public ExistingUserControllerTest {
  public:
   ExistingUserControllerUntrustedTest() = default;
 
+  ExistingUserControllerUntrustedTest(
+      const ExistingUserControllerUntrustedTest&) = delete;
+  ExistingUserControllerUntrustedTest& operator=(
+      const ExistingUserControllerUntrustedTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExistingUserControllerTest::SetUpOnMainThread();
     MakeCrosSettingsPermanentlyUntrusted();
     ExpectLoginFailure();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerUntrustedTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
@@ -386,6 +389,12 @@ MATCHER_P(HasDetails, expected, "") {
 class ExistingUserControllerPublicSessionTest
     : public ExistingUserControllerTest,
       public user_manager::UserManager::Observer {
+ public:
+  ExistingUserControllerPublicSessionTest(
+      const ExistingUserControllerPublicSessionTest&) = delete;
+  ExistingUserControllerPublicSessionTest& operator=(
+      const ExistingUserControllerPublicSessionTest&) = delete;
+
  protected:
   ExistingUserControllerPublicSessionTest() {}
 
@@ -554,8 +563,6 @@ class ExistingUserControllerPublicSessionTest
 
  private:
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerPublicSessionTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,

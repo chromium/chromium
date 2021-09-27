@@ -40,12 +40,14 @@ class LoginScreenPowerManagementPolicyHandlerTest : public testing::Test {
  protected:
   LoginScreenPowerManagementPolicyHandlerTest();
 
+  LoginScreenPowerManagementPolicyHandlerTest(
+      const LoginScreenPowerManagementPolicyHandlerTest&) = delete;
+  LoginScreenPowerManagementPolicyHandlerTest& operator=(
+      const LoginScreenPowerManagementPolicyHandlerTest&) = delete;
+
   void SetUp() override;
 
   Schema chrome_schema_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenPowerManagementPolicyHandlerTest);
 };
 
 LoginScreenPowerManagementPolicyHandlerTest::

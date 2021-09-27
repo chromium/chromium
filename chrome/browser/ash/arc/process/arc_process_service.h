@@ -118,6 +118,10 @@ class ArcProcessService : public KeyedService,
   class NSPidToPidMap : public base::RefCountedThreadSafe<NSPidToPidMap> {
    public:
     NSPidToPidMap();
+
+    NSPidToPidMap(const NSPidToPidMap&) = delete;
+    NSPidToPidMap& operator=(const NSPidToPidMap&) = delete;
+
     base::ProcessId& operator[](const base::ProcessId& key) {
       return pidmap_[key];
     }
@@ -139,7 +143,6 @@ class ArcProcessService : public KeyedService,
     ~NSPidToPidMap();
 
     PidMap pidmap_;
-    DISALLOW_COPY_AND_ASSIGN(NSPidToPidMap);
   };
 
  private:

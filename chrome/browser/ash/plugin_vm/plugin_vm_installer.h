@@ -123,6 +123,9 @@ class PluginVmInstaller : public KeyedService,
 
   explicit PluginVmInstaller(Profile* profile);
 
+  PluginVmInstaller(const PluginVmInstaller&) = delete;
+  PluginVmInstaller& operator=(const PluginVmInstaller&) = delete;
+
   // Start the installation. Progress updates will be sent to the observer.
   // Returns a FailureReason if the installation couldn't be started.
   absl::optional<FailureReason> Start();
@@ -295,8 +298,6 @@ class PluginVmInstaller : public KeyedService,
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   base::WeakPtrFactory<PluginVmInstaller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstaller);
 };
 
 }  // namespace plugin_vm

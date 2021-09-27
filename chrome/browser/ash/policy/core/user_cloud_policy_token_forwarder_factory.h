@@ -23,6 +23,11 @@ class UserCloudPolicyTokenForwarderFactory
   // Returns an instance of the UserCloudPolicyTokenForwarderFactory singleton.
   static UserCloudPolicyTokenForwarderFactory* GetInstance();
 
+  UserCloudPolicyTokenForwarderFactory(
+      const UserCloudPolicyTokenForwarderFactory&) = delete;
+  UserCloudPolicyTokenForwarderFactory& operator=(
+      const UserCloudPolicyTokenForwarderFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       UserCloudPolicyTokenForwarderFactory>;
@@ -35,8 +40,6 @@ class UserCloudPolicyTokenForwarderFactory
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyTokenForwarderFactory);
 };
 
 }  // namespace policy

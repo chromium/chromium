@@ -115,6 +115,9 @@ class AccessibilityManager
       public ProfileObserver,
       public speech::SodaInstaller::Observer {
  public:
+  AccessibilityManager(const AccessibilityManager&) = delete;
+  AccessibilityManager& operator=(const AccessibilityManager&) = delete;
+
   // Creates an instance of AccessibilityManager, this should be called once,
   // because only one instance should exist at the same time.
   static void Initialize();
@@ -592,8 +595,6 @@ class AccessibilityManager
   friend class AccessibilityManagerSodaTest;
   friend class AccessibilityManagerDictationDialogTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };
 
 }  // namespace ash

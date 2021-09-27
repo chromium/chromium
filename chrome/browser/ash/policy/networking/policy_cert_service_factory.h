@@ -43,6 +43,9 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static PolicyCertServiceFactory* GetInstance();
 
+  PolicyCertServiceFactory(const PolicyCertServiceFactory&) = delete;
+  PolicyCertServiceFactory& operator=(const PolicyCertServiceFactory&) = delete;
+
   // Used to mark or clear |user_email| as having used certificates pushed by
   // policy before.
   static void SetUsedPolicyCertificates(const std::string& user_email);
@@ -63,8 +66,6 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCertServiceFactory);
 };
 
 }  // namespace policy

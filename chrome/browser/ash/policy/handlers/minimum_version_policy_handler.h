@@ -134,6 +134,11 @@ class MinimumVersionPolicyHandler
 
   explicit MinimumVersionPolicyHandler(Delegate* delegate,
                                        ash::CrosSettings* cros_settings);
+
+  MinimumVersionPolicyHandler(const MinimumVersionPolicyHandler&) = delete;
+  MinimumVersionPolicyHandler& operator=(const MinimumVersionPolicyHandler&) =
+      delete;
+
   ~MinimumVersionPolicyHandler() override;
 
   // BuildStateObserver:
@@ -312,8 +317,6 @@ class MinimumVersionPolicyHandler
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<MinimumVersionPolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MinimumVersionPolicyHandler);
 };
 
 }  // namespace policy

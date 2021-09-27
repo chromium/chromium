@@ -20,6 +20,9 @@ class GuestOsSharePathFactory : public BrowserContextKeyedServiceFactory {
   static GuestOsSharePath* GetForProfile(Profile* profile);
   static GuestOsSharePathFactory* GetInstance();
 
+  GuestOsSharePathFactory(const GuestOsSharePathFactory&) = delete;
+  GuestOsSharePathFactory& operator=(const GuestOsSharePathFactory&) = delete;
+
  private:
   friend class base::NoDestructor<GuestOsSharePathFactory>;
 
@@ -29,8 +32,6 @@ class GuestOsSharePathFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsSharePathFactory);
 };
 
 }  // namespace guest_os

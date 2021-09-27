@@ -590,6 +590,10 @@ class FileManagerTestMessageListener : public extensions::TestApiObserver {
 class TestVolume {
  protected:
   explicit TestVolume(const std::string& name) : name_(name) {}
+
+  TestVolume(const TestVolume&) = delete;
+  TestVolume& operator=(const TestVolume&) = delete;
+
   virtual ~TestVolume() = default;
 
   bool CreateRootDirectory(const Profile* profile) {
@@ -621,8 +625,6 @@ class TestVolume {
   base::FilePath root_;
   bool root_initialized_ = false;
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVolume);
 };
 
 base::Lock& GetLockForBlockingDefaultFileTaskRunner() {

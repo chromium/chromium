@@ -367,6 +367,9 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
  public:
   ArcSessionManagerTest() = default;
 
+  ArcSessionManagerTest(const ArcSessionManagerTest&) = delete;
+  ArcSessionManagerTest& operator=(const ArcSessionManagerTest&) = delete;
+
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
 
@@ -387,9 +390,6 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     chromeos::CryptohomeMiscClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerTest);
 };
 
 TEST_F(ArcSessionManagerTest, BaseWorkflow) {
@@ -1131,13 +1131,15 @@ class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {
  public:
   ArcSessionManagerArcAlwaysStartTest() = default;
 
+  ArcSessionManagerArcAlwaysStartTest(
+      const ArcSessionManagerArcAlwaysStartTest&) = delete;
+  ArcSessionManagerArcAlwaysStartTest& operator=(
+      const ArcSessionManagerArcAlwaysStartTest&) = delete;
+
   void SetUp() override {
     SetArcAlwaysStartWithoutPlayStoreForTesting();
     ArcSessionManagerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerArcAlwaysStartTest);
 };
 
 ArcProvisioningResult CreateProvisioningResult(
@@ -1456,6 +1458,10 @@ class ArcSessionManagerKioskTest : public ArcSessionManagerTestBase {
  public:
   ArcSessionManagerKioskTest() = default;
 
+  ArcSessionManagerKioskTest(const ArcSessionManagerKioskTest&) = delete;
+  ArcSessionManagerKioskTest& operator=(const ArcSessionManagerKioskTest&) =
+      delete;
+
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
     const AccountId account_id(
@@ -1463,9 +1469,6 @@ class ArcSessionManagerKioskTest : public ArcSessionManagerTestBase {
     GetFakeUserManager()->AddArcKioskAppUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerKioskTest);
 };
 
 TEST_F(ArcSessionManagerKioskTest, AuthFailure) {
@@ -1495,6 +1498,11 @@ class ArcSessionManagerPublicSessionTest : public ArcSessionManagerTestBase {
  public:
   ArcSessionManagerPublicSessionTest() = default;
 
+  ArcSessionManagerPublicSessionTest(
+      const ArcSessionManagerPublicSessionTest&) = delete;
+  ArcSessionManagerPublicSessionTest& operator=(
+      const ArcSessionManagerPublicSessionTest&) = delete;
+
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
     const AccountId account_id(
@@ -1502,9 +1510,6 @@ class ArcSessionManagerPublicSessionTest : public ArcSessionManagerTestBase {
     GetFakeUserManager()->AddPublicAccountUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerPublicSessionTest);
 };
 
 TEST_F(ArcSessionManagerPublicSessionTest, AuthFailure) {
@@ -1537,6 +1542,11 @@ class ArcSessionOobeOptInNegotiatorTest
       public testing::WithParamInterface<bool> {
  public:
   ArcSessionOobeOptInNegotiatorTest() = default;
+
+  ArcSessionOobeOptInNegotiatorTest(const ArcSessionOobeOptInNegotiatorTest&) =
+      delete;
+  ArcSessionOobeOptInNegotiatorTest& operator=(
+      const ArcSessionOobeOptInNegotiatorTest&) = delete;
 
   void SetUp() override {
     ArcSessionManagerTest::SetUp();
@@ -1635,8 +1645,6 @@ class ArcSessionOobeOptInNegotiatorTest
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionOobeOptInNegotiatorTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1746,6 +1754,9 @@ class ArcSessionRetryTest
  public:
   ArcSessionRetryTest() = default;
 
+  ArcSessionRetryTest(const ArcSessionRetryTest&) = delete;
+  ArcSessionRetryTest& operator=(const ArcSessionRetryTest&) = delete;
+
   void SetUp() override {
     ArcSessionManagerTest::SetUp();
 
@@ -1777,9 +1788,6 @@ class ArcSessionRetryTest
     arc_session_manager()->Shutdown();
     ArcSessionManagerTest::TearDown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionRetryTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

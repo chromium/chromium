@@ -164,6 +164,9 @@ class ProcessDataCollector {
   // DBusThreadManager is shut down.
   static void Shutdown();
 
+  ProcessDataCollector(const ProcessDataCollector&) = delete;
+  ProcessDataCollector& operator=(const ProcessDataCollector&) = delete;
+
   // The analog for the |SampleCpuUsage| function but for testing. Do not call
   // this while a |ProcessDataCollector| has been initialized with |Initialize|
   // rather than |InitializeForTesting|.
@@ -324,8 +327,6 @@ class ProcessDataCollector {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ProcessDataCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessDataCollector);
 };
 
 }  // namespace ash

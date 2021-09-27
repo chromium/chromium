@@ -112,6 +112,10 @@ class DemoSetupControllerTest : public testing::Test {
  protected:
   DemoSetupControllerTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  DemoSetupControllerTest(const DemoSetupControllerTest&) = delete;
+  DemoSetupControllerTest& operator=(const DemoSetupControllerTest&) = delete;
+
   ~DemoSetupControllerTest() override = default;
 
   void SetUp() override {
@@ -144,8 +148,6 @@ class DemoSetupControllerTest : public testing::Test {
   ScopedTestingLocalState testing_local_state_;
   ScopedStubInstallAttributes test_install_attributes_;
   system::ScopedFakeStatisticsProvider statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupControllerTest);
 };
 
 TEST_F(DemoSetupControllerTest, OfflineSuccess) {

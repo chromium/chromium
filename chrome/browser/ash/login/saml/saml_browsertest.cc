@@ -176,6 +176,11 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
  public:
   SecretInterceptingFakeUserDataAuthClient();
 
+  SecretInterceptingFakeUserDataAuthClient(
+      const SecretInterceptingFakeUserDataAuthClient&) = delete;
+  SecretInterceptingFakeUserDataAuthClient& operator=(
+      const SecretInterceptingFakeUserDataAuthClient&) = delete;
+
   void Mount(const ::user_data_auth::MountRequest& request,
              MountCallback callback) override;
 
@@ -183,8 +188,6 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 
  private:
   std::string salted_hashed_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecretInterceptingFakeUserDataAuthClient);
 };
 
 SecretInterceptingFakeUserDataAuthClient::
@@ -1414,13 +1417,15 @@ class SAMLPasswordAttributesTest : public SAMLPolicyTest,
                                    public testing::WithParamInterface<bool> {
  public:
   SAMLPasswordAttributesTest() = default;
+
+  SAMLPasswordAttributesTest(const SAMLPasswordAttributesTest&) = delete;
+  SAMLPasswordAttributesTest& operator=(const SAMLPasswordAttributesTest&) =
+      delete;
+
   void SetUpOnMainThread() override;
 
  protected:
   bool in_session_pw_change_policy_enabled() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SAMLPasswordAttributesTest);
 };
 
 void SAMLPasswordAttributesTest::SetUpOnMainThread() {

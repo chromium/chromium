@@ -65,6 +65,9 @@ class MockUptimeProvider {
   explicit MockUptimeProvider(
       base::TestMockTimeTaskRunner* mock_time_task_runner);
 
+  MockUptimeProvider(const MockUptimeProvider&) = delete;
+  MockUptimeProvider& operator=(const MockUptimeProvider&) = delete;
+
   void WriteUptimeToFile();
 
   // Adjusts the offset so that the current mock uptime will be |uptime|.
@@ -84,14 +87,17 @@ class MockUptimeProvider {
 
   base::FilePath uptime_file_path_;
   base::TimeDelta uptime_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUptimeProvider);
 };
 
 class TestAutomaticRebootManagerTaskRunner
     : public base::TestMockTimeTaskRunner {
  public:
   TestAutomaticRebootManagerTaskRunner();
+
+  TestAutomaticRebootManagerTaskRunner(
+      const TestAutomaticRebootManagerTaskRunner&) = delete;
+  TestAutomaticRebootManagerTaskRunner& operator=(
+      const TestAutomaticRebootManagerTaskRunner&) = delete;
 
   MockUptimeProvider* uptime_provider() const {
     return uptime_provider_.get();
@@ -106,8 +112,6 @@ class TestAutomaticRebootManagerTaskRunner
   void OnAfterTaskRun() override;
 
   std::unique_ptr<MockUptimeProvider> uptime_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutomaticRebootManagerTaskRunner);
 };
 
 class MockAutomaticRebootManagerObserver
@@ -137,6 +141,12 @@ class MockAutomaticRebootManagerObserver
 }  // namespace
 
 class AutomaticRebootManagerBasicTest : public testing::Test {
+ public:
+  AutomaticRebootManagerBasicTest(const AutomaticRebootManagerBasicTest&) =
+      delete;
+  AutomaticRebootManagerBasicTest& operator=(
+      const AutomaticRebootManagerBasicTest&) = delete;
+
  protected:
   AutomaticRebootManagerBasicTest();
   ~AutomaticRebootManagerBasicTest() override;
@@ -218,9 +228,6 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   session_manager::SessionManager session_manager_;
 
   FakeUpdateEngineClient* update_engine_client_ = nullptr;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutomaticRebootManagerBasicTest);
 };
 
 enum AutomaticRebootManagerTestScenario {

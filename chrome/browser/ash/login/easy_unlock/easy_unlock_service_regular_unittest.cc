@@ -88,6 +88,11 @@ class FakeMultiDeviceSetupDialog
 }  // namespace
 
 class EasyUnlockServiceRegularTest : public testing::Test {
+ public:
+  EasyUnlockServiceRegularTest(const EasyUnlockServiceRegularTest&) = delete;
+  EasyUnlockServiceRegularTest& operator=(const EasyUnlockServiceRegularTest&) =
+      delete;
+
  protected:
   EasyUnlockServiceRegularTest()
       : test_local_device_(
@@ -283,8 +288,6 @@ class EasyUnlockServiceRegularTest : public testing::Test {
                                             false /* browser_restart */,
                                             false /* is_child */);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceRegularTest);
 };
 
 TEST_F(EasyUnlockServiceRegularTest, NotAllowedWhenProhibited) {

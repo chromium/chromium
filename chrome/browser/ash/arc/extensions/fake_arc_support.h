@@ -30,6 +30,10 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   };
 
   explicit FakeArcSupport(ArcSupportHost* support_host);
+
+  FakeArcSupport(const FakeArcSupport&) = delete;
+  FakeArcSupport& operator=(const FakeArcSupport&) = delete;
+
   ~FakeArcSupport() override;
 
   // Emulates to open ARC support Chrome app, and connect message host to
@@ -140,8 +144,6 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeArcSupport> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArcSupport);
 };
 
 }  // namespace arc

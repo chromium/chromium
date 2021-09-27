@@ -44,6 +44,10 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   UpdateRequiredScreenUnitTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  UpdateRequiredScreenUnitTest(const UpdateRequiredScreenUnitTest&) = delete;
+  UpdateRequiredScreenUnitTest& operator=(const UpdateRequiredScreenUnitTest&) =
+      delete;
+
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
     status.set_current_operation(operation);
@@ -124,8 +128,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenUnitTest);
 };
 
 namespace {

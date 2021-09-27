@@ -88,6 +88,12 @@ std::unique_ptr<KeyedService> CreateTestingScreenTimeController(
 }  // namespace
 
 class EventBasedStatusReportingServiceTest : public testing::Test {
+ public:
+  EventBasedStatusReportingServiceTest(
+      const EventBasedStatusReportingServiceTest&) = delete;
+  EventBasedStatusReportingServiceTest& operator=(
+      const EventBasedStatusReportingServiceTest&) = delete;
+
  protected:
   EventBasedStatusReportingServiceTest() = default;
   ~EventBasedStatusReportingServiceTest() override = default;
@@ -175,8 +181,6 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   TestingScreenTimeController* test_screen_time_controller_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<EventBasedStatusReportingService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceTest);
 };
 
 TEST_F(EventBasedStatusReportingServiceTest, ReportWhenAppInstall) {

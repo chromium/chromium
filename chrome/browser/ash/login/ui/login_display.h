@@ -53,6 +53,10 @@ class LoginDisplay {
   };
 
   LoginDisplay();
+
+  LoginDisplay(const LoginDisplay&) = delete;
+  LoginDisplay& operator=(const LoginDisplay&) = delete;
+
   virtual ~LoginDisplay();
 
   // Clears and enables fields on user pod or GAIA frame.
@@ -91,8 +95,6 @@ class LoginDisplay {
   // in redesigned login stack.
   // Login stack (and this object) will be recreated for next user sign in.
   bool is_signin_completed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplay);
 };
 
 }  // namespace ash

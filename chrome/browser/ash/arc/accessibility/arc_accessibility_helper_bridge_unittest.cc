@@ -153,6 +153,11 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
 
   ArcAccessibilityHelperBridgeTest() = default;
 
+  ArcAccessibilityHelperBridgeTest(const ArcAccessibilityHelperBridgeTest&) =
+      delete;
+  ArcAccessibilityHelperBridgeTest& operator=(
+      const ArcAccessibilityHelperBridgeTest&) = delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
@@ -209,8 +214,6 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   std::unique_ptr<ArcBridgeService> bridge_service_;
   std::unique_ptr<TestArcAccessibilityHelperBridge>
       accessibility_helper_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAccessibilityHelperBridgeTest);
 };
 
 TEST_F(ArcAccessibilityHelperBridgeTest, AnnouncementEvent) {

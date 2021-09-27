@@ -100,6 +100,10 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
         user_data_dir_override_(chrome::DIR_USER_DATA),
         management_settings_set_(false) {}
 
+  OwnerSettingsServiceAshTest(const OwnerSettingsServiceAshTest&) = delete;
+  OwnerSettingsServiceAshTest& operator=(const OwnerSettingsServiceAshTest&) =
+      delete;
+
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
     provider_ = std::make_unique<DeviceSettingsProvider>(
@@ -153,9 +157,6 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
   bool management_settings_set_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAshTest);
 };
 
 TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {

@@ -97,6 +97,9 @@ class CrostiniInstallerTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {}
 
+  CrostiniInstallerTest(const CrostiniInstallerTest&) = delete;
+  CrostiniInstallerTest& operator=(const CrostiniInstallerTest&) = delete;
+
   void SetUp() override {
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
@@ -188,8 +191,6 @@ class CrostiniInstallerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerTest);
 };
 
 TEST_F(CrostiniInstallerTest, InstallFlow) {

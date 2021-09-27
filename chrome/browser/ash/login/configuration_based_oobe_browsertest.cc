@@ -59,6 +59,9 @@ class OobeConfigurationTest : public OobeBaseTest {
  public:
   OobeConfigurationTest() = default;
 
+  OobeConfigurationTest(const OobeConfigurationTest&) = delete;
+  OobeConfigurationTest& operator=(const OobeConfigurationTest&) = delete;
+
   bool ShouldWaitForOobeUI() override { return false; }
 
   void LoadConfiguration() {
@@ -134,9 +137,6 @@ class OobeConfigurationTest : public OobeBaseTest {
  protected:
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
   base::ScopedTempDir fake_policy_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTest);
 };
 
 class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {

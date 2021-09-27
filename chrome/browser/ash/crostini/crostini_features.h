@@ -21,6 +21,9 @@ class CrostiniFeatures {
  public:
   static CrostiniFeatures* Get();
 
+  CrostiniFeatures(const CrostiniFeatures&) = delete;
+  CrostiniFeatures& operator=(const CrostiniFeatures&) = delete;
+
   // Returns false if this |profile| will never be allowed to run crostini for
   // the lifetime of this process, otherwise returns true. The return value of
   // this method is guaranteed not to change for a given |profile| within the
@@ -88,8 +91,6 @@ class CrostiniFeatures {
 
  private:
   base::WeakPtrFactory<CrostiniFeatures> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniFeatures);
 };
 
 }  // namespace crostini

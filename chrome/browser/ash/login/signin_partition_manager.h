@@ -102,6 +102,9 @@ class SigninPartitionManager : public KeyedService {
 
     static Factory* GetInstance();
 
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
    private:
     friend struct base::DefaultSingletonTraits<Factory>;
 
@@ -113,8 +116,6 @@ class SigninPartitionManager : public KeyedService {
         content::BrowserContext* context) const override;
     content::BrowserContext* GetBrowserContextToUse(
         content::BrowserContext* context) const override;
-
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
  private:

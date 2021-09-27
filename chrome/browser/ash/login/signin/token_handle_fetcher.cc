@@ -35,6 +35,11 @@ class TokenHandleFetcherShutdownNotifierFactory
     return base::Singleton<TokenHandleFetcherShutdownNotifierFactory>::get();
   }
 
+  TokenHandleFetcherShutdownNotifierFactory(
+      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
+  TokenHandleFetcherShutdownNotifierFactory& operator=(
+      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       TokenHandleFetcherShutdownNotifierFactory>;
@@ -45,8 +50,6 @@ class TokenHandleFetcherShutdownNotifierFactory
     DependsOn(IdentityManagerFactory::GetInstance());
   }
   ~TokenHandleFetcherShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleFetcherShutdownNotifierFactory);
 };
 
 }  // namespace

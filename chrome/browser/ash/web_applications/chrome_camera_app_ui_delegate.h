@@ -40,6 +40,9 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
  public:
   class CameraAppDialog : public chromeos::SystemWebDialogDelegate {
    public:
+    CameraAppDialog(const CameraAppDialog&) = delete;
+    CameraAppDialog& operator=(const CameraAppDialog&) = delete;
+
     static void ShowIntent(const std::string& queries,
                            gfx::NativeWindow parent);
 
@@ -61,8 +64,6 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
    private:
     explicit CameraAppDialog(const std::string& url);
     ~CameraAppDialog() override;
-
-    DISALLOW_COPY_AND_ASSIGN(CameraAppDialog);
   };
 
   class FileMonitor {

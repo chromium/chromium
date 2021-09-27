@@ -53,6 +53,9 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
       const gfx::Size& size,
       bool enable_notification);
 
+  ArcScreenCaptureSession(const ArcScreenCaptureSession&) = delete;
+  ArcScreenCaptureSession& operator=(const ArcScreenCaptureSession&) = delete;
+
   // Implements mojo::ScreenCaptureSession interface.
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
                        uint32_t stride,
@@ -116,8 +119,6 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 
   base::WeakPtrFactory<ArcScreenCaptureSession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcScreenCaptureSession);
 };
 
 }  // namespace arc

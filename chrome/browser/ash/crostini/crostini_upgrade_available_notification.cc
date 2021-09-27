@@ -35,6 +35,11 @@ class CrostiniUpgradeAvailableNotificationDelegate
         ContainerId::GetDefault());
   }
 
+  CrostiniUpgradeAvailableNotificationDelegate(
+      const CrostiniUpgradeAvailableNotificationDelegate&) = delete;
+  CrostiniUpgradeAvailableNotificationDelegate& operator=(
+      const CrostiniUpgradeAvailableNotificationDelegate&) = delete;
+
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     disposition_ =
@@ -84,8 +89,6 @@ class CrostiniUpgradeAvailableNotificationDelegate
 
   base::WeakPtrFactory<CrostiniUpgradeAvailableNotificationDelegate>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgradeAvailableNotificationDelegate);
 };
 
 std::unique_ptr<CrostiniUpgradeAvailableNotification>

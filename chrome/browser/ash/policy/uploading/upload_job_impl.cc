@@ -66,6 +66,9 @@ class DataSegment {
               std::unique_ptr<std::string> data,
               const std::map<std::string, std::string>& header_entries);
 
+  DataSegment(const DataSegment&) = delete;
+  DataSegment& operator=(const DataSegment&) = delete;
+
   // Returns the header entries for this DataSegment.
   const std::map<std::string, std::string>& GetHeaderEntries() const;
 
@@ -90,8 +93,6 @@ class DataSegment {
   const std::string filename_;
   std::unique_ptr<std::string> data_;
   std::map<std::string, std::string> header_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataSegment);
 };
 
 DataSegment::DataSegment(

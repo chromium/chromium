@@ -40,6 +40,11 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
                 "realm.com",
                 "device_id")) {}
 
+  ActiveDirectoryPolicyManagerTest(const ActiveDirectoryPolicyManagerTest&) =
+      delete;
+  ActiveDirectoryPolicyManagerTest& operator=(
+      const ActiveDirectoryPolicyManagerTest&) = delete;
+
   // testing::Test overrides:
   void SetUp() override {
     chromeos::AuthPolicyClient::InitializeFake();
@@ -99,7 +104,6 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   chromeos::ScopedStubInstallAttributes install_attributes_;
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPolicyManagerTest);
 };
 
 class UserActiveDirectoryPolicyManagerTest

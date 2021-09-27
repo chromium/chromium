@@ -46,6 +46,9 @@ class QuirksBrowserTest : public InProcessBrowserTest {
         }));
   }
 
+  QuirksBrowserTest(const QuirksBrowserTest&) = delete;
+  QuirksBrowserTest& operator=(const QuirksBrowserTest&) = delete;
+
  protected:
   ~QuirksBrowserTest() override = default;
 
@@ -103,9 +106,6 @@ class QuirksBrowserTest : public InProcessBrowserTest {
                                     // request.
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuirksBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(QuirksBrowserTest, DownloadIccFile) {

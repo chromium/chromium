@@ -459,6 +459,9 @@ class DriveIntegrationService::DriveFsHolder
                       chromeos::disks::DiskMountManager::GetInstance(),
                       std::make_unique<base::OneShotTimer>()) {}
 
+  DriveFsHolder(const DriveFsHolder&) = delete;
+  DriveFsHolder& operator=(const DriveFsHolder&) = delete;
+
   drivefs::DriveFsHost* drivefs_host() { return &drivefs_host_; }
 
  private:
@@ -558,8 +561,6 @@ class DriveIntegrationService::DriveFsHolder
   drivefs::DriveFsHost drivefs_host_;
 
   std::string profile_salt_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsHolder);
 };
 
 DriveIntegrationService::DriveIntegrationService(

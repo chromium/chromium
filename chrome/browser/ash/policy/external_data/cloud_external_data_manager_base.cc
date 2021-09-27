@@ -61,6 +61,9 @@ class CloudExternalDataManagerBase::Backend {
           scoped_refptr<base::SequencedTaskRunner> task_runner,
           scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
+
   // Allows downloaded external data to be cached in |external_data_store|.
   // Ownership of the store is taken. The store can be destroyed by calling
   // SetExternalDataStore(nullptr).
@@ -159,8 +162,6 @@ class CloudExternalDataManagerBase::Backend {
   std::unique_ptr<ExternalPolicyDataUpdater> updater_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 CloudExternalDataManagerBase::Backend::Backend(

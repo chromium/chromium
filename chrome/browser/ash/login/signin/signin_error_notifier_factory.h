@@ -26,6 +26,10 @@ class SigninErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the SigninErrorNotifierFactory singleton.
   static SigninErrorNotifierFactory* GetInstance();
 
+  SigninErrorNotifierFactory(const SigninErrorNotifierFactory&) = delete;
+  SigninErrorNotifierFactory& operator=(const SigninErrorNotifierFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SigninErrorNotifierFactory>;
 
@@ -35,8 +39,6 @@ class SigninErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorNotifierFactory);
 };
 
 }  // namespace ash

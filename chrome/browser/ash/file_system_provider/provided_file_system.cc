@@ -116,6 +116,10 @@ struct ProvidedFileSystem::NotifyInQueueArgs {
         changes(std::move(changes)),
         tag(tag),
         callback(std::move(callback)) {}
+
+  NotifyInQueueArgs(const NotifyInQueueArgs&) = delete;
+  NotifyInQueueArgs& operator=(const NotifyInQueueArgs&) = delete;
+
   ~NotifyInQueueArgs() {}
 
   const size_t token;
@@ -125,9 +129,6 @@ struct ProvidedFileSystem::NotifyInQueueArgs {
   const std::unique_ptr<ProvidedFileSystemObserver::Changes> changes;
   const std::string tag;
   storage::AsyncFileUtil::StatusCallback callback;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotifyInQueueArgs);
 };
 
 ProvidedFileSystem::ProvidedFileSystem(

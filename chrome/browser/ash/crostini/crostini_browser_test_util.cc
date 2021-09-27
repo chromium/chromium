@@ -29,6 +29,11 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
   explicit CrostiniBrowserTestChromeBrowserMainExtraParts(bool register_termina)
       : register_termina_(register_termina) {}
 
+  CrostiniBrowserTestChromeBrowserMainExtraParts(
+      const CrostiniBrowserTestChromeBrowserMainExtraParts&) = delete;
+  CrostiniBrowserTestChromeBrowserMainExtraParts& operator=(
+      const CrostiniBrowserTestChromeBrowserMainExtraParts&) = delete;
+
   component_updater::FakeCrOSComponentManager* cros_component_manager() {
     return cros_component_manager_ptr_;
   }
@@ -83,8 +88,6 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
       nullptr;
 
   content::NetworkConnectionChangeSimulator connection_change_simulator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniBrowserTestChromeBrowserMainExtraParts);
 };
 
 CrostiniBrowserTestBase::CrostiniBrowserTestBase(bool register_termina)

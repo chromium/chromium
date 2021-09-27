@@ -27,6 +27,9 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Returns the global instance if initialized.
   static WilcoDtcSupportdClient* Get();
 
+  WilcoDtcSupportdClient(const WilcoDtcSupportdClient&) = delete;
+  WilcoDtcSupportdClient& operator=(const WilcoDtcSupportdClient&) = delete;
+
   // Registers |callback| to run when the wilco_dtc_supportd service becomes
   // available.
   virtual void WaitForServiceToBeAvailable(
@@ -41,9 +44,6 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Create() should be used instead.
   WilcoDtcSupportdClient();
   ~WilcoDtcSupportdClient() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdClient);
 };
 
 }  // namespace ash

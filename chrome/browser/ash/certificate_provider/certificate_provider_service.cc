@@ -75,6 +75,9 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
                 const CertificateInfo& cert_info,
                 const base::WeakPtr<CertificateProviderService>& service);
 
+  SSLPrivateKey(const SSLPrivateKey&) = delete;
+  SSLPrivateKey& operator=(const SSLPrivateKey&) = delete;
+
   // net::SSLPrivateKey:
   std::string GetProviderName() override;
   std::vector<uint16_t> GetAlgorithmPreferences() override;
@@ -89,8 +92,6 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
   const CertificateInfo cert_info_;
   const base::WeakPtr<CertificateProviderService> service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKey);
 };
 
 class CertificateProviderService::ClientCertIdentity

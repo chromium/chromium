@@ -44,6 +44,10 @@ const char kTestSAMLUser[] = "user@saml.example.com";
 }  // namespace
 
 class OfflineSigninLimiterTest : public testing::Test {
+ public:
+  OfflineSigninLimiterTest(const OfflineSigninLimiterTest&) = delete;
+  OfflineSigninLimiterTest& operator=(const OfflineSigninLimiterTest&) = delete;
+
  protected:
   OfflineSigninLimiterTest();
   ~OfflineSigninLimiterTest() override;
@@ -80,8 +84,6 @@ class OfflineSigninLimiterTest : public testing::Test {
 
   TestingPrefServiceSimple testing_local_state_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiterTest);
 };
 
 OfflineSigninLimiterTest::OfflineSigninLimiterTest()

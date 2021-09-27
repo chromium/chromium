@@ -22,6 +22,9 @@ class OobeAuthPageWaiter {
   // Gaia Login and Enrollment screens use different authenticators.
   // `auth_page_type` specifies which authenticator to wait for.
   explicit OobeAuthPageWaiter(AuthPageType auth_page_type);
+
+  OobeAuthPageWaiter& operator=(const OobeAuthPageWaiter&) = delete;
+
   ~OobeAuthPageWaiter();
 
   // Waits for the "ready" event be triggered by the page authenticator.
@@ -34,8 +37,6 @@ class OobeAuthPageWaiter {
   const char* GetAuthenticator();
 
   const AuthPageType auth_page_type_;
-
-  DISALLOW_ASSIGN(OobeAuthPageWaiter);
 };
 
 // Helper that creates an OobeAuthPageWaiter that listens for Gaia page JS

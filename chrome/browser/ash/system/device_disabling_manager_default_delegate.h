@@ -16,12 +16,15 @@ class DeviceDisablingManagerDefaultDelegate
  public:
   DeviceDisablingManagerDefaultDelegate();
 
+  DeviceDisablingManagerDefaultDelegate(
+      const DeviceDisablingManagerDefaultDelegate&) = delete;
+  DeviceDisablingManagerDefaultDelegate& operator=(
+      const DeviceDisablingManagerDefaultDelegate&) = delete;
+
  private:
   // DeviceDisablingManager::Delegate:
   void RestartToLoginScreen() override;
   void ShowDeviceDisabledScreen() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerDefaultDelegate);
 };
 
 }  // namespace system

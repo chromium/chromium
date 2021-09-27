@@ -53,6 +53,10 @@ const char kDisabledMessage[] = "This device has been disabled.";
 
 class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
  public:
+  DeviceSettingsProviderTest(const DeviceSettingsProviderTest&) = delete;
+  DeviceSettingsProviderTest& operator=(const DeviceSettingsProviderTest&) =
+      delete;
+
   MOCK_METHOD1(SettingChanged, void(const std::string&));
   MOCK_METHOD0(GetTrustedCallback, void(void));
 
@@ -464,9 +468,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   std::unique_ptr<DeviceSettingsProvider> provider_;
 
   base::ScopedPathOverride user_data_dir_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsProviderTest);
 };
 
 // Same as above, but enrolled into an enterprise

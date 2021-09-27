@@ -67,6 +67,9 @@ class MagnifierAnimationWaiter {
   explicit MagnifierAnimationWaiter(FullscreenMagnifierController* controller)
       : controller_(controller) {}
 
+  MagnifierAnimationWaiter(const MagnifierAnimationWaiter&) = delete;
+  MagnifierAnimationWaiter& operator=(const MagnifierAnimationWaiter&) = delete;
+
   void Wait() {
     base::RepeatingTimer check_timer;
     check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
@@ -85,7 +88,6 @@ class MagnifierAnimationWaiter {
 
   FullscreenMagnifierController* controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
-  DISALLOW_COPY_AND_ASSIGN(MagnifierAnimationWaiter);
 };
 
 }  // namespace
@@ -93,6 +95,12 @@ class MagnifierAnimationWaiter {
 class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
  protected:
   FullscreenMagnifierControllerTest() {}
+
+  FullscreenMagnifierControllerTest(const FullscreenMagnifierControllerTest&) =
+      delete;
+  FullscreenMagnifierControllerTest& operator=(
+      const FullscreenMagnifierControllerTest&) = delete;
+
   ~FullscreenMagnifierControllerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -155,9 +163,6 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
   void SetFocusOnElement(const std::string& element_id) {
     ExecuteScript("document.getElementById('" + element_id + "').focus();");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenMagnifierControllerTest);
 };
 
 // Test is flaky on ChromeOS: crbug.com/1150753

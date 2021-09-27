@@ -61,6 +61,9 @@ class EasyUnlockService : public KeyedService {
   // logged in and their profile is initialized.
   static EasyUnlockService* GetForUser(const user_manager::User& user);
 
+  EasyUnlockService(const EasyUnlockService&) = delete;
+  EasyUnlockService& operator=(const EasyUnlockService&) = delete;
+
   // Registers Easy Unlock profile preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -293,8 +296,6 @@ class EasyUnlockService : public KeyedService {
   bool tpm_key_checked_;
 
   base::WeakPtrFactory<EasyUnlockService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockService);
 };
 
 }  // namespace ash

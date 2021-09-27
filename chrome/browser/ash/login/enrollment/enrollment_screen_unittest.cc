@@ -37,6 +37,9 @@ class EnrollmentScreenUnitTest : public testing::Test {
  public:
   EnrollmentScreenUnitTest() = default;
 
+  EnrollmentScreenUnitTest(const EnrollmentScreenUnitTest&) = delete;
+  EnrollmentScreenUnitTest& operator=(const EnrollmentScreenUnitTest&) = delete;
+
   // Creates the EnrollmentScreen and sets required parameters.
   virtual void SetUpEnrollmentScreen() {
     wizard_context_ = std::make_unique<WizardContext>();
@@ -99,13 +102,16 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   // Objects required by the EnrollmentScreen that can be re-used.
   MockEnrollmentScreenView mock_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenUnitTest);
 };
 
 class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
  public:
   ZeroTouchEnrollmentScreenUnitTest() = default;
+
+  ZeroTouchEnrollmentScreenUnitTest(const ZeroTouchEnrollmentScreenUnitTest&) =
+      delete;
+  ZeroTouchEnrollmentScreenUnitTest& operator=(
+      const ZeroTouchEnrollmentScreenUnitTest&) = delete;
 
   enum AttestationEnrollmentStatus {
     SUCCESS,
@@ -226,9 +232,6 @@ class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
     // Start enrollment.
     enrollment_screen_->Show(wizard_context_.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ZeroTouchEnrollmentScreenUnitTest);
 };
 
 TEST_F(ZeroTouchEnrollmentScreenUnitTest, FinishEnrollmentFlow) {
@@ -297,6 +300,11 @@ class AutomaticEnrollmentScreenUnitTest
  public:
   AutomaticEnrollmentScreenUnitTest() = default;
 
+  AutomaticEnrollmentScreenUnitTest(const AutomaticEnrollmentScreenUnitTest&) =
+      delete;
+  AutomaticEnrollmentScreenUnitTest& operator=(
+      const AutomaticEnrollmentScreenUnitTest&) = delete;
+
   void SetUpEnrollmentScreen() override {
     enrollment_config_.mode = GetParam();
     enrollment_config_.auth_mechanism =
@@ -308,9 +316,6 @@ class AutomaticEnrollmentScreenUnitTest
     // Automatic re-enrollment is always setup for fallback.
     SetUpEnrollmentScreen();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutomaticEnrollmentScreenUnitTest);
 };
 
 TEST_P(AutomaticEnrollmentScreenUnitTest, ShowErrorPanel) {

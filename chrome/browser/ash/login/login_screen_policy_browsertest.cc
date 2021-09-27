@@ -54,14 +54,14 @@ class LoginScreenPolicyTest : public policy::DevicePolicyCrosBrowserTest {
  public:
   LoginScreenPolicyTest() = default;
 
+  LoginScreenPolicyTest(const LoginScreenPolicyTest&) = delete;
+  LoginScreenPolicyTest& operator=(const LoginScreenPolicyTest&) = delete;
+
   void RefreshDevicePolicyAndWaitForSettingChange(
       const char* cros_setting_name);
 
  protected:
   LoginManagerMixin login_manager_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenPolicyTest);
 };
 
 void LoginScreenPolicyTest::RefreshDevicePolicyAndWaitForSettingChange(

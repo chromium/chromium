@@ -54,6 +54,10 @@ class ArcFileSystemBridge
 
   ArcFileSystemBridge(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
+
+  ArcFileSystemBridge(const ArcFileSystemBridge&) = delete;
+  ArcFileSystemBridge& operator=(const ArcFileSystemBridge&) = delete;
+
   ~ArcFileSystemBridge() override;
 
   // Returns the factory instance for this class.
@@ -192,8 +196,6 @@ class ArcFileSystemBridge
   std::unique_ptr<ArcSelectFilesHandlersManager> select_files_handlers_manager_;
 
   base::WeakPtrFactory<ArcFileSystemBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemBridge);
 };
 
 }  // namespace arc

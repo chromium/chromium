@@ -50,6 +50,10 @@ std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
 }
 
 class UserCommandArcJobTest : public testing::Test {
+ public:
+  UserCommandArcJobTest(const UserCommandArcJobTest&) = delete;
+  UserCommandArcJobTest& operator=(const UserCommandArcJobTest&) = delete;
+
  protected:
   UserCommandArcJobTest();
   ~UserCommandArcJobTest() override;
@@ -64,9 +68,6 @@ class UserCommandArcJobTest : public testing::Test {
   const std::unique_ptr<TestingProfile> profile_;
   arc::ArcPolicyBridge* const arc_policy_bridge_;
   const std::unique_ptr<arc::FakePolicyInstance> policy_instance_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCommandArcJobTest);
 };
 
 UserCommandArcJobTest::UserCommandArcJobTest()

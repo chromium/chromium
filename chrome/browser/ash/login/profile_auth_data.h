@@ -18,6 +18,10 @@ namespace ash {
 // used for authentication to the user's actual BrowserContext.
 class ProfileAuthData {
  public:
+  ProfileAuthData() = delete;
+  ProfileAuthData(const ProfileAuthData&) = delete;
+  ProfileAuthData& operator=(const ProfileAuthData&) = delete;
+
   // Transfers authentication-related data from `from_partition` to
   // `to_partition` and invokes `completion_callback` on the UI thread when the
   // operation has completed. The following data is transferred:
@@ -37,9 +41,6 @@ class ProfileAuthData {
                        bool transfer_auth_cookies_on_first_login,
                        bool transfer_saml_auth_cookies_on_subsequent_login,
                        base::OnceClosure completion_callback);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProfileAuthData);
 };
 
 }  // namespace ash

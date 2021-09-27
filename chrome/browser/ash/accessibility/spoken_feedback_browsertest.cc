@@ -1500,6 +1500,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
 class OobeSpokenFeedbackTest : public OobeBaseTest {
  protected:
   OobeSpokenFeedbackTest() = default;
+
+  OobeSpokenFeedbackTest(const OobeSpokenFeedbackTest&) = delete;
+  OobeSpokenFeedbackTest& operator=(const OobeSpokenFeedbackTest&) = delete;
+
   ~OobeSpokenFeedbackTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1513,9 +1517,6 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
   }
 
   test::SpeechMonitor sm_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeSpokenFeedbackTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {

@@ -35,6 +35,11 @@ class UserNetworkConfigurationUpdaterFactory
 
   static UserNetworkConfigurationUpdaterFactory* GetInstance();
 
+  UserNetworkConfigurationUpdaterFactory(
+      const UserNetworkConfigurationUpdaterFactory&) = delete;
+  UserNetworkConfigurationUpdaterFactory& operator=(
+      const UserNetworkConfigurationUpdaterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       UserNetworkConfigurationUpdaterFactory>;
@@ -49,8 +54,6 @@ class UserNetworkConfigurationUpdaterFactory
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserNetworkConfigurationUpdaterFactory);
 };
 
 }  // namespace policy

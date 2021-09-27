@@ -205,6 +205,9 @@ class PrefChangeWatcher {
  public:
   PrefChangeWatcher(const std::string& pref_name, PrefService* prefs);
 
+  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
+  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
+
   void Wait();
 
  private:
@@ -214,8 +217,6 @@ class PrefChangeWatcher {
 
   base::RunLoop run_loop_;
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
 PrefChangeWatcher::PrefChangeWatcher(const std::string& pref_name,
@@ -1169,6 +1170,10 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
  public:
   WebviewClientCertsLoginTest() = default;
 
+  WebviewClientCertsLoginTest(const WebviewClientCertsLoginTest&) = delete;
+  WebviewClientCertsLoginTest& operator=(const WebviewClientCertsLoginTest&) =
+      delete;
+
   // Imports specified client certificates into the system slot.
   void SetUpClientCertsInSystemSlot(
       const std::vector<std::string>& client_cert_names) {
@@ -1178,8 +1183,6 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
 
  private:
   ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewClientCertsLoginTest);
 };
 
 // Tests that client certificate authentication is not enabled in a webview on
@@ -1537,6 +1540,10 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
             net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
             base::FilePath())) {}
 
+  WebviewProxyAuthLoginTest(const WebviewProxyAuthLoginTest&) = delete;
+  WebviewProxyAuthLoginTest& operator=(const WebviewProxyAuthLoginTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     // Start proxy server
@@ -1646,8 +1653,6 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewProxyAuthLoginTest);
 };
 
 // Disabled fails on msan and also non-msan bots: https://crbug.com/849128.

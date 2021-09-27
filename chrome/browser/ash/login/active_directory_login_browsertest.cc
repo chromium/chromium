@@ -83,6 +83,12 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
 class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {
  public:
   ActiveDirectoryLoginAutocompleteTest() = default;
+
+  ActiveDirectoryLoginAutocompleteTest(
+      const ActiveDirectoryLoginAutocompleteTest&) = delete;
+  ActiveDirectoryLoginAutocompleteTest& operator=(
+      const ActiveDirectoryLoginAutocompleteTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ActiveDirectoryLoginTest::SetUpInProcessBrowserTestFixture();
 
@@ -95,9 +101,6 @@ class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {
   }
 
   std::string autocomplete_realm_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginAutocompleteTest);
 };
 
 }  // namespace

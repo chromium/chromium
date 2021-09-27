@@ -39,6 +39,9 @@ class ApkWebAppInstaller {
   // a WeakPtr<Owner> member as a proxy for a profile lifetime observer.
   class Owner {};
 
+  ApkWebAppInstaller(const ApkWebAppInstaller&) = delete;
+  ApkWebAppInstaller& operator=(const ApkWebAppInstaller&) = delete;
+
   // Installs a web app represented by |web_app_info| with icon bytes
   // |icon_png_data| into |profile|. |owner| must stay alive for this class to
   // finish its tasks, otherwise installation will be aborted. Runs |callback|
@@ -90,8 +93,6 @@ class ApkWebAppInstaller {
   base::WeakPtr<Owner> weak_owner_;
 
   std::unique_ptr<WebApplicationInfo> web_app_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppInstaller);
 };
 
 }  // namespace ash

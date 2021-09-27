@@ -23,6 +23,12 @@ AccessCodeConfig GetZeroClockDriftConfig() {
 }
 
 class ParentAccessCodeAuthenticatorTest : public testing::Test {
+ public:
+  ParentAccessCodeAuthenticatorTest(const ParentAccessCodeAuthenticatorTest&) =
+      delete;
+  ParentAccessCodeAuthenticatorTest& operator=(
+      const ParentAccessCodeAuthenticatorTest&) = delete;
+
  protected:
   ParentAccessCodeAuthenticatorTest() = default;
   ~ParentAccessCodeAuthenticatorTest() override = default;
@@ -33,9 +39,6 @@ class ParentAccessCodeAuthenticatorTest : public testing::Test {
     EXPECT_GE(timestamp, code->valid_from());
     EXPECT_LE(timestamp, code->valid_to());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessCodeAuthenticatorTest);
 };
 
 TEST_F(ParentAccessCodeAuthenticatorTest, GenerateHardcodedCodeValues) {

@@ -65,6 +65,10 @@ GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
 class BitmapWrapper {
  public:
   explicit BitmapWrapper(const SkBitmap* bitmap) : bitmap_(bitmap) {}
+
+  BitmapWrapper(const BitmapWrapper&) = delete;
+  BitmapWrapper& operator=(const BitmapWrapper&) = delete;
+
   bool operator<(const BitmapWrapper& other) const {
     const size_t size1 = bitmap_->computeByteSize();
     const size_t size2 = other.bitmap_->computeByteSize();
@@ -78,7 +82,6 @@ class BitmapWrapper {
 
  private:
   const SkBitmap* const bitmap_;
-  DISALLOW_COPY_AND_ASSIGN(BitmapWrapper);
 };
 
 }  // namespace

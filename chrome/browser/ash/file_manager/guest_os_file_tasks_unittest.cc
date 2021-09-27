@@ -36,6 +36,9 @@ class GuestOsFileTasksTest : public testing::Test {
  protected:
   GuestOsFileTasksTest() = default;
 
+  GuestOsFileTasksTest(const GuestOsFileTasksTest&) = delete;
+  GuestOsFileTasksTest& operator=(const GuestOsFileTasksTest&) = delete;
+
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&profile_),
@@ -105,8 +108,6 @@ class GuestOsFileTasksTest : public testing::Test {
   std::vector<guest_os::GuestOsRegistryService::VmType> app_vm_types_;
   crostini::FakeCrostiniFeatures fake_crostini_features_;
   plugin_vm::FakePluginVmFeatures fake_plugin_vm_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsFileTasksTest);
 };
 
 TEST_F(GuestOsFileTasksTest, CheckPathsCanBeShared) {

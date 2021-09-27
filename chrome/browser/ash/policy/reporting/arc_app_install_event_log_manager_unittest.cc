@@ -138,6 +138,9 @@ class TestLogTaskRunnerWrapper
     test_task_runner_ = new base::TestSimpleTaskRunner;
   }
 
+  TestLogTaskRunnerWrapper(const TestLogTaskRunnerWrapper&) = delete;
+  TestLogTaskRunnerWrapper& operator=(const TestLogTaskRunnerWrapper&) = delete;
+
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() override {
     return test_task_runner_;
   }
@@ -148,13 +151,17 @@ class TestLogTaskRunnerWrapper
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLogTaskRunnerWrapper);
 };
 
 }  // namespace
 
 class ArcAppInstallEventLogManagerTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogManagerTest(const ArcAppInstallEventLogManagerTest&) =
+      delete;
+  ArcAppInstallEventLogManagerTest& operator=(
+      const ArcAppInstallEventLogManagerTest&) = delete;
+
  protected:
   ArcAppInstallEventLogManagerTest()
       : uploader_(&cloud_policy_client_, /*profile=*/nullptr),
@@ -318,9 +325,6 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   Events events_;
 
   std::unique_ptr<ArcAppInstallEventLogManager> manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogManagerTest);
 };
 
 // Create a manager with an empty log. Verify that no store is scheduled and no

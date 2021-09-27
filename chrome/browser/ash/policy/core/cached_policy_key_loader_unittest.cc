@@ -31,6 +31,10 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
  protected:
   CachedPolicyKeyLoaderTest() = default;
 
+  CachedPolicyKeyLoaderTest(const CachedPolicyKeyLoaderTest&) = delete;
+  CachedPolicyKeyLoaderTest& operator=(const CachedPolicyKeyLoaderTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
@@ -82,8 +86,6 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
 
  private:
   base::ScopedTempDir tmp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedPolicyKeyLoaderTest);
 };
 
 // Loads an existing key file using EnsurePolicyKeyLoaded.

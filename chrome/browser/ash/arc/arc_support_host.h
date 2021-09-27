@@ -145,6 +145,10 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
       base::RepeatingCallback<void(Profile* profile)>;
 
   explicit ArcSupportHost(Profile* profile);
+
+  ArcSupportHost(const ArcSupportHost&) = delete;
+  ArcSupportHost& operator=(const ArcSupportHost&) = delete;
+
   ~ArcSupportHost() override;
 
   void SetAuthDelegate(AuthDelegate* delegate);
@@ -283,8 +287,6 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // Prefix of the device management (DM) server URL used to detect whether the
   // SAML flow finished. The DM server is the SAML service provider.
   std::string active_directory_auth_device_management_url_prefix_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportHost);
 };
 
 #endif  // CHROME_BROWSER_ASH_ARC_ARC_SUPPORT_HOST_H_

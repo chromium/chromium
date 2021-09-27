@@ -105,6 +105,9 @@ class AXTreeSourceArcTest : public testing::Test,
     tree_source_->set_automation_event_router_for_test(router_.get());
   }
 
+  AXTreeSourceArcTest(const AXTreeSourceArcTest&) = delete;
+  AXTreeSourceArcTest& operator=(const AXTreeSourceArcTest&) = delete;
+
   // AXTreeSourceArc::Delegate overrides.
   void OnAction(const ui::AXActionData& data) const override {}
   bool UseFullFocusMode() const override { return full_focus_mode_; }
@@ -162,8 +165,6 @@ class AXTreeSourceArcTest : public testing::Test,
   const std::unique_ptr<AXTreeSourceArc> tree_source_;
 
   bool full_focus_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceArcTest);
 };
 
 TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {

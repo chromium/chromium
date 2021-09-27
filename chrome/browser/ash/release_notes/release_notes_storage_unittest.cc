@@ -34,6 +34,10 @@ namespace ash {
 
 class ReleaseNotesStorageTest : public testing::Test,
                                 public testing::WithParamInterface<bool> {
+ public:
+  ReleaseNotesStorageTest(const ReleaseNotesStorageTest&) = delete;
+  ReleaseNotesStorageTest& operator=(const ReleaseNotesStorageTest&) = delete;
+
  protected:
   ReleaseNotesStorageTest()
       : user_manager_(new FakeChromeUserManager()),
@@ -84,8 +88,6 @@ class ReleaseNotesStorageTest : public testing::Test,
   bool is_managed_ = false;
   bool is_ephemeral_ = false;
   bool is_unicorn_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ReleaseNotesStorageTest);
 };
 
 // Release notes are not shown for profiles that have been created in this

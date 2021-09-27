@@ -236,6 +236,12 @@ void FinishSamlResponseJob(const network::ResourceRequest& request,
 class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
     : public InProcessBrowserTest,
       public ArcSupportHost::ErrorDelegate {
+ public:
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+
  protected:
   ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() = default;
   ~ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() override = default;
@@ -372,8 +378,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   void OnRunNetworkTestsClicked() override {}
 
   std::unique_ptr<ArcSupportHost> support_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest);
 };
 
 // Non-SAML flow fetches valid enrollment token and user id.

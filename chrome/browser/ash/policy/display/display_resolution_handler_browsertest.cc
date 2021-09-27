@@ -168,6 +168,11 @@ class DeviceDisplayResolutionTestBase
     : public policy::DeviceDisplayPolicyCrosBrowserTest,
       public testing::WithParamInterface<PolicyValue> {
  public:
+  DeviceDisplayResolutionTestBase(const DeviceDisplayResolutionTestBase&) =
+      delete;
+  DeviceDisplayResolutionTestBase& operator=(
+      const DeviceDisplayResolutionTestBase&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(chromeos::switches::kLoginManager);
     command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
@@ -183,22 +188,20 @@ class DeviceDisplayResolutionTestBase
     policy_helper()->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {chromeos::kDeviceDisplayResolution});
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisplayResolutionTestBase);
 };
 
 class DeviceDisplayResolutionTest : public DeviceDisplayResolutionTestBase {
  public:
   DeviceDisplayResolutionTest() {}
 
+  DeviceDisplayResolutionTest(const DeviceDisplayResolutionTest&) = delete;
+  DeviceDisplayResolutionTest& operator=(const DeviceDisplayResolutionTest&) =
+      delete;
+
  protected:
   void SetPolicy(PolicyValue value) {
     DeviceDisplayResolutionTestBase::SetPolicy(value, false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisplayResolutionTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, Internal) {
@@ -303,6 +306,11 @@ INSTANTIATE_TEST_SUITE_P(
 class DisplayResolutionBootTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<PolicyValue> {
+ public:
+  DisplayResolutionBootTest(const DisplayResolutionBootTest&) = delete;
+  DisplayResolutionBootTest& operator=(const DisplayResolutionBootTest&) =
+      delete;
+
  protected:
   DisplayResolutionBootTest() {
     device_state_.set_skip_initial_policy_setup(true);
@@ -330,7 +338,6 @@ class DisplayResolutionBootTest
  private:
   DevicePolicyCrosTestHelper policy_helper_;
   DeviceDisplayCrosTestHelper helper_;
-  DISALLOW_COPY_AND_ASSIGN(DisplayResolutionBootTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
@@ -394,6 +401,11 @@ class DeviceDisplayResolutionRecommendedTest
  public:
   DeviceDisplayResolutionRecommendedTest() {}
 
+  DeviceDisplayResolutionRecommendedTest(
+      const DeviceDisplayResolutionRecommendedTest&) = delete;
+  DeviceDisplayResolutionRecommendedTest& operator=(
+      const DeviceDisplayResolutionRecommendedTest&) = delete;
+
  protected:
   void SetPolicy(PolicyValue value) {
     DeviceDisplayResolutionTestBase::SetPolicy(value, true);
@@ -419,7 +431,6 @@ class DeviceDisplayResolutionRecommendedTest
 
  private:
   DeviceDisplayCrosTestHelper display_helper_;
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisplayResolutionRecommendedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest, Internal) {

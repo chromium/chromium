@@ -36,6 +36,9 @@ class LanguageSwitchedWaiter {
         finished_(false),
         runner_(new content::MessageLoopRunner) {}
 
+  LanguageSwitchedWaiter(const LanguageSwitchedWaiter&) = delete;
+  LanguageSwitchedWaiter& operator=(const LanguageSwitchedWaiter&) = delete;
+
   void ExitMessageLoop(const LanguageSwitchResult& result) {
     finished_ = true;
     runner_->Quit();
@@ -57,7 +60,6 @@ class LanguageSwitchedWaiter {
   SwitchLanguageCallback callback_;
   bool finished_;
   scoped_refptr<content::MessageLoopRunner> runner_;
-  DISALLOW_COPY_AND_ASSIGN(LanguageSwitchedWaiter);
 };
 
 const struct {

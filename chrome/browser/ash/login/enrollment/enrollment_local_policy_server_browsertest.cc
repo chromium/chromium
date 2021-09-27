@@ -99,6 +99,11 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
     authenticator_id_ = "$('enterprise-enrollment').authenticator_";
   }
 
+  EnrollmentLocalPolicyServerBase(const EnrollmentLocalPolicyServerBase&) =
+      delete;
+  EnrollmentLocalPolicyServerBase& operator=(
+      const EnrollmentLocalPolicyServerBase&) = delete;
+
   void SetUpOnMainThread() override {
     fake_gaia_.SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId,
@@ -178,9 +183,6 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentLocalPolicyServerBase);
 };
 
 class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
@@ -188,6 +190,11 @@ class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
   AutoEnrollmentLocalPolicyServer() {
     device_state_.SetState(DeviceStateMixin::State::BEFORE_OOBE);
   }
+
+  AutoEnrollmentLocalPolicyServer(const AutoEnrollmentLocalPolicyServer&) =
+      delete;
+  AutoEnrollmentLocalPolicyServer& operator=(
+      const AutoEnrollmentLocalPolicyServer&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);
@@ -209,9 +216,6 @@ class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
 
  protected:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentLocalPolicyServer);
 };
 
 class AutoEnrollmentWithStatistics : public AutoEnrollmentLocalPolicyServer {
@@ -273,6 +277,9 @@ class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
     policy_server_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);
   }
+
+  InitialEnrollmentTest(const InitialEnrollmentTest&) = delete;
+  InitialEnrollmentTest& operator=(const InitialEnrollmentTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);
@@ -340,7 +347,6 @@ class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
 
  private:
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  DISALLOW_COPY_AND_ASSIGN(InitialEnrollmentTest);
 };
 
 // Simple manual enrollment.
@@ -985,15 +991,15 @@ class OobeGuestButtonPolicy : public testing::WithParamInterface<bool>,
  public:
   OobeGuestButtonPolicy() = default;
 
+  OobeGuestButtonPolicy(const OobeGuestButtonPolicy&) = delete;
+  OobeGuestButtonPolicy& operator=(const OobeGuestButtonPolicy&) = delete;
+
   void SetUpOnMainThread() override {
     enterprise_management::ChromeDeviceSettingsProto proto;
     proto.mutable_guest_mode_enabled()->set_guest_mode_enabled(GetParam());
     policy_server_.UpdateDevicePolicy(proto);
     EnrollmentLocalPolicyServerBase::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeGuestButtonPolicy);
 };
 
 IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {

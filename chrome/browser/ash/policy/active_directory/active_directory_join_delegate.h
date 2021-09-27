@@ -22,6 +22,11 @@ using OnDomainJoinedCallback =
 class ActiveDirectoryJoinDelegate {
  public:
   ActiveDirectoryJoinDelegate() = default;
+
+  ActiveDirectoryJoinDelegate(const ActiveDirectoryJoinDelegate&) = delete;
+  ActiveDirectoryJoinDelegate& operator=(const ActiveDirectoryJoinDelegate&) =
+      delete;
+
   // Start the Active Directory domain join flow. |dm_token| will be stored in
   // the device policy. |domain_join_config| could be used to streamline the
   // flow.
@@ -31,9 +36,6 @@ class ActiveDirectoryJoinDelegate {
 
  protected:
   ~ActiveDirectoryJoinDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryJoinDelegate);
 };
 
 }  // namespace policy

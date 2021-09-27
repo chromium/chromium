@@ -73,6 +73,9 @@ class CpuDataCollectorTest : public testing::Test {
                                   TimeDelta::FromMilliseconds(910000),
                                   TimeDelta::FromMilliseconds(510000)}) {}
 
+  CpuDataCollectorTest(const CpuDataCollectorTest&) = delete;
+  CpuDataCollectorTest& operator=(const CpuDataCollectorTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -100,9 +103,6 @@ class CpuDataCollectorTest : public testing::Test {
   base::FilePath time_in_state_path_cpu0_;
   base::FilePath time_in_state_path_cpu1_;
   base::FilePath all_time_in_state_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CpuDataCollectorTest);
 };
 
 TEST_F(CpuDataCollectorTest, ReadCpuFreqTimeInState) {

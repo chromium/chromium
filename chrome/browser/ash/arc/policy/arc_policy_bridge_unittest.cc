@@ -217,6 +217,9 @@ class ArcPolicyBridgeTestBase {
  public:
   ArcPolicyBridgeTestBase() = default;
 
+  ArcPolicyBridgeTestBase(const ArcPolicyBridgeTestBase&) = delete;
+  ArcPolicyBridgeTestBase& operator=(const ArcPolicyBridgeTestBase&) = delete;
+
   void DoSetUp(bool is_affiliated) {
     bridge_service_ = std::make_unique<ArcBridgeService>();
     EXPECT_CALL(policy_service_,
@@ -343,8 +346,6 @@ class ArcPolicyBridgeTestBase {
   std::unique_ptr<FakePolicyInstance> policy_instance_;
   policy::PolicyMap policy_map_;
   policy::MockPolicyService policy_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPolicyBridgeTestBase);
 };
 
 class ArcPolicyBridgeTest : public ArcPolicyBridgeTestBase,

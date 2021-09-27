@@ -129,6 +129,10 @@ class EventLogger {
   };
 
   EventLogger() {}
+
+  EventLogger(const EventLogger&) = delete;
+  EventLogger& operator=(const EventLogger&) = delete;
+
   virtual ~EventLogger() {}
 
   void OnExecute(int request_id) {
@@ -168,8 +172,6 @@ class EventLogger {
   std::vector<std::unique_ptr<SuccessEvent>> success_events_;
   std::vector<std::unique_ptr<ErrorEvent>> error_events_;
   base::WeakPtrFactory<EventLogger> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
 
 // Fake handler, which forwards callbacks to the logger. The handler is owned
@@ -265,6 +267,10 @@ class RequestObserver : public RequestManager::Observer {
   };
 
   RequestObserver() {}
+
+  RequestObserver(const RequestObserver&) = delete;
+  RequestObserver& operator=(const RequestObserver&) = delete;
+
   ~RequestObserver() override {}
 
   // RequestManager::Observer overrides.
@@ -315,8 +321,6 @@ class RequestObserver : public RequestManager::Observer {
   std::vector<FulfilledEvent> fulfilled_;
   std::vector<RejectedEvent> rejected_;
   std::vector<Event> timeouted_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestObserver);
 };
 
 }  // namespace

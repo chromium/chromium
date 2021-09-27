@@ -44,6 +44,11 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   ArcProvisionNotificationServiceTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
+  ArcProvisionNotificationServiceTest(
+      const ArcProvisionNotificationServiceTest&) = delete;
+  ArcProvisionNotificationServiceTest& operator=(
+      const ArcProvisionNotificationServiceTest&) = delete;
+
   void SetUp() override {
     SetUpInternal(/*should_create_session_manager=*/true);
   }
@@ -109,8 +114,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
 
  private:
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationServiceTest);
 };
 
 }  // namespace
@@ -323,6 +326,12 @@ class ArcProvisionNotificationServiceOobeTest
     : public ArcProvisionNotificationServiceTest {
  protected:
   ArcProvisionNotificationServiceOobeTest() = default;
+
+  ArcProvisionNotificationServiceOobeTest(
+      const ArcProvisionNotificationServiceOobeTest&) = delete;
+  ArcProvisionNotificationServiceOobeTest& operator=(
+      const ArcProvisionNotificationServiceOobeTest&) = delete;
+
   void SetUp() override {
     // SessionManager is created in FakeLoginDisplayHost. We should not create
     // another one here.
@@ -343,8 +352,6 @@ class ArcProvisionNotificationServiceOobeTest
 
  private:
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationServiceOobeTest);
 };
 
 // For mananged user whose B&R or GLS is not managed, Arc Tos is shown during

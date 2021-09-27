@@ -27,6 +27,10 @@ class UserPolicyTestHelper;
 // to login.
 // TODO (crbug/1014663): Deprecate this class in favor of LoggedInUserMixin.
 class LoginPolicyTestBase : public ash::OobeBaseTest {
+ public:
+  LoginPolicyTestBase(const LoginPolicyTestBase&) = delete;
+  LoginPolicyTestBase& operator=(const LoginPolicyTestBase&) = delete;
+
  protected:
   LoginPolicyTestBase();
   ~LoginPolicyTestBase() override;
@@ -65,8 +69,6 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
 
   const AccountId account_id_;  // Test AccountId.
   std::unique_ptr<UserPolicyTestHelper> user_policy_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPolicyTestBase);
 };
 
 }  // namespace policy

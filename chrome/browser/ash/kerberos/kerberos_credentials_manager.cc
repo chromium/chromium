@@ -157,6 +157,9 @@ class KerberosAddAccountRunner {
     AddAccount();
   }
 
+  KerberosAddAccountRunner(const KerberosAddAccountRunner&) = delete;
+  KerberosAddAccountRunner& operator=(const KerberosAddAccountRunner&) = delete;
+
  private:
   // Adds the |normalized_principal_| account to the Kerberos daemon.
   void AddAccount() {
@@ -283,7 +286,6 @@ class KerberosAddAccountRunner {
   bool is_new_account_ = false;
 
   base::WeakPtrFactory<KerberosAddAccountRunner> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosAddAccountRunner);
 };
 
 KerberosCredentialsManager::Observer::Observer() = default;

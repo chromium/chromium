@@ -34,6 +34,9 @@ class FileStreamWriter::OperationRunner
  public:
   OperationRunner() : file_handle_(0) {}
 
+  OperationRunner(const OperationRunner&) = delete;
+  OperationRunner& operator=(const OperationRunner&) = delete;
+
   // Opens a file for writing and calls the completion callback. Must be called
   // on UI thread.
   void OpenFileOnUIThread(const storage::FileSystemURL& url,
@@ -129,8 +132,6 @@ class FileStreamWriter::OperationRunner
   base::WeakPtr<ProvidedFileSystemInterface> file_system_;
   std::unique_ptr<ScopedFileOpener> file_opener_;
   int file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OperationRunner);
 };
 
 FileStreamWriter::FileStreamWriter(const storage::FileSystemURL& url,

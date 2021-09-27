@@ -152,6 +152,10 @@ class CrosUsbNotificationDelegate
         settings_sub_page_(std::move(settings_sub_page)),
         disposition_(CrosUsbNotificationClosed::kUnknown) {}
 
+  CrosUsbNotificationDelegate(const CrosUsbNotificationDelegate&) = delete;
+  CrosUsbNotificationDelegate& operator=(const CrosUsbNotificationDelegate&) =
+      delete;
+
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
@@ -191,8 +195,6 @@ class CrosUsbNotificationDelegate
   std::string settings_sub_page_;
   CrosUsbNotificationClosed disposition_;
   base::WeakPtrFactory<CrosUsbNotificationDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosUsbNotificationDelegate);
 };
 
 // List of class codes to handle / not handle.

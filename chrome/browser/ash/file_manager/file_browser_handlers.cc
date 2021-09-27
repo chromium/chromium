@@ -161,6 +161,10 @@ class FileBrowserHandlerExecutor {
                              const Extension* extension,
                              const std::string& action_id);
 
+  FileBrowserHandlerExecutor(const FileBrowserHandlerExecutor&) = delete;
+  FileBrowserHandlerExecutor& operator=(const FileBrowserHandlerExecutor&) =
+      delete;
+
   // Executes the task for each file. |done| will be run with the result.
   void Execute(const std::vector<FileSystemURL>& file_urls,
                file_tasks::FileTaskFinishedCallback done);
@@ -201,8 +205,6 @@ class FileBrowserHandlerExecutor {
   const std::string action_id_;
   file_tasks::FileTaskFinishedCallback done_;
   base::WeakPtrFactory<FileBrowserHandlerExecutor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileBrowserHandlerExecutor);
 };
 
 // static

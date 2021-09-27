@@ -42,6 +42,9 @@ class UserAddingScreenTest : public LoginManagerTest,
     login_mixin_.AppendRegularUsers(3);
   }
 
+  UserAddingScreenTest(const UserAddingScreenTest&) = delete;
+  UserAddingScreenTest& operator=(const UserAddingScreenTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
     UserAddingScreen::Get()->AddObserver(this);
@@ -86,8 +89,6 @@ class UserAddingScreenTest : public LoginManagerTest,
   std::unique_ptr<base::RunLoop> run_loop_;
   bool finished_ = false;  // True if OnUserAddingFinished() has been called
                            // before WaitUntilUserAddingFinishedOrCancelled().
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {

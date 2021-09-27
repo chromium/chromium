@@ -38,6 +38,11 @@ class UserCloudPolicyManagerTest
       public testing::WithParamInterface<
           std::tuple<std::vector<base::Feature>,
                      ash::LoggedInUserMixin::LogInType>> {
+ public:
+  UserCloudPolicyManagerTest(const UserCloudPolicyManagerTest&) = delete;
+  UserCloudPolicyManagerTest& operator=(const UserCloudPolicyManagerTest&) =
+      delete;
+
  protected:
   UserCloudPolicyManagerTest() {
     // Override default tests configuration that prevents effective testing of
@@ -79,8 +84,6 @@ class UserCloudPolicyManagerTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {

@@ -41,6 +41,9 @@ class FileStreamReader::OperationRunner
  public:
   OperationRunner() : file_handle_(0) {}
 
+  OperationRunner(const OperationRunner&) = delete;
+  OperationRunner& operator=(const OperationRunner&) = delete;
+
   // Opens a file for reading and calls the completion callback. Must be called
   // on UI thread.
   void OpenFileOnUIThread(const storage::FileSystemURL& url,
@@ -183,8 +186,6 @@ class FileStreamReader::OperationRunner
   base::FilePath file_path_;
   std::unique_ptr<ScopedFileOpener> file_opener_;
   int file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OperationRunner);
 };
 
 FileStreamReader::FileStreamReader(storage::FileSystemContext* context,

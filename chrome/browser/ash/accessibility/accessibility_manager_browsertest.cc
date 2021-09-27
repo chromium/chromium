@@ -337,6 +337,10 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   AccessibilityManagerTest()
       : disable_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+
+  AccessibilityManagerTest(const AccessibilityManagerTest&) = delete;
+  AccessibilityManagerTest& operator=(const AccessibilityManagerTest&) = delete;
+
   ~AccessibilityManagerTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -399,7 +403,6 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerTest);
 };
 
 // Test that a new user's application locale is mapped to a supported Dictation
@@ -1220,6 +1223,11 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   AccessibilityManagerLoginTest()
       : disable_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+
+  AccessibilityManagerLoginTest(const AccessibilityManagerLoginTest&) = delete;
+  AccessibilityManagerLoginTest& operator=(
+      const AccessibilityManagerLoginTest&) = delete;
+
   ~AccessibilityManagerLoginTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1267,8 +1275,6 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerLoginTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, BrailleOnLoginScreen) {
@@ -1375,6 +1381,12 @@ class AccessibilityManagerUserTypeTest
           embedded_test_server(), this);
     }
   }
+
+  AccessibilityManagerUserTypeTest(const AccessibilityManagerUserTypeTest&) =
+      delete;
+  AccessibilityManagerUserTypeTest& operator=(
+      const AccessibilityManagerUserTypeTest&) = delete;
+
   ~AccessibilityManagerUserTypeTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1398,9 +1410,6 @@ class AccessibilityManagerUserTypeTest
   std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
 
   MockBrailleController braille_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerUserTypeTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,

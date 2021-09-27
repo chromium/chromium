@@ -96,6 +96,9 @@ class SnapshotManager::FileRefsHolder
  public:
   FileRefsHolder() = default;
 
+  FileRefsHolder(const FileRefsHolder&) = delete;
+  FileRefsHolder& operator=(const FileRefsHolder&) = delete;
+
   void FreeSpaceAndCreateSnapshotFile(
       scoped_refptr<storage::FileSystemContext> context,
       const storage::FileSystemURL& url,
@@ -131,8 +134,6 @@ class SnapshotManager::FileRefsHolder
   ~FileRefsHolder() = default;
 
   base::circular_deque<FileReferenceWithSizeInfo> file_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileRefsHolder);
 };
 
 void SnapshotManager::FileRefsHolder::FreeSpaceAndCreateSnapshotFile(

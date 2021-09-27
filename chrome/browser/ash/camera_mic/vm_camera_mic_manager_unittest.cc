@@ -141,6 +141,9 @@ class VmCameraMicManagerTest : public testing::Test {
     vm_camera_mic_manager_->OnPrimaryUserSessionStarted(&testing_profile_);
   }
 
+  VmCameraMicManagerTest(const VmCameraMicManagerTest&) = delete;
+  VmCameraMicManagerTest& operator=(const VmCameraMicManagerTest&) = delete;
+
   void SetCameraAccessing(VmType vm, bool value) {
     vm_camera_mic_manager_->SetCameraAccessing(vm, value);
   }
@@ -189,8 +192,6 @@ class VmCameraMicManagerTest : public testing::Test {
 
   FakeNotificationDisplayService* fake_display_service_;
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };
 
 TEST_F(VmCameraMicManagerTest, CameraPrivacy) {

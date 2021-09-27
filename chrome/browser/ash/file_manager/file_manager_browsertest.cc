@@ -195,6 +195,9 @@ class FilesAppBrowserTest : public FileManagerBrowserTestBase,
  public:
   FilesAppBrowserTest() = default;
 
+  FilesAppBrowserTest(const FilesAppBrowserTest&) = delete;
+  FilesAppBrowserTest& operator=(const FilesAppBrowserTest&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FileManagerBrowserTestBase::SetUpCommandLine(command_line);
@@ -217,9 +220,6 @@ class FilesAppBrowserTest : public FileManagerBrowserTestBase,
   }
 
   Options GetOptions() const override { return GetParam().options; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilesAppBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, Test) {
@@ -232,8 +232,9 @@ class ExtendedFilesAppBrowserTest : public FilesAppBrowserTest {
  public:
   ExtendedFilesAppBrowserTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtendedFilesAppBrowserTest);
+  ExtendedFilesAppBrowserTest(const ExtendedFilesAppBrowserTest&) = delete;
+  ExtendedFilesAppBrowserTest& operator=(const ExtendedFilesAppBrowserTest&) =
+      delete;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, PRE_Test) {

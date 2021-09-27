@@ -148,6 +148,10 @@ class ArcTracingGraphicsModel {
   using ViewMap = std::map<ViewId, EventsContainer>;
 
   ArcTracingGraphicsModel();
+
+  ArcTracingGraphicsModel(const ArcTracingGraphicsModel&) = delete;
+  ArcTracingGraphicsModel& operator=(const ArcTracingGraphicsModel&) = delete;
+
   ~ArcTracingGraphicsModel();
 
   // Trims container events by |trim_timestamp|. All global events are discarded
@@ -241,8 +245,6 @@ class ArcTracingGraphicsModel {
   ArcSystemModel system_model_;
   // Allows to have model incomplete, used in overview and in tests.
   bool skip_structure_validation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingGraphicsModel);
 };
 
 std::ostream& operator<<(std::ostream& os,

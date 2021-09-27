@@ -60,6 +60,11 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
         ArcBootPhaseThrottleObserver::ObserverStateChangedCallback());
   }
 
+  ArcBootPhaseThrottleObserverTest(const ArcBootPhaseThrottleObserverTest&) =
+      delete;
+  ArcBootPhaseThrottleObserverTest& operator=(
+      const ArcBootPhaseThrottleObserverTest&) = delete;
+
   void TearDown() override {
     observer()->StopObserving();
     testing_profile_.reset();
@@ -86,8 +91,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   ArcBootPhaseThrottleObserver observer_;
   std::unique_ptr<TestingProfile> testing_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseThrottleObserverTest);
 };
 
 TEST_F(ArcBootPhaseThrottleObserverTest, TestConstructDestruct) {}

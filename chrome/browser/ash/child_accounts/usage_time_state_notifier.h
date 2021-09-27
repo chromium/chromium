@@ -43,6 +43,9 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   // initialize the instance in the first time it's called.
   static UsageTimeStateNotifier* GetInstance();
 
+  UsageTimeStateNotifier(const UsageTimeStateNotifier&) = delete;
+  UsageTimeStateNotifier& operator=(const UsageTimeStateNotifier&) = delete;
+
   // Adds and removes observers.
   void AddObserver(UsageTimeStateNotifier::Observer* observer);
   void RemoveObserver(UsageTimeStateNotifier::Observer* observer);
@@ -69,8 +72,6 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   base::ObserverList<Observer> observers_;
 
   UsageTimeState last_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTimeStateNotifier);
 };
 
 }  // namespace ash

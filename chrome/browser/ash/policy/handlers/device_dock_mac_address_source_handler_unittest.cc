@@ -30,6 +30,11 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
             ash::CrosSettings::Get(), &network_device_handler_mock_);
   }
 
+  DeviceDockMacAddressHandlerBaseTest(
+      const DeviceDockMacAddressHandlerBaseTest&) = delete;
+  DeviceDockMacAddressHandlerBaseTest& operator=(
+      const DeviceDockMacAddressHandlerBaseTest&) = delete;
+
  protected:
   void MakeCrosSettingsTrusted() {
     scoped_cros_settings_test_helper_.SetTrustedStatus(
@@ -42,9 +47,6 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
       network_device_handler_mock_;
 
   std::unique_ptr<DeviceDockMacAddressHandler> device_dock_mac_address_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDockMacAddressHandlerBaseTest);
 };
 
 // Tests that DockMacAddressHandler does not change device handler property if
@@ -61,8 +63,10 @@ class DeviceDockMacAddressHandlerTest
  public:
   DeviceDockMacAddressHandlerTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDockMacAddressHandlerTest);
+  DeviceDockMacAddressHandlerTest(const DeviceDockMacAddressHandlerTest&) =
+      delete;
+  DeviceDockMacAddressHandlerTest& operator=(
+      const DeviceDockMacAddressHandlerTest&) = delete;
 };
 
 // Tests that DockMacAddressHandler does not change device handler property if

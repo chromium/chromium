@@ -190,6 +190,10 @@ std::unique_ptr<UploadJob> MockScreenshotDelegate::CreateUploadJob(
 
 class DeviceCommandScreenshotTest : public ChromeAshTestBase {
  public:
+  DeviceCommandScreenshotTest(const DeviceCommandScreenshotTest&) = delete;
+  DeviceCommandScreenshotTest& operator=(const DeviceCommandScreenshotTest&) =
+      delete;
+
   void VerifyResults(RemoteCommandJob* job,
                      RemoteCommandJob::Status expected_status,
                      std::string expected_payload);
@@ -213,8 +217,6 @@ class DeviceCommandScreenshotTest : public ChromeAshTestBase {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandScreenshotTest);
 };
 
 DeviceCommandScreenshotTest::DeviceCommandScreenshotTest()

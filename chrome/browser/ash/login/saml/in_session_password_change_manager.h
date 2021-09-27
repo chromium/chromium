@@ -34,6 +34,11 @@ namespace ash {
 // rerunning the task or posting the task to be re-run, which means that there
 // is only ever one of task that is scheduled to be run.
 class RecheckPasswordExpiryTask {
+ public:
+  RecheckPasswordExpiryTask(const RecheckPasswordExpiryTask&) = delete;
+  RecheckPasswordExpiryTask& operator=(const RecheckPasswordExpiryTask&) =
+      delete;
+
  private:
   RecheckPasswordExpiryTask();
   ~RecheckPasswordExpiryTask();
@@ -51,8 +56,6 @@ class RecheckPasswordExpiryTask {
 
   // Only InSessionPasswordChangeManager can use this class.
   friend class InSessionPasswordChangeManager;
-
-  DISALLOW_COPY_AND_ASSIGN(RecheckPasswordExpiryTask);
 };
 
 // Manages the flow of changing a password in-session - handles user

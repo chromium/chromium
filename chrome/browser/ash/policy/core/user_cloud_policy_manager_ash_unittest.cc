@@ -124,6 +124,10 @@ constexpr char kDeviceId[] = "id987";
 class UserCloudPolicyManagerAshTest
     : public testing::TestWithParam<std::vector<base::Feature>> {
  public:
+  UserCloudPolicyManagerAshTest(const UserCloudPolicyManagerAshTest&) = delete;
+  UserCloudPolicyManagerAshTest& operator=(
+      const UserCloudPolicyManagerAshTest&) = delete;
+
   // Note: This method has to be public, so that a pointer to it may be obtained
   // in the test.
   void MakeManagerWithPreloadedStore(const base::TimeDelta& fetch_timeout) {
@@ -468,8 +472,6 @@ class UserCloudPolicyManagerAshTest
       test_system_shared_loader_factory_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAshTest);
 };
 
 // TODO(agawronska): Remove test instantiation with kDMServerOAuthForChildUser
@@ -1148,6 +1150,11 @@ TEST_P(UserCloudPolicyManagerAshTest, ReregistrationFails) {
 class UserCloudPolicyManagerAshChildTest
     : public UserCloudPolicyManagerAshTest {
  public:
+  UserCloudPolicyManagerAshChildTest(
+      const UserCloudPolicyManagerAshChildTest&) = delete;
+  UserCloudPolicyManagerAshChildTest& operator=(
+      const UserCloudPolicyManagerAshChildTest&) = delete;
+
   // Issues OAuthToken for device management scopes.
   void IssueOAuth2AccessToken(base::TimeDelta token_lifetime) {
     signin::ScopeSet scopes;
@@ -1179,9 +1186,6 @@ class UserCloudPolicyManagerAshChildTest
     store_->NotifyStoreLoaded();
     EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAshChildTest);
 };
 
 // TODO(agawronska): Remove test instantiation with kDMServerOAuthForChildUser

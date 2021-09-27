@@ -251,13 +251,14 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
         const std::string& component_id,
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
     PendingKeyEvent(PendingKeyEvent&& other);
+
+    PendingKeyEvent(const PendingKeyEvent&) = delete;
+    PendingKeyEvent& operator=(const PendingKeyEvent&) = delete;
+
     ~PendingKeyEvent();
 
     std::string component_id;
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PendingKeyEvent);
   };
 
   // Returns true if this IME is active, false if not.

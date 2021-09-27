@@ -37,6 +37,10 @@ class LoggingObserver : public Observer {
   };
 
   LoggingObserver();
+
+  LoggingObserver(const LoggingObserver&) = delete;
+  LoggingObserver& operator=(const LoggingObserver&) = delete;
+
   ~LoggingObserver() override;
 
   // file_system_provider::Observer overrides.
@@ -50,8 +54,6 @@ class LoggingObserver : public Observer {
 
   std::vector<Event> mounts;
   std::vector<Event> unmounts;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingObserver);
 };
 
 }  // namespace file_system_provider

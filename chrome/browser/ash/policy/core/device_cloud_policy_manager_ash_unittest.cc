@@ -128,6 +128,12 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
 class DeviceCloudPolicyManagerAshTest
     : public ash::DeviceSettingsTestBase,
       public chromeos::SessionManagerClient::Observer {
+ public:
+  DeviceCloudPolicyManagerAshTest(const DeviceCloudPolicyManagerAshTest&) =
+      delete;
+  DeviceCloudPolicyManagerAshTest& operator=(
+      const DeviceCloudPolicyManagerAshTest&) = delete;
+
  protected:
   DeviceCloudPolicyManagerAshTest()
       : state_keys_broker_(&session_manager_client_), store_(nullptr) {
@@ -308,8 +314,6 @@ class DeviceCloudPolicyManagerAshTest
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAshTest);
 };
 
 TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
@@ -465,6 +469,11 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     : public DeviceCloudPolicyManagerAshTest,
       public testing::WithParamInterface<bool> {
  public:
+  DeviceCloudPolicyManagerAshEnrollmentTest(
+      const DeviceCloudPolicyManagerAshEnrollmentTest&) = delete;
+  DeviceCloudPolicyManagerAshEnrollmentTest& operator=(
+      const DeviceCloudPolicyManagerAshEnrollmentTest&) = delete;
+
   void Done(EnrollmentStatus status) {
     enrollment_handler_.reset();
     ConnectManager(false);
@@ -768,9 +777,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
   bool expect_robot_auth_fetch_failure_;
 
   bool done_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAshEnrollmentTest);
 };
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Success) {

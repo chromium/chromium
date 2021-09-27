@@ -2496,6 +2496,10 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
 }
 
 class KioskEnterpriseTest : public KioskTest {
+ public:
+  KioskEnterpriseTest(const KioskEnterpriseTest&) = delete;
+  KioskEnterpriseTest& operator=(const KioskEnterpriseTest&) = delete;
+
  protected:
   KioskEnterpriseTest() { set_use_consumer_kiosk_mode(false); }
 
@@ -2557,8 +2561,6 @@ class KioskEnterpriseTest : public KioskTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskEnterpriseTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
@@ -2665,6 +2667,11 @@ class KioskVirtualKeyboardTestSoundsManagerTestImpl
  public:
   KioskVirtualKeyboardTestSoundsManagerTestImpl() {}
 
+  KioskVirtualKeyboardTestSoundsManagerTestImpl(
+      const KioskVirtualKeyboardTestSoundsManagerTestImpl&) = delete;
+  KioskVirtualKeyboardTestSoundsManagerTestImpl& operator=(
+      const KioskVirtualKeyboardTestSoundsManagerTestImpl&) = delete;
+
   bool Initialize(SoundKey key, const base::StringPiece& data) override {
     sound_data_[key] = std::string(data);
     return true;
@@ -2698,8 +2705,6 @@ class KioskVirtualKeyboardTestSoundsManagerTestImpl
 
  private:
   std::map<SoundKey, std::string> sound_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskVirtualKeyboardTestSoundsManagerTestImpl);
 };
 
 // Specialized test fixture for testing kiosk mode where virtual keyboard is
@@ -2775,6 +2780,9 @@ class KioskHiddenWebUITest : public KioskTest,
  public:
   KioskHiddenWebUITest() = default;
 
+  KioskHiddenWebUITest(const KioskHiddenWebUITest&) = delete;
+  KioskHiddenWebUITest& operator=(const KioskHiddenWebUITest&) = delete;
+
   // KioskTest:
   void SetUpOnMainThread() override {
     LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
@@ -2806,8 +2814,6 @@ class KioskHiddenWebUITest : public KioskTest,
  private:
   bool wallpaper_loaded_ = false;
   scoped_refptr<content::MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskHiddenWebUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskHiddenWebUITest, AutolaunchWarning) {

@@ -190,6 +190,9 @@ class OobeLocalizationTest
  public:
   OobeLocalizationTest();
 
+  OobeLocalizationTest(const OobeLocalizationTest&) = delete;
+  OobeLocalizationTest& operator=(const OobeLocalizationTest&) = delete;
+
   // Verifies that the comma-separated `values` corresponds with the first
   // values in `select_id`, optionally checking for an options group label after
   // the first set of options.
@@ -209,8 +212,6 @@ class OobeLocalizationTest
 
  private:
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeLocalizationTest);
 };
 
 OobeLocalizationTest::OobeLocalizationTest() : OobeBaseTest() {

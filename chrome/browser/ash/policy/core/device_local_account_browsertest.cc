@@ -393,6 +393,10 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
                                public user_manager::UserManager::Observer,
                                public BrowserListObserver,
                                public extensions::AppWindowRegistry::Observer {
+ public:
+  DeviceLocalAccountTest(const DeviceLocalAccountTest&) = delete;
+  DeviceLocalAccountTest& operator=(const DeviceLocalAccountTest&) = delete;
+
  protected:
   DeviceLocalAccountTest()
       : public_session_input_method_id_(
@@ -747,7 +751,6 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
  private:
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountTest);
 };
 
 static bool IsKnownUser(const AccountId& account_id) {

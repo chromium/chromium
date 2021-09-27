@@ -48,6 +48,9 @@ class ParentAccessService {
   // Gets the service singleton.
   static ParentAccessService& Get();
 
+  ParentAccessService(const ParentAccessService&) = delete;
+  ParentAccessService& operator=(const ParentAccessService&) = delete;
+
   // Checks if the provided |action| requires parental approval to be performed.
   static bool IsApprovalRequired(SupervisedAction action);
 
@@ -80,8 +83,6 @@ class ParentAccessService {
   ConfigSource config_source_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessService);
 };
 
 }  // namespace parent_access

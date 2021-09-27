@@ -26,6 +26,9 @@ class ApkWebAppService;
 // ApkWebAppService may be created for any profile that supports ARC.
 class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ApkWebAppServiceFactory(const ApkWebAppServiceFactory&) = delete;
+  ApkWebAppServiceFactory& operator=(const ApkWebAppServiceFactory&) = delete;
+
   static ApkWebAppService* GetForProfile(Profile* profile);
 
   static ApkWebAppServiceFactory* GetInstance();
@@ -41,8 +44,6 @@ class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppServiceFactory);
 };
 
 }  // namespace ash

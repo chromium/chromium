@@ -51,6 +51,10 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
     RegisterPrefs(test_local_state_->registry());
   }
 
+  FakeUserManagerWithLocalState(const FakeUserManagerWithLocalState&) = delete;
+  FakeUserManagerWithLocalState& operator=(
+      const FakeUserManagerWithLocalState&) = delete;
+
   PrefService* GetLocalState() const override {
     return test_local_state_.get();
   }
@@ -64,8 +68,6 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
   TestingProfileManager* const testing_profile_manager_;
 
   std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUserManagerWithLocalState);
 };
 
 class ScopedLogIn {

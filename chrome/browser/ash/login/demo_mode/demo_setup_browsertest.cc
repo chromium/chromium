@@ -1101,6 +1101,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotInvokeWithTaps) {
 
 // Demo setup tests related to Force Re-Enrollment.
 class DemoSetupFRETest : public DemoSetupArcSupportedTest {
+ public:
+  DemoSetupFRETest(const DemoSetupFRETest&) = delete;
+  DemoSetupFRETest& operator=(const DemoSetupFRETest&) = delete;
+
  protected:
   DemoSetupFRETest() {
     statistics_provider_.SetMachineStatistic(system::kSerialNumberKeyForTest,
@@ -1117,9 +1121,6 @@ class DemoSetupFRETest : public DemoSetupArcSupportedTest {
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupFRETest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {

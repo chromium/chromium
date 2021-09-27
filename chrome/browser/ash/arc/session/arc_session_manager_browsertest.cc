@@ -112,6 +112,10 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
 class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   ArcSessionManagerTest() = default;
+
+  ArcSessionManagerTest(const ArcSessionManagerTest&) = delete;
+  ArcSessionManagerTest& operator=(const ArcSessionManagerTest&) = delete;
+
   ~ArcSessionManagerTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
@@ -231,8 +235,6 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
       identity_test_environment_adaptor_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ConsumerAccount) {

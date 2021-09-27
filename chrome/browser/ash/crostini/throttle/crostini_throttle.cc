@@ -49,6 +49,9 @@ class CrostiniThrottleFactory : public BrowserContextKeyedServiceFactory {
             context, true /* create */));
   }
 
+  CrostiniThrottleFactory(const CrostiniThrottleFactory&) = delete;
+  CrostiniThrottleFactory& operator=(const CrostiniThrottleFactory&) = delete;
+
  private:
   friend class base::NoDestructor<CrostiniThrottleFactory>;
 
@@ -65,8 +68,6 @@ class CrostiniThrottleFactory : public BrowserContextKeyedServiceFactory {
       return nullptr;
     return new CrostiniThrottle(context);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniThrottleFactory);
 };
 
 }  // namespace

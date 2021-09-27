@@ -38,6 +38,11 @@ base::TimeDelta GetExpirationTime(PrefService* pref_service) {
 }  // namespace
 
 class QuickUnlockStorageUnitTest : public testing::Test {
+ public:
+  QuickUnlockStorageUnitTest(const QuickUnlockStorageUnitTest&) = delete;
+  QuickUnlockStorageUnitTest& operator=(const QuickUnlockStorageUnitTest&) =
+      delete;
+
  protected:
   QuickUnlockStorageUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
   ~QuickUnlockStorageUnitTest() override {}
@@ -52,8 +57,6 @@ class QuickUnlockStorageUnitTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorageUnitTest);
 };
 
 // Provides test-only QuickUnlockStorage APIs.
@@ -62,6 +65,10 @@ class QuickUnlockStorageTestApi {
   // Does *not* take ownership over `quick_unlock_storage`.
   explicit QuickUnlockStorageTestApi(QuickUnlockStorage* quick_unlock_storage)
       : quick_unlock_storage_(quick_unlock_storage) {}
+
+  QuickUnlockStorageTestApi(const QuickUnlockStorageTestApi&) = delete;
+  QuickUnlockStorageTestApi& operator=(const QuickUnlockStorageTestApi&) =
+      delete;
 
   // Reduces the amount of strong auth time available by `time_delta`.
   void ReduceRemainingStrongAuthTimeBy(const base::TimeDelta& time_delta) {
@@ -80,8 +87,6 @@ class QuickUnlockStorageTestApi {
 
  private:
   QuickUnlockStorage* quick_unlock_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorageTestApi);
 };
 
 // Verifies that marking the strong auth makes TimeSinceLastStrongAuth a > zero

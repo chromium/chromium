@@ -73,6 +73,9 @@ class ScreenLocker
 
   explicit ScreenLocker(const user_manager::UserList& users);
 
+  ScreenLocker(const ScreenLocker&) = delete;
+  ScreenLocker& operator=(const ScreenLocker&) = delete;
+
   // Returns the default instance if it has been created.
   static ScreenLocker* default_screen_locker() { return screen_locker_; }
 
@@ -323,8 +326,6 @@ class ScreenLocker
   SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
 
   base::WeakPtrFactory<ScreenLocker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLocker);
 };
 
 }  // namespace ash

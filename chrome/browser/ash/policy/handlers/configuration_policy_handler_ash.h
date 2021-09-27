@@ -223,14 +223,15 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
  public:
   ArcServicePolicyHandler(const char* policy, const char* pref);
 
+  ArcServicePolicyHandler(const ArcServicePolicyHandler&) = delete;
+  ArcServicePolicyHandler& operator=(const ArcServicePolicyHandler&) = delete;
+
   // IntRangePolicyHandlerBase:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
  private:
   const std::string pref_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcServicePolicyHandler);
 };
 
 }  // namespace policy

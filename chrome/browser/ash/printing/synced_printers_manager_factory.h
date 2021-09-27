@@ -25,6 +25,10 @@ class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
 
   static SyncedPrintersManagerFactory* GetInstance();
 
+  SyncedPrintersManagerFactory(const SyncedPrintersManagerFactory&) = delete;
+  SyncedPrintersManagerFactory& operator=(const SyncedPrintersManagerFactory&) =
+      delete;
+
  protected:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
@@ -38,8 +42,6 @@ class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation:
   SyncedPrintersManager* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedPrintersManagerFactory);
 };
 
 }  // namespace ash

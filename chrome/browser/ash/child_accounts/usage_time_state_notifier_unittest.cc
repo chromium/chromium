@@ -47,6 +47,11 @@ class TestUsageTimeStateNotifierObserver
 class UsageTimeStateNotifierTest : public testing::Test {
  protected:
   UsageTimeStateNotifierTest() = default;
+
+  UsageTimeStateNotifierTest(const UsageTimeStateNotifierTest&) = delete;
+  UsageTimeStateNotifierTest& operator=(const UsageTimeStateNotifierTest&) =
+      delete;
+
   ~UsageTimeStateNotifierTest() override = default;
 
   void SetUp() override {
@@ -73,8 +78,6 @@ class UsageTimeStateNotifierTest : public testing::Test {
 
  private:
   session_manager::SessionManager session_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTimeStateNotifierTest);
 };
 
 TEST_F(UsageTimeStateNotifierTest, CallObserverWhenSessionIsActive) {

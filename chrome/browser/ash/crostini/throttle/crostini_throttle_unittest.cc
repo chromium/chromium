@@ -23,6 +23,9 @@ class CrostiniThrottleTest : public testing::Test {
         std::make_unique<TestDelegateImpl>(this));
   }
 
+  CrostiniThrottleTest(const CrostiniThrottleTest&) = delete;
+  CrostiniThrottleTest& operator=(const CrostiniThrottleTest&) = delete;
+
  protected:
   CrostiniThrottle* crostini_throttle() { return &crostini_throttle_; }
 
@@ -60,8 +63,6 @@ class CrostiniThrottleTest : public testing::Test {
   CrostiniThrottle crostini_throttle_;
   size_t disable_cpu_restriction_counter_{0};
   size_t enable_cpu_restriction_counter_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniThrottleTest);
 };
 
 // Tests that CrostiniThrottle can be constructed and destructed.

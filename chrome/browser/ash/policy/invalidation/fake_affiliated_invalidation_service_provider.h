@@ -15,13 +15,15 @@ class FakeAffiliatedInvalidationServiceProvider
  public:
   FakeAffiliatedInvalidationServiceProvider();
 
+  FakeAffiliatedInvalidationServiceProvider(
+      const FakeAffiliatedInvalidationServiceProvider&) = delete;
+  FakeAffiliatedInvalidationServiceProvider& operator=(
+      const FakeAffiliatedInvalidationServiceProvider&) = delete;
+
   // AffiliatedInvalidationServiceProvider:
   void RegisterConsumer(Consumer* consumer) override;
   void UnregisterConsumer(Consumer* consumer) override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAffiliatedInvalidationServiceProvider);
 };
 
 }  // namespace policy

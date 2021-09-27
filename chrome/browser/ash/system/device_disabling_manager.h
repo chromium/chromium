@@ -55,17 +55,18 @@ class DeviceDisablingManager {
 
   class Observer {
    public:
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer();
 
     virtual void OnDisabledMessageChanged(
         const std::string& disabled_message) = 0;
-
-   private:
-    DISALLOW_ASSIGN(Observer);
   };
 
   class Delegate {
    public:
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Terminate the current session (if any) and restart Chrome to show the
@@ -74,15 +75,16 @@ class DeviceDisablingManager {
 
     // Show the device disabled screen.
     virtual void ShowDeviceDisabledScreen() = 0;
-
-   private:
-    DISALLOW_ASSIGN(Delegate);
   };
 
   // |delegate| must outlive |this|.
   DeviceDisablingManager(Delegate* delegate,
                          CrosSettings* cros_settings,
                          user_manager::UserManager* user_manager);
+
+  DeviceDisablingManager(const DeviceDisablingManager&) = delete;
+  DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
+
   ~DeviceDisablingManager();
 
   // Must be called after construction.
@@ -147,8 +149,6 @@ class DeviceDisablingManager {
   std::string serial_number_;
 
   base::WeakPtrFactory<DeviceDisablingManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManager);
 };
 
 }  // namespace system

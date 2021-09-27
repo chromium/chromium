@@ -113,6 +113,10 @@ class ExtensionInstallErrorObserver final {
                 &ExtensionInstallErrorObserver::IsNotificationRelevant,
                 base::Unretained(this))) {}
 
+  ExtensionInstallErrorObserver(const ExtensionInstallErrorObserver&) = delete;
+  ExtensionInstallErrorObserver& operator=(
+      const ExtensionInstallErrorObserver&) = delete;
+
   void Wait() { notification_observer_.Wait(); }
 
  private:
@@ -130,8 +134,6 @@ class ExtensionInstallErrorObserver final {
   const Profile* const profile_;
   const std::string extension_id_;
   content::WindowedNotificationObserver notification_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallErrorObserver);
 };
 
 // Observer that allows waiting until the specified version of the given
@@ -187,6 +189,12 @@ class ExtensionUpdateAvailabilityObserver final
 // Class for testing sign-in profile apps/extensions.
 class SigninProfileExtensionsPolicyTest
     : public SigninProfileExtensionsPolicyTestBase {
+ public:
+  SigninProfileExtensionsPolicyTest(const SigninProfileExtensionsPolicyTest&) =
+      delete;
+  SigninProfileExtensionsPolicyTest& operator=(
+      const SigninProfileExtensionsPolicyTest&) = delete;
+
  protected:
   SigninProfileExtensionsPolicyTest()
       : SigninProfileExtensionsPolicyTestBase(version_info::Channel::STABLE) {}
@@ -199,9 +207,6 @@ class SigninProfileExtensionsPolicyTest
   }
 
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileExtensionsPolicyTest);
 };
 
 }  // namespace

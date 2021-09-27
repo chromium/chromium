@@ -339,6 +339,11 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     NotifyComplete(std::move(lifetime));
   }
 
+  ConvertSelectedFileInfoListToFileChooserFileInfoListImpl(
+      const ConvertSelectedFileInfoListToFileChooserFileInfoListImpl&) = delete;
+  ConvertSelectedFileInfoListToFileChooserFileInfoListImpl& operator=(
+      const ConvertSelectedFileInfoListToFileChooserFileInfoListImpl&) = delete;
+
   ~ConvertSelectedFileInfoListToFileChooserFileInfoListImpl() {
     for (const auto& info : chooser_info_list_) {
       if (info && info->is_file_system()) {
@@ -421,9 +426,6 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
   scoped_refptr<storage::FileSystemContext> context_;
   FileChooserFileInfoList chooser_info_list_;
   FileChooserFileInfoListCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ConvertSelectedFileInfoListToFileChooserFileInfoListImpl);
 };
 
 void CheckIfDirectoryExistsOnIoThread(

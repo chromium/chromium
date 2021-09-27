@@ -53,6 +53,10 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
 
   // Creates a device off hours controller instance.
   DeviceOffHoursController();
+
+  DeviceOffHoursController(const DeviceOffHoursController&) = delete;
+  DeviceOffHoursController& operator=(const DeviceOffHoursController&) = delete;
+
   ~DeviceOffHoursController() override;
 
   void AddObserver(Observer* observer);
@@ -147,8 +151,6 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   enterprise_management::ChromeDeviceSettingsProto device_settings_proto_;
 
   base::WeakPtrFactory<DeviceOffHoursController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOffHoursController);
 };
 
 }  // namespace off_hours

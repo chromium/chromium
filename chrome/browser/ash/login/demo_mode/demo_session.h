@@ -81,6 +81,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
       "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
       "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
 
+  DemoSession(const DemoSession&) = delete;
+  DemoSession& operator=(const DemoSession&) = delete;
+
   static std::string DemoConfigToString(DemoModeConfig config);
 
   // Whether the device is set up to run demo sessions.
@@ -242,8 +245,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   bool screensaver_activated_ = false;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSession);
 };
 
 }  // namespace ash

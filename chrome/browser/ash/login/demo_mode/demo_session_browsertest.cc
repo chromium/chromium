@@ -52,6 +52,11 @@ void CheckNoDemoMode() {
 // Tests locking device to policy::DEVICE_MODE_DEMO mode. It is an equivalent to
 // going through online demo mode setup or using offline setup.
 class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
+ public:
+  DemoSessionDemoDeviceModeTest(const DemoSessionDemoDeviceModeTest&) = delete;
+  DemoSessionDemoDeviceModeTest& operator=(
+      const DemoSessionDemoDeviceModeTest&) = delete;
+
  protected:
   DemoSessionDemoDeviceModeTest() = default;
   ~DemoSessionDemoDeviceModeTest() override = default;
@@ -65,8 +70,6 @@ class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionDemoDeviceModeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
@@ -77,6 +80,12 @@ IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
 // mode. It is an equivalent to enrolling device directly by using enterprise
 // enrollment flow.
 class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
+ public:
+  DemoSessionDemoEnrolledDeviceTest(const DemoSessionDemoEnrolledDeviceTest&) =
+      delete;
+  DemoSessionDemoEnrolledDeviceTest& operator=(
+      const DemoSessionDemoEnrolledDeviceTest&) = delete;
+
  protected:
   DemoSessionDemoEnrolledDeviceTest() : OobeBaseTest() {
     device_state_.set_domain(policy::kDemoModeDomain);
@@ -93,8 +102,6 @@ class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionDemoEnrolledDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoEnrolledDeviceTest, IsDemoMode) {

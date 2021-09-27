@@ -67,6 +67,9 @@ class ArcTracingDataSource
     return instance.get();
   }
 
+  ArcTracingDataSource(const ArcTracingDataSource&) = delete;
+  ArcTracingDataSource& operator=(const ArcTracingDataSource&) = delete;
+
   // Called after constructing |bridge|.
   void RegisterBridgeOnUI(ArcTracingBridge* bridge) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -259,8 +262,6 @@ class ArcTracingDataSource
   tracing::PerfettoProducer* producer_on_ui_thread_ = nullptr;
   perfetto::DataSourceConfig data_source_config_;
   std::unique_ptr<tracing::SystemTraceWriter<std::string>> trace_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingDataSource);
 };
 
 }  // namespace

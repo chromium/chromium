@@ -58,6 +58,9 @@ class ArcPolicyBridge : public KeyedService,
  public:
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     // Called when policy is sent to CloudDPC.
     virtual void OnPolicySent(const std::string& policy) {}
 
@@ -98,8 +101,6 @@ class ArcPolicyBridge : public KeyedService,
    protected:
     Observer() = default;
     virtual ~Observer() = default;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Policy constants.
@@ -124,6 +125,10 @@ class ArcPolicyBridge : public KeyedService,
   ArcPolicyBridge(content::BrowserContext* context,
                   ArcBridgeService* bridge_service,
                   policy::PolicyService* policy_service);
+
+  ArcPolicyBridge(const ArcPolicyBridge&) = delete;
+  ArcPolicyBridge& operator=(const ArcPolicyBridge&) = delete;
+
   ~ArcPolicyBridge() override;
 
   const std::string& GetInstanceGuidForTesting();
@@ -225,8 +230,6 @@ class ArcPolicyBridge : public KeyedService,
 
   // Must be the last member.
   base::WeakPtrFactory<ArcPolicyBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPolicyBridge);
 };
 
 }  // namespace arc

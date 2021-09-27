@@ -20,6 +20,11 @@ namespace policy {
 // the device policy.
 class SigninProfileExtensionsPolicyTestBase
     : public DevicePolicyCrosBrowserTest {
+  SigninProfileExtensionsPolicyTestBase(
+      const SigninProfileExtensionsPolicyTestBase&) = delete;
+  SigninProfileExtensionsPolicyTestBase& operator=(
+      const SigninProfileExtensionsPolicyTestBase&) = delete;
+
  protected:
   explicit SigninProfileExtensionsPolicyTestBase(version_info::Channel channel);
 
@@ -40,8 +45,6 @@ class SigninProfileExtensionsPolicyTestBase
 
  private:
   const extensions::ScopedCurrentChannel scoped_current_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileExtensionsPolicyTestBase);
 };
 
 }  // namespace policy

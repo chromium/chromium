@@ -43,12 +43,11 @@ class UploadJobImpl : public UploadJob,
   // mark the boundaries between data segments.
   class MimeBoundaryGenerator {
    public:
+    MimeBoundaryGenerator& operator=(const MimeBoundaryGenerator&) = delete;
+
     virtual ~MimeBoundaryGenerator();
 
     virtual std::string GenerateBoundary() const = 0;
-
-   private:
-    DISALLOW_ASSIGN(MimeBoundaryGenerator);
   };
 
   // An implemenation of the MimeBoundaryGenerator which uses random

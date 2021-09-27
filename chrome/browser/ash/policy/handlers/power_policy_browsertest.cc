@@ -120,6 +120,11 @@ const char kScreenLockDelayPolicy[] =
 }  // namespace
 
 class PowerPolicyBrowserTestBase : public DevicePolicyCrosBrowserTest {
+ public:
+  PowerPolicyBrowserTestBase(const PowerPolicyBrowserTestBase&) = delete;
+  PowerPolicyBrowserTestBase& operator=(const PowerPolicyBrowserTestBase&) =
+      delete;
+
  protected:
   PowerPolicyBrowserTestBase();
 
@@ -148,11 +153,15 @@ class PowerPolicyBrowserTestBase : public DevicePolicyCrosBrowserTest {
 
   // Reloads user policy for |profile| from session manager client.
   void ReloadUserPolicy(Profile* profile);
-
-  DISALLOW_COPY_AND_ASSIGN(PowerPolicyBrowserTestBase);
 };
 
 class PowerPolicyLoginScreenBrowserTest : public PowerPolicyBrowserTestBase {
+ public:
+  PowerPolicyLoginScreenBrowserTest(const PowerPolicyLoginScreenBrowserTest&) =
+      delete;
+  PowerPolicyLoginScreenBrowserTest& operator=(
+      const PowerPolicyLoginScreenBrowserTest&) = delete;
+
  protected:
   PowerPolicyLoginScreenBrowserTest();
 
@@ -160,20 +169,20 @@ class PowerPolicyLoginScreenBrowserTest : public PowerPolicyBrowserTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerPolicyLoginScreenBrowserTest);
 };
 
 class PowerPolicyInSessionBrowserTest : public PowerPolicyBrowserTestBase {
+ public:
+  PowerPolicyInSessionBrowserTest(const PowerPolicyInSessionBrowserTest&) =
+      delete;
+  PowerPolicyInSessionBrowserTest& operator=(
+      const PowerPolicyInSessionBrowserTest&) = delete;
+
  protected:
   PowerPolicyInSessionBrowserTest();
 
   // PowerPolicyBrowserTestBase:
   void SetUpOnMainThread() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerPolicyInSessionBrowserTest);
 };
 
 PowerPolicyBrowserTestBase::PowerPolicyBrowserTestBase() = default;

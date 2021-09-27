@@ -27,6 +27,10 @@ class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the OAuth2LoginManagerFactory singleton.
   static OAuth2LoginManagerFactory* GetInstance();
 
+  OAuth2LoginManagerFactory(const OAuth2LoginManagerFactory&) = delete;
+  OAuth2LoginManagerFactory& operator=(const OAuth2LoginManagerFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OAuth2LoginManagerFactory>;
 
@@ -36,8 +40,6 @@ class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManagerFactory);
 };
 
 }  // namespace ash

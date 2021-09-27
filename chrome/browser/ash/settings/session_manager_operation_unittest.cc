@@ -78,6 +78,10 @@ class SessionManagerOperationTest : public testing::Test {
         owner_key_util_);
   }
 
+  SessionManagerOperationTest(const SessionManagerOperationTest&) = delete;
+  SessionManagerOperationTest& operator=(const SessionManagerOperationTest&) =
+      delete;
+
   void SetUp() override {
     policy_.payload().mutable_user_allowlist()->add_user_allowlist(
         "fake-whitelist");
@@ -122,9 +126,6 @@ class SessionManagerOperationTest : public testing::Test {
   OwnerSettingsServiceAsh* service_;
 
   bool validated_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerOperationTest);
 };
 
 TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {

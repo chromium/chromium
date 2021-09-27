@@ -35,6 +35,12 @@ class ResourceCache;
 class DeviceLocalAccountExternalDataManager
     : public CloudExternalDataManagerBase,
       public base::RefCounted<DeviceLocalAccountExternalDataManager> {
+ public:
+  DeviceLocalAccountExternalDataManager(
+      const DeviceLocalAccountExternalDataManager&) = delete;
+  DeviceLocalAccountExternalDataManager& operator=(
+      const DeviceLocalAccountExternalDataManager&) = delete;
+
  private:
   friend class DeviceLocalAccountExternalDataService;
   friend class base::RefCounted<DeviceLocalAccountExternalDataManager>;
@@ -57,8 +63,6 @@ class DeviceLocalAccountExternalDataManager
 
   // CloudExternalDataManagerBase:
   void OnPolicyStoreLoaded() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExternalDataManager);
 };
 
 }  // namespace policy

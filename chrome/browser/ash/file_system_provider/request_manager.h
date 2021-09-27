@@ -152,6 +152,10 @@ class RequestManager {
  private:
   struct Request {
     Request();
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
     // Timer for discarding the request during a timeout.
@@ -159,9 +163,6 @@ class RequestManager {
 
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   // Destroys the request with the passed |request_id|.

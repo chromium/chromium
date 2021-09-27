@@ -130,6 +130,11 @@ class AuthPolicyCredentialsManagerFactory
  public:
   static AuthPolicyCredentialsManagerFactory* GetInstance();
 
+  AuthPolicyCredentialsManagerFactory(
+      const AuthPolicyCredentialsManagerFactory&) = delete;
+  AuthPolicyCredentialsManagerFactory& operator=(
+      const AuthPolicyCredentialsManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       AuthPolicyCredentialsManagerFactory>;
@@ -145,8 +150,6 @@ class AuthPolicyCredentialsManagerFactory
   // valid AuthPolicyCredentialsManager.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManagerFactory);
 };
 
 }  // namespace ash

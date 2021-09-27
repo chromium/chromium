@@ -92,6 +92,12 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
 };
 
 class UserCloudPolicyTokenForwarderTest : public testing::Test {
+ public:
+  UserCloudPolicyTokenForwarderTest(const UserCloudPolicyTokenForwarderTest&) =
+      delete;
+  UserCloudPolicyTokenForwarderTest& operator=(
+      const UserCloudPolicyTokenForwarderTest&) = delete;
+
  protected:
   static ash::FakeChromeUserManager* GetFakeUserManager() {
     return static_cast<ash::FakeChromeUserManager*>(
@@ -216,8 +222,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   std::unique_ptr<MockCloudPolicyStore> store_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyTokenForwarderTest);
 };
 
 TEST_F(UserCloudPolicyTokenForwarderTest,

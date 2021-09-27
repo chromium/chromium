@@ -47,12 +47,12 @@ class FakeCloudPolicyStore : public CloudPolicyStore {
  public:
   FakeCloudPolicyStore();
 
+  FakeCloudPolicyStore(const FakeCloudPolicyStore&) = delete;
+  FakeCloudPolicyStore& operator=(const FakeCloudPolicyStore&) = delete;
+
   // CloudPolicyStore:
   void Store(const em::PolicyFetchResponse& policy) override;
   void Load() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeCloudPolicyStore);
 };
 
 FakeCloudPolicyStore::FakeCloudPolicyStore() {}

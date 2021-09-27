@@ -23,6 +23,11 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
  public:
   SingleDebugDaemonLogSourceTest() : num_callback_calls_(0) {}
 
+  SingleDebugDaemonLogSourceTest(const SingleDebugDaemonLogSourceTest&) =
+      delete;
+  SingleDebugDaemonLogSourceTest& operator=(
+      const SingleDebugDaemonLogSourceTest&) = delete;
+
   void SetUp() override {
     // Since no debug daemon will be available during a unit test, use
     // FakeDebugDaemonClient to provide dummy DebugDaemonClient functionality.
@@ -59,8 +64,6 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
 
   // Stores results from the log source.
   SystemLogsResponse response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSourceTest);
 };
 
 TEST_F(SingleDebugDaemonLogSourceTest, SingleCall) {

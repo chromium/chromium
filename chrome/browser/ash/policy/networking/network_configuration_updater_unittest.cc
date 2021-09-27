@@ -92,16 +92,21 @@ class MockPolicyProvidedCertsObserver
  public:
   MockPolicyProvidedCertsObserver() = default;
 
-  MOCK_METHOD0(OnPolicyProvidedCertsChanged, void());
+  MockPolicyProvidedCertsObserver(const MockPolicyProvidedCertsObserver&) =
+      delete;
+  MockPolicyProvidedCertsObserver& operator=(
+      const MockPolicyProvidedCertsObserver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPolicyProvidedCertsObserver);
+  MOCK_METHOD0(OnPolicyProvidedCertsChanged, void());
 };
 
 class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
  public:
   FakeNetworkDeviceHandler()
       : allow_roaming_(false), mac_addr_randomization_(false) {}
+
+  FakeNetworkDeviceHandler(const FakeNetworkDeviceHandler&) = delete;
+  FakeNetworkDeviceHandler& operator=(const FakeNetworkDeviceHandler&) = delete;
 
   void SetCellularAllowRoaming(bool allow_roaming,
                                bool policy_allow_roaming) override {
@@ -116,9 +121,6 @@ class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
   bool allow_roaming_ = false;
   bool policy_allow_roaming_ = true;
   bool mac_addr_randomization_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkDeviceHandler);
 };
 
 class FakeCertificateImporter : public chromeos::onc::CertificateImporter {

@@ -17,6 +17,11 @@ class CrostiniActiveWindowThrottleObserverTest : public testing::Test {
  public:
   using testing::Test::Test;
 
+  CrostiniActiveWindowThrottleObserverTest(
+      const CrostiniActiveWindowThrottleObserverTest&) = delete;
+  CrostiniActiveWindowThrottleObserverTest& operator=(
+      const CrostiniActiveWindowThrottleObserverTest&) = delete;
+
  protected:
   CrostiniActiveWindowThrottleObserver* observer() { return &observer_; }
 
@@ -24,8 +29,6 @@ class CrostiniActiveWindowThrottleObserverTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   CrostiniActiveWindowThrottleObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniActiveWindowThrottleObserverTest);
 };
 
 TEST_F(CrostiniActiveWindowThrottleObserverTest, TestConstructDestruct) {}

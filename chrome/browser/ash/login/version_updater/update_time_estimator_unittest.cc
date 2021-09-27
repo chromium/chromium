@@ -25,6 +25,10 @@ class UpdateTimeEstimatorUnitTest : public testing::Test {
  public:
   UpdateTimeEstimatorUnitTest() = default;
 
+  UpdateTimeEstimatorUnitTest(const UpdateTimeEstimatorUnitTest&) = delete;
+  UpdateTimeEstimatorUnitTest& operator=(const UpdateTimeEstimatorUnitTest&) =
+      delete;
+
   void SetUp() override {
     time_estimator_.set_tick_clock_for_testing(&tick_clock_);
   }
@@ -42,9 +46,6 @@ class UpdateTimeEstimatorUnitTest : public testing::Test {
   UpdateTimeEstimator time_estimator_;
 
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateTimeEstimatorUnitTest);
 };
 
 TEST_F(UpdateTimeEstimatorUnitTest, DownloadingTimeLeft) {

@@ -120,6 +120,11 @@ class WebTrustedCertsChangedObserver
  public:
   WebTrustedCertsChangedObserver() = default;
 
+  WebTrustedCertsChangedObserver(const WebTrustedCertsChangedObserver&) =
+      delete;
+  WebTrustedCertsChangedObserver& operator=(
+      const WebTrustedCertsChangedObserver&) = delete;
+
   // chromeos::PolicyCertificateProvider::Observer
   void OnPolicyProvidedCertsChanged() override { run_loop_.Quit(); }
 
@@ -127,8 +132,6 @@ class WebTrustedCertsChangedObserver
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTrustedCertsChangedObserver);
 };
 
 // Allows waiting until |NetworkCertLoader| updates its list of certificates.
@@ -165,14 +168,16 @@ class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
  public:
   CertDatabaseChangedObserver() {}
 
+  CertDatabaseChangedObserver(const CertDatabaseChangedObserver&) = delete;
+  CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
+      delete;
+
   void OnCertDBChanged() override { run_loop_.Quit(); }
 
   void Wait() { run_loop_.Run(); }
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertDatabaseChangedObserver);
 };
 
 // Retrieves the path to the directory containing certificates designated for
@@ -764,6 +769,12 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
 }
 
 class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
+ public:
+  PolicyProvidedCertsOnUserSessionInitTest(
+      const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
+  PolicyProvidedCertsOnUserSessionInitTest& operator=(
+      const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
+
  protected:
   PolicyProvidedCertsOnUserSessionInitTest() {}
 
@@ -780,9 +791,6 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
         chromeos::ProfileHelper::Get()->GetProfileByUser(user);
     return profile;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvidedCertsOnUserSessionInitTest);
 };
 
 // Verifies that the policy-provided trust root is active as soon as the user
@@ -863,6 +871,12 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedClientCertsTest, ClientCertsImported) {
 // |kSigninScreenExtension2| into the sign-in profile.
 class PolicyProvidedCertsForSigninExtensionTest
     : public SigninProfileExtensionsPolicyTestBase {
+ public:
+  PolicyProvidedCertsForSigninExtensionTest(
+      const PolicyProvidedCertsForSigninExtensionTest&) = delete;
+  PolicyProvidedCertsForSigninExtensionTest& operator=(
+      const PolicyProvidedCertsForSigninExtensionTest&) = delete;
+
  protected:
   // Use DEV channel as sign-in screen extensions are currently usable there.
   PolicyProvidedCertsForSigninExtensionTest()
@@ -963,8 +977,6 @@ class PolicyProvidedCertsForSigninExtensionTest
 
     return onc_dict;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvidedCertsForSigninExtensionTest);
 };  // namespace policy
 
 // Verifies that a device-policy-provided, extension-scoped trust anchor is

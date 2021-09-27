@@ -72,6 +72,12 @@ const char k20ByteAppURL[] = "http://localhost/app_20_bytes";
 }  // namespace
 
 class CloudExternalDataManagerBaseTest : public testing::Test {
+ public:
+  CloudExternalDataManagerBaseTest(const CloudExternalDataManagerBaseTest&) =
+      delete;
+  CloudExternalDataManagerBaseTest& operator=(
+      const CloudExternalDataManagerBaseTest&) = delete;
+
  protected:
   CloudExternalDataManagerBaseTest();
 
@@ -115,9 +121,6 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
 
   std::map<int, std::unique_ptr<std::string>> callback_data_;
   PolicyDetailsMap policy_details_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataManagerBaseTest);
 };
 
 CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {}

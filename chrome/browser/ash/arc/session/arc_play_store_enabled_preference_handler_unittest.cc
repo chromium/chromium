@@ -57,6 +57,11 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   ArcPlayStoreEnabledPreferenceHandlerTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
+  ArcPlayStoreEnabledPreferenceHandlerTest(
+      const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
+  ArcPlayStoreEnabledPreferenceHandlerTest& operator=(
+      const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
+
   void SetUp() override {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
@@ -154,8 +159,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandlerTest);
 };
 
 TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeTriggersService) {

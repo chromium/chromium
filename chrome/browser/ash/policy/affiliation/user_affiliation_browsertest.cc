@@ -119,6 +119,10 @@ class UserAffiliationBrowserTest
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
   }
 
+  UserAffiliationBrowserTest(const UserAffiliationBrowserTest&) = delete;
+  UserAffiliationBrowserTest& operator=(const UserAffiliationBrowserTest&) =
+      delete;
+
  protected:
   // MixinBasedInProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -244,8 +248,6 @@ class UserAffiliationBrowserTest
           ? ash::DeviceStateMixin::State::
                 OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED
           : ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(UserAffiliationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(UserAffiliationBrowserTest, PRE_PRE_TestAffiliation) {

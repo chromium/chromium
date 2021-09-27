@@ -16,6 +16,11 @@ class ArcDocumentsProviderRootMap;
 class ArcDocumentsProviderRootMapFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcDocumentsProviderRootMapFactory(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+  ArcDocumentsProviderRootMapFactory& operator=(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+
   // Returns the ArcDocumentsProviderRootMap for |context|, creating it if not
   // created yet.
   static ArcDocumentsProviderRootMap* GetForBrowserContext(
@@ -36,8 +41,6 @@ class ArcDocumentsProviderRootMapFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootMapFactory);
 };
 
 }  // namespace arc

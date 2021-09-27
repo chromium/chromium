@@ -186,6 +186,11 @@ class ServicesCustomizationExternalLoader
   explicit ServicesCustomizationExternalLoader(Profile* profile)
       : is_apps_set_(false), profile_(profile) {}
 
+  ServicesCustomizationExternalLoader(
+      const ServicesCustomizationExternalLoader&) = delete;
+  ServicesCustomizationExternalLoader& operator=(
+      const ServicesCustomizationExternalLoader&) = delete;
+
   Profile* profile() { return profile_; }
 
   // Used by the ServicesCustomizationDocument to update the current apps.
@@ -221,8 +226,6 @@ class ServicesCustomizationExternalLoader
   bool is_apps_set_;
   base::DictionaryValue apps_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesCustomizationExternalLoader);
 };
 
 // CustomizationDocument implementation. ---------------------------------------

@@ -67,6 +67,12 @@ class CloudExternalDataPolicyObserver
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
       Delegate* delegate);
+
+  CloudExternalDataPolicyObserver(const CloudExternalDataPolicyObserver&) =
+      delete;
+  CloudExternalDataPolicyObserver& operator=(
+      const CloudExternalDataPolicyObserver&) = delete;
+
   ~CloudExternalDataPolicyObserver() override;
 
   void Init();
@@ -128,8 +134,6 @@ class CloudExternalDataPolicyObserver
   FetchWeakPtrMap fetch_weak_ptrs_;
 
   base::WeakPtrFactory<CloudExternalDataPolicyObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataPolicyObserver);
 };
 
 }  // namespace policy

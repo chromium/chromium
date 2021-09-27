@@ -130,6 +130,10 @@ void SetSystemSalt() {
 
 class WallpaperPolicyTest : public LoginManagerTest,
                             public WallpaperControllerObserver {
+ public:
+  WallpaperPolicyTest(const WallpaperPolicyTest&) = delete;
+  WallpaperPolicyTest& operator=(const WallpaperPolicyTest&) = delete;
+
  protected:
   WallpaperPolicyTest()
       : LoginManagerTest(), owner_key_util_(new ownership::MockOwnerKeyUtil()) {
@@ -309,8 +313,6 @@ class WallpaperPolicyTest : public LoginManagerTest,
   absl::optional<SkColor> average_color_;
 
   base::WeakPtrFactory<WallpaperPolicyTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPolicyTest);
 };
 
 // Verifies that the wallpaper can be set and re-set through policy and that

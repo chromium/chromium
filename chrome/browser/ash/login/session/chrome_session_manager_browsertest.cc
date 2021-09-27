@@ -323,6 +323,9 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
  public:
   GuestSessionRlzTest() : is_locked_(GetParam()) {}
 
+  GuestSessionRlzTest(const GuestSessionRlzTest&) = delete;
+  GuestSessionRlzTest& operator=(const GuestSessionRlzTest&) = delete;
+
  protected:
   StubInstallAttributes* stub_install_attributes() {
     return scoped_stub_install_attributes_->Get();
@@ -360,8 +363,6 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   std::unique_ptr<system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
   std::unique_ptr<ScopedStubInstallAttributes> scoped_stub_install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestSessionRlzTest);
 };
 
 IN_PROC_BROWSER_TEST_P(GuestSessionRlzTest, DeviceIsLocked) {
