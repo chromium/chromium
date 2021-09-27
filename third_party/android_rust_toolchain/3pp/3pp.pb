@@ -5,7 +5,7 @@ create {
       repo: "https://android.googlesource.com/platform/prebuilts/rust.git"
       tag_pattern: "rustc-%s",
     }
-    patch_version: "cr0"
+    patch_version: "cr1"
   }
   build {
   }

@@ -17,4 +17,6 @@ PLATFORM=${PLATFORM,,} # lowercase
 # We're simply moving things between git and CIPD here, so we don't actually
 # build anything. Instead just transfer the relevant content into the output
 # directory to be packaged by CIPD.
-mv "$PLATFORM-x86/${_3PP_VERSION}" "$PREFIX"
+for x in $(ls "$PLATFORM-x86/${_3PP_VERSION}"); do
+  mv "$PLATFORM-x86/${_3PP_VERSION}/$x" "$PREFIX/"
+done
