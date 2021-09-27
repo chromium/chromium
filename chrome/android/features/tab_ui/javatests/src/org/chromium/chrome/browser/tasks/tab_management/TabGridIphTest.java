@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
@@ -90,7 +91,7 @@ import java.io.IOException;
         "name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365/" +
         "session_rate/<1"
 })
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
     ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 @Features.DisableFeatures(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)
