@@ -87,6 +87,8 @@ class OzonePlatformWayland : public OzonePlatform,
     // generated inside Chrome, and the flag is properly set.
     // See also WaylandEventSource.
     KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
+
+    OSExchangeDataProviderFactoryOzone::SetInstance(this);
   }
 
   OzonePlatformWayland(const OzonePlatformWayland&) = delete;

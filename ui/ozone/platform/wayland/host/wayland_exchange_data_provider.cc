@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -183,6 +184,13 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 WaylandExchangeDataProvider::WaylandExchangeDataProvider() = default;
 
 WaylandExchangeDataProvider::~WaylandExchangeDataProvider() = default;
+
+std::unique_ptr<OSExchangeDataProvider> WaylandExchangeDataProvider::Clone()
+    const {
+  auto clone = std::make_unique<WaylandExchangeDataProvider>();
+  CopyData(clone.get());
+  return clone;
+}
 
 std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
     const {

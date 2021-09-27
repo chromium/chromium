@@ -79,6 +79,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   DataTransferEndpoint* GetSource() const override;
 
  protected:
+  // Copy internal data into |provider| object.
+  void CopyData(OSExchangeDataProviderNonBacked* provider) const;
+
   const std::map<ClipboardFormatType, base::Pickle>& pickle_data() const {
     return pickle_data_;
   }
