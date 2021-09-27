@@ -83,7 +83,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                    "externally_connectable",
                    extensions::DictionaryBuilder()
                        .Set("matches", extensions::ListBuilder()
-                                           .Append("http://www.google.com/*")
+                                           .Append("*://www.google.com/*")
                                            .Build())
                        .Build())
                .SetID(kChromeOSSystemExtensionId)  // only allowlisted id

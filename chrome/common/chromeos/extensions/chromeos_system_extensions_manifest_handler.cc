@@ -37,7 +37,7 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
 
   // Verifies allowlisted origins.
   // TODO(b/200920331): replace google.com with OEM-specific origin.
-  return matches_list.front().GetString() == "http://www.google.com/*";
+  return matches_list.front().GetString() == "*://www.google.com/*";
 }
 
 }  // namespace

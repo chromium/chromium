@@ -42,7 +42,7 @@ const char BaseTelemetryExtensionBrowserTest::kManifestFile[] = R"(
         "optional_permissions": [ "os.telemetry.serial_number" ],
         "externally_connectable": {
           "matches": [
-            "http://www.google.com/*"
+            "*://www.google.com/*"
           ]
         },
         "options_page": "options.html"

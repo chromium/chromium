@@ -16,7 +16,7 @@
     "chromeos_system_extension": {},
     "externally_connectable": {
       "matches": [
-        "http://www.google.com/*"
+        "*://www.google.com/*"
       ]
     },
     "options_page": "options.html"

@@ -9,7 +9,7 @@
   "chromeos_system_extension": {},
   "externally_connectable": {
     "matches": [
-      "http://google.com/*",
+      "*://google.com/*",
       "https://telemetry.google.com/*"
     ]
   }
