@@ -507,12 +507,6 @@ void ServiceWorkerMetrics::RecordRuntime(base::TimeDelta time) {
                              kBucketCount);
 }
 
-void ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(
-    StartServiceWorkerForNavigationHintResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartForNavigationHint.Result",
-                            result);
-}
-
 void ServiceWorkerMetrics::RecordOfflineCapableReason(
     blink::ServiceWorkerStatusCode status,
     int status_code) {

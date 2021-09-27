@@ -909,6 +909,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.StartForNavigationHint.Result"
     enum="ServiceWorkerStartForNavigationHintResult" expires_after="2021-02-16">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

@@ -746,25 +746,15 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
                "document_url", document_url.spec());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto callback_with_recording_metrics = base::BindOnce(
-      [](StartServiceWorkerForNavigationHintCallback callback,
-         StartServiceWorkerForNavigationHintResult result) {
-        ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(
-            result);
-        std::move(callback).Run(result);
-      },
-      std::move(callback));
-
   if (!context_core_) {
-    std::move(callback_with_recording_metrics)
-        .Run(StartServiceWorkerForNavigationHintResult::FAILED);
+    std::move(callback).Run(StartServiceWorkerForNavigationHintResult::FAILED);
     return;
   }
   context_core_->registry()->FindRegistrationForClientUrl(
       net::SimplifyUrlForRequest(document_url), key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint,
-          this, std::move(callback_with_recording_metrics)));
+          this, std::move(callback)));
 }
 
 void ServiceWorkerContextWrapper::StopAllServiceWorkersForStorageKey(

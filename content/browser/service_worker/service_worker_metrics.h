@@ -211,10 +211,6 @@ class ServiceWorkerMetrics {
 
   static void RecordRuntime(base::TimeDelta time);
 
-  // Records the result of starting service worker for a navigation hint.
-  static void RecordStartServiceWorkerForNavigationHintResult(
-      StartServiceWorkerForNavigationHintResult result);
-
   // Records the reason a service worker was deemed to be offline capable. The
   // reason may be that the service worker responded with 2xx..., 3xx..., or the
   // check timed out.

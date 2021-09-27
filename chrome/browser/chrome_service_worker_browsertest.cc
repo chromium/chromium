@@ -684,9 +684,6 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
       histogram_tester_.ExpectTotalCount(
           "ServiceWorker.StartWorker.StatusByPurpose_NAVIGATION_HINT", 0);
     }
-    histogram_tester_.ExpectBucketCount(
-        "ServiceWorker.StartForNavigationHint.Result",
-        static_cast<int>(expected_result), 1);
   }
 
   void TestStarted(const char* test_script) {
