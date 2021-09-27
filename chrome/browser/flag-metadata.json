@@ -3383,7 +3383,7 @@
   {
     "name": "incognito-brand-consistency-for-android",
     "owners": [ "sideyilmaz", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "incognito-brand-consistency-for-desktop",
@@ -3393,7 +3393,7 @@
   {
     "name": "incognito-brand-consistency-for-ios",
     "owners": [ "sideyilmaz", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "incognito-clear-browsing-data-dialog-for-desktop",
