@@ -154,9 +154,7 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
    * @param hasScreenReader Whether a screen reader is enabled.
    */
   private onScreenReaderStateChanged_(hasScreenReader: boolean) {
-    // TODO(katie): Remove showExperimentalA11yLabels flag before launch.
-    this.showAccessibilityLabelsSetting_ = hasScreenReader &&
-        loadTimeData.getBoolean('showExperimentalA11yLabels');
+    this.showAccessibilityLabelsSetting_ = hasScreenReader;
   }
 
   private onA11yCaretBrowsingChange_(event: Event) {

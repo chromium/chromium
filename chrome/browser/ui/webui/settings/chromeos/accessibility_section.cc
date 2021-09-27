@@ -324,11 +324,6 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
-bool AreExperimentalA11yLabelsAllowed() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityLabels);
-}
-
 bool IsLiveCaptionEnabled() {
   return media::IsLiveCaptionFeatureEnabled();
 }
@@ -781,9 +776,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("showSwitchAccessSetupGuide",
                           IsSwitchAccessSetupGuideAllowed());
 
-  html_source->AddBoolean("showExperimentalA11yLabels",
-                          AreExperimentalA11yLabelsAllowed());
-
   html_source->AddBoolean("showTabletModeShelfNavigationButtonsSettings",
                           AreTabletNavigationButtonsAllowed());
 
@@ -973,8 +965,7 @@ void AccessibilitySection::UpdateTextToSpeechEnginesSearchTags() {
 void AccessibilitySection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (accessibility_state_utils::IsScreenReaderEnabled() &&
-      AreExperimentalA11yLabelsAllowed()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     updater.AddSearchTags(GetA11yLabelsSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yLabelsSearchConcepts());

@@ -169,9 +169,7 @@ Polymer({
    * @param {boolean} hasScreenReader Whether a screen reader is enabled.
    */
   onScreenReaderStateChanged_(hasScreenReader) {
-    // TODO(katie): Remove showExperimentalA11yLabels flag before launch.
-    this.showAccessibilityLabelsSetting_ = hasScreenReader &&
-        loadTimeData.getBoolean('showExperimentalA11yLabels');
+    this.showAccessibilityLabelsSetting_ = hasScreenReader;
   },
 
   /** @private */
