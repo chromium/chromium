@@ -54,10 +54,8 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
                   kTooltipPaddingBottom, kTooltipPaddingLeftRight),
       kPreviewPadding));
 
-  const ui::NativeTheme* theme = anchor_widget()->GetNativeTheme();
-
   for (auto* window : windows) {
-    WindowPreview* preview = new WindowPreview(window, this, theme);
+    WindowPreview* preview = new WindowPreview(window, this);
     AddChildView(preview);
     previews_.push_back(preview);
   }

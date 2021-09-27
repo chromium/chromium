@@ -14,6 +14,8 @@
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -135,7 +137,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
 
-    auto* theme = GetNativeTheme();
+    const auto* color_provider = GetColorProvider();
 
     auto* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(id_);
@@ -144,14 +146,12 @@ class StackedNotificationBar::StackedNotificationBarIcon
     if (!notification)
       return;
 
-    SkColor accent_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_NotificationDefaultAccentColor);
+    SkColor accent_color =
+        color_provider->GetColor(ui::kColorNotificationHeaderForeground);
     gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
         kStackedNotificationIconSize, accent_color,
-        theme->GetSystemColor(
-            ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
-        theme->GetSystemColor(
-            ui::NativeTheme::kColorId_MessageCenterSmallImageMaskForeground));
+        color_provider->GetColor(ui::kColorNotificationIconBackground),
+        color_provider->GetColor(ui::kColorNotificationIconForeground));
 
     if (masked_small_icon.IsEmpty()) {
       SetImage(gfx::CreateVectorIcon(message_center::kProductIcon,

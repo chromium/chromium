@@ -14,7 +14,6 @@
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/native_theme/test_native_theme.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -30,24 +29,6 @@ constexpr double kMutedSaturation = 0.2;
 constexpr double kVibrantSaturation = 0.8;
 
 constexpr int kDefaultForegroundArtworkHeight = 100;
-
-constexpr SkColor kDarkBackgroundColor = SK_ColorBLACK;
-
-class TestDarkTheme : public ui::TestNativeTheme {
- public:
-  TestDarkTheme() = default;
-  ~TestDarkTheme() override = default;
-
-  // ui::NativeTheme implementation.
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override {
-    return (color_id == kColorId_BubbleBackground)
-               ? kDarkBackgroundColor
-               : ui::TestNativeTheme::GetSystemColorDeprecated(
-                     color_id, color_scheme, apply_processing);
-  }
-};
 
 SkColor GetColorFromSL(double s, double l) {
   return color_utils::HSLToSkColor({0.2, s, l}, SK_AlphaOPAQUE);
@@ -230,11 +211,13 @@ TEST_F(MediaNotificationBackgroundImplTest,
 
 TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  auto* theme = widget->GetNativeTheme();
+  theme->set_use_dark_colors(false);
   auto* owner = widget->SetContentsView(std::make_unique<views::View>());
+  SkColor light_background_color = background()->GetBackgroundColor(*owner);
 
-  TestDarkTheme dark_theme;
-  owner->SetNativeThemeForTesting(&dark_theme);
-  EXPECT_EQ(kDarkBackgroundColor, background()->GetBackgroundColor(*owner));
+  theme->set_use_dark_colors(true);
+  EXPECT_NE(light_background_color, background()->GetBackgroundColor(*owner));
 }
 
 // MediaNotificationBackgroundImplBlackWhiteTest will repeat these tests with a

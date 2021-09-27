@@ -16,6 +16,8 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_background_painter.h"
@@ -168,8 +170,7 @@ void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
 void ArcNotificationView::OnThemeChanged() {
   message_center::MessageView::OnThemeChanged();
   focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_FocusedBorderColor),
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
       gfx::Insets(0, 1, 3, 2));
 }
 

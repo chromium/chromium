@@ -39,6 +39,7 @@ component("media_message_center") {
     "//services/media_session/public/cpp",
     "//skia",
     "//ui/accessibility",
+    "//ui/color",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/views",

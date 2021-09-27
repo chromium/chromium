@@ -42,9 +42,7 @@ class WindowPreview : public views::View {
     virtual ~Delegate() {}
   };
 
-  WindowPreview(aura::Window* window,
-                Delegate* delegate,
-                const ui::NativeTheme* theme);
+  WindowPreview(aura::Window* window, Delegate* delegate);
 
   WindowPreview(const WindowPreview&) = delete;
   WindowPreview& operator=(const WindowPreview&) = delete;
@@ -56,12 +54,11 @@ class WindowPreview : public views::View {
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   const WindowPreviewView* preview_view() const { return preview_view_; }
 
  private:
-  void SetStyling(const ui::NativeTheme* theme);
-
   // All the preview containers have the same size.
   gfx::Size GetPreviewContainerSize() const;
 

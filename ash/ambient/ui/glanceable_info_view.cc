@@ -94,7 +94,7 @@ void GlanceableInfoView::OnWeatherInfoUpdated() {
 void GlanceableInfoView::OnThemeChanged() {
   views::View::OnThemeChanged();
   gfx::ShadowValues text_shadow_values =
-      ambient::util::GetTextShadowValues(GetNativeTheme());
+      ambient::util::GetTextShadowValues(GetColorProvider());
   time_view_->SetTextShadowValues(text_shadow_values);
   temperature_->SetShadows(text_shadow_values);
 }

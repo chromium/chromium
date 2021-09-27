@@ -12,6 +12,8 @@
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -79,8 +81,8 @@ void ResizeConfirmationDialogView::AddedToWidget() {
 
 void ResizeConfirmationDialogView::OnThemeChanged() {
   views::BoxLayoutView::OnThemeChanged();
-  do_not_ask_checkbox_->SetEnabledTextColors(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogForeground));
+  do_not_ask_checkbox_->SetEnabledTextColors(
+      GetColorProvider()->GetColor(ui::kColorDialogForeground));
 }
 
 std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {

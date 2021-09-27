@@ -11,9 +11,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/shadow_value.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace ash {
 namespace ambient {
@@ -50,8 +51,8 @@ const gfx::FontList& GetDefaultFontlist() {
   return *font_list;
 }
 
-gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme) {
-  // If the theme does not exist the shadow values are being created in
+gfx::ShadowValues GetTextShadowValues(const ui::ColorProvider* color_provider) {
+  // If `color_provider` does not exist the shadow values are being created in
   // order to calculate margins. In that case the color plays no role so set it
   // to gfx::kPlaceholderColor.
   // Currently an elevation of 2 falls back to MakeMdShadowValues so use
@@ -60,8 +61,8 @@ gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme) {
   // |key_shadow_color| and |ambient_shadow_color|.
   // TODO(elainechien): crbug.com/1056950
   SkColor shadow_base_color =
-      theme ? theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase)
-            : gfx::kPlaceholderColor;
+      color_provider ? color_provider->GetColor(ui::kColorShadowBase)
+                     : gfx::kPlaceholderColor;
   return gfx::ShadowValue::MakeShadowValues(
       kTextShadowElevation, shadow_base_color, shadow_base_color);
 }

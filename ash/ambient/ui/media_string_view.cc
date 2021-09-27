@@ -128,7 +128,8 @@ MediaStringView::~MediaStringView() = default;
 
 void MediaStringView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  media_text_->SetShadows(ambient::util::GetTextShadowValues(GetNativeTheme()));
+  media_text_->SetShadows(
+      ambient::util::GetTextShadowValues(GetColorProvider()));
 }
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();

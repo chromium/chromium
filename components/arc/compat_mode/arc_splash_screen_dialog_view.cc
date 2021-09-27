@@ -20,6 +20,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,8 +83,8 @@ class HighlightBorder : public views::View {
     View::ConvertRectToTarget(parent(), this, &rect);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusedBorderColor));
+    flags.setColor(
+        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);

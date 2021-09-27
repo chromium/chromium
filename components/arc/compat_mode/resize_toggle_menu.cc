@@ -16,6 +16,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -118,18 +120,16 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   if (!GetWidget())
     return;
 
-  const auto* theme = GetNativeTheme();
+  const auto* color_provider = GetColorProvider();
 
   const auto icon_color =
-      is_selected_
-          ? GetCrOSColor(cros_styles::ColorName::kIconColorSelection)
-          : theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor);
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kIconColorSelection)
+                   : color_provider->GetColor(ui::kColorLabelForeground);
   icon_view_->SetImage(gfx::CreateVectorIcon(icon_, icon_color));
 
   const auto text_color =
-      is_selected_
-          ? GetCrOSColor(cros_styles::ColorName::kTextColorSelection)
-          : theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor);
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kTextColorSelection)
+                   : color_provider->GetColor(ui::kColorLabelForeground);
   title_->SetEnabledColor(text_color);
 
   const auto background_color =
@@ -138,9 +138,8 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   background()->SetNativeControlColor(background_color);
 
   const auto border_color =
-      is_selected_
-          ? SK_ColorTRANSPARENT
-          : theme->GetSystemColor(ui::NativeTheme::kColorId_MenuBorderColor);
+      is_selected_ ? SK_ColorTRANSPARENT
+                   : color_provider->GetColor(ui::kColorMenuBorder);
   GetBorder()->set_color(border_color);
 }
 

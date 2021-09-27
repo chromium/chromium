@@ -19,6 +19,8 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -75,14 +77,12 @@ void NotificationIconTrayItemView::SetNotification(
   if (!GetWidget())
     return;
 
-  auto* theme = GetNativeTheme();
+  const auto* color_provider = GetColorProvider();
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
       kUnifiedTrayIconSize,
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),
-      theme->GetSystemColor(
-          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
-      theme->GetSystemColor(
-          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskForeground));
+      color_provider->GetColor(ui::kColorNotificationIconBackground),
+      color_provider->GetColor(ui::kColorNotificationIconForeground));
   if (!masked_small_icon.IsEmpty()) {
     image_view()->SetImage(masked_small_icon.AsImageSkia());
   } else {
