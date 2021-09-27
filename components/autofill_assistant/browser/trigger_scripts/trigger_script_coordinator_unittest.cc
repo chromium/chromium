@@ -30,6 +30,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace autofill_assistant {
 
@@ -38,6 +39,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
@@ -1453,6 +1455,73 @@ TEST_F(TriggerScriptCoordinatorTest, RecordTriggerConditionEvaluationTime) {
       ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
           {navigation_ids_[0], {{kTriggerConditionTimingMs, 700}}},
           {navigation_ids_[0], {{kTriggerConditionTimingMs, 300}}}}));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, RecordIfPrimaryPageFailed) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Start prerendering a page.
+  EXPECT_CALL(mock_callback_,
+              Run(Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR, _, _))
+      .Times(1);
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kFakeDeepLink), web_contents());
+  simulator->Fail(net::ERR_TIMED_OUT);
+  simulator->CommitErrorPage();
+
+  // UKM should not be recorded by the prerendering's fail response.
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
+}
+
+class TriggerScriptCoordinatorPrerenderTest
+    : public TriggerScriptCoordinatorTest {
+ public:
+  TriggerScriptCoordinatorPrerenderTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~TriggerScriptCoordinatorPrerenderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TriggerScriptCoordinatorPrerenderTest, DoNotRecordIfPrerenderingFailed) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  EXPECT_CALL(mock_callback_, Run).Times(0);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Start prerendering a page.
+  auto simulator = content::WebContentsTester::For(web_contents())
+                       ->AddPrerenderAndStartNavigation(GURL(kFakeDeepLink));
+  simulator->Fail(net::ERR_TIMED_OUT);
+  simulator->CommitErrorPage();
+
+  // UKM should not be recorded by the prerendering's fail response.
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_), IsEmpty());
 }
 
 }  // namespace autofill_assistant
