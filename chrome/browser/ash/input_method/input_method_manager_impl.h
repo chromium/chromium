@@ -111,10 +111,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     // ------------------------- Data members.
     Profile* const profile;
 
-    // All input methods that have been registered by InputMethodEngines.
-    // The key is the input method ID.
-    std::map<std::string, InputMethodDescriptor> available_input_methods;
-
     // True if the opt-in IME menu is activated.
     bool menu_activated = false;
 
@@ -149,6 +145,10 @@ class InputMethodManagerImpl : public InputMethodManager,
     // allowed input method, if no hardware input method is allowed.
     std::string GetAllowedFallBackKeyboardLayout() const;
 
+    // Returns Input Method that best matches given id.
+    const InputMethodDescriptor* LookupInputMethod(
+        const std::string& input_method_id);
+
     InputMethodManagerImpl* const manager_;
 
     std::string last_used_input_method_id_;
@@ -156,6 +156,10 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodDescriptor current_input_method_;
 
     std::vector<std::string> enabled_input_method_ids_;
+
+    // All input methods that have been registered by InputMethodEngines.
+    // The key is the input method ID.
+    std::map<std::string, InputMethodDescriptor> available_input_methods_;
 
     // The allowed keyboard layout input methods (e.g. by policy).
     std::vector<std::string> allowed_keyboard_layout_input_method_ids_;
@@ -257,11 +261,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Creates and initializes |assistive_window_controller_| if it hasn't been
   // done.
   void MaybeInitializeAssistiveWindowController();
-
-  // Returns Input Method that best matches given id.
-  const InputMethodDescriptor* LookupInputMethod(
-      const std::string& input_method_id,
-      StateImpl* state);
 
   // Change system input method to the one specified in the active state.
   void ChangeInputMethodInternalFromActiveState(bool show_message,
