@@ -252,9 +252,20 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     ActivatePrerenderedPage(kPrerenderingUrl, *wc);
   }
 
+  void ExpectUniqueSampleOfFinalStatus(PrerenderHost::FinalStatus status) {
+    histogram_tester_.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+  }
+
+  void ExpectBucketCountOfFinalStatus(PrerenderHost::FinalStatus status) {
+    histogram_tester_.ExpectBucketCount(
+        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   PrerenderWebContentsDelegate web_contents_delegate_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
@@ -314,7 +325,6 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1.
 TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
-  base::HistogramTester histogram_tester;
   const GURL kOriginalUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(kOriginalUrl);
@@ -335,9 +345,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
       registry->CreateAndStartHost(attributes1, *render_frame_host);
   int frame_tree_node_id2 =
       registry->CreateAndStartHost(attributes2, *render_frame_host);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectUniqueSampleOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   EXPECT_NE(frame_tree_node_id1, kNoFrameTreeNodeId);
@@ -354,16 +363,14 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
   frame_tree_node_id2 =
       registry->CreateAndStartHost(attributes2, *render_frame_host);
   EXPECT_NE(frame_tree_node_id2, kNoFrameTreeNodeId);
-  histogram_tester.ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectBucketCountOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new same-origin page.
 TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
-  base::HistogramTester histogram_tester;
   const GURL kOriginalUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(kOriginalUrl);
@@ -383,9 +390,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   ASSERT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectUniqueSampleOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // The initiator document navigates away.
   render_frame_host = NavigatePrimaryPage(
@@ -400,16 +406,14 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   SendCandidate(kPrerenderingUrl2, remote2);
 
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
-  histogram_tester.ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectBucketCountOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new cross-origin page.
 TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
-  base::HistogramTester histogram_tester;
   const GURL kOriginalUrl("https://example.com/");
 
   std::unique_ptr<TestWebContents> web_contents =
@@ -430,9 +434,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   ASSERT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectUniqueSampleOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // The initiator document navigates away to a cross-origin page.
   render_frame_host =
@@ -447,9 +450,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   const GURL kPrerenderingUrl3("https://example.org/next1");
   SendCandidate(kPrerenderingUrl3, remote2);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl3), nullptr);
-  histogram_tester.ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  ExpectBucketCountOfFinalStatus(
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -681,7 +683,6 @@ TEST_F(PrerenderHostRegistryTest,
 
 TEST_F(PrerenderHostRegistryTest,
        DontStartPrerenderWhenTriggerIsAlreadyHidden) {
-  base::HistogramTester histogram_tester;
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   // The visibility state to be HIDDEN will cause prerendering not started.
@@ -698,9 +699,8 @@ TEST_F(PrerenderHostRegistryTest,
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kTriggerBackgrounded, 1);
+  ExpectUniqueSampleOfFinalStatus(
+      PrerenderHost::FinalStatus::kTriggerBackgrounded);
 }
 
 // -------------------------------------------------
