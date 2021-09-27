@@ -33,6 +33,8 @@
 #include <netfw.h>
 #include <windows.h>
 #include <wrl/client.h>
+
+#include "net/dns/public/win_dns_system_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -192,7 +194,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.chrome_remote_desktop_app_blocked = GetChromeRemoteDesktopAppBlocked();
   info.third_party_blocking_enabled = GetThirdPartyBLockingEnabled();
 #if defined(OS_WIN)
-  base::ThreadPool::CreateCOMSTATaskRunner({})
+  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
       .get()
       ->PostTaskAndReplyWithResult(
           FROM_HERE,
@@ -339,6 +341,19 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
         return std::vector<std::string>();
       else
         dns_addresses.push_back(nameserver.ToString());
+    }
+  }
+#elif defined(OS_WIN)
+  absl::optional<std::vector<net::IPEndPoint>> nameservers;
+  absl::optional<net::WinDnsSystemSettings> settings =
+      net::ReadWinSystemDnsSettings();
+  if (settings.has_value()) {
+    nameservers = settings->GetAllNameservers();
+  }
+
+  if (nameservers.has_value()) {
+    for (const net::IPEndPoint& nameserver : nameservers.value()) {
+      dns_addresses.push_back(nameserver.ToString());
     }
   }
 #endif

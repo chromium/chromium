@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq
         (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
       chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
-      chrome.test.assertEq(typeof info.osFirewall,'string');
+      chrome.test.assertEq(typeof info.osFirewall, 'string');
       chrome.test.assertTrue(info.systemDnsServers instanceof Array);
 
       chrome.test.notifyPass();
