@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_features.h"
@@ -27,7 +26,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace cart {
 
@@ -37,21 +35,6 @@ namespace {
 std::string GetDomain(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-const re2::RE2& GetPartnerMerchantPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(
-      cart_features::kPartnerMerchantPattern.Get(), options);
-  return *instance;
-}
-
-bool IsPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetPartnerMerchantPattern());
 }
 
 void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
@@ -208,8 +191,8 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
   }
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
-  if (service_->IsCartDiscountEnabled() && IsPartnerMerchant(navigation_url) &&
-      product_id.empty()) {
+  if (service_->IsCartDiscountEnabled() &&
+      cart_features::IsPartnerMerchant(navigation_url) && product_id.empty()) {
     validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
@@ -236,7 +219,8 @@ void CommerceHintService::OnCartUpdated(
   absl::optional<GURL> validated_cart = cart_url;
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
-  if (service_->IsCartDiscountEnabled() && IsPartnerMerchant(cart_url)) {
+  if (service_->IsCartDiscountEnabled() &&
+      cart_features::IsPartnerMerchant(cart_url)) {
     validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;

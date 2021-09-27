@@ -29,21 +29,6 @@ namespace {
 const char kOauthName[] = "rbd";
 const char kOauthScopes[] = "https://www.googleapis.com/auth/chromememex";
 const char kEmptyToken[] = "";
-
-const re2::RE2& GetPartnerMerchantPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(
-      cart_features::kPartnerMerchantPattern.Get(), options);
-  return *instance;
-}
-
-bool IsPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetPartnerMerchantPattern());
-}
 }  // namespace
 
 CartServiceDelegate::CartServiceDelegate(CartService* cart_service)
@@ -159,7 +144,8 @@ void FetchDiscountWorker::ReadyToFetch(
   // post another delayed fetch.
   bool has_partner_merchant = false;
   for (auto pair : proto_pairs) {
-    if (IsPartnerMerchant(GURL(pair.second.merchant_cart_url()))) {
+    if (cart_features::IsPartnerMerchant(
+            GURL(pair.second.merchant_cart_url()))) {
       has_partner_merchant = true;
       break;
     }

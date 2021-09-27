@@ -82,21 +82,6 @@ bool IsExpired(const cart_db::ChromeCartContentProto& proto) {
              .InDays() > 14;
 }
 
-const re2::RE2& GetPartnerMerchantPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(
-      cart_features::kPartnerMerchantPattern.Get(), options);
-  return *instance;
-}
-
-bool IsPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetPartnerMerchantPattern());
-}
-
 const re2::RE2& GetSkipCartExtractionPattern() {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
@@ -153,7 +138,7 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
-  DCHECK(base_url.is_valid() && IsPartnerMerchant(base_url));
+  DCHECK(base_url.is_valid() && cart_features::IsPartnerMerchant(base_url));
 
   if (kRbdUtmParam.Get()) {
     return net::AppendOrReplaceQueryParameter(
@@ -308,7 +293,8 @@ void CartService::HasPartnerCarts(
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   for (auto proto_pair : proto_pairs) {
-    if (IsPartnerMerchant(GURL(proto_pair.second.merchant_cart_url()))) {
+    if (cart_features::IsPartnerMerchant(
+            GURL(proto_pair.second.merchant_cart_url()))) {
       std::move(callback).Run(true);
       return;
     }
@@ -346,11 +332,11 @@ void CartService::GetDiscountURL(
     const GURL& cart_url,
     base::OnceCallback<void(const ::GURL&)> callback) {
   auto url = cart_url;
-  if (IsPartnerMerchant(cart_url)) {
+  if (cart_features::IsPartnerMerchant(cart_url)) {
     url = AppendUTM(cart_url, IsCartDiscountEnabled());
   }
 
-  if (!IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
+  if (!cart_features::IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
     std::move(callback).Run(url);
     CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
@@ -409,7 +395,7 @@ void CartService::OnDiscountURLFetched(
 void CartService::PrepareForNavigation(const GURL& cart_url,
                                        bool is_navigating) {
   metrics_tracker_->PrepareToRecordUKM(cart_url);
-  if (is_navigating || !IsPartnerMerchant(cart_url) ||
+  if (is_navigating || !cart_features::IsPartnerMerchant(cart_url) ||
       !IsCartDiscountEnabled()) {
     return;
   }
