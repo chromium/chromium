@@ -11,9 +11,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -60,7 +62,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -71,12 +76,16 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -85,7 +94,7 @@ import java.util.List;
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
     private static Boolean sItemBookmarkedForTesting;
 
-    protected MenuItem mReloadMenuItem;
+    protected PropertyModel mReloadPropertyModel;
 
     protected final Context mContext;
     protected final boolean mIsTablet;
@@ -101,6 +110,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
+    private Map<CustomViewBinder, Integer> mCustomViewTypeOffsetMap;
 
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
@@ -184,8 +194,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
     }
 
-    @Override
-    public int getAppMenuLayoutId() {
+    /**
+     * @return The resource id for the menu to use in {@link AppMenu}.
+     */
+    protected int getAppMenuLayoutId() {
         return R.menu.main_menu;
     }
 
@@ -250,6 +262,72 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @Override
+    public ModelList getMenuItems(
+            CustomItemViewTypeProvider customItemViewTypeProvider, AppMenuHandler handler) {
+        ModelList modelList = new ModelList();
+
+        PopupMenu popup = new PopupMenu(mContext, mDecorView);
+        Menu menu = popup.getMenu();
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(getAppMenuLayoutId(), menu);
+
+        prepareMenu(menu, handler);
+
+        // TODO(crbug.com/1119550): Programmatically create menu item's PropertyModel instead of
+        // converting from MenuItems.
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (!item.isVisible()) continue;
+
+            PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
+            propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
+            if (item.hasSubMenu()) {
+                // Only support top level menu items have SUBMENU, and a SUBMENU item cannot have a
+                // SUBMENU.
+                // TODO(crbug.com/1183234) : Create a new SubMenuItemProperties property key set for
+                // SUBMENU items.
+                ModelList subList = new ModelList();
+                for (int j = 0; j < item.getSubMenu().size(); ++j) {
+                    MenuItem subitem = item.getSubMenu().getItem(j);
+                    if (!subitem.isVisible()) continue;
+
+                    PropertyModel subModel = AppMenuUtil.menuItemToPropertyModel(subitem);
+                    subList.add(new MVCListAdapter.ListItem(0, subModel));
+                    if (subitem.getItemId() == R.id.reload_menu_id) {
+                        mReloadPropertyModel = subModel;
+                        Tab currentTab = mActivityTabProvider.get();
+                        loadingStateChanged(currentTab.isLoading());
+                    }
+                }
+                propertyModel.set(AppMenuItemProperties.SUBMENU, subList);
+            }
+            int menutype = AppMenuItemType.STANDARD;
+            if (item.getItemId() == R.id.request_desktop_site_row_menu_id
+                    || item.getItemId() == R.id.share_row_menu_id) {
+                menutype = AppMenuItemType.TITLE_BUTTON;
+            } else if (item.getItemId() == R.id.icon_row_menu_id) {
+                int viewCount = item.getSubMenu().size();
+                if (viewCount == 3) {
+                    menutype = AppMenuItemType.THREE_BUTTON_ROW;
+                } else if (viewCount == 4) {
+                    menutype = AppMenuItemType.FOUR_BUTTON_ROW;
+                } else if (viewCount == 5) {
+                    menutype = AppMenuItemType.FIVE_BUTTON_ROW;
+                }
+            } else {
+                // Could be standard items or custom items.
+                int customType = customItemViewTypeProvider.fromMenuItemId(item.getItemId());
+                if (customType != CustomViewBinder.NOT_HANDLED) {
+                    menutype = customType;
+                }
+            }
+            modelList.add(new MVCListAdapter.ListItem(menutype, propertyModel));
+        }
+
+        return modelList;
+    }
+
+    @Override
     public void prepareMenu(Menu menu, AppMenuHandler handler) {
         int menuGroup = getMenuGroup();
         setMenuGroupVisibility(menuGroup, menu);
@@ -281,12 +359,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             MenuItem forwardMenuItem = actionBar.findItem(R.id.forward_menu_id);
             forwardMenuItem.setEnabled(currentTab.canGoForward());
 
-            mReloadMenuItem = actionBar.findItem(R.id.reload_menu_id);
             Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
             DrawableCompat.setTintList(icon,
                     AppCompatResources.getColorStateList(
                             mContext, R.color.default_icon_color_tint_list));
-            mReloadMenuItem.setIcon(icon);
+            actionBar.findItem(R.id.reload_menu_id).setIcon(icon);
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem bookmarkMenuItem = actionBar.findItem(R.id.bookmark_this_page_id);
@@ -405,6 +482,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 if (item.getItemId() != R.id.reader_mode_prefs_id
                         && item.getItemId() != R.id.update_menu_id) {
                     item.setIcon(null);
+                }
+
+                // Remove title button icons.
+                if (item.getItemId() == R.id.request_desktop_site_row_menu_id
+                        || item.getItemId() == R.id.share_row_menu_id) {
+                    item.getSubMenu().getItem(0).setIcon(null);
                 }
             }
 
@@ -701,9 +784,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @Override
-    public Bundle getBundleForMenuItem(MenuItem item) {
+    public Bundle getBundleForMenuItem(int itemId) {
         Bundle bundle = new Bundle();
-        if (item.getItemId() == R.id.add_to_homescreen_id) {
+        if (itemId == R.id.add_to_homescreen_id) {
             bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
         }
         return bundle;
@@ -719,21 +802,24 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public void loadingStateChanged(boolean isLoading) {
-        if (mReloadMenuItem != null) {
+        if (mReloadPropertyModel != null) {
             Resources resources = mContext.getResources();
-            mReloadMenuItem.getIcon().setLevel(isLoading
-                            ? resources.getInteger(R.integer.reload_button_level_stop)
-                            : resources.getInteger(R.integer.reload_button_level_reload));
-            mReloadMenuItem.setTitle(isLoading ? R.string.accessibility_btn_stop_loading
-                                               : R.string.accessibility_btn_refresh);
-            mReloadMenuItem.setTitleCondensed(resources.getString(
-                    isLoading ? R.string.menu_stop_refresh : R.string.menu_refresh));
+            mReloadPropertyModel.get(AppMenuItemProperties.ICON)
+                    .setLevel(isLoading
+                                    ? resources.getInteger(R.integer.reload_button_level_stop)
+                                    : resources.getInteger(R.integer.reload_button_level_reload));
+            mReloadPropertyModel.set(AppMenuItemProperties.TITLE,
+                    resources.getString(isLoading ? R.string.accessibility_btn_stop_loading
+                                                  : R.string.accessibility_btn_refresh));
+            mReloadPropertyModel.set(AppMenuItemProperties.TITLE_CONDENSED,
+                    resources.getString(
+                            isLoading ? R.string.menu_stop_refresh : R.string.menu_refresh));
         }
     }
 
     @Override
     public void onMenuDismissed() {
-        mReloadMenuItem = null;
+        mReloadPropertyModel = null;
         if (mUpdateMenuItemVisible) {
             UpdateMenuItemHelper.getInstance().onMenuDismissed();
             UpdateMenuItemHelper.getInstance().unregisterObserver(mAppMenuInvalidator);

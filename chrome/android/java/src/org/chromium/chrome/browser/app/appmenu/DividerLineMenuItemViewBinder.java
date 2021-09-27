@@ -5,19 +5,17 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * A custom binder used to bind the managed menu item.
+ * A custom binder used to bind the divider line in app menu.
  */
 class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
@@ -34,15 +32,23 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
-            @Nullable Integer highlightedItemId) {
-        assert item.getItemId() == R.id.divider_line_id;
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.divider_line_menu_item, parent, false);
+    public int getLayoutId(int viewType) {
+        if (viewType == DIVIDER_LINE_ITEM_VIEW_TYPE) {
+            return R.layout.divider_line_menu_item;
         }
-        return convertView;
+        return CustomViewBinder.NOT_HANDLED;
+    }
+
+    // TODO(crbug.com/1183227): create a PropertyModel only for divider line.
+    @Override
+    public void bind(PropertyModel model, View view, PropertyKey key) {
+        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
+
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            assert id == R.id.divider_line_id;
+            view.setId(id);
+        }
     }
 
     @Override

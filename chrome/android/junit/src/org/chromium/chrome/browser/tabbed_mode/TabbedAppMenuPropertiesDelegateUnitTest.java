@@ -475,7 +475,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .isOpenInOtherWindowSupported();
 
         PopupMenu tempMenu = new PopupMenu(ContextUtils.getApplicationContext(), mDecorView);
-        tempMenu.inflate(mTabbedAppMenuPropertiesDelegate.getAppMenuLayoutId());
+        tempMenu.inflate(R.menu.main_menu);
         return tempMenu.getMenu();
     }
 

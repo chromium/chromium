@@ -66,8 +66,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
         mAppMenuPropertiesDelegate = mAppMenuDelegate.createAppMenuPropertiesDelegate();
 
         mAppMenuHandler = new AppMenuHandlerImpl(mContext, mAppMenuPropertiesDelegate,
-                mAppMenuDelegate, mAppMenuPropertiesDelegate.getAppMenuLayoutId(), decorView,
-                activityLifecycleDispatcher, hardwareButtonAnchorView);
+                mAppMenuDelegate, decorView, activityLifecycleDispatcher, hardwareButtonAnchorView);
     }
 
     @Override

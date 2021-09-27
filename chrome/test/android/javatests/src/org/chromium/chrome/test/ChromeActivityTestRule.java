@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.internal.runner.listener.InstrumentationResultPrinter;
-import android.view.Menu;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -140,12 +138,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @SuppressWarnings("RedundantOverride")
     public T getActivity() {
         return super.getActivity();
-    }
-
-    /** Retrieves the application Menu */
-    public Menu getMenu() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> AppMenuTestSupport.getMenu(getAppMenuCoordinator()));
     }
 
     /**

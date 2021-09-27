@@ -6,21 +6,19 @@ package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -41,42 +39,56 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
-            @Nullable Integer highlightedItemId) {
-        assert item.getItemId() == R.id.new_incognito_tab_menu_id;
-
-        IncognitoMenuItemViewHolder holder;
-        if (convertView == null || !(convertView.getTag() instanceof IncognitoMenuItemViewHolder)) {
-            holder = new IncognitoMenuItemViewHolder();
-            convertView = inflater.inflate(R.layout.custom_view_menu_item, parent, false);
-            holder.title = convertView.findViewById(R.id.title);
-            holder.image = convertView.findViewById(R.id.trailing_icon);
-            convertView.setTag(holder);
-        } else {
-            holder = (IncognitoMenuItemViewHolder) convertView.getTag();
+    public int getLayoutId(int viewType) {
+        if (viewType == INCOGNITO_ITEM_VIEW_TYPE) {
+            return R.layout.custom_view_menu_item;
         }
+        return CustomViewBinder.NOT_HANDLED;
+    }
 
-        holder.title.setCompoundDrawablesRelative(item.getIcon(), null, null, null);
-        holder.title.setText(item.getTitle());
-        holder.title.setEnabled(item.isEnabled());
-        // Setting |holder.title| to non-focusable will allow TalkBack highlighting the whole view
-        // of the menu item, not just title text.
-        holder.title.setFocusable(false);
-        convertView.setFocusable(item.isEnabled());
-        if (IncognitoUtils.isIncognitoModeManaged()) {
-            holder.image.setImageResource(R.drawable.ic_business);
-            holder.image.setVisibility(View.VISIBLE);
-        }
-        convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
-        if (highlightedItemId != null && item.getItemId() == highlightedItemId) {
-            ViewHighlighter.turnOnHighlight(
-                    convertView, new HighlightParams(HighlightShape.RECTANGLE));
-        } else {
-            ViewHighlighter.turnOffHighlight(convertView);
-        }
+    @Override
+    public void bind(PropertyModel model, View view, PropertyKey key) {
+        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
 
-        return convertView;
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            assert id == R.id.new_incognito_tab_menu_id;
+            view.setId(id);
+
+            if (IncognitoUtils.isIncognitoModeManaged()) {
+                ChromeImageView image = view.findViewById(R.id.trailing_icon);
+                image.setImageResource(R.drawable.ic_business);
+                image.setVisibility(View.VISIBLE);
+            }
+        } else if (key == AppMenuItemProperties.TITLE) {
+            ((TextViewWithCompoundDrawables) view.findViewById(R.id.title))
+                    .setText(model.get(AppMenuItemProperties.TITLE));
+        } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
+            CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
+            view.findViewById(R.id.title).setContentDescription(titleCondensed);
+        } else if (key == AppMenuItemProperties.ICON) {
+            ((TextViewWithCompoundDrawables) view.findViewById(R.id.title))
+                    .setCompoundDrawablesRelative(
+                            model.get(AppMenuItemProperties.ICON), null, null, null);
+        } else if (key == AppMenuItemProperties.ENABLED) {
+            boolean enabled = model.get(AppMenuItemProperties.ENABLED);
+            TextViewWithCompoundDrawables title = view.findViewById(R.id.title);
+            title.setEnabled(enabled);
+            // Setting |title| to non-focusable will allow TalkBack highlighting the whole view
+            // of the menu item, not just title text.
+            title.setFocusable(false);
+            view.setFocusable(enabled);
+        } else if (key == AppMenuItemProperties.HIGHLIGHTED) {
+            if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {
+                ViewHighlighter.turnOnHighlight(
+                        view, new HighlightParams(HighlightShape.RECTANGLE));
+            } else {
+                ViewHighlighter.turnOffHighlight(view);
+            }
+        } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
+            view.setOnClickListener(
+                    v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
+        }
     }
 
     @Override
@@ -89,10 +101,5 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
         TypedArray a = context.obtainStyledAttributes(
                 new int[] {android.R.attr.listPreferredItemHeightSmall});
         return a.getDimensionPixelSize(0, 0);
-    }
-
-    private static class IncognitoMenuItemViewHolder {
-        public TextViewWithCompoundDrawables title;
-        public ChromeImageView image;
     }
 }

@@ -5,16 +5,14 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * A custom binder used to bind the managed by menu item.
@@ -34,17 +32,24 @@ class ManagedByMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
-            @Nullable Integer highlightedItemId) {
-        assert item.getItemId() == R.id.managed_by_menu_id;
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.managed_by_menu_item, parent, false);
+    public int getLayoutId(int viewType) {
+        if (viewType == MANAGED_BY_ITEM_VIEW_TYPE) {
+            return R.layout.managed_by_menu_item;
         }
-        convertView.setFocusable(false);
+        return CustomViewBinder.NOT_HANDLED;
+    }
 
-        return convertView;
+    @Override
+    public void bind(PropertyModel model, View view, PropertyKey key) {
+        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
+
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            assert id == R.id.managed_by_menu_id;
+
+            view.setId(id);
+            view.setFocusable(false);
+        }
     }
 
     @Override

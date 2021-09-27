@@ -99,8 +99,8 @@ public class DemoPaintPreviewTest {
         AppMenuCoordinator coordinator = sActivityTestRule.getAppMenuCoordinator();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { AppMenuTestSupport.showAppMenu(coordinator, null, false); });
-        Assert.assertNotNull(
-                AppMenuTestSupport.getMenu(coordinator).findItem(R.id.paint_preview_show_id));
+        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                coordinator, R.id.paint_preview_show_id));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AppMenuTestSupport.callOnItemClick(coordinator, R.id.paint_preview_show_id));
 

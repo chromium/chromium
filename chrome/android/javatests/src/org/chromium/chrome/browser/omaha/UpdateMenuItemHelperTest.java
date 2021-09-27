@@ -155,8 +155,9 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertTrue("Update menu item is not showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNotNull("Update menu item is not showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     /**
@@ -166,8 +167,9 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test
@@ -221,8 +223,9 @@ public class UpdateMenuItemHelperTest {
 
         // Make sure the item is not shown in tab switcher app menu.
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test

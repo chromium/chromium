@@ -16,8 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.test.InstrumentationRegistry;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
@@ -212,15 +210,6 @@ public class CustomTabsTestUtils {
                                             .getAppMenuCoordinatorForTesting()
                                             .getAppMenuHandler()::isAppMenuShowing,
                 "App menu was not shown");
-    }
-
-    public static int getVisibleMenuSize(Menu menu) {
-        int visibleMenuSize = 0;
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            if (item.isVisible()) visibleMenuSize++;
-        }
-        return visibleMenuSize;
     }
 
     /**
