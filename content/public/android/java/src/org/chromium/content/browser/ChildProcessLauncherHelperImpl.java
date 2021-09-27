@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
@@ -125,6 +126,15 @@ public final class ChildProcessLauncherHelperImpl {
     private static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH =
             "--" + EarlyTraceEvent.TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
 
+    // The first known App Zygote PID. If the app zygote gets restarted, the new bundles from it
+    // are not sent further for simplicity. Accessed only on LauncherThread.
+    private static int sZygotePid;
+
+    // The bundle with RELRO FD. For sending to child processes, including the ones that did not
+    // announce whether they inherit from the app zygote. Declared as volatile to allow sending it
+    // from different threads.
+    private static volatile Bundle sZygoteBundle;
+
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
@@ -151,8 +161,12 @@ public final class ChildProcessLauncherHelperImpl {
                             ContentChildProcessConstants.EXTRA_CPU_COUNT, CpuFeatures.getCount());
                     connectionBundle.putLong(
                             ContentChildProcessConstants.EXTRA_CPU_FEATURES, CpuFeatures.getMask());
-                    LibraryLoader.getInstance().getMediator().putSharedRelrosToBundle(
-                            connectionBundle);
+                    if (sZygoteBundle != null) {
+                        connectionBundle.putAll(sZygoteBundle);
+                    } else {
+                        LibraryLoader.getInstance().getMediator().putSharedRelrosToBundle(
+                                connectionBundle);
+                    }
                 }
 
                 @Override
@@ -179,6 +193,13 @@ public final class ChildProcessLauncherHelperImpl {
                 }
 
                 @Override
+                public void onReceivedZygoteInfo(
+                        ChildProcessConnection connection, Bundle relroBundle) {
+                    assert LauncherThread.runningOnLauncherThread();
+                    distributeZygoteInfo(connection, relroBundle);
+                }
+
+                @Override
                 public void onConnectionLost(ChildProcessConnection connection) {
                     assert LauncherThread.runningOnLauncherThread();
                     if (connection.getPid() == 0) return;
@@ -196,6 +217,72 @@ public final class ChildProcessLauncherHelperImpl {
                     }
                 }
             };
+
+    /**
+     * Called for every new child connection. Receives a possibly null bundle inherited from the App
+     * Zygote. Sends the bundle to existing processes that did not have usable bundles or sends
+     * a previously memoized bundle to the new child.
+     *
+     * @param connection the connection to the new child
+     * @param zygoteBundle the bundle received from the child process, null means that either the
+     *                     process did not inherit from the app zygote or the app zygote did not
+     *                     produce a usable RELRO region.
+     */
+    private static void distributeZygoteInfo(
+            ChildProcessConnection connection, @Nullable Bundle zygoteBundle) {
+        if (LibraryLoader.mainProcessIntendsToProvideRelroFd()) return;
+
+        if (!connection.hasUsableZygoteInfo()) {
+            Log.d(TAG, "Connection likely not created from app zygote");
+            sendPreviouslySeenZygoteBundle(connection);
+            return;
+        }
+
+        // If the process was created from the app zygote, but failed to generate the the zygote
+        // bundle. Ignore it.
+        if (zygoteBundle == null) return;
+
+        if (sZygotePid != 0) {
+            Log.d(TAG, "Zygote was seen before with a usable RELRO bundle.");
+            onObtainedUsableZygoteBundle(connection);
+            return;
+        }
+
+        Log.d(TAG, "Encountered the first usable RELRO bundle.");
+        sZygotePid = connection.getZygotePid();
+        sZygoteBundle = zygoteBundle;
+        sendPreviouslySeenZygoteBundleToExistingConnections(connection.getPid());
+    }
+
+    private static void onObtainedUsableZygoteBundle(ChildProcessConnection connection) {
+        if (sZygotePid != connection.getZygotePid()) {
+            Log.d(TAG, "Zygote restarted.");
+            // TODO(pasko): Record how often the app zygote is seen to be restarted.
+        }
+        // TODO(pasko): To avoid accumulating open file descriptors close the received RELRO FD
+        // if it cannot be used.
+    }
+
+    private static void sendPreviouslySeenZygoteBundle(ChildProcessConnection connection) {
+        if (sZygotePid != 0 && sZygoteBundle != null) {
+            connection.consumeZygoteBundle(sZygoteBundle);
+        }
+    }
+
+    private static void sendPreviouslySeenZygoteBundleToExistingConnections(int pid) {
+        CollectionUtil.forEach(sLauncherByPid, entry -> {
+            int otherPid = entry.getKey();
+            if (pid != otherPid) {
+                ChildProcessConnection otherConnection = entry.getValue().mLauncher.getConnection();
+                if (otherConnection.getZygotePid() == 0) {
+                    // The Zygote PID for each connection must be finalized before the launcher
+                    // thread starts processing the zygote info. Zygote PID being 0 guarantees that
+                    // the zygote did not produce the RELRO region.
+                    otherConnection.consumeZygoteBundle(sZygoteBundle);
+                }
+            }
+        });
+    }
 
     private final ChildProcessLauncher mLauncher;
 

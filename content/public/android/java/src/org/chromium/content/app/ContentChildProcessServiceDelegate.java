@@ -110,6 +110,14 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     }
 
     @Override
+    public void consumeRelroBundle(Bundle bundle) {
+        // Does not block, but may jank slightly. If the library has not been loaded yet, the bundle
+        // will be unpacked and saved for the future. If the library is loaded, the RELRO region
+        // will be replaced, which involves mmap(2) of shared memory and memcpy+memcmp of a few MB.
+        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(bundle);
+    }
+
+    @Override
     public SparseArray<String> getFileDescriptorsIdsToKeys() {
         assert mFdsIdsToKeys != null;
         return mFdsIdsToKeys;
