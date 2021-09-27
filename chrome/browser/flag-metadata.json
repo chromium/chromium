@@ -3894,7 +3894,7 @@
   {
     "name": "new-canvas-2d-api",
     "owners": [ "aaronhk", "fserb", "juanmihd", "yiyix" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "new-content-suggestions-feed",
