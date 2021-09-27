@@ -892,6 +892,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.SendStopWorker.Status"
     enum="ServiceWorkerStatusCode" expires_after="M85">
+  <obsolete>
+    Removed from the code in April 2017.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1203,6 +1206,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.WorkerForMessageFound" enum="Boolean"
     expires_after="M85">
+  <obsolete>
+    Removed from the code in March 2018.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
