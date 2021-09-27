@@ -25,6 +25,9 @@ declare_args() {
   # Enable credential provider extension.
   ios_enable_credential_provider_extension = true
 
+  # Enable intents extension.
+  ios_enable_intents_extension = false
+
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
