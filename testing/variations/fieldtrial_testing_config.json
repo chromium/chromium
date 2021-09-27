@@ -2592,6 +2592,21 @@
             ]
         }
     ],
+    "DefaultEnableGpuRasterization": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultEnableGpuRasterization"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [

@@ -70,6 +70,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     platform_suffix = "_mac";
 #elif defined(OS_WIN)
     platform_suffix = "_win";
+#elif defined(OS_LINUX)
+    platform_suffix = "_linux";
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     platform_suffix = "_chromeos";
 #elif defined(OS_ANDROID)
@@ -109,7 +111,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 120.f,
         /* small_error_threshold */ 0);
-#elif defined(OS_ANDROID) || defined(OS_WIN)
+#elif defined(OS_ANDROID) || defined(OS_WIN) || (OS_LINUX)
     // Different versions of android may have slight differences in rendering.
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
