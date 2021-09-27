@@ -483,6 +483,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDeviceMemory;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsResourceWidth;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsViewportWidth;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWebSQLInThirdPartyContextEnabled;
 
 }  // namespace features
 }  // namespace blink

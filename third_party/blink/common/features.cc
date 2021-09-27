@@ -1056,5 +1056,10 @@ const base::Feature kClientHintsResourceWidth{
 // Enable `sec-ch-viewport-width` client hint.
 const base::Feature kClientHintsViewportWidth{
     "ClientHintsViewportWidth", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows third party use of WebSQL (`DOMWindowWebDatabase::openDatabase`).
+const base::Feature kWebSQLInThirdPartyContextEnabled{
+    "WebSQLInThirdPartyContextEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
