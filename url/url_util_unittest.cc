@@ -571,8 +571,8 @@ TEST_F(URLUtilTest, TestCanonicalizeIdempotencyWithLeadingControlCharacters) {
   for (char c = '\0'; c <= ' '; c++) {
     SCOPED_TRACE(testing::Message() << "c: " << c);
 
-    // Overwrite the first character of `spec` with a C0 control character. Note
-    // that replacing the first character with NUL will change the length!
+    // Overwrite the first character of `spec`. Note that replacing the first
+    // character with NUL will not change the length!
     spec[0] = c;
 
     for (bool trim_path_end : {false, true}) {
