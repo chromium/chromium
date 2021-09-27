@@ -229,7 +229,7 @@ public class CrashesListFragmentTest {
 
             @Override
             public boolean matchesSafely(View view) {
-                Drawable expectedDrawable = mResources.getDrawable(expectedId);
+                Drawable expectedDrawable = view.getContext().getDrawable(expectedId);
                 return withDrawable(expectedDrawable).matches(view);
             }
 
