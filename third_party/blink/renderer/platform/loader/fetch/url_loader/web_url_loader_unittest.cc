@@ -208,7 +208,8 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
                           const WebString& new_method,
                           const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers,
-                          std::vector<std::string>*) override {
+                          std::vector<std::string>*,
+                          bool insecure_scheme_was_upgraded) override {
     EXPECT_TRUE(loader_);
 
     // No test currently simulates mutiple redirects.

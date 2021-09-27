@@ -4577,9 +4577,6 @@ crbug.com/848398 http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ F
 # Flakes 2018-06-02
 crbug.com/841567 fast/scrolling/scrollbar-tickmarks-hittest.html [ Failure Pass ]
 
-# Now that upgrade-insecure-requests enforcing is fixed for redirects, this test will fail while reporting is implemented.
-crbug.com/615885 external/wpt/content-security-policy/securitypolicyviolation/img-src-redirect-upgrade-reporting.https.html [ Timeout ]
-
 # Flakes 2018-06-04
 
 # Sheriff 2018-06-07

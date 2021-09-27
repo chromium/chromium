@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "url/url_constants.h"
 
 namespace blink {
 
@@ -773,7 +774,8 @@ bool ResourceLoader::WillFollowRedirect(
     const WebString& new_method,
     const WebURLResponse& passed_redirect_response,
     bool& has_devtools_request_id,
-    std::vector<std::string>* removed_headers) {
+    std::vector<std::string>* removed_headers,
+    bool insecure_scheme_was_upgraded) {
   DCHECK(!passed_redirect_response.IsNull());
 
   if (passed_redirect_response.HasAuthorizationCoveredByWildcardOnPreflight()) {
@@ -836,10 +838,17 @@ bool ResourceLoader::WillFollowRedirect(
         unused_preload ? ReportingDisposition::kSuppressReporting
                        : ReportingDisposition::kReport;
 
+    // The network stack might have upgraded to https an http URL. Report-only
+    // CSP must be checked with the url prior to that upgrade.
+    KURL new_url_prior_upgrade = new_url;
+    if (insecure_scheme_was_upgraded && new_url.ProtocolIs(url::kHttpsScheme)) {
+      new_url_prior_upgrade.SetProtocol(url::kHttpScheme);
+    }
+
     // CanRequest() checks only enforced CSP, so check report-only here to
     // ensure that violations are sent.
     Context().CheckCSPForRequest(
-        request_context, request_destination, new_url, options,
+        request_context, request_destination, new_url_prior_upgrade, options,
         reporting_disposition, url_before_redirects,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 

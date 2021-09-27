@@ -134,7 +134,8 @@ class PLATFORM_EXPORT ResourceLoader final
                           const WebString& new_method,
                           const WebURLResponse& passed_redirect_response,
                           bool& has_devtools_request_id,
-                          std::vector<std::string>* removed_headers) override;
+                          std::vector<std::string>* removed_headers,
+                          bool insecure_scheme_was_upgraded) override;
   void DidSendData(uint64_t bytes_sent,
                    uint64_t total_bytes_to_be_sent) override;
   void DidReceiveResponse(const WebURLResponse&) override;

@@ -85,7 +85,8 @@ WebURL WebURLLoaderMock::ServeRedirect(
   bool follow = client_->WillFollowRedirect(
       redirect_url, net::SiteForCookies::FromUrl(redirect_url), WebString(),
       network::mojom::ReferrerPolicy::kDefault, method, redirect_response,
-      report_raw_headers, nullptr /* removed_headers */);
+      report_raw_headers, nullptr /* removed_headers */,
+      false /* insecure_scheme_was_upgraded */);
   // |this| might be deleted in willFollowRedirect().
   if (!self)
     return redirect_url;
