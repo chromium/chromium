@@ -130,8 +130,16 @@ void HandleOnPerformDrop(
   if (!drop_data.file_contents.empty())
     data.text.push_back(drop_data.file_contents);
 
+  // `callback` should only run asynchronously when scanning is blocking.
+  content::WebContentsViewDelegate::DropCompletionCallback scan_callback =
+      base::DoNothing();
+  if (data.settings.block_until_verdict ==
+      enterprise_connectors::BlockUntilVerdict::BLOCK) {
+    scan_callback = std::move(callback);
+  }
+
   auto* handle_drop_scan_data =
-      new HandleDropScanData(web_contents, std::move(callback));
+      new HandleDropScanData(web_contents, std::move(scan_callback));
   if (drop_data.filenames.empty()) {
     handle_drop_scan_data->ScanData(std::move(data));
   } else {
@@ -140,5 +148,10 @@ void HandleOnPerformDrop(
         base::BindOnce(&GetPathsToScan, drop_data, std::move(data)),
         base::BindOnce(&HandleDropScanData::ScanData,
                        handle_drop_scan_data->GetWeakPtr()));
+  }
+
+  if (!callback.is_null()) {
+    std::move(callback).Run(
+        content::WebContentsViewDelegate::DropCompletionResult::kContinue);
   }
 }
