@@ -3957,7 +3957,8 @@ class DeviceStatusCollectorNetworkInterfacesTest
   }
 };
 
-TEST_F(DeviceStatusCollectorNetworkInterfacesTest, TestNoInterfaces) {
+// TODO(crbug.com/1253206): Revive this test.
+TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
   ClearNetworkData();
   IsolateReportingSetting(chromeos::kReportDeviceNetworkConfiguration);
 
@@ -4095,7 +4096,8 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
   VerifyReporting();
 }
 
-TEST_F(DeviceStatusCollectorNetworkStateTest, TestNoNetworks) {
+// TODO(crbug.com/1253206): Revive this test.
+TEST_F(DeviceStatusCollectorNetworkStateTest, DISABLED_TestNoNetworks) {
   ClearNetworkData();
   IsolateReportingSetting(chromeos::kReportDeviceNetworkStatus);
 
