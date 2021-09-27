@@ -711,7 +711,11 @@ if (is_mac) {
 }
 
 test("headless_browsertests") {
-  configs += [ "//net:net_test_config" ]
+  configs += [
+    "//net:net_test_config",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
   sources = [
     "test/headless_browser_browsertest.cc",
     "test/headless_browser_context_browsertest.cc",
@@ -779,6 +783,7 @@ test("headless_browsertests") {
     "//components/security_state/content",
     "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//gin",
     "//net:test_support",
     "//printing/buildflags",
     "//services/network/public/mojom",

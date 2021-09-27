@@ -2,6 +2,7 @@ include_rules = [
   "+cc/base/switches.h",
   "+cc/test",
   "+components/viz/common",
+  "+gin",
   "+pdf",
   "+printing",
   "+third_party/blink/public",

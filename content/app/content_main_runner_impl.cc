@@ -230,15 +230,26 @@ void LoadV8SnapshotFile() {
 
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 }
+
+bool ShouldLoadV8Snapshot(const base::CommandLine& command_line,
+                          const std::string& process_type) {
+  // The gpu does not need v8, and the browser only needs v8 when in single
+  // process mode.
+  if (process_type == switches::kGpuProcess ||
+      (process_type.empty() &&
+       !command_line.HasSwitch(switches::kSingleProcess))) {
+    return false;
+  }
+  return true;
+}
+
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
-void InitializeV8IfNeeded(const base::CommandLine& command_line,
-                          const std::string& process_type) {
-  if (process_type == switches::kGpuProcess)
-    return;
-
+void LoadV8SnapshotIfNeeded(const base::CommandLine& command_line,
+                            const std::string& process_type) {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-  LoadV8SnapshotFile();
+  if (ShouldLoadV8Snapshot(command_line, process_type))
+    LoadV8SnapshotFile();
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 }
 
@@ -854,7 +865,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
     return TerminateForFatalInitializationError();
 #endif  // OS_ANDROID && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
 
-  InitializeV8IfNeeded(command_line, process_type);
+  LoadV8SnapshotIfNeeded(command_line, process_type);
 
   blink::TrialTokenValidator::SetOriginTrialPolicyGetter(
       base::BindRepeating([]() -> blink::OriginTrialPolicy* {
