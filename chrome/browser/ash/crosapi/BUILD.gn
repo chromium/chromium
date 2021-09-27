@@ -93,6 +93,8 @@ source_set("crosapi") {
     "test_mojo_connection_manager.h",
     "url_handler_ash.cc",
     "url_handler_ash.h",
+    "user_data_stats_recorder.cc",
+    "user_data_stats_recorder.h",
     "video_capture_device_ash.cc",
     "video_capture_device_ash.h",
     "video_capture_device_factory_ash.cc",
@@ -178,6 +180,7 @@ source_set("unit_tests") {
     "test_local_printer_ash.cc",
     "test_local_printer_ash.h",
     "test_mojo_connection_manager_unittest.cc",
+    "user_data_stats_recorder_unittest.cc",
   ]
 
   deps = [

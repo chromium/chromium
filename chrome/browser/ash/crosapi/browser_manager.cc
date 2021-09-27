@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
+#include "chrome/browser/ash/crosapi/user_data_stats_recorder.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -773,6 +774,13 @@ void BrowserManager::OnSessionStateChanged() {
     SetState(State::UNAVAILABLE);
     browser_loader_->Unload();
   }
+
+  // Post `RecordUserDataSizes()` to send UMA stats about sizes of files/dirs
+  // inside the profile data directory.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&user_data_stats_recorder::RecordUserDataSizes,
+                     ProfileManager::GetPrimaryUserProfile()->GetPath()));
 }
 
 void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {
