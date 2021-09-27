@@ -191,6 +191,7 @@ X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
       x_root_window_(GetX11RootWindow()) {
   DCHECK(connection_);
   DCHECK_NE(x_root_window_, x11::Window::None);
+  DCHECK(platform_window_delegate_);
 
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
@@ -463,6 +464,8 @@ bool X11Window::IsVisible() const {
 }
 
 void X11Window::PrepareForShutdown() {
+  if (HasCapture())
+    X11WindowManager::GetInstance()->UngrabEvents(this);
   connection_->RemoveEventObserver(this);
   DCHECK(X11EventSource::HasInstance());
   X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
