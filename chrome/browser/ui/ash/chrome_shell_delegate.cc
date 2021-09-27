@@ -50,6 +50,7 @@
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -104,13 +105,23 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
 // Returns true if `window` is supported in desk templates feature.
 bool IsWindowSupportedForDeskTemplate(aura::Window* window,
                                       Profile* user_profile) {
-  // For now we'll ignore ARC, crostini and lacros windows in desk template.
+  // For now we'll crostini and lacros windows in desk template. We'll also
+  // ignore ARC apps unless the flag is turned on.
   const ash::AppType app_type =
       static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
-  if (app_type != ash::AppType::BROWSER &&
-      app_type != ash::AppType::CHROME_APP &&
-      app_type != ash::AppType::SYSTEM_APP) {
-    return false;
+  switch (app_type) {
+    case ash::AppType::NON_APP:
+    case ash::AppType::CROSTINI_APP:
+    case ash::AppType::LACROS:
+      return false;
+    case ash::AppType::ARC_APP:
+      if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
+        return false;
+      break;
+    case ash::AppType::BROWSER:
+    case ash::AppType::CHROME_APP:
+    case ash::AppType::SYSTEM_APP:
+      break;
   }
 
   DCHECK(user_profile);

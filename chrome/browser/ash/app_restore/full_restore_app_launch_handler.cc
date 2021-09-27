@@ -216,7 +216,8 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   VLOG(1) << "Restore apps in " << profile()->GetPath();
   if (auto* arc_task_handler =
           app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())) {
-    arc_task_handler->arc_app_launch_handler()->RestoreArcApps(this);
+    arc_task_handler->full_restore_arc_app_launch_handler()->RestoreArcApps(
+        this);
   }
 
   LaunchApps();

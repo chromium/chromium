@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 
 namespace ash {
@@ -33,7 +34,12 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
     window_handler_ = std::make_unique<full_restore::ArcWindowHandler>();
 #endif
 
-  arc_app_launch_handler_ = std::make_unique<ArcAppLaunchHandler>();
+  if (::app_restore::features::IsArcAppsForDesksTemplatesEnabled()) {
+    desks_templates_arc_app_launch_handler_ =
+        std::make_unique<ArcAppLaunchHandler>();
+  }
+  full_restore_arc_app_launch_handler_ =
+      std::make_unique<ArcAppLaunchHandler>();
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
@@ -77,8 +83,11 @@ void AppRestoreArcTaskHandler::OnAppConnectionReady() {
     window_handler_->OnAppInstanceConnected();
 #endif
 
-  if (arc_app_launch_handler_)
-    arc_app_launch_handler_->OnAppConnectionReady();
+  for (auto* handler : {desks_templates_arc_app_launch_handler(),
+                        full_restore_arc_app_launch_handler()}) {
+    if (handler)
+      handler->OnAppConnectionReady();
+  }
 
   ::full_restore::SetArcConnection(/*is_connection_ready=*/true);
 }
@@ -92,17 +101,24 @@ void AppRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
 }
 
 void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
-  if (arc_app_launch_handler_)
-    arc_app_launch_handler_->OnArcPlayStoreEnabledChanged(enabled);
+  for (auto* handler : {desks_templates_arc_app_launch_handler(),
+                        full_restore_arc_app_launch_handler()}) {
+    if (handler)
+      handler->OnArcPlayStoreEnabledChanged(enabled);
+  }
 }
 
 void AppRestoreArcTaskHandler::OnShelfReady() {
-  if (arc_app_launch_handler_)
-    arc_app_launch_handler_->OnShelfReady();
+  for (auto* handler : {desks_templates_arc_app_launch_handler(),
+                        full_restore_arc_app_launch_handler()}) {
+    if (handler)
+      handler->OnShelfReady();
+  }
 }
 
 void AppRestoreArcTaskHandler::Shutdown() {
-  arc_app_launch_handler_.reset();
+  desks_templates_arc_app_launch_handler_.reset();
+  full_restore_arc_app_launch_handler_.reset();
   window_handler_.reset();
 }
 

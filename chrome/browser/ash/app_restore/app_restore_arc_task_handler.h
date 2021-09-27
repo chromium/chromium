@@ -25,11 +25,10 @@ namespace app_restore {
 class ArcAppLaunchHandler;
 
 // The AppRestoreArcTaskHandler class observes ArcAppListPrefs, and calls
-// FullRestoreSaveHandler to update the ARC app launch info when a task is
-// created or destroyed.
-//
-// AppRestoreArcTaskHandler is an independent KeyedService so that it could be
-// created along with ARC system rather than with FullRestoreService.
+// app restore clients to update the ARC app launch info when a task is created
+// or destroyed. AppRestoreArcTaskHandler is an independent KeyedService so that
+// it could be created along with ARC system rather than with desks templates or
+// full restore.
 class AppRestoreArcTaskHandler : public KeyedService,
                                  public ArcAppListPrefs::Observer,
                                  public arc::ArcSessionManagerObserver {
@@ -39,7 +38,6 @@ class AppRestoreArcTaskHandler : public KeyedService,
   explicit AppRestoreArcTaskHandler(Profile* profile);
   AppRestoreArcTaskHandler(const AppRestoreArcTaskHandler&) = delete;
   AppRestoreArcTaskHandler& operator=(const AppRestoreArcTaskHandler&) = delete;
-
   ~AppRestoreArcTaskHandler() override;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
@@ -48,8 +46,11 @@ class AppRestoreArcTaskHandler : public KeyedService,
   }
 #endif
 
-  ArcAppLaunchHandler* arc_app_launch_handler() {
-    return arc_app_launch_handler_.get();
+  ArcAppLaunchHandler* desks_templates_arc_app_launch_handler() {
+    return desks_templates_arc_app_launch_handler_.get();
+  }
+  ArcAppLaunchHandler* full_restore_arc_app_launch_handler() {
+    return full_restore_arc_app_launch_handler_.get();
   }
 
   // ArcAppListPrefs::Observer.
@@ -85,7 +86,10 @@ class AppRestoreArcTaskHandler : public KeyedService,
   std::unique_ptr<full_restore::ArcWindowHandler> window_handler_;
 #endif
 
-  std::unique_ptr<ArcAppLaunchHandler> arc_app_launch_handler_;
+  // The ArcAppLaunchHandlers, one for each feature that wants to launch ARC
+  // apps.
+  std::unique_ptr<ArcAppLaunchHandler> desks_templates_arc_app_launch_handler_;
+  std::unique_ptr<ArcAppLaunchHandler> full_restore_arc_app_launch_handler_;
 };
 
 }  // namespace app_restore

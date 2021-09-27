@@ -56,7 +56,7 @@ void ArcShelfSpinnerItemController::ItemSelected(
       window_info_->window_id >
           full_restore::kArcSessionIdOffsetForRestoredLaunching) {
     ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(observed_profile_)
-        ->arc_app_launch_handler()
+        ->full_restore_arc_app_launch_handler()
         ->LaunchApp(app_id());
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
