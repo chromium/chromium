@@ -25,12 +25,6 @@ void AshStructuredMetricsRecorder::Initialize() {
   if (is_initialized_)
     return;
 
-  // Ensure that a sequence task runner has been set in the thread that calls
-  // this. Events are recorded in a sequence task runner used by the Recorder.
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  Recorder::GetInstance()->SetUiTaskRunner(
-      base::SequencedTaskRunnerHandle::Get());
-
   // Crosapi may not be initialized, in which case a pipe cannot be setup.
   if (crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
@@ -42,6 +36,7 @@ void AshStructuredMetricsRecorder::Initialize() {
 }
 
 void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
+  // It is OK not to check whether the remote is bound or not yet.
   std::vector<Event> events;
   events.push_back(std::move(event));
   remote_->Record(events);
@@ -56,7 +51,9 @@ void AshStructuredMetricsRecorder::Record(EventBase&& event_base) {
 }
 
 bool AshStructuredMetricsRecorder::IsReadyToRecord() const {
-  return is_initialized_;
+  // Remote doesn't have to be bound to since the remote can queue up messages.
+  // Should be ready to record the moment it is initialized.
+  return true;
 }
 
 }  // namespace structured

@@ -12,10 +12,12 @@
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_mojo_events.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,9 +68,11 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
   };
 
   void SetUpInProcessBrowserTestFixture() override {
-    recorder_ = std::make_unique<LacrosStructuredMetricsRecorder>();
-    StructuredMetricsClient::Get()->SetDelegate(recorder_.get());
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
+  }
+
+  void SetUpOnMainThread() override {
+    ChromeStructuredMetricsRecorder::Get()->Initialize();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -81,6 +85,8 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
 
   TestObserver* InitTestObserver() {
     observer_ = std::make_unique<TestObserver>();
+    recorder_ = static_cast<LacrosStructuredMetricsRecorder*>(
+        ChromeStructuredMetricsRecorder::Get()->delegate_.get());
     recorder_->AddObserver(observer_.get());
     return observer_.get();
   }
@@ -89,24 +95,17 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
     recorder_->RemoveObserver(observer);
   }
 
-  // TODO(jongahn): Remove this once migration is complete as it should be part
-  // of init.
-  void SetSequence(
-      const scoped_refptr<base::SequencedTaskRunner> sequence_task_runner) {
-    recorder_->SetSequence(sequence_task_runner);
-  }
-
-  const LacrosStructuredMetricsRecorder* recorder() const {
-    return recorder_.get();
-  }
+  LacrosStructuredMetricsRecorder* recorder() { return recorder_; }
 
  private:
-  std::unique_ptr<LacrosStructuredMetricsRecorder> recorder_;
+  LacrosStructuredMetricsRecorder* recorder_;
   std::unique_ptr<TestObserver> observer_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
-                       SendEventsAfterSequenceIsSet) {
+                       SendValidEventSuccessfully) {
   auto* observer = InitTestObserver();
   RecordCallback record_callback =
       base::BindLambdaForTesting([](const Event& event) {
@@ -117,9 +116,6 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
 
   FlushCallback flush_callback = base::BindLambdaForTesting([]() { FAIL(); });
   observer->SetFlushCallback(std::move(flush_callback));
-
-  // Set the sequence for lacros recorder to run on.
-  SetSequence(base::SequencedTaskRunnerHandle::Get());
 
   events::v2::test_project_one::TestEventOne test_event;
   test_event.SetTestMetricOne("hash").SetTestMetricTwo(1);
@@ -135,6 +131,9 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
 
   events::v2::test_project_one::TestEventOne test_event;
   test_event.SetTestMetricOne("hash").SetTestMetricTwo(1);
+
+  // Reset the sequence.
+  recorder()->SetSequence(nullptr);
 
   // Record before sequence is set.
   test_event.Record();

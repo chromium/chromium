@@ -13,11 +13,13 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_mojo_events.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,12 +46,12 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
  public:
   void SetUpInProcessBrowserTestFixture() override {
     Recorder::GetInstance()->AddObserver(this);
-
-    recorder_ = std::make_unique<AshStructuredMetricsRecorder>();
-    StructuredMetricsClient::Get()->SetDelegate(recorder_.get());
+    feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
   }
 
-  void SetUpOnMainThread() override { recorder_->Initialize(); }
+  void SetUpOnMainThread() override {
+    ChromeStructuredMetricsRecorder::Get()->Initialize();
+  }
 
   void TearDownInProcessBrowserTestFixture() override {
     Recorder::GetInstance()->RemoveObserver(this);
@@ -75,11 +77,12 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
   }
 
  private:
-  std::unique_ptr<AshStructuredMetricsRecorder> recorder_;
   base::test::ScopedRunLoopTimeout shortened_timeout_{
       FROM_HERE, base::TimeDelta::FromSeconds(3)};
 
   EventDelegate event_delegate_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
