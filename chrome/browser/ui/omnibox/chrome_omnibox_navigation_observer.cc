@@ -317,7 +317,7 @@ void ChromeOmniboxNavigationObserver::On404() {
 void ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone(bool success) {
   TRACE_EVENT("omnibox",
               "ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone",
-              "success", success)
+              "success", success);
   if (success) {
     fetch_state_ = AlternativeFetchState::kFetchSucceeded;
   } else {
