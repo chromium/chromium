@@ -81,12 +81,14 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
     if (context.type ===
         (constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM)) {
       text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM');
-      button.setAttribute('href', 'chrome://os-settings/pluginVm/sharedPaths');
+      button.setAttribute(
+          'href', 'chrome://os-settings/app-management/pluginVm/sharedPaths');
       return;
     }
     if (context.type === constants.PLUGIN_VM) {
       text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM');
-      button.setAttribute('href', 'chrome://os-settings/pluginVm/sharedPaths');
+      button.setAttribute(
+          'href', 'chrome://os-settings/app-management/pluginVm/sharedPaths');
       return;
     }
     text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_CROSTINI');
