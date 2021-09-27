@@ -158,6 +158,10 @@
     "includes": [1420],
     "structures": [1440],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/connectors_internals/resources.grd": {
+    "META": {"sizes": {"includes": [25]}},
+    "includes": [1475],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/downloads_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1480],

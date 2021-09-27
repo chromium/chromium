@@ -383,6 +383,11 @@ const char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
+const char kChromeUIConnectorsInternalsHost[] = "connectors-internals";
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
 const char kChromeUIDiscardsHost[] = "discards";
 const char kChromeUIDiscardsURL[] = "chrome://discards/";
 #endif
@@ -607,6 +612,10 @@ const char* const kChromeHostURLs[] = {
     kChromeUIInternetConfigDialogHost,
     kChromeUIInternetDetailDialogHost,
     kChromeUIAssistantOptInHost,
+#endif
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+    kChromeUIConnectorsInternalsHost,
 #endif
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)

@@ -645,6 +645,17 @@ static_library("ui") {
     ]
   }
 
+  if (is_win || is_linux || is_mac || is_chromeos_ash) {
+    sources += [
+      "webui/connectors_internals/connectors_internals_page_handler.cc",
+      "webui/connectors_internals/connectors_internals_page_handler.h",
+      "webui/connectors_internals/connectors_internals_ui.cc",
+      "webui/connectors_internals/connectors_internals_ui.h",
+    ]
+
+    deps += [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings" ]
+  }
+
   if (!is_fuchsia) {
     deps += [ "//components/crash/core/app" ]
   }

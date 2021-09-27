@@ -94,6 +94,12 @@
 #include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/contextualsearch/contextual_search_observer.h"
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
@@ -681,6 +687,13 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<federated_learning::mojom::PageHandler,
                                          FlocInternalsUI>(map);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  RegisterWebUIControllerInterfaceBinder<
+      connectors_internals::mojom::PageHandler,
+      enterprise_connectors::ConnectorsInternalsUI>(map);
+#endif
 
 #if defined(OS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<

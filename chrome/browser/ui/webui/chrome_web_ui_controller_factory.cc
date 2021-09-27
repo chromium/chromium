@@ -301,6 +301,11 @@
 #include "chrome/browser/ui/webui/sandbox/sandbox_internals_ui.h"
 #endif
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
+#endif
+
 #if defined(USE_NSS_CERTS) && defined(USE_AURA)
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
@@ -1071,6 +1076,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUISandboxHost) {
     return &NewWebUI<SandboxInternalsUI>;
   }
+#endif
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  if (url.host_piece() == chrome::kChromeUIConnectorsInternalsHost)
+    return &NewWebUI<enterprise_connectors::ConnectorsInternalsUI>;
 #endif
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)

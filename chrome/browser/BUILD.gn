@@ -2520,6 +2520,10 @@ static_library("browser") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    deps += [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings" ]
+  }
+
   if (is_android) {
     sources += [
       "after_startup_task_utils_android.cc",

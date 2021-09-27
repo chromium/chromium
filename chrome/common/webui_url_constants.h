@@ -326,6 +326,11 @@ extern const char kChromeUIWebUIJsErrorURL[];
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+extern const char kChromeUIConnectorsInternalsHost[];
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 extern const char kChromeUIDiscardsHost[];
 extern const char kChromeUIDiscardsURL[];

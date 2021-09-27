@@ -1,0 +1,9 @@
+<div>
+  <h1>Enterprise Connectors</h1>
+</div>
+<template is="dom-if" if="[[!isOtr]]">
+  <zero-trust-connector></zero-trust-connector>
+</template>
+<p hidden$="[[!isOtr]]">
+  Enterprise Connectors are disabled in off-the-record contexts.
+</p>
