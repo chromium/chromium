@@ -13713,23 +13713,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Only counting memory used by Partition allocator."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.ArrayBuffer"
+  <suffix name="PartitionAlloc.MaxAllocatedSize.ArrayBuffer"
       label="Highwatermark for allocated memory for the ArrayBuffer
              partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.Buffer"
+  <suffix name="PartitionAlloc.MaxAllocatedSize.Buffer"
       label="Highwatermark for allocated memory for the Buffer partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.FastMalloc"
+  <suffix name="PartitionAlloc.MaxAllocatedSize.FastMalloc"
       label="Highwatermark for allocated memory for the FastMalloc partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.Layout"
+  <suffix name="PartitionAlloc.MaxAllocatedSize.Layout"
       label="Highwatermark for allocated memory for the Layout partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.ArrayBuffer"
+  <suffix name="PartitionAlloc.MaxCommittedSize.ArrayBuffer"
       label="Highwatermark for committed memory for the ArrayBuffer
              partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.Buffer"
+  <suffix name="PartitionAlloc.MaxCommittedSize.Buffer"
       label="Highwatermark for committed memory for the Buffer partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.FastMalloc"
+  <suffix name="PartitionAlloc.MaxCommittedSize.FastMalloc"
       label="Highwatermark for committed memory for the FastMalloc partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.Layout"
+  <suffix name="PartitionAlloc.MaxCommittedSize.Layout"
       label="Highwatermark for committed memory for the Layout partition."/>
   <suffix name="PartitionAlloc.Partitions.ArrayBuffer"
       label="Only counting memory used by Array Buffer partition."/>
