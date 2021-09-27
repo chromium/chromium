@@ -1209,6 +1209,10 @@
       status: "stable",
     },
     {
+      name: "InteractionId",
+      status: "experimental",
+    },
+    {
       name: "InterestCohortAPI",
       origin_trial_feature_name: "InterestCohortAPI",
       origin_trial_allows_third_party: true,

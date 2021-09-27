@@ -75,6 +75,14 @@ Node* PerformanceEventTiming::target() const {
   return Performance::CanExposeNode(target_) ? target_ : nullptr;
 }
 
+uint32_t PerformanceEventTiming::interactionId() const {
+  return interaction_id_;
+}
+
+void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
+  interaction_id_ = interaction_id;
+}
+
 void PerformanceEventTiming::SetDuration(double duration) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(0, duration);
@@ -101,6 +109,8 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
   traced_value->SetInteger("processingEnd", processingEnd());
   traced_value->SetInteger("duration", duration());
   traced_value->SetBoolean("cancelable", cancelable());
+  // If int overflows occurs, the static_cast may not work correctly.
+  traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
   return traced_value;
 }
 

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -74,6 +75,12 @@ class WindowPerformanceTest : public testing::Test {
   void SimulateSwapPromise(base::TimeTicks timestamp) {
     performance_->ReportEventTimings(frame_counter++, WebSwapResult::kDidSwap,
                                      timestamp);
+  }
+
+  void SimulateInteractionId(PerformanceEventTiming* entry,
+                             absl::optional<int> key_code,
+                             absl::optional<PointerId> pointer_id) {
+    performance_->SetInteractionIdForEventTiming(entry, key_code, pointer_id);
   }
 
   LocalFrame* GetFrame() const { return &page_holder_->GetFrame(); }
@@ -989,6 +996,54 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   std::string url;
   EXPECT_TRUE(arg_dict->GetString("url", &url));
   EXPECT_EQ(url, "url");
+}
+
+TEST_F(WindowPerformanceTest, InteractionID) {
+  // Keyboard
+  PerformanceEventTiming* keydown_entry = PerformanceEventTiming::Create(
+      event_type_names::kKeydown, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(keydown_entry, 1, absl::nullopt);
+  PerformanceEventTiming* keyup_entry = PerformanceEventTiming::Create(
+      event_type_names::kKeyup, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(keyup_entry, 1, absl::nullopt);
+  EXPECT_EQ(keydown_entry->interactionId(), keyup_entry->interactionId());
+  EXPECT_GT(keydown_entry->interactionId(), 0u);
+
+  // Tap or Click
+  PerformanceEventTiming* pointerdown_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointerdown_entry, absl::nullopt, 10);
+  PerformanceEventTiming* pointerup_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointerup, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointerup_entry, absl::nullopt, 10);
+  PerformanceEventTiming* click_entry = PerformanceEventTiming::Create(
+      event_type_names::kClick, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(click_entry, absl::nullopt, 10);
+  EXPECT_GT(pointerdown_entry->interactionId(), 0u);
+  EXPECT_EQ(pointerdown_entry->interactionId(),
+            pointerup_entry->interactionId());
+  EXPECT_EQ(pointerup_entry->interactionId(), click_entry->interactionId());
+
+  // Drag
+  pointerdown_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointerdown_entry, absl::nullopt, 20);
+  pointerup_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointerup, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointerup_entry, absl::nullopt, 20);
+  EXPECT_GT(pointerdown_entry->interactionId(), 0u);
+  EXPECT_EQ(pointerdown_entry->interactionId(),
+            pointerup_entry->interactionId());
+
+  // Scroll
+  pointerdown_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointerdown_entry, absl::nullopt, 5);
+  PerformanceEventTiming* pointercancel_entry = PerformanceEventTiming::Create(
+      event_type_names::kPointercancel, 0.0, 0.0, 0.0, false, nullptr);
+  SimulateInteractionId(pointercancel_entry, absl::nullopt, 5);
+  EXPECT_EQ(pointerdown_entry->interactionId(), 0u);
+  EXPECT_EQ(pointercancel_entry->interactionId(), 0u);
 }
 
 }  // namespace blink

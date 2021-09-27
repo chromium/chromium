@@ -195,6 +195,20 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
+  // Assign an interaction id to an event timing entry if needed.
+  // Returns true if the entry is ready to be surfaced in PerformanceObservers
+  // and the Performance Timeline
+  bool SetInteractionIdForEventTiming(PerformanceEventTiming* entry,
+                                      absl::optional<int> key_code,
+                                      absl::optional<PointerId> pointer_id);
+
+  // Notify observer that an event timing entry is ready and add it to the event
+  // timing buffer if needed.
+  void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
+
+  void UpdateInteractionId();
+
+  uint32_t GetCurrentInteractionId() const;
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;
 
@@ -221,6 +235,14 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   ResponsivenessMetrics responsiveness_metrics_;
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
+
+  std::unordered_map<int, uint32_t> key_code_interaction_id_map_;
+  HeapHashMap<PointerId,
+              Member<PerformanceEventTiming>,
+              WTF::IntHash<PointerId>,
+              WTF::UnsignedWithZeroKeyHashTraits<PointerId>>
+      pointer_id_pointer_down_map_;
+  uint32_t current_interaction_id_for_event_timing_;
 };
 
 }  // namespace blink

@@ -75,6 +75,17 @@ static constexpr base::TimeDelta kLongTaskObserverThreshold =
 namespace blink {
 
 namespace {
+// Minimum potential value for the first Interaction ID.
+constexpr uint32_t kMinFirstInteractionID = 100;
+// Maximum potential value for the first Interaction ID.
+constexpr uint32_t kMaxFirstInteractionID = 10000;
+// Interaction ID increment.
+constexpr uint32_t kInteractionIdIncrement = 7;
+// The maximum number of pending pointer down.
+constexpr WTF::wtf_size_t kMaxPendingPointerDownNumber = 20;
+// The maximum tap delay we can handle for assigning interaction id to click.
+constexpr blink::DOMHighResTimeStamp kMaxTapDelayForClick =
+    blink::DOMHighResTimeStamp(500);
 
 AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
                                const QualifiedName& attr_name) {
@@ -165,7 +176,9 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
                   window->GetTaskRunner(TaskType::kPerformanceTimeline),
                   window),
       ExecutionContextClient(window),
-      PageVisibilityObserver(window->GetFrame()->GetPage()) {
+      PageVisibilityObserver(window->GetFrame()->GetPage()),
+      current_interaction_id_for_event_timing_(
+          base::RandInt(kMinFirstInteractionID, kMaxFirstInteractionID)) {
   DCHECK(window);
   DCHECK(window->GetFrame()->GetPerformanceMonitor());
   window->GetFrame()->GetPerformanceMonitor()->Subscribe(
@@ -254,6 +267,7 @@ void WindowPerformance::Trace(Visitor* visitor) const {
   visitor->Trace(navigation_);
   visitor->Trace(timing_);
   visitor->Trace(current_event_);
+  visitor->Trace(pointer_id_pointer_down_map_);
   Performance::Trace(visitor);
   PerformanceMonitor::Client::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -489,21 +503,104 @@ void WindowPerformance::ReportEventTimings(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
     }
+    if (!SetInteractionIdForEventTiming(entry, key_code, pointer_id))
+      continue;
 
-    if (HasObserverFor(PerformanceEntry::kEvent)) {
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kEventTimingExplicitlyRequested);
-      NotifyObserversOfEntry(*entry);
+    NotifyAndAddEventTimingBuffer(entry);
+  }
+}
+
+void WindowPerformance::NotifyAndAddEventTimingBuffer(
+    PerformanceEventTiming* entry) {
+  if (HasObserverFor(PerformanceEntry::kEvent)) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEventTimingExplicitlyRequested);
+    NotifyObserversOfEntry(*entry);
+  }
+  // TODO(npm): is 104 a reasonable buffering threshold or should it be
+  // relaxed?
+  if (entry->duration() >= PerformanceObserver::kDefaultDurationThreshold &&
+      !IsEventTimingBufferFull()) {
+    AddEventTimingBuffer(*entry);
+  }
+}
+
+void WindowPerformance::UpdateInteractionId() {
+  current_interaction_id_for_event_timing_ += kInteractionIdIncrement;
+}
+
+uint32_t WindowPerformance::GetCurrentInteractionId() const {
+  return current_interaction_id_for_event_timing_;
+}
+
+bool WindowPerformance::SetInteractionIdForEventTiming(
+    PerformanceEventTiming* entry,
+    absl::optional<int> key_code,
+    absl::optional<PointerId> pointer_id) {
+  if (!RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext())) {
+    return true;
+  }
+
+  auto event_type = entry->name();
+  if (event_type == event_type_names::kPointercancel &&
+      pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+    // Flush the pointer down entry.
+    NotifyAndAddEventTimingBuffer(
+        pointer_id_pointer_down_map_.at(pointer_id.value()));
+    // The pointer id of the pointerdown is no longer needed.
+    pointer_id_pointer_down_map_.erase(pointer_id.value());
+  } else if (event_type == event_type_names::kPointerdown) {
+    if (pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+      NotifyAndAddEventTimingBuffer(
+          pointer_id_pointer_down_map_.at(pointer_id.value()));
     }
+    pointer_id_pointer_down_map_.Set(pointer_id.value(), entry);
+    return false;
+  } else if (event_type == event_type_names::kPointerup &&
+             pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+    PerformanceEventTiming* pointer_down_entry =
+        pointer_id_pointer_down_map_.at(pointer_id.value());
+    // Generate a new interaction id.
+    UpdateInteractionId();
+    pointer_down_entry->SetInteractionId(GetCurrentInteractionId());
+    entry->SetInteractionId(pointer_down_entry->interactionId());
+    // Flush the pointer down entry.
+    NotifyAndAddEventTimingBuffer(pointer_down_entry);
+  } else if (event_type == event_type_names::kClick &&
+             pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+    PerformanceEventTiming* pointer_down_entry =
+        pointer_id_pointer_down_map_.at(pointer_id.value());
+    entry->SetInteractionId(pointer_down_entry->interactionId());
+    // The pointer id of the pointerdown is no longer needed.
+    pointer_id_pointer_down_map_.erase(pointer_id.value());
+  } else if (event_type == event_type_names::kKeydown) {
+    // Generate a new interaction id.
+    UpdateInteractionId();
+    entry->SetInteractionId(GetCurrentInteractionId());
+    key_code_interaction_id_map_[key_code.value()] = GetCurrentInteractionId();
+  } else if (event_type == event_type_names::kKeyup &&
+             key_code_interaction_id_map_.find(key_code.value()) !=
+                 key_code_interaction_id_map_.end()) {
+    // TODO(crbug.com/1252068): Once we figure out how to handle keyboard event
+    // sequence for IME, update this part.
+    entry->SetInteractionId(key_code_interaction_id_map_.at(key_code.value()));
+    key_code_interaction_id_map_.erase(key_code.value());
+  }
 
-    // Only buffer really slow events to keep memory usage low.
-    // TODO(npm): is 104 a reasonable buffering threshold or should it be
-    // relaxed?
-    if (duration_in_ms >= PerformanceObserver::kDefaultDurationThreshold &&
-        !IsEventTimingBufferFull()) {
-      AddEventTimingBuffer(*entry);
+  // Clear the map if there are too many pending pointer down entries.
+  if (pointer_id_pointer_down_map_.size() > kMaxPendingPointerDownNumber) {
+    blink::DOMHighResTimeStamp current_time =
+        MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks::Now());
+    for (const auto& pointer_id_pointer_down : pointer_id_pointer_down_map_) {
+      PerformanceEventTiming* pointer_down = pointer_id_pointer_down.value;
+      if ((current_time - pointer_down->startTime() -
+           pointer_down->duration()) > kMaxTapDelayForClick) {
+        pointer_id_pointer_down_map_.erase(pointer_id_pointer_down.key);
+      }
     }
   }
+
+  return true;
 }
 
 void WindowPerformance::AddElementTiming(const AtomicString& name,
