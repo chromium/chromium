@@ -20,6 +20,7 @@
 #include "net/cert/internal/verify_certificate_chain.h"
 #include "net/cert/pem.h"
 #include "net/der/input.h"
+#include "net/net_buildflags.h"
 #include "net/test/test_certificate_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -581,7 +582,7 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
   }
 }
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void AddToStoreWithEKURestriction(HCERTSTORE store,
                                   const scoped_refptr<ParsedCertificate>& cert,
@@ -680,7 +681,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
   auto result = path_builder.Run();
   ASSERT_FALSE(result.HasValidPath());
 }
-#endif  // OS_WIN
+#endif  // defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 class PathBuilderKeyRolloverTest : public ::testing::Test {
  public:
