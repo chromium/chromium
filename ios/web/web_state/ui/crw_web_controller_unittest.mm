@@ -45,7 +45,6 @@
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/crw_fake_wk_frame_info.h"
 #import "ios/web/test/fakes/crw_fake_wk_navigation_action.h"
-#import "ios/web/test/fakes/crw_fake_wk_navigation_response.h"
 #include "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/test/wk_web_view_crash_utils.h"
@@ -527,11 +526,12 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
       BOOL for_main_frame,
       BOOL can_show_mime_type,
       WKNavigationResponsePolicy* out_policy) WARN_UNUSED_RESULT {
-    CRWFakeWKNavigationResponse* navigation_response =
-        [[CRWFakeWKNavigationResponse alloc] init];
-    navigation_response.response = response;
-    navigation_response.forMainFrame = for_main_frame;
-    navigation_response.canShowMIMEType = can_show_mime_type;
+    id navigation_response =
+        [OCMockObject mockForClass:[WKNavigationResponse class]];
+    OCMStub([navigation_response response]).andReturn(response);
+    OCMStub([navigation_response isForMainFrame]).andReturn(for_main_frame);
+    OCMStub([navigation_response canShowMIMEType])
+        .andReturn(can_show_mime_type);
 
     // Call decidePolicyForNavigationResponse and wait for decisionHandler's
     // callback.
