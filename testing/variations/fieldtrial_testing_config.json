@@ -6202,52 +6202,6 @@
             ]
         }
     ],
-    "ProtoDBSharedMigration": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled3",
-                    "params": {
-                        "migrate_BudgetManager": "true",
-                        "migrate_CachedImageFetcherDatabase": "true",
-                        "migrate_DomDistillerStore": "true",
-                        "migrate_DownloadDB": "true",
-                        "migrate_DownloadService": "true",
-                        "migrate_FeatureEngagementTrackerAvailabilityStore": "true",
-                        "migrate_FeatureEngagementTrackerEventStore": "true",
-                        "migrate_FeedContentDatabase": "true",
-                        "migrate_FeedJournalDatabase": "true",
-                        "migrate_NTPSnippetImages": "true",
-                        "migrate_NTPSnippets": "true",
-                        "migrate_NotificationSchedulerIcons": "true",
-                        "migrate_NotificationSchedulerImpressions": "true",
-                        "migrate_NotificationSchedulerNotifications": "true",
-                        "migrate_PreviewsHintCacheStore": "true",
-                        "migrate_PrintJobDatabase": "true",
-                        "migrate_StrikeService": "true",
-                        "migrate_UsageStatsSuspension": "true",
-                        "migrate_UsageStatsTokenMapping": "true",
-                        "migrate_UsageStatsWebsiteEvent": "true",
-                        "migrate_VideoDecodeStatsDB": "true"
-                    },
-                    "enable_features": [
-                        "ProtoDBSharedMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
