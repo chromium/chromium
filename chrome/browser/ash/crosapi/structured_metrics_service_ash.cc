@@ -7,6 +7,7 @@
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/recorder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -26,7 +27,8 @@ void StructuredMetricsServiceAsh::Record(
     auto event_base = metrics::structured::EventBase::FromEvent(event);
     // Only record the event if it is valid.
     if (event_base.has_value())
-      event_base.value().Record();
+      metrics::structured::Recorder::GetInstance()->Record(
+          std::move(event_base.value()));
   }
 }
 
