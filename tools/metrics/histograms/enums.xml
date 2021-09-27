@@ -34664,6 +34664,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4047" label="ClientHintsDPR"/>
   <int value="4048" label="ClientHintsResourceWidth"/>
   <int value="4049" label="ClientHintsViewportWidth"/>
+  <int value="4050" label="InlineBoxIgnoringContinuation"/>
+  <int value="4051" label="OffsetWidthOrHeightIgnoringContinuation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

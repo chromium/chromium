@@ -386,14 +386,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutUnit OffsetLeft(const Element*) const final;
   LayoutUnit OffsetTop(const Element*) const final;
-  LayoutUnit OffsetWidth() const final {
-    NOT_DESTROYED();
-    return PhysicalLinesBoundingBox().Width();
-  }
-  LayoutUnit OffsetHeight() const final {
-    NOT_DESTROYED();
-    return PhysicalLinesBoundingBox().Height();
-  }
+  LayoutUnit OffsetWidth() const final;
+  LayoutUnit OffsetHeight() const final;
 
   // This method differs from VisualOverflowRect() in that
   // 1. it doesn't include the rects for culled inline boxes, which aren't

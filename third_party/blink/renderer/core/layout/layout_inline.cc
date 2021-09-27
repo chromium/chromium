@@ -1107,6 +1107,24 @@ LayoutUnit LayoutInline::OffsetTop(const Element* parent) const {
   return AdjustedPositionRelativeTo(FirstLineBoxTopLeft(), parent).top;
 }
 
+LayoutUnit LayoutInline::OffsetWidth() const {
+  NOT_DESTROYED();
+  if (UNLIKELY(Continuation())) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kOffsetWidthOrHeightIgnoringContinuation);
+  }
+  return PhysicalLinesBoundingBox().Width();
+}
+
+LayoutUnit LayoutInline::OffsetHeight() const {
+  NOT_DESTROYED();
+  if (UNLIKELY(Continuation())) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kOffsetWidthOrHeightIgnoringContinuation);
+  }
+  return PhysicalLinesBoundingBox().Height();
+}
+
 static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
                                 const Length& margin) {
   if (margin.IsFixed())
@@ -1276,6 +1294,13 @@ PositionWithAffinity LayoutInline::PositionForPoint(
 
 PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
   NOT_DESTROYED();
+  // |LayoutBoxModelObject::QuadsInternal| includes continuations, but this
+  // function does not.
+  if (UNLIKELY(Continuation())) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kInlineBoxIgnoringContinuation);
+  }
+
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);

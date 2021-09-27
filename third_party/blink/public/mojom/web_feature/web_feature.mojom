@@ -3357,6 +3357,8 @@ enum WebFeature {
   kClientHintsDPR = 4047,
   kClientHintsResourceWidth = 4048,
   kClientHintsViewportWidth = 4049,
+  kInlineBoxIgnoringContinuation = 4050,
+  kOffsetWidthOrHeightIgnoringContinuation = 4051,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
