@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
@@ -97,8 +96,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
-    absl::optional<int> install_source = GetIntWebAppPref(
-        profile()->GetPrefs(), app_id, kLatestWebAppInstallSource);
+    absl::optional<int> install_source =
+        GetWebAppInstallSource(profile()->GetPrefs(), app_id);
     EXPECT_TRUE(install_source.has_value());
     EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
               webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);

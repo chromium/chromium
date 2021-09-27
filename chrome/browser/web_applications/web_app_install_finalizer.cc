@@ -40,7 +40,6 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -208,8 +207,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->AddSource(source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
 
-  UpdateIntWebAppPref(profile_->GetPrefs(), app_id, kLatestWebAppInstallSource,
-                      static_cast<int>(options.install_source));
+  UpdateWebAppInstallSource(profile_->GetPrefs(), app_id,
+                            static_cast<int>(options.install_source));
 
   file_handlers_helper_->WillInstallApp(web_app_info);
 

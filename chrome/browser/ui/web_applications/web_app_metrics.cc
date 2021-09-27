@@ -23,7 +23,6 @@
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
@@ -61,16 +60,6 @@ void RecordUserInstalledHistogram(
     site_engagement::EngagementType engagement_type) {
   const std::string histogram_prefix = "WebApp.Engagement.UserInstalled";
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
-}
-
-optional<int> GetLatestWebAppInstallSource(const AppId& app_id,
-                                           PrefService* prefs) {
-  optional<int> value =
-      GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
-  DCHECK_GE(value.value_or(0), 0);
-  DCHECK_LT(value.value_or(0),
-            static_cast<int>(webapps::WebappInstallSource::COUNT));
-  return value;
 }
 
 }  // namespace
@@ -334,7 +323,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.start_url = provider->registrar().GetAppStartUrl(app_id);
     features.installed = true;
     features.install_source =
-        GetLatestWebAppInstallSource(app_id, profile_->GetPrefs());
+        GetWebAppInstallSource(profile_->GetPrefs(), app_id);
     DisplayMode display_mode =
         provider->registrar().GetAppEffectiveDisplayMode(app_id);
     features.effective_display_mode = static_cast<int>(display_mode);

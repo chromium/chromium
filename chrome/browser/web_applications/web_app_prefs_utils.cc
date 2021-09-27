@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -214,6 +215,26 @@ void RemoveWebAppPref(PrefService* pref_service,
   std::unique_ptr<prefs::DictionaryValueUpdate> web_app_prefs =
       UpdateWebAppDictionary(update.Get(), app_id);
   web_app_prefs->Remove(path);
+}
+
+absl::optional<int> GetWebAppInstallSource(PrefService* prefs,
+                                           const AppId& app_id) {
+  absl::optional<int> value =
+      GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
+  DCHECK_GE(value.value_or(0), 0);
+  DCHECK_LT(value.value_or(0),
+            static_cast<int>(webapps::WebappInstallSource::COUNT));
+  return value;
+}
+
+void UpdateWebAppInstallSource(PrefService* prefs,
+                               const AppId& app_id,
+                               int install_source) {
+  DCHECK_GE(install_source, 0);
+  DCHECK_LT(install_source,
+            static_cast<int>(webapps::WebappInstallSource::COUNT));
+  UpdateIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource,
+                      install_source);
 }
 
 void RecordInstallIphIgnored(PrefService* pref_service,

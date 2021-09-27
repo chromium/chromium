@@ -73,6 +73,13 @@ void RemoveWebAppPref(PrefService* pref_service,
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
 
+absl::optional<int> GetWebAppInstallSource(PrefService* prefs,
+                                           const AppId& app_id);
+
+void UpdateWebAppInstallSource(PrefService* prefs,
+                               const AppId& app_id,
+                               int install_source);
+
 void RecordInstallIphIgnored(PrefService* pref_service,
                              const AppId& app_id,
                              base::Time time);

@@ -185,8 +185,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   absl::optional<int> install_source =
-      GetIntWebAppPref(profile()->GetPrefs(), result.installed_app_id,
-                       kLatestWebAppInstallSource);
+      GetWebAppInstallSource(profile()->GetPrefs(), result.installed_app_id);
   EXPECT_TRUE(install_source.has_value());
   EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
             webapps::WebappInstallSource::INTERNAL_DEFAULT);
