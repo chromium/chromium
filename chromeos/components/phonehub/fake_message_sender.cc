@@ -10,10 +10,8 @@ namespace phonehub {
 FakeMessageSender::FakeMessageSender() = default;
 FakeMessageSender::~FakeMessageSender() = default;
 
-void FakeMessageSender::SendCrosState(bool notification_enabled,
-                                      bool camera_roll_enabled) {
-  cros_states_.push_back(
-      std::make_pair(notification_enabled, camera_roll_enabled));
+void FakeMessageSender::SendCrosState(bool notification_enabled) {
+  cros_states_.push_back(notification_enabled);
 }
 
 void FakeMessageSender::SendUpdateNotificationModeRequest(
@@ -79,7 +77,7 @@ size_t FakeMessageSender::GetFetchCameraRollItemsRequestCallCount() const {
   return fetch_camera_roll_items_requests_.size();
 }
 
-std::pair<bool, bool> FakeMessageSender::GetRecentCrosState() const {
+bool FakeMessageSender::GetRecentCrosState() const {
   return cros_states_.back();
 }
 

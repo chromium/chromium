@@ -89,16 +89,10 @@ void CrosStateSender::PerformUpdateCrosState() {
   bool are_notifications_enabled =
       multidevice_setup_client_->GetFeatureState(
           Feature::kPhoneHubNotifications) == FeatureState::kEnabledByUser;
-  bool is_camera_roll_enabled =
-      multidevice_setup_client_->GetFeatureState(
-          Feature::kPhoneHubCameraRoll) == FeatureState::kEnabledByUser;
 
   PA_LOG(INFO) << "Attempting to send cros state with notifications enabled "
-               << "state as: " << are_notifications_enabled
-               << " and camera roll enabled state as: "
-               << is_camera_roll_enabled;
-  message_sender_->SendCrosState(are_notifications_enabled,
-                                 is_camera_roll_enabled);
+               << "state as: " << are_notifications_enabled;
+  message_sender_->SendCrosState(are_notifications_enabled);
 
   retry_timer_->Start(FROM_HERE, retry_delay_,
                       base::BindOnce(&CrosStateSender::OnRetryTimerFired,
