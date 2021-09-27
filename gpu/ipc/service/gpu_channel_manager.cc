@@ -798,11 +798,9 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
         ContextCreationAttribs(), use_passthrough_decoder);
 
-#if !defined(OS_MAC)
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
     // SwANGLE.
-    // TODO(crbug.com/1238413): disable robust_resource_initialization for Mac.
     // TODO(crbug.com/1116174): Currently disabling robust initialization is
     // breaking some tests with OOP canvas. Once that's fixed remove check for
     // kCanvasOopRasterization feature.
@@ -811,7 +809,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
         !base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
       attribs.robust_resource_initialization = false;
     }
-#endif
 
     attribs.can_skip_validation = !enable_angle_validation;
 
