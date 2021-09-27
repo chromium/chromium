@@ -63,6 +63,9 @@ const CrosSettingsOsBannerInteraction = {
 };
 // </if>
 
+// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
+// TypeScript.
+type Constructor<T> = new (...args: any[]) => T;
 
 const SettingsBasicPageElementBase =
     mixinBehaviors(
@@ -71,7 +74,9 @@ const SettingsBasicPageElementBase =
           PrefsBehavior,
           // </if>
         ],
-        MainPageMixin(RouteObserverMixin(PolymerElement))) as {
+        MainPageMixin(
+            RouteObserverMixin(PolymerElement) as unknown as
+            Constructor<PolymerElement>)) as {
       new (): PolymerElement &
       // <if expr="chromeos or lacros">
       PrefsBehaviorInterface &
@@ -204,7 +209,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   /**
    * Override MainPageMixin method.
    */
-  containsRoute(route?: Route): boolean {
+  containsRoute(route: Route|null): boolean {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);
   }

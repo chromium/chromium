@@ -192,7 +192,7 @@ class SettingsSiteSettingsListElement extends
    */
   private updateDefaultValueLabel_(
       category: ContentSettingsTypes, setting: ContentSetting) {
-    const element = this.shadowRoot!.querySelector<HTMLElement>(`#${category}`);
+    const element = this.$$<HTMLElement>(`#${category}`);
     if (!element) {
       // |category| is not part of this list.
       return;

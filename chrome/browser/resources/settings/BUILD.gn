@@ -108,7 +108,7 @@ preprocess_if_expr("preprocess") {
     "about_page/about_page_browser_proxy.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
-    "autofill_page/merge_exceptions_store_copies_behavior.js",
+    "autofill_page/merge_exceptions_store_copies_mixin.ts",
     "autofill_page/merge_passwords_store_copies_behavior.js",
     "autofill_page/multi_store_exception_entry.ts",
     "autofill_page/multi_store_id_handler.ts",
@@ -116,7 +116,7 @@ preprocess_if_expr("preprocess") {
     "autofill_page/password_check_mixin.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/show_password_mixin.ts",
-    "base_mixin.js",
+    "base_mixin.ts",
     "chrome_cleanup_page/chrome_cleanup_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/pref_control_behavior.js",
@@ -125,7 +125,7 @@ preprocess_if_expr("preprocess") {
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
-    "global_scroll_target_mixin.js",
+    "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
     "i18n_setup.ts",
     "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
@@ -153,7 +153,7 @@ preprocess_if_expr("preprocess") {
     "search_settings.ts",
     "setting_id_param_util.ts",
     "settings.ts",
-    "settings_page/main_page_mixin.js",
+    "settings_page/main_page_mixin.ts",
     "settings_routes.js",
     "site_settings/constants.ts",
     "site_settings/cookie_info.ts",
@@ -406,7 +406,6 @@ js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":base_mixin",
     ":extension_control_browser_proxy",
     ":i18n_setup",
     ":lifetime_browser_proxy",
@@ -436,12 +435,6 @@ js_library("settings") {
   extra_deps = [ ":build_ts" ]
 }
 
-js_library("base_mixin") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("extension_control_browser_proxy") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/extension_control_browser_proxy.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
@@ -454,14 +447,6 @@ js_library("i18n_setup") {
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/i18n_setup.js" ]
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
   extra_deps = [ ":build_ts" ]
-}
-
-js_library("global_scroll_target_mixin") {
-  deps = [
-    ":router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
 }
 
 js_library("lifetime_browser_proxy") {
@@ -597,7 +582,7 @@ ts_library("build_ts") {
     "autofill_page/avatar_icon.ts",
     "autofill_page/credit_card_edit_dialog.ts",
     "autofill_page/credit_card_list_entry.ts",
-    "autofill_page/merge_exceptions_store_copies_behavior.js",
+    "autofill_page/merge_exceptions_store_copies_mixin.ts",
     "autofill_page/merge_passwords_store_copies_behavior.js",
     "autofill_page/multi_store_exception_entry.ts",
     "autofill_page/multi_store_id_handler.ts",
@@ -623,7 +608,7 @@ ts_library("build_ts") {
     "autofill_page/payments_section.ts",
     "autofill_page/show_password_mixin.ts",
     "autofill_page/upi_id_list_entry.ts",
-    "base_mixin.js",
+    "base_mixin.ts",
     "basic_page/basic_page.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
@@ -647,7 +632,7 @@ ts_library("build_ts") {
     "downloads_page/downloads_page.ts",
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
-    "global_scroll_target_mixin.js",
+    "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
     "i18n_setup.ts",
     "icons.ts",
@@ -728,7 +713,7 @@ ts_library("build_ts") {
     "settings_main/settings_main.ts",
     "settings_menu/settings_menu.ts",
     "settings_page_css.ts",
-    "settings_page/main_page_mixin.js",
+    "settings_page/main_page_mixin.ts",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",

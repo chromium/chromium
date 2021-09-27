@@ -60,13 +60,19 @@ interface PasswordsDeviceSectionElement {
   };
 }
 
+// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
+// TypeScript.
+type Constructor<T> = new (...args: any[]) => T;
+
 const PasswordsDeviceSectionElementBase =
     mixinBehaviors(
         [
           MergePasswordsStoreCopiesBehavior,
           WebUIListenerBehavior,
         ],
-        GlobalScrollTargetMixin(RouteObserverMixin(PolymerElement))) as {
+        GlobalScrollTargetMixin(
+            RouteObserverMixin(PolymerElement) as unknown as
+            Constructor<PolymerElement>)) as {
       new (): PolymerElement & WebUIListenerBehavior &
       MergePasswordsStoreCopiesBehaviorInterface & RouteObserverMixinInterface
     };

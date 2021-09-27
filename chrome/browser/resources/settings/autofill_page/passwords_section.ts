@@ -51,7 +51,7 @@ import {Route, Router} from '../router.js';
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {MergeExceptionsStoreCopiesBehavior, MergeExceptionsStoreCopiesBehaviorInterface} from './merge_exceptions_store_copies_behavior.js';
+import {MergeExceptionsStoreCopiesMixin, MergeExceptionsStoreCopiesMixinInterface} from './merge_exceptions_store_copies_mixin.js';
 import {MergePasswordsStoreCopiesBehavior, MergePasswordsStoreCopiesBehaviorInterface} from './merge_passwords_store_copies_behavior.js';
 import {MultiStoreExceptionEntry} from './multi_store_exception_entry.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -92,13 +92,13 @@ const PasswordsSectionElementBase =
         [
           I18nBehavior,
           WebUIListenerBehavior,
-          MergeExceptionsStoreCopiesBehavior,
           MergePasswordsStoreCopiesBehavior,
           PrefsBehavior,
         ],
-        GlobalScrollTargetMixin(PasswordCheckMixin(PolymerElement))) as {
+        GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
+            PasswordCheckMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      MergeExceptionsStoreCopiesBehaviorInterface &
+      MergeExceptionsStoreCopiesMixinInterface &
       MergePasswordsStoreCopiesBehaviorInterface & PasswordCheckMixinInterface
     };
 

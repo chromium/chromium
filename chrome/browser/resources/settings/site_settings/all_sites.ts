@@ -72,16 +72,22 @@ interface AllSitesElement {
   };
 }
 
-const AllSitesElementBase = mixinBehaviors(
-                                [
-                                  I18nBehavior,
-                                  WebUIListenerBehavior,
-                                ],
-                                GlobalScrollTargetMixin(RouteObserverMixin(
-                                    SiteSettingsMixin(PolymerElement)))) as {
-  new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-  SiteSettingsMixinInterface & RouteObserverMixinInterface
-};
+// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
+// TypeScript.
+type Constructor<T> = new (...args: any[]) => T;
+
+const AllSitesElementBase =
+    mixinBehaviors(
+        [
+          I18nBehavior,
+          WebUIListenerBehavior,
+        ],
+        GlobalScrollTargetMixin(
+            RouteObserverMixin(SiteSettingsMixin(PolymerElement)) as unknown as
+            Constructor<PolymerElement>)) as {
+      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+      SiteSettingsMixinInterface & RouteObserverMixinInterface
+    };
 
 class AllSitesElement extends AllSitesElementBase {
   static get is() {
