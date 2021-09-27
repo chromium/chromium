@@ -410,7 +410,6 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/shared_vars.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store_client.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store.html",
-                                 "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/toggle_row.html",

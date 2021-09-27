@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './supported_links_overlapping_apps_dialog.js';
 import './supported_links_dialog.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, AppType} from './constants.js';
-import {AppManagementStoreClient} from './store_client.js';
-import {recordAppManagementUserAction} from './util.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
 
-const PREFERRED_APP_PREF = 'preferred';
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -58,21 +57,6 @@ Polymer({
     showSupportedLinksDialog_: {
       type: Boolean,
       value: false,
-    },
-
-    /**
-     * @private {boolean}
-     */
-    showOverlappingAppsDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * @private {Array<string>}
-     */
-    overlappingAppIds_: {
-      type: Array,
     },
   },
 
@@ -134,7 +118,19 @@ Polymer({
         {substitutions: [String(app.title)]});
   },
 
-  /* Supported links list dialog functions ************************************/
+  /**
+   * @param {!CustomEvent<{value: string}>} event
+   * @private
+   */
+  onSupportedLinkPrefChanged_(event) {
+    const newPref = event.detail.value === 'preferred';
+    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newPref);
+
+    const userAction = newPref ? AppManagementUserAction.PreferredAppTurnedOn :
+                                 AppManagementUserAction.PreferredAppTurnedOff;
+    recordAppManagementUserAction(this.app.type, userAction);
+  },
+
   /**
    * Stamps and opens the Supported Links dialog.
    * @param {!Event} e
@@ -153,70 +149,6 @@ Polymer({
    */
   onDialogClose_() {
     this.showSupportedLinksDialog_ = false;
-    focusWithoutInk(assert(this.$.heading));
-  },
-
-  /* Preferred app state change dialog and related functions ******************/
-
-  /**
-   * @param {!CustomEvent<{value: string}>} event
-   * @private
-   */
-  async onSupportedLinkPrefChanged_(event) {
-    const preference = event.detail.value;
-
-    let overlappingAppIds = [];
-
-    try {
-      const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              this.app.id);
-      overlappingAppIds = appIds;
-    } catch (err) {
-      // If we fail to get the overlapping preferred apps, don't prevent the
-      // user from setting their preference.
-      console.log(err);
-    }
-
-    // If there are overlapping apps, show the overlap dialog to the user.
-    if (preference === PREFERRED_APP_PREF && overlappingAppIds.length > 0) {
-      this.overlappingAppIds_ = overlappingAppIds;
-      this.showOverlappingAppsDialog_ = true;
-      return;
-    }
-
-    this.setAppAsPreferredApp_(preference);
-  },
-
-  onOverlappingDialogClosed_() {
-    this.showOverlappingAppsDialog_ = false;
-
-    if (this.shadowRoot.querySelector('#overlap-dialog').wasConfirmed()) {
-      this.setAppAsPreferredApp_(PREFERRED_APP_PREF);
-      // Return keyboard focus to the preferred radio button.
-      focusWithoutInk(this.$.preferred);
-    } else {
-      // Reset the radio button.
-      this.shadowRoot.querySelector('#radio-group').selected =
-          this.getCurrentPref_(this.app);
-      // Return keyboard focus to the browser radio button.
-      focusWithoutInk(this.$.browser);
-    }
-  },
-
-  /**
-   * Sets this.app as a preferred app or not depending on the value of
-   * |preference|.
-   *
-   * @param {string} preference either "preferred" or "browser"
-   */
-  setAppAsPreferredApp_(preference) {
-    const newState = preference === PREFERRED_APP_PREF;
-
-    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
-
-    const userAction = newState ? AppManagementUserAction.PreferredAppTurnedOn :
-                                  AppManagementUserAction.PreferredAppTurnedOff;
-    recordAppManagementUserAction(this.app.type, userAction);
-  },
+    focusWithoutInk(assert(this.$$('#heading')));
+  }
 });

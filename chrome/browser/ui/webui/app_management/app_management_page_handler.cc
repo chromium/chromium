@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -243,16 +242,6 @@ void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
   } else if (!is_preferred_app && is_preferred_app_for_supported_links) {
     proxy->RemoveSupportedLinksPreference(app_id);
   }
-}
-
-void AppManagementPageHandler::GetOverlappingPreferredApps(
-    const std::string& app_id,
-    GetOverlappingPreferredAppsCallback callback) {
-  auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
-  base::flat_set<std::string> app_ids =
-      preferred_apps_list_.FindPreferredAppsForFilters(intent_filters);
-  app_ids.erase(app_id);
-  std::move(callback).Run(std::move(app_ids).extract());
 }
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
