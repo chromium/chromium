@@ -858,14 +858,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
   EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
-// TODO(https://crbug.com/1239636) Flaky on Android.
-#if defined(OS_ANDROID)
-#define MAYBE_SameDocumentNavigation DISABLED_SameDocumentNavigation
-#else
-#define MAYBE_SameDocumentNavigation SameDocumentNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest,
-                       MAYBE_SameDocumentNavigation) {
+IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, SameDocumentNavigation) {
   ASSERT_NO_FATAL_FAILURE(LoadScrollablePageWithContent("/index.html"));
   WebContents* main_contents = shell()->web_contents();
 
