@@ -396,9 +396,9 @@ a swarming task, which contains something like:
 
 ```
 Download inputs files into directory foo:
-# (if needed, use "\${platform}" as-is) cipd install "infra/tools/luci/isolated/\${platform}" -root bar
-# (if needed) ./bar/isolated login
-./bar/isolated download -I https://isolateserver.appspot.com --namespace default-gzip -isolated 07f20bcb2b29b3d8f4ba73166313a37efd651746 -output-dir foo
+# (if needed, use "\${platform}" as-is) cipd install "infra/tools/luci/cas/\${platform}" -root bar
+# (if needed) ./bar/cas login
+./bar/cas download -cas-instance projects/chromium-swarm/instances/default_instance -digest 68ae1d6b22673b0ab7b4427ca1fc2a4761c9ee53474105b9076a23a67e97a18a/647 -dir foo
 ```
 
 Before attempting to download an isolate, you must ensure you have permission

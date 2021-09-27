@@ -120,8 +120,8 @@ If `cd`'d into `src/`:
 
 1.  `./tools/mb/mb.py isolate //out/Release [target name]`
     *   For example: `./tools/mb/mb.py isolate //out/Release angle_end2end_tests`
-1.  `./tools/luci-go/isolate batcharchive -I https://isolateserver.appspot.com out/Release/[target name].isolated.gen.json`
-    *   For example: `./tools/luci-go/isolate batcharchive -I https://isolateserver.appspot.com out/Release/angle_end2end_tests.isolated.gen.json`
+1.  `./tools/luci-go/isolate batcharchive -cas-instance chromium-swarm out/Release/[target name].isolated.gen.json`
+    *   For example: `./tools/luci-go/isolate batcharchive -cas-instance chromium-swarm out/Release/angle_end2end_tests.isolated.gen.json`
 See the section below on [isolate server credentials](#Isolate-server-credentials).
 
 ### Adding your new isolate to the tests that are run on the bots
