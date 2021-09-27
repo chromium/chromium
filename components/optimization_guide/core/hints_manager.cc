@@ -221,6 +221,8 @@ class ScopedCanApplyOptimizationLogger {
         url_(url) {}
 
   ~ScopedCanApplyOptimizationLogger() {
+    if (!optimization_guide::switches::IsDebugLogsEnabled())
+      return;
     DCHECK_NE(type_decision_,
               optimization_guide::OptimizationTypeDecision::kUnknown);
     DVLOG(0) << "OptimizationGuide: CanApplyOptimization: "
