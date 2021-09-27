@@ -195,8 +195,8 @@
   },
   {
     "name": "arc-file-picker-experiment",
-    "owners": [ "niwa" ],
-    "expiry_milestone": 95
+    "owners": [ "youkichihosoi", "risan", "niwa" ],
+    "expiry_milestone": 100
   },
   {
     "name": "arc-ghost-window",
