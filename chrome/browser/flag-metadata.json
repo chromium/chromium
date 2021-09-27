@@ -1192,7 +1192,7 @@
   {
     "name": "disable-virtual-keyboard",
     "owners": [ "myy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "disable-webrtc-hw-decoding",
@@ -1646,7 +1646,7 @@
   {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-on-device-grammar-check",
