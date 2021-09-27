@@ -715,6 +715,18 @@ security bugs. A read or write to the NULL page results in a non-exploitable cra
 If the offset is larger than a page, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
 
+<a name="TOC-Are-stack-overflows-considered-security-bugs-"></a>
+## Are stack overflows considered security bugs?
+
+No. Guard pages mean that stack overflows are considered unexploitable, and
+are regarded as [denial of service bugs](#TOC-Are-denial-of-service-issues-considered-security-bugs-).
+The only exception is if an attacker can jump over the guard pages allocated by
+the operating system and avoid accessing them, e.g.:
+
+*    A frame with a very large stack allocation.
+*    C variable length array with an attacker-controlled size.
+*    A call to `alloca()` with an attacker-controlled size.
+
 <a name="TOC-Are-enterprise-admins-considered-privileged-"></a>
 ## Are enterprise admins considered privileged?
 
