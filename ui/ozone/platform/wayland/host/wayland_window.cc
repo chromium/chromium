@@ -793,15 +793,25 @@ bool WaylandWindow::CommitOverlays(
           reference_above = (*std::next(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
-            root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
-            nullptr, reference_above, (*overlay_iter)->priority_hint);
+            (*overlay_iter)->bounds_rect, (*split)->bounds_rect,
+            root_surface()->buffer_scale(), nullptr, reference_above);
+
+        (*iter)->wayland_surface()->SetBufferTransform(
+            (*overlay_iter)->transform);
+        (*iter)->wayland_surface()->SetSurfaceBufferScale(
+            root_surface()->buffer_scale());
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
-        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
-        (*iter)->wayland_surface()->SetBlending((*overlay_iter)->enable_blend);
+        (*iter)->wayland_surface()->SetOverlayPriority(
+            (*overlay_iter)->priority_hint);
         (*iter)->wayland_surface()->SetViewportDestination(
             (*overlay_iter)->bounds_rect.size());
+        gfx::Rect region_px =
+            (*overlay_iter)->enable_blend
+                ? gfx::Rect()
+                : gfx::Rect((*overlay_iter)->bounds_rect.size());
+        (*iter)->wayland_surface()->SetOpaqueRegion({region_px});
+        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             (*overlay_iter)->damage_region,
@@ -831,15 +841,25 @@ bool WaylandWindow::CommitOverlays(
           reference_below = (*std::prev(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
-            root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
-            reference_below, nullptr, (*overlay_iter)->priority_hint);
+            (*overlay_iter)->bounds_rect, (*split)->bounds_rect,
+            root_surface()->buffer_scale(), reference_below, nullptr);
+
+        (*iter)->wayland_surface()->SetBufferTransform(
+            (*overlay_iter)->transform);
+        (*iter)->wayland_surface()->SetSurfaceBufferScale(
+            root_surface()->buffer_scale());
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
-        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
-        (*iter)->wayland_surface()->SetBlending((*overlay_iter)->enable_blend);
+        (*iter)->wayland_surface()->SetOverlayPriority(
+            (*overlay_iter)->priority_hint);
         (*iter)->wayland_surface()->SetViewportDestination(
             (*overlay_iter)->bounds_rect.size());
+        gfx::Rect region_px =
+            (*overlay_iter)->enable_blend
+                ? gfx::Rect()
+                : gfx::Rect((*overlay_iter)->bounds_rect.size());
+        (*iter)->wayland_surface()->SetOpaqueRegion({region_px});
+        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             (*overlay_iter)->damage_region,
@@ -881,18 +901,23 @@ bool WaylandWindow::CommitOverlays(
     //   to apply viewport.destination is made at commit time. Right now PIP
     //   would have incorrect size b/c it is fullscreen overlay scheduled at
     //   z_order=0.
-    primary_subsurface_->ConfigureAndShowSurface(
-        (*split)->transform, (*split)->bounds_rect,
-        root_surface()->buffer_scale(), (*split)->enable_blend, nullptr,
-        nullptr, (*split)->priority_hint);
+    primary_subsurface_->wayland_surface()->SetBufferTransform(
+        (*split)->transform);
+    primary_subsurface_->wayland_surface()->SetSurfaceBufferScale(
+        root_surface()->buffer_scale());
     primary_subsurface_->wayland_surface()->SetViewportSource(
         (*split)->crop_rect);
-    primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);
-    primary_subsurface_->wayland_surface()->SetBlending((*split)->enable_blend);
+    primary_subsurface_->wayland_surface()->SetOverlayPriority(
+        (*split)->priority_hint);
     primary_subsurface_->wayland_surface()->SetViewportDestination(
         (*split)->crop_rect == gfx::RectF(1.f, 1.f)
             ? gfx::Size()
             : (*split)->bounds_rect.size());
+    gfx::Rect region_px = (*split)->enable_blend
+                              ? gfx::Rect()
+                              : gfx::Rect((*split)->bounds_rect.size());
+    primary_subsurface_->wayland_surface()->SetOpaqueRegion({region_px});
+    primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
         (*split)->damage_region,
