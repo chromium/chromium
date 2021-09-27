@@ -43,11 +43,15 @@ void MediaBlocker::UpdateMediaLoadingBlockedState() {
   if (!web_contents())
     return;
 
-  const std::vector<content::RenderFrameHost*> frames =
-      web_contents()->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames) {
-    UpdateRenderFrameMediaLoadingBlockedState(frame);
-  }
+  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+      [](MediaBlocker* media_blocker,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          media_blocker->UpdateRenderFrameMediaLoadingBlockedState(
+              render_frame_host);
+        }
+      },
+      this));
 }
 
 void MediaBlocker::UpdateRenderFrameMediaLoadingBlockedState(
