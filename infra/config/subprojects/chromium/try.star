@@ -1857,24 +1857,25 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win10-rel-orchestrator",
+    # TODO (kimstephanie): Remove after verifying retry wo patch success build
+    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = 2,
     os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
-    # TODO (kimstephanie): turn coverage back on when crbug.com/1233609 is done
-    # use_clang_coverage = True,
-    # coverage_test_types = ["unit", "overall"],
     properties = {
-        "compilator": "win10-rel-compilator",
+        "$build/chromium_orchestrator": {
+            "compilator": "win10-rel-compilator",
+            "compilator_watcher_git_revision": "ecaab12e4a31e76701a25668cb71ae964189a341",
+        },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(
-        experiment_percentage = 15,
-    ),
 )
 
 try_.chromium_win_builder(
     name = "win10-rel-compilator",
+    # TODO (kimstephanie): Remove after verifying retry wo patch success build
+    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     os = os.WINDOWS_10,
     cores = None,
