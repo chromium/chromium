@@ -13,45 +13,26 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
-#include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 namespace {
 // Some Display Controllers (e.g. Intel Gen 9.5) don't support AR/B30
 // framebuffers, only XR/B30; this function indicates if an opaque format should
 // be used instead of the non-opaque |buffer_format| for AddFramebuffer2().
-//
-// Some Intel Gens (5~8) support AR24 with different modifiers than XR24 so
-// this additionally checks that the requested format+modifier combination is
-// valid on the non-opaque framebuffer before forcing to opaque.
 bool ForceUsingOpaqueFormatWorkaround(
     const scoped_refptr<ui::DrmDevice>& drm_device,
-    uint32_t drm_fourcc,
-    uint64_t drm_modifier) {
-  constexpr uint32_t kFallbackARGBFormats[] = {
-      DRM_FORMAT_ARGB8888, DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010,
-      DRM_FORMAT_RGBA1010102, DRM_FORMAT_BGRA1010102};
-
-  // Check that the format is supported for opaque fallback.
-  const bool is_fallback_format_with_alpha =
-      base::Contains(kFallbackARGBFormats, drm_fourcc);
-  if (!is_fallback_format_with_alpha)
+    uint32_t drm_fourcc) {
+  constexpr uint32_t kHighBitDepthARGBFormats[] = {
+      DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010, DRM_FORMAT_RGBA1010102,
+      DRM_FORMAT_BGRA1010102};
+  const bool is_high_bit_depth_format_with_alpha =
+      base::Contains(kHighBitDepthARGBFormats, drm_fourcc);
+  if (!is_high_bit_depth_format_with_alpha)
     return false;
 
-  // Check if the format is supported at all.
   const std::vector<uint32_t>& supported_formats =
       drm_device->plane_manager()->GetSupportedFormats();
-  if (!base::Contains(supported_formats, drm_fourcc))
-    return true;
-
-  // If it is supported, check if it's supported with the given modifier.
-  for (const auto& plane : drm_device->plane_manager()->planes()) {
-    if (base::Contains(plane->ModifiersForFormat(drm_fourcc), drm_modifier)) {
-      return false;
-    }
-  }
-
-  return true;
+  return !base::Contains(supported_formats, drm_fourcc);
 }
 
 }  // namespace
@@ -76,10 +57,10 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   const auto buffer_format = GetBufferFormatFromFourCCFormat(params.format);
   const uint32_t opaque_format =
       GetFourCCFormatForOpaqueFramebuffer(buffer_format);
-  const auto drm_format = ForceUsingOpaqueFormatWorkaround(
-                              drm_device, params.format, params.modifier)
-                              ? opaque_format
-                              : params.format;
+  const auto drm_format =
+      ForceUsingOpaqueFormatWorkaround(drm_device, params.format)
+          ? opaque_format
+          : params.format;
 
   uint32_t framebuffer_id = 0;
   if (!drm_device->AddFramebuffer2(params.width, params.height, drm_format,
