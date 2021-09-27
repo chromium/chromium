@@ -92,6 +92,11 @@ class PageInfoMainView : public views::View,
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
 
+  // Creates 'About this site' section which contains a button that opens a
+  // subpage and two separators.
+  std::unique_ptr<views::View> CreateAboutThisSiteSection(
+      std::u16string description) WARN_UNUSED_RESULT;
+
   PageInfo* presenter_;
 
   ChromePageInfoUiDelegate* ui_delegate_;
@@ -116,6 +121,10 @@ class PageInfoMainView : public views::View,
   // The view that contains the scroll view with permission rows and the reset
   // button, surrounded by separators.
   views::View* permissions_view_ = nullptr;
+
+  // The section that contains "About this site" button that opens a
+  // subpage and two separators.
+  views::View* about_this_site_section_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.
   PageInfoSecurityContentView* security_content_view_ = nullptr;

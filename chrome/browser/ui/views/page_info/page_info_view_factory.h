@@ -45,6 +45,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_CLOSE_BUTTON,
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
     VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON,
+    VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -95,6 +96,9 @@ class PageInfoViewFactory {
   // Returns the icon for a permission in a state not managed by the user.
   static const ui::ImageModel GetManagedPermissionIcon(
       const PageInfo::PermissionInfo& info);
+
+  // Returns the icon for 'About this site' button.
+  static const ui::ImageModel GetAboutThisSiteIcon();
 
   std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "components/page_info/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -85,6 +86,15 @@ PageInfoMainView::PageInfoMainView(
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
   permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+    std::u16string description = ui_delegate_->GetAboutThisSiteDescription();
+    if (!description.empty()) {
+      layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
+      about_this_site_section_ =
+          layout->AddView(CreateAboutThisSiteSection(description));
+    }
+  }
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());
@@ -263,7 +273,11 @@ void PageInfoMainView::SetPermissionInfo(
   // show reset button.
   reset_button_->SetVisible(false);
   UpdateResetButton(permission_info_list);
-  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  // 'About this site' section has separators on top and bottom. If it is shown,
+  // bottom separator here isn't needed anymore.
+  if (!about_this_site_section_) {
+    permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  }
 
   PreferredSizeChanged();
 }
@@ -484,4 +498,30 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   header->AddChildView(close_button.release());
 
   return header;
+}
+
+std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
+    std::u16string description) {
+  auto about_this_site_section = std::make_unique<views::View>();
+  about_this_site_section
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
+
+  // TODO(crbug.com/1250653): Update with the actual strings.
+  auto* about_this_site_button = about_this_site_section->AddChildView(
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                // TODO(crbug.com/1250653): Open 'About this site' subpage.
+              },
+              this),
+          PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
+          std::u16string(), description,
+          PageInfoViewFactory::GetOpenSubpageIcon()));
+  about_this_site_button->SetTitleText(u"About this site");
+
+  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
+  return about_this_site_section;
 }

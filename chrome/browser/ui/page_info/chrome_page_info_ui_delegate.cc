@@ -6,10 +6,12 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/about_this_site_service.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -88,6 +90,14 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
       break;
   }
 
+  return std::u16string();
+}
+
+std::u16string ChromePageInfoUiDelegate::GetAboutThisSiteDescription() {
+  if (auto* service =
+          AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
+    return service->GetAboutThisSiteDescription(site_url_);
+  }
   return std::u16string();
 }
 

@@ -30,6 +30,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/vector_icons.h"
 
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
 constexpr int PageInfoViewFactory::kMaxBubbleWidth;
@@ -381,6 +382,12 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
                                         ui::kColorIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      views::kInfoIcon, ui::NativeTheme::kColorId_DefaultIconColor);
 }
 
 // static
