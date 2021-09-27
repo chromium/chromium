@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -69,7 +68,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -84,7 +82,6 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
@@ -206,180 +203,6 @@ public class TabsTest {
                                    .getCount();
             Criteria.checkThat(tabCount, Matchers.is(2));
         });
-    }
-
-    /**
-     * Verify that a popup will use desktop user agent on tablets, and use mobile user agent on
-     * phones.
-     * Mobile user agent header sample:
-     * "Mozilla/5.0 (Linux; Android 11; Pixel 2 XL) AppleWebKit/537.36 (KHTML, like Gecko)
-     * Chrome/91.0.4451.0 Mobile Safari/537.36"
-     * Desktop user agent header sample: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36
-     * (KHTML, like Gecko) Chrome/91.0.4451.0 Safari/537.36"
-     */
-    @Test
-    @LargeTest
-    @Feature({"Navigation"})
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @EnableFeatures({ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS + "<Study"})
-    @CommandLineFlags.Add({ContentSwitches.DISABLE_POPUP_BLOCKING, "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:screen_width_dp/100/enabled/true"})
-    public void
-    testPopupLoadDesktopSiteOnTablet() throws InterruptedException {
-        mTestServer = new EmbeddedTestServer();
-        mTestServer.initializeNative(InstrumentationRegistry.getContext(),
-                EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
-        mTestServer.addDefaultHandlers("");
-        Assert.assertTrue(mTestServer.start());
-
-        mActivityTestRule.loadUrl(mTestServer.getURL("/echoheader?User-Agent"));
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        String echoHeader = getTabBodyText(tab);
-        // Tab should request desktop sites on tablets, mobile sites on phone.
-        if (DeviceFormFactor.isTablet()) {
-            Assert.assertTrue("Tab should request desktop sites for tablets.",
-                    tab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-            Assert.assertFalse(
-                    "On tablets, User-Agent in the header should not contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        } else {
-            Assert.assertFalse("Tab should request mobile sites for phones.",
-                    tab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-            Assert.assertTrue(
-                    "On phones, User-Agent in the header should contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        }
-
-        // Open a popup window from the first tab.
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> tab.getWebContents().evaluateJavaScriptForTests("(function() {"
-                                        + "  window.open('/echoheader?User-Agent');"
-                                        + "})()",
-                                null));
-
-        CriteriaHelper.pollUiThread(() -> {
-            int tabCount = mActivityTestRule.getActivity()
-                                   .getTabModelSelector()
-                                   .getModel(false)
-                                   .getCount();
-            Criteria.checkThat(tabCount, Matchers.is(2));
-            final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-
-            // Make sure that the new tab have desktop user agent on tablets, and mobile user agent
-            // on phones.
-            Criteria.checkThat(currentTab.getId(), Matchers.not(tab.getId()));
-            Criteria.checkThat(
-                    currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent(),
-                    Matchers.is(DeviceFormFactor.isTablet()));
-        });
-
-        Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-        echoHeader = getTabBodyText(tab);
-        if (DeviceFormFactor.isTablet()) {
-            Assert.assertFalse(
-                    "On tablets, User-Agent in the header should not contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        } else {
-            Assert.assertTrue(
-                    "On phones, User-Agent in the header should contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        }
-    }
-
-    /**
-     * Verify that a client redirect popup will use desktop user agent on tablets, and use mobile
-     * user agent on phones. The key difference from testPopupLoadDesktopSiteOnTablet is, this test
-     * is using target='_blank' in the link.
-     * Mobile user agent header sample: "Mozilla/5.0 (Linux; Android 11; Pixel
-     * 2 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4451.0 Mobile Safari/537.36"
-     * Desktop user agent header sample: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36
-     * (KHTML, like Gecko) Chrome/91.0.4451.0 Safari/537.36"
-     */
-    @Test
-    @LargeTest
-    @Feature({"Navigation"})
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @EnableFeatures({ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS + "<Study"})
-    @CommandLineFlags.Add({ContentSwitches.DISABLE_POPUP_BLOCKING, "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:screen_width_dp/100/enabled/true"})
-    public void
-    testRedirectTargetBlankPopupLoadDesktopSiteOnTablet() throws Exception {
-        mTestServer = new EmbeddedTestServer();
-        mTestServer.initializeNative(InstrumentationRegistry.getContext(),
-                EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
-        mTestServer.addDefaultHandlers("");
-        Assert.assertTrue(mTestServer.start());
-
-        String echoHeaderUrl = mTestServer.getURL("/echoheader?User-Agent");
-        mActivityTestRule.loadUrl(echoHeaderUrl);
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        String echoHeader = getTabBodyText(tab);
-        // Tab should request desktop sites on tablets, mobile sites on phone.
-        if (DeviceFormFactor.isTablet()) {
-            Assert.assertTrue("Tab should request desktop sites for tablets.",
-                    tab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-            Assert.assertFalse(
-                    "On tablets, User-Agent in the header should not contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        } else {
-            Assert.assertFalse("Tab should request mobile sites for phones.",
-                    tab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-            Assert.assertTrue(
-                    "On phones, User-Agent in the header should contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        }
-
-        // Open a popup window from the first tab.
-        String redirectToEchoHeaderUrl = mTestServer.getURL("/client-redirect?" + echoHeaderUrl);
-
-        // Add a redirect link with target='_blank' and click it.
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(
-                String.format("var aTag = document.createElement('a');"
-                                + "aTag.id = '%s';"
-                                + "aTag.setAttribute('href','%s');"
-                                + "aTag.setAttribute('target','_blank');"
-                                + "aTag.innerHTML = 'Click Me!';"
-                                + "document.body.appendChild(aTag);",
-                        "target_blank_id", redirectToEchoHeaderUrl));
-        DOMUtils.clickNode(mActivityTestRule.getActivity().getActivityTab().getWebContents(),
-                "target_blank_id");
-
-        CriteriaHelper.pollUiThread(() -> {
-            int tabCount = mActivityTestRule.getActivity()
-                                   .getTabModelSelector()
-                                   .getModel(false)
-                                   .getCount();
-            Criteria.checkThat(tabCount, Matchers.is(2));
-            final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-
-            // Make sure that the new tab have desktop user agent on tablets, and mobile user agent
-            // on phones.
-            Criteria.checkThat(currentTab.getId(), Matchers.not(tab.getId()));
-            Criteria.checkThat(
-                    currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent(),
-                    Matchers.is(DeviceFormFactor.isTablet()));
-        });
-
-        Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-        echoHeader = getTabBodyText(tab);
-        if (DeviceFormFactor.isTablet()) {
-            Assert.assertFalse(
-                    "On tablets, User-Agent in the header should not contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        } else {
-            Assert.assertTrue(
-                    "On phones, User-Agent in the header should contain Android, but it is : "
-                            + echoHeader,
-                    echoHeader.contains("Android"));
-        }
     }
 
     @Test
