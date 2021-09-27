@@ -71,7 +71,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
 
   // For testing only.
   void WaitForDidStopLoadingForTesting();
-  void SetOnDestroyedCallbackForTesting(base::OnceClosure cb);
 
   RenderFrameHostImpl* GetInnerRoot() { return frame_tree_->GetMainFrame(); }
 
@@ -105,8 +104,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   std::unique_ptr<FrameTree> frame_tree_;
 
   base::OnceClosure on_did_finish_loading_callback_for_testing_;
-
-  base::OnceClosure on_destroyed_callback_for_testing_;
 
   // Receives messages from the frame owner element in Blink.
   mojo::AssociatedReceiver<blink::mojom::FencedFrameOwnerHost> receiver_{this};

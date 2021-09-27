@@ -52,8 +52,6 @@ FencedFrame::~FencedFrame() {
   DCHECK(frame_tree_);
   frame_tree_->Shutdown();
   frame_tree_.reset();
-  if (on_destroyed_callback_for_testing_)
-    std::move(on_destroyed_callback_for_testing_).Run();
 }
 
 void FencedFrame::Navigate(const GURL& url) {
@@ -160,11 +158,6 @@ void FencedFrame::WaitForDidStopLoadingForTesting() {
   base::RunLoop run_loop;
   on_did_finish_loading_callback_for_testing_ = run_loop.QuitClosure();
   run_loop.Run();
-}
-
-void FencedFrame::SetOnDestroyedCallbackForTesting(base::OnceClosure cb) {
-  DCHECK(!on_destroyed_callback_for_testing_);
-  on_destroyed_callback_for_testing_ = std::move(cb);
 }
 
 }  // namespace content

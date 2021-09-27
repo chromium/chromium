@@ -152,6 +152,8 @@ static_library("test_support") {
     "../public/test/fake_service_worker_context.h",
     "../public/test/fake_speech_recognition_manager.cc",
     "../public/test/fake_speech_recognition_manager.h",
+    "../public/test/fenced_frame_test_util.cc",
+    "../public/test/fenced_frame_test_util.h",
     "../public/test/find_test_utils.cc",
     "../public/test/find_test_utils.h",
     "../public/test/focus_changed_observer.cc",
