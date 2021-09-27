@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/overview/desks_templates/desks_templates_item_view.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/views/border.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,7 +26,6 @@ constexpr int kNumRows = 2;
 
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
-constexpr gfx::Size kPlaceholderTempPreferredSize(300, 200);
 
 }  // namespace
 
@@ -60,16 +59,8 @@ DesksTemplatesGridView::DesksTemplatesGridView() {
                                   kGridPaddingDp);
     }
 
-    for (int j = 0; j < kNumColumns; ++j) {
-      views::View* placeholder_template_view =
-          layout->AddView(std::make_unique<views::View>());
-      // TODO(richui): Remove this border. It is only used for visualizing
-      // bounds while it is a placeholder.
-      placeholder_template_view->SetBorder(
-          views::CreateSolidBorder(/*thickness=*/2, SK_ColorGRAY));
-      placeholder_template_view->SetPreferredSize(
-          kPlaceholderTempPreferredSize);
-    }
+    for (int j = 0; j < kNumColumns; ++j)
+      layout->AddView(std::make_unique<DesksTemplatesItemView>());
   }
 }
 
