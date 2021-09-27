@@ -2849,8 +2849,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash ]
-crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash ]
 crbug.com/626703 [ Linux ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
@@ -6647,13 +6645,6 @@ crbug.com/1238130 external/wpt/animation-worklet/worklet-animation-with-scroll-t
 
 # Sheriff 2021-07-29
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
-crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Mac10.12 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Mac10.14 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 [ Win ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
 crbug.com/626703 virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
 
 # Sheriff 2021-07-30
@@ -6731,7 +6722,6 @@ crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Crash Failure Pass ]
 # Also reported as failing via crbug.com/1233766:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-timing.https.html [ Crash Failure Pass ]
-crbug.com/1233826 [ Mac ] external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Pass ]
 crbug.com/1233826 [ Mac ] external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Pass ]
 # Previously reported as failing on all platforms via crbug.com/626703:
 crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Failure Pass ]
@@ -6960,3 +6950,7 @@ crbug.com/1250534 virtual/file-system-access-access-handle-incognito/external/wp
 # Sheriff 2021-09-23
 crbug.com/1164568 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
 crbug.com/1164568 [ Mac10.13 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
+
+# Sheriff 2021-09-27
+crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass ]
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass ]
