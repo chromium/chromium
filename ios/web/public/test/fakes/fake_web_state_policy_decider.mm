@@ -20,7 +20,7 @@ void FakeWebStatePolicyDecider::SetShouldAllowRequest(
 
 void FakeWebStatePolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info,
+    RequestInfo request_info,
     PolicyDecisionCallback callback) {
   std::move(callback).Run(should_allow_request_);
 }

@@ -147,7 +147,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // the first PolicyDecision::CancelAndDisplayError() result that was received.
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   // Decides whether the navigation corresponding to |response| should

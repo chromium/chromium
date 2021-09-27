@@ -357,7 +357,7 @@ void FakeWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
 
 void FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
+    WebStatePolicyDecider::RequestInfo request_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   auto request_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));

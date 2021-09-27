@@ -93,7 +93,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
 
   // WebStatePolicyDecider overrides
   void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
+                          RequestInfo request_info,
                           PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(request.URL);

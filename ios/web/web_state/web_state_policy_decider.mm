@@ -66,7 +66,7 @@ WebStatePolicyDecider::~WebStatePolicyDecider() {
 
 void WebStatePolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info,
+    RequestInfo request_info,
     PolicyDecisionCallback callback) {
   std::move(callback).Run(PolicyDecision::Allow());
 }

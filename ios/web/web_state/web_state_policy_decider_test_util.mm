@@ -10,8 +10,8 @@
 
 namespace web {
 
-bool RequestInfoMatch(const WebStatePolicyDecider::RequestInfo& expected,
-                      const WebStatePolicyDecider::RequestInfo& got) {
+bool RequestInfoMatch(WebStatePolicyDecider::RequestInfo expected,
+                      WebStatePolicyDecider::RequestInfo got) {
   return ui::PageTransitionTypeIncludingQualifiersIs(
              got.transition_type, expected.transition_type) &&
          (got.target_frame_is_main == expected.target_frame_is_main) &&

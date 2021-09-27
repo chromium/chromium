@@ -18,9 +18,8 @@ namespace web {
 
 // Arguments passed to |shouldAllowRequest:requestInfo:|.
 struct FakeShouldAllowRequestInfo {
-  FakeShouldAllowRequestInfo(
-      NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info);
+  FakeShouldAllowRequestInfo(NSURLRequest* request,
+                             WebStatePolicyDecider::RequestInfo request_info);
   ~FakeShouldAllowRequestInfo();
   NSURLRequest* request = nil;
   WebStatePolicyDecider::RequestInfo request_info;

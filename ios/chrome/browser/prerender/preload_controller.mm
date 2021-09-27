@@ -567,8 +567,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 #pragma mark - CRWWebStatePolicyDecider
 
 - (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const WebStatePolicyDecider::RequestInfo&)requestInfo
+               requestInfo:(WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL requestURL = net::GURLWithNSURL(request.URL);
   // Don't allow preloading for requests that are handled by opening another

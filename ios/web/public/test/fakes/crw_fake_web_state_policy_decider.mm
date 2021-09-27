@@ -14,7 +14,7 @@ namespace web {
 
 FakeShouldAllowRequestInfo::FakeShouldAllowRequestInfo(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info)
+    WebStatePolicyDecider::RequestInfo request_info)
     : request(request), request_info(request_info) {}
 
 FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
@@ -50,8 +50,7 @@ FakeDecidePolicyForNavigationResponseInfo::
 #pragma mark CRWWebStatePolicyDecider methods -
 
 - (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
+               requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   _shouldAllowRequestInfo =
       std::make_unique<web::FakeShouldAllowRequestInfo>(request, requestInfo);

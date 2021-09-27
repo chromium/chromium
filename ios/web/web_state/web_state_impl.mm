@@ -465,7 +465,7 @@ void WebStateImpl::SetContentsMimeType(const std::string& mime_type) {
 
 void WebStateImpl::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
+    WebStatePolicyDecider::RequestInfo request_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   auto request_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));

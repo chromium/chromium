@@ -12,8 +12,8 @@ namespace web {
 // Compares two web::WebStatePolicyDecider::RequestInfo. Used to implement
 // Google Mock matcher for tests. This is needed because operator== is not
 // implemented for web::WebStatePolicyDecider::RequestInfo.
-bool RequestInfoMatch(const WebStatePolicyDecider::RequestInfo& expected,
-                      const WebStatePolicyDecider::RequestInfo& got);
+bool RequestInfoMatch(WebStatePolicyDecider::RequestInfo expected,
+                      WebStatePolicyDecider::RequestInfo got);
 
 }  // namespace web
 

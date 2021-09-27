@@ -28,7 +28,7 @@ class NavigationBlockerDecider
       : web::WebStatePolicyDecider(web_state) {}
 
   void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
+                          RequestInfo request_info,
                           PolicyDecisionCallback callback) override {
     std::move(callback).Run(PolicyDecision::Cancel());
   }

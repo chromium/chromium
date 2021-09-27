@@ -134,7 +134,7 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameServerRedirect() {
 
 void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));

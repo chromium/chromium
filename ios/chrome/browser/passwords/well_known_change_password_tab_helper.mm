@@ -50,7 +50,7 @@ void WellKnownChangePasswordTabHelper::DidStartNavigation(
 
 void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   // The custom behaviour is only used if the .well-known/change-password

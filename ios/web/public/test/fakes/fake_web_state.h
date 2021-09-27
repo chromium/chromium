@@ -124,7 +124,7 @@ class FakeWebState : public WebState {
   // to PolicyDecision::Allow().
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
   // Uses |policy_deciders| to determine whether the navigation corresponding to
   // |response| should be allowed. Calls |callback| with the decision. Defaults

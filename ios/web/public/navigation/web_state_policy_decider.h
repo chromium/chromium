@@ -111,7 +111,7 @@ class WebStatePolicyDecider {
   // |callback| with the decision. Never called in the following cases:
   //  - same-document back-forward and state change navigations
   virtual void ShouldAllowRequest(NSURLRequest* request,
-                                  const RequestInfo& request_info,
+                                  RequestInfo request_info,
                                   PolicyDecisionCallback callback);
 
   // Asks the decider whether the navigation corresponding to |response| should

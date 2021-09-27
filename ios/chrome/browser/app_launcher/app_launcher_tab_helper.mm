@@ -163,7 +163,7 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
 
 void AppLauncherTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   if (!IsAppUrl(request_url)) {

@@ -18,8 +18,7 @@ typedef void (^PolicyDecisionHandler)(
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
 - (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
+               requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler;
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
@@ -50,7 +49,7 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
 
   // web::WebStatePolicyDecider methods.
   void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
+                          RequestInfo request_info,
                           PolicyDecisionCallback callback) override;
 
   void ShouldAllowResponse(NSURLResponse* response,

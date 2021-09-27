@@ -127,7 +127,7 @@ class AccountConsistencyService::AccountConsistencyHandler
   // web::WebStatePolicyDecider override.
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
+      web::WebStatePolicyDecider::RequestInfo request_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   // Decides on navigation corresponding to |response| whether the navigation
   // should continue and updates authentication cookies on Google domains.
@@ -167,7 +167,7 @@ AccountConsistencyService::AccountConsistencyHandler::AccountConsistencyHandler(
 
 void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL url = net::GURLWithNSURL(request.URL);
   if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&

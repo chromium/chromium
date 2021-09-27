@@ -19,7 +19,7 @@ class PolicyUrlBlockingTabHelper
   // web::WebStatePolicyDecider
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
+      web::WebStatePolicyDecider::RequestInfo request_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:

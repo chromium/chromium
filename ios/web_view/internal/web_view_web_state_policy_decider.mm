@@ -21,7 +21,7 @@ WebViewWebStatePolicyDecider::WebViewWebStatePolicyDecider(
 
 void WebViewWebStatePolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
+    WebStatePolicyDecider::RequestInfo request_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   id<CWVNavigationDelegate> delegate = web_view_.navigationDelegate;
   if ([delegate respondsToSelector:@selector

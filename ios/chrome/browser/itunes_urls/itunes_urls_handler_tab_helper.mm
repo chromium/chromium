@@ -113,7 +113,7 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
 
 void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Don't Handle URLS in Off The record mode as this will open StoreKit with
   // Users' iTunes account. Also don't Handle navigations in iframe because they

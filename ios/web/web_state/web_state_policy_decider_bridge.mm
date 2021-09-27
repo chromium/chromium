@@ -19,7 +19,7 @@ WebStatePolicyDeciderBridge::~WebStatePolicyDeciderBridge() = default;
 
 void WebStatePolicyDeciderBridge::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info,
+    RequestInfo request_info,
     PolicyDecisionCallback callback) {
   if ([decider_ respondsToSelector:@selector
                 (shouldAllowRequest:requestInfo:decisionHandler:)]) {

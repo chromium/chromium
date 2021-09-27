@@ -122,7 +122,7 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
 
   MOCK_METHOD3(ShouldAllowRequest,
                void(NSURLRequest* request,
-                    const WebStatePolicyDecider::RequestInfo& request_info,
+                    WebStatePolicyDecider::RequestInfo request_info,
                     WebStatePolicyDecider::PolicyDecisionCallback callback));
 
   MOCK_METHOD2(ShouldAllowErrorPageToBeDisplayed,

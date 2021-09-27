@@ -761,13 +761,13 @@ class PolicyDeciderMock : public WebStatePolicyDecider {
 
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     MockShouldAllowRequest(request, request_info, callback);
   }
   MOCK_METHOD3(MockShouldAllowRequest,
                void(NSURLRequest*,
-                    const WebStatePolicyDecider::RequestInfo& request_info,
+                    WebStatePolicyDecider::RequestInfo request_info,
                     WebStatePolicyDecider::PolicyDecisionCallback& callback));
   MOCK_METHOD3(ShouldAllowResponse,
                void(NSURLResponse*,
