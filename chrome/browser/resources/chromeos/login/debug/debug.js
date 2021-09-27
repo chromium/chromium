@@ -208,6 +208,10 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.OTHER,
     },
     {
+      id: 'os-trial',
+      kind: ScreenKind.OTHER,
+    },
+    {
       id: 'debugging',
       kind: ScreenKind.OTHER,
     },

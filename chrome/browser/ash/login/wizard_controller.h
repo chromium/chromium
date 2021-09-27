@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
+#include "chrome/browser/ash/login/screens/os_trial_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
@@ -55,6 +55,7 @@
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/geolocation/geoposition.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -278,6 +279,7 @@ class WizardController {
   void ShowEduCoexistenceLoginScreen();
   void ShowParentalHandoffScreen();
   void ShowOsInstallScreen();
+  void ShowOsTrialScreen();
   void ShowLacrosDataMigrationScreen();
   void ShowConsolidatedConsentScreen();
 
@@ -349,6 +351,7 @@ class WizardController {
   void OnParentalHandoffScreenExit(ParentalHandoffScreen::Result result);
   void OnOfflineLoginScreenExit(OfflineLoginScreen::Result result);
   void OnOsInstallScreenExit();
+  void OnOsTrialScreenExit(OsTrialScreen::Result result);
   void OnConsolidatedConsentScreenExit(
       ConsolidatedConsentScreen::Result result);
 

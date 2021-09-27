@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -21,6 +23,9 @@ namespace {
 
 const test::UIPath kWelcomeScreen = {"connect", "welcomeScreen"};
 const test::UIPath kOsInstallButton = {"connect", "welcomeScreen", "osInstall"};
+
+const test::UIPath kOsTrialInstallRadioButton = {"os-trial", "installButton"};
+const test::UIPath kOsTrialNextButton = {"os-trial", "nextButton"};
 
 const test::UIPath kOsInstallExitButton = {"os-install", "osInstallExitButton"};
 const test::UIPath kOsInstallIntroNextButton = {"os-install",
@@ -77,6 +82,11 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
   void AdvanceToOsInstallScreen() {
     OobeScreenWaiter(WelcomeView::kScreenId).Wait();
     test::OobeJS().TapOnPath(kOsInstallButton);
+
+    OobeScreenWaiter(OsTrialScreenView::kScreenId).Wait();
+    test::OobeJS().ExpectHasAttribute("checked", kOsTrialInstallRadioButton);
+    test::OobeJS().ClickOnPath(kOsTrialNextButton);
+
     OobeScreenWaiter(OsInstallScreenView::kScreenId).Wait();
     test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
   }
@@ -168,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallBackNavigation) {
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
   // Exit os install flow
   test::OobeJS().TapOnPath(kOsInstallExitButton);
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
+  OobeScreenWaiter(OsTrialScreenView::kScreenId).Wait();
 }
 
 // Check that if no destination device is found, the error step is shown.

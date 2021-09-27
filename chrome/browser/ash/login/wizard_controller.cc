@@ -151,6 +151,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
@@ -753,6 +754,10 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
         oobe_ui->GetView<OsInstallScreenHandler>(),
         base::BindRepeating(&WizardController::OnOsInstallScreenExit,
                             weak_factory_.GetWeakPtr())));
+    append(std::make_unique<OsTrialScreen>(
+        oobe_ui->GetView<OsTrialScreenHandler>(),
+        base::BindRepeating(&WizardController::OnOsTrialScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   return result;
@@ -962,6 +967,10 @@ void WizardController::ShowOsInstallScreen() {
   SetCurrentScreen(GetScreen(OsInstallScreenView::kScreenId));
 }
 
+void WizardController::ShowOsTrialScreen() {
+  SetCurrentScreen(GetScreen(OsTrialScreenView::kScreenId));
+}
+
 void WizardController::ShowConsolidatedConsentScreen() {
   SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
 }
@@ -1129,6 +1138,25 @@ void WizardController::OnOsInstallScreenExit() {
   }
 }
 
+void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
+  OnScreenExit(OsTrialScreenView::kScreenId,
+               OsTrialScreen::GetResultString(result));
+  switch (result) {
+    case OsTrialScreen::Result::BACK:
+      // The OS Trial screen is only shown when OS Installation is started from
+      // the welcome screen, so if the back button was clicked we go back to
+      // the welcome screen.
+      ShowWelcomeScreen();
+      break;
+    case OsTrialScreen::Result::NEXT_TRY:
+      ShowNetworkScreen();
+      break;
+    case OsTrialScreen::Result::NEXT_INSTALL:
+      ShowOsInstallScreen();
+      break;
+  }
+}
+
 void WizardController::SkipToLoginForTesting() {
   VLOG(1) << "WizardController::SkipToLoginForTesting()";
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId)
@@ -1200,7 +1228,7 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
       ShowEnableDebuggingScreen();
       return;
     case WelcomeScreen::Result::START_OS_INSTALL:
-      AdvanceToScreen(OsInstallScreenView::kScreenId);
+      ShowOsTrialScreen();
       return;
     case WelcomeScreen::Result::NEXT:
       ShowNetworkScreen();
@@ -2024,6 +2052,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == LocaleSwitchView::kScreenId ||
              screen_id == OfflineLoginView::kScreenId ||
              screen_id == OsInstallScreenView::kScreenId ||
+             screen_id == OsTrialScreenView::kScreenId ||
              screen_id == ParentalHandoffScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {

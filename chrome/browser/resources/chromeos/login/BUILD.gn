@@ -124,6 +124,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "components/buttons/oobe_icon_button.html",
     "components/buttons/oobe_icon_button.js",
     "components/common_styles/common_styles.html",
+    "components/common_styles/cr_card_radio_group_styles.html",
     "components/common_styles/oobe_flex_layout_styles.html",
     "components/common_styles/oobe_dialog_host_styles.html",
     "components/dialogs/oobe_adaptive_dialog.html",

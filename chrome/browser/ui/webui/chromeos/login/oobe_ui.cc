@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_display_chooser.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
@@ -553,6 +554,8 @@ void OobeUI::ConfigureOobeDisplay() {
   if (switches::IsOsInstallAllowed()) {
     AddScreenHandler(
         std::make_unique<OsInstallScreenHandler>(js_calls_container_.get()));
+    AddScreenHandler(
+        std::make_unique<OsTrialScreenHandler>(js_calls_container_.get()));
   }
 
   AddScreenHandler(std::make_unique<ConsolidatedConsentScreenHandler>(

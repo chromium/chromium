@@ -1865,6 +1865,8 @@ source_set("chromeos") {
     "../ash/login/screens/offline_login_screen.h",
     "../ash/login/screens/os_install_screen.cc",
     "../ash/login/screens/os_install_screen.h",
+    "../ash/login/screens/os_trial_screen.cc",
+    "../ash/login/screens/os_trial_screen.h",
     "../ash/login/screens/packaged_license_screen.cc",
     "../ash/login/screens/packaged_license_screen.h",
     "../ash/login/screens/parental_handoff_screen.cc",
