@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -316,7 +318,10 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 }
 
 LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
-    : frame_(frame) {
+    : frame_(frame),
+      loading_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.LocalFrameMojoHandler")) {
   frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
@@ -823,19 +828,20 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Value> result;
+  loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kLoading);
   if (!CallMethodOnFrame(frame_, object_name, method_name, std::move(arguments),
                          converter.get())
            .ToLocal(&result)) {
     std::move(callback).Run({});
-    return;
-  }
-
-  if (wants_result) {
+  } else if (wants_result) {
     std::move(callback).Run(
         GetJavaScriptExecutionResult(result, frame_, converter.get()));
   } else {
     std::move(callback).Run({});
   }
+
+  loading_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequest(
@@ -844,6 +850,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
     JavaScriptExecuteRequestCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
                        TRACE_EVENT_SCOPE_THREAD);
+
+  loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kLoading);
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Value> result =
@@ -861,6 +869,9 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
   } else {
     std::move(callback).Run({});
   }
+
+  loading_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
@@ -924,6 +935,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
     return;
   }
 
+  loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kLoading);
+
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   scoped_refptr<DOMWrapperWorld> isolated_world =
       DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(frame_), world_id);
@@ -935,6 +948,9 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
       MakeGarbageCollected<JavaScriptIsolatedWorldRequest>(
           frame_, wants_result, std::move(callback)));
   executor->Run();
+
+  loading_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
 
 #if defined(OS_MAC)
