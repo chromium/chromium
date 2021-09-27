@@ -180,9 +180,10 @@ class DeclarativeNetRequestBrowserTest
       public ::testing::WithParamInterface<ExtensionLoadType> {
  public:
   DeclarativeNetRequestBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kFledgeInterestGroups,
-                                    blink::features::kFledgeInterestGroupAPI},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+        {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 

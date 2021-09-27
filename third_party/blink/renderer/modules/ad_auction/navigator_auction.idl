@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Partial Navigator interface for the FLEDGE ad-serving experiment.
-// https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+// Partial Navigator interface for ad-serving experiments.
+// FLEDGE: https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+// PARAKEET:
+// https://github.com/WICG/privacy-preserving-ads/blob/main/Parakeet.md
+// Common interest group APIs are behind AdInterestGroupAPI and specific ad
+// serving APIs are behing Fledge and Parakeet respectively.
 
 [
   ImplementedAs=NavigatorAuction,
-  RuntimeEnabled=FledgeInterestGroupAPI,
+  RuntimeEnabled=AdInterestGroupAPI,
   SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, Measure, RaisesException]
@@ -19,6 +23,14 @@
   [CallWith=ScriptState, Measure]
   void updateAdInterestGroups();
 
-  [CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
   Promise<USVString?> runAdAuction(AuctionAdConfig config);
+
+  // https://crbug.com/1249186
+  // ToDo: Fully define params and types.
+  [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
+  Promise<void> createAdRequest();
+
+  [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
+  Promise<void> finalizeAd();
 };

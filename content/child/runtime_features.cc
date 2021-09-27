@@ -332,6 +332,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // function and using feature string name with EnableFeatureFromString.
   const RuntimeFeatureToChromiumFeatureMap<const char*>
       runtimeFeatureNameToChromiumFeatureMapping[] = {
+          {"AdInterestGroupAPI", blink::features::kAdInterestGroupAPI},
           {"AllowContentInitiatedDataUrlNavigations",
            features::kAllowContentInitiatedDataUrlNavigations},
           {"AutofillShadowDOM", blink::features::kAutofillShadowDOM},
@@ -355,10 +356,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
           {"FileHandling", blink::features::kFileHandlingAPI},
+          {"Fledge", blink::features::kFledge},
           {"FontAccess", blink::features::kFontAccess},
           {"FontAccessPersistent", blink::features::kFontAccessPersistent},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
-          {"FledgeInterestGroupAPI", blink::features::kFledgeInterestGroupAPI},
           {"ForceSynchronousHTMLParsing",
            blink::features::kForceSynchronousHTMLParsing},
           {"InterestCohortFeaturePolicy",
@@ -374,6 +375,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kOffsetParentNewSpecBehavior},
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
+          {"Parakeet", blink::features::kParakeet},
           {"PrefersColorSchemeClientHintHeader",
            blink::features::kPrefersColorSchemeClientHintHeader},
           {"SanitizerAPI", blink::features::kSanitizerAPI},

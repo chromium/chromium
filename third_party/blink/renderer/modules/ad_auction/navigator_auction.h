@@ -56,6 +56,14 @@ class MODULES_EXPORT NavigatorAuction final
                                     const AuctionAdConfig*,
                                     ExceptionState&);
 
+  // TODO(https://crbug.com/1249186): Add full impl of methods.
+  ScriptPromise createAdRequest(ScriptState*, ExceptionState&);
+  static ScriptPromise createAdRequest(ScriptState*,
+                                       Navigator&,
+                                       ExceptionState&);
+  ScriptPromise finalizeAd(ScriptState*, ExceptionState&);
+  static ScriptPromise finalizeAd(ScriptState*, Navigator&, ExceptionState&);
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
     Supplement<Navigator>::Trace(visitor);

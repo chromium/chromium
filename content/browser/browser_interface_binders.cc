@@ -989,7 +989,7 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&KeyboardLockServiceImpl::CreateMojoService));
   map->Add<blink::mojom::FlocService>(
       base::BindRepeating(&FlocServiceImpl::CreateMojoService));
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeInterestGroups)) {
+  if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
     map->Add<blink::mojom::AdAuctionService>(
         base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));
   }

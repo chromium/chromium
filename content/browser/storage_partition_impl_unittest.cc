@@ -876,7 +876,7 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     ConversionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures({blink::features::kFledgeInterestGroups},
+    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage},
                                    {});
   }
 

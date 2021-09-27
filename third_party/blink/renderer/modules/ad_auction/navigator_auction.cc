@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
@@ -465,8 +466,8 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   String error_field_name;
   String error_field_value;
   String error;
-  if (!ValidateBlinkInterestGroup(
-          *mojo_group, error_field_name, error_field_value, error)) {
+  if (!ValidateBlinkInterestGroup(*mojo_group, error_field_name,
+                                  error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));
     return;
@@ -559,6 +560,43 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   return From(ExecutionContext::From(script_state), navigator)
       .runAdAuction(script_state, config, exception_state);
+}
+
+ScriptPromise NavigatorAuction::createAdRequest(ScriptState* script_state,
+                                                ExceptionState&) {
+  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
+  // return a resolved promise.
+  return ScriptPromise::RejectWithDOMException(
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kNotSupportedError,
+                        "createAdRequest API not yet implemented"));
+}
+
+/* static */
+ScriptPromise NavigatorAuction::createAdRequest(
+    ScriptState* script_state,
+    Navigator& navigator,
+    ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .createAdRequest(script_state, exception_state);
+}
+
+ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
+                                           ExceptionState&) {
+  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
+  // return a resolved promise.
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "finalizeAd API not yet implemented"));
+}
+
+/* static */
+ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
+                                           Navigator& navigator,
+                                           ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .finalizeAd(script_state, exception_state);
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,

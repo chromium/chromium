@@ -939,17 +939,24 @@ const base::Feature kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes{
     "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Kill switch for the Fledge Interest Group API, i.e. if disabled, the
+// Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
-// (See https://github.com/WICG/turtledove/blob/main/FLEDGE.md.)
-// Enables FLEDGE implementation. See https://crbug.com/1186444.
-const base::Feature kFledgeInterestGroups{"FledgeInterestGroups",
+const base::Feature kInterestGroupStorage{"InterestGroupStorage",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable the availability of the Fledge interest group API as part of the
-// origin trial.
-const base::Feature kFledgeInterestGroupAPI{"FledgeInterestGroupAPI",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// Enable the availability of the ad interest group API as part of the
+// origin trial for FLEDGE or PARAKEET.
+const base::Feature kAdInterestGroupAPI{"AdInterestGroupAPI",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature flag to enable PARAKEET implementation (See
+// https://github.com/WICG/privacy-preserving-ads/blob/main/Parakeet.md).
+// See also https://crbug.com/1249186.
+const base::Feature kParakeet{"Parakeet", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+// Enables FLEDGE implementation. See https://crbug.com/1186444.
+const base::Feature kFledge{"Fledge", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the ability to minimize processing in the WebRTC APM when all audio
 // tracks are disabled. If disabled, the APM in WebRTC will ignore attempts to

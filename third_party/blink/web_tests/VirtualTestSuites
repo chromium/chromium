@@ -1109,7 +1109,12 @@
       "fast/css/fontfaceset-multiple-families.html",
       "fast/css/unused-data-url-fontface.html"
     ],
-    "args": ["--disable-features=SyncLoadDataUrlFonts"]
+    "args": [ "--disable-features=SyncLoadDataUrlFonts" ]
+  },
+  {
+    "prefix": "parakeet",
+    "bases": ["external/wpt/parakeet"],
+    "args": ["--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet"]
   },
   {
     "prefix": "automatic-lazy-frame-loading",

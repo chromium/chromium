@@ -1305,7 +1305,7 @@ void StoragePartitionImpl::Initialize(
         this, path, special_storage_policy_);
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeInterestGroups)) {
+  if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
     interest_group_manager_ = std::make_unique<InterestGroupManager>(
         path, is_in_memory(), GetURLLoaderFactoryForBrowserProcess());
   }

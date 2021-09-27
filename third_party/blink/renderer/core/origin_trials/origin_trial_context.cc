@@ -419,7 +419,7 @@ void OriginTrialContext::AddForceEnabledTrials(
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "HandwritingRecognition") {
     return base::FeatureList::IsEnabled(
-               features::kHandwritingRecognitionWebPlatformApiFinch);
+        features::kHandwritingRecognitionWebPlatformApiFinch);
   }
   if (trial_name == "Portals")
     return base::FeatureList::IsEnabled(features::kPortals);
@@ -433,8 +433,8 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "ComputePressure")
     return base::FeatureList::IsEnabled(features::kComputePressure);
 
-  if (trial_name == "FledgeInterestGroupAPI")
-    return base::FeatureList::IsEnabled(features::kFledgeInterestGroups);
+  if (trial_name == "AdInterestGroupAPI")
+    return base::FeatureList::IsEnabled(features::kInterestGroupStorage);
 
   if (trial_name == "TrustTokens")
     return base::FeatureList::IsEnabled(network::features::kTrustTokens);

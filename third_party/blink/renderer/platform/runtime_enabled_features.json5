@@ -154,6 +154,11 @@
       implied_by: ["CorsRFC1918"],
     },
     {
+      name: "AdInterestGroupAPI",
+      origin_trial_feature_name: "AdInterestGroupAPI",
+      implied_by: ["Fledge", "Parakeet"],
+    },
+    {
       name: "AdTagging",
       status: "test",
     },
@@ -1066,8 +1071,8 @@
       status: "experimental",
     },
     {
-      name: "FledgeInterestGroupAPI",
-      origin_trial_feature_name: "FledgeInterestGroupAPI",
+      name: "Fledge",
+      origin_trial_feature_name: "Fledge",
     },
     {
       name: "FocuslessSpatialNavigation",
@@ -1654,6 +1659,10 @@
     {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
+    },
+    {
+      name: "Parakeet",
+      origin_trial_feature_name: "Parakeet",
     },
     {
       // This flag enables the Manifest parser to handle URL Protocols.

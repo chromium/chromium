@@ -187,7 +187,7 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   RestrictedInterestGroupStoreImplTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeInterestGroups);
+    feature_list_.InitAndEnableFeature(blink::features::kInterestGroupStorage);
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }

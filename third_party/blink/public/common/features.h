@@ -389,9 +389,16 @@ BLINK_COMMON_EXPORT extern const base::Feature kJXL;
 BLINK_COMMON_EXPORT extern const base::Feature
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes;
 
-// Master control for Fledge Interest Group feature
-BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroups;
-BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
+// Main controls for ad serving API features.
+//
+// Backend storage + kill switch for Interest Group API  origin trials.
+BLINK_COMMON_EXPORT extern const base::Feature kInterestGroupStorage;
+// Interest Group JS API/runtimeflag.
+BLINK_COMMON_EXPORT extern const base::Feature kAdInterestGroupAPI;
+// PARAKEET ad serving runtime flag/JS API.
+BLINK_COMMON_EXPORT extern const base::Feature kParakeet;
+// FLEDGE ad serving runtime flag/JS API.
+BLINK_COMMON_EXPORT extern const base::Feature kFledge;
 
 // Control switch for minimizing processing in the WebRTC APM when all audio
 // tracks are disabled.

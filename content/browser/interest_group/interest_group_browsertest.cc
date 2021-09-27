@@ -126,9 +126,11 @@ class UpdateResponder {
 class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kFledgeInterestGroups,
-                                    blink::features::kFledgeInterestGroupAPI},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
+         blink::features::kFledge},
+        {});
   }
 
   ~InterestGroupBrowserTest() override {
@@ -337,6 +339,38 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 })())",
                       auction_config_json.c_str()));
+  }
+
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  content::EvalJsResult CreateAdRequestAndWait(
+      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
+      WARN_UNUSED_RESULT {
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  R"(
+(async function() {
+  try {
+    return await navigator.createAdRequest();
+  } catch (e) {
+    return e.toString();
+  }
+})())");
+  }
+
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  content::EvalJsResult FinalizeAdAndWait(
+      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
+      WARN_UNUSED_RESULT {
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  R"(
+(async function() {
+  try {
+    return await navigator.finalizeAd();
+  } catch (e) {
+    return e.toString();
+  }
+})())");
   }
 
   // Waits until the `condition` callback over the interest groups returns true.
@@ -2423,6 +2457,24 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       "{\"even\": \"more\", \"x\": 4.5}";
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
+}
+
+// Validate that createAdRequest is available and be successfully called as part
+// of PARAKEET.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CreateAdRequestWorks) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ("NotSupportedError: createAdRequest API not yet implemented",
+            CreateAdRequestAndWait());
+}
+
+// Validate that finalizeAd is available and be successfully called as part of
+// PARAKEET.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FinalizeAdWorks) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ("NotSupportedError: finalizeAd API not yet implemented",
+            FinalizeAdAndWait());
 }
 
 }  // namespace
