@@ -11,16 +11,6 @@
       "all"
     ]
   },
-  "Linux Builder (core-32) (goma)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "Linux Builder (core-32) (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Linux Builder (deps-cache) (reclient)": {
     "additional_compile_targets": [
       "all"
@@ -469,16 +459,6 @@
     ]
   },
   "TSAN Debug (reclient)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
-  "TSAN Release (core-32) (goma)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
-  "TSAN Release (core-32) (reclient)": {
     "additional_compile_targets": [
       "chromium_builder_asan"
     ]
