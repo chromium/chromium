@@ -34686,6 +34686,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4049" label="ClientHintsViewportWidth"/>
   <int value="4050" label="InlineBoxIgnoringContinuation"/>
   <int value="4051" label="OffsetWidthOrHeightIgnoringContinuation"/>
+  <int value="4052" label="ConditionalFocus"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

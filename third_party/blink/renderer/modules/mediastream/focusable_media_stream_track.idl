@@ -23,6 +23,6 @@ interface FocusableMediaStreamTrack : MediaStreamTrack {
   // Promise<MediaStream> is resolved, or if the call comes too late due
   // to processing delays, the user agent assumes an implicit call with |focus|
   // set to a value decided by the user agent itself.
-  [CallWith = ExecutionContext, RaisesException]
+  [CallWith = ExecutionContext, RaisesException, MeasureAs = ConditionalFocus]
   void focus(CaptureStartFocusBehavior focus_behavior);
 };
