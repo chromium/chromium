@@ -769,6 +769,10 @@ void NativeIOFileManager::DeleteImpl(String name,
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(
         resolver, mojom::blink::NativeIOError::New(
@@ -787,6 +791,10 @@ void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
       << "called without checking if storage access was allowed";
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
 
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(
@@ -808,6 +816,10 @@ void NativeIOFileManager::RenameImpl(String old_name,
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(
         resolver, mojom::blink::NativeIOError::New(
@@ -826,6 +838,10 @@ void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
       << "called without checking if storage access was allowed";
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
 
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(
