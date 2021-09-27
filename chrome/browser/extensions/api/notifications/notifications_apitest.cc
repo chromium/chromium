@@ -27,16 +27,15 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -74,12 +73,12 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   const Extension* LoadExtensionAndWait(
       const std::string& test_name) {
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
-    content::WindowedNotificationObserver page_created(
-        extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
+    extensions::ExtensionHostTestHelper host_helper(profile());
+    host_helper.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
     const extensions::Extension* extension = LoadExtension(extdir);
     if (extension) {
-      page_created.Wait();
+      host_helper.WaitForDocumentElementAvailable();
     }
     return extension;
   }
