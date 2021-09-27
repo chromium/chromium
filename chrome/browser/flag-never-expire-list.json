@@ -102,6 +102,7 @@
   "system-keyboard-lock",
   "tint-composited-content",
   "top-chrome-touch-ui",
+  "translate-force-trigger-on-english",
   "ui-debug-tools",
   "ui-disable-partial-swap",
   "ui-slow-animations",
