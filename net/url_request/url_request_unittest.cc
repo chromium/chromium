@@ -12319,11 +12319,12 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
+  DCHECK(request.ssl_info);
+
   if (request.GetURL().path() != "/zerortt")
     return nullptr;
-  auto iter = request.headers.find("Early-Data");
-  bool zero_rtt = iter != request.headers.end() && iter->second == "1";
-  return std::make_unique<ZeroRTTResponse>(zero_rtt, false);
+  return std::make_unique<ZeroRTTResponse>(
+      request.ssl_info->early_data_received, false);
 }
 
 }  // namespace
@@ -12622,13 +12623,14 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataNonIdempotentRequestTest) {
 std::unique_ptr<test_server::HttpResponse> HandleTooEarly(
     bool* sent_425,
     const test_server::HttpRequest& request) {
+  DCHECK(request.ssl_info);
+
   if (request.GetURL().path() != "/tooearly")
     return nullptr;
-  auto iter = request.headers.find("Early-Data");
-  bool zero_rtt = iter != request.headers.end() && iter->second == "1";
-  if (zero_rtt)
+  if (request.ssl_info->early_data_received)
     *sent_425 = true;
-  return std::make_unique<ZeroRTTResponse>(zero_rtt, true);
+  return std::make_unique<ZeroRTTResponse>(
+      request.ssl_info->early_data_received, true);
 }
 
 // Test that we handle 425 (Too Early) correctly.

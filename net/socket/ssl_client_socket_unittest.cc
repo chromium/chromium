@@ -1362,16 +1362,11 @@ class ZeroRTTResponse : public test_server::HttpResponse {
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
-  if (request.GetURL().path() != "/zerortt")
+  if (request.GetURL().path() != "/zerortt" || !request.ssl_info)
     return nullptr;
-  bool zero_rtt = false;
-  if (request.headers.find("Early-Data") != request.headers.end()) {
-    if (request.headers.at("Early-Data") == "1") {
-      zero_rtt = true;
-    }
-  }
 
-  return std::make_unique<ZeroRTTResponse>(zero_rtt);
+  return std::make_unique<ZeroRTTResponse>(
+      request.ssl_info->early_data_received);
 }
 
 class SSLClientSocketZeroRTTTest : public SSLClientSocketTest {

@@ -85,11 +85,8 @@ bool Http1Connection::HandleReadResult(int rv) {
   std::unique_ptr<HttpRequest> request = request_parser_.GetRequest();
 
   SSLInfo ssl_info;
-  if (socket_->GetSSLInfo(&ssl_info)) {
+  if (socket_->GetSSLInfo(&ssl_info))
     request->ssl_info = ssl_info;
-    if (ssl_info.early_data_received)
-      request->headers["Early-Data"] = "1";
-  }
 
   server_delegate_->HandleRequest(weak_factory_.GetWeakPtr(),
                                   std::move(request));
