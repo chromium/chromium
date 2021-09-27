@@ -86952,6 +86952,7 @@ others/histograms.xml -->
   <int value="1668389814" label="Art"/>
   <int value="1804492839" label="Colors"/>
   <int value="1894705443" label="Leisure"/>
+  <int value="1914850019" label="Heritage"/>
   <int value="2084467495" label="Dessert time"/>
   <int value="2094027636" label="Solid colors"/>
 </enum>
@@ -86982,8 +86983,11 @@ others/histograms.xml -->
   <int value="-2111482612" label="Solid Colors - 7593482887976204"/>
   <int value="-2110074118" label="Togetherness - 18444149073834070778"/>
   <int value="-2094648855" label="Solid Colors - 3931714047324649"/>
+  <int value="-2088281608" label="Heritage - 331011041221112"/>
+  <int value="-2079643564" label="Heritage - 18441528924770609236"/>
   <int value="-2075846537" label="Composition - 18446099444287215735"/>
   <int value="-2052639994" label="Landscapes - 3406001502368518"/>
+  <int value="-2036802440" label="Heritage - 18444825093169798264"/>
   <int value="-2034367398" label="Landscapes - 8363308608259162"/>
   <int value="-2028697222" label="Made by Canvas - 18438928296354023802"/>
   <int value="-2010890067" label="Cityscapes - 18441361086107369645"/>
@@ -86994,6 +86998,7 @@ others/histograms.xml -->
   <int value="-1938230489" label="Element - 18440708087942279975"/>
   <int value="-1916450445" label="Art - 18446537445211457907"/>
   <int value="-1910580223" label="Solid Colors - 18444350009783540737"/>
+  <int value="-1890583571" label="Heritage - 8492875030461421"/>
   <int value="-1886552792" label="Art - 8008196565073192"/>
   <int value="-1879435782" label="Illustrations - 6677967891207674"/>
   <int value="-1878774587" label="Landscapes - 5675002833939653"/>
@@ -87002,6 +87007,7 @@ others/histograms.xml -->
   <int value="-1848694292" label="Solid Colors - 18444545048605305324"/>
   <int value="-1842680590" label="Illustrations - 4696317262228722"/>
   <int value="-1834253570" label="Element - 7403164574384894"/>
+  <int value="-1763557434" label="Heritage - 18439582183915143110"/>
   <int value="-1756893570" label="Leisure - 7392551787556478"/>
   <int value="-1747187714" label="Landscapes - 776841872541694"/>
   <int value="-1741914332" label="Solid Colors - 962603508334372"/>
@@ -87009,6 +87015,7 @@ others/histograms.xml -->
   <int value="-1689000484" label="Togetherness - 18439295116965570012"/>
   <int value="-1686380267" label="Cityscapes - 1581190523642133"/>
   <int value="-1677513839" label="Solid Colors - 3228924670847889"/>
+  <int value="-1667225463" label="Heritage - 18443680188402247817"/>
   <int value="-1666643127" label="Art - 113140656835401"/>
   <int value="-1665140063" label="Art - 7267821734066849"/>
   <int value="-1639283780" label="Leisure - 18443165363585319868"/>
@@ -87035,6 +87042,7 @@ others/histograms.xml -->
   <int value="-1397020104" label="Cityscapes - 3452989100206648"/>
   <int value="-1389216897" label="Landscapes - 3716322142862207"/>
   <int value="-1382225891" label="Landscapes - 7848789358209053"/>
+  <int value="-1379111552" label="Heritage - 6939063748423040"/>
   <int value="-1346329828" label="Collage - 302823912809244"/>
   <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
   <int value="-1308168417" label="Solid Colors - 737212648320799"/>
@@ -87044,6 +87052,7 @@ others/histograms.xml -->
   <int value="-1274675052" label="Art - 2851414628237460"/>
   <int value="-1215416857" label="Element - 18445289040653465063"/>
   <int value="-1206721847" label="Made by Canvas - 18440189784905409225"/>
+  <int value="-1201999266" label="Heritage - 8821217378890334"/>
   <int value="-1196759923" label="Collage - 18443143257831171213"/>
   <int value="-1196759879" label="Landscapes - 998419785770169"/>
   <int value="-1194600035" label="Landscapes - 18439590254727649693"/>
@@ -87104,6 +87113,7 @@ others/histograms.xml -->
   <int value="-435188694" label="Art - 18444631610789694506"/>
   <int value="-387775828" label="Cityscapes - 18438479018645979820"/>
   <int value="-359510740" label="Solid Colors - 18440625901026823468"/>
+  <int value="-347674537" label="Heritage - 6951507300116567"/>
   <int value="-344702098" label="Landscapes - 18446494149217895278"/>
   <int value="-335909288" label="Art - 6686963096251992"/>
   <int value="-329960828" label="Landscapes - 18445540125327045252"/>
@@ -87114,6 +87124,7 @@ others/histograms.xml -->
   <int value="-288029248" label="Illustrations - 3023519249401280"/>
   <int value="-275592484" label="Art - 18438681316012772060"/>
   <int value="-264921592" label="Leisure - 18439547692531424776"/>
+  <int value="-250481953" label="Heritage - 18442925297777111775"/>
   <int value="-242251369" label="Solid Colors - 2175301908924823"/>
   <int value="-217934385" label="Togetherness - 6948539607455183"/>
   <int value="-213086089" label="Art - 18439421351825281143"/>
@@ -87134,6 +87145,7 @@ others/histograms.xml -->
   <int value="-40293301" label="Landscapes - 6678566730804299"/>
   <int value="-34451659" label="Landscapes - 18443902699405725493"/>
   <int value="-14900592" label="Dessert Time - 18445906920144151184"/>
+  <int value="-8722165" label="Heritage - 7157880817641739"/>
   <int value="-3017196" label="Art - 1230422227940884"/>
   <int value="11921136" label="Art - 18441231667880650480"/>
   <int value="21374230" label="Element - 3650936971339030"/>
@@ -87164,9 +87176,12 @@ others/histograms.xml -->
   <int value="414767910" label="Imaginary - 18446088339992402726"/>
   <int value="419310910" label="Dessert Time - 2648504887291198"/>
   <int value="425591336" label="Landscapes - 5270694096929320"/>
+  <int value="427770466" label="Heritage - 3541007689794146"/>
   <int value="460520651" label="Illustrations - 3514056802761931"/>
+  <int value="473587735" label="Heritage - 18443282072844525591"/>
   <int value="474793699" label="Art - 18446204450198308579"/>
   <int value="481651970" label="Solid Colors - 5104143911185666"/>
+  <int value="485050488" label="Heritage - 18444694245218011256"/>
   <int value="500548057" label="Art - 18442613054405722585"/>
   <int value="502222590" label="Illustrations - 3440479759716094"/>
   <int value="507283273" label="Colors - 18438533741719357257"/>
@@ -87181,6 +87196,7 @@ others/histograms.xml -->
   <int value="652440414" label="Togetherness - 18438158975903167326"/>
   <int value="712360087" label="Solid Colors - 18444153758170857623"/>
   <int value="723351331" label="Art - 4590504718989091"/>
+  <int value="731985139" label="Heritage - 3218288446354675"/>
   <int value="732594745" label="Collage - 6982402080145977"/>
   <int value="738877507" label="Leisure - 2226962756689987"/>
   <int value="766726480" label="Leisure - 18440296559765836112"/>
@@ -87207,6 +87223,7 @@ others/histograms.xml -->
   <int value="962509426" label="Solid Colors - 18444943328028834418"/>
   <int value="971331677" label="Cityscapes - 8606754655262813"/>
   <int value="982113383" label="Cityscapes - 7805399667956839"/>
+  <int value="993271315" label="Heritage - 2400861941931539"/>
   <int value="995793386" label="Art - 18440963598480742890"/>
   <int value="996011870" label="Floral - 7430096849596254"/>
   <int value="1006682258" label="Landscapes - 18445475075089023122"/>
@@ -87221,6 +87238,7 @@ others/histograms.xml -->
   <int value="1173629942" label="Colors - 6465464552401910"/>
   <int value="1192252038" label="Cityscapes - 6488081868804742"/>
   <int value="1206215167" label="Art - 18445129029773517311"/>
+  <int value="1243872355" label="Heritage - 18443899384969296995"/>
   <int value="1250920293" label="Art - 18443102780212086629"/>
   <int value="1259225205" label="Composition - 18442882001721507957"/>
   <int value="1280051538" label="Made by Canvas - 3143878686017874"/>
@@ -87245,10 +87263,12 @@ others/histograms.xml -->
   <int value="1517259953" label="Illustrations - 18444680442225331377"/>
   <int value="1520811358" label="Colors - 273157145869662"/>
   <int value="1535000622" label="Imaginary - 1900923995439150"/>
+  <int value="1551836957" label="Heritage - 990184787093277"/>
   <int value="1561201240" label="Solid Colors - 18440201375495096920"/>
   <int value="1567507477" label="Art - 2184344624841749"/>
   <int value="1573305199" label="Collage - 18445466155008572271"/>
   <int value="1581350106" label="Imaginary - 3113861460884698"/>
+  <int value="1593019616" label="Heritage - 18440281880393911520"/>
   <int value="1596391393" label="Solid Colors - 7592202400628705"/>
   <int value="1602775350" label="Dessert Time - 18438498829025700150"/>
   <int value="1608128987" label="Floral - 18440852058792401371"/>
@@ -87296,6 +87316,7 @@ others/histograms.xml -->
   <int value="2096017887" label="Dessert Time - 1656717010973151"/>
   <int value="2111036570" label="Togetherness - 7655330344590490"/>
   <int value="2111289865" label="Cityscapes - 7963176420751881"/>
+  <int value="2143896077" label="Heritage - 6067768730927629"/>
 </enum>
 
 <enum name="WallpaperLayout">
