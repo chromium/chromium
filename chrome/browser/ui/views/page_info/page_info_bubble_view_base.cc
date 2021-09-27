@@ -80,9 +80,6 @@ void PageInfoBubbleViewBase::OnVisibilityChanged(
 
 void PageInfoBubbleViewBase::DidStartNavigation(
     content::NavigationHandle* handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (handle->IsInPrimaryMainFrame())
     GetWidget()->Close();
 }

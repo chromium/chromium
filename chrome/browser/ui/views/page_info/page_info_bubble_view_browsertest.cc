@@ -40,6 +40,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -140,12 +141,21 @@ class PageInfoBubbleViewBrowserTest
   PageInfoBubbleViewBrowserTest& operator=(
       const PageInfoBubbleViewBrowserTest& test) = delete;
 
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 browser()->profile(),
                 base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -165,17 +175,13 @@ class PageInfoBubbleViewBrowserTest
 
   void ExecuteJavaScriptForTests(const std::string& js) {
     base::RunLoop run_loop;
-    browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetMainFrame()
-        ->ExecuteJavaScriptForTests(
-            base::ASCIIToUTF16(js),
-            base::BindOnce(
-                [](base::OnceClosure quit_callback, base::Value result) {
-                  std::move(quit_callback).Run();
-                },
-                run_loop.QuitClosure()));
+    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(js),
+        base::BindOnce(
+            [](base::OnceClosure quit_callback, base::Value result) {
+              std::move(quit_callback).Run();
+            },
+            run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -291,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
             PageInfoBubbleView::GetShownBubbleType());
 
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  web_contents()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
@@ -324,11 +330,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ChromeDevtoolsURL) {
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetMainFrame()
-      ->ViewSource();
+  web_contents()->GetMainFrame()->ViewSource();
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
@@ -376,7 +378,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 // SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE threat type.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        VerifyEnterprisePasswordReusePageInfoBubble) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/")));
@@ -386,8 +387,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
   safe_browsing::ChromePasswordProtectionService* service =
       safe_browsing::ChromePasswordProtectionService::
           GetPasswordProtectionService(browser()->profile());
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
@@ -395,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
       reused_password_account_type);
 
   scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
-      safe_browsing::CreateDummyRequest(contents);
+      safe_browsing::CreateDummyRequest(web_contents());
   service->ShowModalWarning(
       request.get(),
       safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
@@ -409,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
+      SecurityStateTabHelper::FromWebContents(web_contents());
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
       helper->GetVisibleSecurityState();
   ASSERT_EQ(security_state::MALICIOUS_CONTENT_STATUS_ENTERPRISE_PASSWORD_REUSE,
@@ -459,7 +458,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 // SB_THREAT_TYPE_SAVED_PASSWORD_REUSE threat type.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        VerifySavedPasswordReusePageInfoBubble) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/")));
@@ -469,8 +467,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
   safe_browsing::ChromePasswordProtectionService* service =
       safe_browsing::ChromePasswordProtectionService::
           GetPasswordProtectionService(browser()->profile());
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::SAVED_PASSWORD);
@@ -478,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
       reused_password_account_type);
 
   scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
-      safe_browsing::CreateDummyRequest(contents);
+      safe_browsing::CreateDummyRequest(web_contents());
   service->ShowModalWarning(
       request.get(),
       safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
@@ -492,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
+      SecurityStateTabHelper::FromWebContents(web_contents());
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
       helper->GetVisibleSecurityState();
   ASSERT_EQ(security_state::MALICIOUS_CONTENT_STATUS_SAVED_PASSWORD_REUSE,
@@ -570,9 +566,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
-  content::NavigateIframeToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), "test",
-      GetSimplePageUrl());
+  content::NavigateIframeToURL(web_contents(), "test", GetSimplePageUrl());
   // Expect that the bubble is still open even after a subframe navigation has
   // happened.
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
@@ -850,10 +844,8 @@ class ViewFocusTracker : public FocusTracker, public views::ViewObserver {
 // contents pane.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        MAYBE_FocusReturnsToContentOnClose) {
-  content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  WebContentsFocusTracker web_contents_focus_tracker(web_contents);
-  web_contents->Focus();
+  WebContentsFocusTracker web_contents_focus_tracker(web_contents());
+  web_contents()->Focus();
   web_contents_focus_tracker.WaitForFocus(true);
 
   OpenPageInfoBubble(browser());
@@ -882,12 +874,10 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 // before getting back to web contents (see https://crbug.com/910067).
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt) {
-  content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  WebContentsFocusTracker web_contents_focus_tracker(web_contents);
+  WebContentsFocusTracker web_contents_focus_tracker(web_contents());
   ViewFocusTracker location_bar_focus_tracker(
       BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView());
-  web_contents->Focus();
+  web_contents()->Focus();
   web_contents_focus_tracker.WaitForFocus(true);
 
   OpenPageInfoBubble(browser());
@@ -907,4 +897,44 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 // Run tests with kPageInfoV2Desktop flag enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewBrowserTest,
+                         ::testing::Values(false, true));
+
+class PageInfoBubbleViewPrerenderBrowserTest
+    : public PageInfoBubbleViewBrowserTest {
+ public:
+  PageInfoBubbleViewPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&PageInfoBubbleViewBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~PageInfoBubbleViewPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PageInfoBubbleViewBrowserTest::SetUp();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrerenderBrowserTest,
+                       DoesntCloseOnPrerenderNavigate) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
+            PageInfoBubbleView::GetShownBubbleType());
+  OpenPageInfoBubble(browser());
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
+            PageInfoBubbleView::GetShownBubbleType());
+  // Start a prerender.
+  prerender_helper_.AddPrerender(
+      embedded_test_server()->GetURL("/title1.html"));
+  // Ensure the bubble is still open after prerender navigation.
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
+            PageInfoBubbleView::GetShownBubbleType());
+}
+
+// Run tests with kPageInfoV2Desktop flag enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewPrerenderBrowserTest,
                          ::testing::Values(false, true));
