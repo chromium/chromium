@@ -24,7 +24,14 @@ var NewTabPageAppTest = class extends NewTabPageBrowserTest {
   }
 };
 
-TEST_F('NewTabPageAppTest', 'All', function() {
+// TODO(https://crbug.com/1253309): Flaky on Linux debug builds.
+GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_NewTabPageAppTestAll DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_NewTabPageAppTestAll All');
+GEN('#endif');
+
+TEST_F('NewTabPageAppTest', 'MAYBE_NewTabPageAppTestAll', function() {
   mocha.run();
 });
 
