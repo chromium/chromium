@@ -676,18 +676,4 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
   EXPECT_TRUE(activities.empty());
 }
 
-// Verify that we can create a NaCl module by adding the <embed> to the
-// background page, without having to e.g. touch emebed.lastError to
-// trigger the module to load.
-// Disabled due to http://crbug.com/371059.
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, DISABLED_CreateNaClModule) {
-  ExtensionTestMessageListener ready_listener("ready", true);
-  LaunchTestingApp();
-  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  ExtensionTestMessageListener created_listener("created_module:1", false);
-  ready_listener.Reply("create_module_without_hack");
-  EXPECT_TRUE(created_listener.WaitUntilSatisfied());
-}
-
 #endif  //  BUILDFLAG(ENABLE_NACL)
