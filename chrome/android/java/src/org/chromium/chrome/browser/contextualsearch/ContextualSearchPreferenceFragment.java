@@ -59,7 +59,8 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
                 (ChromeManagedPreferenceDelegate)
                         preference -> ContextualSearchPolicy.isContextualSearchDisabledByPolicy());
 
-        seeBetterResultsSwitch.setChecked(ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+        seeBetterResultsSwitch.setChecked(
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
         seeBetterResultsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             ContextualSearchUma.logPrivacyOptInPreferenceChange((boolean) newValue);
             ContextualSearchPolicy.setContextualSearchFullyOptedIn((boolean) newValue);
