@@ -5,3 +5,7 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # For History.ClearBrowsingData.* histograms
 dullweber@chromium.org
+
+# For History.Clusters* histograms
+mcrouse@chromium.org
+sophiechang@chromium.org
