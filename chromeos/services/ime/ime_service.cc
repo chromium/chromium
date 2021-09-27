@@ -78,6 +78,11 @@ void ImeService::ConnectToImeEngine(
     mojo::PendingRemote<mojom::InputChannel> from_engine,
     const std::vector<uint8_t>& extra,
     ConnectToImeEngineCallback callback) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+    std::move(callback).Run(/*bound=*/false);
+    return;
+  }
+
   // There can only be one client using the decoder at any time. There are two
   // possible clients: NativeInputMethodEngine (for physical keyboard) and the
   // XKB extension (for virtual keyboard). The XKB extension may try to

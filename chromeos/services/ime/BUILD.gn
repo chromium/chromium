@@ -25,6 +25,7 @@ source_set("decoder") {
 
   deps = [
     ":constants",
+    "//ash/constants",
     "//base",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
   ]

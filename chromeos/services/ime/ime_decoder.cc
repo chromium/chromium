@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/ime_decoder.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -58,6 +59,10 @@ bool IsEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
 }  // namespace
 
 ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+    return;
+  }
+
   if (g_fake_decoder_entry_points_for_testing) {
     entry_points_ = *g_fake_decoder_entry_points_for_testing;
     status_ = Status::kSuccess;
