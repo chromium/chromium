@@ -506,10 +506,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
 
         String[][] shortcuts = new String[info.shortcutItems().size()][];
+        byte[][] shortcutIconData = new byte[info.shortcutItems().size()][];
         for (int j = 0; j < info.shortcutItems().size(); j++) {
             WebApkExtras.ShortcutItem shortcut = info.shortcutItems().get(j);
             shortcuts[j] = new String[] {shortcut.name, shortcut.shortName, shortcut.launchUrl,
-                    shortcut.iconUrl, shortcut.iconHash, shortcut.icon.encoded()};
+                    shortcut.iconUrl, shortcut.iconHash};
+            shortcutIconData[j] = shortcut.icon.data();
         }
 
         String shareTargetAction = "";
@@ -542,9 +544,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
                 shareTargetAction, shareTargetParamTitle, shareTargetParamText,
                 shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
-                shareTargetParamAccepts, shortcuts, info.manifestUrl(), info.webApkPackageName(),
-                versionCode, isManifestStale, isAppIdentityUpdateSupported, updateReasonsArray,
-                callback);
+                shareTargetParamAccepts, shortcuts, shortcutIconData, info.manifestUrl(),
+                info.webApkPackageName(), versionCode, isManifestStale,
+                isAppIdentityUpdateSupported, updateReasonsArray, callback);
     }
 
     @NativeMethods
@@ -558,8 +560,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 String shareTargetParamTitle, String shareTargetParamText,
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
-                String[][] shortcuts, String manifestUrl, String webApkPackage, int webApkVersion,
-                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                String[][] shortcuts, byte[][] shortcutIconData, String manifestUrl,
+                String webApkPackage, int webApkVersion, boolean isManifestStale,
+                boolean isAppIdentityUpdateSupported, int[] updateReasons,
                 Callback<Boolean> callback);
         public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
     }
