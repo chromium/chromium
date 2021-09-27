@@ -412,31 +412,7 @@ int TestSuite::Run() {
   mac::ScopedNSAutoreleasePool scoped_pool;
 #endif
 
-  {
-    // Some features are required to be checked as soon as possible. Thus, make
-    // sure that the FeatureList is initalized before Initialize() is called so
-    // that tests that rely on this call are able to check the enabled and
-    // disabled featured passed via a command line.
-    //
-    // PS: When use_x11 and use_ozone are both true, some test suites need to
-    // check if Ozone is being used during the Initialize() call below.
-    // However, the feature list isn't initialized until later, when running
-    // each test suite inside RUN_ALL_TESTS() below. Eagerly initialize a
-    // ScopedFeatureList here to ensure the correct value is set for
-    // feature::IsUsingOzonePlatform.
-    //
-    // TODO(https://crbug.com/1096425): Remove the comment about
-    // UseOzonePlatform when USE_X11 is removed.
-    std::string enabled =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kEnableFeatures);
-    std::string disabled =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kDisableFeatures);
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitFromCommandLine(enabled, disabled);
-    Initialize();
-  }
+  Initialize();
 
   std::string client_func =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
