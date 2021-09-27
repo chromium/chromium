@@ -24,6 +24,7 @@
 #include "ui/views/background.h"
 
 #if defined(OS_MAC)
+#include "chrome/browser/image_editor/event_capture_mac.h"
 #include "content/public/browser/render_view_host.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -74,17 +75,13 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   const gfx::Rect offset_bounds = widget->GetWindowBoundsInScreen();
   bounds.Offset(-offset_bounds.x(), -offset_bounds.y());
 
-  views::Widget* top_widget =
-      views::Widget::GetTopLevelWidgetForNativeView(web_contents_view);
-  views::View* root_view = top_widget->GetRootView();
-  root_view->AddPreTargetHandler(this);
+  event_capture_mac_ = std::make_unique<EventCaptureMac>(
+      this, web_contents_->GetTopLevelNativeWindow());
 #else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   ui::Layer* content_layer = native_window->layer();
   const gfx::Rect bounds = native_window->bounds();
   // Capture mouse down and drag events on our window.
-  // TODO(skare): We should exit from this mode when moving between tabs,
-  // clicking on browser chrome, etc.
   native_window->AddPreTargetHandler(this);
 #endif
   content_layer->Add(screen_capture_layer_.get());
@@ -103,8 +100,7 @@ void ScreenshotFlow::RemoveUIOverlay() {
   views::Widget* widget = views::Widget::GetWidgetForNativeView(
       web_contents_->GetContentNativeView());
   ui::Layer* content_layer = widget->GetLayer();
-  views::View* root_view = widget->GetRootView();
-  root_view->RemovePreTargetHandler(this);
+  event_capture_mac_.reset();
 #else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   native_window->RemovePreTargetHandler(this);
@@ -180,6 +176,26 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   gfx::Point location = located_event->location();
+#if defined(OS_MAC)
+  // Offset |location| be relative to the WebContents widget, vs the parent
+  // window, recomputed rather than cached in case e.g. user disables
+  // bookmarks bar from another window.
+  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
+  const gfx::NativeView web_contents_view =
+      web_contents_->GetContentNativeView();
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeView(web_contents_view);
+  const gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
+  location.set_x(location.x() + (widget_bounds.x() - web_contents_bounds.x()));
+  location.set_y(location.y() + (widget_bounds.y() - web_contents_bounds.y()));
+  // Don't capture clicks on browser ui outside the webcontents.
+  if (location.x() < 0 || location.y() < 0 ||
+      location.x() > web_contents_bounds.width() ||
+      location.y() > web_contents_bounds.height()) {
+    return;
+  }
+#endif
+
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
       SetCursor(ui::mojom::CursorType::kCross);

@@ -18,8 +18,16 @@ static_library("image_editor") {
     "//ui/snapshot",
     "//ui/views",
   ]
+
   if (use_aura) {
     deps += [ "//ui/wm" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "event_capture_mac.h",
+      "event_capture_mac.mm",
+    ]
   }
 
   public_deps = [ "//base" ]
