@@ -2192,9 +2192,23 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     }
 
     if (fragment.IsBlockInInline()) {
-      // "label-contains-other-interactive-content.html" reaches here.
-      return NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
-                                                        physical_offset);
+      if (NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
+                                                     physical_offset)) {
+        return true;
+      }
+      if (!box_fragment_.IsInlineBox()) {
+        // fast/events/pointerevents/mouse-pointer-transition-events.html
+        // requires this.
+        return false;
+      }
+      // [1] and [2] reach here for hit test on empty <div> with size.
+      // [1] label-contains-other-interactive-content.html
+      // [2] svg/custom/use-event-retargeting.html
+      if (hit_test.action != kHitTestForeground)
+        return false;
+      return NGBoxFragmentPainter(fragment).NodeAtPoint(
+          *hit_test.result, hit_test.location, physical_offset,
+          kHitTestChildBlockBackgrounds);
     }
 
     // When traversing into a different inline formatting context,
