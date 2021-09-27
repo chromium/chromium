@@ -2237,7 +2237,7 @@ TEST_F(StyleEngineTest, FirstLetterRemoved) {
 
   GetDocument().getElementById("f1")->firstChild()->remove();
 
-  EXPECT_TRUE(d1->firstChild()->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(d1->firstChild()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(d1->firstChild()->ChildNeedsReattachLayoutTree());
   EXPECT_FALSE(d1->firstChild()->NeedsReattachLayoutTree());
   EXPECT_TRUE(d1->ChildNeedsStyleRecalc());
@@ -2253,7 +2253,7 @@ TEST_F(StyleEngineTest, FirstLetterRemoved) {
 
   GetDocument().getElementById("f2")->firstChild()->remove();
 
-  EXPECT_TRUE(d2->firstChild()->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(d2->firstChild()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(d2->firstChild()->ChildNeedsReattachLayoutTree());
   EXPECT_FALSE(d2->firstChild()->NeedsReattachLayoutTree());
   EXPECT_TRUE(d2->ChildNeedsStyleRecalc());
@@ -4763,6 +4763,20 @@ TEST_F(StyleEngineTest, ChangeRenderingForHTMLSelect_DetachParent) {
   GetStyleEngine().ChangeRenderingForHTMLSelect(
       To<HTMLSelectElement>(*GetDocument().getElementById("select")));
   EXPECT_FALSE(GetParentForDetachedSubtree());
+}
+
+TEST_F(StyleEngineTest, EmptyDetachParent) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <span id="parent"><b>A</b> <i>B</i></span>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  auto* parent = GetDocument().getElementById("parent");
+  parent->setInnerHTML("");
+
+  ASSERT_TRUE(parent->GetLayoutObject());
+  EXPECT_FALSE(parent->GetLayoutObject()->WhitespaceChildrenMayChange());
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
 }  // namespace blink

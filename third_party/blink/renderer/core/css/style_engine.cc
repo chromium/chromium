@@ -2670,6 +2670,15 @@ void StyleEngine::Trace(Visitor* visitor) const {
   FontSelectorClient::Trace(visitor);
 }
 
+namespace {
+
+inline bool MayHaveFlatTreeChildren(const Element& element) {
+  return element.firstChild() || IsShadowHost(element) ||
+         element.IsActiveSlot();
+}
+
+}  // namespace
+
 void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
   if (!parent_for_detached_subtree_)
     return;
@@ -2687,7 +2696,8 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
     // flag will be cause the element to be marked for layout tree rebuild
     // traversal during style recalc to make sure we revisit whitespace text
     // nodes.
-    if (!layout_object->WhitespaceChildrenMayChange()) {
+    if (!layout_object->WhitespaceChildrenMayChange() &&
+        MayHaveFlatTreeChildren(*layout_object_element)) {
       layout_object->SetWhitespaceChildrenMayChange(true);
       layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
     }
