@@ -7177,12 +7177,18 @@
                     "name": "EnabledOmnibox",
                     "enable_features": [
                         "SharingHubDesktopOmnibox"
+                    ],
+                    "disable_features": [
+                        "SharingHubDesktopAppMenu"
                     ]
                 },
                 {
                     "name": "EnabledAppMenu",
                     "enable_features": [
                         "SharingHubDesktopAppMenu"
+                    ],
+                    "disable_features": [
+                        "SharingHubDesktopOmnibox"
                     ]
                 }
             ]
