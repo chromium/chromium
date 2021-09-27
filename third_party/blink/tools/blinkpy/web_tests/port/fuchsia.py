@@ -182,11 +182,11 @@ class _TargetHost(object):
 
     def cleanup(self):
         try:
-            if self._target:
-                self._target.Stop()
-        finally:
             if self._pkg_repo:
                 self._pkg_repo.__exit__(None, None, None)
+        finally:
+            if self._target:
+                self._target.Stop()
 
 
 class FuchsiaPort(base.Port):
