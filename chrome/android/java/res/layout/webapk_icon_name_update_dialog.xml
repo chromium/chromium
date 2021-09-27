@@ -15,8 +15,10 @@
 
     <!-- The icon, name and short_name as it is before updating. -->
     <LinearLayout
-        android:layout_width="128dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
         android:gravity="center">
@@ -59,9 +61,11 @@
 
     <!-- The icon, name and short_name as it will be after the update. -->
     <LinearLayout
-        android:layout_width="128dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:orientation="vertical"
         android:gravity="center">
 
