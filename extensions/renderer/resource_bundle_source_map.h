@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_RESOURCE_BUNDLE_SOURCE_MAP_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
