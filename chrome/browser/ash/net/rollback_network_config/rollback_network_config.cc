@@ -92,8 +92,8 @@ void ManagedOncConfigureActivePartAsDeviceWide(
   if (!network_state || !network_state->IsInProfile()) {
     managed_network_configuration_handler()->CreateConfiguration(
         kDeviceUserHash, base::Value::AsDictionaryValue(network),
-        base::DoNothing::Once<const std::string&, const std::string&>().Then(
-            std::move(success_callback)),
+        base::BindOnce([](const std::string&, const std::string&) {
+        }).Then(std::move(success_callback)),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   } else if (network_state) {
     managed_network_configuration_handler()->SetProperties(
