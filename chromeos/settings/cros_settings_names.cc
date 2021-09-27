@@ -210,37 +210,6 @@ const char kReportOsUpdateStatus[] =
 const char kReportRunningKioskApp[] =
     "cros.device_status.report_running_kiosk_app";
 
-const char* const kDeviceReportingSettings[] = {
-    kReportDeviceVersionInfo,
-    kReportDeviceActivityTimes,
-    kReportDeviceAudioStatus,
-    kReportDeviceBoardStatus,
-    kReportDeviceBootMode,
-    kReportDeviceCpuInfo,
-    kReportDeviceTimezoneInfo,
-    kReportDeviceMemoryInfo,
-    kReportDeviceBacklightInfo,
-    kReportDeviceLocation,
-    kReportDeviceNetworkConfiguration,
-    kReportDeviceNetworkInterfaces,
-    kReportDeviceNetworkStatus,
-    kReportDevicePowerStatus,
-    kReportDeviceStorageStatus,
-    kReportDeviceUsers,
-    kReportDeviceHardwareStatus,
-    kReportDeviceSessionStatus,
-    kReportDeviceGraphicsStatus,
-    kReportDeviceCrashReportInfo,
-    kReportOsUpdateStatus,
-    kReportRunningKioskApp,
-    kReportDeviceAppInfo,
-    kReportDeviceBluetoothInfo,
-    kReportDeviceFanInfo,
-    kReportDeviceVpdInfo,
-    kReportDeviceSystemInfo,
-    kReportDevicePrintJobs,
-    kReportDeviceLoginLogout};
-
 // How frequently device status reports are uploaded, in milliseconds.
 const char kReportUploadFrequency[] =
     "cros.device_status.report_upload_frequency";

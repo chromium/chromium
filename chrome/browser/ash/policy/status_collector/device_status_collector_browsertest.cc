@@ -948,15 +948,6 @@ class DeviceStatusCollectorTest : public testing::Test {
         chromeos::kReportDeviceNetworkConfiguration, false);
   }
 
-  void IsolateReportingSetting(const std::string& isolated_path) {
-    for (int i = 0; chromeos::kDeviceReportingSettings[i] != nullptr; i++) {
-      scoped_testing_cros_settings_.device_settings()->SetBoolean(
-          chromeos::kDeviceReportingSettings[i], false);
-    }
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(isolated_path,
-                                                                true);
-  }
-
   void TearDown() override { status_collector_.reset(); }
 
  protected:
@@ -3914,6 +3905,30 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  // TODO(b/192252043): Iterate over a list to remove these.
+  void DisableDefaultSettings() {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceVersionInfo, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceActivityTimes, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceBootMode, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceNetworkInterfaces, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceUsers, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceHardwareStatus, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceSessionStatus, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceAudioStatus, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceNetworkConfiguration, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceNetworkStatus, false);
+  }
+
   virtual void VerifyReporting() = 0;
 
  private:
@@ -3960,7 +3975,9 @@ class DeviceStatusCollectorNetworkInterfacesTest
 // TODO(crbug.com/1253206): Revive this test.
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
   ClearNetworkData();
-  IsolateReportingSetting(chromeos::kReportDeviceNetworkConfiguration);
+  DisableDefaultSettings();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceNetworkConfiguration, true);
 
   // If no interfaces are found, nothing should be reported.
   GetStatus();
@@ -4099,7 +4116,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
 // TODO(crbug.com/1253206): Revive this test.
 TEST_F(DeviceStatusCollectorNetworkStateTest, DISABLED_TestNoNetworks) {
   ClearNetworkData();
-  IsolateReportingSetting(chromeos::kReportDeviceNetworkStatus);
+  DisableDefaultSettings();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceNetworkConfiguration, true);
 
   // If no networks are found, nothing should be reported.
   GetStatus();

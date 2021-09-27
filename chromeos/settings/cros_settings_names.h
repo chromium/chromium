@@ -133,9 +133,6 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kReportDevicePrintJobs[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceLoginLogout[];
 
-COMPONENT_EXPORT(CHROMEOS_SETTINGS)
-extern const char* const kDeviceReportingSettings[];
-
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kHeartbeatEnabled[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kHeartbeatFrequency[];
 
