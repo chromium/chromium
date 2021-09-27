@@ -308,9 +308,14 @@ void NativeWindowOcclusionTrackerWin::OnSessionChange(
   if (is_current_session && !*is_current_session)
     return;
   if (status_code == WTS_SESSION_UNLOCK) {
-    // UNLOCK will cause a foreground window change, which will
-    // trigger an occlusion calculation on its own.
     screen_locked_ = false;
+    // We may not get a foreground event when unlocking the device so
+    // kick off occlusion recalculation now.
+    update_occlusion_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WindowOcclusionCalculator::ForceRecalculation,
+            base::Unretained(WindowOcclusionCalculator::GetInstance())));
   } else if (status_code == WTS_SESSION_LOCK && is_current_session) {
     screen_locked_ = true;
     MarkNonIconicWindowsOccluded();
@@ -329,17 +334,34 @@ void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
   display_on_ = display_on;
   if (display_on_) {
     // Notify the window occlusion calculator of the display turning on
-    // which will schedule an occlusion calculation. This must be run
-    // on the WindowOcclusionCalculator thread.
+    // to chedule an occlusion calculation. This must be run on the
+    // WindowOcclusionCalculator thread.
     update_occlusion_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &WindowOcclusionCalculator::HandleVisibilityChanged,
-            base::Unretained(WindowOcclusionCalculator::GetInstance()),
-            /*visible=*/true));
+            &WindowOcclusionCalculator::ForceRecalculation,
+            base::Unretained(WindowOcclusionCalculator::GetInstance())));
   } else {
     MarkNonIconicWindowsOccluded();
   }
+}
+
+void NativeWindowOcclusionTrackerWin::OnResume() {
+  // Notify the window occlusion calculator of the device waking.
+  // This must be run on the WindowOcclusionCalculator thread.
+  update_occlusion_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WindowOcclusionCalculator::HandleResumeSuspend,
+                                base::Unretained(
+                                    WindowOcclusionCalculator::GetInstance())));
+}
+
+void NativeWindowOcclusionTrackerWin::OnSuspend() {
+  // Notify the window occlusion calculator of the device going to sleep.
+  // This must be run on the WindowOcclusionCalculator thread.
+  update_occlusion_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WindowOcclusionCalculator::HandleResumeSuspend,
+                                base::Unretained(
+                                    WindowOcclusionCalculator::GetInstance())));
 }
 
 void NativeWindowOcclusionTrackerWin::MarkNonIconicWindowsOccluded() {
@@ -426,6 +448,23 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     MaybeRegisterEventHooks();
     ScheduleOcclusionCalculationIfNeeded();
   }
+}
+
+void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
+    ForceRecalculation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  MaybeRegisterEventHooks();
+  ScheduleOcclusionCalculationIfNeeded();
+}
+
+void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
+    HandleResumeSuspend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Timers are unreliable when the device is going to sleep or resuming.
+  // Stop the timer if it is currently running.
+  if (occlusion_update_timer_.IsRunning())
+    occlusion_update_timer_.Stop();
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::

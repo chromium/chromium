@@ -30,6 +30,8 @@ class PowerSettingChangeObserver {
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   void OnDisplayStateChanged(bool display_on);
+  void OnResume();
+  void OnSuspend();
 
   static HPOWERNOTIFY RegisterNotification(LPCGUID power_setting);
   static BOOL UnregisterNotification(HPOWERNOTIFY handle);
@@ -69,16 +71,38 @@ void PowerSettingChangeObserver::OnWndProc(HWND hwnd,
                                            UINT message,
                                            WPARAM wparam,
                                            LPARAM lparam) {
-  if (message == WM_POWERBROADCAST && wparam == PBT_POWERSETTINGCHANGE) {
-    POWERBROADCAST_SETTING* setting = (POWERBROADCAST_SETTING*)lparam;
-    if (setting &&
-        IsEqualGUID(setting->PowerSetting, GUID_SESSION_DISPLAY_STATUS) &&
-        setting->DataLength == sizeof(DWORD)) {
-      OnDisplayStateChanged(
-          PowerMonitorOff !=
-          static_cast<MONITOR_DISPLAY_STATE>(setting->Data[0]));
+  if (message == WM_POWERBROADCAST) {
+    switch (wparam) {
+      case PBT_POWERSETTINGCHANGE: {
+        POWERBROADCAST_SETTING* setting = (POWERBROADCAST_SETTING*)lparam;
+        if (setting &&
+            IsEqualGUID(setting->PowerSetting, GUID_SESSION_DISPLAY_STATUS) &&
+            setting->DataLength == sizeof(DWORD)) {
+          OnDisplayStateChanged(
+              PowerMonitorOff !=
+              static_cast<MONITOR_DISPLAY_STATE>(setting->Data[0]));
+        }
+      } break;
+      case PBT_APMRESUMEAUTOMATIC:
+        OnResume();
+        break;
+      case PBT_APMSUSPEND:
+        OnSuspend();
+        break;
+      default:
+        return;
     }
   }
+}
+
+void PowerSettingChangeObserver::OnResume() {
+  for (PowerSettingChangeListener& observer : listeners_)
+    observer.OnResume();
+}
+
+void PowerSettingChangeObserver::OnSuspend() {
+  for (PowerSettingChangeListener& observer : listeners_)
+    observer.OnSuspend();
 }
 
 void PowerSettingChangeObserver::OnDisplayStateChanged(bool display_on) {

@@ -99,8 +99,14 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     void EnableOcclusionTrackingForWindow(HWND hwnd);
     void DisableOcclusionTrackingForWindow(HWND hwnd);
 
+    // Forces a recalculation of occlusion
+    void ForceRecalculation();
+
     // If a window becomes visible, makes sure event hooks are registered.
     void HandleVisibilityChanged(bool visible);
+
+    // Special handling for when the device is going to sleep or waking up.
+    void HandleResumeSuspend();
 
    private:
     WindowOcclusionCalculator(
@@ -285,6 +291,12 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // This is called when the display is put to sleep. If the display is sleeping
   // it marks app windows as occluded.
   void OnDisplayStateChanged(bool display_on) override;
+
+  // Called when the device resumes from sleep.
+  void OnResume() override;
+
+  // Called before the device goes to sleep.
+  void OnSuspend() override;
 
   // Marks all root windows as either occluded, or if hwnd IsIconic, hidden.
   void MarkNonIconicWindowsOccluded();
