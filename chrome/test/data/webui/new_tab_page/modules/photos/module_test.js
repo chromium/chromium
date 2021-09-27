@@ -37,12 +37,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Assert.
-    const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
+    const items =
+        Array.from(module.shadowRoot.querySelectorAll('#memories > .memory'));
     assertTrue(!!module);
     assertTrue(isVisible(module.$.memories));
     assertEquals(2, items.length);
@@ -55,8 +59,11 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   test('module does not show without data', async () => {
     // Arrange.
     handler.setResultFor('getMemories', Promise.resolve({memories: []}));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = await photosDescriptor.initialize(0);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Assert.
     assertFalse(!!module);
@@ -79,9 +86,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Act.
     $$(module, 'ntp-module-header')
@@ -108,9 +118,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Act.
     const dismiss = {event: null};
@@ -148,9 +161,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Act.
     const disable = {event: null};
@@ -174,9 +190,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       }]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Assert.
     assertTrue(!!$$(module, '#exploreCard'));
@@ -209,12 +228,84 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
 
     // Assert.
-    const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
+    const items =
+        Array.from(module.shadowRoot.querySelectorAll('#memories > .memory'));
     assertEquals(3, items.length);
+  });
+
+  test('backend is notified when user opt out', async () => {
+    // Arrange.
+    const data = {
+      memories: [{
+        title: 'Title 1',
+        id: 'key1',
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+      }]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
+
+    // Asserts.
+    assertTrue(!!$$(module, '#optInCard'));
+
+    // Act.
+    const disable = {event: null};
+    module.addEventListener('disable-module', (e) => disable.event = e);
+    $$(module, '#optOutButton').click();
+
+    // Asserts.
+    assertEquals(1, handler.getCallCount('onUserOptIn'));
+    assertEquals(false, handler.getArgs('onUserOptIn')[0]);
+    assertEquals(
+        loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+        disable.event.detail.message);
+  });
+
+  test('UI is updated and backend notified when user opt in', async () => {
+    // Arrange.
+    const data = {
+      memories: [{
+        title: 'Title 1',
+        id: 'key1',
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+      }]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
+
+    // Asserts.
+    assertTrue(!!$$(module, '#optInCard'));
+
+    // Act.
+    $$(module, '#optInButton').click();
+    $$(module, '#welcomeCardElement').render();
+    $$(module, '#memoriesElement').render();
+    $$(module, '#exploreCardElement').render();
+
+    // Asserts.
+    assertFalse(isVisible(assert($$(module, '#optInCard'))));
+    assertEquals(1, handler.getCallCount('onUserOptIn'));
+    assertEquals(true, handler.getArgs('onUserOptIn')[0]);
+    const items =
+        Array.from(module.shadowRoot.querySelectorAll('#memories > .memory'));
+    assertEquals(1, items.length);
   });
 });

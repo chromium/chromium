@@ -8,11 +8,10 @@ generate_grd("build_grdp") {
   grd_prefix = "photos"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
-    "explore_icon.svg",
-    "shape_1.svg",
-    "shape_2.svg",
-    "shape_3.svg",
+    "main_example_2x.webp",
+    "second_example_2x.webp",
+    "third_example_2x.webp",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  resource_path_prefix = "modules/photos/icons"
+  resource_path_prefix = "modules/photos/images"
 }

@@ -33,11 +33,25 @@ class PhotosModuleElement extends mixinBehaviors
       /** @type {Array<!photos.mojom.Memory>} */
       memories: Array,
 
+      /** @type {boolean} */
+      showOptInScreen: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       /**
        * @type {boolean}
        * @private
        */
-      showExploreMore_: {type: Boolean, computed: 'computeShowExploreMore_()'},
+      showExploreMore_:
+          {type: Boolean, computed: 'computeShowExploreMore_(memories)'},
+
+      /**
+       * @type {string}
+       * @private
+       */
+      headerChipText_:
+          {type: Boolean, computed: 'computeHeaderChipText_(showOptInScreen)'},
     };
   }
 
@@ -47,6 +61,15 @@ class PhotosModuleElement extends mixinBehaviors
    */
   computeShowExploreMore_() {
     return this.memories.length === 1;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeHeaderChipText_() {
+    return this.showOptInScreen ? loadTimeData.getString('modulesPhotosNew') :
+                                  '';
   }
 
   /** @private */
@@ -79,6 +102,19 @@ class PhotosModuleElement extends mixinBehaviors
     }));
   }
 
+  /** @private */
+  onOptInClick_() {
+    PhotosProxy.getHandler().onUserOptIn(true);
+    this.showOptInScreen = false;
+  }
+
+  /** @private */
+  onOptOutClick_() {
+    PhotosProxy.getHandler().onUserOptIn(false);
+    // Disable the module when user opt out.
+    this.onDisableButtonClick_();
+  }
+
   /**
    * @param {string} url
    * @param {number} numMemories
@@ -102,10 +138,13 @@ customElements.define(PhotosModuleElement.is, PhotosModuleElement);
  */
 async function createPhotosElement() {
   const {memories} = await PhotosProxy.getHandler().getMemories();
+  const {showOptInScreen} =
+      await PhotosProxy.getHandler().shouldShowOptInScreen();
   if (memories.length === 0) {
     return null;
   }
   const element = new PhotosModuleElement();
+  element.showOptInScreen = showOptInScreen;
   // We show only the first 3 at most.
   element.memories = memories.slice(0, 3);
   return element;
