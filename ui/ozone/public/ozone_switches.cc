@@ -18,6 +18,10 @@ const char kEnableWaylandIme[] = "enable-wayland-ime";
 // Disable wayland input method editor.
 const char kDisableWaylandIme[] = "disable-wayland-ime";
 
+// Use explicit grab when opening popup windows.
+// See https://crbug.com/1220274
+const char kUseWaylandExplicitGrab[] = "use-wayland-explicit-grab";
+
 // Disable explicit DMA-fences
 const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 

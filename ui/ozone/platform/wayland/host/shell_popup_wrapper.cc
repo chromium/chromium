@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/environment.h"
 #include "base/logging.h"
@@ -18,6 +19,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
@@ -65,6 +67,10 @@ void ShellPopupWrapper::FillAnchorData(
 
 void ShellPopupWrapper::GrabIfPossible(WaylandConnection* connection,
                                        WaylandWindow* parent_window) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(switches::kUseWaylandExplicitGrab))
+    return;
+
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
   // we try to create a popup and grab it, it will be immediately dismissed.

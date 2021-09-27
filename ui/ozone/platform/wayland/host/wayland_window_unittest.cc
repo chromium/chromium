@@ -19,6 +19,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -50,6 +51,7 @@
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -2705,123 +2707,146 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
 // Tests that a popup window is created using the serial of button press
 // events as required by the Wayland protocol spec.
 TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
-  wl_seat_send_capabilities(
-      server_.seat()->resource(),
-      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD);
+  for (bool use_explicit_grab : {false, true}) {
+    base::test::ScopedCommandLine command_line_;
+    if (use_explicit_grab) {
+      command_line_.GetProcessCommandLine()->AppendSwitch(
+          switches::kUseWaylandExplicitGrab);
+    }
 
-  Sync();
+    wl_seat_send_capabilities(
+        server_.seat()->resource(),
+        WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_KEYBOARD);
 
-  constexpr uint32_t enter_serial = 1;
-  constexpr uint32_t button_press_serial = 2;
-  constexpr uint32_t button_release_serial = 3;
+    Sync();
 
-  wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
-  struct wl_array empty;
-  wl_array_init(&empty);
-  wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
-                         toplevel_surface->resource(), &empty);
+    constexpr uint32_t enter_serial = 1;
+    constexpr uint32_t button_press_serial = 2;
+    constexpr uint32_t button_release_serial = 3;
 
-  // Send two events - button down and button up.
-  wl_pointer_send_button(server_.seat()->pointer()->resource(),
-                         button_press_serial, 1002, BTN_LEFT,
-                         WL_POINTER_BUTTON_STATE_PRESSED);
-  wl_pointer_send_button(server_.seat()->pointer()->resource(),
-                         button_release_serial, 1004, BTN_LEFT,
-                         WL_POINTER_BUTTON_STATE_RELEASED);
-  Sync();
+    wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
+        window_->root_surface()->GetSurfaceId());
+    struct wl_array empty;
+    wl_array_init(&empty);
+    wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
+                           toplevel_surface->resource(), &empty);
 
-  // Create a popup window and verify the client used correct serial.
-  MockPlatformWindowDelegate delegate;
-  EXPECT_CALL(delegate, GetMenuType())
-      .WillOnce(Return(MenuType::kRootContextMenu));
-  auto popup = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
-      &delegate);
-  ASSERT_TRUE(popup);
+    // Send two events - button down and button up.
+    wl_pointer_send_button(server_.seat()->pointer()->resource(),
+                           button_press_serial, 1002, BTN_LEFT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_button(server_.seat()->pointer()->resource(),
+                           button_release_serial, 1004, BTN_LEFT,
+                           WL_POINTER_BUTTON_STATE_RELEASED);
+    Sync();
 
-  Sync();
+    // Create a popup window and verify the client used correct serial.
+    MockPlatformWindowDelegate delegate;
+    EXPECT_CALL(delegate, GetMenuType())
+        .WillOnce(Return(MenuType::kRootContextMenu));
+    auto popup = CreateWaylandWindowWithParams(
+        PlatformWindowType::kMenu, window_->GetWidget(),
+        gfx::Rect(0, 0, 50, 50), &delegate);
+    ASSERT_TRUE(popup);
 
-  auto* test_popup = GetTestXdgPopupByWindow(popup.get());
-  ASSERT_TRUE(test_popup);
-  EXPECT_NE(test_popup->grab_serial(), button_release_serial);
-  EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
+    Sync();
+
+    auto* test_popup = GetTestXdgPopupByWindow(popup.get());
+    ASSERT_TRUE(test_popup);
+    if (use_explicit_grab) {
+      EXPECT_NE(test_popup->grab_serial(), button_release_serial);
+      EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
+    } else {
+      EXPECT_EQ(test_popup->grab_serial(), 0U);
+    }
+  }
 }
 
 // Tests that a popup window is created using the serial of touch down events
 // as required by the Wayland protocol spec.
 TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
-  wl_seat_send_capabilities(
-      server_.seat()->resource(),
-      WL_SEAT_CAPABILITY_TOUCH | WL_SEAT_CAPABILITY_KEYBOARD);
+  for (bool use_explicit_grab : {false, true}) {
+    base::test::ScopedCommandLine command_line_;
+    if (use_explicit_grab) {
+      command_line_.GetProcessCommandLine()->AppendSwitch(
+          switches::kUseWaylandExplicitGrab);
+    }
+    wl_seat_send_capabilities(
+        server_.seat()->resource(),
+        WL_SEAT_CAPABILITY_TOUCH | WL_SEAT_CAPABILITY_KEYBOARD);
 
-  Sync();
+    Sync();
 
-  constexpr uint32_t enter_serial = 1;
-  constexpr uint32_t touch_down_serial = 2;
-  constexpr uint32_t touch_up_serial = 3;
+    constexpr uint32_t enter_serial = 1;
+    constexpr uint32_t touch_down_serial = 2;
+    constexpr uint32_t touch_up_serial = 3;
 
-  wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
-  struct wl_array empty;
-  wl_array_init(&empty);
-  wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
-                         toplevel_surface->resource(), &empty);
+    wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
+        window_->root_surface()->GetSurfaceId());
+    struct wl_array empty;
+    wl_array_init(&empty);
+    wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
+                           toplevel_surface->resource(), &empty);
 
-  // Send two events - touch down and touch up.
-  wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial, 0,
-                     surface_->resource(), 0 /* id */, wl_fixed_from_int(50),
-                     wl_fixed_from_int(100));
-  wl_touch_send_up(server_.seat()->touch()->resource(), touch_up_serial, 1000,
-                   0 /* id */);
+    // Send two events - touch down and touch up.
+    wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial,
+                       0, surface_->resource(), 0 /* id */,
+                       wl_fixed_from_int(50), wl_fixed_from_int(100));
+    wl_touch_send_up(server_.seat()->touch()->resource(), touch_up_serial, 1000,
+                     0 /* id */);
 
-  Sync();
+    Sync();
 
-  // Create a popup window and verify the client used correct serial.
-  MockPlatformWindowDelegate delegate;
-  EXPECT_CALL(delegate, GetMenuType())
-      .WillRepeatedly(Return(MenuType::kRootContextMenu));
-  auto popup = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
-      &delegate);
-  ASSERT_TRUE(popup);
+    // Create a popup window and verify the client used correct serial.
+    MockPlatformWindowDelegate delegate;
+    EXPECT_CALL(delegate, GetMenuType())
+        .WillRepeatedly(Return(MenuType::kRootContextMenu));
+    auto popup = CreateWaylandWindowWithParams(
+        PlatformWindowType::kMenu, window_->GetWidget(),
+        gfx::Rect(0, 0, 50, 50), &delegate);
+    ASSERT_TRUE(popup);
 
-  Sync();
+    Sync();
 
-  auto* test_popup = GetTestXdgPopupByWindow(popup.get());
-  ASSERT_TRUE(test_popup);
+    auto* test_popup = GetTestXdgPopupByWindow(popup.get());
+    ASSERT_TRUE(test_popup);
 
-  // Touch events are the exception. We can't use the serial that was sent
-  // before the "up" event. Otherwise, some compositors may dismiss popups.
-  // Thus, no serial must be used.
-  EXPECT_EQ(test_popup->grab_serial(), 0U);
+    // Touch events are the exception. We can't use the serial that was sent
+    // before the "up" event. Otherwise, some compositors may dismiss popups.
+    // Thus, no serial must be used.
+    EXPECT_EQ(test_popup->grab_serial(), 0U);
 
-  popup->Hide();
+    popup->Hide();
 
-  // Send a single down event now.
-  wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial, 0,
-                     surface_->resource(), 0 /* id */, wl_fixed_from_int(50),
-                     wl_fixed_from_int(100));
+    // Send a single down event now.
+    wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial,
+                       0, surface_->resource(), 0 /* id */,
+                       wl_fixed_from_int(50), wl_fixed_from_int(100));
 
-  Sync();
+    Sync();
 
-  popup->Show(false);
+    popup->Show(false);
 
-  Sync();
+    Sync();
 
-  test_popup = GetTestXdgPopupByWindow(popup.get());
-  ASSERT_TRUE(test_popup);
+    test_popup = GetTestXdgPopupByWindow(popup.get());
+    ASSERT_TRUE(test_popup);
 
-  uint32_t expected_serial = touch_down_serial;
+    uint32_t expected_serial = touch_down_serial;
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto env = base::Environment::Create();
-  if (base::nix::GetDesktopEnvironment(env.get()) ==
-      base::nix::DESKTOP_ENVIRONMENT_GNOME) {
-    // We do not grab with touch events on gnome shell.
-    expected_serial = 0u;
-  }
+    auto env = base::Environment::Create();
+    if (base::nix::GetDesktopEnvironment(env.get()) ==
+        base::nix::DESKTOP_ENVIRONMENT_GNOME) {
+      // We do not grab with touch events on gnome shell.
+      expected_serial = 0u;
+    }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ(test_popup->grab_serial(), expected_serial);
+    if (use_explicit_grab) {
+      EXPECT_EQ(test_popup->grab_serial(), expected_serial);
+    } else {
+      EXPECT_EQ(test_popup->grab_serial(), 0U);
+    }
+  }
 }
 
 // Tests nested menu windows get the topmost window in the stack of windows
