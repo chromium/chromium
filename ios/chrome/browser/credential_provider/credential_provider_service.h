@@ -7,8 +7,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -36,7 +36,7 @@ class CredentialProviderService
   // Initializes the service.
   CredentialProviderService(
       PrefService* prefs,
-      scoped_refptr<password_manager::PasswordStore> password_store,
+      scoped_refptr<password_manager::PasswordStoreInterface> password_store,
       AuthenticationService* authentication_service,
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
@@ -114,7 +114,7 @@ class CredentialProviderService
   void OnSavingPasswordsEnabledChanged();
 
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // The interface for getting the primary account identifier.
   AuthenticationService* authentication_service_ = nullptr;

@@ -39,9 +39,9 @@ namespace {
 
 using password_manager::PasswordForm;
 using password_manager::AffiliatedMatchHelper;
-using password_manager::PasswordStore;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
+using password_manager::PasswordStoreInterface;
 using password_manager::AffiliationService;
 
 // ASCredentialIdentityStoreError enum to report UMA metrics. Must be in sync
@@ -133,7 +133,7 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 
 CredentialProviderService::CredentialProviderService(
     PrefService* prefs,
-    scoped_refptr<PasswordStore> password_store,
+    scoped_refptr<PasswordStoreInterface> password_store,
     AuthenticationService* authentication_service,
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,

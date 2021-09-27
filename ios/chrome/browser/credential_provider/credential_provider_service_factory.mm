@@ -53,8 +53,8 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
