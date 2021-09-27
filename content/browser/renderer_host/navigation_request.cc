@@ -985,8 +985,18 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
             .GetBackForwardCache()
             .GetEntry(entry->GetUniqueID());
     if (restored_entry) {
-      rfh_restored_from_back_forward_cache =
-          restored_entry->render_frame_host();
+      if (frame_tree_node->IsMainFrame()) {
+        rfh_restored_from_back_forward_cache =
+            restored_entry->render_frame_host();
+      } else {
+        // We have a matching BFCache entry for a subframe navigation. This
+        // shouldn't happen as we should've triggered deletion of BFCache
+        // entries that have the same BrowsingInstance as the current document.
+        // See https://crbug.com/1250111.
+        CaptureTraceForNavigationDebugScenario(
+            DebugScenario::
+                kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav);
+      }
     }
   }
 
