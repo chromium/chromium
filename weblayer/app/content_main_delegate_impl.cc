@@ -193,7 +193,7 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kDisableDeJelly,
     ::features::kDynamicColorGamut,
 #else
-    // TODO(crbug.com/1131021): Support WebOTP Service on WebLayer.
+    // WebOTP is supported only on Android in WebLayer.
     ::features::kWebOTP,
 #endif
   };
