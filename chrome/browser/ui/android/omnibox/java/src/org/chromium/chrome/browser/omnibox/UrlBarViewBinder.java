@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.res.Resources;
 import android.os.Build;
 import android.text.Editable;
 import android.text.Selection;
@@ -12,7 +11,6 @@ import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.material.color.MaterialColors;
@@ -20,6 +18,8 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -72,8 +72,8 @@ class UrlBarViewBinder {
                     view.setSelection(view.getText().length());
                 }
             }
-        } else if (UrlBarProperties.USE_DARK_TEXT_COLORS.equals(propertyKey)) {
-            updateTextColors(view, model.get(UrlBarProperties.USE_DARK_TEXT_COLORS));
+        } else if (UrlBarProperties.OMNIBOX_THEME.equals(propertyKey)) {
+            updateTextColors(view, model.get(UrlBarProperties.OMNIBOX_THEME));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
             final boolean incognitoColorsEnabled =
                     model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
@@ -92,17 +92,15 @@ class UrlBarViewBinder {
         }
     }
 
-    private static void updateTextColors(UrlBar view, boolean useDarkTextColors) {
-        Resources resources = view.getResources();
-        @ColorRes
-        int textColorRes = useDarkTextColors ? R.color.default_text_color_dark
-                                             : R.color.default_text_color_light;
-        @ColorRes
-        int hintColorRes = useDarkTextColors ? R.color.locationbar_dark_hint_text
-                                             : R.color.locationbar_light_hint_text;
+    private static void updateTextColors(UrlBar view, @OmniboxTheme int omniboxTheme) {
+        final @ColorInt int textColor =
+                OmniboxResourceProvider.getUrlBarPrimaryTextColor(view.getContext(), omniboxTheme);
 
-        view.setTextColor(resources.getColor(textColorRes));
-        setHintTextColor(view, resources.getColor(hintColorRes));
+        final @ColorInt int hintColor =
+                OmniboxResourceProvider.getUrlBarHintTextColor(view.getContext(), omniboxTheme);
+
+        view.setTextColor(textColor);
+        setHintTextColor(view, hintColor);
     }
 
     private static void updateHighlightColor(UrlBar view, boolean useIncognitoColors) {

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -303,10 +306,20 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(getProfile());
-            OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText, mContext.getResources(),
+            final @OmniboxTheme int omniboxTheme = OmniboxResourceProvider.getOmniboxTheme(
+                    mContext, isIncognito(), getPrimaryColor());
+            final @ColorInt int nonEmphasizedColor =
+                    OmniboxResourceProvider.getUrlBarSecondaryTextColor(mContext, omniboxTheme);
+            final @ColorInt int emphasizedColor =
+                    OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, omniboxTheme);
+            final @ColorInt int dangerColor =
+                    OmniboxResourceProvider.getUrlBarDangerColor(mContext, omniboxTheme);
+            final @ColorInt int secureColor =
+                    OmniboxResourceProvider.getUrlBarSecureColor(mContext, omniboxTheme);
+            OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
                     chromeAutocompleteSchemeClassifier, getSecurityLevel(), isInternalPage,
-                    !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryColor()),
-                    shouldEmphasizeHttpsScheme());
+                    shouldEmphasizeHttpsScheme(), nonEmphasizedColor, emphasizedColor, dangerColor,
+                    secureColor);
             chromeAutocompleteSchemeClassifier.destroy();
         }
 

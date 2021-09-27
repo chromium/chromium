@@ -30,6 +30,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Property;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -79,6 +81,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -223,6 +226,7 @@ public class LocationBarMediatorTest {
     @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    private Context mContext;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private LocationBarMediator mMediator;
     private LocationBarMediator mTabletMediator;
@@ -231,8 +235,8 @@ public class LocationBarMediatorTest {
 
     @Before
     public void setUp() {
-        Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay);
+        mContext = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTemplateUrlService).when(mTemplateUrlServiceSupplier).get();
@@ -246,7 +250,7 @@ public class LocationBarMediatorTest {
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Runnable noAction = () -> {}; // launchAssistanceSettingsAction
-        mMediator = new LocationBarMediator(context, mLocationBarLayout, mLocationBarDataProvider,
+        mMediator = new LocationBarMediator(mContext, mLocationBarLayout, mLocationBarDataProvider,
                 mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
                 mLocaleManager, mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
                 mWindowAndroid,
@@ -256,7 +260,7 @@ public class LocationBarMediatorTest {
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
 
-        mTabletMediator = new LocationBarMediator(context, mLocationBarTablet,
+        mTabletMediator = new LocationBarMediator(mContext, mLocationBarTablet,
                 mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
                 mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier,
                 mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
@@ -647,30 +651,72 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testUpdateUseDarkColors() {
-        mMediator.updateUseDarkColors();
-        verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
-        verify(mStatusCoordinator).setUseDarkColors(false);
-        verify(mAutocompleteCoordinator)
-                .updateVisualsForState(/* useDarkColors= */ false, /* incognito= */ false);
+    public void testUpdateColors_lightBrandedColor() {
+        doReturn(Color.parseColor("#eaecf0" /*Light grey color*/))
+                .when(mLocationBarDataProvider)
+                .getPrimaryColor();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+
+        mMediator.updateOmniboxTheme();
+
+        verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
+        verify(mStatusCoordinator).setUseDarkForegroundColors(true);
+        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.LIGHT_THEME);
     }
 
     @Test
-    public void testUpdateUseDarkColors_setUseDarkTextColors() {
+    public void testUpdateColors_darkBrandedColor() {
+        doReturn(Color.BLACK).when(mLocationBarDataProvider).getPrimaryColor();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+
+        mMediator.updateOmniboxTheme();
+
+        verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
+        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
+        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
+    }
+
+    @Test
+    public void testUpdateColors_incognito() {
+        final int primaryColor = ChromeColors.getDefaultThemeColor(mContext, true);
+        doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+
+        mMediator.updateOmniboxTheme();
+
+        verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
+        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
+        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.INCOGNITO);
+    }
+
+    @Test
+    public void testUpdateColors_default() {
+        final int primaryColor = ChromeColors.getDefaultThemeColor(mContext, false);
+        doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+
+        mMediator.updateOmniboxTheme();
+
+        verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
+        verify(mStatusCoordinator).setUseDarkForegroundColors(true);
+        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DEFAULT);
+    }
+
+    @Test
+    public void testUpdateColors_setOmniboxTheme() {
         String url = "https://www.google.com";
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(url).when(mLocationBarDataProvider).getCurrentUrl();
-        doReturn(true).when(mUrlCoordinator).setUseDarkTextColors(false);
+        doReturn(true).when(mUrlCoordinator).setOmniboxTheme(anyInt());
 
-        mMediator.updateUseDarkColors();
+        mMediator.updateOmniboxTheme();
         verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
-        verify(mStatusCoordinator).setUseDarkColors(false);
-        verify(mAutocompleteCoordinator)
-                .updateVisualsForState(/* useDarkColors= */ false, /* incognito= */ false);
+        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
+        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
     }
 
     @Test

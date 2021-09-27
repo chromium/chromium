@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
@@ -307,11 +308,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
     /**
      * Update the visuals of the autocomplete UI.
-     * @param useDarkColors Whether dark colors should be applied to the UI.
-     * @param isIncognito Whether the UI is for incognito mode or not.
+     * @param omniboxTheme The {@link @OmniboxTheme}.
      */
-    public void updateVisualsForState(boolean useDarkColors, boolean isIncognito) {
-        mMediator.updateVisualsForState(useDarkColors, isIncognito);
+    public void updateVisualsForState(@OmniboxTheme int omniboxTheme) {
+        mMediator.updateVisualsForState(omniboxTheme);
     }
 
     /**

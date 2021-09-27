@@ -160,9 +160,12 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setUrlFocusChangePercent(percent);
     }
 
-    /**  @param useDarkColors Whether dark colors should be for the status icon and text. */
-    public void setUseDarkColors(boolean useDarkColors) {
-        mMediator.setUseDarkColors(useDarkColors);
+    /**
+     * @param useDarkForegroundColors Whether dark foreground colors should be for the status icon
+     *                                and text.
+     */
+    public void setUseDarkForegroundColors(boolean useDarkForegroundColors) {
+        mMediator.setUseDarkColors(useDarkForegroundColors);
 
         // TODO(ender): remove this once icon selection has complete set of
         // corresponding properties (for tinting etc).

@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -893,14 +894,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateUseDarkColors() {
             updateButtonsTint();
-            if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
+            @OmniboxTheme
+            int omniboxTheme = mUseDarkColors ? OmniboxTheme.DARK_THEME : OmniboxTheme.LIGHT_THEME;
+            if (mUrlCoordinator.setOmniboxTheme(omniboxTheme)) {
                 // Update the URL to make it use the new color scheme.
                 updateUrlBar();
             }
 
             mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
-                    mUseDarkColors ? R.color.default_text_color_dark
-                                   : R.color.default_text_color_light));
+                    mUseDarkColors ? R.color.branded_url_text_on_light_bg
+                                   : R.color.branded_url_text_on_dark_bg));
         }
 
         @Override

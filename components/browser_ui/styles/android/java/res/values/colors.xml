@@ -32,8 +32,6 @@
     <color name="bottom_system_nav_divider_color">@color/divider_line_bg_color</color>
     <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
 
-    <color name="text_highlight_color_incognito">@color/baseline_primary_200_alpha_20</color>
-
     <!-- This is the color that will appear on the system recents UI. It is a neutral background
          color that adapts to dark/light modes but not a dynamic color. -->
     <color name="default_task_description_color">@color/default_bg_color</color>

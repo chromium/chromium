@@ -32,6 +32,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -244,9 +245,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         getRecycledViewPool().clear();
     }
 
-    /** Update the suggestion popup background to reflect the current state. */
-    public void refreshPopupBackground(boolean isIncognito) {
-        int color = isIncognito ? mIncognitoBgColor : mStandardBgColor;
+    /**
+     * Update the suggestion popup background to reflect the current state.
+     * @param omniboxTheme The {@link @OmniboxTheme}.
+     */
+    public void refreshPopupBackground(@OmniboxTheme int omniboxTheme) {
+        int color = omniboxTheme == OmniboxTheme.INCOGNITO ? mIncognitoBgColor : mStandardBgColor;
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
             // mOmniboxResultsContainer' background from the area not covered by

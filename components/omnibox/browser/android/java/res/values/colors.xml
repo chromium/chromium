@@ -6,7 +6,7 @@
     <!-- URL Emphasizer colors -->
     <color name="url_emphasis_non_emphasized_text">@color/default_text_color_secondary_dark</color>
     <color name="url_emphasis_light_non_emphasized_text">@color/white_alpha_50</color>
-    <color name="url_emphasis_domain_and_registry">@color/default_text_color_dark</color>
-    <color name="url_emphasis_light_domain_and_registry">@android:color/white</color>
+    <color name="url_emphasis_emphasized_text">@color/default_text_color_dark</color>
+    <color name="url_emphasis_light_emphasized_text">@android:color/white</color>
 
 </resources>

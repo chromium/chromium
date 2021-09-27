@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
@@ -250,15 +249,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     /**
      * Specifies the visual state to be used by the suggestions.
-     * @param useDarkColors Whether dark colors should be used for fonts and icons.
-     * @param isIncognito Whether the UI is for incognito mode or not.
+     * @param omniboxTheme The {@link @OmniboxTheme}.
      */
-    void updateVisualsForState(boolean useDarkColors, boolean isIncognito) {
-        @OmniboxTheme
-        int omniboxTheme = OmniboxResourceProvider.getThemeFromDarkColorsAndIncognito(
-                useDarkColors, isIncognito);
+    void updateVisualsForState(@OmniboxTheme int omniboxTheme) {
         mDropdownViewInfoListManager.setOmniboxTheme(omniboxTheme);
-        mListPropertyModel.set(SuggestionListProperties.IS_INCOGNITO, isIncognito);
+        mListPropertyModel.set(SuggestionListProperties.OMNIBOX_THEME, omniboxTheme);
     }
 
     /**

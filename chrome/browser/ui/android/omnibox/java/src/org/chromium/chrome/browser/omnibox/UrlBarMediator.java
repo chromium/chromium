@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -72,7 +73,7 @@ class UrlBarMediator
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
         mModel.set(UrlBarProperties.TEXT_CHANGED_LISTENER, this);
-        setUseDarkTextColors(true);
+        setOmniboxTheme(OmniboxTheme.DEFAULT);
     }
 
     public void destroy() {
@@ -223,15 +224,17 @@ class UrlBarMediator
     }
 
     /**
-     * Sets whether to use dark text colors.
+     * Sets the omnibox theme.
      *
+     * @param omniboxTheme The {@link @OmniboxTheme}.
      * @return Whether this resulted in a change from the previous value.
      */
-    public boolean setUseDarkTextColors(boolean useDarkColors) {
+    public boolean setOmniboxTheme(@OmniboxTheme int omniboxTheme) {
         // TODO(bauerb): Make clients observe the property instead of checking the return value.
-        boolean previousValue = mModel.get(UrlBarProperties.USE_DARK_TEXT_COLORS);
-        mModel.set(UrlBarProperties.USE_DARK_TEXT_COLORS, useDarkColors);
-        return previousValue != useDarkColors;
+        @OmniboxTheme
+        int previousValue = mModel.get(UrlBarProperties.OMNIBOX_THEME);
+        mModel.set(UrlBarProperties.OMNIBOX_THEME, omniboxTheme);
+        return previousValue != omniboxTheme;
     }
 
     /**
