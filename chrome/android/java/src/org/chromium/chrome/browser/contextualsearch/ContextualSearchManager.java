@@ -1700,7 +1700,7 @@ public class ContextualSearchManager
 
     @Override
     public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder rankerLogger) {
-        boolean didOptIn = !mPolicy.isUserUndecided();
+        boolean didOptIn = mPolicy.isContextualSearchFullyEnabled();
         rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.DID_OPT_IN, didOptIn);
         boolean isHttp = mPolicy.isBasePageHTTP(getBasePageURL());
         rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.IS_HTTP, isHttp);

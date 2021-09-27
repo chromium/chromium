@@ -59,8 +59,8 @@ class ContextualSearchPolicy {
     private ContextualSearchPanelInterface mSearchPanel;
 
     // Members used only for testing purposes.
-    private boolean mDidOverrideDecidedStateForTesting;
-    private boolean mDecidedStateForTesting;
+    private boolean mDidOverrideFullyEnabledForTesting;
+    private boolean mFullyEnabledForTesting;
     private Integer mTapTriggeredPromoLimitForTesting;
     private boolean mDidOverrideAllowSendingPageUrlForTesting;
     private boolean mAllowSendingPageUrlForTesting;
@@ -121,7 +121,7 @@ class ContextualSearchPolicy {
      * @return Whether a Tap gesture is currently supported as a trigger for the feature.
      */
     boolean isTapSupported() {
-        return (!isUserUndecided()
+        return (isContextualSearchFullyEnabled()
                        || ContextualSearchFieldTrial.getSwitch(
                                ContextualSearchSwitch
                                        .IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED))
@@ -167,7 +167,7 @@ class ContextualSearchPolicy {
         }
 
         // The user must have decided on privacy to resolve page content on HTTPS.
-        return !isUserUndecided() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
     }
 
     /** @return Whether a long-press gesture can resolve. */
@@ -181,10 +181,8 @@ class ContextualSearchPolicy {
      * @return Whether surroundings are available.
      */
     boolean canSendSurroundings() {
-        if (mDidOverrideDecidedStateForTesting) return mDecidedStateForTesting;
-
         // The user must have decided on privacy to send page content on HTTPS.
-        return !isUserUndecided() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
     }
 
     /**
@@ -358,7 +356,7 @@ class ContextualSearchPolicy {
         // Otherwise we'll get skewed data; more HTTP pages than HTTPS (since those don't resolve),
         // and it's also possible that public pages, e.g. news, have more searches for multi-word
         // entities like people.
-        if (!isUserUndecided()) {
+        if (isContextualSearchFullyEnabled()) {
             GURL url = mNetworkCommunicator.getBasePageUrl();
             ContextualSearchUma.logBasePageProtocol(isBasePageHTTP(url));
             boolean isSingleWord = !CONTAINS_WHITESPACE_PATTERN.matcher(searchTerm.trim()).find();
@@ -386,7 +384,7 @@ class ContextualSearchPolicy {
      * @return {@code true} if the URL should be sent.
      */
     boolean doSendBasePageUrl() {
-        if (isUserUndecided()) return false;
+        if (!isContextualSearchFullyEnabled()) return false;
 
         // Check whether there is a Field Trial setting preventing us from sending the page URL.
         if (ContextualSearchFieldTrial.getSwitch(
@@ -651,8 +649,8 @@ class ContextualSearchPolicy {
      */
     @VisibleForTesting
     void overrideDecidedStateForTesting(boolean decidedState) {
-        mDidOverrideDecidedStateForTesting = true;
-        mDecidedStateForTesting = decidedState;
+        mDidOverrideFullyEnabledForTesting = true;
+        mFullyEnabledForTesting = decidedState;
     }
 
     /**
@@ -710,13 +708,22 @@ class ContextualSearchPolicy {
      *         on enabling or disabling the feature.
      */
     boolean isUserUndecided() {
-        if (mDidOverrideDecidedStateForTesting) return !mDecidedStateForTesting;
+        if (mDidOverrideFullyEnabledForTesting) return !mFullyEnabledForTesting;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
             return isContextualSearchUninitialized() && isContextualSearchOptInUninitialized();
         }
 
         return isContextualSearchUninitialized();
+    }
+
+    /**
+     * @return Whether a user explicitly enabled the Contextual Search feature.
+     */
+    boolean isContextualSearchFullyEnabled() {
+        if (mDidOverrideFullyEnabledForTesting) return mFullyEnabledForTesting;
+
+        return isContextualSearchEnabled();
     }
 
     /**
