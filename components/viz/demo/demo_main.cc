@@ -260,7 +260,7 @@ int main(int argc, char** argv) {
 
     // To create dmabuf through gbm, Ozone needs to be set up.
     gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
-    gpu_helper->Initialize(base::ThreadTaskRunnerHandle::Get());
+    gpu_helper->Initialize();
   }
 #endif
 

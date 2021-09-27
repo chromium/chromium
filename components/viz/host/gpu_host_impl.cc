@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -104,8 +103,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
                          InitParams params)
     : delegate_(delegate),
       viz_main_(std::move(viz_main)),
-      params_(std::move(params)),
-      host_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      params_(std::move(params)) {
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
 #if defined(OS_WIN)
@@ -354,9 +352,7 @@ void GpuHostImpl::InitOzone() {
 
   ui::OzonePlatform::GetInstance()
       ->GetGpuPlatformSupportHost()
-      ->OnGpuServiceLaunched(params_.restart_id,
-                             params_.main_thread_task_runner,
-                             host_thread_task_runner_, interface_binder,
+      ->OnGpuServiceLaunched(params_.restart_id, interface_binder,
                              std::move(terminate_callback));
 }
 

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,14 +52,10 @@ class FlatlandGpuHost : public mojom::ScenicGpuHost,
   void OnChannelDestroyed(int host_id) override;
   void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 
  private:
-  void OnGpuServiceLaunchedOnUI(
-      mojo::PendingRemote<mojom::ScenicGpuService> gpu_service);
   void UpdateReceiver(uint32_t service_launch_count,
                       mojo::PendingReceiver<mojom::ScenicGpuHost> receiver);
 
@@ -69,12 +64,8 @@ class FlatlandGpuHost : public mojom::ScenicGpuHost,
   mojo::Receiver<mojom::ScenicGpuHost> gpu_receiver_{this};
 
   mojo::Remote<mojom::ScenicGpuService> gpu_service_;
-  scoped_refptr<base::SingleThreadTaskRunner> ui_thread_runner_;
 
   THREAD_CHECKER(ui_thread_checker_);
-  THREAD_CHECKER(io_thread_checker_);
-
-  base::WeakPtrFactory<FlatlandGpuHost> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

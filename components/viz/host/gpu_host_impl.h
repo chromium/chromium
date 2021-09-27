@@ -270,9 +270,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 
-  // Task runner corresponding to the thread |this| is created on.
-  scoped_refptr<base::SingleThreadTaskRunner> host_thread_task_runner_;
-
   mojo::Remote<mojom::GpuService> gpu_service_remote_;
 #if defined(OS_WIN)
   mojo::Remote<mojom::InfoCollectionGpuService>

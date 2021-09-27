@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_DRM_HOST_DRM_DEVICE_CONNECTOR_H_
 
 
-#include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/mojom/device_cursor.mojom.h"
@@ -30,8 +29,6 @@ class DrmDeviceConnector : public GpuPlatformSupportHost {
   void OnChannelDestroyed(int host_id) override;
   void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 

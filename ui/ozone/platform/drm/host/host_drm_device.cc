@@ -24,9 +24,7 @@
 
 namespace ui {
 
-HostDrmDevice::HostDrmDevice(DrmCursor* cursor) : cursor_(cursor) {
-  DETACH_FROM_THREAD(on_io_thread_);
-}
+HostDrmDevice::HostDrmDevice(DrmCursor* cursor) : cursor_(cursor) {}
 
 HostDrmDevice::~HostDrmDevice() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
@@ -168,24 +166,14 @@ bool HostDrmDevice::GpuRelinquishDisplayControl() {
   return true;
 }
 
-bool HostDrmDevice::GpuAddGraphicsDeviceOnUIThread(const base::FilePath& path,
-                                                   base::ScopedFD fd) {
+void HostDrmDevice::GpuAddGraphicsDevice(const base::FilePath& path,
+                                         base::ScopedFD fd) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-  base::File file(std::move(fd));
+  if (!drm_device_.is_bound())
+    return;
 
+  base::File file(std::move(fd));
   drm_device_->AddGraphicsDevice(path, std::move(file));
-
-  return true;
-}
-
-void HostDrmDevice::GpuAddGraphicsDeviceOnIOThread(const base::FilePath& path,
-                                                   base::ScopedFD fd) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_io_thread_);
-  DCHECK(drm_device_on_io_thread_.is_bound());
-  base::File file(std::move(fd));
-  drm_device_on_io_thread_->AddGraphicsDevice(path, std::move(file));
 }
 
 bool HostDrmDevice::GpuRemoveGraphicsDevice(const base::FilePath& path) {
@@ -287,28 +275,7 @@ void HostDrmDevice::GpuSetHDCPStateCallback(int64_t display_id,
   display_manager_->GpuUpdatedHDCPState(display_id, success);
 }
 
-void HostDrmDevice::OnGpuServiceLaunchedOnProcessThread(
-    mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runner) {
-  // The observers might send IPC messages from the IO thread during the call to
-  // OnGpuProcessLaunched.
-  drm_device_on_io_thread_.Bind(std::move(drm_device));
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuProcessLaunched();
-  // In the single-threaded mode or when GpuProcessHost lives on the UI thread,
-  // there won't be separate UI and IO threads.
-  if (ui_runner->BelongsToCurrentThread()) {
-    OnGpuServiceLaunchedOnUIThread(drm_device_on_io_thread_.Unbind());
-  } else {
-    DCHECK_CALLED_ON_VALID_THREAD(on_io_thread_);
-    ui_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HostDrmDevice::OnGpuServiceLaunchedOnUIThread, this,
-                       drm_device_on_io_thread_.Unbind()));
-  }
-}
-
-void HostDrmDevice::OnGpuServiceLaunchedOnUIThread(
+void HostDrmDevice::OnGpuServiceLaunched(
     mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
 
@@ -318,6 +285,8 @@ void HostDrmDevice::OnGpuServiceLaunchedOnUIThread(
     OnGpuServiceLost();
 
   drm_device_.Bind(std::move(drm_device));
+  for (GpuThreadObserver& observer : gpu_thread_observers_)
+    observer.OnGpuProcessLaunched();
 
   // Create two DeviceCursor connections: one for the UI thread and one for the
   // IO thread.

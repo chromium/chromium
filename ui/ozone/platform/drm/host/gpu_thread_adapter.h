@@ -41,10 +41,8 @@ class GpuThreadAdapter {
   virtual bool GpuTakeDisplayControl() = 0;
   virtual bool GpuRefreshNativeDisplays() = 0;
   virtual bool GpuRelinquishDisplayControl() = 0;
-  virtual bool GpuAddGraphicsDeviceOnUIThread(const base::FilePath& path,
-                                              base::ScopedFD fd) = 0;
-  virtual void GpuAddGraphicsDeviceOnIOThread(const base::FilePath& path,
-                                              base::ScopedFD fd) = 0;
+  virtual void GpuAddGraphicsDevice(const base::FilePath& path,
+                                    base::ScopedFD fd) = 0;
   virtual bool GpuRemoveGraphicsDevice(const base::FilePath& path) = 0;
 
   // Services needed by DrmDisplayHost
