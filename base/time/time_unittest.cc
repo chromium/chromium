@@ -1747,14 +1747,14 @@ TEST(TimeDelta, MaxConversions) {
   EXPECT_EQ(kMax.InMilliseconds(), std::numeric_limits<int64_t>::max());
   EXPECT_EQ(kMax.InMillisecondsRoundedUp(), std::numeric_limits<int64_t>::max());
 
-  static_assert(TimeDelta::FromDays(std::numeric_limits<int>::max()).is_max(),
-                "");
-
-  static_assert(TimeDelta::FromHours(std::numeric_limits<int>::max()).is_max(),
-                "");
+  static_assert(
+      TimeDelta::FromDays(std::numeric_limits<int64_t>::max()).is_max(), "");
 
   static_assert(
-      TimeDelta::FromMinutes(std::numeric_limits<int>::max()).is_max(), "");
+      TimeDelta::FromHours(std::numeric_limits<int64_t>::max()).is_max(), "");
+
+  static_assert(
+      TimeDelta::FromMinutes(std::numeric_limits<int64_t>::max()).is_max(), "");
 
   constexpr int64_t max_int = std::numeric_limits<int64_t>::max();
   constexpr int64_t min_int = std::numeric_limits<int64_t>::min();
