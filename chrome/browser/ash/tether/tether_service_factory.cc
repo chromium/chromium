@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/tether/tether_service_factory.h"
+#include "chrome/browser/ash/tether/tether_service_factory.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/chromeos/tether/fake_tether_service.h"
+#include "chrome/browser/ash/tether/fake_tether_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

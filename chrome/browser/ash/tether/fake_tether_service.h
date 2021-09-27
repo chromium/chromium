@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_TETHER_FAKE_TETHER_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_TETHER_FAKE_TETHER_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TETHER_FAKE_TETHER_SERVICE_H_
+#define CHROME_BROWSER_ASH_TETHER_FAKE_TETHER_SERVICE_H_
 
-#include "chrome/browser/chromeos/tether/tether_service.h"
+#include "chrome/browser/ash/tether/tether_service.h"
 
 // A stub of TetherService that provides an easy way to develop for Tether on
 // non-Chromebooks or without a Tether host. To use, see
@@ -40,4 +40,4 @@ class FakeTetherService : public TetherService {
   DISALLOW_COPY_AND_ASSIGN(FakeTetherService);
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_TETHER_FAKE_TETHER_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TETHER_FAKE_TETHER_SERVICE_H_

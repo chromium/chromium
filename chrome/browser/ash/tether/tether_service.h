@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_TETHER_TETHER_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_TETHER_TETHER_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_H_
+#define CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_H_
 
 #include <memory>
 
@@ -286,4 +286,4 @@ class TetherService
   base::WeakPtrFactory<TetherService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_TETHER_TETHER_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_H_
