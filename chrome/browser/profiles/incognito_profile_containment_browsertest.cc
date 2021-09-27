@@ -79,10 +79,7 @@ struct FileData {
   uint32_t file_hash = 0;
 };
 
-struct Snapshot {
-  std::unordered_map<std::string, FileData> files;
-  std::set<std::string> directories;
-};
+using Snapshot = std::map<std::string, FileData>;
 
 bool ComputeFileHash(const base::FilePath& file_path, uint32_t* hash_code) {
   std::string content;
@@ -105,20 +102,19 @@ void GetUserDirectorySnapshot(Snapshot& snapshot, bool compute_file_hashes) {
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     // Remove |user_data_dir| part from path.
-    std::string reduced_path =
+    std::string file =
         path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe().substr(
             user_data_dir.AsUTF8Unsafe().length());
 
-    if (enumerator.GetInfo().IsDirectory()) {
-      snapshot.directories.insert(reduced_path);
-    } else {
-      FileData fd;
+    FileData fd;
+    // TODO(http://crbug.com/1234755): Expand to newly added empty directories.
+    if (!enumerator.GetInfo().IsDirectory()) {
       fd.size = enumerator.GetInfo().GetSize();
       fd.last_modified_time = enumerator.GetInfo().GetLastModifiedTime();
       fd.file_hash_is_valid =
           compute_file_hashes ? ComputeFileHash(path, &fd.file_hash) : false;
       fd.full_path = path;
-      snapshot.files[reduced_path] = fd;
+      snapshot[file] = fd;
     }
   }
   return;
@@ -139,53 +135,21 @@ bool IsFileModified(FileData& before, FileData& after) {
   return false;
 }
 
-bool AreDirectoriesModified(Snapshot& snapshot_before,
-                            Snapshot& snapshot_after,
-                            std::set<std::string>& allow_list) {
+bool IsDiskStateModified(Snapshot& snapshot_before,
+                         Snapshot& snapshot_after,
+                         std::set<std::string>& allow_list) {
   bool modified = false;
-
-  // Check for new directories.
-  for (const std::string& directory : snapshot_after.directories) {
-    if (!base::Contains(snapshot_before.directories, directory)) {
-      // If a file/prefix in this directory is allowlisted, ignore directory
-      // addition.
-      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
-                      [&directory](const std::string& prefix) {
-                        return prefix.find(directory) == 0;
-                      })) {
-        continue;
-      }
-#if defined(OS_CHROMEOS)
-      // "/test-user" directories are not cleared after the test.
-      // TODO(http://crbug.com/1234755): Audit if this is just an artifact of
-      // testing or it can be an indicator of writing data while in Incognito.
-      if (directory.find("/test-user") == 0)
-        continue;
-#endif
-      LOG(ERROR) << "New directory: " << directory;
-      modified = true;
-    }
-  }
-
-  return modified;
-}
-
-bool AreFilesModified(Snapshot& snapshot_before,
-                      Snapshot& snapshot_after,
-                      std::set<std::string>& allow_list) {
-  bool modified = false;
-
   // TODO(http://crbug.com/1234755): Consider deleted files as well. Currently
   // we only look for added and modified files, but file deletion is also
   // modifying disk and is best to be prevented.
-  for (auto& fd : snapshot_after.files) {
-    auto before = snapshot_before.files.find(fd.first);
-    bool is_new = (before == snapshot_before.files.end());
+  for (auto& fd : snapshot_after) {
+    auto before = snapshot_before.find(fd.first);
+    bool is_new = (before == snapshot_before.end());
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
-      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
-                      [&fd](const std::string& prefix) {
+      if (std::any_of(allow_list.begin(), allow_list.end(),
+                      [&fd](std::string prefix) {
                         return fd.first.find(prefix) == 0;
                       })) {
         continue;
@@ -300,9 +264,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   Snapshot after_incognito;
   GetUserDirectorySnapshot(after_incognito, /*compute_file_hashes=*/false);
   EXPECT_FALSE(
-      AreDirectoriesModified(before_incognito, after_incognito, allow_list_));
-  EXPECT_FALSE(
-      AreFilesModified(before_incognito, after_incognito, allow_list_));
+      IsDiskStateModified(before_incognito, after_incognito, allow_list_));
 }
 
 // TODO(http://crbug.com/1234755): Add more complex naviagtions, triggering
