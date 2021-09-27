@@ -12625,12 +12625,21 @@ IN_PROC_BROWSER_TEST_F(
                     {}, {}, {}, {}, FROM_HERE);
 }
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons \
+  DISABLED_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons
+#else
+#define MAYBE_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons \
+  PagesWithCacheControlNoStoreEvictedWithBothCookieReasons
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets evicted with both JavaScript and HTTPOnly cookie changes. Only
 // HTTPOnly cookie reason should be recorded.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreEvictedWithBothCookieReasons) {
+    MAYBE_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/main_document");
@@ -12695,11 +12704,20 @@ class BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange
   }
 };
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_NoCacheControlNoStoreButHTTPOnlyCookieChange \
+  DISABLED_NoCacheControlNoStoreButHTTPOnlyCookieChange
+#else
+#define MAYBE_NoCacheControlNoStoreButHTTPOnlyCookieChange \
+  NoCacheControlNoStoreButHTTPOnlyCookieChange
+#endif
+
 // Test that a page without cache-control:no-store can enter BackForwardCache
 // and gets restored if HTTPOnly Cookie changes.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange,
-    NoCacheControlNoStoreButHTTPOnlyCookieChange) {
+    MAYBE_NoCacheControlNoStoreButHTTPOnlyCookieChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL(
@@ -12730,11 +12748,20 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange \
+  DISABLED_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange
+#else
+#define MAYBE_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange \
+  PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and does not get evicted if normal cookies change.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange,
-    PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange) {
+    MAYBE_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL(
@@ -12771,11 +12798,20 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange \
+  DISABLED_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange
+#else
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange \
+  PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets evicted if HTTPOnly cookie changes.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange) {
+    MAYBE_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/main_document");
@@ -12826,11 +12862,20 @@ IN_PROC_BROWSER_TEST_F(
                     {}, {}, {}, {}, FROM_HERE);
 }
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange \
+  DISABLED_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange
+#else
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange \
+  PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets evicted if HTTPOnly cookie changes.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange) {
+    MAYBE_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/main_document");
