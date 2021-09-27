@@ -2164,6 +2164,9 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
 
     case network::mojom::CorsError::kInsecurePrivateNetwork:
       return protocol::Network::CorsErrorEnum::InsecurePrivateNetwork;
+
+    case network::mojom::CorsError::kInvalidPrivateNetworkAccess:
+      return protocol::Network::CorsErrorEnum::InvalidPrivateNetworkAccess;
   }
 }
 }  // namespace

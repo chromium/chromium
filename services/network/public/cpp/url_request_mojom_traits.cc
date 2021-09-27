@@ -22,6 +22,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/url_request.mojom.h"
@@ -205,6 +206,7 @@ bool StructTraits<
   out->is_fetch_like_api = data.is_fetch_like_api();
   out->is_favicon = data.is_favicon();
   out->obey_origin_policy = data.obey_origin_policy();
+  out->target_ip_address_space = data.target_ip_address_space();
   return true;
 }
 

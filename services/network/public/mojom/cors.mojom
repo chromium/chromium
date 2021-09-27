@@ -76,6 +76,9 @@ enum CorsError {
   // "Access-Control-Allow-External:"
   // ( https://wicg.github.io/cors-rfc1918/#headers ) specific error
   // conditions:
+  //
+  // TODO(https://crbug.com/1252295): Rename these to reflect the evolution of
+  // the spec. See https://wicg.github.io/private-network-access/#headers.
   kPreflightMissingAllowExternal,
   kPreflightInvalidAllowExternal,
 
@@ -97,8 +100,13 @@ enum CorsError {
   kRedirectContainsCredentials,
 
   // Request client is not secure and less private than the request target.
-  // See: https://wicg.github.io/cors-rfc1918.
+  // See: https://wicg.github.io/private-network-access/#secure-context-restriction
   kInsecurePrivateNetwork,
+
+  // The request carried a `target_ip_address_space` which turned out to
+  // be different from the IP address space of the remote endpoint.
+  // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
+  kInvalidPrivateNetworkAccess,
 };
 
 [Native]

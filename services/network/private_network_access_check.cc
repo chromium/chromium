@@ -15,12 +15,20 @@ namespace {
 
 PrivateNetworkAccessCheckResult PrivateNetworkAccessCheckInternal(
     const network::mojom::ClientSecurityState* client_security_state,
+    mojom::IPAddressSpace target_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
   if (url_load_options & mojom::kURLLoadOptionBlockLocalRequest &&
       IsLessPublicAddressSpace(resource_address_space,
                                network::mojom::IPAddressSpace::kPublic)) {
     return PrivateNetworkAccessCheckResult::kBlockedByLoadOption;
+  }
+
+  if (target_address_space != mojom::IPAddressSpace::kUnknown) {
+    return resource_address_space == target_address_space
+               ? PrivateNetworkAccessCheckResult::kAllowedByTargetIpAddressSpace
+               : PrivateNetworkAccessCheckResult::
+                     kBlockedByTargetIpAddressSpace;
   }
 
   if (!client_security_state) {
@@ -48,10 +56,12 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessCheckInternal(
 
 PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
     const network::mojom::ClientSecurityState* client_security_state,
+    mojom::IPAddressSpace target_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
   PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheckInternal(
-      client_security_state, url_load_options, resource_address_space);
+      client_security_state, target_address_space, url_load_options,
+      resource_address_space);
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
                                 result);
   return result;

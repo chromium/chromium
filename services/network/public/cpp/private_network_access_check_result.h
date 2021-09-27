@@ -6,6 +6,8 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
 
 #include "base/component_export.h"
+#include "services/network/public/mojom/cors.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -32,13 +34,23 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: blocked because policy is `kBlock`.
   kBlockedByPolicyBlock = 5,
 
+  // Request carries a `target_ip_address_space` that matches the resource
+  // address space.
+  kAllowedByTargetIpAddressSpace = 6,
+
+  // Request carries a `target_ip_address_space` that differs from the actual
+  // resource address space. This may be indicative of a DNS rebinding attack.
+  kBlockedByTargetIpAddressSpace = 7,
+
   // Required for UMA histogram logging.
-  kMaxValue = kBlockedByPolicyBlock,
+  kMaxValue = kBlockedByTargetIpAddressSpace,
 };
 
-// Returns whether `result` indicates the request should be allowed.
-bool COMPONENT_EXPORT(NETWORK_CPP) PrivateNetworkAccessCheckResultIsAllowed(
-    PrivateNetworkAccessCheckResult result);
+// If `result` indicates that the request should be blocked, returns the
+// corresponding `CorsError` enum value. Otherwise returns `nullopt`.
+absl::optional<mojom::CorsError> COMPONENT_EXPORT(NETWORK_CPP)
+    PrivateNetworkAccessCheckResultToCorsError(
+        PrivateNetworkAccessCheckResult result);
 
 }  // namespace network
 

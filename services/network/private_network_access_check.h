@@ -17,15 +17,19 @@ class ClientSecurityState;
 
 }  // namespace mojom
 
-// Returns whether a request client with the given `client_security_state`
-// should be allowed to make requests to an endpoint in `resource_address_space`
-// with a `URLLoader` configured with the given `url_load_options`.
+// Returns whether a request client with the given `client_security_state`,
+// expecting a resource in `target_address_space`, should be allowed to make
+// requests to an endpoint in `resource_address_space` with a `URLLoader`
+// configured with the given `url_load_options`.
+//
+// `target_address_space` is ignored if set to `kUnknown`.
 //
 // Implements the following spec:
 // https://wicg.github.io/private-network-access/#private-network-access-check
 PrivateNetworkAccessCheckResult COMPONENT_EXPORT(NETWORK_SERVICE)
     PrivateNetworkAccessCheck(
         const network::mojom::ClientSecurityState* client_security_state,
+        mojom::IPAddressSpace target_address_space,
         int32_t url_load_options,
         mojom::IPAddressSpace resource_address_space);
 

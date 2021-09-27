@@ -36,9 +36,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   CorsErrorStatus(mojom::CorsError cors_error,
                   const std::string& failed_parameter);
 
-  // Constructor for CORS-RFC1918 errors.
-  // Sets `cors_error` to `kInsecurePrivateNetwork`.
-  explicit CorsErrorStatus(mojom::IPAddressSpace resource_address_space);
+  // Constructor for Private Network Access errors.
+  CorsErrorStatus(mojom::CorsError cors_error,
+                  mojom::IPAddressSpace target_address_space,
+                  mojom::IPAddressSpace resource_address_space);
 
   ~CorsErrorStatus();
 
@@ -52,9 +53,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   // Contains request method name, or header name that didn't pass a CORS check.
   std::string failed_parameter;
 
+  // The target IP address space set on the URL request.
+  // See `ResourceRequest::target_ip_address_space`.
+  // Set if (but not only if) `cors_error == kInvalidPrivateNetworkAccess`.
+  mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
+
   // The address space of the requested resource.
+  // Set iff `cors_error` is one of:
   //
-  // Only set if `cors_error == kInsecurePrivateNetwork`.
+  // - `kInvalidPrivateNetworkAccess`
+  // - `kInsecurePrivateNetwork`
+  //
   mojom::IPAddressSpace resource_address_space =
       mojom::IPAddressSpace::kUnknown;
 

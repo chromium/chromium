@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -186,6 +187,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
   absl::optional<NetLogParams> net_log_params;
+  mojom::IPAddressSpace target_ip_address_space =
+      mojom::IPAddressSpace::kUnknown;
 };
 
 // This does not accept |kDefault| referrer policy.

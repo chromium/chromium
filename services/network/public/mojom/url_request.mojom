@@ -440,6 +440,14 @@ struct URLRequest {
   // (which happens in CorsURLLoader). See the comment of NetLogParams for
   // details.
   NetLogParams? net_log_params;
+
+  // The IP address space to which the target endpoint of this request should
+  // belong, or `kUnknown` if there is no such requirement.
+  // If the target endpoint of the network socket does not belong to this
+  // address space, the request is failed with a CORS error.
+  // Clients outside the network service must not set this field to a value
+  // other than `kUnknown`.
+  IPAddressSpace target_ip_address_space;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

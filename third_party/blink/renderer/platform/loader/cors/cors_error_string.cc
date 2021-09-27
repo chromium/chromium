@@ -227,6 +227,12 @@ String GetErrorString(const network::CorsErrorStatus& status,
                        "' contains a username and password, which is "
                        "disallowed for cross-origin requests."});
       break;
+    case CorsError::kInvalidPrivateNetworkAccess:
+      Append(builder, {"Request had a target IP address space of `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` yet the resource is in address space `",
+                       ShortAddressSpace(status.resource_address_space), "`."});
+      break;
   }
   return builder.ToString();
 }

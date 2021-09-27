@@ -500,6 +500,7 @@ URLLoader::URLLoader(
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
       custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
       fetch_window_id_(request.fetch_window_id),
+      target_ip_address_space_(request.target_ip_address_space),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       origin_access_list_(origin_access_list),
       cookie_observer_(std::move(cookie_observer)),
@@ -1025,7 +1026,8 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
   // Fully-qualify function name to disambiguate it, otherwise it resolves to
   // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
   PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
-      security_state.get(), options_, resource_address_space);
+      security_state.get(), target_ip_address_space_, options_,
+      resource_address_space);
 
   bool is_warning = false;
   switch (result) {
@@ -1040,8 +1042,8 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
       return result;
   }
 
-  // If `security_state` was nullptr, then `result` should have been
-  // `kAllowedMissingClientSecurityState`.
+  // If `security_state` was nullptr, then `result` should not have mentioned
+  // the policy set in `security_state->private_network_request_policy`.
   DCHECK(security_state);
 
   if (auto* devtools_observer = GetDevToolsObserver()) {
@@ -1065,12 +1067,16 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   // this request should be blocked per Private Network Access.
   mojom::IPAddressSpace resource_address_space =
       IPEndPointToIPAddressSpace(info.endpoint);
-  if (!PrivateNetworkAccessCheckResultIsAllowed(
-          PrivateNetworkAccessCheck(resource_address_space))) {
+
+  absl::optional<mojom::CorsError> cors_error =
+      PrivateNetworkAccessCheckResultToCorsError(
+          PrivateNetworkAccessCheck(resource_address_space));
+  if (cors_error.has_value()) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
     // other CORS errors.
-    cors_error_status_ = CorsErrorStatus(resource_address_space);
+    cors_error_status_ = CorsErrorStatus(*cors_error, target_ip_address_space_,
+                                         resource_address_space);
     return net::ERR_FAILED;
   }
 

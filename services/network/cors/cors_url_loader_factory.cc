@@ -513,6 +513,12 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
         "CorsURLLoaderFactory: net_log_params field is not expected.");
   }
 
+  if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: target_ip_address_space field is set");
+    return false;
+  }
+
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should
   // be "follow".
   return true;

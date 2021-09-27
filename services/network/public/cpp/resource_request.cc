@@ -253,7 +253,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
              request.devtools_accepted_stream_types &&
          trust_token_params == request.trust_token_params &&
          OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
-             web_bundle_token_params, request.web_bundle_token_params);
+             web_bundle_token_params, request.web_bundle_token_params) &&
+         target_ip_address_space == request.target_ip_address_space;
 }
 
 bool ResourceRequest::SendsCookies() const {

@@ -2067,6 +2067,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(status.error_code, net::ERR_FAILED);
   EXPECT_THAT(status.cors_error_status,
               Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kInsecurePrivateNetwork,
+                  network::mojom::IPAddressSpace::kUnknown,
                   network::mojom::IPAddressSpace::kLocal)));
 }
 

@@ -532,6 +532,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   absl::optional<base::UnguessableToken> fetch_window_id_;
 
+  // See |ResourceRequest::target_ip_address_space_|.
+  mojom::IPAddressSpace target_ip_address_space_ =
+      mojom::IPAddressSpace::kUnknown;
+
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;

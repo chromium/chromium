@@ -4917,6 +4917,7 @@ domain Network
       HeaderDisallowedByPreflightResponse
       RedirectContainsCredentials
       InsecurePrivateNetwork
+      InvalidPrivateNetworkAccess
       NoCorsRedirectModeNotFollow
 
   type CorsErrorStatus extends object

@@ -30,6 +30,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
@@ -335,6 +336,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const absl::optional<network::ResourceRequest::NetLogParams>&
   net_log_params(const network::ResourceRequest& request) {
     return request.net_log_params;
+  }
+  static network::mojom::IPAddressSpace target_ip_address_space(
+      const network::ResourceRequest& request) {
+    return request.target_ip_address_space;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,
