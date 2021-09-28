@@ -143,7 +143,6 @@ js_library("crostini_port_forwarding") {
     ":crostini_browser_proxy",
     ":crostini_port_forwarding_add_port_dialog",
     "..:metrics_recorder.m",
-    "../../controls:settings_toggle_button",
     "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
@@ -181,7 +180,6 @@ js_library("crostini_subpage") {
     "..:os_route.m",
     "..:route_origin_behavior.m",
     "../..:router",
-    "../../controls:settings_toggle_button",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
@@ -189,6 +187,7 @@ js_library("crostini_subpage") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  externs_list = [ "../settings_controls_types.js" ]
 }
 
 html_to_js("web_components") {

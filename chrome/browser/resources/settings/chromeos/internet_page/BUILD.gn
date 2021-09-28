@@ -85,8 +85,6 @@ js_library("internet_detail_page") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy.m",
-    "//chrome/browser/resources/settings/controls:controlled_button",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
     "//chrome/browser/resources/settings/prefs:prefs",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
@@ -227,7 +225,6 @@ js_library("network_proxy_section") {
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -238,6 +235,7 @@ js_library("network_proxy_section") {
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list = [ "../settings_controls_types.js" ]
 }
 
 js_library("network_summary") {
@@ -305,7 +303,6 @@ js_library("cellular_roaming_toggle_button") {
   deps = [
     ":internet_shared_css",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/prefs:prefs",
     "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",

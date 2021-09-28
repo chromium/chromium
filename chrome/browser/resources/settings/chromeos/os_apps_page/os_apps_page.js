@@ -23,12 +23,12 @@ import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
 import './app_management_page/uninstall_button.js';
+import '../../controls/settings_dropdown_menu.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';

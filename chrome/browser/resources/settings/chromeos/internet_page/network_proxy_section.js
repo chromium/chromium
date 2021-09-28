@@ -17,12 +17,12 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/extension_controlled_indicator.js';
 import '../../settings_vars_css.js';
 import './internet_shared_css.js';
+import '../../controls/settings_toggle_button.js';
 
 import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';

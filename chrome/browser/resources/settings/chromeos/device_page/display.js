@@ -19,6 +19,7 @@ import '../settings_scheduler_slider/settings_scheduler_slider.js';
 import '../../controls/settings_slider.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
+import '../../controls/settings_dropdown_menu.js';
 
 import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
@@ -27,7 +28,6 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';

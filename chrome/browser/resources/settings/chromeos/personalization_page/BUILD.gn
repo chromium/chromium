@@ -52,7 +52,6 @@ js_library("dark_mode_subpage.m") {
   deps = [
     "..:os_route.m",
     "../..:router",
-    "../../controls:settings_toggle_button",
     "../../prefs:prefs",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data",

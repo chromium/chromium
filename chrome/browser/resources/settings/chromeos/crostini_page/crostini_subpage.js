@@ -21,11 +21,12 @@ import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/icons.m.js';
+import '../../controls/settings_toggle_button.js';
+
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, CrostiniPortProtocol, CrostiniPortSetting, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, PortState, MIN_VALID_PORT_NUMBER, MAX_VALID_PORT_NUMBER} from './crostini_browser_proxy.js';
 import './crostini_confirmation_dialog.js';
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';

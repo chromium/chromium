@@ -17,7 +17,6 @@ import '../../settings_shared_css.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';

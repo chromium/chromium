@@ -85,8 +85,6 @@ js_library("lock_screen.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router",
-    "../../controls:settings_dropdown_menu",
-    "../../controls:settings_toggle_button",
     "../multidevice_page:multidevice_smartlock_item.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
@@ -98,6 +96,7 @@ js_library("lock_screen.m") {
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
   extra_deps = [ ":lock_screen_module" ]
+  externs_list = [ "../settings_controls_types.js" ]
 }
 
 js_library("lock_screen_password_prompt_dialog.m") {
@@ -297,7 +296,7 @@ polymer_modulizer("lock_screen") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/controls/settings_toggle_button.html|SettingsToggleButtonElement" ]
+  auto_imports = os_settings_auto_imports
 }
 
 polymer_modulizer("lock_screen_password_prompt_dialog") {

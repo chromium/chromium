@@ -48,12 +48,12 @@ js_library("timezone_browser_proxy") {
 js_library("timezone_selector") {
   deps = [
     ":timezone_browser_proxy",
-    "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior",
     "../../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = [ "../settings_controls_types.js" ]
 }
 
 js_library("timezone_subpage") {

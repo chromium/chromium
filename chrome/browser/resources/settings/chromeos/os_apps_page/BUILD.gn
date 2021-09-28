@@ -41,7 +41,6 @@ js_library("os_apps_page") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../../:router",
-    "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior",
     "../../settings_page:settings_animated_pages",
     "./app_management_page:constants",
@@ -53,7 +52,10 @@ js_library("os_apps_page") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
+  externs_list = [
+    "$externs_path/metrics_private.js",
+    "../settings_controls_types.js",
+  ]
 }
 
 html_to_js("web_components") {
