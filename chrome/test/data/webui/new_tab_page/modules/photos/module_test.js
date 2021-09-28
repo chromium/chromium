@@ -176,7 +176,9 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
 
     // Assert.
     assertEquals(
-        loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+        loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesPhotosMemoriesDisabled')),
         disable.event.detail.message);
   });
 
@@ -270,7 +272,9 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     assertEquals(1, handler.getCallCount('onUserOptIn'));
     assertEquals(false, handler.getArgs('onUserOptIn')[0]);
     assertEquals(
-        loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+        loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesPhotosMemoriesDisabled')),
         disable.event.detail.message);
   });
 

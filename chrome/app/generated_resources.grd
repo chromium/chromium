@@ -5975,23 +5975,26 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         Learn about the data Google Drive collects and why <ph name="BEGIN_LINK">&lt;a href="https://support.google.com/drive/answer/2450387" target="_blank"&gt;</ph>here<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
-      <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module and various other UIs.">
-        Google Photos
+      <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module.">
+        From your Google Photos
       </message>
-      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_HIDE_TODAY" desc="Label used to hide Google Photos Memories from the new tab page for today.">
-        Hide memories for today
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_TITLE" desc="Title shown for Google Photos Memories in the list of available cards for the new tab page.">
+        Google Photos memories
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_HIDE_TODAY" desc="Part of label (combined with IDS_NTP_MODULES_DISMISS_BUTTON_TEXT) used to hide Google Photos Memories from the new tab page for today.">
+        your memories for today
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_HIDDEN_TODAY" desc="Confirmation text shown when Google Photos Memories were hidden from the new tab page for today.">
         Memories hidden for today
       </message>
-      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLE" desc="Label used to disable Google Photos Memories from the new tab page.">
-        Never show memories
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLE" desc="Part of label (combined with IDS_NTP_MODULES_DISABLE_BUTTON_TEXT) used to disable Google Photos Memories from the new tab page.">
+        memories
       </message>
-      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLED" desc="Confirmation text shown when the Google Photos Memories module is disabled from the new tab page.">
-        All memories hidden
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLED" desc="Part of confirmation text (combined with IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE) shown when the Google Photos Memories module is disabled from the new tab page.">
+        memories from Google Photos
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_INFO" desc="Text shown in the body of the info dialog of the Photos module.">
-        Your Memories from Google Photos are shown here. They are visible only when you’re signed in.
+        Your memories from Google Photos are shown here. They are visible only to you, whenever you’re signed in.
         <ph name="BREAK">&lt;br&gt;</ph>
         <ph name="BREAK">&lt;br&gt;</ph>
         Manage what you see in your memories at <ph name="BEGIN_LINK">&lt;a href="https://photos.google.com/settings" target="_blank"&gt;</ph>photos.google.com/settings<ph name="END_LINK">&lt;/a&gt;</ph>.
@@ -6003,7 +6006,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         See your memories here
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TEXT" desc="Text for the opt-in UI for Google Photos in the new tab page.">
-        You’ll see your memories from Google Photos here. They’ll only show when you’re signed in.
+        Start exploring your memories from Google Photos, whenever you’re signed in.
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_BUTTON_OPT_IN" desc="Label of the button to opt-in of Google Photos in the new tab page.">
         See memories

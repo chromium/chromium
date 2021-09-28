@@ -81,6 +81,7 @@
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 1;
   }
 
   .memory-title {
@@ -96,6 +97,7 @@
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 2;
   }
 
   .memory-img {
@@ -309,9 +311,13 @@
     show-info-button="[[!showOptInScreen]]"
     on-info-button-click="onInfoButtonClick_"
     show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
-    dismiss-text="[[i18n('modulesPhotosMemoriesHideToday')]]"
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesPhotosMemoriesHideToday')]]"
     on-disable-button-click="onDisableButtonClick_"
-    disable-text="[[i18n('modulesPhotosMemoriesDisable')]]">
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesPhotosMemoriesDisable')]]">
   [[i18n('modulesPhotosTitle')]]
 </ntp-module-header>
 <div id="memories">

@@ -97,7 +97,9 @@ class PhotosModuleElement extends mixinBehaviors
       bubbles: true,
       composed: true,
       detail: {
-        message: loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesPhotosMemoriesDisabled')),
       },
     }));
   }
