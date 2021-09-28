@@ -2092,6 +2092,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.UpdateProfileAffectedType.{Decision}"
+    enum="AutofillSettingsVisibleTypes" expires_after="M98">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs that a specific type would have changed in a profile update process
+    that received a specific {Decision}. The update was shown to the user
+    because a profile similar to an already existing profile was observed in a
+    form submission. Note that this metric collects the changed types before the
+    user potentially applies additional edits. The metric is recorded on form
+    submission once the user decision is final.
+  </summary>
+  <token key="Decision">
+    <variant name="Accepted"
+        summary="The user accepted the update flow from the initial prompt."/>
+    <variant name="Any" summary="Any decision."/>
+    <variant name="AutoDeclined"
+        summary="The prompt is suppressed most likely because there is
+                 already another prompt shown on the same tab."/>
+    <variant name="Declined"
+        summary="The user declined the update flow from the initial prompt."/>
+    <variant name="EditAccepted"
+        summary="The user accepted the update flow from the edit dialog."/>
+    <variant name="EditDeclined"
+        summary="The user declined the update flow from the edit dialog."/>
+    <variant name="Ignored" summary="The user ignored the prompt."/>
+    <variant name="MessageDeclined"
+        summary="The user swipes away the update Message. This is only
+                 relevant on mobile."/>
+    <variant name="MessageTimeout"
+        summary="The update message timed out before the user interacted.
+                 This is only relevant on mobile."/>
+    <variant name="Never"
+        summary="The user selected to never save a new profile on a given
+                 domain or update a specific profile (currently not
+                 supported)."/>
+    <variant name="Undefined" summary="Undefined"/>
+    <variant name="UserNotAsked"
+        summary="No prompt is shown and no decision is needed to proceed with
+                 the process."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.UpdateProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="M96">
   <owner>koerber@google.com</owner>
@@ -2126,6 +2169,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This metric is only collected if the profile update is accepted by the user
     without further edits.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields.{Decision}"
+    units="fields" expires_after="M98">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the number of fields that would be changed by an accepted update for
+    any possible Decision. Note that this metric collects the number of changed
+    fields before the user potentially applies additional edits. The metric is
+    recorded on form submission once the user decision is final.
+  </summary>
+  <token key="Decision">
+    <variant name="Accepted"
+        summary="The user accepted the update flow from the initial prompt."/>
+    <variant name="Any" summary="Any decision."/>
+    <variant name="AutoDeclined"
+        summary="The prompt is suppressed most likely because there is
+                 already another prompt shown on the same tab."/>
+    <variant name="Declined"
+        summary="The user declined the update flow from the initial prompt."/>
+    <variant name="EditAccepted"
+        summary="The user accepted the update flow from the edit dialog."/>
+    <variant name="EditDeclined"
+        summary="The user declined the update flow from the edit dialog."/>
+    <variant name="Ignored" summary="The user ignored the prompt."/>
+    <variant name="MessageDeclined"
+        summary="The user swipes away the update Message. This is only
+                 relevant on mobile."/>
+    <variant name="MessageTimeout"
+        summary="The update message timed out before the user interacted.
+                 This is only relevant on mobile."/>
+    <variant name="Never"
+        summary="The user selected to never save a new profile on a given
+                 domain or update a specific profile (currently not
+                 supported)."/>
+    <variant name="Undefined" summary="Undefined"/>
+    <variant name="UserNotAsked"
+        summary="No prompt is shown and no decision is needed to proceed with
+                 the process."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ProfileImport.UpdateProfileNumberOfEditedFields"

@@ -152,6 +152,36 @@ ConvertSettingsVisibleFieldTypeForMetrics(ServerFieldType field_type) {
   }
 }
 
+const char* GetSaveAndUpdatePromptDecisionMetricsSuffix(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  switch (decision) {
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined:
+      return ".Undefined";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked:
+      return ".UserNotAsked";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted:
+      return ".Accepted";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
+      return ".Declined";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted:
+      return ".EditAccepted";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined:
+      return ".EditDeclined";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kNever:
+      return ".Never";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
+      return ".Ignored";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout:
+      return ".MessageTimeout";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined:
+      return ".MessageDeclined";
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined:
+      return ".AutoDeclined";
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -2814,9 +2844,27 @@ void AutofillMetrics::LogProfileUpdateImportDecision(
 }
 
 void AutofillMetrics::LogProfileUpdateAffectedType(
-    ServerFieldType affected_type) {
+    ServerFieldType affected_type,
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  // TODO(crbug.com/1253798): Remove the special-case metric in favor of more
+  // general one once the majority of clients contribute to the more general
+  // one.
+  if (decision ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
+    base::UmaHistogramEnumeration(
+        "Autofill.ProfileImport.UpdateProfileAffectedType",
+        ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
+  }
+
+  // Record the decision-specific metric.
   base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileAffectedType",
+      base::StrCat({"Autofill.ProfileImport.UpdateProfileAffectedType",
+                    GetSaveAndUpdatePromptDecisionMetricsSuffix(decision)}),
+      ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
+
+  // But also collect an histogram for any decision.
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.UpdateProfileAffectedType.Any",
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
 }
 
@@ -2834,9 +2882,27 @@ void AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
 }
 
 void AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
-    int number_of_edited_fields) {
+    int number_of_edited_fields,
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  // TODO(crbug.com/1253798): Remove the special-case metric in favor of more
+  // general one once the majority of clients contribute to the more general
+  // one.
+  if (decision ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
+    base::UmaHistogramExactLinear(
+        "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields",
+        number_of_edited_fields, /*exclusive_max=*/15);
+  }
+
+  // Record the decision-specific metric.
   base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields",
+      base::StrCat({"Autofill.ProfileImport.UpdateProfileAffectedType",
+                    GetSaveAndUpdatePromptDecisionMetricsSuffix(decision)}),
+      number_of_edited_fields, /*exclusive_max=*/15);
+
+  // But also collect an histogram for any decision.
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.UpdateProfileAffectedType.Any",
       number_of_edited_fields, /*exclusive_max=*/15);
 }
 

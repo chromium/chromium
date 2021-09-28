@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -328,6 +329,23 @@ void AddressProfileSaveManagerTest::TestImportScenario(
            test_scenario.expected_affeceted_types_in_merge_for_metrics) {
         histogram_tester.ExpectBucketCount(kProfileUpdateAffectedTypesHistogram,
                                            changed_type, 1);
+        std::string changed_histogram_suffix;
+        switch (test_scenario.user_decision) {
+          case UserDecision::kAccepted:
+            changed_histogram_suffix = ".Accepted";
+            break;
+
+          case UserDecision::kDeclined:
+            changed_histogram_suffix = ".Declined";
+            break;
+
+          default:
+            NOTREACHED() << "Decision not covered by test logic.";
+        }
+        histogram_tester.ExpectBucketCount(
+            base::StrCat({kProfileUpdateAffectedTypesHistogram,
+                          changed_histogram_suffix}),
+            changed_type, 1);
       }
 
       histogram_tester.ExpectUniqueSample(

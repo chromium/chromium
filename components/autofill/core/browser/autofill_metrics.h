@@ -1691,9 +1691,12 @@ class AutofillMetrics {
   static void LogProfileUpdateImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  // Logs that a specific type changed in a profile update which was accepted
-  // without manual edits.
-  static void LogProfileUpdateAffectedType(ServerFieldType affected_type);
+  // Logs that a specific type changed in a profile update that received the
+  // user |decision|. Note that additional manual edits in the update prompt are
+  // not accounted for in this metric.
+  static void LogProfileUpdateAffectedType(
+      ServerFieldType affected_type,
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs that a specific type was edited in an update prompt.
   static void LogProfileUpdateEditedType(ServerFieldType edited_type);
@@ -1701,10 +1704,12 @@ class AutofillMetrics {
   // Logs the number of edited fields for an accepted profile update.
   static void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields);
 
-  // Logs the number of changed fields for a profile update that is accepted
-  // without manual edits.
+  // Logs the number of changed fields for a profile update that received the
+  // user |decision|. Note that additional manual edits in the update prompt are
+  // not accounted for in this metric.
   static void LogUpdateProfileNumberOfAffectedFields(
-      int number_of_affected_fields);
+      int number_of_affected_fields,
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);
