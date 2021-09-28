@@ -188,6 +188,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
  private:
   friend class SodaInstallerImplChromeOSTest;
+  friend class SodaInstallerImplTest;
   // Any new feature using SODA should add its pref here.
   bool IsAnyFeatureUsingSodaEnabled(PrefService* prefs);
 };

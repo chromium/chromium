@@ -37,6 +37,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
         ash::prefs::kAccessibilityDictationEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
                                                    true);
+    pref_service_->registry()->RegisterStringPref(
+        prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
 
     chromeos::DBusThreadManager::Initialize();
     chromeos::DlcserviceClient::InitializeFake();
@@ -245,6 +247,32 @@ TEST_F(SodaInstallerImplChromeOSTest, UninstallSodaAfterThirtyDays) {
   Init();
   RunUntilIdle();
   ASSERT_FALSE(IsSodaInstalled());
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, ReinstallSoda) {
+  Init();
+  RunUntilIdle();
+  ASSERT_TRUE(IsSodaInstalled());
+  // Turn off features that use SODA so that the uninstall timer can be set.
+  SetDictationEnabled(false);
+  SetLiveCaptionEnabled(false);
+  SetUninstallTimer();
+  ASSERT_TRUE(IsSodaInstalled());
+  // If 30 days pass without the uninstall time being pushed, SODA will be
+  // uninstalled the next time Init() is called.
+  // Set SodaInstaller initialized state to false to mimic a browser shutdown.
+  SetSodaInstallerInitialized(false);
+  FastForwardBy(kSodaUninstallTime);
+  ASSERT_TRUE(IsSodaInstalled());
+  // The uninstallation process doesn't start until Init() is called again.
+  Init();
+  RunUntilIdle();
+  ASSERT_FALSE(IsSodaInstalled());
+  // Enable live caption and reinstall SODA.
+  SetLiveCaptionEnabled(true);
+  Init();
+  RunUntilIdle();
+  ASSERT_TRUE(IsSodaInstalled());
 }
 
 // Tests that SODA stays installed if thirty days pass and a feature using SODA
