@@ -4666,6 +4666,10 @@ proto_library("user_activity_event_proto") {
 
 proto_library("user_added_removed_record_proto") {
   sources = [ "../ash/policy/reporting/user_added_removed/user_added_removed_record.proto" ]
+  proto_in_dir = "//"
+  deps = [
+    "//components/reporting/proto/common_event_support:session_affiliated_user",
+  ]
 }
 
 proto_library("device_configuration_proto") {
@@ -4690,6 +4694,10 @@ proto_library("print_job_info_proto") {
 
 proto_library("login_logout_record_proto") {
   sources = [ "../ash/login/reporting/login_logout_record.proto" ]
+  proto_in_dir = "//"
+  deps = [
+    "//components/reporting/proto/common_event_support:session_affiliated_user",
+  ]
 }
 
 proto_library("user_event_reporter_testing_record_proto") {

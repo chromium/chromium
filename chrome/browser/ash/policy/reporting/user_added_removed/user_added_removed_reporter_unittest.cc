@@ -154,8 +154,8 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.has_user_added_event());
-  EXPECT_TRUE(record.has_user());
-  ASSERT_EQ(record.user().email(), user_email);
+  EXPECT_TRUE(record.has_affiliated_user());
+  ASSERT_EQ(record.affiliated_user().user_email(), user_email);
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
@@ -187,7 +187,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.has_user_added_event());
-  ASSERT_FALSE(record.has_user());
+  ASSERT_FALSE(record.has_affiliated_user());
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
@@ -302,8 +302,9 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.has_user_removed_event());
-  EXPECT_TRUE(record.has_user());
-  EXPECT_THAT(record.user().email(), ::testing::StrEq(user_email));
+  EXPECT_TRUE(record.has_affiliated_user());
+  EXPECT_THAT(record.affiliated_user().user_email(),
+              ::testing::StrEq(user_email));
   EXPECT_THAT(record.user_removed_event().reason(),
               ::testing::Eq(UserRemovalReason::GAIA_REMOVED));
 }
@@ -341,7 +342,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.has_user_removed_event());
-  EXPECT_FALSE(record.has_user());
+  EXPECT_FALSE(record.has_affiliated_user());
   EXPECT_THAT(record.user_removed_event().reason(),
               ::testing::Eq(UserRemovalReason::GAIA_REMOVED));
 }
@@ -397,8 +398,8 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.has_user_removed_event());
-  EXPECT_TRUE(record.has_user());
-  EXPECT_TRUE(record.user().email() == user_email);
+  EXPECT_TRUE(record.has_affiliated_user());
+  EXPECT_EQ(record.affiliated_user().user_email(), user_email);
   EXPECT_THAT(record.user_removed_event().reason(),
               ::testing::Eq(UserRemovalReason::REMOTE_ADMIN_INITIATED));
 }

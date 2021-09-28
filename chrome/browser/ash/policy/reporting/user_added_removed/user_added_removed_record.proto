@@ -6,11 +6,9 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package reporting;
+import "components/reporting/proto/common_event_support/session_affiliated_user.proto";
 
-message User {
-  optional string email = 1;
-}
+package reporting;
 
 enum UserRemovalReason {
   UNKNOWN = 0;
@@ -34,7 +32,7 @@ message UserAddedRemovedRecord {
   optional int64 event_timestamp_sec = 1;
 
   // Omitted if the user is not affiliated.
-  optional User user = 2;
+  optional SessionAffiliatedUser affiliated_user = 2;
 
   oneof event {
     UserAddedEvent user_added_event = 3;

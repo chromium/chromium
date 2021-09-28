@@ -54,7 +54,7 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
   UserAddedRemovedRecord record;
   record.mutable_user_added_event();
   if (helper_->ShouldReportUser(email)) {
-    record.mutable_user()->set_email(email);
+    record.mutable_affiliated_user()->set_user_email(email);
   }
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
@@ -95,7 +95,7 @@ void UserAddedRemovedReporter::OnUserRemoved(
   UserAddedRemovedRecord record;
   record.mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
   if (is_affiliated_user) {
-    record.mutable_user()->set_email(account_id.GetUserEmail());
+    record.mutable_affiliated_user()->set_user_email(account_id.GetUserEmail());
   }
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
@@ -112,7 +112,7 @@ void UserAddedRemovedReporter::ProcessRemoveUserCache() {
     record.mutable_user_removed_event()->set_reason(
         UserRemovalReason(user.second));
     if (user.first != "") {
-      record.mutable_user()->set_email(user.first);
+      record.mutable_affiliated_user()->set_user_email(user.first);
     }
 
     helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
