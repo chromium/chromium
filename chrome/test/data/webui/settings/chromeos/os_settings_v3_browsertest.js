@@ -381,7 +381,8 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['AppManagementPwaDetailView', 'pwa_detail_view_test.m.js'],
  ['AppManagementReducers', 'reducers_test.m.js'],
  ['AppManagementResizeLockItem', 'resize_lock_item_test.m.js'],
- ['AppManagementSupportedLinksItem', 'supported_links_item_test.m.js'],
+ // TODO(crbug/1253891): Re-enable once flakiness is fixed.
+ // ['AppManagementSupportedLinksItem', 'supported_links_item_test.m.js'],
  ['AppManagementToggleRow', 'toggle_row_test.m.js'],
  ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
