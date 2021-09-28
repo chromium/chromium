@@ -74,6 +74,17 @@ class WebTransport::Stream final {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&Stream::Send, stream_));
     }
+    void OnResetStreamReceived(
+        quic::WebTransportStreamError /*error*/) override {
+      // TODO(yhirano): Implement this.
+    }
+    void OnStopSendingReceived(
+        quic::WebTransportStreamError /*error*/) override {
+      // TODO(yhirano): Implement this.
+    }
+    void OnWriteSideInDataRecvdState() override {
+      // TODO(yhirano): Implement this.
+    }
 
    private:
     const base::WeakPtr<Stream> stream_;

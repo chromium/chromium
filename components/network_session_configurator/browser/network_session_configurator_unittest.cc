@@ -74,7 +74,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
 
   EXPECT_TRUE(params_.enable_quic);
   EXPECT_TRUE(quic_params_.retry_without_alt_svc_on_quic_errors);
-  EXPECT_EQ(1350u, quic_params_.max_packet_length);
+  EXPECT_EQ(1250u, quic_params_.max_packet_length);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.connection_options);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.client_connection_options);
   EXPECT_FALSE(params_.enable_server_push_cancellation);

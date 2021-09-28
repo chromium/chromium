@@ -1086,8 +1086,8 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
         !kIncludeDiversificationNonce, quic::PACKET_8BYTE_CONNECTION_ID,
         quic::PACKET_1BYTE_PACKET_NUMBER, offset);
     if (version_.HasIetfQuicFrames() && i == 0) {
-      // 3973 is the data frame length from packet length.
-      std::string header2 = ConstructDataHeader(3973);
+      // 3673 is the data frame length from packet length.
+      std::string header2 = ConstructDataHeader(3673);
       mock_quic_data_.AddWrite(
           SYNCHRONOUS,
           ConstructDataPacket(
