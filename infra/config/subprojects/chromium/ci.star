@@ -4471,7 +4471,6 @@ ci.fyi_ios_builder(
     cpu = cpu.ARM64,
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
-    xcode = xcode.x12e262,
 )
 
 ci.fyi_ios_builder(
