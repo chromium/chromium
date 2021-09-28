@@ -255,7 +255,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   CreateInfobar(kSharedTabName, kAppName, false, true);
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-  content::NavigationController* controller = &web_contents->GetController();
-  NavigateAndCommit(controller, GURL("http://bar"));
+  NavigateAndCommit(web_contents, GURL("http://bar"));
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
 }

@@ -62,18 +62,17 @@ class TestingProfileManager;
 //
 //   // Add a new tab and navigate it. This will be at index 0.
 //   AddTab(browser(), GURL("http://foo/1"));
-//   NavigationController* controller =
-//       &browser()->tab_strip_model()->GetWebContentsAt(0)->GetController();
+//   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
 //
 //   // Navigate somewhere else.
 //   GURL url2("http://foo/2");
-//   NavigateAndCommit(controller, url2);
+//   NavigateAndCommit(contents, url2);
 //
 //   // This is equivalent to the above, and lets you test pending navigations.
 //   browser()->OpenURL(OpenURLParams(
 //       GURL("http://foo/2"), GURL(), WindowOpenDisposition::CURRENT_TAB,
 //       ui::PAGE_TRANSITION_TYPED, false));
-//   CommitPendingLoad(controller);
+//   CommitPendingLoad(&contents->GetController());
 //
 // Subclasses must invoke BrowserWithTestWindowTest::SetUp as it is responsible
 // for creating the various objects of this class.
@@ -159,12 +158,10 @@ class BrowserWithTestWindowTest : public testing::Test {
   // URL of the pending load. If there is no pending load, this does nothing.
   void CommitPendingLoad(content::NavigationController* controller);
 
-  // Creates a pending navigation on the given navigation controller to the
-  // given URL with the default parameters and the commits the load with a page
-  // ID one larger than any seen. This emulates what happens on a new
-  // navigation.
-  void NavigateAndCommit(content::NavigationController* controller,
-                         const GURL& url);
+  // Creates a pending navigation on the given WebContents to the given URL with
+  // the default parameters and the commits the load with a page ID one larger
+  // than any seen. This emulates what happens on a new navigation.
+  void NavigateAndCommit(content::WebContents* web_contents, const GURL& url);
 
   // Navigates the current tab. This is a wrapper around NavigateAndCommit.
   void NavigateAndCommitActiveTab(const GURL& url);

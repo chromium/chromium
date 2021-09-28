@@ -1732,20 +1732,14 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // Navigate the |foo| tab to the same origin as |origin_anchor|, and the
   // |origin_query| tab to a different origin.
   const GURL origin_path("https://www.example.com/path/to/page.html");
-  content::NavigationController* foo_controller =
-      &browser()
-           ->tab_strip_model()
-           ->GetWebContentsAt(/*foo=*/0)
-           ->GetController();
-  NavigateAndCommit(foo_controller, origin_path);
+  content::WebContents* foo_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(/*foo=*/0);
+  NavigateAndCommit(foo_contents, origin_path);
 
   const GURL example_without_www("https://example.com/");
-  content::NavigationController* origin_query_controller =
-      &browser2()
-           ->tab_strip_model()
-           ->GetWebContentsAt(/*origin_query=*/1)
-           ->GetController();
-  NavigateAndCommit(origin_query_controller, example_without_www);
+  content::WebContents* origin_query_contents =
+      browser2()->tab_strip_model()->GetWebContentsAt(/*origin_query=*/1);
+  NavigateAndCommit(origin_query_contents, example_without_www);
 
   // Reset all permissions.
   base::Value reset_args(base::Value::Type::LIST);

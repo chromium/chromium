@@ -174,17 +174,13 @@ void BrowserWithTestWindowTest::CommitPendingLoad(
   RenderFrameHostTester::CommitPendingLoad(controller);
 }
 
-void BrowserWithTestWindowTest::NavigateAndCommit(
-    NavigationController* controller,
-    const GURL& url) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      controller->DeprecatedGetWebContents(), url);
+void BrowserWithTestWindowTest::NavigateAndCommit(WebContents* web_contents,
+                                                  const GURL& url) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents, url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {
-  NavigateAndCommit(&browser()->tab_strip_model()->GetActiveWebContents()->
-                        GetController(),
-                    url);
+  NavigateAndCommit(browser()->tab_strip_model()->GetActiveWebContents(), url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
@@ -193,9 +189,9 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
     const std::u16string& title) {
   WebContents* contents =
       navigating_browser->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  NavigateAndCommit(controller, url);
-  contents->UpdateTitleForEntry(controller->GetActiveEntry(), title);
+  NavigateAndCommit(contents, url);
+  contents->UpdateTitleForEntry(contents->GetController().GetActiveEntry(),
+                                title);
 }
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
