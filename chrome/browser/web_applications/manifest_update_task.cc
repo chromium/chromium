@@ -429,20 +429,12 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
   // Allow app icon updating for certain apps, or if the existing icons are
   // empty - this means the app icon download during install failed.
   if (AllowUnpromptedIconUpdate(app_id_, registrar_)) {
-    // When kPwaUpdateDialogForNameAndIcon is enabled, the FilterAndResizeIcons
-    // call has already been made.
-    if (!base::FeatureList::IsEnabled(
-            features::kPwaUpdateDialogForNameAndIcon)) {
-      // This call populates the |web_application_info_| with all icon bitmap
-      // data.
-      // If this data does not match what we already have on disk, then an
-      // update is necessary.
-      // TODO(https://crbug.com/1184911): Reuse this data in the web app install
-      // task.
-      PopulateProductIcons(&web_application_info_.value(),
-                           &downloaded_icons_map);
-    }
-
+    // This call populates the |web_application_info_| with all icon bitmap
+    // data. If this data does not match what we already have on disk, then an
+    // update is necessary.
+    // TODO(https://crbug.com/1184911): Reuse this data in the web app install
+    // task.
+    PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
     // TODO: compare in a BEST_EFFORT blocking PostTaskAndReply.
     if (IsUpdateNeededForIconContents(disk_icon_bitmaps).changes_detected) {
       UpdateAfterWindowsClose();
