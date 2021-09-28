@@ -88,4 +88,16 @@ avifenc -r f -d  8 -y 420 -s 0 --irot 3 --imir 1 red.png red-full-range-angle-3-
 These are copied from https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles/Xiph
 under the CC BY-SA 3.0 license.
 
+### green-no-alpha-ispe.avif
+The alpha auxiliary image item in this file does not have a mandatory ispe
+property. This is generated from green-alpha.png with a patched cavif encoder.
+The following commit should be reverted in avif-serialize:
+https://github.com/kornelski/avif-serialize/commit/451ff3568fa2de2fad1185654576f8f4a2db13c5
+
+The cavif command line is:
+
+```
+cavif ../../../fast/box-shadow/resources/green-alpha.png -o green-no-alpha-ispe.avif
+```
+
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.
