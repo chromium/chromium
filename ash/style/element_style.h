@@ -19,6 +19,13 @@ namespace ash {
 // the button, which includes the button's size, icon size, border, color etc.
 namespace element_style {
 
+// Constants of the icon buttons.
+constexpr int kSmallIconButtonSize = 32;
+constexpr int kMediumIconButtonSize = 36;
+constexpr int kLargeIconButtonSize = 48;
+constexpr int kIconButtonIconSize = 20;
+constexpr int kIconButtonBorderSize = 4;
+
 // Multiple types of icon buttons. It is an ImageButton with a circular
 // background, which is toggleable. And its background will have different
 // colors while it is toggled. Border will be added to the button if

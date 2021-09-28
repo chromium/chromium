@@ -23,14 +23,8 @@
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/animation/ink_drop_host_view.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 
@@ -63,9 +57,6 @@ constexpr int kLightBackgroundBlendAlpha = 191;  // 75%
 // The default background color that can be applied on any layer.
 constexpr SkColor kBackgroundColorDefaultLight = SK_ColorWHITE;
 constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
-
-// The spacing between a pill button's icon and label, if it has both.
-constexpr int kPillButtonImageLabelSpacingDp = 8;
 
 // Get the corresponding ColorName for |type|. ColorName is an enum in
 // cros_styles.h file that is generated from cros_colors.json5, which
@@ -244,57 +235,6 @@ SkColor AshColorProvider::GetInvertedBackgroundColor() const {
                     : GetInvertedBackgroundDefaultColor();
 }
 
-void AshColorProvider::DecoratePillButton(views::LabelButton* button,
-                                          const gfx::VectorIcon* icon) {
-  if (icon) {
-    SkColor enabled_icon_color =
-        GetContentLayerColor(ContentLayerType::kButtonIconColor);
-    button->SetImage(views::Button::STATE_NORMAL,
-                     gfx::CreateVectorIcon(*icon, enabled_icon_color));
-    button->SetImage(
-        views::Button::STATE_DISABLED,
-        gfx::CreateVectorIcon(*icon, GetDisabledColor(enabled_icon_color)));
-    button->SetImageLabelSpacing(kPillButtonImageLabelSpacingDp);
-  }
-
-  SkColor enabled_text_color =
-      GetContentLayerColor(ContentLayerType::kButtonLabelColor);
-  button->SetEnabledTextColors(enabled_text_color);
-  button->SetTextColor(views::Button::STATE_DISABLED,
-                       GetDisabledColor(enabled_text_color));
-
-  // TODO(sammiequon): Add a default rounded rect background. It should probably
-  // be optional as some buttons still require customization. At that point we
-  // should package the parameters of this function into a struct.
-}
-
-void AshColorProvider::DecorateCloseButton(views::ImageButton* button,
-                                           int button_size,
-                                           const gfx::VectorIcon& icon) {
-  DCHECK(!icon.is_empty());
-  SkColor enabled_icon_color =
-      GetContentLayerColor(ContentLayerType::kButtonIconColor);
-  button->SetImage(views::Button::STATE_NORMAL,
-                   gfx::CreateVectorIcon(icon, enabled_icon_color));
-
-  // Add a rounded rect background. The rounding will be half the button size so
-  // it is a circle.
-  SkColor icon_background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  button->SetBackground(views::CreateRoundedRectBackground(
-      icon_background_color, button_size / 2));
-
-  // TODO(sammiequon): Add background blur as per spec. Background blur is quite
-  // heavy, and we may have many close buttons showing at a time. They'll be
-  // added separately so its easier to monitor performance.
-}
-
-void AshColorProvider::DecorateFloatingIconButton(views::ImageButton* button,
-                                                  const gfx::VectorIcon& icon) {
-  DecorateIconButton(button, icon, /*toggled=*/false,
-                     GetDefaultSizeOfVectorIcon(icon));
-}
-
 void AshColorProvider::DecorateInkDrop(views::InkDropHost* host,
                                        int ink_drop_config_flags,
                                        SkColor bg_color) {
@@ -309,37 +249,6 @@ void AshColorProvider::DecorateInkDrop(views::InkDropHost* host,
 
   if (ink_drop_config_flags & kConfigHighlightOpacity)
     host->SetHighlightOpacity(ripple_attributes.highlight_opacity);
-}
-
-void AshColorProvider::DecorateIconButton(views::ImageButton* button,
-                                          const gfx::VectorIcon& icon,
-                                          bool toggled,
-                                          int icon_size) {
-  DCHECK(!icon.is_empty());
-  const SkColor normal_color =
-      GetContentLayerColor(ContentLayerType::kButtonIconColor);
-  const SkColor toggled_icon_color =
-      GetContentLayerColor(ContentLayerType::kButtonIconColorPrimary);
-  const SkColor icon_color = toggled ? toggled_icon_color : normal_color;
-
-  // Skip repainting if the incoming icon is the same as the current icon. If
-  // the icon has been painted before, |gfx::CreateVectorIcon()| will simply
-  // grab the ImageSkia from a cache, so it will be cheap. Note that this
-  // assumes that toggled/disabled images changes at the same time as the normal
-  // image, which it currently does.
-  const gfx::ImageSkia new_normal_image =
-      gfx::CreateVectorIcon(icon, icon_size, icon_color);
-  const gfx::ImageSkia& old_normal_image =
-      button->GetImage(views::Button::STATE_NORMAL);
-  if (!new_normal_image.isNull() && !old_normal_image.isNull() &&
-      new_normal_image.BackedBySameObjectAs(old_normal_image)) {
-    return;
-  }
-
-  button->SetImage(views::Button::STATE_NORMAL, new_normal_image);
-  button->SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, icon_size, GetDisabledColor(normal_color)));
 }
 
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {

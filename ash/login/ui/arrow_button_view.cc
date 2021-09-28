@@ -97,8 +97,16 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 
 void ArrowButtonView::OnThemeChanged() {
   LoginButton::OnThemeChanged();
-  AshColorProvider::Get()->DecorateIconButton(
-      this, kLockScreenArrowIcon, /*toggled_=*/false, kArrowIconSizeDp);
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                                 icon_color));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                            AshColorProvider::GetDisabledColor(icon_color)));
 }
 
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {

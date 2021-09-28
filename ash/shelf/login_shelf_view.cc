@@ -217,7 +217,11 @@ class LoginShelfButton : public views::LabelButton {
         icon_(icon) {
     SetAccessibleName(GetText());
     AshColorProvider* color_provider = AshColorProvider::Get();
-    color_provider->DecoratePillButton(this, &icon);
+    const SkColor enabled_text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColor);
+    SetEnabledTextColors(enabled_text_color);
+    SetTextColor(views::Button::STATE_DISABLED,
+                 AshColorProvider::GetDisabledColor(enabled_text_color));
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
     set_suppress_default_focus_handling();

@@ -44,7 +44,11 @@ RoundedLabelButton::RoundedLabelButton(PressedCallback callback,
 void RoundedLabelButton::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  color_provider->DecoratePillButton(this, /*icon=*/nullptr);
+  const SkColor enabled_text_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor);
+  SetEnabledTextColors(enabled_text_color);
+  SetTextColor(views::Button::STATE_DISABLED,
+               AshColorProvider::GetDisabledColor(enabled_text_color));
   views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
   background()->SetNativeControlColor(GetBackgroundColor());

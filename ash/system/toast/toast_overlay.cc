@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -163,11 +164,9 @@ class ToastOverlayButton : public views::LabelButton {
   // views::LabelButton:
   void OnThemeChanged() override {
     views::LabelButton::OnThemeChanged();
-    const auto* color_provider = AshColorProvider::Get();
     views::InkDrop::Get(this)->SetBaseColor(
-        color_provider->GetRippleAttributes().base_color);
-    SetEnabledTextColors(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+        AshColorProvider::Get()->GetRippleAttributes().base_color);
+    element_style::DecorateIconlessFloatingPillButton(this);
   }
 };
 

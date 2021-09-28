@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -56,8 +57,11 @@ void ConfigureFeaturePodLabel(views::Label* label,
 FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                                            bool is_togglable)
     : views::ImageButton(std::move(callback)), is_togglable_(is_togglable) {
-  SetPreferredSize(kUnifiedFeaturePodIconSize);
-  SetBorder(views::CreateEmptyBorder(kUnifiedFeaturePodIconPadding));
+  const int button_size = element_style::kMediumIconButtonSize +
+                          2 * element_style::kIconButtonBorderSize;
+  SetPreferredSize(gfx::Size(button_size, button_size));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(element_style::kIconButtonBorderSize)));
   SetFlipCanvasOnPaintForRTLUI(false);
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
@@ -69,8 +73,8 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           kUnifiedFeaturePodHoverPadding));
-  views::InstallCircleHighlightPathGenerator(this,
-                                             kUnifiedFeaturePodIconPadding);
+  views::InstallCircleHighlightPathGenerator(
+      this, gfx::Insets(element_style::kIconButtonBorderSize));
 }
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
@@ -147,8 +151,8 @@ void FeaturePodIconButton::UpdateVectorIcon() {
   if (!icon_)
     return;
 
-  AshColorProvider::Get()->DecorateIconButton(this, *icon_, toggled_,
-                                              kUnifiedFeaturePodVectorIconSize);
+  element_style::DecorateMediumIconButton(this, *icon_, toggled_,
+                                          /*has_border=*/true);
 }
 
 FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)

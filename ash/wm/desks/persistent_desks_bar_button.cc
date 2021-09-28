@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -90,7 +91,7 @@ gfx::Size PersistentDesksBarCircularButton::CalculatePreferredSize() const {
 
 void PersistentDesksBarCircularButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  AshColorProvider::Get()->DecorateFloatingIconButton(this, icon_);
+  element_style::DecorateFloatingIconButton(this, icon_);
 }
 
 // -----------------------------------------------------------------------------

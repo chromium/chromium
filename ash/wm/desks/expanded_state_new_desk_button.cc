@@ -50,7 +50,16 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
 
   void OnThemeChanged() override {
     DeskButtonBase::OnThemeChanged();
-    AshColorProvider::Get()->DecoratePillButton(this, &kDesksNewDeskButtonIcon);
+    const SkColor enabled_icon_color =
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kButtonIconColor);
+    SetImage(
+        views::Button::STATE_NORMAL,
+        gfx::CreateVectorIcon(kDesksNewDeskButtonIcon, enabled_icon_color));
+    SetImage(views::Button::STATE_DISABLED,
+             gfx::CreateVectorIcon(
+                 kDesksNewDeskButtonIcon,
+                 AshColorProvider::GetDisabledColor(enabled_icon_color)));
     UpdateButtonState();
   }
 

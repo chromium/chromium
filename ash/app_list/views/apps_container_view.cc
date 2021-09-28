@@ -40,6 +40,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -112,13 +113,16 @@ class SortButton : public views::ImageButton {
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    AshColorProvider::Get()->DecorateIconButton(
-        /*button=*/this,
-        is_alphabetical_ ? kOverflowShelfLeftIcon : kOverflowShelfRightIcon,
-        /*toggled=*/false, GetPreferredSize().width());
+    auto* color_provider = AshColorProvider::Get();
+    const SkColor icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(is_alphabetical_ ? kOverflowShelfLeftIcon
+                                                    : kOverflowShelfRightIcon,
+                                   GetPreferredSize().width(), icon_color));
 
     auto* inkdrop_host = views::InkDrop::Get(this);
-    AshColorProvider::Get()->DecorateInkDrop(
+    color_provider->DecorateInkDrop(
         inkdrop_host, AshColorProvider::kConfigBaseColor |
                           AshColorProvider::kConfigHighlightOpacity |
                           AshColorProvider::kConfigHighlightOpacity);

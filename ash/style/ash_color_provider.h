@@ -11,16 +11,13 @@
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/vector_icon_types.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
 namespace views {
-class ImageButton;
 class InkDropHost;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -86,21 +83,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Same as above, but returns the color based on the current inverted color
   // mode and color theme.
   SkColor GetInvertedBackgroundColor() const;
-
-  // Helpers to style different types of buttons. Depending on the type may
-  // style text, icon and background colors for both enabled and disabled
-  // states. May overwrite an prior styles on |button|.
-  void DecoratePillButton(views::LabelButton* button,
-                          const gfx::VectorIcon* icon);
-  void DecorateCloseButton(views::ImageButton* button,
-                           int button_size,
-                           const gfx::VectorIcon& icon);
-  void DecorateIconButton(views::ImageButton* button,
-                          const gfx::VectorIcon& icon,
-                          bool toggled,
-                          int icon_size);
-  void DecorateFloatingIconButton(views::ImageButton* button,
-                                  const gfx::VectorIcon& icon);
 
   // Decorates the ink drop managed by `host`. `ink_drop_config_flags` is a
   // bitmask which specifies the ink drop attributes to modify. `bg_color` is

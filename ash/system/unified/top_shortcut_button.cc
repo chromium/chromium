@@ -5,6 +5,7 @@
 #include "ash/system/unified/top_shortcut_button.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -33,10 +34,6 @@ TopShortcutButton::TopShortcutButton(PressedCallback callback,
 
 TopShortcutButton::~TopShortcutButton() = default;
 
-gfx::Size TopShortcutButton::CalculatePreferredSize() const {
-  return gfx::Size(kTrayItemSize, kTrayItemSize);
-}
-
 void TopShortcutButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -54,12 +51,12 @@ const char* TopShortcutButton::GetClassName() const {
 
 void TopShortcutButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->DecorateIconButton(this, icon_,
-                                     /*toggled_=*/false,
-                                     kTrayTopShortcutButtonIconSize);
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  element_style::DecorateSmallIconButton(this, icon_,
+                                         /*toggled_=*/false,
+                                         /*has_border=*/false);
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
   SchedulePaint();
 }
 

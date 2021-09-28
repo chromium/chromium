@@ -15,13 +15,6 @@ namespace element_style {
 
 namespace {
 
-// Constants of the icon buttons.
-constexpr int kSmallIconButtonSize = 32;
-constexpr int kMediumIconButtonSize = 36;
-constexpr int kLargeIconButtonSize = 48;
-constexpr int kIconButtonIconSize = 20;
-constexpr int kIconButtonBorderSize = 4;
-
 // Constants of the pill buttons.
 constexpr gfx::Size kIconlessPillButtonSize(64, 32);
 constexpr gfx::Size kIconPillButtonSize(92, 32);

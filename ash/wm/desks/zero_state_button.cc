@@ -19,6 +19,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -232,7 +233,10 @@ const char* ZeroStateNewDeskButton::GetClassName() const {
 
 void ZeroStateNewDeskButton::OnThemeChanged() {
   DeskButtonBase::OnThemeChanged();
-  AshColorProvider::Get()->DecoratePillButton(this, &kDesksNewDeskButtonIcon);
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(kDesksNewDeskButtonIcon, icon_color));
 }
 
 gfx::Size ZeroStateNewDeskButton::CalculatePreferredSize() const {

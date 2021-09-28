@@ -48,7 +48,6 @@ class UnifiedSliderButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
-  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
  private:

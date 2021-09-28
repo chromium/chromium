@@ -24,9 +24,6 @@ class TopShortcutButton : public views::ImageButton {
 
   ~TopShortcutButton() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;

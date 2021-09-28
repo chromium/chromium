@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -37,7 +38,6 @@ namespace {
 constexpr int kMediaControlsCornerRadius = 8;
 constexpr int kMediaControlsViewPadding = 8;
 constexpr int kMediaButtonsPadding = 8;
-constexpr int kMediaButtonIconSize = 20;
 constexpr int kArtworkCornerRadius = 4;
 constexpr int kTitleRowHeight = 20;
 constexpr int kTrackTitleFontSizeIncrease = 1;
@@ -47,7 +47,6 @@ constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
 
 constexpr gfx::Size kEmptyArtworkIconSize = gfx::Size(20, 20);
 constexpr gfx::Size kArtworkSize = gfx::Size(40, 40);
-constexpr gfx::Size kMediaButtonSize = gfx::Size(32, 32);
 
 gfx::Size ScaleSizeToFitView(const gfx::Size& size,
                              const gfx::Size& view_size) {
@@ -123,7 +122,6 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
       action_(action) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  SetPreferredSize(kMediaButtonSize);
   SetAction(action, accessible_name);
 
   TrayPopupUtils::ConfigureTrayPopupButton(
@@ -149,9 +147,9 @@ void UnifiedMediaControlsView::MediaActionButton::OnThemeChanged() {
 }
 
 void UnifiedMediaControlsView::MediaActionButton::UpdateVectorIcon() {
-  AshColorProvider::Get()->DecorateIconButton(
+  element_style::DecorateSmallIconButton(
       this, GetVectorIconForMediaAction(action_), /*toggled=*/false,
-      kMediaButtonIconSize);
+      /*has_border=*/false);
 }
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
