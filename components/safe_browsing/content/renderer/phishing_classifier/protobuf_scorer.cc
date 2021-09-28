@@ -23,10 +23,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
-#include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
-#include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 
 namespace safe_browsing {
 
