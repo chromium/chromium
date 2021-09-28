@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -121,7 +122,11 @@ class DownloadDeepScanningBrowserTestBase
   explicit DownloadDeepScanningBrowserTestBase(bool connectors_machine_scope,
                                                bool is_consumer)
       : is_consumer_(is_consumer),
-        connectors_machine_scope_(connectors_machine_scope) {}
+        connectors_machine_scope_(connectors_machine_scope) {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {kSafeBrowsingEnterpriseCsd,
+             kSafeBrowsingDisableConsumerCsdForEnterprise});
+  }
 
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* item) override {
@@ -456,6 +461,8 @@ class DownloadDeepScanningBrowserTestBase
   bool connectors_machine_scope_;
 
   mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ConsumerDeepScanningBrowserTest
