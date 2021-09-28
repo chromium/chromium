@@ -437,10 +437,8 @@ std::string MaybeGetLegacyXkbId(const std::string& input_method_id) {
   return input_method_id;
 }
 
-bool InputMethodUtil::TranslateStringInternal(
-    const std::string& english_string,
-    std::u16string* out_string) const {
-  DCHECK(out_string);
+std::u16string InputMethodUtil::TranslateString(
+    const std::string& english_string) const {
   // |english_string| could be an input method id. So legacy xkb id is required
   // to get the translated string.
   std::string key_string = MaybeGetLegacyXkbId(english_string);
@@ -452,20 +450,10 @@ bool InputMethodUtil::TranslateStringInternal(
     // ID array (crosbug.com/4572).
     LOG(ERROR) << "Resource ID is not found for: " << english_string
                << ", " << key_string;
-    return false;
+    return base::UTF8ToUTF16(english_string);
   }
 
-  *out_string = delegate_->GetLocalizedString(iter->second);
-  return true;
-}
-
-std::u16string InputMethodUtil::TranslateString(
-    const std::string& english_string) const {
-  std::u16string localized_string;
-  if (TranslateStringInternal(english_string, &localized_string)) {
-    return localized_string;
-  }
-  return base::UTF8ToUTF16(english_string);
+  return delegate_->GetLocalizedString(iter->second);
 }
 
 bool InputMethodUtil::IsValidInputMethodId(
