@@ -68,12 +68,10 @@ GetRestrictedCookieManagerForContext(
           network::mojom::RestrictedCookieManagerRole::NETWORK, request_origin,
           std::move(isolation_info),
           /* is_service_worker = */ false,
-          render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
-          render_frame_host ? render_frame_host->GetRoutingID()
-                            : MSG_ROUTING_NONE,
+          render_frame_host->GetProcess()->GetID(),
+          render_frame_host->GetRoutingID(),
           pipe.InitWithNewPipeAndPassReceiver(),
-          render_frame_host ? render_frame_host->CreateCookieAccessObserver()
-                            : mojo::NullRemote());
+          render_frame_host->CreateCookieAccessObserver());
   return pipe;
 }
 
@@ -124,12 +122,10 @@ void RequestPlatformPathFromFileSystemURL(
 MediaResourceGetterImpl::MediaResourceGetterImpl(
     BrowserContext* browser_context,
     storage::FileSystemContext* file_system_context,
-    int render_process_id,
-    int render_frame_id)
+    RenderFrameHostImpl* render_frame_host)
     : browser_context_(browser_context),
       file_system_context_(file_system_context),
-      render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id) {}
+      render_frame_host_(render_frame_host) {}
 
 MediaResourceGetterImpl::~MediaResourceGetterImpl() {}
 
@@ -144,19 +140,10 @@ void MediaResourceGetterImpl::GetAuthCredentials(
     return;
   }
 
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_);
-  // Can't get a NetworkIsolationKey to get credentials if the RenderFrameHost
-  // has already been destroyed.
-  if (!render_frame_host) {
-    GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
-    return;
-  }
-
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->LookupServerBasicAuthCredentials(
-          url, render_frame_host->GetNetworkIsolationKey(),
+          url, render_frame_host_->GetNetworkIsolationKey(),
           base::BindOnce(&MediaResourceGetterImpl::GetAuthCredentialsCallback,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -170,7 +157,7 @@ void MediaResourceGetterImpl::GetCookies(
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(render_process_id_,
+  if (!policy->CanAccessDataForOrigin(render_frame_host_->GetProcess()->GetID(),
                                       url::Origin::Create(url))) {
     // Running the callback asynchronously on the caller thread to avoid
     // reentrancy issues.
@@ -179,9 +166,9 @@ void MediaResourceGetterImpl::GetCookies(
   }
 
   mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager(
-      GetRestrictedCookieManagerForContext(
-          browser_context_, url, site_for_cookies, top_frame_origin,
-          RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_)));
+      GetRestrictedCookieManagerForContext(browser_context_, url,
+                                           site_for_cookies, top_frame_origin,
+                                           render_frame_host_));
   network::mojom::RestrictedCookieManager* cookie_manager_ptr =
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
@@ -213,7 +200,8 @@ void MediaResourceGetterImpl::GetPlatformPathFromURL(
   scoped_refptr<storage::FileSystemContext> context(file_system_context_);
   context->default_file_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&RequestPlatformPathFromFileSystemURL, url,
-                                render_process_id_, context, std::move(cb)));
+                                render_frame_host_->GetProcess()->GetID(),
+                                context, std::move(cb)));
 }
 
 void MediaResourceGetterImpl::GetPlatformPathCallback(

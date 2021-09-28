@@ -38,8 +38,8 @@
 #endif
 
 namespace content {
-
 class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderFrameHostImpl to help create remote media components in different
@@ -148,7 +148,7 @@ class MediaInterfaceProxy final
 #endif  // defined(OS_WIN)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
-  RenderFrameHost* const render_frame_host_;
+  RenderFrameHostImpl* const render_frame_host_;
 
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
 
