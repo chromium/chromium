@@ -4952,6 +4952,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoRotation" enum="VideoRotation" expires_after="M79">
+  <obsolete>
+    Went untouched since M79. Removed as of 11/21.
+  </obsolete>
   <owner>dalecurtis@chromium.org</owner>
   <summary>Metadata rotation in mp4 videos. Emitted during demuxing.</summary>
 </histogram>

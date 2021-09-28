@@ -1909,11 +1909,6 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
   if (power_status_helper_)
     power_status_helper_->SetMetadata(metadata);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.VideoRotation",
-      metadata.video_decoder_config.video_transformation().rotation,
-      media::VIDEO_ROTATION_MAX + 1);
-
   if (HasAudio()) {
     media_metrics_provider_->SetHasAudio(metadata.audio_decoder_config.codec());
     RecordEncryptionScheme("Audio",
