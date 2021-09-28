@@ -24,7 +24,7 @@ Storage
  Trust Tokens
 Cache
  Cache Storage
- Application Cache
+ Back-forward Cache
 Background Services
  Background Fetch
  Background Sync
@@ -58,7 +58,7 @@ Storage
  Trust Tokens
 Cache
  Cache Storage
- Application Cache
+ Back-forward Cache
 Background Services
  Background Fetch
  Background Sync
@@ -94,7 +94,7 @@ Storage
  Trust Tokens
 Cache
  Cache Storage
- Application Cache
+ Back-forward Cache
 Background Services
  Background Fetch
  Background Sync

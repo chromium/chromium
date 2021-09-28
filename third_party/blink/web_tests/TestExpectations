@@ -6739,13 +6739,6 @@ crbug.com/1241860 http/tests/inspector-protocol/issues/content-security-policy-i
 crbug.com/1241860 http/tests/inspector-protocol/issues/cors-issues.js [ Skip ]
 crbug.com/1241860 http/tests/inspector-protocol/issues/renderer-cors-issues.js [ Skip ]
 
-# Temporarily disable to update DevTools Application Panel
-crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
-crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
-
 # Credentials in same-origin Reporting-API reports are currently not implemented.
 crbug.com/1163645 external/wpt/reporting/same-origin-report-credentials.https.sub.html [ Failure ]
 
