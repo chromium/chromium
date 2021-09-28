@@ -1097,6 +1097,7 @@ external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-invalid-url-
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-out-of-scope-url-manual.html [ Skip ]
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-undefined-name-manual.html [ Skip ]
 external/wpt/appmanifest/shortcuts-member/shortcuts-member-skip-for-undefined-url-manual.html [ Skip ]
+external/wpt/appmanifest/id-member/id-member-manifest-update-manual.tentative.html [ Skip ]
 external/wpt/audio-output/setSinkId-manual.https.html [ Skip ]
 external/wpt/battery-status/battery-charging-manual.https.html [ Skip ]
 external/wpt/battery-status/battery-discharging-manual.https.html [ Skip ]
