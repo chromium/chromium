@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_store_ash.h"
 
 #include <cert.h>
 #include <algorithm>
@@ -17,14 +17,14 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_filter.h"
 #include "crypto/nss_crypto_module_delegate.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace chromeos {
 
-ClientCertStoreChromeOS::ClientCertStoreChromeOS(
+ClientCertStoreAsh::ClientCertStoreAsh(
     std::unique_ptr<CertificateProvider> cert_provider,
     bool use_system_slot,
     const std::string& username_hash,
@@ -32,16 +32,16 @@ ClientCertStoreChromeOS::ClientCertStoreChromeOS(
     : cert_provider_(std::move(cert_provider)),
       cert_filter_(use_system_slot, username_hash) {}
 
-ClientCertStoreChromeOS::~ClientCertStoreChromeOS() {}
+ClientCertStoreAsh::~ClientCertStoreAsh() {}
 
-void ClientCertStoreChromeOS::GetClientCerts(
+void ClientCertStoreAsh::GetClientCerts(
     const net::SSLCertRequestInfo& cert_request_info,
     ClientCertListCallback callback) {
   // Caller is responsible for keeping the ClientCertStore alive until the
   // callback is run.
   base::OnceCallback<void(net::ClientCertIdentityList)>
       get_platform_certs_and_filter = base::BindOnce(
-          &ClientCertStoreChromeOS::GotAdditionalCerts, base::Unretained(this),
+          &ClientCertStoreAsh::GotAdditionalCerts, base::Unretained(this),
           base::Unretained(&cert_request_info), std::move(callback));
 
   base::OnceClosure get_additional_certs_and_continue;
@@ -63,7 +63,7 @@ void ClientCertStoreChromeOS::GetClientCerts(
   }
 }
 
-void ClientCertStoreChromeOS::GotAdditionalCerts(
+void ClientCertStoreAsh::GotAdditionalCerts(
     const net::SSLCertRequestInfo* request,
     ClientCertListCallback callback,
     net::ClientCertIdentityList additional_certs) {
@@ -73,14 +73,13 @@ void ClientCertStoreChromeOS::GotAdditionalCerts(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ClientCertStoreChromeOS::GetAndFilterCertsOnWorkerThread,
+      base::BindOnce(&ClientCertStoreAsh::GetAndFilterCertsOnWorkerThread,
                      base::Unretained(this), password_delegate,
                      base::Unretained(request), std::move(additional_certs)),
       std::move(callback));
 }
 
-net::ClientCertIdentityList
-ClientCertStoreChromeOS::GetAndFilterCertsOnWorkerThread(
+net::ClientCertIdentityList ClientCertStoreAsh::GetAndFilterCertsOnWorkerThread(
     scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate>
         password_delegate,
     const net::SSLCertRequestInfo* request,
@@ -95,7 +94,7 @@ ClientCertStoreChromeOS::GetAndFilterCertsOnWorkerThread(
   net::ClientCertIdentityList client_certs;
   net::ClientCertStoreNSS::GetPlatformCertsOnWorkerThread(
       std::move(password_delegate),
-      base::BindRepeating(&ClientCertFilterChromeOS::IsCertAllowed,
+      base::BindRepeating(&ClientCertFilter::IsCertAllowed,
                           base::Unretained(&cert_filter_)),
       &client_certs);
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_CHROMEOS_H_
-#define CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_H_
+#define CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_H_
 
 #include <memory>
 #include <string>
@@ -19,16 +19,15 @@ namespace chromeos {
 // A client certificate filter that filters by applying a
 // NSSProfileFilterChromeOS.
 //
-// TODO(davidben): Fold this class back into ClientCertStoreChromeOS.
-class ClientCertFilterChromeOS {
+// TODO(davidben): Fold this class back into ClientCertStoreAsh.
+class ClientCertFilter {
  public:
   // The internal NSSProfileFilterChromeOS will be initialized with the public
   // and private slot of the user with |username_hash| and with the system slot
   // if |use_system_slot| is true.
   // If |username_hash| is empty, no public and no private slot will be used.
-  ClientCertFilterChromeOS(bool use_system_slot,
-                           const std::string& username_hash);
-  ~ClientCertFilterChromeOS();
+  ClientCertFilter(bool use_system_slot, const std::string& username_hash);
+  ~ClientCertFilter();
 
   // Initializes this filter. Returns true if it finished initialization,
   // otherwise returns false and calls |callback| once the initialization is
@@ -50,9 +49,9 @@ class ClientCertFilterChromeOS {
   // must be called from the IO thread.
   std::unique_ptr<CertFilterIO, content::BrowserThread::DeleteOnIOThread>
       cert_filter_io_;
-  base::WeakPtrFactory<ClientCertFilterChromeOS> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ClientCertFilter> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_NET_CLIENT_CERT_FILTER_H_

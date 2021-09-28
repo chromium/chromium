@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_store_ash.h"
 
 #include <memory>
 #include <string>
@@ -48,9 +48,9 @@ void SaveIdentitiesAndQuitCallback(net::ClientCertIdentityList* out_identities,
 
 }  // namespace
 
-class ClientCertStoreChromeOSTest : public ::testing::Test {
+class ClientCertStoreAshTest : public ::testing::Test {
  public:
-  ClientCertStoreChromeOSTest() {}
+  ClientCertStoreAshTest() {}
 
   void SetUp() override {
     ASSERT_TRUE(user1_.constructed_successfully());
@@ -75,11 +75,10 @@ class ClientCertStoreChromeOSTest : public ::testing::Test {
 
 // Ensure that cert requests, that are started before the filter is initialized,
 // will wait for the initialization and succeed afterwards.
-TEST_F(ClientCertStoreChromeOSTest, RequestWaitsForNSSInitAndSucceeds) {
-  ClientCertStoreChromeOS store(
-      nullptr /* no additional provider */,
-      /*use_system_slot=*/false, user1_.username_hash(),
-      ClientCertStoreChromeOS::PasswordDelegateFactory());
+TEST_F(ClientCertStoreAshTest, RequestWaitsForNSSInitAndSucceeds) {
+  ClientCertStoreAsh store(nullptr /* no additional provider */,
+                           /*use_system_slot=*/false, user1_.username_hash(),
+                           ClientCertStoreAsh::PasswordDelegateFactory());
 
   scoped_refptr<net::X509Certificate> cert_1(ImportCertToSlot(
       "client_1.pem", "client_1.pk8",
@@ -112,13 +111,12 @@ TEST_F(ClientCertStoreChromeOSTest, RequestWaitsForNSSInitAndSucceeds) {
 
 // Ensure that cert requests, that are started after the filter was initialized,
 // will succeed.
-TEST_F(ClientCertStoreChromeOSTest, RequestsAfterNSSInitSucceed) {
+TEST_F(ClientCertStoreAshTest, RequestsAfterNSSInitSucceed) {
   user1_.FinishInit();
 
-  ClientCertStoreChromeOS store(
-      nullptr /* no additional provider */,
-      /*use_system_slot=*/false, user1_.username_hash(),
-      ClientCertStoreChromeOS::PasswordDelegateFactory());
+  ClientCertStoreAsh store(nullptr /* no additional provider */,
+                           /*use_system_slot=*/false, user1_.username_hash(),
+                           ClientCertStoreAsh::PasswordDelegateFactory());
 
   scoped_refptr<net::X509Certificate> cert_1(ImportCertToSlot(
       "client_1.pem", "client_1.pk8",
@@ -138,7 +136,7 @@ TEST_F(ClientCertStoreChromeOSTest, RequestsAfterNSSInitSucceed) {
   ASSERT_EQ(1u, selected_identities.size());
 }
 
-TEST_F(ClientCertStoreChromeOSTest, Filter) {
+TEST_F(ClientCertStoreAshTest, Filter) {
   user1_.FinishInit();
   user2_.FinishInit();
 
@@ -195,9 +193,9 @@ TEST_F(ClientCertStoreChromeOSTest, Filter) {
     SCOPED_TRACE(test.use_system_slot);
     SCOPED_TRACE(test.username_hash);
 
-    ClientCertStoreChromeOS store(
-        nullptr /* no additional provider */, test.use_system_slot,
-        test.username_hash, ClientCertStoreChromeOS::PasswordDelegateFactory());
+    ClientCertStoreAsh store(nullptr /* no additional provider */,
+                             test.use_system_slot, test.username_hash,
+                             ClientCertStoreAsh::PasswordDelegateFactory());
 
     auto request_all = base::MakeRefCounted<net::SSLCertRequestInfo>();
 
@@ -225,13 +223,12 @@ TEST_F(ClientCertStoreChromeOSTest, Filter) {
 
 // Ensure that the delegation of the request matching to the base class is
 // functional.
-TEST_F(ClientCertStoreChromeOSTest, CertRequestMatching) {
+TEST_F(ClientCertStoreAshTest, CertRequestMatching) {
   user1_.FinishInit();
 
-  ClientCertStoreChromeOS store(
-      nullptr,  // no additional provider
-      /*use_system_slot=*/false, user1_.username_hash(),
-      ClientCertStoreChromeOS::PasswordDelegateFactory());
+  ClientCertStoreAsh store(nullptr,  // no additional provider
+                           /*use_system_slot=*/false, user1_.username_hash(),
+                           ClientCertStoreAsh::PasswordDelegateFactory());
 
   crypto::ScopedPK11Slot slot =
       crypto::GetPublicSlotForChromeOSUser(user1_.username_hash());

@@ -12,7 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_store_ash.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -83,10 +83,10 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
     // Use the device-wide system key slot only if the user is affiliated on the
     // device.
     const bool use_system_key_slot = user->IsAffiliated();
-    return std::make_unique<ClientCertStoreChromeOS>(
+    return std::make_unique<ClientCertStoreAsh>(
         nullptr,  // no additional provider
         use_system_key_slot, user->username_hash(),
-        ClientCertStoreChromeOS::PasswordDelegateFactory());
+        ClientCertStoreAsh::PasswordDelegateFactory());
   }
 
  private:
@@ -107,10 +107,10 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    return std::make_unique<ClientCertStoreChromeOS>(
+    return std::make_unique<ClientCertStoreAsh>(
         nullptr,  // no additional provider
         /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
-        ClientCertStoreChromeOS::PasswordDelegateFactory());
+        ClientCertStoreAsh::PasswordDelegateFactory());
   }
 
  private:

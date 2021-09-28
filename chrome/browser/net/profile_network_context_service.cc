@@ -71,7 +71,7 @@
 #include "chrome/browser/ash/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_store_ash.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -557,12 +557,12 @@ ProfileNetworkContextService::CreateClientCertStore() {
     certificate_provider = cert_provider_service->CreateCertificateProvider();
   }
 
-  // ClientCertStoreChromeOS internally depends on NSS initialization that
-  // happens when the ResourceContext is created. Call GetResourceContext() so
-  // the dependency is explicit. See https://crbug.com/1018972.
+  // `ClientCertStoreAsh` internally depends on NSS initialization that happens
+  // when the `ResourceContext` is created. Call `GetResourceContext()` so the
+  // dependency is explicit. See https://crbug.com/1018972.
   profile_->GetResourceContext();
 
-  return std::make_unique<chromeos::ClientCertStoreChromeOS>(
+  return std::make_unique<chromeos::ClientCertStoreAsh>(
       std::move(certificate_provider), use_system_key_slot, username_hash,
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                           kCryptoModulePasswordClientAuth));

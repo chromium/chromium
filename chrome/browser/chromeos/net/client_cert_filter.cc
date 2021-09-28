@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_filter.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 
 namespace chromeos {
 
-class ClientCertFilterChromeOS::CertFilterIO {
+class ClientCertFilter::CertFilterIO {
  public:
   CertFilterIO(bool use_system_slot, const std::string& username_hash)
       : use_system_slot_(use_system_slot), username_hash_(username_hash) {}
@@ -111,16 +111,15 @@ class ClientCertFilterChromeOS::CertFilterIO {
   base::WeakPtrFactory<CertFilterIO> weak_ptr_factory_{this};
 };
 
-ClientCertFilterChromeOS::ClientCertFilterChromeOS(
-    bool use_system_slot,
-    const std::string& username_hash)
+ClientCertFilter::ClientCertFilter(bool use_system_slot,
+                                   const std::string& username_hash)
     : cert_filter_io_(new CertFilterIO(use_system_slot, username_hash)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ClientCertFilterChromeOS::~ClientCertFilterChromeOS() {}
+ClientCertFilter::~ClientCertFilter() {}
 
-bool ClientCertFilterChromeOS::Init(base::OnceClosure callback) {
+bool ClientCertFilter::Init(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // base::Unretained() is safe here because |cert_filter_io_| is destroyed on
@@ -130,17 +129,17 @@ bool ClientCertFilterChromeOS::Init(base::OnceClosure callback) {
       base::BindOnce(
           &CertFilterIO::Init, base::Unretained(cert_filter_io_.get()),
           // Wrap |callback| in OnInitComplete so it is cancelled if the
-          // ClientCertFilterChromeOS is destroyed earlier.
-          base::BindOnce(&ClientCertFilterChromeOS::OnInitComplete,
+          // ClientCertFilter is destroyed earlier.
+          base::BindOnce(&ClientCertFilter::OnInitComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   return false;
 }
 
-bool ClientCertFilterChromeOS::IsCertAllowed(CERTCertificate* cert) const {
+bool ClientCertFilter::IsCertAllowed(CERTCertificate* cert) const {
   return cert_filter_io_->IsCertAllowed(cert);
 }
 
-void ClientCertFilterChromeOS::OnInitComplete(base::OnceClosure callback) {
+void ClientCertFilter::OnInitComplete(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 

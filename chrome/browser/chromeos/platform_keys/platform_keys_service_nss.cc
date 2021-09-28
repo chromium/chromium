@@ -32,7 +32,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
+#include "chrome/browser/chromeos/net/client_cert_store_ash.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -1004,8 +1004,8 @@ void SignWithDB(std::unique_ptr<SignState> state,
       base::BindOnce(&SignOnWorkerThread, std::move(state)));
 }
 
-// Called when ClientCertStoreChromeOS::GetClientCerts is done. Builds the list
-// of net::CertificateList and calls back. Used by SelectCertificates().
+// Called when `ClientCertStoreAsh::GetClientCerts` is done. Builds the list of
+// `net::CertificateList` and calls back. Used by `SelectCertificates()`.
 void DidSelectCertificates(std::unique_ptr<SelectCertificatesState> state,
                            net::ClientCertIdentityList identities) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
