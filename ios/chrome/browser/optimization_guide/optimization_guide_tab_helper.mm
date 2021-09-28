@@ -40,25 +40,21 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
 // static
 void OptimizationGuideTabHelper::CreateForWebState(web::WebState* web_state) {
   DCHECK(web_state);
-  OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service)
-    return;
   if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new OptimizationGuideTabHelper(
-                               web_state, optimization_guide_service)));
+    web_state->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new OptimizationGuideTabHelper(web_state)));
   }
 }
 
-OptimizationGuideTabHelper::OptimizationGuideTabHelper(
-    web::WebState* web_state,
-    OptimizationGuideService* optimization_guide_service)
-    : optimization_guide_service_(optimization_guide_service) {
+OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)
+    : optimization_guide_service_(
+          OptimizationGuideServiceFactory::GetForBrowserState(
+              ChromeBrowserState::FromBrowserState(
+                  web_state->GetBrowserState()))) {
   DCHECK(web_state);
-  DCHECK(optimization_guide_service);
-  web_state->AddObserver(this);
+  if (optimization_guide_service_)
+    web_state->AddObserver(this);
 }
 
 OptimizationGuideTabHelper::~OptimizationGuideTabHelper() {

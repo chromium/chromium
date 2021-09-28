@@ -66,9 +66,7 @@ class OptimizationGuideTabHelper
  private:
   friend class web::WebStateUserData<OptimizationGuideTabHelper>;
 
-  OptimizationGuideTabHelper(
-      web::WebState* web_state,
-      OptimizationGuideService* optimization_guide_service);
+  explicit OptimizationGuideTabHelper(web::WebState* web_state);
 
   // WebStateObserver implementation:
   // These DidStart, DidRedirect, DidFinish navigation are called only for
