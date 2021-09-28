@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "gin/converter.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -42,15 +45,19 @@ class AuctionV8HelperTest : public testing::Test {
   }
   ~AuctionV8HelperTest() override = default;
 
-  void CompileAndRunScriptOnV8Thread(int context_group_id,
-                                     const std::string& function_name,
-                                     const GURL& url,
-                                     const std::string& body) {
+  void CompileAndRunScriptOnV8Thread(
+      int context_group_id,
+      const std::string& function_name,
+      const GURL& url,
+      const std::string& body,
+      base::OnceClosure result_out_ready = base::OnceClosure(),
+      int* result_out = nullptr) {
     helper_->v8_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](scoped_refptr<AuctionV8Helper> helper, int context_group_id,
-               std::string function_name, GURL url, std::string body) {
+               std::string function_name, GURL url, std::string body,
+               base::OnceClosure result_out_ready, int* result_out) {
               AuctionV8Helper::FullIsolateScope isolate_scope(helper.get());
               v8::Local<v8::UnboundScript> script;
               {
@@ -71,8 +78,33 @@ class AuctionV8HelperTest : public testing::Test {
                                           base::span<v8::Local<v8::Value>>(),
                                           error_msgs)
                               .ToLocal(&result));
+              if (result_out) {
+                ASSERT_TRUE(
+                    gin::ConvertFromV8(helper->isolate(), result, result_out));
+                // Notify the test that result actually got written out, since
+                // it happens after all the v8 debugger stuff it can wait for.
+                std::move(result_out_ready).Run();
+              }
             },
-            helper_, context_group_id, function_name, url, body));
+            helper_, context_group_id, function_name, url, body,
+            std::move(result_out_ready), result_out));
+  }
+
+  void ConnectToDevToolsAgent(
+      int context_group_id,
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent_receiver) {
+    helper_->v8_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<AuctionV8Helper> helper,
+               mojo::PendingReceiver<blink::mojom::DevToolsAgent>
+                   agent_receiver,
+               scoped_refptr<base::SequencedTaskRunner> mojo_thread, int id) {
+              helper->ConnectDevToolsAgent(std::move(agent_receiver),
+                                           std::move(mojo_thread), id);
+            },
+            helper_, std::move(agent_receiver),
+            base::SequencedTaskRunnerHandle::Get(), context_group_id));
   }
 
  protected:
@@ -572,6 +604,159 @@ TEST_F(AuctionV8HelperTest, DebugCompileError) {
       channel->WaitForMethodNotification("Runtime.executionContextDestroyed");
 
   FreeContextGroupIdAndWait(helper_, id);
+}
+
+TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
+  const char kSession[] = "123-456";
+  const char kScript[] = R"(
+    var multiplier = 2;
+    function compute() {
+      return multiplier * 3;
+    }
+  )";
+
+  for (bool use_binary_protocol : {false, true}) {
+    SCOPED_TRACE(use_binary_protocol);
+    // Need to use a separate thread for debugger stuff.
+    v8_scope_.reset();
+    helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+    int id = AllocContextGroupIdAndWait(helper_);
+
+    mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+    ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+    TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                         use_binary_protocol);
+    debug_client.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+        R"({"id":1,"method":"Runtime.enable","params":{}})");
+    debug_client.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+        R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+    const char kBreakpointCommand[] = R"({
+          "id":3,
+          "method":"Debugger.setBreakpointByUrl",
+          "params": {
+            "lineNumber": 2,
+            "url": "https://example.com/test.js",
+            "columnNumber": 0,
+            "condition": ""
+          }})";
+
+    debug_client.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 3,
+        "Debugger.setBreakpointByUrl", kBreakpointCommand);
+
+    int result = -1;
+    base::RunLoop result_run_loop;
+    CompileAndRunScriptOnV8Thread(id, "compute",
+                                  GURL("https://example.com/test.js"), kScript,
+                                  result_run_loop.QuitClosure(), &result);
+
+    // Eat completion from parsing.
+    debug_client.WaitForMethodNotification("Runtime.executionContextDestroyed");
+
+    TestDevToolsAgentClient::Event script_parsed =
+        debug_client.WaitForMethodNotification("Debugger.scriptParsed");
+    const std::string* url = script_parsed.value.FindStringPath("params.url");
+    ASSERT_TRUE(url);
+    EXPECT_EQ(*url, "https://example.com/test.js");
+    absl::optional<int> context_id =
+        script_parsed.value.FindIntPath("params.executionContextId");
+    ASSERT_TRUE(context_id.has_value());
+
+    // Wait for breakpoint to hit.
+    TestDevToolsAgentClient::Event breakpoint_hit =
+        debug_client.WaitForMethodNotification("Debugger.paused");
+
+    base::Value* hit_breakpoints =
+        breakpoint_hit.value.FindListPath("params.hitBreakpoints");
+    ASSERT_TRUE(hit_breakpoints);
+    base::Value::ConstListView hit_breakpoints_list =
+        hit_breakpoints->GetList();
+    ASSERT_EQ(1u, hit_breakpoints_list.size());
+    ASSERT_TRUE(hit_breakpoints_list[0].is_string());
+    EXPECT_EQ("1:2:0:https://example.com/test.js",
+              hit_breakpoints_list[0].GetString());
+
+    const char kCommandTemplate[] = R"({
+      "id": 4,
+      "method": "Runtime.evaluate",
+      "params": {
+        "expression": "multiplier = 10",
+        "contextId": %d
+      }
+    })";
+
+    // Change the state before resuming.
+    // Post-breakpoint params must be run on IO pipe, any main thread commands
+    // won't do things yet.
+    debug_client.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kIO, 4, "Runtime.evaluate",
+        base::StringPrintf(kCommandTemplate, context_id.value()));
+
+    // Resume.
+    debug_client.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kIO, 10, "Debugger.resume",
+        R"({"id":10,"method":"Debugger.resume","params":{}})");
+
+    // Wait for actual completion.
+    debug_client.WaitForMethodNotification("Runtime.executionContextDestroyed");
+
+    // Produced value changed by the write to `multiplier`.
+    result_run_loop.Run();
+    EXPECT_EQ(30, result);
+
+    FreeContextGroupIdAndWait(helper_, id);
+  }
+}
+
+TEST_F(AuctionV8HelperTest, DevToolsDebuggerInvalidCommand) {
+  const char kSession[] = "ABCD-EFGH";
+  for (bool use_binary_protocol : {false, true}) {
+    SCOPED_TRACE(use_binary_protocol);
+    // Need to use a separate thread for debugger stuff.
+    v8_scope_.reset();
+    helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+    int id = AllocContextGroupIdAndWait(helper_);
+
+    mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+    ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+    TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                         use_binary_protocol);
+    TestDevToolsAgentClient::Event result =
+        debug_client.RunCommandAndWaitForResult(
+            TestDevToolsAgentClient::Channel::kMain, 1, "NoSuchThing.enable",
+            R"({"id":1,"method":"NoSuchThing.enable","params":{}})");
+    EXPECT_TRUE(result.value.FindDictKey("error"));
+    FreeContextGroupIdAndWait(helper_, id);
+  }
+}
+
+TEST_F(AuctionV8HelperTest, DevToolsDeleteSessionPipeLate) {
+  // Test that deleting session pipe after the agent is fine.
+  const char kSession[] = "ABCD-EFGH";
+  const bool use_binary_protocol = true;
+
+  v8_scope_.reset();
+  helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+  int id = AllocContextGroupIdAndWait(helper_);
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+  ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                       use_binary_protocol);
+  task_environment_.RunUntilIdle();
+
+  FreeContextGroupIdAndWait(helper_, id);
+  helper_.reset();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace auction_worklet

@@ -31,6 +31,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
@@ -39,6 +40,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+
+using auction_worklet::TestDevToolsAgentClient;
 
 namespace content {
 namespace {
@@ -280,6 +283,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       report_win_run_loop_->Quit();
   }
 
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+    ADD_FAILURE()
+        << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
+  }
+
   void CompleteLoadingAndBid(double bid,
                              const GURL& render_url,
                              base::TimeDelta duration = base::TimeDelta()) {
@@ -412,6 +421,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     report_result_callback_ = std::move(report_result_callback);
     if (report_result_run_loop_)
       report_result_run_loop_->Quit();
+  }
+
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+    ADD_FAILURE()
+        << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
   }
 
   // Informs the consumer that the seller worklet has successfully loaded.
@@ -1173,6 +1188,109 @@ TEST_F(AuctionRunnerTest, Basic) {
                   "Destroy https://adplatform.com/offers.js",
                   "Destroy https://anotheradthing.com/bids.js",
                   "Destroy https://adstuff.publisher1.com/auction.js"));
+}
+
+TEST_F(AuctionRunnerTest, BasicDebug) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  for (const GURL& debug_url : {kBidder1Url, kBidder2Url, kSellerUrl}) {
+    SCOPED_TRACE(debug_url);
+    pause_worklet_url_ = debug_url;
+
+    // Seller breakpoint is expected to hit twice.
+    int expected_hits = (debug_url == kSellerUrl ? 2 : 1);
+
+    StartStandardAuction();
+    task_environment_.RunUntilIdle();
+
+    bool found = false;
+    mojo::Remote<blink::mojom::DevToolsAgent> agent;
+
+    for (DebuggableAuctionWorklet* debuggable :
+         DebuggableAuctionWorkletTracker::GetInstance()->GetAll()) {
+      if (debuggable->url() == debug_url) {
+        found = true;
+        debuggable->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+      }
+    }
+    ASSERT_TRUE(found);
+
+    TestDevToolsAgentClient debug(std::move(agent), "S1",
+                                  true /* use_binary_protocol */);
+    debug.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+        R"({"id":1,"method":"Runtime.enable","params":{}})");
+    debug.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+        R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+    // Set a breakpoint, and let the worklet run.
+    const char kBreakpointTemplate[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 7,
+          "url": "%s",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+    debug.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 3,
+        "Debugger.setBreakpointByUrl",
+        base::StringPrintf(kBreakpointTemplate, debug_url.spec().c_str()));
+    debug.RunCommandAndWaitForResult(
+        TestDevToolsAgentClient::Channel::kMain, 4,
+        "Runtime.runIfWaitingForDebugger",
+        R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+    // Should get breakpoint hit eventually.
+    for (int hit = 0; hit < expected_hits; ++hit) {
+      TestDevToolsAgentClient::Event breakpoint_hit =
+          debug.WaitForMethodNotification("Debugger.paused");
+
+      base::Value* hit_breakpoints =
+          breakpoint_hit.value.FindListPath("params.hitBreakpoints");
+      ASSERT_TRUE(hit_breakpoints);
+      base::Value::ConstListView hit_breakpoints_list =
+          hit_breakpoints->GetList();
+      ASSERT_EQ(1u, hit_breakpoints_list.size());
+      ASSERT_TRUE(hit_breakpoints_list[0].is_string());
+      EXPECT_EQ(base::StringPrintf("1:7:0:%s", debug_url.spec().c_str()),
+                hit_breakpoints_list[0].GetString());
+
+      // Just resume execution.
+      debug.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+          R"({"id":6,"method":"Debugger.resume","params":{}})");
+    }
+
+    // Let it finish --- result should as in Basic test since this didn't
+    // actually change anything.
+    auction_run_loop_->Run();
+    EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+    EXPECT_EQ(GURL("https://reporting.example.com/"),
+              result_.seller_report_url);
+    EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+              result_.bidder_report_url);
+  }
 }
 
 TEST_F(AuctionRunnerTest, PauseBidder) {

@@ -16,6 +16,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
+#include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -1521,6 +1522,145 @@ TEST_F(BidderWorkletTest, ParseErrorV8Debug) {
   const std::string* error_url = parse_error.value.FindStringPath("params.url");
   ASSERT_TRUE(error_url);
   EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url);
+}
+
+TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
+  std::string bid_script = CreateGenerateBidScript(
+      R"({ad: ["ad"], bid: this.global_bid ? this.global_bid : 1,
+          render:"https://response.test/"})");
+  const char kUrl1[] = "http://example.com/first.js";
+  const char kUrl2[] = "http://example.org/second.js";
+
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1), bid_script);
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2), bid_script);
+
+  auto worklet1 =
+      CreateWorklet(GURL(kUrl1), true /* pause_for_debugger_on_start */);
+  auto worklet2 =
+      CreateWorklet(GURL(kUrl2), true /* pause_for_debugger_on_start */);
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent1, agent2;
+  worklet1->ConnectDevToolsAgent(agent1.BindNewPipeAndPassReceiver());
+  worklet2->ConnectDevToolsAgent(agent2.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug1(std::move(agent1), "123",
+                                 true /* use_binary_protocol */);
+  TestDevToolsAgentClient debug2(std::move(agent2), "456",
+                                 true /* use_binary_protocol */);
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  const char kBreakpointTemplate[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 0,
+          "url": "%s",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl1));
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl2));
+
+  // Now start #1. We should see a scriptParsed event.
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+  TestDevToolsAgentClient::Event script_parsed1 =
+      debug1.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  ASSERT_TRUE(url1);
+  EXPECT_EQ(*url1, kUrl1);
+  absl::optional<int> context_id1 =
+      script_parsed1.value.FindIntPath("params.executionContextId");
+  ASSERT_TRUE(context_id1.has_value());
+
+  // Next there is the breakpoint.
+  TestDevToolsAgentClient::Event breakpoint_hit1 =
+      debug1.WaitForMethodNotification("Debugger.paused");
+
+  base::Value* hit_breakpoints1 =
+      breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints1);
+  base::Value::ConstListView hit_breakpoints_list1 =
+      hit_breakpoints1->GetList();
+  ASSERT_EQ(1u, hit_breakpoints_list1.size());
+  ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
+  EXPECT_EQ("1:0:0:http://example.com/first.js",
+            hit_breakpoints_list1[0].GetString());
+
+  // Override the bid value.
+  const char kCommandTemplate[] = R"({
+    "id": 5,
+    "method": "Runtime.evaluate",
+    "params": {
+      "expression": "global_bid = 42",
+      "contextId": %d
+    }
+  })";
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Runtime.evaluate",
+      base::StringPrintf(kCommandTemplate, context_id1.value()));
+
+  // Resume, setting up event loop for fixture first.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(42, bid_->bid);
+  bid_.reset();
+
+  // Start #2, see that it hit its breakpoint.
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+  TestDevToolsAgentClient::Event breakpoint_hit2 =
+      debug2.WaitForMethodNotification("Debugger.paused");
+
+  base::Value* hit_breakpoints2 =
+      breakpoint_hit2.value.FindListPath("params.hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints2);
+  base::Value::ConstListView hit_breakpoints_list2 =
+      hit_breakpoints2->GetList();
+  ASSERT_EQ(1u, hit_breakpoints_list2.size());
+  ASSERT_TRUE(hit_breakpoints_list2[0].is_string());
+  EXPECT_EQ("1:0:0:http://example.org/second.js",
+            hit_breakpoints_list2[0].GetString());
+
+  // Go ahead and resume w/o messing with anything.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.resume",
+      R"({"id":5,"method":"Debugger.resume","params":{}})");
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
 }
 
 }  // namespace

@@ -6,6 +6,7 @@ module auction_worklet.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -95,4 +96,7 @@ interface BidderWorklet {
             double browser_signal_bid) => (
                 url.mojom.Url? report_url,
                 array<string> errors);
+
+  // Establishes a debugger connection to the worklet.
+  ConnectDevToolsAgent(pending_receiver<blink.mojom.DevToolsAgent> agent);
 };

@@ -8,6 +8,10 @@ source_set("auction_worklet") {
   sources = [
     "auction_downloader.cc",
     "auction_downloader.h",
+    "auction_v8_devtools_agent.cc",
+    "auction_v8_devtools_agent.h",
+    "auction_v8_devtools_session.cc",
+    "auction_v8_devtools_session.h",
     "auction_v8_helper.cc",
     "auction_v8_helper.h",
     "auction_worklet_service_impl.cc",
@@ -16,6 +20,8 @@ source_set("auction_worklet") {
     "bidder_worklet.h",
     "console.cc",
     "console.h",
+    "debug_command_queue.cc",
+    "debug_command_queue.h",
     "report_bindings.cc",
     "report_bindings.h",
     "seller_worklet.cc",
@@ -38,6 +44,7 @@ source_set("auction_worklet") {
     "//net",
     "//services/network/public/cpp",
     "//third_party/blink/public/common",
+    "//third_party/inspector_protocol:crdtp",
     "//url",
     "//v8",
   ]
@@ -52,8 +59,11 @@ source_set("tests") {
     "auction_downloader_unittest.cc",
     "auction_v8_helper_unittest.cc",
     "bidder_worklet_unittest.cc",
+    "debug_command_queue_unittest.cc",
     "seller_worklet_unittest.cc",
     "trusted_bidding_signals_unittest.cc",
+    "worklet_devtools_debug_test_util.cc",
+    "worklet_devtools_debug_test_util.h",
     "worklet_loader_unittest.cc",
     "worklet_test_util.cc",
     "worklet_test_util.h",
@@ -71,6 +81,7 @@ source_set("tests") {
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/inspector_protocol:crdtp",
     "//v8",
   ]
 

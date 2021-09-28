@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "content/services/auction_worklet/auction_v8_devtools_agent.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
 #include "gin/gin_features.h"
@@ -503,6 +504,20 @@ void AuctionV8Helper::ResumeAllForTesting() {
     Resume(id);
 }
 
+void AuctionV8Helper::ConnectDevToolsAgent(
+    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent,
+    scoped_refptr<base::SequencedTaskRunner> mojo_sequence,
+    int context_group_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!devtools_agent_) {
+    devtools_agent_ = std::make_unique<AuctionV8DevToolsAgent>(
+        this, std::move(mojo_sequence));
+    v8_inspector_ =
+        v8_inspector::V8Inspector::create(isolate(), devtools_agent_.get());
+  }
+  devtools_agent_->Connect(std::move(agent), context_group_id);
+}
+
 v8_inspector::V8Inspector* AuctionV8Helper::inspector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return v8_inspector_.get();
@@ -553,6 +568,10 @@ AuctionV8Helper::AuctionV8Helper(
 AuctionV8Helper::~AuctionV8Helper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(resume_callbacks_.empty());
+  // Need to destroy sessions before `v8_inspector_` which needs to be
+  // destroyed before `devtools_agent_`.
+  if (devtools_agent_)
+    devtools_agent_->DestroySessions();
 }
 
 void AuctionV8Helper::CreateIsolate() {

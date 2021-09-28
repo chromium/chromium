@@ -82,6 +82,9 @@ class BidderWorklet : public mojom::BidderWorklet {
                  double browser_signal_bid,
                  ReportWinCallback callback) override;
 
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
+
  private:
   // Portion of BidderWorklet that deals with V8 execution, and therefore lives
   // on the v8 thread --- everything except the constructor must be run there.
@@ -109,6 +112,9 @@ class BidderWorklet : public mojom::BidderWorklet {
                    ReportWinCallback callback);
 
     void GenerateBid();
+
+    void ConnectDevToolsAgent(
+        mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
 
    private:
     friend class base::DeleteHelper<V8State>;

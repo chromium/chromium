@@ -73,6 +73,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                     double browser_signal_bid,
                     double browser_signal_desirability,
                     ReportResultCallback callback) override;
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
 
  private:
   // Portion of SellerWorklet that deals with V8 execution, and therefore lives
@@ -102,6 +104,9 @@ class SellerWorklet : public mojom::SellerWorklet {
                       double browser_signal_bid,
                       double browser_signal_desirability,
                       ReportResultCallback callback);
+
+    void ConnectDevToolsAgent(
+        mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
 
    private:
     friend class base::DeleteHelper<V8State>;

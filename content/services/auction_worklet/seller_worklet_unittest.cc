@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -119,6 +120,28 @@ class SellerWorkletTest : public testing::Test {
     RunScoreAdExpectingResult(expected_score, expected_errors);
   }
 
+  // Runs score_ad() script, checking result and invoking provided closure
+  // when done. Something else must spin the event loop.
+  void RunScoreAdOnWorkletAsync(mojom::SellerWorklet* seller_worklet,
+                                double expected_score,
+                                const std::vector<std::string>& expected_errors,
+                                base::OnceClosure done_closure) {
+    seller_worklet->ScoreAd(
+        ad_metadata_, bid_, auction_config_.Clone(),
+        browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
+        browser_signal_ad_render_fingerprint_,
+        browser_signal_bidding_duration_msecs_,
+        base::BindOnce(
+            [](double expected_score, std::vector<std::string> expected_errors,
+               base::OnceClosure done_closure, double score,
+               const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_score, score);
+              EXPECT_EQ(expected_errors, errors);
+              std::move(done_closure).Run();
+            },
+            expected_score, expected_errors, std::move(done_closure)));
+  }
+
   // Loads and runs a scode_ad() script, expecting the supplied result.
   void RunScoreAdExpectingResultOnWorklet(
       mojom::SellerWorklet* seller_worklet,
@@ -126,18 +149,8 @@ class SellerWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     base::RunLoop run_loop;
-    seller_worklet->ScoreAd(
-        ad_metadata_, bid_, auction_config_.Clone(),
-        browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
-        browser_signal_ad_render_fingerprint_,
-        browser_signal_bidding_duration_msecs_,
-        base::BindLambdaForTesting(
-            [&run_loop, &expected_score, &expected_errors](
-                double score, const std::vector<std::string>& errors) {
-              EXPECT_EQ(expected_score, score);
-              EXPECT_EQ(expected_errors, errors);
-              run_loop.Quit();
-            }));
+    RunScoreAdOnWorkletAsync(seller_worklet, expected_score, expected_errors,
+                             run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1007,6 +1020,162 @@ TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
   const std::string* error_url = parse_error.value.FindStringPath("params.url");
   ASSERT_TRUE(error_url);
   EXPECT_EQ(url_.spec(), *error_url);
+}
+
+TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
+  const char kScriptResult[] = "this.global_score ? this.global_score : 10";
+
+  const char kUrl1[] = "http://example.com/first.js";
+  const char kUrl2[] = "http://example.org/second.js";
+
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
+                        CreateScoreAdScript(kScriptResult));
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2),
+                        CreateScoreAdScript(kScriptResult));
+
+  auto worklet1 =
+      CreateWorkletImpl(GURL(kUrl1), true /* pause_for_debugger_on_start */);
+  auto worklet2 =
+      CreateWorkletImpl(GURL(kUrl2), true /* pause_for_debugger_on_start */);
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent1, agent2;
+  worklet1->ConnectDevToolsAgent(agent1.BindNewPipeAndPassReceiver());
+  worklet2->ConnectDevToolsAgent(agent2.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug1(std::move(agent1), "123",
+                                 true /* use_binary_protocol */);
+  TestDevToolsAgentClient debug2(std::move(agent2), "456",
+                                 true /* use_binary_protocol */);
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  const char kBreakpointTemplate[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 2,
+          "url": "%s",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl1));
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl2));
+
+  // Now start #1. This should result in successful worklet creation.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  EXPECT_TRUE(create_worklet_succeeded_);
+
+  // Start #2.
+  create_worklet_succeeded_ = false;
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  EXPECT_TRUE(create_worklet_succeeded_);
+
+  // To actually have execution happen, call the score_ad function.
+  // For this one, we will modify the result to 100.5
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(worklet1.get(), 100.5, {}, run_loop.QuitClosure());
+
+  TestDevToolsAgentClient::Event script_parsed1 =
+      debug1.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  ASSERT_TRUE(url1);
+  EXPECT_EQ(*url1, kUrl1);
+  absl::optional<int> context_id1 =
+      script_parsed1.value.FindIntPath("params.executionContextId");
+  ASSERT_TRUE(context_id1.has_value());
+
+  // Next there is the breakpoint.
+  TestDevToolsAgentClient::Event breakpoint_hit1 =
+      debug1.WaitForMethodNotification("Debugger.paused");
+
+  base::Value* hit_breakpoints1 =
+      breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints1);
+  base::Value::ConstListView hit_breakpoints_list1 =
+      hit_breakpoints1->GetList();
+  ASSERT_EQ(1u, hit_breakpoints_list1.size());
+  ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
+  EXPECT_EQ("1:2:0:http://example.com/first.js",
+            hit_breakpoints_list1[0].GetString());
+
+  // Override the score value.
+  const char kCommandTemplate[] = R"({
+    "id": 5,
+    "method": "Runtime.evaluate",
+    "params": {
+      "expression": "global_score = %s",
+      "contextId": %d
+    }
+  })";
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Runtime.evaluate",
+      base::StringPrintf(kCommandTemplate, "100.5", context_id1.value()));
+
+  // Let worklet 1 finish. The callback set by RunScoreAdOnWorkletAsync() will
+  // verify the result.
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  run_loop.Run();
+
+  // Now score_ad on worklet 2.
+  base::RunLoop run_loop2;
+  RunScoreAdOnWorkletAsync(
+      worklet2.get(), 0,
+      {"http://example.org/second.js scoreAd() did not return a valid number."},
+      run_loop2.QuitClosure());
+
+  TestDevToolsAgentClient::Event script_parsed2 =
+      debug2.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url2 = script_parsed2.value.FindStringPath("params.url");
+  ASSERT_TRUE(url2);
+  EXPECT_EQ(*url2, kUrl2);
+  absl::optional<int> context_id2 =
+      script_parsed2.value.FindIntPath("params.executionContextId");
+  ASSERT_TRUE(context_id2.has_value());
+
+  // Wait for breakpoint, and then change the result to be trouble.
+  TestDevToolsAgentClient::Event breakpoint_hit2 =
+      debug2.WaitForMethodNotification("Debugger.paused");
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Runtime.evaluate",
+      base::StringPrintf(kCommandTemplate, R"(\"not a score\")",
+                         context_id2.value()));
+
+  // Let worklet 2 finish. The callback set by RunScoreAdOnWorkletAsync() will
+  // verify the result.
+  debug2.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  run_loop2.Run();
 }
 
 }  // namespace

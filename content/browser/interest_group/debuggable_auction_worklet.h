@@ -8,6 +8,9 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -17,15 +20,14 @@ class RenderFrameHostImpl;
 // This is an opaque representation of a worklet (either buyer or seller) for
 // help in interfacing with a debugger --- adding observers to
 // DebuggableAuctionWorkletTracker will notify of creation/destruction of these.
-//
-// TODO(morlovich): This will eventually get methods to connect to the worklet
-// via devtools protocol over mojo, but that's a bit too much for an initial CL.
 class CONTENT_EXPORT DebuggableAuctionWorklet {
  public:
   explicit DebuggableAuctionWorklet(const DebuggableAuctionWorklet&) = delete;
   DebuggableAuctionWorklet& operator=(const DebuggableAuctionWorklet&) = delete;
 
   const GURL& url() const { return url_; }
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
 
   RenderFrameHostImpl* owning_frame() const { return owning_frame_; }
 
@@ -58,8 +60,10 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
 
   RenderFrameHostImpl* const owning_frame_ = nullptr;
   const GURL url_;
-  auction_worklet::mojom::BidderWorklet* bidder_worklet_ = nullptr;
-  auction_worklet::mojom::SellerWorklet* seller_worklet_ = nullptr;
+
+  absl::variant<auction_worklet::mojom::BidderWorklet*,
+                auction_worklet::mojom::SellerWorklet*>
+      worklet_;
 };
 
 }  // namespace content

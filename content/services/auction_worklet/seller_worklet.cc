@@ -190,6 +190,15 @@ void SellerWorklet::ReportResult(
           std::move(callback)));
 }
 
+void SellerWorklet::ConnectDevToolsAgent(
+    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V8State::ConnectDevToolsAgent,
+                     base::Unretained(v8_state_.get()), std::move(agent)));
+}
+
 SellerWorklet::V8State::V8State(scoped_refptr<AuctionV8Helper> v8_helper,
                                 GURL script_source_url,
                                 base::WeakPtr<SellerWorklet> parent)
@@ -369,6 +378,13 @@ void SellerWorklet::V8State::ReportResult(
   PostReportResultCallbackToUserThread(
       std::move(callback), std::move(signals_for_winner),
       report_bindings.report_url(), std::move(errors_out));
+}
+
+void SellerWorklet::V8State::ConnectDevToolsAgent(
+    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_,
+                                   context_group_id_);
 }
 
 SellerWorklet::V8State::~V8State() {

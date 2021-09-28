@@ -165,6 +165,15 @@ void BidderWorklet::ReportWin(
                                 browser_signal_bid, std::move(callback)));
 }
 
+void BidderWorklet::ConnectDevToolsAgent(
+    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V8State::ConnectDevToolsAgent,
+                     base::Unretained(v8_state_.get()), std::move(agent)));
+}
+
 BidderWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
     GURL script_source_url,
@@ -446,6 +455,13 @@ void BidderWorklet::V8State::GenerateBid() {
                     " generateBid() returned render_url isn't one "
                     "of the registered creative URLs."}));
   PostErrorBidCallbackToUserThread(std::move(errors_out));
+}
+
+void BidderWorklet::V8State::ConnectDevToolsAgent(
+    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_,
+                                   context_group_id_);
 }
 
 BidderWorklet::V8State::~V8State() {
