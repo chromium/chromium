@@ -1207,14 +1207,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2021-08-29">
-  <owner>wutao@chromium.org</owner>
+    expires_after="2022-03-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Relative smoothness of animations of showing and hiding app list folder.
     100% represents ideally smooth 60 frames per second. 50% represents only 30
     frames per second is achieved during the animations. 0% should not happen.
     This metric is recorded exactly once when the user starts the folder
     animation in the launcher.
+
+    Warning: this histogram was expired from 2021-08-29 to 2021-09-28; data may
+    be missing.
   </summary>
 </histogram>
 
