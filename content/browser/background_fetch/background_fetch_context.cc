@@ -248,7 +248,7 @@ void BackgroundFetchContext::UpdateUI(
 }
 
 base::WeakPtr<BackgroundFetchContext> BackgroundFetchContext::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return weak_factory_.GetWeakPtr();
 }
 

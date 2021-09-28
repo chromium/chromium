@@ -1236,13 +1236,13 @@ void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
 
 // Service workers
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return host->version()->GetInfo();
 }
 
 void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                                   mojo::BinderMap* map) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Do nothing for interfaces that the renderer might request, but doesn't
   // always expect to be bound.
@@ -1288,7 +1288,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
 void PopulateBinderMapWithContext(
     ServiceWorkerHost* host,
     mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // static binders
   // Use a task runner if ServiceWorkerHost lives on the IO thread, as
@@ -1348,7 +1348,7 @@ void PopulateBinderMapWithContext(
 }
 
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PopulateServiceWorkerBinders(host, map);
 }
 

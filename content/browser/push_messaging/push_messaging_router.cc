@@ -34,7 +34,7 @@ using ServiceWorkerStartCallback = base::OnceCallback<void(
 void RunPushEventCallback(
     PushMessagingRouter::PushEventCallback deliver_message_callback,
     blink::mojom::PushEventStatus push_event_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // PostTask() to ensure the callback is called asynchronously.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -50,7 +50,7 @@ void DidFindServiceWorkerRegistration(
     ServiceWorkerStartCallback callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (event_type == ServiceWorkerMetrics::EventType::PUSH) {
     UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus.FindServiceWorker",
@@ -80,7 +80,7 @@ void FindServiceWorkerRegistration(
     const url::Origin& origin,
     int64_t service_worker_registration_id,
     ServiceWorkerStartCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Try to acquire the registration from storage. If it's already live we'll
   // receive it right away. If not, it will be revived from storage.
   service_worker_context->FindReadyRegistrationForId(
@@ -140,7 +140,7 @@ void PushMessagingRouter::DeliverMessageToWorker(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Service worker registration was not found, run callback immediately
   if (!service_worker) {
     DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);
@@ -190,7 +190,7 @@ void PushMessagingRouter::DeliverMessageEnd(
     const std::string& message_id,
     PushEventCallback deliver_message_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus.ServiceWorkerEvent",
                             service_worker_status);
   blink::mojom::PushEventStatus push_event_status =
@@ -276,7 +276,7 @@ void PushMessagingRouter::FireSubscriptionChangeEventToWorker(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent));
 
   if (!service_worker) {
@@ -313,7 +313,7 @@ void PushMessagingRouter::FireSubscriptionChangeEventEnd(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     PushEventCallback subscription_change_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::mojom::PushEventStatus push_event_status =
       blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
   switch (service_worker_status) {

@@ -47,7 +47,7 @@ void ExecuteUpdate(base::WeakPtr<ServiceWorkerContextCore> context,
                        outside_fetch_client_settings_object,
                    ServiceWorkerContextCore::UpdateCallback callback,
                    blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     // The delay was already very long and update() is rejected immediately.
@@ -243,11 +243,11 @@ void ServiceWorkerRegistrationObjectHost::DelayUpdate(
     return;
   }
 
-  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
-      ->PostDelayedTask(FROM_HERE,
-                        base::BindOnce(std::move(update_function),
-                                       blink::ServiceWorkerStatusCode::kOk),
-                        delay);
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(update_function),
+                     blink::ServiceWorkerStatusCode::kOk),
+      delay);
 }
 
 void ServiceWorkerRegistrationObjectHost::Unregister(

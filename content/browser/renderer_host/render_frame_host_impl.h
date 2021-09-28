@@ -1453,9 +1453,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::WeakPtr<ServiceWorkerContainerHost> host);
   void RemoveServiceWorkerContainerHost(const std::string& uuid);
   // Returns the last committed ServiceWorkerContainerHost of this frame.
-  // The function is called on the UI thread, but the returned pointer can only
-  // be dereferenced on the thread identified by
-  // ServiceWorkerContext::GetCoreThreadId().
   base::WeakPtr<ServiceWorkerContainerHost> GetLastCommittedServiceWorkerHost();
 
   // Called to taint |this| so the pages which have requested MediaStream
@@ -3804,8 +3801,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Keep the list of ServiceWorkerContainerHosts so that they can observe when
   // the frame goes in/out of BackForwardCache.
-  // These pointers must be dereferenced on the
-  // |ServiceWorkerContext::GetCoreThreadId()| thread only.
   // TODO(yuzus): Make this a single pointer. A frame should only have a single
   // container host, but probably during a navigation the old container host is
   // still alive when the new container host is created and added to this

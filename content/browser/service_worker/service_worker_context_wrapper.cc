@@ -295,11 +295,6 @@ BrowserContext* ServiceWorkerContextWrapper::browser_context() {
   return process_manager()->browser_context();
 }
 
-// static
-BrowserThread::ID ServiceWorkerContext::GetCoreThreadId() {
-  return BrowserThread::UI;
-}
-
 void ServiceWorkerContextWrapper::OnRegistrationCompleted(
     int64_t registration_id,
     const GURL& scope,

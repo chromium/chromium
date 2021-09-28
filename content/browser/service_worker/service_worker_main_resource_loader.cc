@@ -121,7 +121,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                          "url", resource_request.url.spec());
   DCHECK(ServiceWorkerUtils::IsMainRequestDestination(
       resource_request.destination));
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   resource_request_ = resource_request;
   if (container_host_ && container_host_->fetch_request_window_id()) {
@@ -255,7 +255,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
     scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(status_, Status::kStarted);
 
   TRACE_EVENT_WITH_FLOW2(
@@ -335,7 +335,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
     blink::mojom::FetchAPIResponsePtr response,
     scoped_refptr<ServiceWorkerVersion> version,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(status_, Status::kStarted);
 
   blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(*response,

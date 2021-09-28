@@ -96,10 +96,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
 
-  // Returns BrowserThread::UI always.
-  // TODO(https://crbug.com/1138155): Remove this.
-  static content::BrowserThread::ID GetCoreThreadId();
-
   // Returns true if |url| is within the service worker |scope|.
   static bool ScopeMatches(const GURL& scope, const GURL& url);
 

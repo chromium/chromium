@@ -284,7 +284,7 @@ void BackgroundFetchScheduler::DidMarkForDeletion(
 
 void BackgroundFetchScheduler::CleanupRegistration(
     const BackgroundFetchRegistrationId& registration_id) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Indicate to the renderer that the records for this fetch are no longer
   // available.
   registration_notifier_->NotifyRecordsUnavailable(registration_id.unique_id());
@@ -359,7 +359,7 @@ void BackgroundFetchScheduler::OnRegistrationCreated(
     const SkBitmap& icon,
     int num_requests,
     bool start_paused) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LogBackgroundFetchEventForDevTools(
       Event::kFetchRegistered, registration_id,
@@ -395,7 +395,7 @@ void BackgroundFetchScheduler::OnRegistrationLoadedAtStartup(
     int num_requests,
     std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
         active_fetch_requests) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LogBackgroundFetchEventForDevTools(
       Event::kFetchResumedOnStartup, registration_id,
@@ -494,12 +494,12 @@ void BackgroundFetchScheduler::OnRegistrationDeleted(
     int64_t registration_id,
     const GURL& pattern,
     const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AbortFetches(registration_id);
 }
 
 void BackgroundFetchScheduler::OnStorageWiped() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AbortFetches(blink::mojom::kInvalidServiceWorkerRegistrationId);
 }
 

@@ -67,12 +67,10 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
                                                         std::move(response));
     if (complete_downloads_) {
       // Post a task so that Abort() can cancel this download before completing.
-      BrowserThread::GetTaskRunnerForThread(
-          ServiceWorkerContext::GetCoreThreadId())
-          ->PostTask(
-              FROM_HERE,
-              base::BindOnce(&FakeBackgroundFetchDelegate::CompleteDownload,
-                             base::Unretained(this), job_unique_id, guid));
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&FakeBackgroundFetchDelegate::CompleteDownload,
+                         base::Unretained(this), job_unique_id, guid));
     }
   }
 
