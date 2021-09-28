@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_media.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -1334,6 +1335,10 @@ bool LocalDOMWindow::find(const String& string,
                           bool whole_word,
                           bool /*searchInFrames*/,
                           bool /*showDialog*/) const {
+  auto forced_activatable_locks = document()
+                                      ->GetDisplayLockDocumentState()
+                                      .GetScopedForceActivatableLocks();
+
   if (!IsCurrentlyDisplayedInFrame())
     return false;
 
