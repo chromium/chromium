@@ -31,12 +31,6 @@ namespace content {
 class DirectManipulationBrowserTestBase;
 class DirectManipulationUnitTest;
 
-// TODO(crbug.com/914914) This is added for help us getting debug log on
-// machine with scrolling issue on Windows Precision Touchpad. We will remove it
-// after Windows Precision Touchpad scrolling issue fixed.
-void DebugLogging(const std::string& s, HRESULT hr = 0);
-bool LoggingEnabled();
-
 // Windows 10 provides a new API called Direct Manipulation which generates
 // smooth scroll and scale factor via IDirectManipulationViewportEventHandler
 // on precision touchpad.

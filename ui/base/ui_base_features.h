@@ -66,8 +66,6 @@ extern const base::Feature kInputPaneOnScreenKeyboard;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kPointerEventsForTouch;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kPrecisionTouchpadLogging;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kScreenPowerListenerForNativeWinOcclusion;
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kTSFImeSupport;
 

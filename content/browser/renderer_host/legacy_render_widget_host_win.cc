@@ -516,8 +516,6 @@ LRESULT LegacyRenderWidgetHostHWND::OnPointerHitTest(UINT message,
   if (!direct_manipulation_helper_)
     return 0;
 
-  DebugLogging("Receive DM_POINTERHITTEST.");
-
   direct_manipulation_helper_->OnPointerHitTest(w_param);
 
   return 0;

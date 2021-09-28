@@ -174,9 +174,6 @@ bool IsUsingWMPointerForTouch() {
          base::FeatureList::IsEnabled(kPointerEventsForTouch);
 }
 
-// Enables Logging for DirectManipulation.
-const base::Feature kPrecisionTouchpadLogging{
-    "PrecisionTouchpadLogging", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
 #if defined(OS_CHROMEOS)
