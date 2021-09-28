@@ -21,15 +21,18 @@ content::RenderFrameHost* FindCorrespondingRenderFrameHost(
   if (frame_id.empty()) {
     return web_contents->GetMainFrame();
   }
-  const auto& all_frames = web_contents->GetAllFrames();
-  const auto& it = std::find_if(
-      all_frames.begin(), all_frames.end(), [&](const auto& frame) {
-        return frame->GetDevToolsFrameToken().ToString() == frame_id;
-      });
-  if (it == all_frames.end()) {
-    return nullptr;
-  }
-  return *it;
+  content::RenderFrameHost* result = nullptr;
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const std::string& frame_id, content::RenderFrameHost** result,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetDevToolsFrameToken().ToString() == frame_id) {
+          *result = render_frame_host;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      frame_id, &result));
+  return result;
 }
 
 }  // namespace autofill_assistant
