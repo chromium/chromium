@@ -10,9 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"  // for FALLTHROUGH;
-#include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
@@ -625,31 +622,6 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
                         site_for_cookies_ok);
   UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.TopFrameOriginOK",
                         top_frame_origin_ok);
-
-  if (!top_frame_origin_ok || !site_for_cookies_ok) {
-    base::debug::Alias(&top_frame_origin_ok);
-    base::debug::Alias(&site_for_cookies_ok);
-    static bool reported = false;
-    if (!reported) {
-      reported = true;
-      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-site_for_cookies",
-                                 BoundSiteForCookies().ToDebugString());
-      SCOPED_CRASH_KEY_STRING256("RCM", "render-site_for_cookies",
-                                 site_for_cookies.ToDebugString());
-
-      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-top_frame_origin",
-                                 BoundTopFrameOrigin().GetDebugString());
-      SCOPED_CRASH_KEY_STRING256("RCM", "render-top_frame_origin",
-                                 top_frame_origin.GetDebugString());
-
-      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-origin", origin_.GetDebugString());
-      // Only origin here, since url is probably way too sensitive.
-      SCOPED_CRASH_KEY_STRING256("RCM", "render-origin",
-                                 url::Origin::Create(url).GetDebugString());
-      base::debug::DumpWithoutCrashing();
-    }
-    return false;
-  }
 
   // Don't allow setting cookies on other domains. See crbug.com/996786.
   if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.host())) {
