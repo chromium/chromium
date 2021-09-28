@@ -178,7 +178,6 @@ static_library("test_support") {
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
-    "//url",
   ]
 }
 
