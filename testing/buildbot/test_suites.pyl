@@ -5190,15 +5190,6 @@
     },
 
     'updater_gtests_win_uac': {
-      'updater_tests': {
-        'args': [
-          '--deelevate',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
       'updater_tests_system': {
         'args': [
           # Timeouts based on empirical observations of test runtimes, 2021-07.
@@ -5213,6 +5204,15 @@
             }
           ]
         }
+      },
+      'updater_tests_win_uac': {
+        'args': [
+          'updater_tests.exe',
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
       },
     },
 

@@ -1856,6 +1856,11 @@
     "label": "//chrome/updater:updater_tests_system",
     "type": "console_test_launcher",
   },
+  "updater_tests_win_uac": {
+    "label": "//chrome/updater:updater_tests_win_uac",
+    "script": "//chrome/updater/chrome/updater/test/service/run_command_as_standard_user.py",
+    "type": "script",
+  },
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
     "type": "generated_script",

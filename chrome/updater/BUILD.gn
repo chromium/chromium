@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
@@ -641,8 +642,14 @@ if (is_win || is_mac) {
     if (is_win) {
       data_deps += [ ":test_service_files" ]
     }
-    if (is_win) {
-      data_deps += [ ":test_service_files" ]
+  }
+
+  if (is_win) {
+    python_library("updater_tests_win_uac") {
+      testonly = true
+
+      deps = [ ":updater_tests" ]
+      data_deps = [ ":test_service_files" ]
     }
   }
 
