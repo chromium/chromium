@@ -652,6 +652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="ExtensionsDatabaseOpen">
     <variant name=""/>
     <variant name=".Rules" summary="Rules backing stores"/>
+    <variant name=".Scripts" summary="Scripts backing stores"/>
     <variant name=".Settings" summary="Settings backing stores"/>
     <variant name=".State" summary="State backing stores"/>
   </token>
