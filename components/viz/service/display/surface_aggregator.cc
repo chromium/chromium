@@ -772,7 +772,8 @@ void SurfaceAggregator::EmitSurfaceContent(
         source.transform_to_root_target, source.filters,
         source.backdrop_filters, source.backdrop_filter_bounds,
         root_content_color_usage_, source.has_transparent_background,
-        source.cache_render_pass, source.has_damage_from_contributing_content,
+        source.cache_render_pass,
+        resolved_pass.aggregation().has_damage_from_contributing_content,
         source.generate_mipmap);
 
     MoveMatchingRequests(source.id, &copy_requests, &copy_pass->copy_requests);
@@ -805,18 +806,11 @@ void SurfaceAggregator::EmitSurfaceContent(
       }
     }
 
-    if (copy_pass->has_damage_from_contributing_content)
-      contributing_content_damaged_passes_.insert(copy_pass->id);
     dest_pass_list_->push_back(std::move(copy_pass));
   }
 
   const auto& last_pass = *render_pass_list.back();
   const auto& resolved_root_pass = resolved_frame.GetRootRenderPassData();
-  // This will check if all the surface_quads (including child surfaces) has
-  // damage because HandleSurfaceQuad is a recursive call by calling
-  // CopyQuadsToPass in it.
-  dest_pass->has_damage_from_contributing_content |=
-      !DamageRectForSurface(resolved_frame, true).IsEmpty();
 
   if (merge_pass) {
     CopyQuadsToPass(resolved_frame, resolved_root_pass, dest_pass,
@@ -1234,12 +1228,6 @@ void SurfaceAggregator::CopyQuadsToPass(
             resolved_frame.GetRenderPassDataById(original_pass_id)
                 .remapped_id();
 
-        // If the CompositorRenderPassDrawQuad is referring to other render pass
-        // with the |has_damage_from_contributing_content| set on it, then the
-        // dest_pass should have the flag set on it as well.
-        if (contributing_content_damaged_passes_.count(remapped_pass_id))
-          dest_pass->has_damage_from_contributing_content = true;
-
         dest_quad = dest_pass->CopyFromAndAppendRenderPassDrawQuad(
             pass_quad, remapped_pass_id);
       } else if (quad->material == DrawQuad::Material::kTextureContent) {
@@ -1334,7 +1322,8 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
         transform_to_root_target, source.filters, source.backdrop_filters,
         source.backdrop_filter_bounds, root_content_color_usage_,
         source.has_transparent_background, source.cache_render_pass,
-        source.has_damage_from_contributing_content, source.generate_mipmap);
+        resolved_pass.aggregation().has_damage_from_contributing_content,
+        source.generate_mipmap);
 
     if (needs_surface_damage_rect_list_ && resolved_pass.is_root()) {
       AddSurfaceDamageToDamageList(
@@ -1362,9 +1351,6 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
         copy_pass->damage_rect.Intersect(damage_rect_in_render_pass_space);
       }
     }
-
-    if (copy_pass->has_damage_from_contributing_content)
-      contributing_content_damaged_passes_.insert(copy_pass->id);
     dest_pass_list_->push_back(std::move(copy_pass));
   }
 
@@ -1405,6 +1391,10 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (render_pass.filters.HasFilterThatMovesPixels() ||
       (parent_pass && parent_pass->aggregation().in_pixel_moving_filter_pass)) {
     resolved_pass.aggregation().in_pixel_moving_filter_pass = true;
+  }
+
+  if (render_pass.has_damage_from_contributing_content) {
+    resolved_pass.aggregation().has_damage_from_contributing_content = true;
   }
 
   // The damage on the root render pass of the surface comes from damage
@@ -1497,6 +1487,10 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
         child_rect = gfx::ScaleToEnclosingRect(child_rect, x_scale, y_scale);
         quad_damage_rect.Union(child_rect);
       }
+
+      if (!quad_damage_rect.IsEmpty()) {
+        resolved_pass.aggregation().has_damage_from_contributing_content = true;
+      }
     } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       auto* render_pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
 
@@ -1581,6 +1575,11 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       quad_damage_rect = PrewalkRenderPass(
           resolved_frame, child_resolved_pass, will_draw, gfx::Rect(),
           child_to_root_transform, &resolved_pass, result);
+
+      if (child_resolved_pass.aggregation()
+              .has_damage_from_contributing_content) {
+        resolved_pass.aggregation().has_damage_from_contributing_content = true;
+      }
     }
 
     if (!quad_damage_rect.IsEmpty()) {
@@ -1675,6 +1674,13 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   damage_rect.Union(PrewalkRenderPass(resolved_frame, root_resolved_pass,
                                       will_draw, damage_from_parent,
                                       gfx::Transform(), parent_pass, result));
+
+  // If this surface has damage from contributing content, then the render pass
+  // embedding this surface does as well.
+  if (parent_pass &&
+      root_resolved_pass.aggregation().has_damage_from_contributing_content) {
+    parent_pass->aggregation().has_damage_from_contributing_content = true;
+  }
 
   if (!damage_rect.IsEmpty()) {
     auto damage_rect_surface_space = damage_rect;
@@ -1994,7 +2000,6 @@ void SurfaceAggregator::ResetAfterAggregate() {
   has_pixel_moving_backdrop_filter_ = false;
   has_copy_requests_ = false;
   new_surfaces_.clear();
-  contributing_content_damaged_passes_.clear();
   resolved_surface_ranges_.clear();
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();

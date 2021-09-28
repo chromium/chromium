@@ -45,6 +45,12 @@ RenderPassBuilder& RenderPassBuilder::SetCacheRenderPass(bool val) {
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetHasDamageFromContributingContent(
+    bool val) {
+  pass_->has_damage_from_contributing_content = val;
+  return *this;
+}
+
 RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
     const gfx::Rect& rect,
     SkColor color,

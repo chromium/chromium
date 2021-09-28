@@ -6344,6 +6344,163 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 }
 
 // Tests that has_damage_from_contributing_content is aggregated correctly from
+// grand child surface quads when render passes can't be merged.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       HasDamageByChangingGrandChildSurfaceNoMerge) {
+  auto grand_child_sink = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryMiddleFrameSinkId, /*is_root=*/false);
+  TestSurfaceIdAllocator grand_child_surface_id(
+      grand_child_sink->frame_sink_id());
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  {
+    CompositorFrame grandchild_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                    .Build())
+            .Build();
+    grand_child_sink->SubmitCompositorFrame(
+        grand_child_surface_id.local_surface_id(), std::move(grandchild_frame));
+
+    CompositorFrame child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSurfaceQuad(gfx::Rect(5, 5),
+                                    SurfaceRange(grand_child_surface_id),
+                                    {.allow_merge = false})
+                    .Build())
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{2},
+                                             gfx::Rect(kSurfaceSize))
+                               .AddRenderPassQuad(gfx::Rect(kSurfaceSize),
+                                                  CompositorRenderPassId{1})
+                               .Build())
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+
+    CompositorFrame root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{1},
+                                             gfx::Rect(kSurfaceSize))
+                               .AddSurfaceQuad(gfx::Rect(5, 5),
+                                               SurfaceRange(child_surface_id),
+                                               {.allow_merge = false})
+                               .Build())
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    // On first frame there is no existing cache texture to worry about
+    // re-using, so we don't worry what this bool is set to.
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+  }
+
+  // No Surface changed, so no damage should be given.
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    ASSERT_EQ(4u, aggregated_frame.render_pass_list.size());
+    EXPECT_FALSE(aggregated_frame.render_pass_list[3]
+                     ->has_damage_from_contributing_content);
+  }
+
+  // A new grandchild frame should damage the root render pass.
+  {
+    CompositorFrame grandchild_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                    .Build())
+            .Build();
+    grand_child_sink->SubmitCompositorFrame(
+        grand_child_surface_id.local_surface_id(), std::move(grandchild_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    ASSERT_EQ(4u, aggregated_frame.render_pass_list.size());
+    EXPECT_TRUE(aggregated_frame.render_pass_list[3]
+                    ->has_damage_from_contributing_content);
+  }
+}
+
+// Tests that has_damage_from_contributing_content is aggregated correctly from
+// child surface quads even when the damage rect is empty.
+TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromChildDamageFlag) {
+  auto grand_child_sink = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryMiddleFrameSinkId, /*is_root=*/false);
+  TestSurfaceIdAllocator grand_child_surface_id(
+      grand_child_sink->frame_sink_id());
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  {
+    CompositorFrame child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                    .Build())
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+    CompositorFrame root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{1},
+                                             gfx::Rect(kSurfaceSize))
+                               .AddSurfaceQuad(gfx::Rect(5, 5),
+                                               SurfaceRange(child_surface_id),
+                                               {.allow_merge = false})
+                               .Build())
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    // On first frame there is no existing cache texture to worry about
+    // re-using, so we don't worry what this bool is set to.
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+  }
+
+  // No Surface changed, so no damage should be given.
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
+    EXPECT_FALSE(aggregated_frame.render_pass_list[1]
+                     ->has_damage_from_contributing_content);
+  }
+
+  // A new child frame with HasDamageFromContributingContent set should damage
+  // the root render pass even if there is no damage.
+  {
+    CompositorFrame child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                    .SetHasDamageFromContributingContent(true)
+                    .SetDamageRect(gfx::Rect())
+                    .Build())
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
+    EXPECT_TRUE(aggregated_frame.render_pass_list[1]
+                    ->has_damage_from_contributing_content);
+  }
+}
+
+// Tests that has_damage_from_contributing_content is aggregated correctly from
 // render pass quads.
 TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
   std::vector<Quad> child_quads = {

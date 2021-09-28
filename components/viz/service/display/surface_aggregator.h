@@ -391,10 +391,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::TimeTicks expected_display_time_;
   int64_t display_trace_id_ = -1;
 
-  // This is the set of aggregated pass ids that has damage from contributing
-  // content.
-  base::flat_set<AggregatedRenderPassId> contributing_content_damaged_passes_;
-
   // Map from SurfaceRange to Surface for current aggregation.
   base::flat_map<SurfaceRange, Surface*> resolved_surface_ranges_;
 

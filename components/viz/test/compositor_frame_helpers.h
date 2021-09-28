@@ -65,6 +65,7 @@ class RenderPassBuilder {
   // Methods to modify the CompositorRenderPass start here.
   RenderPassBuilder& SetDamageRect(const gfx::Rect& damage_rect);
   RenderPassBuilder& SetCacheRenderPass(bool val);
+  RenderPassBuilder& SetHasDamageFromContributingContent(bool val);
 
   // Methods to add DrawQuads start here. The methods are structured so that the
   // most important attributes on the quad are function parameters. Less

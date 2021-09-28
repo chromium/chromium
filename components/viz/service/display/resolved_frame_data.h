@@ -74,6 +74,10 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // True if the render pass will be stored as part of a cached render pass.
   // This property is transitive from parent pass to embedded passes.
   bool in_cached_render_pass = false;
+
+  // True if there is accumulated damage from contributing render pass or
+  // surface quads.
+  bool has_damage_from_contributing_content = false;
 };
 
 // Data associated with a CompositorRenderPass in a resolved frame. Has fixed
