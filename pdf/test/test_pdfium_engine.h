@@ -49,7 +49,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               (override));
 
   // Sets a scaled mouse event for testing.
-  bool HandleInputEvent(const blink::WebInputEvent& scaled_event) override;
+  bool HandleInputEvent(const blink::WebInputEvent& event) override;
 
   bool HasPermission(DocumentPermission permission) const override;
 
@@ -69,7 +69,9 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   std::vector<uint8_t> GetSaveData() override;
 
-  const blink::WebMouseEvent* GetScaledMouseEvent() const;
+  const blink::WebMouseEvent* GetScaledMouseEvent() const {
+    return scaled_mouse_event_.get();
+  }
 
   void SetPermissions(const std::vector<DocumentPermission>& permissions);
 

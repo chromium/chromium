@@ -34,17 +34,15 @@ TestPDFiumEngine::TestPDFiumEngine(PDFEngine::Client* client)
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
 
-bool TestPDFiumEngine::HandleInputEvent(
-    const blink::WebInputEvent& scaled_event) {
+bool TestPDFiumEngine::HandleInputEvent(const blink::WebInputEvent& event) {
   // Since blink::WebInputEvent is an abstract class, we cannot use equal
   // matcher to verify its value. Here we test with blink::WebMouseEvent
   // specifically.
-  if (!blink::WebInputEvent::IsMouseEventType(scaled_event.GetType()))
+  if (!blink::WebInputEvent::IsMouseEventType(event.GetType()))
     return false;
 
-  blink::WebMouseEvent* mouse_event = new blink::WebMouseEvent;
-  scaled_mouse_event_.reset(mouse_event);
-  *mouse_event = static_cast<const blink::WebMouseEvent&>(scaled_event);
+  scaled_mouse_event_ = std::make_unique<blink::WebMouseEvent>();
+  *scaled_mouse_event_ = static_cast<const blink::WebMouseEvent&>(event);
   return true;
 }
 
@@ -81,10 +79,6 @@ bool TestPDFiumEngine::ReadLoadedBytes(uint32_t length, void* buffer) {
 
 std::vector<uint8_t> TestPDFiumEngine::GetSaveData() {
   return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
-}
-
-const blink::WebMouseEvent* TestPDFiumEngine::GetScaledMouseEvent() const {
-  return scaled_mouse_event_ ? scaled_mouse_event_.get() : nullptr;
 }
 
 void TestPDFiumEngine::SetPermissions(
