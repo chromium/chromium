@@ -415,10 +415,6 @@
     <!-- IPH shared highlighting builder padding top -->
     <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>
 
-    <!-- Accessibility Page Zoom Settings dimensions -->
-    <dimen name="accessibility_page_zoom_minimum_button_size">44dp</dimen>
-    <dimen name="accessibility_page_zoom_control_spacing">10dp</dimen>
-
     <dimen name="sharing_hub_tile_width">69sp</dimen>
     <dimen name="sharing_hub_tile_margin">8sp</dimen>
 </resources>

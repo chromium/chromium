@@ -1222,21 +1222,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions
       </message>
-      <message name="IDS_ACCESSIBILITY_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
-        Page Zoom
-      </message>
-      <message name="IDS_ACCESSIBILITY_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
-        Use this setting to increase/decrease the zoom factor for a given page.
-      </message>
-      <message name="IDS_ACCESSIBILITY_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
-        Decrease zoom
-      </message>
-      <message name="IDS_ACCESSIBILITY_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
-        Increase zoom
-      </message>
-      <message name="IDS_ACCESSIBILITY_PAGE_ZOOM_FACTOR" desc="Text description of the current page zoom factor set by the user" translateable="false">
-        <ph name="ZOOM_FACTOR">%1$d<ex>100</ex></ph> %%
-      </message>
 
       <!-- Language Settings -->
       <message name="IDS_LANGUAGE_SETTINGS" desc="Title for the Languages settings screen that allows users to manage their languages preferences. [CHAR_LIMIT=32]">

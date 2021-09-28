@@ -1042,9 +1042,6 @@ const base::Feature kWebXrArModule{"WebXRARModule",
 const base::Feature kAccessibilityPageZoom{"AccessibilityPageZoom",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAccessibilityPageZoomUpdatedUI{
-    "AccessibilityPageZoomUpdatedUI", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Sets moderate binding to background renderers playing media, when enabled.
 // Else the renderer will have strong binding.
 const base::Feature kBackgroundMediaRendererHasModerateBinding{

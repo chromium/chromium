@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 /**
  * Fragment to keep track of all the accessibility related preferences.
@@ -35,7 +34,6 @@ public class AccessibilitySettings
     static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
     static final String PREF_CAPTIONS = "captions";
     static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
-    static final String PREF_ACCESSIBILITY_PAGE_ZOOM = "accessibility_page_zoom";
 
     private TextScalePreference mTextScalePref;
     private ChromeBaseCheckBoxPreference mForceEnableZoomPref;
@@ -108,10 +106,6 @@ public class AccessibilitySettings
         Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
         imageDescriptionsPreference.setVisible(
                 ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem());
-
-        Preference accessibilityPageZoomPreference = findPreference(PREF_ACCESSIBILITY_PAGE_ZOOM);
-        accessibilityPageZoomPreference.setVisible(ContentFeatureList.isEnabled(
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_UPDATED_UI));
     }
 
     @Override

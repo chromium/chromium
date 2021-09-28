@@ -28,9 +28,6 @@ public class ContentFeatureList {
     // Alphabetical:
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
 
-    public static final String ACCESSIBILITY_PAGE_ZOOM_UPDATED_UI =
-            "AccessibilityPageZoomUpdatedUI";
-
     public static final String BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING =
             "BackgroundMediaRendererHasModerateBinding";
 

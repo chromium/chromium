@@ -34,9 +34,4 @@
         android:key="image_descriptions"
         android:title="@string/image_descriptions_settings_title" />
 
-    <org.chromium.chrome.browser.accessibility.settings.AccessibilityPageZoomPreference
-        android:key="accessibility_page_zoom"
-        android:layout="@layout/custom_preference"
-        android:widgetLayout="@layout/accessibility_page_zoom_preference" />
-
 </PreferenceScreen>
