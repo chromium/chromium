@@ -345,6 +345,8 @@ void AppListSyncableService::SetAppIsDefaultForTest(Profile* profile,
   app_list::SetAppIsDefaultForTest(profile, id);
 }
 
+AppListSyncableService::AppListSyncableService() = default;
+
 AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
@@ -1000,6 +1002,11 @@ void AppListSyncableService::PopulateSyncItemsForTest(
             .second;
     DCHECK(success);
   }
+}
+
+const AppListSyncableService::SyncItemMap& AppListSyncableService::sync_items()
+    const {
+  return sync_items_;
 }
 
 void AppListSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {

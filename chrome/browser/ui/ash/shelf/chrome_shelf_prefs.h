@@ -15,6 +15,10 @@ class ShelfControllerHelper;
 class PrefService;
 class Profile;
 
+namespace app_list {
+class AppListSyncableService;
+}  // namespace app_list
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -72,6 +76,17 @@ class ChromeShelfPrefs {
   // shelf.
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
+
+  // This is a one-time operation. This method unpins any of the legacy camera
+  // apps. and then uses their pinned position for the new camera app.
+  void MigrateLegacyCameraApp(
+      app_list::AppListSyncableService* syncable_service,
+      PrefService* prefs);
+
+ private:
+  // Migrations are performed exactly once, on the first call to
+  // GetPinnedAppsFromSync that has sync data.
+  bool performed_migrations_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_

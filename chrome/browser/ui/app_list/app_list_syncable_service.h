@@ -105,6 +105,9 @@ class AppListSyncableService : public syncer::SyncableService,
 
   using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
 
+  // No-op constructor for tests.
+  AppListSyncableService();
+
   // Populates the model when |profile|'s extension system is ready.
   explicit AppListSyncableService(Profile* profile);
   AppListSyncableService(const AppListSyncableService&) = delete;
@@ -139,7 +142,7 @@ class AppListSyncableService : public syncer::SyncableService,
   void UpdateItem(const ChromeAppListItem* app_item);
 
   // Returns the existing sync item matching |id| or NULL.
-  const SyncItem* GetSyncItem(const std::string& id) const;
+  virtual const SyncItem* GetSyncItem(const std::string& id) const;
 
   // Transfers app attributes, such as parent folder id, position in App
   // Launcher and pin position on the shelf from one app to another app. Target
@@ -160,12 +163,12 @@ class AppListSyncableService : public syncer::SyncableService,
   // Returns optional pin position for the app specified by |app_id|. If app is
   // not synced or does not have associated pin position then empty ordinal is
   // returned.
-  syncer::StringOrdinal GetPinPosition(const std::string& app_id);
+  virtual syncer::StringOrdinal GetPinPosition(const std::string& app_id);
 
   // Sets pin position and how it is pinned for the app specified by |app_id|.
   // Empty |item_pin_ordinal| indicates that the app has no pin.
-  void SetPinPosition(const std::string& app_id,
-                      const syncer::StringOrdinal& item_pin_ordinal);
+  virtual void SetPinPosition(const std::string& app_id,
+                              const syncer::StringOrdinal& item_pin_ordinal);
 
   // Gets the app list model updater.
   AppListModelUpdater* GetModelUpdater();
@@ -193,7 +196,7 @@ class AppListSyncableService : public syncer::SyncableService,
 
   void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
 
-  const SyncItemMap& sync_items() const { return sync_items_; }
+  virtual const SyncItemMap& sync_items() const;
 
   // syncer::SyncableService
   void WaitUntilReadyToSync(base::OnceClosure done) override;
