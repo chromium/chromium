@@ -97,11 +97,17 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   void OnConnected(
       const base::UnguessableToken& id,
       mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_pending_remote);
+          message_sender_pending_remote,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+          file_payload_handler_remote);
   void OnDisconnected(const base::UnguessableToken& id);
   void InvokeActiveConnectionAttemptCallback(
       mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_pending_remote);
+          message_sender_pending_remote,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+          file_payload_handler_remote);
 
   nearby::NearbyProcessManager* nearby_process_manager_;
 

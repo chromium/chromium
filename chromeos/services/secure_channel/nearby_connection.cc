@@ -99,7 +99,9 @@ NearbyConnection::GetRemoteDeviceBluetoothAddressAsVector() {
 }
 
 void NearbyConnection::OnConnectResult(
-    mojo::PendingRemote<mojom::NearbyMessageSender> message_sender) {
+    mojo::PendingRemote<mojom::NearbyMessageSender> message_sender,
+    mojo::PendingRemote<mojom::NearbyFilePayloadHandler> file_payload_handler) {
+  // TODO(https://crbug.com/1221297): wire up NearbyFilePayloadHandler
   // If a connection failed to be established, disconnect.
   if (!message_sender) {
     PA_LOG(WARNING) << "NearbyConnector returned invalid MessageSender; "

@@ -56826,6 +56826,7 @@ Called by update_use_counter_css.py.-->
   <int value="11" label="Connection lost"/>
   <int value="12" label="Nearby process crash"/>
   <int value="13" label="Nearby process Mojo dependency disconnection"/>
+  <int value="14" label="Received file paylad that wasn't registered"/>
 </enum>
 
 <enum name="MultiDeviceNearbyMessageAction">

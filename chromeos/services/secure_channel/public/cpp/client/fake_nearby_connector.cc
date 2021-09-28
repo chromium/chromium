@@ -53,7 +53,8 @@ FakeNearbyConnector::~FakeNearbyConnector() = default;
 
 void FakeNearbyConnector::FailQueuedCallback() {
   DCHECK(!queued_connect_args_.empty());
-  std::move(queued_connect_args_.front()->callback).Run(mojo::NullRemote());
+  std::move(queued_connect_args_.front()->callback)
+      .Run(mojo::NullRemote(), mojo::NullRemote());
   queued_connect_args_.pop();
 }
 
@@ -66,12 +67,19 @@ FakeNearbyConnector::ConnectQueuedCallback() {
       message_sender_pending_receiver =
           message_sender_pending_remote.InitWithNewPipeAndPassReceiver();
 
+  mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+      file_payload_handler_pending_remote;
+  mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+      file_payload_handler_pending_receiver =
+          file_payload_handler_pending_remote.InitWithNewPipeAndPassReceiver();
+
   auto fake_connection = std::make_unique<FakeConnection>(
       queued_connect_args_.front()->bluetooth_public_address,
       std::move(message_sender_pending_receiver),
       std::move(queued_connect_args_.front()->message_receiver));
   std::move(queued_connect_args_.front()->callback)
-      .Run(std::move(message_sender_pending_remote));
+      .Run(std::move(message_sender_pending_remote),
+           std::move(file_payload_handler_pending_remote));
   queued_connect_args_.pop();
 
   FakeConnection* fake_connection_ptr = fake_connection.get();

@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
@@ -39,12 +41,14 @@ using ::location::nearby::connections::mojom::Payload;
 using ::location::nearby::connections::mojom::PayloadContent;
 using ::location::nearby::connections::mojom::PayloadListener;
 using ::location::nearby::connections::mojom::PayloadPtr;
+using ::location::nearby::connections::mojom::PayloadStatus;
+using ::location::nearby::connections::mojom::PayloadTransferUpdate;
+using ::location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 using ::location::nearby::connections::mojom::Status;
 using ::testing::_;
 using ::testing::Invoke;
 
 const char kEndpointId[] = "endpointId";
-const int64_t kInvalidPayloadTypeId = 1234;
 
 const std::vector<uint8_t>& GetEid() {
   static const std::vector<uint8_t> eid{0, 1};
@@ -64,7 +68,8 @@ const std::vector<uint8_t>& GetEndpointInfo() {
 }  // namespace
 
 class NearbyConnectionBrokerImplTest : public testing::Test,
-                                       public mojom::NearbyMessageReceiver {
+                                       public mojom::NearbyMessageReceiver,
+                                       public mojom::NearbyFilePayloadListener {
  protected:
   NearbyConnectionBrokerImplTest() = default;
   ~NearbyConnectionBrokerImplTest() override = default;
@@ -77,6 +82,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     broker_ = NearbyConnectionBrokerImpl::Factory::Create(
         GetBluetoothAddress(), GetEid(), &fake_endpoint_finder_,
         message_sender_.BindNewPipeAndPassReceiver(),
+        file_payload_handler_.BindNewPipeAndPassReceiver(),
         message_receiver_.BindNewPipeAndPassRemote(),
         mock_nearby_connections_.shared_remote(),
         base::BindOnce(&NearbyConnectionBrokerImplTest::OnConnected,
@@ -153,8 +159,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   void InvokeAcceptConnectionCallback(bool success) {
     if (!success) {
       base::RunLoop run_loop;
-      on_disconnect_from_endpoint_closure_ = run_loop.QuitClosure();
-      ExpectDisconnectFromEndpoint();
+      ExpectDisconnectFromEndpoint(run_loop.QuitClosure());
       std::move(accept_connection_callback_).Run(Status::kError);
       run_loop.Run();
       return;
@@ -228,8 +233,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
     // Failure to send should disconnect the ongoing connection.
     base::RunLoop disconnect_run_loop;
-    on_disconnect_from_endpoint_closure_ = disconnect_run_loop.QuitClosure();
-    ExpectDisconnectFromEndpoint();
+    ExpectDisconnectFromEndpoint(disconnect_run_loop.QuitClosure());
     std::move(send_payload_callback).Run(Status::kError);
     send_message_response_run_loop.Run();
     disconnect_run_loop.Run();
@@ -251,31 +255,67 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     EXPECT_EQ(received_messages_.back(), message);
   }
 
-  void ReceiveInvalidPayloadType() {
-    base::RunLoop payload_run_loop;
-    on_disconnect_from_endpoint_closure_ = payload_run_loop.QuitClosure();
-    ExpectDisconnectFromEndpoint();
-
+  void ReceiveFilePayload(int64_t payload_id, const base::FilePath& file_path) {
     // Create fake file to receive.
     const std::vector<uint8_t> kFakeFileContent{0x01, 0x02, 0x03};
-    base::FilePath path;
-    base::CreateTemporaryFile(&path);
-    base::File output_file(path, base::File::Flags::FLAG_CREATE_ALWAYS |
-                                     base::File::Flags::FLAG_WRITE);
+    base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                          base::File::Flags::FLAG_WRITE);
     output_file.WriteAndCheck(
         /*offset=*/0,
         base::make_span(kFakeFileContent.begin(), kFakeFileContent.end()));
     output_file.Flush();
     output_file.Close();
     base::File input_file(
-        path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+        file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
 
     payload_listener_->OnPayloadReceived(
         kEndpointId,
-        Payload::New(
-            /*id=*/kInvalidPayloadTypeId,
-            PayloadContent::NewFile(FilePayload::New(std::move(input_file)))));
-    payload_run_loop.Run();
+        Payload::New(payload_id, PayloadContent::NewFile(
+                                     FilePayload::New(std::move(input_file)))));
+  }
+
+  void RegisterPayloadFile(int64_t payload_id,
+                           const base::FilePath& file_path,
+                           bool expect_success) {
+    base::RunLoop nearby_connections_run_loop;
+    base::RunLoop file_payload_handler_run_loop;
+
+    NearbyConnectionsMojom::RegisterPayloadFileCallback
+        register_payload_file_callback;
+    EXPECT_CALL(mock_nearby_connections_, RegisterPayloadFile(_, _, _, _, _))
+        .WillOnce(Invoke(
+            [&](const std::string& service_id, int64_t payload_id,
+                const base::File& input_file, const base::File& output_file,
+                NearbyConnectionsMojom::RegisterPayloadFileCallback callback) {
+              register_payload_file_callback = std::move(callback);
+              nearby_connections_run_loop.Quit();
+            }));
+
+    file_payload_handler_->RegisterPayloadFile(
+        payload_id, file_path,
+        file_payload_listener_.BindNewPipeAndPassRemote(),
+        base::BindLambdaForTesting([&](bool success) {
+          EXPECT_EQ(expect_success, success);
+          file_payload_handler_run_loop.Quit();
+        }));
+    nearby_connections_run_loop.Run();
+
+    std::move(register_payload_file_callback)
+        .Run(expect_success ? Status::kSuccess : Status::kError);
+    file_payload_handler_run_loop.Run();
+  }
+
+  void ReceiveFileTransferUpdate(PayloadTransferUpdatePtr update) {
+    base::RunLoop run_loop;
+    on_file_transfer_update_closure_ = run_loop.QuitClosure();
+    payload_listener_->OnPayloadTransferUpdate(kEndpointId, std::move(update));
+    run_loop.Run();
+  }
+
+  void ReceiveInvalidFileTransferUpdate(PayloadTransferUpdatePtr update) {
+    // No callback is expected to run when an invalid PayloadTransferUpdate is
+    // received.
+    payload_listener_->OnPayloadTransferUpdate(kEndpointId, std::move(update));
   }
 
   void DisconnectMojoBindings(bool expected_to_disconnect) {
@@ -285,15 +325,16 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
       EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
           .Times(0);
       message_sender_.reset();
+      file_payload_handler_.reset();
       disconnect_run_loop.Run();
       return;
     }
 
     base::RunLoop disconnect_from_endpoint_run_loop;
-    on_disconnect_from_endpoint_closure_ =
-        disconnect_from_endpoint_run_loop.QuitClosure();
-    ExpectDisconnectFromEndpoint();
+    ExpectDisconnectFromEndpoint(
+        disconnect_from_endpoint_run_loop.QuitClosure());
     message_sender_.reset();
+    file_payload_handler_.reset();
     disconnect_from_endpoint_run_loop.Run();
   }
 
@@ -324,14 +365,31 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     }
 
     base::RunLoop disconnect_from_endpoint_run_loop;
-    on_disconnect_from_endpoint_closure_ =
-        disconnect_from_endpoint_run_loop.QuitClosure();
-    ExpectDisconnectFromEndpoint();
+    ExpectDisconnectFromEndpoint(
+        disconnect_from_endpoint_run_loop.QuitClosure());
     mock_timer_->Fire();
     disconnect_from_endpoint_run_loop.Run();
   }
 
+  void ExpectDisconnectFromEndpoint(
+      base::OnceClosure on_disconnect_from_endpoint_closure) {
+    on_disconnect_from_endpoint_closure_ =
+        std::move(on_disconnect_from_endpoint_closure);
+    EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
+        .WillOnce(Invoke(
+            [&](const std::string& service_id, const std::string& endpoint_id,
+                NearbyConnectionsMojom::DisconnectFromEndpointCallback
+                    callback) {
+              disconnect_from_endpoint_callback_ = std::move(callback);
+              std::move(on_disconnect_from_endpoint_closure_).Run();
+            }));
+  }
+
   bool IsTimerRunning() const { return mock_timer_->IsRunning(); }
+
+  const std::vector<mojom::FileTransferUpdatePtr>& file_transfer_updates() {
+    return file_transfer_updates_;
+  }
 
   NearbyConnectionsMojom::RequestConnectionCallback
       request_connection_callback_;
@@ -346,15 +404,10 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     std::move(on_message_received_closure_).Run();
   }
 
-  void ExpectDisconnectFromEndpoint() {
-    EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
-        .WillOnce(Invoke(
-            [&](const std::string& service_id, const std::string& endpoint_id,
-                NearbyConnectionsMojom::DisconnectFromEndpointCallback
-                    callback) {
-              disconnect_from_endpoint_callback_ = std::move(callback);
-              std::move(on_disconnect_from_endpoint_closure_).Run();
-            }));
+  // mojom::NearbyFilePayloadListener:
+  void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override {
+    file_transfer_updates_.push_back(std::move(update));
+    std::move(on_file_transfer_update_closure_).Run();
   }
 
   void OnConnected() { std::move(on_connected_closure_).Run(); }
@@ -366,7 +419,9 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   FakeNearbyEndpointFinder fake_endpoint_finder_;
 
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
+  mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
+  mojo::Receiver<mojom::NearbyFilePayloadListener> file_payload_listener_{this};
 
   std::unique_ptr<NearbyConnectionBroker> broker_;
 
@@ -375,12 +430,14 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   base::OnceClosure on_connected_closure_;
   base::OnceClosure on_disconnected_closure_;
   base::OnceClosure on_message_received_closure_;
+  base::OnceClosure on_file_transfer_update_closure_;
   base::OnceClosure on_disconnect_from_endpoint_closure_;
 
   mojo::Remote<ConnectionLifecycleListener> connection_lifecycle_listener_;
   mojo::Remote<PayloadListener> payload_listener_;
 
   std::vector<std::string> received_messages_;
+  std::vector<mojom::FileTransferUpdatePtr> file_transfer_updates_;
 };
 
 TEST_F(NearbyConnectionBrokerImplTest, SendAndReceive) {
@@ -411,9 +468,124 @@ TEST_F(NearbyConnectionBrokerImplTest, DisconnectsUnexpectedly) {
   InvokeDisconnectedCallback();
 }
 
-TEST_F(NearbyConnectionBrokerImplTest, ReceiveInvalidPayloadType) {
+TEST_F(NearbyConnectionBrokerImplTest,
+       DisconnectAfterReceivingFilePayloadWhenFeatureUnsupported) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
-  ReceiveInvalidPayloadType();
+
+  base::RunLoop disconnect_from_endpoint_run_loop;
+  ExpectDisconnectFromEndpoint(disconnect_from_endpoint_run_loop.QuitClosure());
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  ReceiveFilePayload(/*payload_id=*/1234, path);
+  disconnect_from_endpoint_run_loop.Run();
+
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest,
+       DisconnectAfterReceivingUnregisteredFilePayload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  base::RunLoop disconnect_from_endpoint_run_loop;
+  ExpectDisconnectFromEndpoint(disconnect_from_endpoint_run_loop.QuitClosure());
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(/*payload_id=*/1234, path, /*expect_success=*/true);
+  ReceiveFilePayload(/*payload_id=*/5678, path);
+  disconnect_from_endpoint_run_loop.Run();
+
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForRegisteredPayload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  int64_t payload_id = 1234;
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(payload_id, path, /*expect_success=*/true);
+  ReceiveFilePayload(payload_id, path);
+  ReceiveFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/100));
+  ReceiveFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/200));
+  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(file_transfer_updates().at(0),
+            mojom::FileTransferUpdate::New(
+                payload_id, mojom::FileTransferStatus::kInProgress,
+                /*total_bytes=*/1000,
+                /*bytes_transferred=*/100));
+  EXPECT_EQ(file_transfer_updates().at(1),
+            mojom::FileTransferUpdate::New(
+                payload_id, mojom::FileTransferStatus::kInProgress,
+                /*total_bytes=*/1000,
+                /*bytes_transferred=*/200));
+
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForCompletedPayload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  int64_t payload_id = 1234;
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(payload_id, path, /*expect_success=*/true);
+  ReceiveFilePayload(payload_id, path);
+  ReceiveFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kSuccess,
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/1000));
+  // This is not supposed to trigger a FileTransferUpdate callback as this
+  // payload has already been completed and is now untracked.
+  ReceiveInvalidFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+                                 /*total_bytes=*/2000,
+                                 /*bytes_transferred=*/1100));
+  EXPECT_EQ(1, file_transfer_updates().size());
+  EXPECT_EQ(file_transfer_updates().at(0),
+            mojom::FileTransferUpdate::New(payload_id,
+                                           mojom::FileTransferStatus::kSuccess,
+                                           /*total_bytes=*/1000,
+                                           /*bytes_transferred=*/1000));
+
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest,
+       FileTransferUpdateForUnregisteredPayload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(/*payload_id=*/1234, path, /*expect_success=*/true);
+  ReceiveInvalidFileTransferUpdate(PayloadTransferUpdate::New(
+      /*payload_id=*/5678, PayloadStatus::kInProgress,
+      /*total_bytes=*/1000,
+      /*bytes_transferred=*/100));
+  EXPECT_TRUE(file_transfer_updates().empty());
+
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
   InvokeDisconnectedCallback();
 }

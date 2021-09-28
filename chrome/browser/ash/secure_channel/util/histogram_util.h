@@ -58,7 +58,8 @@ enum class NearbyDisconnectionReason {
   kConnectionLost = 11,
   kNearbyProcessCrash = 12,
   kNearbyProcessMojoDisconnection = 13,
-  kMaxValue = kNearbyProcessMojoDisconnection
+  kReceivedUnregisteredFilePayload = 14,
+  kMaxValue = kReceivedUnregisteredFilePayload
 };
 
 void RecordNearbyDisconnection(NearbyDisconnectionReason reason);

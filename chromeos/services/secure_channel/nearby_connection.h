@@ -69,7 +69,9 @@ class NearbyConnection : public Connection,
   std::vector<uint8_t> GetRemoteDeviceBluetoothAddressAsVector();
 
   void OnConnectResult(
-      mojo::PendingRemote<mojom::NearbyMessageSender> message_sender);
+      mojo::PendingRemote<mojom::NearbyMessageSender> message_sender,
+      mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+          file_payload_handler);
   void OnSendMessageResult(bool success);
   void ProcessQueuedMessagesToSend();
 

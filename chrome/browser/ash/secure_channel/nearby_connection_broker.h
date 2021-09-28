@@ -24,10 +24,14 @@ namespace secure_channel {
 // to Nearby Connections, and uses the mojom::NearbyMessageReceiver interface to
 // relay messages received from Nearby Connections back to SecureChannel.
 //
+// Also implements the mojom::NearbyFilePayloadHandler interface to register
+// incoming file payloads with Nearby Connections.
+//
 // An instance of this class is only meant to be used for one connection
 // request to a single device. To make a new request, create a new object.
 class NearbyConnectionBroker
-    : public chromeos::secure_channel::mojom::NearbyMessageSender {
+    : public chromeos::secure_channel::mojom::NearbyMessageSender,
+      public chromeos::secure_channel::mojom::NearbyFilePayloadHandler {
  public:
   ~NearbyConnectionBroker() override;
 
@@ -37,6 +41,9 @@ class NearbyConnectionBroker
       mojo::PendingReceiver<
           chromeos::secure_channel::mojom::NearbyMessageSender>
           message_sender_receiver,
+      mojo::PendingReceiver<
+          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+          file_payload_handler_receiver,
       mojo::PendingRemote<
           chromeos::secure_channel::mojom::NearbyMessageReceiver>
           message_receiver_remote,
@@ -47,8 +54,8 @@ class NearbyConnectionBroker
     return bluetooth_public_address_;
   }
 
-  // Can be overridden by derived classes to handle MessageSender and
-  // MessageReceiver Mojo pipes being disconnected.
+  // Can be overridden by derived classes to handle MessageSender,
+  // FilePayloadHandler, and MessageReceiver Mojo pipes being disconnected.
   virtual void OnMojoDisconnection() {}
 
   void InvokeDisconnectedCallback();
@@ -59,6 +66,8 @@ class NearbyConnectionBroker
   std::vector<uint8_t> bluetooth_public_address_;
   mojo::Receiver<chromeos::secure_channel::mojom::NearbyMessageSender>
       message_sender_receiver_;
+  mojo::Receiver<chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      file_payload_handler_receiver_;
   mojo::Remote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
       message_receiver_remote_;
   base::OnceClosure on_connected_callback_;

@@ -5,9 +5,14 @@
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/flat_map.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
@@ -31,6 +36,8 @@ using ::location::nearby::connections::mojom::NearbyConnections;
 using ::location::nearby::connections::mojom::Payload;
 using ::location::nearby::connections::mojom::PayloadContent;
 using ::location::nearby::connections::mojom::PayloadPtr;
+using ::location::nearby::connections::mojom::PayloadStatus;
+using ::location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 using ::location::nearby::connections::mojom::Status;
 
 NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
@@ -89,6 +96,24 @@ void RecordWebRtcUpgradeDuration(base::TimeDelta duration) {
       /*buckets=*/50);
 }
 
+scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
+  // The tasks posted to this sequenced task runner do synchronous File I/O to
+  // open files for handling registered incoming file payloads.
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+}
+
+NearbyConnectionBrokerImpl::PayloadFiles CreatePayloadFiles(
+    const base::FilePath& file_path) {
+  NearbyConnectionBrokerImpl::PayloadFiles payload_files;
+  payload_files.input_file = base::File(
+      file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+  payload_files.output_file =
+      base::File(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                base::File::Flags::FLAG_WRITE);
+  return payload_files;
+}
+
 }  // namespace
 
 // static
@@ -98,6 +123,8 @@ NearbyConnectionBrokerImpl::Factory::Create(
     const std::vector<uint8_t>& eid,
     NearbyEndpointFinder* endpoint_finder,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+    mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+        file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
@@ -106,16 +133,20 @@ NearbyConnectionBrokerImpl::Factory::Create(
   if (g_test_factory) {
     return g_test_factory->CreateInstance(
         bluetooth_public_address, endpoint_finder,
-        std::move(message_sender_receiver), std::move(message_receiver_remote),
-        nearby_connections, std::move(on_connected_callback),
-        std::move(on_disconnected_callback), std::move(timer));
+        std::move(message_sender_receiver),
+        std::move(file_payload_handler_receiver),
+        std::move(message_receiver_remote), nearby_connections,
+        std::move(on_connected_callback), std::move(on_disconnected_callback),
+        std::move(timer));
   }
 
   return base::WrapUnique(new NearbyConnectionBrokerImpl(
       bluetooth_public_address, eid, endpoint_finder,
-      std::move(message_sender_receiver), std::move(message_receiver_remote),
-      nearby_connections, std::move(on_connected_callback),
-      std::move(on_disconnected_callback), std::move(timer)));
+      std::move(message_sender_receiver),
+      std::move(file_payload_handler_receiver),
+      std::move(message_receiver_remote), nearby_connections,
+      std::move(on_connected_callback), std::move(on_disconnected_callback),
+      std::move(timer)));
 }
 
 // static
@@ -129,6 +160,8 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
     const std::vector<uint8_t>& eid,
     NearbyEndpointFinder* endpoint_finder,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+    mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+        file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
@@ -136,12 +169,14 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
     std::unique_ptr<base::OneShotTimer> timer)
     : NearbyConnectionBroker(bluetooth_public_address,
                              std::move(message_sender_receiver),
+                             std::move(file_payload_handler_receiver),
                              std::move(message_receiver_remote),
                              std::move(on_connected_callback),
                              std::move(on_disconnected_callback)),
       endpoint_finder_(endpoint_finder),
       nearby_connections_(nearby_connections),
-      timer_(std::move(timer)) {
+      timer_(std::move(timer)),
+      task_runner_(CreateFileTaskRunner()) {
   TransitionToStatus(ConnectionStatus::kDiscoveringEndpoint);
   endpoint_finder_->FindEndpoint(
       bluetooth_public_address, eid,
@@ -394,6 +429,45 @@ void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
   util::LogMessageAction(util::MessageAction::kMessageSent);
 }
 
+void NearbyConnectionBrokerImpl::RegisterPayloadFile(
+    int64_t payload_id,
+    const base::FilePath& file_path,
+    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
+    RegisterPayloadFileCallback callback) {
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreatePayloadFiles, file_path),
+      base::BindOnce(&NearbyConnectionBrokerImpl::OnPayloadFilesCreated,
+                     weak_ptr_factory_.GetWeakPtr(), payload_id, file_path,
+                     std::move(listener), std::move(callback)));
+}
+
+void NearbyConnectionBrokerImpl::OnPayloadFilesCreated(
+    int64_t payload_id,
+    const base::FilePath& file_path,
+    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
+    RegisterPayloadFileCallback callback,
+    NearbyConnectionBrokerImpl::PayloadFiles payload_files) {
+  nearby_connections_->RegisterPayloadFile(
+      mojom::kServiceId, payload_id, std::move(payload_files.input_file),
+      std::move(payload_files.output_file),
+      base::BindOnce(&NearbyConnectionBrokerImpl::OnPayloadFileRegistered,
+                     weak_ptr_factory_.GetWeakPtr(), payload_id,
+                     std::move(listener), std::move(callback)));
+}
+
+void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
+    int64_t payload_id,
+    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
+    RegisterPayloadFileCallback callback,
+    Status status) {
+  bool success = status == Status::kSuccess;
+  if (success) {
+    file_payload_listeners_.emplace(payload_id, std::move(listener));
+  }
+  // TODO(https://crbug.com/1221297): log file payload registration results
+  std::move(callback).Run(success);
+}
+
 void NearbyConnectionBrokerImpl::OnConnectionInitiated(
     const std::string& endpoint_id,
     ConnectionInfoPtr info) {
@@ -505,21 +579,79 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
     return;
   }
 
-  if (!payload->content->is_bytes()) {
+  if (payload->content->is_bytes()) {
+    PA_LOG(VERBOSE) << "OnPayloadReceived(): Received message with payload ID "
+                    << payload->id;
+    const std::vector<uint8_t>& message_as_bytes =
+        payload->content->get_bytes()->bytes;
+    NotifyMessageReceived(
+        std::string(message_as_bytes.begin(), message_as_bytes.end()));
+
+    util::LogMessageAction(util::MessageAction::kMessageReceived);
+  } else if (ash::features::IsPhoneHubCameraRollEnabled() &&
+             payload->content->is_file()) {
+    if (!file_payload_listeners_.contains(payload->id)) {
+      PA_LOG(WARNING)
+          << "OnPayloadReceived(): Received unregistered file payload with ID "
+          << payload->id << ". Disconnecting.";
+      Disconnect(
+          util::NearbyDisconnectionReason::kReceivedUnregisteredFilePayload);
+    } else {
+      PA_LOG(VERBOSE) << "OnPayloadReceived(): Received file with payload ID "
+                      << payload->id;
+      // TODO(https://crbug.com/1221297): log file payloads received
+    }
+  } else {
     PA_LOG(WARNING) << "OnPayloadReceived(): Received unexpected payload type "
                     << "(was expecting bytes type). Disconnecting.";
     Disconnect(util::NearbyDisconnectionReason::kReceivedUnexpectedPayloadType);
+  }
+}
+
+mojom::FileTransferStatus ConvertFileTransferStatus(PayloadStatus status) {
+  switch (status) {
+    case PayloadStatus::kSuccess:
+      return mojom::FileTransferStatus::kSuccess;
+    case PayloadStatus::kFailure:
+      return mojom::FileTransferStatus::kFailure;
+    case PayloadStatus::kInProgress:
+      return mojom::FileTransferStatus::kInProgress;
+    case PayloadStatus::kCanceled:
+      return mojom::FileTransferStatus::kCanceled;
+  }
+}
+
+void NearbyConnectionBrokerImpl::OnPayloadTransferUpdate(
+    const std::string& endpoint_id,
+    location::nearby::connections::mojom::PayloadTransferUpdatePtr update) {
+  if (!ash::features::IsPhoneHubCameraRollEnabled()) {
     return;
   }
 
-  PA_LOG(VERBOSE) << "OnPayloadReceived(): Received message with payload ID "
-                  << payload->id;
-  const std::vector<uint8_t>& message_as_bytes =
-      payload->content->get_bytes()->bytes;
-  NotifyMessageReceived(
-      std::string(message_as_bytes.begin(), message_as_bytes.end()));
+  if (remote_endpoint_id_ != endpoint_id) {
+    PA_LOG(WARNING) << "OnPayloadTransferUpdate(): unexpected endpoint ID; "
+                    << "expected=" << endpoint_id
+                    << ", actual=" << remote_endpoint_id_;
+    return;
+  }
 
-  util::LogMessageAction(util::MessageAction::kMessageReceived);
+  auto it = file_payload_listeners_.find(update->payload_id);
+  if (it == file_payload_listeners_.end()) {
+    return;
+  }
+
+  PA_LOG(VERBOSE)
+      << "OnPayloadTransferUpdate(): Received update for file payload "
+      << update->payload_id;
+
+  it->second->OnFileTransferUpdate(mojom::FileTransferUpdate::New(
+      update->payload_id, ConvertFileTransferStatus(update->status),
+      update->total_bytes, update->bytes_transferred));
+
+  if (update->status != PayloadStatus::kInProgress) {
+    file_payload_listeners_.erase(it);
+    // TODO(https://crbug.com/1221297): log result of file transfers
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream,

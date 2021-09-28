@@ -66,6 +66,8 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
       const std::vector<uint8_t>& bluetooth_public_address,
       NearbyEndpointFinder* endpoint_finder,
       mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+      mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+          file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
       const mojo::SharedRemote<
           location::nearby::connections::mojom::NearbyConnections>&
@@ -75,6 +77,7 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
       std::unique_ptr<base::OneShotTimer> timer) override {
     auto instance = std::make_unique<FakeNearbyConnectionBroker>(
         bluetooth_public_address, std::move(message_sender_receiver),
+        std::move(file_payload_handler_receiver),
         std::move(message_receiver_remote), std::move(on_connected_callback),
         std::move(on_disconnected_callback));
     last_created_ = instance.get();
@@ -163,7 +166,9 @@ class NearbyConnectorImplTest : public testing::Test {
  private:
   void OnConnectResult(int id,
                        mojo::PendingRemote<mojom::NearbyMessageSender>
-                           message_sender_pending_remote) {
+                           message_sender_pending_remote,
+                       mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+                           file_payload_handler_remote) {
     if (!message_sender_pending_remote)
       id_to_remote_map_[id] = mojo::Remote<mojom::NearbyMessageSender>();
     else

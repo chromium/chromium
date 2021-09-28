@@ -17,6 +17,9 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
       mojo::PendingReceiver<
           chromeos::secure_channel::mojom::NearbyMessageSender>
           message_sender_receiver,
+      mojo::PendingReceiver<
+          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+          file_payload_handler_receiver,
       mojo::PendingRemote<
           chromeos::secure_channel::mojom::NearbyMessageReceiver>
           message_receiver_remote,
@@ -41,6 +44,14 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
   // mojom::NearbyMessageSender:
   void SendMessage(const std::string& message,
                    SendMessageCallback callback) override;
+
+  // mojom::NearbyFilePayloadHandler:
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      const base::FilePath& file_path,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyFilePayloadListener> listener,
+      RegisterPayloadFileCallback callback) override {}
 
   std::vector<std::string> sent_messages_;
   bool should_send_message_succeed_ = true;

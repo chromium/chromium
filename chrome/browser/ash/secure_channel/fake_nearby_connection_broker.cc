@@ -14,11 +14,14 @@ namespace mojom = ::chromeos::secure_channel::mojom;
 FakeNearbyConnectionBroker::FakeNearbyConnectionBroker(
     const std::vector<uint8_t>& bluetooth_public_address,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+    mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+        file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
     base::OnceClosure on_connected_callback,
     base::OnceClosure on_disconnected_callback)
     : NearbyConnectionBroker(bluetooth_public_address,
                              std::move(message_sender_receiver),
+                             std::move(file_payload_handler_receiver),
                              std::move(message_receiver_remote),
                              std::move(on_connected_callback),
                              std::move(on_disconnected_callback)) {}

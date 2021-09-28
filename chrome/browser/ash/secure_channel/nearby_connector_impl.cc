@@ -72,7 +72,8 @@ void NearbyConnectorImpl::Shutdown() {
 
 void NearbyConnectorImpl::ClearActiveAndPendingConnections() {
   if (active_connection_attempt_) {
-    InvokeActiveConnectionAttemptCallback(mojo::NullRemote());
+    InvokeActiveConnectionAttemptCallback(mojo::NullRemote(),
+                                          mojo::NullRemote());
     active_connection_attempt_.reset();
   }
   id_to_brokers_map_.clear();
@@ -118,6 +119,12 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
       message_sender_pending_receiver =
           message_sender_pending_remote.InitWithNewPipeAndPassReceiver();
 
+  mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+      file_payload_handler_pending_remote;
+  mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
+      file_payload_handler_pending_receiver =
+          file_payload_handler_pending_remote.InitWithNewPipeAndPassReceiver();
+
   DCHECK(!active_connection_attempt_);
   active_connection_attempt_.emplace(
       new_broker_id,
@@ -130,11 +137,13 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
           metadata->bluetooth_public_address, metadata->eid,
           active_connection_attempt_->endpoint_finder.get(),
           std::move(message_sender_pending_receiver),
+          std::move(file_payload_handler_pending_receiver),
           std::move(metadata->message_receiver),
           process_reference_->GetNearbyConnections(),
           base::BindOnce(&NearbyConnectorImpl::OnConnected,
                          base::Unretained(this), new_broker_id,
-                         std::move(message_sender_pending_remote)),
+                         std::move(message_sender_pending_remote),
+                         std::move(file_payload_handler_pending_remote)),
           base::BindOnce(&NearbyConnectorImpl::OnDisconnected,
                          base::Unretained(this), new_broker_id));
 }
@@ -184,10 +193,13 @@ void NearbyConnectorImpl::RecordNearbyDisconnectionForActiveBrokers(
 void NearbyConnectorImpl::OnConnected(
     const base::UnguessableToken& id,
     mojo::PendingRemote<mojom::NearbyMessageSender>
-        message_sender_pending_remote) {
+        message_sender_pending_remote,
+    mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+        file_payload_handler_remote) {
   DCHECK_EQ(active_connection_attempt_->attempt_id, id);
   InvokeActiveConnectionAttemptCallback(
-      std::move(message_sender_pending_remote));
+      std::move(message_sender_pending_remote),
+      std::move(file_payload_handler_remote));
   active_connection_attempt_.reset();
   ProcessQueuedConnectionRequests();
 }
@@ -197,7 +209,8 @@ void NearbyConnectorImpl::OnDisconnected(const base::UnguessableToken& id) {
   // unbound PendingRemote.
   if (active_connection_attempt_ &&
       active_connection_attempt_->attempt_id == id) {
-    InvokeActiveConnectionAttemptCallback(mojo::NullRemote());
+    InvokeActiveConnectionAttemptCallback(mojo::NullRemote(),
+                                          mojo::NullRemote());
     active_connection_attempt_.reset();
   }
 
@@ -216,9 +229,12 @@ void NearbyConnectorImpl::OnDisconnected(const base::UnguessableToken& id) {
 
 void NearbyConnectorImpl::InvokeActiveConnectionAttemptCallback(
     mojo::PendingRemote<mojom::NearbyMessageSender>
-        message_sender_pending_remote) {
+        message_sender_pending_remote,
+    mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+        file_payload_handler_remote) {
   std::move(active_connection_attempt_->callback)
-      .Run(std::move(message_sender_pending_remote));
+      .Run(std::move(message_sender_pending_remote),
+           std::move(file_payload_handler_remote));
 }
 
 }  // namespace secure_channel
