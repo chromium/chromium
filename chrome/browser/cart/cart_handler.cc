@@ -71,7 +71,7 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     auto cart = chrome_cart::mojom::MerchantCart::New();
     cart->merchant = std::move(proto_pair.second.merchant());
 
-    if (cart_features::IsPartnerMerchant(
+    if (cart_features::IsRuleDiscountPartnerMerchant(
             GURL(proto_pair.second.merchant_cart_url()))) {
       cart->cart_url = CartService::AppendUTM(
           GURL(std::move(proto_pair.second.merchant_cart_url())),

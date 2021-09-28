@@ -7,6 +7,7 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
@@ -1309,10 +1310,17 @@ class CartServiceDiscountTest : public CartServiceTest {
   // Features need to be initialized before CartServiceTest::SetUp runs, in
   // order to avoid tsan data race error on FeatureList.
   CartServiceDiscountTest() {
-    features_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
-         {"partner-merchant-pattern", "(foo.com)"}});
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    base::FieldTrialParams cart_params, coupon_params;
+    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params["partner-merchant-pattern"] = "(foo.com)";
+    enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
+                                  cart_params);
+    coupon_params["coupon-partner-merchant-pattern"] = "(bar.com)";
+    enabled_features.emplace_back(commerce::kRetailCoupons, coupon_params);
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features*/ {});
   }
 
   void SetUp() override {
@@ -1381,7 +1389,7 @@ TEST_F(CartServiceDiscountTest, TestReadConsentFromPrefs) {
 
 // Tests discount consent doesn't show when there is no partner merchant cart.
 TEST_F(CartServiceDiscountTest, TestNoConsentWithoutPartnerCart) {
-  base::RunLoop run_loop[2];
+  base::RunLoop run_loop[3];
   for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
     service_->IncreaseWelcomeSurfaceCounter();
   }
@@ -1398,6 +1406,14 @@ TEST_F(CartServiceDiscountTest, TestNoConsentWithoutPartnerCart) {
       base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
                      base::Unretained(this), run_loop[1].QuitClosure(), false));
   run_loop[1].Run();
+
+  service_->AddCart(kMockMerchantB, absl::nullopt, kMockProtoB);
+  task_environment_.RunUntilIdle();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
 }
 
 // Tests updating whether rule-based discount is enabled in profile prefs.

@@ -192,7 +192,8 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
-      cart_features::IsPartnerMerchant(navigation_url) && product_id.empty()) {
+      cart_features::IsRuleDiscountPartnerMerchant(navigation_url) &&
+      product_id.empty()) {
     validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
@@ -220,7 +221,7 @@ void CommerceHintService::OnCartUpdated(
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
-      cart_features::IsPartnerMerchant(cart_url)) {
+      cart_features::IsRuleDiscountPartnerMerchant(cart_url)) {
     validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;

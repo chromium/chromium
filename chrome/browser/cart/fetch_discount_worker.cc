@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "chrome/browser/cart/cart_features.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/variations/variations.mojom.h"
