@@ -3170,7 +3170,7 @@
   {
     "name": "force-startup-signin-promo",
     "owners": [ "jlebel", "chrome-signin-team" ],
-    // This is required by test teams and dev teams to verify the startup
+    // This is required by test teams and dev teams to verify the startup
     // sign-in promo functionality.
     "expiry_milestone": -1
   },
