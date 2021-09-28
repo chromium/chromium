@@ -313,8 +313,13 @@ bool NGInlineCursorPosition::IsPartOfCulledInlineBox(
   DCHECK(*this);
   const LayoutObject* const layout_object = GetLayoutObject();
   // We use |IsInline()| to exclude floating and out-of-flow objects.
-  if (!layout_object || !layout_object->IsInline() ||
-      layout_object->IsAtomicInlineLevel())
+  if (!layout_object || layout_object->IsAtomicInlineLevel())
+    return false;
+  // When |Current()| is block-in-inline, e.g. <span><div>foo</div></span>, it
+  // should be part of culled inline box[1].
+  // [1]
+  // external/wpt/shadow-dom/DocumentOrShadowRoot-prototype-elementFromPoint.html
+  if (!layout_object->IsInline() && !layout_object->IsBlockInInline())
     return false;
   DCHECK(!layout_object->IsFloatingOrOutOfFlowPositioned());
   DCHECK(!BoxFragment() || !BoxFragment()->IsFormattingContextRoot());
