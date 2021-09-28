@@ -71,6 +71,16 @@ void FakeAppListModelUpdater::SetItemFolderId(const std::string& id,
     observer.OnAppListItemUpdated(item);
 }
 
+void FakeAppListModelUpdater::SetItemPosition(
+    const std::string& id,
+    const syncer::StringOrdinal& new_position) {
+  ChromeAppListItem* item = FindItem(id);
+  if (!item)
+    return;
+
+  ChromeAppListItem::TestApi(item).SetPosition(new_position);
+}
+
 void FakeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_engine_is_google_ = is_google;
 }
@@ -208,7 +218,7 @@ void FakeAppListModelUpdater::UpdateAppItemFromSyncItem(
       (!chrome_item->position().IsValid() ||
        !chrome_item->position().Equals(sync_item->item_ordinal))) {
     // This updates the position in both chrome and ash:
-    chrome_item->SetPosition(sync_item->item_ordinal);
+    SetItemPosition(chrome_item->id(), sync_item->item_ordinal);
   }
   // Only update the item name if it is a Folder or the name is empty.
   if (update_name && sync_item->item_name != chrome_item->name() &&

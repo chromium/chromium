@@ -268,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ChromeAppListItem* app_list_item =
         app_list_model_updater->FindItem(kExtensionId);
-    app_list_item->SetPosition(syncer::StringOrdinal("testapplistposition"));
+    ChromeAppListItem::TestApi(app_list_item)
+        .SetPosition(syncer::StringOrdinal("testapplistposition"));
     app_list_model_updater->OnItemUpdated(app_list_item->CloneMetadata());
     app_list_syncable_service->SetPinPosition(
         kExtensionId, syncer::StringOrdinal("testpinposition"));
@@ -402,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ChromeAppListItem* app_list_item =
         app_list_model_updater->FindItem(kExtensionId);
-    app_list_item->SetPosition(syncer::StringOrdinal("testapplistposition"));
+    ChromeAppListItem::TestApi(app_list_item)
+        .SetPosition(syncer::StringOrdinal("testapplistposition"));
     app_list_model_updater->OnItemUpdated(app_list_item->CloneMetadata());
     app_list_syncable_service->SetPinPosition(
         kExtensionId, syncer::StringOrdinal("testpinposition"));

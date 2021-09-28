@@ -56,7 +56,9 @@ class AppServiceAppModelBuilder::CrostiniFolderObserver
 
     if (!parent_->GetSyncItem(ash::kCrostiniFolderId,
                               sync_pb::AppListSpecifics::TYPE_FOLDER)) {
-      item->SetDefaultPositionIfApplicable(parent_->model_updater());
+      item->model_updater()->SetItemPosition(
+          item->id(),
+          item->CalculateDefaultPositionIfApplicable(parent_->model_updater()));
     }
 
     // Reset the folder name whether it's in the sync service or not

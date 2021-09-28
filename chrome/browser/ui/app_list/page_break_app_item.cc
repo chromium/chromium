@@ -18,12 +18,12 @@ PageBreakAppItem::PageBreakAppItem(
   if (sync_item) {
     DCHECK_EQ(sync_item->item_type, sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
     if (sync_item->item_ordinal.IsValid()) {
-      UpdateFromSync(sync_item);
+      InitFromSync(sync_item);
       return;
     }
   }
 
-  SetDefaultPositionIfApplicable(model_updater);
+  SetPosition(CalculateDefaultPositionIfApplicable(model_updater));
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);

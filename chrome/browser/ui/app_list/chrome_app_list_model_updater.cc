@@ -248,9 +248,13 @@ void ChromeAppListModelUpdater::SetItemPosition(
   ChromeAppListItem* item = FindItem(id);
   if (!item)
     return;
-  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
-  data->position = new_position;
-  app_list_controller_->SetItemMetadata(id, std::move(data));
+
+  DCHECK(new_position.IsValid());
+  if (item->position().IsValid() && item->position().Equals(new_position))
+    return;
+
+  item->SetPosition(new_position);
+  app_list_controller_->SetItemMetadata(id, item->CloneMetadata());
 }
 
 void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
@@ -466,7 +470,7 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
       (!chrome_item->position().IsValid() ||
        !chrome_item->position().Equals(sync_item->item_ordinal))) {
     // This updates the position in both chrome and ash:
-    chrome_item->SetPosition(sync_item->item_ordinal);
+    SetItemPosition(chrome_item->id(), sync_item->item_ordinal);
   }
   // Only update the item name if it is a Folder or the name is empty.
   if (update_name && sync_item->item_name != chrome_item->name() &&

@@ -41,6 +41,7 @@
 
 using crx_file::id_util::GenerateId;
 using testing::ElementsAre;
+using ItemTestApi = ChromeAppListItem::TestApi;
 
 namespace {
 
@@ -974,11 +975,11 @@ TEST_F(AppListSyncableServiceTest, AddPageBreakItems) {
   std::unique_ptr<ChromeAppListItem> page_break_item3 =
       std::make_unique<ChromeAppListItem>(profile_.get(), kPageBreakItemId3,
                                           model_updater());
-  page_break_item1->SetPosition(syncer::StringOrdinal("bm"));
+  ItemTestApi(page_break_item1.get()).SetPosition(syncer::StringOrdinal("bm"));
   page_break_item1->SetIsPageBreak(true);
-  page_break_item2->SetPosition(syncer::StringOrdinal("cm"));
+  ItemTestApi(page_break_item2.get()).SetPosition(syncer::StringOrdinal("cm"));
   page_break_item2->SetIsPageBreak(true);
-  page_break_item3->SetPosition(syncer::StringOrdinal("dm"));
+  ItemTestApi(page_break_item3.get()).SetPosition(syncer::StringOrdinal("dm"));
   page_break_item3->SetIsPageBreak(true);
   app_list_syncable_service()->AddItem(std::move(page_break_item1));
   app_list_syncable_service()->AddItem(std::move(page_break_item2));
@@ -1263,7 +1264,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
         std::make_unique<ChromeAppListItem>(
             profile_.get(), GenerateId("item_id" + base::NumberToString(i)),
             model_updater());
-    item->SetPosition(last_app_position);
+    ItemTestApi(item.get()).SetPosition(last_app_position);
     model_updater()->AddItem(std::move(item));
     if (i < max_items_in_first_page - 2)
       last_app_position = last_app_position.CreateAfter();
@@ -1277,7 +1278,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
           profile_.get(), GenerateId("page_break_item_id"), model_updater());
   const syncer::StringOrdinal page_break_position =
       last_app_position.CreateAfter();
-  page_break_item->SetPosition(page_break_position);
+  ItemTestApi(page_break_item.get()).SetPosition(page_break_position);
   page_break_item->SetIsPageBreak(true);
   model_updater()->AddItem((std::move(page_break_item)));
   EXPECT_TRUE(last_app_position.CreateBetween(page_break_position)
@@ -1289,7 +1290,8 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
           profile_.get(),
           GenerateId("item_id" + base::NumberToString(max_items_in_first_page)),
           model_updater());
-  app_item->SetPosition(last_app_position.CreateBetween(page_break_position));
+  ItemTestApi(app_item.get())
+      .SetPosition(last_app_position.CreateBetween(page_break_position));
   model_updater()->AddItem(std::move(app_item));
   EXPECT_TRUE(page_break_position.CreateAfter().Equals(
       model_updater()->GetFirstAvailablePosition()));
@@ -1311,7 +1313,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePositionNotExist) {
         std::make_unique<ChromeAppListItem>(
             profile_.get(), GenerateId("item_id" + base::NumberToString(i)),
             model_updater());
-    item->SetPosition(last_app_position);
+    ItemTestApi(item.get()).SetPosition(last_app_position);
     model_updater()->AddItem(std::move(item));
     if (i < max_items_in_first_page - 2)
       last_app_position = last_app_position.CreateAfter();
@@ -1322,7 +1324,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePositionNotExist) {
   std::unique_ptr<ChromeAppListItem> page_break_item =
       std::make_unique<ChromeAppListItem>(
           profile_.get(), GenerateId("page_break_item_id"), model_updater());
-  page_break_item->SetPosition(last_app_position);
+  ItemTestApi(page_break_item.get()).SetPosition(last_app_position);
   page_break_item->SetIsPageBreak(true);
   model_updater()->AddItem((std::move(page_break_item)));
   EXPECT_TRUE(last_app_position.CreateAfter().Equals(

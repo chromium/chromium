@@ -123,7 +123,7 @@ AppListControllerDelegate* ChromeAppListItem::GetController() {
                                           : AppListClientImpl::GetInstance();
 }
 
-void ChromeAppListItem::UpdateFromSync(
+void ChromeAppListItem::InitFromSync(
     const app_list::AppListSyncableService::SyncItem* sync_item) {
   DCHECK(sync_item && sync_item->item_ordinal.IsValid());
   // An existing synced position exists, use that.
@@ -133,7 +133,7 @@ void ChromeAppListItem::UpdateFromSync(
     SetName(sync_item->item_name);
 }
 
-void ChromeAppListItem::SetDefaultPositionIfApplicable(
+syncer::StringOrdinal ChromeAppListItem::CalculateDefaultPositionIfApplicable(
     AppListModelUpdater* model_updater) {
   syncer::StringOrdinal page_ordinal;
   syncer::StringOrdinal launch_ordinal;
@@ -141,23 +141,21 @@ void ChromeAppListItem::SetDefaultPositionIfApplicable(
   if (app_sorting->GetDefaultOrdinals(id(), &page_ordinal, &launch_ordinal) &&
       page_ordinal.IsValid() && launch_ordinal.IsValid()) {
     // Set the default position if it exists.
-    SetPosition(syncer::StringOrdinal(page_ordinal.ToInternalValue() +
-                                      launch_ordinal.ToInternalValue()));
-    return;
+    return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
+                                 launch_ordinal.ToInternalValue());
   }
 
   if (model_updater) {
     // Set the first available position in the app list.
-    SetPosition(model_updater->GetFirstAvailablePosition());
-    return;
+    return model_updater->GetFirstAvailablePosition();
   }
 
   // Set the natural position.
   app_sorting->EnsureValidOrdinals(id(), syncer::StringOrdinal());
   page_ordinal = app_sorting->GetPageOrdinal(id());
   launch_ordinal = app_sorting->GetAppLaunchOrdinal(id());
-  SetPosition(syncer::StringOrdinal(page_ordinal.ToInternalValue() +
-                                    launch_ordinal.ToInternalValue()));
+  return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
+                               launch_ordinal.ToInternalValue());
 }
 
 void ChromeAppListItem::LoadIcon() {
@@ -214,9 +212,6 @@ void ChromeAppListItem::SetFolderId(const std::string& folder_id) {
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {
   metadata_->position = position;
-  AppListModelUpdater* updater = model_updater();
-  if (updater)
-    updater->SetItemPosition(id(), position);
 }
 
 void ChromeAppListItem::SetIsPersistent(bool is_persistent) {

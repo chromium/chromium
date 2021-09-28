@@ -328,11 +328,11 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
       item->SetName(folder_info.name);
       item->SetIsPersistent(true);
 
-      if (folder_info.add_to_front) {
-        item->SetPosition(model_updater_->GetPositionBeforeFirstItem());
-      } else {
-        item->SetPosition(model_updater_->GetFirstAvailablePosition());
-      }
+      syncer::StringOrdinal item_position =
+          folder_info.add_to_front
+              ? model_updater_->GetPositionBeforeFirstItem()
+              : model_updater_->GetFirstAvailablePosition();
+      model_updater_->SetItemPosition(item->id(), item_position);
     }
   }
 

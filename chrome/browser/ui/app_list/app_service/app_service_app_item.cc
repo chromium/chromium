@@ -38,18 +38,17 @@ AppServiceAppItem::AppServiceAppItem(
       is_platform_app_(false) {
   OnAppUpdate(app_update, true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
-    UpdateFromSync(sync_item);
-  } else if (app_type_ == apps::mojom::AppType::kRemote) {
-    ash::RemoteAppsManager* remote_apps_manager =
-        ash::RemoteAppsManagerFactory::GetForProfile(profile);
-
-    if (remote_apps_manager->ShouldAddToFront(app_update.AppId())) {
-      SetPosition(model_updater->GetPositionBeforeFirstItem());
-    } else {
-      SetDefaultPositionIfApplicable(model_updater);
-    }
+    InitFromSync(sync_item);
   } else {
-    SetDefaultPositionIfApplicable(model_updater);
+    syncer::StringOrdinal default_position;
+    if (app_type_ == apps::mojom::AppType::kRemote &&
+        ash::RemoteAppsManagerFactory::GetForProfile(profile)->ShouldAddToFront(
+            app_update.AppId())) {
+      default_position = model_updater->GetPositionBeforeFirstItem();
+    } else {
+      default_position = CalculateDefaultPositionIfApplicable(model_updater);
+    }
+    SetPosition(default_position);
 
     // Crostini apps and the Terminal System App start in the crostini folder.
     if (app_type_ == apps::mojom::AppType::kCrostini ||
