@@ -110,6 +110,28 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM, false);
 
+    private static final String BEHAVIOURAL_TARGETING_PARAM = "behavioural_targeting";
+    public static final StringCachedFieldTrialParameter BEHAVIOURAL_TARGETING =
+            new StringCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, BEHAVIOURAL_TARGETING_PARAM, "");
+
+    private static final String USER_CLICK_THRESHOLD_PARAM = "user_clicks_threshold";
+    public static final IntCachedFieldTrialParameter USER_CLICK_THRESHOLD =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    USER_CLICK_THRESHOLD_PARAM, Integer.MAX_VALUE);
+
+    private static final String NUM_DAYS_KEEP_SHOW_START_AT_STARTUP_PARAM =
+            "num_days_keep_show_start_at_startup";
+    public static final IntCachedFieldTrialParameter NUM_DAYS_KEEP_SHOW_START_AT_STARTUP =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    NUM_DAYS_KEEP_SHOW_START_AT_STARTUP_PARAM, 7);
+
+    private static final String NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM =
+            "num_days_user_click_below_threshold";
+    public static final IntCachedFieldTrialParameter NUM_DAYS_USER_CLICK_BELOW_THRESHOLD =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM, 7);
+
     private static final String SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUND_LIMIT_MS_PARAM =
             "sign_in_promo_show_since_last_background_limit_ms";
     public static final IntCachedFieldTrialParameter

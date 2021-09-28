@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
@@ -227,6 +228,7 @@ public class FeedStream implements Stream {
                 NavigationRecorder.record(tab,
                         visitData -> FeedServiceBridge.reportOpenVisitComplete(visitData.duration));
             }
+            ReturnToChromeExperimentsUtil.onFeedCardOpened();
         }
     }
 
