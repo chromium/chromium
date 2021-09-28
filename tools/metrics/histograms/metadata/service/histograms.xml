@@ -823,6 +823,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.Runtime" units="ms" expires_after="2020-07-30">
+  <obsolete>
+    Expired in July 2020. Removed in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1211,6 +1214,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.StopWorker.Time" units="ms"
     expires_after="2020-07-30">
+  <obsolete>
+    Expired in July 2020. Removed from the code in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>The time taken to stop a Service Worker.</summary>

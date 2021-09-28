@@ -1256,9 +1256,6 @@ void ServiceWorkerVersion::OnStopping() {
 }
 
 void ServiceWorkerVersion::OnStopped(EmbeddedWorkerStatus old_status) {
-  if (!stop_time_.is_null())
-    ServiceWorkerMetrics::RecordStopWorkerTime(GetTickDuration(stop_time_));
-
   OnStoppedInternal(old_status);
 }
 

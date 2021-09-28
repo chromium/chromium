@@ -160,29 +160,6 @@ class EmbeddedWorkerInstance::DevToolsProxy {
   bool worker_stop_ignored_notified_ = false;
 };
 
-// Tracks how long a service worker runs for, for UMA purposes.
-class EmbeddedWorkerInstance::ScopedLifetimeTracker {
- public:
-  ScopedLifetimeTracker() : start_ticks_(base::TimeTicks::Now()) {}
-
-  ScopedLifetimeTracker(const ScopedLifetimeTracker&) = delete;
-  ScopedLifetimeTracker& operator=(const ScopedLifetimeTracker&) = delete;
-
-  ~ScopedLifetimeTracker() {
-    if (!start_ticks_.is_null()) {
-      ServiceWorkerMetrics::RecordRuntime(base::TimeTicks::Now() -
-                                          start_ticks_);
-    }
-  }
-
-  // Called when DevTools was attached to the worker. Ensures no metric is
-  // recorded for this worker.
-  void Abort() { start_ticks_ = base::TimeTicks(); }
-
- private:
-  base::TimeTicks start_ticks_;
-};
-
 // A handle for a renderer process managed by ServiceWorkerProcessManager.
 //
 // TODO(https://crbug.com/1138155): Remove this as a clean up of
@@ -669,9 +646,6 @@ void EmbeddedWorkerInstance::OnStarted(
     return;
   }
 
-  if (!devtools_attached_)
-    lifetime_tracker_ = std::make_unique<ScopedLifetimeTracker>();
-
   // Stop was requested before OnStarted was sent back from the worker. Just
   // pretend startup didn't happen, so observers don't try to use the running
   // worker as it will stop soon.
@@ -997,14 +971,6 @@ void EmbeddedWorkerInstance::SetDevToolsAttached(bool attached) {
     return;
   if (inflight_start_info_)
     inflight_start_info_->skip_recording_startup_time = true;
-  AbortLifetimeTracking();
-}
-
-void EmbeddedWorkerInstance::AbortLifetimeTracking() {
-  if (lifetime_tracker_) {
-    lifetime_tracker_->Abort();
-    lifetime_tracker_.reset();
-  }
 }
 
 void EmbeddedWorkerInstance::OnNetworkAccessedForScriptLoad() {
@@ -1021,7 +987,6 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   instance_host_receiver_.reset();
   devtools_proxy_.reset();
   process_handle_.reset();
-  lifetime_tracker_.reset();
   subresource_loader_updater_.reset();
   coep_reporter_.reset();
   status_ = EmbeddedWorkerStatus::STOPPED;

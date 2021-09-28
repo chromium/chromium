@@ -164,9 +164,6 @@ class ServiceWorkerMetrics {
                                     StartSituation start_situation,
                                     EventType purpose);
 
-  // Records the time taken to successfully stop a worker.
-  static void RecordStopWorkerTime(base::TimeDelta time);
-
   static void RecordActivateEventStatus(blink::ServiceWorkerStatusCode status,
                                         bool is_shutdown);
   static void RecordInstallEventStatus(blink::ServiceWorkerStatusCode status,
@@ -196,8 +193,6 @@ class ServiceWorkerMetrics {
   // Records the size of Service-Worker-Navigation-Preload header when the
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);
-
-  static void RecordRuntime(base::TimeDelta time);
 
   // Records the reason a service worker was deemed to be offline capable. The
   // reason may be that the service worker responded with 2xx..., 3xx..., or the
