@@ -12548,6 +12548,74 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="LensSidePanel.CloseButtonClick">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    Close button was clicked on the Lens side panel. Also records the
+    LensSidePanel.Hide action.
+  </description>
+</action>
+
+<action name="LensSidePanel.Hide">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>The Lens side panel went from showing to hidden.</description>
+</action>
+
+<action name="LensSidePanel.HideChromeSidePanel">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    The Lens side panel clobbered the Chrome side panel (Reading
+    List/Bookmarks).
+  </description>
+</action>
+
+<action name="LensSidePanel.LensQueryWhileShowing">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    The user issued a Lens query while the Lens side panel was open.
+  </description>
+</action>
+
+<action name="LensSidePanel.LoadResultsInNewTab">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    The Lens side panel button to expand results to new tab was clicked.
+  </description>
+</action>
+
+<action name="LensSidePanel.ResultLinkClick">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    The user clicked a result link in the Lens side panel.
+  </description>
+</action>
+
+<action name="LensSidePanel.Show">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>The Lens side panel went from hidden to showing.</description>
+</action>
+
 <action name="LinkNavigationOpenedInForegroundTab">
   <owner>meiliang@chromium.org</owner>
   <owner>sbirch@chromium.org</owner>
