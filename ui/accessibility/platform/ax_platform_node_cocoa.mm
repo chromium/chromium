@@ -833,7 +833,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXPlaceholderValue {
-  return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
+  return [self accessibilityPlaceholderValue];
 }
 
 - (NSString*)AXMenuItemMarkChar {
@@ -1128,10 +1128,13 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)accessibilityPlaceholderValue {
-  if (!_node)
+  if (![self instanceActive])
     return nil;
 
-  return [self AXPlaceholderValue];
+  if (_node->GetNameFrom() == ax::mojom::NameFrom::kPlaceholder)
+    return base::SysUTF8ToNSString(_node->GetName());
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
 }
 
 - (NSString*)accessibilitySelectedText {

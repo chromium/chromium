@@ -207,6 +207,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
       FILE_PATH_LITERAL("ax-text-marker-range-for-ui-element.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPlaceholderValue) {
+  RunMacMethodsTest(FILE_PATH_LITERAL("placeholder-value.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
   RunMacMethodsTest(FILE_PATH_LITERAL("title.html"));
 }

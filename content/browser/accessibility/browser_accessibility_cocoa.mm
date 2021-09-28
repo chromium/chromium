@@ -864,7 +864,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityOrientationAttribute, @"orientation"},
       {NSAccessibilityOwnsAttribute, @"owns"},
       {NSAccessibilityParentAttribute, @"parent"},
-      {NSAccessibilityPlaceholderValueAttribute, @"placeholderValue"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRequiredAttributeChrome, @"required"},
       {NSAccessibilityRoleAttribute, @"role"},
@@ -1692,23 +1691,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
   return @(GetState(_owner, ax::mojom::State::kMultiselectable));
-}
-
-- (NSString*)AXPlaceholderValue {
-  return [self placeholderValue];
-}
-
-- (NSString*)placeholderValue {
-  if (![self instanceActive])
-    return nil;
-  ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
-      _owner->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  if (nameFrom == ax::mojom::NameFrom::kPlaceholder) {
-    return base::SysUTF8ToNSString(_owner->GetName());
-  }
-
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kPlaceholder);
 }
 
 - (NSString*)language {
@@ -2825,7 +2807,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (selector)
     return [self performSelector:selector];
 
-  return nil;
+  return [super accessibilityAttributeValue:attribute];
 }
 
 - (id)AXStringForRange:(id)parameter {
