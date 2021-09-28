@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/share/share_submenu_model.h"
+
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#include "chrome/browser/share/share_submenu_model.h"
 
 namespace share {
 namespace {
@@ -39,6 +40,34 @@ TEST(ShareSubmenuModelTest, CopyItemPresentForEmail) {
   ShareSubmenuModel model(nullptr, nullptr, ShareSubmenuModel::Context::LINK,
                           GURL("mailto:example@chromium.org"), u"");
   EXPECT_TRUE(HasItemWithName(model, IDS_CONTENT_CONTEXT_COPYEMAILADDRESS));
+}
+
+class ShareSubmenuModelMetricsTest : public ::testing::Test {
+ public:
+  ShareSubmenuModelMetricsTest() :
+      model_(nullptr, nullptr, ShareSubmenuModel::Context::PAGE,
+             GURL("https://www.chromium.org/"), u"") {}
+  ~ShareSubmenuModelMetricsTest() override = default;
+
+  ShareSubmenuModel* model() { return &model_; }
+
+  int GetActionCount(const std::string& name) const {
+    return action_tester_.GetActionCount(name);
+  }
+
+ private:
+  ShareSubmenuModel model_;
+  base::UserActionTester action_tester_;
+};
+
+TEST_F(ShareSubmenuModelMetricsTest, UserAction_AbandonLoggedTwice) {
+  EXPECT_EQ(0, GetActionCount("ShareSubmenu.Abandoned"));
+  model()->OnMenuWillShow(model());
+  model()->MenuClosed(model());
+  EXPECT_EQ(1, GetActionCount("ShareSubmenu.Abandoned"));
+  model()->OnMenuWillShow(model());
+  model()->MenuClosed(model());
+  EXPECT_EQ(2, GetActionCount("ShareSubmenu.Abandoned"));
 }
 
 }  // namespace

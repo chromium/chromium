@@ -87,21 +87,43 @@ ShareSubmenuModel::ShareSubmenuModel(
 ShareSubmenuModel::~ShareSubmenuModel() = default;
 
 void ShareSubmenuModel::ExecuteCommand(int id, int event_flags) {
+  any_option_selected_for_metrics_ = true;
   switch (id) {
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
+      base::RecordAction(
+          base::UserMetricsAction("ShareSubmenu.QRCodeSelected"));
       GenerateQRCode();
       break;
     case IDC_SEND_TAB_TO_SELF:
+      base::RecordAction(
+          base::UserMetricsAction("ShareSubmenu.SendTabToSelfSelected"));
       SendTabToSelf();
       break;
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
     case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
+      base::RecordAction(
+          base::UserMetricsAction("ShareSubmenu.CopyLinkSelected"));
       CopyLink();
       break;
     default:
+      base::RecordAction(
+          base::UserMetricsAction("ShareSubmenu.ThirdPartySelected"));
       ShareToThirdParty(id);
       break;
   }
+}
+
+void ShareSubmenuModel::OnMenuWillShow(SimpleMenuModel* source) {
+  menu_opened_for_metrics_ = true;
+}
+
+void ShareSubmenuModel::MenuClosed(SimpleMenuModel* source) {
+  if (menu_opened_for_metrics_ && !any_option_selected_for_metrics_)
+      base::RecordAction(base::UserMetricsAction("ShareSubmenu.Abandoned"));
+
+  // Reset the opened flag - it's possible for the same MenuModel to be opened &
+  // closed multiple times and we want to log each separate abandon or choice.
+  menu_opened_for_metrics_ = false;
 }
 
 void ShareSubmenuModel::AddGenerateQRCodeItem() {

@@ -23161,6 +23161,47 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ShareSubmenu.Abandoned">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    The share submenu was opened, but closed without choosing any of the
+    options.
+  </description>
+</action>
+
+<action name="ShareSubmenu.CopyLinkSelected">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    The &quot;copy link&quot; option was selected in the share submenu.
+  </description>
+</action>
+
+<action name="ShareSubmenu.QRCodeSelected">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    The &quot;generate QR code&quot; option was selected in the share submenu.
+  </description>
+</action>
+
+<action name="ShareSubmenu.SendTabToSelfSelected">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    The &quot;send tab to self&quot; option was selected in the share submenu.
+  </description>
+</action>
+
+<action name="ShareSubmenu.ThirdPartySelected">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    One of the third-party targets was selected in the share submenu.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.BottomRowScrolled">
   <obsolete>
     Renamed to SharingHubAndroid.ThirdPartyAppsScrolled 09/2020.

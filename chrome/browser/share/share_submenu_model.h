@@ -57,6 +57,8 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int id, int event_flags) override;
+  void OnMenuWillShow(SimpleMenuModel* source) override;
+  void MenuClosed(SimpleMenuModel* source) override;
 
  private:
   void AddGenerateQRCodeItem();
@@ -76,6 +78,9 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   Context context_;
   GURL url_;
   std::u16string text_;
+
+  bool menu_opened_for_metrics_ = false;
+  bool any_option_selected_for_metrics_ = false;
 };
 
 }  // namespace share
