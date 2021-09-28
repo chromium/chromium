@@ -106,7 +106,7 @@ class _BulkObjectFileAnalyzerWorker:
     obj_paths = []
     bc_paths = []
     for path in paths:
-      if path.endswith('.a'):
+      if path.endswith('.a') or path.endswith('.rlib'):
         # .a files are typically system libraries containing .o files that are
         # ELF files (and never BC files).
         arch_paths.append(path)
