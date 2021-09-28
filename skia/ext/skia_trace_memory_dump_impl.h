@@ -36,6 +36,9 @@ class SK_API SkiaTraceMemoryDumpImpl : public SkTraceMemoryDump {
       base::trace_event::MemoryDumpLevelOfDetail level_of_detail,
       base::trace_event::ProcessMemoryDump* process_memory_dump);
 
+  SkiaTraceMemoryDumpImpl(const SkiaTraceMemoryDumpImpl&) = delete;
+  SkiaTraceMemoryDumpImpl& operator=(const SkiaTraceMemoryDumpImpl&) = delete;
+
   ~SkiaTraceMemoryDumpImpl() override;
 
   // SkTraceMemoryDump implementation:
@@ -67,8 +70,6 @@ class SK_API SkiaTraceMemoryDumpImpl : public SkTraceMemoryDump {
 
   // Stores the level of detail for the current dump.
   LevelOfDetail request_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaTraceMemoryDumpImpl);
 };
 
 }  // namespace skia

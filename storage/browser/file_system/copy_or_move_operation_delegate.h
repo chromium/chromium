@@ -49,6 +49,10 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
         int buffer_size,
         FileSystemOperation::CopyFileProgressCallback file_progress_callback,
         const base::TimeDelta& min_progress_callback_invocation_span);
+
+    StreamCopyHelper(const StreamCopyHelper&) = delete;
+    StreamCopyHelper& operator=(const StreamCopyHelper&) = delete;
+
     ~StreamCopyHelper();
 
     void Run(StatusCallback callback);
@@ -82,7 +86,6 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
     base::TimeDelta min_progress_callback_invocation_span_;
     bool cancel_requested_;
     base::WeakPtrFactory<StreamCopyHelper> weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(StreamCopyHelper);
   };
 
   CopyOrMoveOperationDelegate(

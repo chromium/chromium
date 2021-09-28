@@ -125,6 +125,9 @@ class UsageTrackerTest : public testing::Test {
                        StorageType::kTemporary,
                        storage_policy_.get()) {}
 
+  UsageTrackerTest(const UsageTrackerTest&) = delete;
+  UsageTrackerTest& operator=(const UsageTrackerTest&) = delete;
+
   ~UsageTrackerTest() override = default;
 
   UsageTracker* usage_tracker() {
@@ -212,8 +215,6 @@ class UsageTrackerTest : public testing::Test {
   scoped_refptr<MockSpecialStoragePolicy> storage_policy_;
   std::unique_ptr<UsageTrackerTestQuotaClient> quota_client_;
   UsageTracker usage_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTrackerTest);
 };
 
 TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {

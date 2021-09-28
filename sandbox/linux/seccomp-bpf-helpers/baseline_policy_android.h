@@ -26,14 +26,15 @@ namespace sandbox {
 class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
  public:
   BaselinePolicyAndroid();
+
+  BaselinePolicyAndroid(const BaselinePolicyAndroid&) = delete;
+  BaselinePolicyAndroid& operator=(const BaselinePolicyAndroid&) = delete;
+
   ~BaselinePolicyAndroid() override;
 
   // sandbox::BaselinePolicy:
   sandbox::bpf_dsl::ResultExpr EvaluateSyscall(
       int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaselinePolicyAndroid);
 };
 
 }  // namespace sandbox

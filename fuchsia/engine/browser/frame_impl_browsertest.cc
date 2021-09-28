@@ -487,6 +487,11 @@ ChunkedHttpTransaction* ChunkedHttpTransaction::current_instance_ = nullptr;
 class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
  public:
   ChunkedHttpTransactionFactory() = default;
+
+  ChunkedHttpTransactionFactory(const ChunkedHttpTransactionFactory&) = delete;
+  ChunkedHttpTransactionFactory& operator=(
+      const ChunkedHttpTransactionFactory&) = delete;
+
   ~ChunkedHttpTransactionFactory() override = default;
 
   void SetOnResponseCreatedCallback(base::OnceClosure on_response_created) {
@@ -505,8 +510,6 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
 
  private:
   base::OnceClosure on_response_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedHttpTransactionFactory);
 };
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {

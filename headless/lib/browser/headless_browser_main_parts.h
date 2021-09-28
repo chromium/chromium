@@ -36,6 +36,10 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   explicit HeadlessBrowserMainParts(
       const content::MainFunctionParams& parameters,
       HeadlessBrowserImpl* browser);
+
+  HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
+  HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
+
   ~HeadlessBrowserMainParts() override;
 
   // content::BrowserMainParts implementation:
@@ -88,8 +92,6 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 #if defined(OS_MAC)
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserMainParts);
 };
 
 }  // namespace headless

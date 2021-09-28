@@ -71,6 +71,10 @@ class ExternalMountPoints::Instance {
       : type_(type),
         path_(path.StripTrailingSeparators()),
         mount_option_(mount_option) {}
+
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
+
   ~Instance() = default;
 
   FileSystemType type() const { return type_; }
@@ -81,8 +85,6 @@ class ExternalMountPoints::Instance {
   const FileSystemType type_;
   const base::FilePath path_;
   const FileSystemMountOption mount_option_;
-
-  DISALLOW_COPY_AND_ASSIGN(Instance);
 };
 
 //--------------------------------------------------------------------------

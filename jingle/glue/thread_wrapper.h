@@ -73,6 +73,9 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
       SampledDurationCallback task_latency_callback,
       SampledDurationCallback task_duration_callback);
 
+  JingleThreadWrapper(const JingleThreadWrapper&) = delete;
+  JingleThreadWrapper& operator=(const JingleThreadWrapper&) = delete;
+
   ~JingleThreadWrapper() override;
 
   // Sets whether the thread can be used to send messages
@@ -175,8 +178,6 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   base::WeakPtr<JingleThreadWrapper> weak_ptr_;
   base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JingleThreadWrapper);
 };
 
 }  // namespace jingle_glue

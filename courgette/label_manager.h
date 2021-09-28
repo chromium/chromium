@@ -50,6 +50,10 @@ class LabelManager {
   class SimpleIndexAssigner {
    public:
     explicit SimpleIndexAssigner(LabelVector* labels);
+
+    SimpleIndexAssigner(const SimpleIndexAssigner&) = delete;
+    SimpleIndexAssigner& operator=(const SimpleIndexAssigner&) = delete;
+
     ~SimpleIndexAssigner();
 
     // Scans forward to assign successive indexes to Labels, using existing
@@ -73,8 +77,6 @@ class LabelManager {
 
     // Tracker for index usage to ensure uniqueness of indexes.
     std::vector<bool> available_;
-
-    DISALLOW_COPY_AND_ASSIGN(SimpleIndexAssigner);
   };
 
   LabelManager();

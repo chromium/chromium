@@ -34,6 +34,10 @@ class TestFileSystemBackend : public FileSystemBackend {
  public:
   TestFileSystemBackend(base::SequencedTaskRunner* task_runner,
                         const base::FilePath& base_path);
+
+  TestFileSystemBackend(const TestFileSystemBackend&) = delete;
+  TestFileSystemBackend& operator=(const TestFileSystemBackend&) = delete;
+
   ~TestFileSystemBackend() override;
 
   // FileSystemBackend implementation.
@@ -98,8 +102,6 @@ class TestFileSystemBackend : public FileSystemBackend {
   bool require_copy_or_move_validator_;
   std::unique_ptr<CopyOrMoveFileValidatorFactory>
       copy_or_move_file_validator_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileSystemBackend);
 };
 
 }  // namespace storage

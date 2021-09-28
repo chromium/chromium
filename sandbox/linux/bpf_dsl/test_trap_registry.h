@@ -19,6 +19,10 @@ namespace bpf_dsl {
 class TestTrapRegistry : public TrapRegistry {
  public:
   TestTrapRegistry();
+
+  TestTrapRegistry(const TestTrapRegistry&) = delete;
+  TestTrapRegistry& operator=(const TestTrapRegistry&) = delete;
+
   virtual ~TestTrapRegistry();
 
   uint16_t Add(TrapFnc fnc, const void* aux, bool safe) override;
@@ -28,8 +32,6 @@ class TestTrapRegistry : public TrapRegistry {
   using Key = std::pair<TrapFnc, const void*>;
 
   std::map<Key, uint16_t> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrapRegistry);
 };
 
 }  // namespace bpf_dsl

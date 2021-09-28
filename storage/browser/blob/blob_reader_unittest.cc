@@ -86,6 +86,9 @@ class FakeFileStreamReader : public FileStreamReader {
         net_error_(net::OK),
         size_(size) {}
 
+  FakeFileStreamReader(const FakeFileStreamReader&) = delete;
+  FakeFileStreamReader& operator=(const FakeFileStreamReader&) = delete;
+
   ~FakeFileStreamReader() override = default;
 
   void SetReturnError(int net_error) { net_error_ = net_error; }
@@ -160,8 +163,6 @@ class FakeFileStreamReader : public FileStreamReader {
   scoped_refptr<base::SingleThreadTaskRunner> async_task_runner_;
   int net_error_;
   uint64_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileStreamReader);
 };
 
 class MockFileStreamReaderProvider
@@ -205,6 +206,10 @@ class MockFileStreamReaderProvider
 class BlobReaderTest : public ::testing::Test {
  public:
   BlobReaderTest() = default;
+
+  BlobReaderTest(const BlobReaderTest&) = delete;
+  BlobReaderTest& operator=(const BlobReaderTest&) = delete;
+
   ~BlobReaderTest() override = default;
 
   void SetUp() override {
@@ -287,9 +292,6 @@ class BlobReaderTest : public ::testing::Test {
   MockFileStreamReaderProvider* provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobReaderTest);
 };
 
 TEST_F(BlobReaderTest, BasicMemory) {

@@ -15,6 +15,10 @@ class RemoveOperationDelegate : public RecursiveOperationDelegate {
   RemoveOperationDelegate(FileSystemContext* file_system_context,
                           const FileSystemURL& url,
                           StatusCallback callback);
+
+  RemoveOperationDelegate(const RemoveOperationDelegate&) = delete;
+  RemoveOperationDelegate& operator=(const RemoveOperationDelegate&) = delete;
+
   ~RemoveOperationDelegate() override;
 
   // RecursiveOperationDelegate overrides:
@@ -38,7 +42,6 @@ class RemoveOperationDelegate : public RecursiveOperationDelegate {
   FileSystemURL url_;
   StatusCallback callback_;
   base::WeakPtrFactory<RemoveOperationDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RemoveOperationDelegate);
 };
 
 }  // namespace storage

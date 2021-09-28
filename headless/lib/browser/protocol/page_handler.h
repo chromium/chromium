@@ -27,6 +27,10 @@ class PageHandler : public DomainHandler, public Page::Backend {
  public:
   PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
               content::WebContents* web_contents);
+
+  PageHandler(const PageHandler&) = delete;
+  PageHandler& operator=(const PageHandler&) = delete;
+
   ~PageHandler() override;
 
   // DomainHandler implementation
@@ -64,8 +68,6 @@ class PageHandler : public DomainHandler, public Page::Backend {
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
 
 }  // namespace protocol

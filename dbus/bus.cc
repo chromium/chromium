@@ -52,6 +52,9 @@ class Watch {
     dbus_watch_set_data(raw_watch_, this, nullptr);
   }
 
+  Watch(const Watch&) = delete;
+  Watch& operator=(const Watch&) = delete;
+
   ~Watch() { dbus_watch_set_data(raw_watch_, nullptr, nullptr); }
 
   // Returns true if the underlying file descriptor is ready to be watched.
@@ -94,8 +97,6 @@ class Watch {
   DBusWatch* raw_watch_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> read_watcher_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> write_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Watch);
 };
 
 // The class is used for monitoring the timeout used for D-Bus method
@@ -106,6 +107,9 @@ class Timeout {
     // Associated |this| with the underlying DBusTimeout.
     dbus_timeout_set_data(raw_timeout_, this, nullptr);
   }
+
+  Timeout(const Timeout&) = delete;
+  Timeout& operator=(const Timeout&) = delete;
 
   ~Timeout() {
     // Remove the association between |this| and the |raw_timeout_|.
@@ -140,8 +144,6 @@ class Timeout {
   DBusTimeout* raw_timeout_;
 
   base::WeakPtrFactory<Timeout> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Timeout);
 };
 
 }  // namespace

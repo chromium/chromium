@@ -32,6 +32,10 @@ struct FakeVarData {
 class FakeVarManager {
  public:
   FakeVarManager();
+
+  FakeVarManager(const FakeVarManager&) = delete;
+  FakeVarManager& operator=(const FakeVarManager&) = delete;
+
   ~FakeVarManager();
 
   void AddRef(PP_Var var);
@@ -53,7 +57,6 @@ class FakeVarManager {
   VarMap var_map_;
 
   sdk_util::SimpleLock lock_;
-  DISALLOW_COPY_AND_ASSIGN(FakeVarManager);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_MANAGER_H_

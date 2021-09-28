@@ -53,6 +53,9 @@ class DeviceListener {
       int port,
       ErrorCallback error_callback);
 
+  DeviceListener(const DeviceListener&) = delete;
+  DeviceListener& operator=(const DeviceListener&) = delete;
+
   ~DeviceListener();
 
   void Start();
@@ -99,8 +102,6 @@ class DeviceListener {
   scoped_refptr<base::SingleThreadTaskRunner> deletion_task_runner_;
   base::Thread thread_;
   ForwardersManager forwarders_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListener);
 };
 
 }  // namespace forwarder

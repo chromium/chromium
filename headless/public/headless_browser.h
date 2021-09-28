@@ -229,6 +229,10 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
  public:
   Builder(int argc, const char** argv);
   Builder();
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder();
 
   // Browser-wide settings.
@@ -270,8 +274,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
  private:
   Options options_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 #if !defined(OS_WIN)

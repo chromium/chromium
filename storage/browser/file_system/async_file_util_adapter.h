@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
   explicit AsyncFileUtilAdapter(
       std::unique_ptr<FileSystemFileUtil> sync_file_util);
 
+  AsyncFileUtilAdapter(const AsyncFileUtilAdapter&) = delete;
+  AsyncFileUtilAdapter& operator=(const AsyncFileUtilAdapter&) = delete;
+
   ~AsyncFileUtilAdapter() override;
 
   FileSystemFileUtil* sync_file_util() { return sync_file_util_.get(); }
@@ -97,8 +100,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
 
  private:
   std::unique_ptr<FileSystemFileUtil> sync_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncFileUtilAdapter);
 };
 
 }  // namespace storage

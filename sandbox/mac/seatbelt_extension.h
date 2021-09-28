@@ -35,6 +35,9 @@ class SEATBELT_EXPORT SeatbeltExtension {
     // TODO(rsesek): Potentially support MACH and GENERIC extension types.
   };
 
+  SeatbeltExtension(const SeatbeltExtension&) = delete;
+  SeatbeltExtension& operator=(const SeatbeltExtension&) = delete;
+
   // Before an extension is destroyed, it must be consumed or explicitly
   // revoked.
   ~SeatbeltExtension();
@@ -82,8 +85,6 @@ class SEATBELT_EXPORT SeatbeltExtension {
 
   // An opaque reference to a consumed extension, 0 if revoked or not consumed.
   int64_t handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeatbeltExtension);
 };
 
 }  // namespace sandbox

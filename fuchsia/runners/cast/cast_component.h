@@ -75,6 +75,10 @@ class CastComponent final : public WebComponent,
                 WebContentRunner* runner,
                 Params params,
                 bool is_headless);
+
+  CastComponent(const CastComponent&) = delete;
+  CastComponent& operator=(const CastComponent&) = delete;
+
   ~CastComponent() override;
 
   void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
@@ -136,8 +140,6 @@ class CastComponent final : public WebComponent,
   uint64_t media_session_id_ = 0;
   zx::eventpair headless_view_token_;
   base::MessagePumpForIO::ZxHandleWatchController headless_disconnect_watch_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastComponent);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_COMPONENT_H_

@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
                     mojo::PendingAssociatedReceiver<mojom::Channel> receiver,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     Delegate* delegate);
+
+  MessagePipeReader(const MessagePipeReader&) = delete;
+  MessagePipeReader& operator=(const MessagePipeReader&) = delete;
+
   ~MessagePipeReader() override;
 
   void FinishInitializationOnIOThread(base::ProcessId self_pid);
@@ -115,8 +119,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   mojo::AssociatedReceiver<mojom::Channel> receiver_;
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<MessagePipeReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeReader);
 };
 
 }  // namespace internal

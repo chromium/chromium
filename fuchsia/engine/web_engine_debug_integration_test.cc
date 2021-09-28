@@ -34,6 +34,10 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   WebEngineDebugIntegrationTest()
       : dev_tools_listener_binding_(&dev_tools_listener_) {}
 
+  WebEngineDebugIntegrationTest(const WebEngineDebugIntegrationTest&) = delete;
+  WebEngineDebugIntegrationTest& operator=(
+      const WebEngineDebugIntegrationTest&) = delete;
+
   ~WebEngineDebugIntegrationTest() override = default;
 
   void SetUp() override {
@@ -113,8 +117,6 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   base::OnceClosure on_url_fetch_complete_ack_;
 
   net::EmbeddedTestServer test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineDebugIntegrationTest);
 };
 
 enum class UserModeDebugging { kEnabled = 0, kDisabled = 1 };

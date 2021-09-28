@@ -27,6 +27,10 @@ class Disassembler : public AddressTranslator {
    public:
     RvaVisitor_Abs32(const std::vector<RVA>& rva_locations,
                      const AddressTranslator& translator);
+
+    RvaVisitor_Abs32(const RvaVisitor_Abs32&) = delete;
+    RvaVisitor_Abs32& operator=(const RvaVisitor_Abs32&) = delete;
+
     ~RvaVisitor_Abs32() override { }
 
     // VectorRvaVisitor<RVA> interfaces.
@@ -34,8 +38,6 @@ class Disassembler : public AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-
-    DISALLOW_COPY_AND_ASSIGN(RvaVisitor_Abs32);
   };
 
   // Visitor/adaptor to translate RVA to target RVA for rel32.
@@ -43,6 +45,10 @@ class Disassembler : public AddressTranslator {
    public:
     RvaVisitor_Rel32(const std::vector<RVA>& rva_locations,
                      const AddressTranslator& translator);
+
+    RvaVisitor_Rel32(const RvaVisitor_Rel32&) = delete;
+    RvaVisitor_Rel32& operator=(const RvaVisitor_Rel32&) = delete;
+
     ~RvaVisitor_Rel32() override { }
 
     // VectorRvaVisitor<RVA> interfaces.
@@ -50,8 +56,6 @@ class Disassembler : public AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-
-    DISALLOW_COPY_AND_ASSIGN(RvaVisitor_Rel32);
   };
 
   virtual ~Disassembler();

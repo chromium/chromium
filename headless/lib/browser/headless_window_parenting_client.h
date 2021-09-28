@@ -14,6 +14,11 @@ class HeadlessWindowParentingClient
     : public aura::client::WindowParentingClient {
  public:
   explicit HeadlessWindowParentingClient(aura::Window* root_window);
+
+  HeadlessWindowParentingClient(const HeadlessWindowParentingClient&) = delete;
+  HeadlessWindowParentingClient& operator=(
+      const HeadlessWindowParentingClient&) = delete;
+
   ~HeadlessWindowParentingClient() override;
 
   aura::Window* GetDefaultParent(aura::Window* window,
@@ -21,8 +26,6 @@ class HeadlessWindowParentingClient
 
  private:
   aura::Window* root_window_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWindowParentingClient);
 };
 
 }  // namespace headless

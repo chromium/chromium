@@ -78,6 +78,9 @@ class Worker : public Listener, public Sender {
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
         is_shutdown_(false) {}
 
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
+
   ~Worker() override {
     // Shutdown() must be called before destruction.
     CHECK(is_shutdown_);
@@ -252,8 +255,6 @@ class Worker : public Listener, public Sender {
   base::WaitableEvent shutdown_event_;
 
   bool is_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 

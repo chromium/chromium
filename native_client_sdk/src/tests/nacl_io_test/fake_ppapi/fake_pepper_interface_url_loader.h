@@ -153,6 +153,11 @@ class FakePepperInterfaceURLLoader : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterfaceURLLoader();
   FakePepperInterfaceURLLoader(const FakeURLLoaderServer& server);
+
+  FakePepperInterfaceURLLoader(const FakePepperInterfaceURLLoader&) = delete;
+  FakePepperInterfaceURLLoader& operator=(const FakePepperInterfaceURLLoader&) =
+      delete;
+
   ~FakePepperInterfaceURLLoader();
 
   virtual PP_Instance GetInstance() { return instance_; }
@@ -176,8 +181,6 @@ class FakePepperInterfaceURLLoader : public nacl_io::PepperInterfaceDummy {
   FakeURLRequestInfoInterface url_request_info_interface_;
   FakeURLResponseInfoInterface url_response_info_interface_;
   PP_Instance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterfaceURLLoader);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_URL_LOADER_H_

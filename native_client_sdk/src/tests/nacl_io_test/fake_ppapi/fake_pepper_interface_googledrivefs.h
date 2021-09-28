@@ -67,6 +67,12 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
   FakeDriveURLResponseInfoInterface(FakeCoreInterface* core_interface,
                                     FakeVarInterface* var_interface,
                                     FakeFileRefInterface* file_ref_interface);
+
+  FakeDriveURLResponseInfoInterface(const FakeDriveURLResponseInfoInterface&) =
+      delete;
+  FakeDriveURLResponseInfoInterface& operator=(
+      const FakeDriveURLResponseInfoInterface&) = delete;
+
   ~FakeDriveURLResponseInfoInterface();
 
   virtual PP_Var GetProperty(PP_Resource response,
@@ -76,8 +82,6 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
  private:
   FakeFileRefInterface* file_ref_interface_;
   PP_Resource filesystem_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLResponseInfoInterface);
 };
 
 // This class is a fake implementation of the interfaces necessary to access
@@ -97,6 +101,12 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
 class FakePepperInterfaceGoogleDriveFs : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterfaceGoogleDriveFs();
+
+  FakePepperInterfaceGoogleDriveFs(const FakePepperInterfaceGoogleDriveFs&) =
+      delete;
+  FakePepperInterfaceGoogleDriveFs& operator=(
+      const FakePepperInterfaceGoogleDriveFs&) = delete;
+
   ~FakePepperInterfaceGoogleDriveFs();
 
   virtual PP_Instance GetInstance() { return instance_; }
@@ -126,8 +136,6 @@ class FakePepperInterfaceGoogleDriveFs : public nacl_io::PepperInterfaceDummy {
   FakeDriveURLRequestInfoInterface drive_url_request_info_interface_;
   FakeDriveURLResponseInfoInterface drive_url_response_info_interface_;
   PP_Instance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterfaceGoogleDriveFs);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_

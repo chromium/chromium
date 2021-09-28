@@ -266,6 +266,10 @@ class CHROME_DBUS_EXPORT MessageWriter {
   // Data added with Append* will be written to |message|, which may be NULL
   // to create a sub-writer for passing to OpenArray, etc.
   explicit MessageWriter(Message* message);
+
+  MessageWriter(const MessageWriter&) = delete;
+  MessageWriter& operator=(const MessageWriter&) = delete;
+
   ~MessageWriter();
 
   // Appends a byte to the message.
@@ -365,8 +369,6 @@ class CHROME_DBUS_EXPORT MessageWriter {
   Message* message_;
   DBusMessageIter raw_message_iter_;
   bool container_is_open_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageWriter);
 };
 
 // MessageReader is used to read incoming messages such as responses for
@@ -379,6 +381,10 @@ class CHROME_DBUS_EXPORT MessageReader {
   // The data will be read from the given |message|, which may be NULL to
   // create a sub-reader for passing to PopArray, etc.
   explicit MessageReader(Message* message);
+
+  MessageReader(const MessageReader&) = delete;
+  MessageReader& operator=(const MessageReader&) = delete;
+
   ~MessageReader();
 
   // Returns true if the reader has more data to read. The function is
@@ -504,8 +510,6 @@ class CHROME_DBUS_EXPORT MessageReader {
 
   Message* message_;
   DBusMessageIter raw_message_iter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageReader);
 };
 
 }  // namespace dbus

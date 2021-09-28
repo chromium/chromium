@@ -50,6 +50,9 @@ class ResponseInjector {
                             base::Unretained(this)));
   }
 
+  ResponseInjector(const ResponseInjector&) = delete;
+  ResponseInjector& operator=(const ResponseInjector&) = delete;
+
   ~ResponseInjector() {
     url_loader_factory_->SetInterceptor(
         base::BindRepeating([](const network::ResourceRequest& request) {
@@ -126,7 +129,6 @@ class ResponseInjector {
   int current_failure_count_;
   int max_failure_count_;
   std::string results_;
-  DISALLOW_COPY_AND_ASSIGN(ResponseInjector);
 };
 
 const std::string kTestAccessToken = "1/fFAGRNJru1FTz70BzhT3Zg";

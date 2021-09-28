@@ -175,6 +175,10 @@ class MockModuleContext
     : public fuchsia::modular::testing::ModuleContext_TestBase {
  public:
   MockModuleContext() = default;
+
+  MockModuleContext(const MockModuleContext&) = delete;
+  MockModuleContext& operator=(const MockModuleContext&) = delete;
+
   ~MockModuleContext() override = default;
 
   MOCK_METHOD0(RemoveSelfFromStory, void());
@@ -182,8 +186,6 @@ class MockModuleContext
   void NotImplemented_(const std::string& name) override {
     NOTIMPLEMENTED() << name;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockModuleContext);
 };
 
 // Verify that Modular's RemoveSelfFromStory() is called on teardown.

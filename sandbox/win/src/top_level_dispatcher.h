@@ -21,6 +21,10 @@ class TopLevelDispatcher : public Dispatcher {
  public:
   // |policy| must outlive this class.
   explicit TopLevelDispatcher(PolicyBase* policy);
+
+  TopLevelDispatcher(const TopLevelDispatcher&) = delete;
+  TopLevelDispatcher& operator=(const TopLevelDispatcher&) = delete;
+
   ~TopLevelDispatcher() override;
 
   Dispatcher* OnMessageReady(IPCParams* ipc,
@@ -45,8 +49,6 @@ class TopLevelDispatcher : public Dispatcher {
   std::unique_ptr<Dispatcher> signed_dispatcher_;
   std::unique_ptr<Dispatcher> socket_dispatcher_;
   Dispatcher* ipc_targets_[kMaxIpcTag];
-
-  DISALLOW_COPY_AND_ASSIGN(TopLevelDispatcher);
 };
 
 }  // namespace sandbox

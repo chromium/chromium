@@ -15,12 +15,13 @@ namespace policy {
 class PpapiProcessPolicy : public BPFBasePolicy {
  public:
   PpapiProcessPolicy();
+
+  PpapiProcessPolicy(const PpapiProcessPolicy&) = delete;
+  PpapiProcessPolicy& operator=(const PpapiProcessPolicy&) = delete;
+
   ~PpapiProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PpapiProcessPolicy);
 };
 
 }  // namespace policy

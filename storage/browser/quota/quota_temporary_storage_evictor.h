@@ -56,6 +56,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
 
   QuotaTemporaryStorageEvictor(QuotaEvictionHandler* quota_eviction_handler,
                                int64_t interval_ms);
+
+  QuotaTemporaryStorageEvictor(const QuotaTemporaryStorageEvictor&) = delete;
+  QuotaTemporaryStorageEvictor& operator=(const QuotaTemporaryStorageEvictor&) =
+      delete;
+
   ~QuotaTemporaryStorageEvictor();
 
   void GetStatistics(std::map<std::string, int64_t>* statistics);
@@ -98,8 +103,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<QuotaTemporaryStorageEvictor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaTemporaryStorageEvictor);
 };
 
 }  // namespace storage

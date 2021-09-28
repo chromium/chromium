@@ -29,6 +29,9 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
     : public FileStreamWriter {
  public:
+  LocalFileStreamWriter(const LocalFileStreamWriter&) = delete;
+  LocalFileStreamWriter& operator=(const LocalFileStreamWriter&) = delete;
+
   ~LocalFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -85,7 +88,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
   net::CompletionOnceCallback cancel_callback_;
 
   base::WeakPtrFactory<LocalFileStreamWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LocalFileStreamWriter);
 };
 
 }  // namespace storage

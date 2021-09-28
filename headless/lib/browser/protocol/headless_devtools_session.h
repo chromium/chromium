@@ -25,6 +25,10 @@ class HeadlessDevToolsSession : public FrontendChannel {
  public:
   HeadlessDevToolsSession(base::WeakPtr<HeadlessBrowserImpl> browser,
                           content::DevToolsAgentHostClientChannel* channel);
+
+  HeadlessDevToolsSession(const HeadlessDevToolsSession&) = delete;
+  HeadlessDevToolsSession& operator=(const HeadlessDevToolsSession&) = delete;
+
   ~HeadlessDevToolsSession() override;
 
   void HandleCommand(
@@ -49,7 +53,6 @@ class HeadlessDevToolsSession : public FrontendChannel {
   base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
       pending_commands_;
   content::DevToolsAgentHostClientChannel* client_channel_;
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsSession);
 };
 
 }  // namespace protocol

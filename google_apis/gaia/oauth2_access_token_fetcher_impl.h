@@ -60,6 +60,11 @@ class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& refresh_token,
       const std::string& auth_code = std::string());
+
+  OAuth2AccessTokenFetcherImpl(const OAuth2AccessTokenFetcherImpl&) = delete;
+  OAuth2AccessTokenFetcherImpl& operator=(const OAuth2AccessTokenFetcherImpl&) =
+      delete;
+
   ~OAuth2AccessTokenFetcherImpl() override;
 
   // Implementation of OAuth2AccessTokenFetcher
@@ -146,7 +151,6 @@ class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
                            ParseGetAccessTokenFailure);
   FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenFetcherImplTest,
                            ParseGetAccessTokenFailureInvalidError);
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenFetcherImpl);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMPL_H_

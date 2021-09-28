@@ -23,6 +23,10 @@ class EncodedProgram;
 class RegionBuffer : public BasicBuffer {
  public:
   explicit RegionBuffer(const Region& region) : region_(region) {}
+
+  RegionBuffer(const RegionBuffer&) = delete;
+  RegionBuffer& operator=(const RegionBuffer&) = delete;
+
   ~RegionBuffer() override {}
 
   // BasicBuffer:
@@ -31,8 +35,6 @@ class RegionBuffer : public BasicBuffer {
 
  private:
   Region region_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegionBuffer);
 };
 
 // CourgetteFlow stores Courgette data arranged into groups, and exposes
@@ -63,6 +65,10 @@ class CourgetteFlow {
   };
 
   CourgetteFlow();
+
+  CourgetteFlow(const CourgetteFlow&) = delete;
+  CourgetteFlow& operator=(const CourgetteFlow&) = delete;
+
   ~CourgetteFlow();
 
   static const char* name(Group group);
@@ -141,8 +147,6 @@ class CourgetteFlow {
   Data data_only_;
   Data data_old_;
   Data data_new_;
-
-  DISALLOW_COPY_AND_ASSIGN(CourgetteFlow);
 };
 
 }  // namespace courgette

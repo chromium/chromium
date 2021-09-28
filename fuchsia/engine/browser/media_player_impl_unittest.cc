@@ -84,6 +84,10 @@ class MediaPlayerImplTest : public testing::Test {
  public:
   MediaPlayerImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  MediaPlayerImplTest(const MediaPlayerImplTest&) = delete;
+  MediaPlayerImplTest& operator=(const MediaPlayerImplTest&) = delete;
+
   ~MediaPlayerImplTest() override = default;
 
   void OnPlayerDisconnected() {}
@@ -95,8 +99,6 @@ class MediaPlayerImplTest : public testing::Test {
   fuchsia::media::sessions2::PlayerPtr player_;
 
   std::unique_ptr<MediaPlayerImpl> player_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerImplTest);
 };
 
 // Verify that the |on_disconnect| closure is invoked if the client disconnects.

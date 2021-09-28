@@ -149,11 +149,13 @@ class AXTreeConverterTest : public testing::Test {
                          ax::mojom::CheckedState::kNone);
     root_node_data_.id = kRootId;
   }
+
+  AXTreeConverterTest(const AXTreeConverterTest&) = delete;
+  AXTreeConverterTest& operator=(const AXTreeConverterTest&) = delete;
+
   ~AXTreeConverterTest() override = default;
 
   ui::AXNodeData& root_node() { return root_node_data_; }
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeConverterTest);
 
  private:
   ui::AXNodeData root_node_data_;

@@ -83,6 +83,10 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
           write_result_(post_copy_valid ? base::File::FILE_OK
                                         : base::File::FILE_ERROR_SECURITY),
           reject_string_(reject_string) {}
+
+    TestValidator(const TestValidator&) = delete;
+    TestValidator& operator=(const TestValidator&) = delete;
+
     ~TestValidator() override = default;
 
     void StartPreWriteValidation(ResultCallback result_callback) override {
@@ -107,8 +111,6 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
     base::File::Error result_;
     base::File::Error write_result_;
     std::string reject_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestValidator);
   };
 };
 
@@ -149,6 +151,9 @@ class ScopedThreadStopper {
  public:
   explicit ScopedThreadStopper(base::Thread* thread) : thread_(thread) {}
 
+  ScopedThreadStopper(const ScopedThreadStopper&) = delete;
+  ScopedThreadStopper& operator=(const ScopedThreadStopper&) = delete;
+
   ~ScopedThreadStopper() {
     if (thread_) {
       // Give another chance for deleted streams to perform Close.
@@ -164,7 +169,6 @@ class ScopedThreadStopper {
 
  private:
   base::Thread* thread_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedThreadStopper);
 };
 
 }  // namespace
@@ -178,6 +182,10 @@ class CopyOrMoveOperationTestHelper {
         src_type_(src_type),
         dest_type_(dest_type),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  CopyOrMoveOperationTestHelper(const CopyOrMoveOperationTestHelper&) = delete;
+  CopyOrMoveOperationTestHelper& operator=(
+      const CopyOrMoveOperationTestHelper&) = delete;
 
   ~CopyOrMoveOperationTestHelper() {
     file_system_context_ = nullptr;
@@ -397,8 +405,6 @@ class CopyOrMoveOperationTestHelper {
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<MockQuotaManager> quota_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveOperationTestHelper);
 };
 
 TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFile) {

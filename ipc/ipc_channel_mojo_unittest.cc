@@ -1165,6 +1165,10 @@ class ListenerWithSyncAssociatedInterface
 class SyncReplyReader : public IPC::MessageReplyDeserializer {
  public:
   explicit SyncReplyReader(int32_t* storage) : storage_(storage) {}
+
+  SyncReplyReader(const SyncReplyReader&) = delete;
+  SyncReplyReader& operator=(const SyncReplyReader&) = delete;
+
   ~SyncReplyReader() override = default;
 
  private:
@@ -1177,8 +1181,6 @@ class SyncReplyReader : public IPC::MessageReplyDeserializer {
   }
 
   int32_t* storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncReplyReader);
 };
 
 TEST_F(IPCChannelProxyMojoTest, SyncAssociatedInterface) {
@@ -1227,6 +1229,10 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
                              public IPC::Listener {
  public:
   SimpleTestClientImpl() = default;
+
+  SimpleTestClientImpl(const SimpleTestClientImpl&) = delete;
+  SimpleTestClientImpl& operator=(const SimpleTestClientImpl&) = delete;
+
   ~SimpleTestClientImpl() override = default;
 
   void set_driver(IPC::mojom::SimpleTestDriver* driver) { driver_ = driver; }
@@ -1291,8 +1297,6 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   IPC::Sender* sync_sender_ = nullptr;
   IPC::mojom::SimpleTestDriver* driver_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleTestClientImpl);
 };
 
 DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
@@ -1388,6 +1392,11 @@ class ExpectValueSequenceListener : public IPC::Listener {
                               base::OnceClosure quit_closure)
       : expected_values_(expected_values),
         quit_closure_(std::move(quit_closure)) {}
+
+  ExpectValueSequenceListener(const ExpectValueSequenceListener&) = delete;
+  ExpectValueSequenceListener& operator=(const ExpectValueSequenceListener&) =
+      delete;
+
   ~ExpectValueSequenceListener() override = default;
 
   // IPC::Listener:
@@ -1406,8 +1415,6 @@ class ExpectValueSequenceListener : public IPC::Listener {
  private:
   base::queue<int32_t>* expected_values_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectValueSequenceListener);
 };
 
 DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(CreatePausedClient,

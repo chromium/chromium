@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
       base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
       const base::FilePath& file_path,
       int64_t initial_offset);
+
+  MemoryFileStreamWriter(const MemoryFileStreamWriter&) = delete;
+  MemoryFileStreamWriter& operator=(const MemoryFileStreamWriter&) = delete;
+
   ~MemoryFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -49,7 +53,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
   net::CompletionOnceCallback cancel_callback_;
 
   base::WeakPtrFactory<MemoryFileStreamWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MemoryFileStreamWriter);
 };
 
 }  // namespace storage

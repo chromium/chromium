@@ -21,6 +21,11 @@ namespace headless {
 class HeadlessBrowserContextOptions {
  public:
   HeadlessBrowserContextOptions(HeadlessBrowserContextOptions&& options);
+
+  HeadlessBrowserContextOptions(const HeadlessBrowserContextOptions&) = delete;
+  HeadlessBrowserContextOptions& operator=(
+      const HeadlessBrowserContextOptions&) = delete;
+
   ~HeadlessBrowserContextOptions();
 
   HeadlessBrowserContextOptions& operator=(
@@ -73,8 +78,6 @@ class HeadlessBrowserContextOptions {
       override_web_preferences_callback_;
 
   absl::optional<gfx::FontRenderParams::Hinting> font_render_hinting_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserContextOptions);
 };
 
 }  // namespace headless

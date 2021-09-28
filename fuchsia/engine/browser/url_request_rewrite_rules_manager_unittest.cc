@@ -17,6 +17,12 @@ class UrlRequestRewriteRulesManagerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         url_request_rewrite_rules_manager_(
             UrlRequestRewriteRulesManager::CreateForTesting()) {}
+
+  UrlRequestRewriteRulesManagerTest(const UrlRequestRewriteRulesManagerTest&) =
+      delete;
+  UrlRequestRewriteRulesManagerTest& operator=(
+      const UrlRequestRewriteRulesManagerTest&) = delete;
+
   ~UrlRequestRewriteRulesManagerTest() override = default;
 
  protected:
@@ -36,8 +42,6 @@ class UrlRequestRewriteRulesManagerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<UrlRequestRewriteRulesManager>
       url_request_rewrite_rules_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlRequestRewriteRulesManagerTest);
 };
 
 // Tests AddHeaders rewrites are properly converted to their Mojo equivalent.

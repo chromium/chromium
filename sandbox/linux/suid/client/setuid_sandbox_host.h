@@ -33,6 +33,10 @@ class SANDBOX_EXPORT SetuidSandboxHost {
  public:
   // All instantation should go through this factory method.
   static SetuidSandboxHost* Create();
+
+  SetuidSandboxHost(const SetuidSandboxHost&) = delete;
+  SetuidSandboxHost& operator=(const SetuidSandboxHost&) = delete;
+
   ~SetuidSandboxHost();
 
   // The setuid sandbox may still be disabled via the environment.
@@ -67,8 +71,6 @@ class SANDBOX_EXPORT SetuidSandboxHost {
 
   // Holds the environment. Will never be NULL.
   std::unique_ptr<base::Environment> env_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetuidSandboxHost);
 };
 
 }  // namespace sandbox

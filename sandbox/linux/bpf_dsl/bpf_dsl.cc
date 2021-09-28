@@ -24,6 +24,10 @@ namespace {
 class ReturnResultExprImpl : public internal::ResultExprImpl {
  public:
   explicit ReturnResultExprImpl(uint32_t ret) : ret_(ret) {}
+
+  ReturnResultExprImpl(const ReturnResultExprImpl&) = delete;
+  ReturnResultExprImpl& operator=(const ReturnResultExprImpl&) = delete;
+
   ~ReturnResultExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc) const override {
@@ -43,8 +47,6 @@ class ReturnResultExprImpl : public internal::ResultExprImpl {
   }
 
   uint32_t ret_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReturnResultExprImpl);
 };
 
 class TrapResultExprImpl : public internal::ResultExprImpl {
@@ -53,6 +55,10 @@ class TrapResultExprImpl : public internal::ResultExprImpl {
       : func_(func), arg_(arg), safe_(safe) {
     DCHECK(func_);
   }
+
+  TrapResultExprImpl(const TrapResultExprImpl&) = delete;
+  TrapResultExprImpl& operator=(const TrapResultExprImpl&) = delete;
+
   ~TrapResultExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc) const override {
@@ -67,8 +73,6 @@ class TrapResultExprImpl : public internal::ResultExprImpl {
   TrapRegistry::TrapFnc func_;
   const void* arg_;
   bool safe_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrapResultExprImpl);
 };
 
 class IfThenResultExprImpl : public internal::ResultExprImpl {
@@ -79,6 +83,10 @@ class IfThenResultExprImpl : public internal::ResultExprImpl {
       : cond_(std::move(cond)),
         then_result_(std::move(then_result)),
         else_result_(std::move(else_result)) {}
+
+  IfThenResultExprImpl(const IfThenResultExprImpl&) = delete;
+  IfThenResultExprImpl& operator=(const IfThenResultExprImpl&) = delete;
+
   ~IfThenResultExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc) const override {
@@ -97,13 +105,15 @@ class IfThenResultExprImpl : public internal::ResultExprImpl {
   BoolExpr cond_;
   ResultExpr then_result_;
   ResultExpr else_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(IfThenResultExprImpl);
 };
 
 class ConstBoolExprImpl : public internal::BoolExprImpl {
  public:
   explicit ConstBoolExprImpl(bool value) : value_(value) {}
+
+  ConstBoolExprImpl(const ConstBoolExprImpl&) = delete;
+  ConstBoolExprImpl& operator=(const ConstBoolExprImpl&) = delete;
+
   ~ConstBoolExprImpl() override = default;
 
   CodeGen::Node Compile(PolicyCompiler* pc,
@@ -114,8 +124,6 @@ class ConstBoolExprImpl : public internal::BoolExprImpl {
 
  private:
   bool value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstBoolExprImpl);
 };
 
 class MaskedEqualBoolExprImpl : public internal::BoolExprImpl {
@@ -125,6 +133,10 @@ class MaskedEqualBoolExprImpl : public internal::BoolExprImpl {
                           uint64_t mask,
                           uint64_t value)
       : argno_(argno), width_(width), mask_(mask), value_(value) {}
+
+  MaskedEqualBoolExprImpl(const MaskedEqualBoolExprImpl&) = delete;
+  MaskedEqualBoolExprImpl& operator=(const MaskedEqualBoolExprImpl&) = delete;
+
   ~MaskedEqualBoolExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc,
@@ -138,13 +150,15 @@ class MaskedEqualBoolExprImpl : public internal::BoolExprImpl {
   size_t width_;
   uint64_t mask_;
   uint64_t value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaskedEqualBoolExprImpl);
 };
 
 class NegateBoolExprImpl : public internal::BoolExprImpl {
  public:
   explicit NegateBoolExprImpl(BoolExpr cond) : cond_(std::move(cond)) {}
+
+  NegateBoolExprImpl(const NegateBoolExprImpl&) = delete;
+  NegateBoolExprImpl& operator=(const NegateBoolExprImpl&) = delete;
+
   ~NegateBoolExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc,
@@ -155,14 +169,16 @@ class NegateBoolExprImpl : public internal::BoolExprImpl {
 
  private:
   BoolExpr cond_;
-
-  DISALLOW_COPY_AND_ASSIGN(NegateBoolExprImpl);
 };
 
 class AndBoolExprImpl : public internal::BoolExprImpl {
  public:
   AndBoolExprImpl(BoolExpr lhs, BoolExpr rhs)
       : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
+
+  AndBoolExprImpl(const AndBoolExprImpl&) = delete;
+  AndBoolExprImpl& operator=(const AndBoolExprImpl&) = delete;
+
   ~AndBoolExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc,
@@ -175,14 +191,16 @@ class AndBoolExprImpl : public internal::BoolExprImpl {
  private:
   BoolExpr lhs_;
   BoolExpr rhs_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndBoolExprImpl);
 };
 
 class OrBoolExprImpl : public internal::BoolExprImpl {
  public:
   OrBoolExprImpl(BoolExpr lhs, BoolExpr rhs)
       : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
+
+  OrBoolExprImpl(const OrBoolExprImpl&) = delete;
+  OrBoolExprImpl& operator=(const OrBoolExprImpl&) = delete;
+
   ~OrBoolExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc,
@@ -195,8 +213,6 @@ class OrBoolExprImpl : public internal::BoolExprImpl {
  private:
   BoolExpr lhs_;
   BoolExpr rhs_;
-
-  DISALLOW_COPY_AND_ASSIGN(OrBoolExprImpl);
 };
 
 }  // namespace

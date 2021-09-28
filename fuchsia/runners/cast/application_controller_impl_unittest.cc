@@ -49,6 +49,10 @@ class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
     run_loop.Run();
   }
 
+  ApplicationControllerImplTest(const ApplicationControllerImplTest&) = delete;
+  ApplicationControllerImplTest& operator=(
+      const ApplicationControllerImplTest&) = delete;
+
   ~ApplicationControllerImplTest() override = default;
 
  protected:
@@ -76,9 +80,6 @@ class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
 
   chromium::cast::ApplicationControllerPtr application_ptr_;
   base::OnceClosure wait_for_controller_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ApplicationControllerImplTest);
 };
 
 // Verifies that SetTouchInputEnabled() calls the Frame API correctly.

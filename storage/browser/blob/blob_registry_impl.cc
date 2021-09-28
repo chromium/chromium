@@ -76,6 +76,9 @@ class BlobRegistryImpl::BlobUnderConstruction {
   // collection in the blob service.
   void StartTransportation(base::WeakPtr<BlobImpl> blob_impl);
 
+  BlobUnderConstruction(const BlobUnderConstruction&) = delete;
+  BlobUnderConstruction& operator=(const BlobUnderConstruction&) = delete;
+
   ~BlobUnderConstruction() = default;
 
   const std::string& uuid() const { return uuid_; }
@@ -209,7 +212,6 @@ class BlobRegistryImpl::BlobUnderConstruction {
   size_t ready_dependent_blob_count_ = 0;
 
   base::WeakPtrFactory<BlobUnderConstruction> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobUnderConstruction);
 };
 
 void BlobRegistryImpl::BlobUnderConstruction::StartTransportation(

@@ -25,6 +25,10 @@ class ApiBindingsClient {
   ApiBindingsClient(
       fidl::InterfaceHandle<chromium::cast::ApiBindings> bindings_service,
       base::OnceClosure on_initialization_complete);
+
+  ApiBindingsClient(const ApiBindingsClient&) = delete;
+  ApiBindingsClient& operator=(const ApiBindingsClient&) = delete;
+
   ~ApiBindingsClient();
 
   // Injects APIs and handles channel connections on |frame|.
@@ -58,8 +62,6 @@ class ApiBindingsClient {
   cast_api_bindings::NamedMessagePortConnector* connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;
   base::OnceClosure on_initialization_complete_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiBindingsClient);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_API_BINDINGS_CLIENT_H_

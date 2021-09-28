@@ -42,6 +42,10 @@ class SandboxQuotaObserver : public FileUpdateObserver,
       scoped_refptr<base::SequencedTaskRunner> update_notify_runner,
       ObfuscatedFileUtil* sandbox_file_util,
       FileSystemUsageCache* file_system_usage_cache_);
+
+  SandboxQuotaObserver(const SandboxQuotaObserver&) = delete;
+  SandboxQuotaObserver& operator=(const SandboxQuotaObserver&) = delete;
+
   ~SandboxQuotaObserver() override;
 
   // FileUpdateObserver overrides.
@@ -74,8 +78,6 @@ class SandboxQuotaObserver : public FileUpdateObserver,
 
   std::map<base::FilePath, int64_t> pending_update_notification_;
   base::OneShotTimer delayed_cache_update_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxQuotaObserver);
 };
 
 }  // namespace storage

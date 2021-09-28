@@ -82,6 +82,9 @@ class EvaluateHelper {
                                        base::Unretained(this)));
   }
 
+  EvaluateHelper(const EvaluateHelper&) = delete;
+  EvaluateHelper& operator=(const EvaluateHelper&) = delete;
+
   ~EvaluateHelper() {
     web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
   }
@@ -101,8 +104,6 @@ class EvaluateHelper {
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<runtime::EvaluateResult> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(EvaluateHelper);
 };
 
 }  // namespace

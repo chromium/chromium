@@ -50,6 +50,9 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   // };
   class ComponentStateBase {
    public:
+    ComponentStateBase(const ComponentStateBase&) = delete;
+    ComponentStateBase& operator=(const ComponentStateBase&) = delete;
+
     virtual ~ComponentStateBase();
 
    protected:
@@ -93,8 +96,6 @@ class AgentImpl : public ::fuchsia::modular::Agent {
     sys::OutgoingDirectory outgoing_directory_;
     std::unique_ptr<base::ServiceProviderImpl> service_provider_;
     std::vector<base::RepeatingCallback<bool()>> keepalive_callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(ComponentStateBase);
   };
 
   // Creates a component state instance providing the services to which the

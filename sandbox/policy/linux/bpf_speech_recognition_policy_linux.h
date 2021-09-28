@@ -18,12 +18,15 @@ class SANDBOX_POLICY_EXPORT SpeechRecognitionProcessPolicy
     : public BPFBasePolicy {
  public:
   SpeechRecognitionProcessPolicy();
+
+  SpeechRecognitionProcessPolicy(const SpeechRecognitionProcessPolicy&) =
+      delete;
+  SpeechRecognitionProcessPolicy& operator=(
+      const SpeechRecognitionProcessPolicy&) = delete;
+
   ~SpeechRecognitionProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionProcessPolicy);
 };
 
 }  // namespace policy

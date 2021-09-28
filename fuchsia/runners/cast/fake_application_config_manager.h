@@ -22,6 +22,11 @@ class FakeApplicationConfigManager
   static const char kFakeAgentUrl[];
 
   FakeApplicationConfigManager();
+
+  FakeApplicationConfigManager(const FakeApplicationConfigManager&) = delete;
+  FakeApplicationConfigManager& operator=(const FakeApplicationConfigManager&) =
+      delete;
+
   ~FakeApplicationConfigManager() override;
 
   // Creates a config for a dummy application with the specified |id| and |url|.
@@ -41,8 +46,6 @@ class FakeApplicationConfigManager
 
  private:
   std::map<std::string, chromium::cast::ApplicationConfig> id_to_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeApplicationConfigManager);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_FAKE_APPLICATION_CONFIG_MANAGER_H_

@@ -51,6 +51,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   HeadlessBrowserImpl(
       base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,
       HeadlessBrowser::Options options);
+
+  HeadlessBrowserImpl(const HeadlessBrowserImpl&) = delete;
+  HeadlessBrowserImpl& operator=(const HeadlessBrowserImpl&) = delete;
+
   ~HeadlessBrowserImpl() override;
 
   // HeadlessBrowser implementation:
@@ -124,9 +128,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserImpl);
 };
 
 }  // namespace headless

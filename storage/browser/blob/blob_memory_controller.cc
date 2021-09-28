@@ -336,6 +336,10 @@ class BlobMemoryController::MemoryQuotaAllocationTask
         done_callback_(std::move(done_callback)),
         allocation_size_(quota_request_size) {}
 
+  MemoryQuotaAllocationTask(const MemoryQuotaAllocationTask&) = delete;
+  MemoryQuotaAllocationTask& operator=(const MemoryQuotaAllocationTask&) =
+      delete;
+
   ~MemoryQuotaAllocationTask() override = default;
 
   void RunDoneCallback(bool success) {
@@ -375,7 +379,6 @@ class BlobMemoryController::MemoryQuotaAllocationTask
   PendingMemoryQuotaTaskList::iterator my_list_position_;
 
   base::WeakPtrFactory<MemoryQuotaAllocationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MemoryQuotaAllocationTask);
 };
 
 class BlobMemoryController::FileQuotaAllocationTask
@@ -436,6 +439,10 @@ class BlobMemoryController::FileQuotaAllocationTask
                        allocation_size_));
     controller_->RecordTracingCounters();
   }
+
+  FileQuotaAllocationTask(const FileQuotaAllocationTask&) = delete;
+  FileQuotaAllocationTask& operator=(const FileQuotaAllocationTask&) = delete;
+
   ~FileQuotaAllocationTask() override = default;
 
   void RunDoneCallback(std::vector<FileCreationInfo> file_info, bool success) {
@@ -532,7 +539,6 @@ class BlobMemoryController::FileQuotaAllocationTask
   PendingFileQuotaTaskList::iterator my_list_position_;
 
   base::WeakPtrFactory<FileQuotaAllocationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileQuotaAllocationTask);
 };
 
 BlobMemoryController::BlobMemoryController(

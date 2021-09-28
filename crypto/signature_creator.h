@@ -29,6 +29,9 @@ class CRYPTO_EXPORT SignatureCreator {
     SHA256,
   };
 
+  SignatureCreator(const SignatureCreator&) = delete;
+  SignatureCreator& operator=(const SignatureCreator&) = delete;
+
   ~SignatureCreator();
 
   // Create an instance. The caller must ensure that the provided PrivateKey
@@ -56,8 +59,6 @@ class CRYPTO_EXPORT SignatureCreator {
   SignatureCreator();
 
   EVP_MD_CTX* sign_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignatureCreator);
 };
 
 }  // namespace crypto

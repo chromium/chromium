@@ -62,6 +62,9 @@ class SANDBOX_EXPORT BrokerProcess {
       bool fast_check_in_client = true,
       bool quiet_failures_for_tests = false);
 
+  BrokerProcess(const BrokerProcess&) = delete;
+  BrokerProcess& operator=(const BrokerProcess&) = delete;
+
   ~BrokerProcess();
 
   // Will initialize the broker process. There should be no threads at this
@@ -115,8 +118,6 @@ class SANDBOX_EXPORT BrokerProcess {
   syscall_broker::BrokerPermissionList
       broker_permission_list_;  // File access allowlist.
   std::unique_ptr<syscall_broker::BrokerClient> broker_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerProcess);
 };
 
 }  // namespace syscall_broker

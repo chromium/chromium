@@ -27,6 +27,9 @@ class ShareableFileMap {
 
   ShareableFileMap() = default;
 
+  ShareableFileMap(const ShareableFileMap&) = delete;
+  ShareableFileMap& operator=(const ShareableFileMap&) = delete;
+
   ~ShareableFileMap() = default;
 
   iterator Find(key_type key) {
@@ -59,8 +62,6 @@ class ShareableFileMap {
   FileMap file_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ShareableFileMap);
 };
 
 base::LazyInstance<ShareableFileMap>::DestructorAtExit g_file_map =

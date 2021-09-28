@@ -63,6 +63,10 @@ class SANDBOX_EXPORT CodeGen {
   static const Node kNullNode = -1;
 
   CodeGen();
+
+  CodeGen(const CodeGen&) = delete;
+  CodeGen& operator=(const CodeGen&) = delete;
+
   ~CodeGen();
 
   // MakeInstruction creates a node representing the specified
@@ -110,8 +114,6 @@ class SANDBOX_EXPORT CodeGen {
   std::vector<Node> equivalent_;
 
   std::map<MemoKey, Node> memos_;
-
-  DISALLOW_COPY_AND_ASSIGN(CodeGen);
 };
 
 }  // namespace sandbox

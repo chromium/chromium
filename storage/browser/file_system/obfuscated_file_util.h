@@ -116,6 +116,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
                      const std::set<std::string>& known_type_strings,
                      SandboxFileSystemBackendDelegate* sandbox_delegate,
                      bool is_incognito);
+
+  ObfuscatedFileUtil(const ObfuscatedFileUtil&) = delete;
+  ObfuscatedFileUtil& operator=(const ObfuscatedFileUtil&) = delete;
+
   ~ObfuscatedFileUtil() override;
 
   // FileSystemFileUtil overrides.
@@ -342,8 +346,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   SandboxFileSystemBackendDelegate* sandbox_delegate_;
 
   std::unique_ptr<ObfuscatedFileUtilDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtil);
 };
 
 }  // namespace storage

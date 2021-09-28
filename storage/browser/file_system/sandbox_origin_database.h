@@ -35,6 +35,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
   // at a given time.
   SandboxOriginDatabase(const base::FilePath& file_system_directory,
                         leveldb::Env* env_override);
+
+  SandboxOriginDatabase(const SandboxOriginDatabase&) = delete;
+  SandboxOriginDatabase& operator=(const SandboxOriginDatabase&) = delete;
+
   ~SandboxOriginDatabase() override;
 
   // SandboxOriginDatabaseInterface overrides.
@@ -74,7 +78,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
   leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   base::Time last_reported_time_;
-  DISALLOW_COPY_AND_ASSIGN(SandboxOriginDatabase);
 };
 
 }  // namespace storage

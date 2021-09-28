@@ -12,12 +12,15 @@ namespace headless {
 class HeadlessContentRendererClient : public content::ContentRendererClient {
  public:
   HeadlessContentRendererClient();
+
+  HeadlessContentRendererClient(const HeadlessContentRendererClient&) = delete;
+  HeadlessContentRendererClient& operator=(
+      const HeadlessContentRendererClient&) = delete;
+
   ~HeadlessContentRendererClient() override;
 
  private:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentRendererClient);
 };
 
 }  // namespace headless

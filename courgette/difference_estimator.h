@@ -34,6 +34,10 @@ namespace courgette {
 class DifferenceEstimator {
  public:
   DifferenceEstimator();
+
+  DifferenceEstimator(const DifferenceEstimator&) = delete;
+  DifferenceEstimator& operator=(const DifferenceEstimator&) = delete;
+
   ~DifferenceEstimator();
 
   class Base;
@@ -53,7 +57,6 @@ class DifferenceEstimator {
  private:
   std::vector<Base*> owned_bases_;
   std::vector<Subject*> owned_subjects_;
-  DISALLOW_COPY_AND_ASSIGN(DifferenceEstimator);
 };
 
 }  // namespace

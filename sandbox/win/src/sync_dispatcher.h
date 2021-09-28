@@ -20,6 +20,10 @@ namespace sandbox {
 class SyncDispatcher : public Dispatcher {
  public:
   explicit SyncDispatcher(PolicyBase* policy_base);
+
+  SyncDispatcher(const SyncDispatcher&) = delete;
+  SyncDispatcher& operator=(const SyncDispatcher&) = delete;
+
   ~SyncDispatcher() override {}
 
   // Dispatcher interface.
@@ -36,7 +40,6 @@ class SyncDispatcher : public Dispatcher {
   bool OpenEvent(IPCInfo* ipc, std::wstring* name, uint32_t desired_access);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(SyncDispatcher);
 };
 
 }  // namespace sandbox

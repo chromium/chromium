@@ -32,6 +32,9 @@ const int64_t kFlushIntervalInBytes = 10 << 20;  // 10MB.
 
 class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
  public:
+  CopyOrMoveImpl(const CopyOrMoveImpl&) = delete;
+  CopyOrMoveImpl& operator=(const CopyOrMoveImpl&) = delete;
+
   virtual ~CopyOrMoveImpl() = default;
   virtual void Run(CopyOrMoveOperationDelegate::StatusCallback callback) = 0;
   virtual void Cancel() = 0;
@@ -129,7 +132,6 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
 
  private:
   const FileSystemOperation::CopyOrMoveProgressCallback progress_callback_;
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveImpl);
 };
 
 namespace {

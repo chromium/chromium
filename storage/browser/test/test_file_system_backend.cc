@@ -63,6 +63,10 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
                                          public FileUpdateObserver {
  public:
   QuotaUtil() : usage_(0) {}
+
+  QuotaUtil(const QuotaUtil&) = delete;
+  QuotaUtil& operator=(const QuotaUtil&) = delete;
+
   ~QuotaUtil() override = default;
 
   // FileSystemQuotaUtil overrides.
@@ -115,7 +119,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
 
  private:
   int64_t usage_;
-  DISALLOW_COPY_AND_ASSIGN(QuotaUtil);
 };
 
 TestFileSystemBackend::TestFileSystemBackend(

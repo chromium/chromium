@@ -18,6 +18,10 @@
 class TestDebugListener final : public fuchsia::web::DevToolsListener {
  public:
   TestDebugListener();
+
+  TestDebugListener(const TestDebugListener&) = delete;
+  TestDebugListener& operator=(const TestDebugListener&) = delete;
+
   ~TestDebugListener() override;
 
   // Spins a RunLoop until there are exactly |size| DevTools ports open.
@@ -33,6 +37,10 @@ class TestDebugListener final : public fuchsia::web::DevToolsListener {
         TestDebugListener* test_debug_listener,
         fidl::InterfaceRequest<fuchsia::web::DevToolsPerContextListener>
             listener);
+
+    TestPerContextListener(const TestPerContextListener&) = delete;
+    TestPerContextListener& operator=(const TestPerContextListener&) = delete;
+
     ~TestPerContextListener() override;
 
    private:
@@ -42,8 +50,6 @@ class TestDebugListener final : public fuchsia::web::DevToolsListener {
     uint16_t port_ = 0;
     TestDebugListener* test_debug_listener_;
     fidl::Binding<fuchsia::web::DevToolsPerContextListener> binding_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestPerContextListener);
   };
 
   // fuchsia::web::DevToolsListener implementation.
@@ -60,8 +66,6 @@ class TestDebugListener final : public fuchsia::web::DevToolsListener {
                  base::UniquePtrComparator>
       per_context_listeners_;
   base::RepeatingClosure on_debug_ports_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDebugListener);
 };
 
 #endif  // FUCHSIA_ENGINE_TEST_DEBUG_LISTENER_H_

@@ -17,6 +17,11 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
  public:
   ObfuscatedFileUtilDelegate() = default;
+
+  ObfuscatedFileUtilDelegate(const ObfuscatedFileUtilDelegate&) = delete;
+  ObfuscatedFileUtilDelegate& operator=(const ObfuscatedFileUtilDelegate&) =
+      delete;
+
   virtual ~ObfuscatedFileUtilDelegate() = default;
 
   virtual bool DirectoryExists(const base::FilePath& path) = 0;
@@ -54,9 +59,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
       FileSystemOperation::CopyOrMoveOption option,
       NativeFileUtil::CopyOrMoveMode mode) = 0;
   virtual base::File::Error DeleteFile(const base::FilePath& path) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilDelegate);
 };
 
 }  // namespace storage

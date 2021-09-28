@@ -16,6 +16,10 @@ namespace protocol {
 class TargetHandler : public DomainHandler, public Target::Backend {
  public:
   explicit TargetHandler(HeadlessBrowserImpl* browser);
+
+  TargetHandler(const TargetHandler&) = delete;
+  TargetHandler& operator=(const TargetHandler&) = delete;
+
   ~TargetHandler() override;
 
   // DomainHandler implementation
@@ -36,7 +40,6 @@ class TargetHandler : public DomainHandler, public Target::Backend {
 
  private:
   HeadlessBrowserImpl* browser_;
-  DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };
 
 }  // namespace protocol

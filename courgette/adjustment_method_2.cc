@@ -1228,6 +1228,10 @@ class AssignmentProblem {
 class Adjuster : public AdjustmentMethod {
  public:
   Adjuster() : prog_(nullptr), model_(nullptr) {}
+
+  Adjuster(const Adjuster&) = delete;
+  Adjuster& operator=(const Adjuster&) = delete;
+
   ~Adjuster() = default;
 
   bool Adjust(const AssemblyProgram& model, AssemblyProgram* program) {
@@ -1285,9 +1289,6 @@ class Adjuster : public AdjustmentMethod {
   const AssemblyProgram* model_;  // Program to be mimicked, owned by caller.
 
   LabelInfoMaker label_info_maker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Adjuster);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

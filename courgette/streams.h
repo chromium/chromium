@@ -129,6 +129,10 @@ class SourceStream {
 class SinkStream {
  public:
   SinkStream() {}
+
+  SinkStream(const SinkStream&) = delete;
+  SinkStream& operator=(const SinkStream&) = delete;
+
   ~SinkStream() {}
 
   // Appends |byte_count| bytes from |data| to the stream.
@@ -169,14 +173,16 @@ class SinkStream {
 
  private:
   NoThrowBuffer<char> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStream);
 };
 
 // A SourceStreamSet is a set of SourceStreams.
 class SourceStreamSet {
  public:
   SourceStreamSet();
+
+  SourceStreamSet(const SourceStreamSet&) = delete;
+  SourceStreamSet& operator=(const SourceStreamSet&) = delete;
+
   ~SourceStreamSet();
 
   // Initializes the SourceStreamSet with the stream data in memory at |source|.
@@ -205,8 +211,6 @@ class SourceStreamSet {
  private:
   size_t count_;
   SourceStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStreamSet);
 };
 
 // A SinkStreamSet is a set of SinkStreams.  Data is collected by writing to the
@@ -217,6 +221,10 @@ class SourceStreamSet {
 class SinkStreamSet {
  public:
   SinkStreamSet();
+
+  SinkStreamSet(const SinkStreamSet&) = delete;
+  SinkStreamSet& operator=(const SinkStreamSet&) = delete;
+
   ~SinkStreamSet();
 
   // Initializes the SinkStreamSet to have |stream_index_limit| streams.  Must
@@ -243,8 +251,6 @@ class SinkStreamSet {
 
   size_t count_;
   SinkStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStreamSet);
 };
 
 }  // namespace courgette

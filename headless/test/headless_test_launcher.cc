@@ -41,6 +41,11 @@ class HeadlessBrowserImplForTest : public HeadlessBrowserImpl {
 class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
   HeadlessTestLauncherDelegate() = default;
+
+  HeadlessTestLauncherDelegate(const HeadlessTestLauncherDelegate&) = delete;
+  HeadlessTestLauncherDelegate& operator=(const HeadlessTestLauncherDelegate&) =
+      delete;
+
   ~HeadlessTestLauncherDelegate() override = default;
 
   // content::TestLauncherDelegate implementation:
@@ -60,9 +65,6 @@ class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
         new HeadlessBrowserImplForTest(options_builder.Build()));
     return new HeadlessContentMainDelegate(std::move(browser));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessTestLauncherDelegate);
 };
 
 }  // namespace

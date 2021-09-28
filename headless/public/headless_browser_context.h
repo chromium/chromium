@@ -36,6 +36,9 @@ class HEADLESS_EXPORT HeadlessBrowserContext {
  public:
   class Builder;
 
+  HeadlessBrowserContext(const HeadlessBrowserContext&) = delete;
+  HeadlessBrowserContext& operator=(const HeadlessBrowserContext&) = delete;
+
   virtual ~HeadlessBrowserContext() {}
 
   // Open a new tab. Returns a builder object which can be used to set
@@ -63,14 +66,15 @@ class HEADLESS_EXPORT HeadlessBrowserContext {
 
  protected:
   HeadlessBrowserContext() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserContext);
 };
 
 class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
  public:
   Builder(Builder&&);
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder();
 
   // By default if you add mojo bindings, http and https are disabled because
@@ -125,8 +129,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
 
   std::list<MojoBindings> mojo_bindings_;
   bool enable_http_and_https_if_mojo_used_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace headless

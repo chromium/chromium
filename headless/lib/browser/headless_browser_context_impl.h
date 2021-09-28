@@ -31,6 +31,10 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
     : public HeadlessBrowserContext,
       public content::BrowserContext {
  public:
+  HeadlessBrowserContextImpl(const HeadlessBrowserContextImpl&) = delete;
+  HeadlessBrowserContextImpl& operator=(const HeadlessBrowserContextImpl&) =
+      delete;
+
   ~HeadlessBrowserContextImpl() override;
 
   static HeadlessBrowserContextImpl* From(
@@ -140,8 +144,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
 
   std::unique_ptr<HeadlessRequestContextManager> request_context_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserContextImpl);
 };
 
 }  // namespace headless

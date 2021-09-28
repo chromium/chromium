@@ -88,13 +88,14 @@ class PopupFrameCreationInfoUserData : public base::SupportsUserData::Data {
 class FrameFocusRules : public wm::BaseFocusRules {
  public:
   FrameFocusRules() = default;
+
+  FrameFocusRules(const FrameFocusRules&) = delete;
+  FrameFocusRules& operator=(const FrameFocusRules&) = delete;
+
   ~FrameFocusRules() override = default;
 
   // wm::BaseFocusRules implementation.
   bool SupportsChildActivation(const aura::Window*) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameFocusRules);
 };
 
 bool FrameFocusRules::SupportsChildActivation(const aura::Window*) const {

@@ -43,6 +43,10 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
                BrokerChannel::EndPoint ipc_channel,
                const BrokerCommandSet& allowed_command_set,
                bool fast_check_in_client);
+
+  BrokerClient(const BrokerClient&) = delete;
+  BrokerClient& operator=(const BrokerClient&) = delete;
+
   ~BrokerClient() override;
 
   // Get the file descriptor used for IPC.
@@ -90,8 +94,6 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
   const bool fast_check_in_client_;  // Whether to forward a request that we
                                      // know will be denied to the broker. (Used
                                      // for tests).
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerClient);
 };
 
 }  // namespace syscall_broker

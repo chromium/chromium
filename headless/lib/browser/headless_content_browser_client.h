@@ -21,6 +21,11 @@ class HeadlessBrowserImpl;
 class HeadlessContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit HeadlessContentBrowserClient(HeadlessBrowserImpl* browser);
+
+  HeadlessContentBrowserClient(const HeadlessContentBrowserClient&) = delete;
+  HeadlessContentBrowserClient& operator=(const HeadlessContentBrowserClient&) =
+      delete;
+
   ~HeadlessContentBrowserClient() override;
 
   // content::ContentBrowserClient implementation:
@@ -100,8 +105,6 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       append_command_line_flags_callback_;
 
   std::unique_ptr<StubBadgeService> stub_badge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentBrowserClient);
 };
 
 }  // namespace headless

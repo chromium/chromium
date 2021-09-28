@@ -41,6 +41,9 @@ class MockQuotaClient : public mojom::QuotaClient {
                   base::span<const MockStorageKeyData> mock_data,
                   QuotaClientType client_type);
 
+  MockQuotaClient(const MockQuotaClient&) = delete;
+  MockQuotaClient& operator=(const MockQuotaClient&) = delete;
+
   ~MockQuotaClient() override;
 
   // To add or modify mock data in this client.
@@ -96,8 +99,6 @@ class MockQuotaClient : public mojom::QuotaClient {
   int mock_time_counter_;
 
   base::WeakPtrFactory<MockQuotaClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaClient);
 };
 
 }  // namespace storage

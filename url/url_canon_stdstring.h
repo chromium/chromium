@@ -37,6 +37,10 @@ namespace url {
 class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
  public:
   StdStringCanonOutput(std::string* str);
+
+  StdStringCanonOutput(const StdStringCanonOutput&) = delete;
+  StdStringCanonOutput& operator=(const StdStringCanonOutput&) = delete;
+
   ~StdStringCanonOutput() override;
 
   // Must be called after writing has completed but before the string is used.
@@ -46,7 +50,6 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
 
  protected:
   std::string* str_;
-  DISALLOW_COPY_AND_ASSIGN(StdStringCanonOutput);
 };
 
 // An extension of the Replacements class that allows the setters to use

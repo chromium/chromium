@@ -320,6 +320,9 @@ class ContextProviderImplTest : public base::MultiProcessTest {
     bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
   }
 
+  ContextProviderImplTest(const ContextProviderImplTest&) = delete;
+  ContextProviderImplTest& operator=(const ContextProviderImplTest&) = delete;
+
   ~ContextProviderImplTest() override {
     provider_ptr_.Unbind();
     base::RunLoop().RunUntilIdle();
@@ -416,8 +419,6 @@ class ContextProviderImplTest : public base::MultiProcessTest {
     base::OnceClosure on_change_cb_;
     fuchsia::web::NavigationState captured_state_;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(ContextProviderImplTest);
 };
 
 TEST_F(ContextProviderImplTest, CanCreateContext) {

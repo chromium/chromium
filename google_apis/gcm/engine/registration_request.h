@@ -124,6 +124,10 @@ class GCM_EXPORT RegistrationRequest {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       const std::string& source_to_record);
+
+  RegistrationRequest(const RegistrationRequest&) = delete;
+  RegistrationRequest& operator=(const RegistrationRequest&) = delete;
+
   ~RegistrationRequest();
 
   void Start();
@@ -162,8 +166,6 @@ class GCM_EXPORT RegistrationRequest {
   std::string source_to_record_;
 
   base::WeakPtrFactory<RegistrationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RegistrationRequest);
 };
 
 }  // namespace gcm

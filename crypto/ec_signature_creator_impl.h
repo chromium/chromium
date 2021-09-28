@@ -19,6 +19,10 @@ namespace crypto {
 class ECSignatureCreatorImpl : public ECSignatureCreator {
  public:
   explicit ECSignatureCreatorImpl(ECPrivateKey* key);
+
+  ECSignatureCreatorImpl(const ECSignatureCreatorImpl&) = delete;
+  ECSignatureCreatorImpl& operator=(const ECSignatureCreatorImpl&) = delete;
+
   ~ECSignatureCreatorImpl() override;
 
   bool Sign(base::span<const uint8_t> data,
@@ -29,8 +33,6 @@ class ECSignatureCreatorImpl : public ECSignatureCreator {
 
  private:
   ECPrivateKey* key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ECSignatureCreatorImpl);
 };
 
 }  // namespace crypto

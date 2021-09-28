@@ -32,6 +32,11 @@ class FakePepperInterfaceHtml5Fs : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterfaceHtml5Fs();
   explicit FakePepperInterfaceHtml5Fs(const FakeFilesystem& filesystem);
+
+  FakePepperInterfaceHtml5Fs(const FakePepperInterfaceHtml5Fs&) = delete;
+  FakePepperInterfaceHtml5Fs& operator=(const FakePepperInterfaceHtml5Fs&) =
+      delete;
+
   ~FakePepperInterfaceHtml5Fs();
 
   virtual PP_Instance GetInstance() { return instance_; }
@@ -55,8 +60,6 @@ class FakePepperInterfaceHtml5Fs : public nacl_io::PepperInterfaceDummy {
   FakeFileRefInterface file_ref_interface_;
   FakeFileIoInterface file_io_interface_;
   PP_Instance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterfaceHtml5Fs);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_HTML5_FS_H_

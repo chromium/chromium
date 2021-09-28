@@ -59,6 +59,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
       const scoped_refptr<FileSystemContext>& file_system_context);
   FileSystemOperationRunner(base::PassKey<FileSystemContext>,
                             FileSystemContext* file_system_context);
+
+  FileSystemOperationRunner(const FileSystemOperationRunner&) = delete;
+  FileSystemOperationRunner& operator=(const FileSystemOperationRunner&) =
+      delete;
+
   virtual ~FileSystemOperationRunner();
 
   // Cancels all inflight operations.
@@ -324,8 +329,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
 
   base::WeakPtr<FileSystemOperationRunner> weak_ptr_;
   base::WeakPtrFactory<FileSystemOperationRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationRunner);
 };
 
 }  // namespace storage

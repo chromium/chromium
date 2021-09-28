@@ -28,6 +28,11 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager final
   static std::unique_ptr<UrlRequestRewriteRulesManager> CreateForTesting();
 
   explicit UrlRequestRewriteRulesManager(content::WebContents* web_contents);
+
+  UrlRequestRewriteRulesManager(const UrlRequestRewriteRulesManager&) = delete;
+  UrlRequestRewriteRulesManager& operator=(
+      const UrlRequestRewriteRulesManager&) = delete;
+
   ~UrlRequestRewriteRulesManager() override;
 
   // Signals |rules| have been updated. Actual implementation for
@@ -57,8 +62,6 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager final
       active_remotes_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(UrlRequestRewriteRulesManager);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_URL_REQUEST_REWRITE_RULES_MANAGER_H_

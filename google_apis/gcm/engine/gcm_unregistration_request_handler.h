@@ -16,6 +16,12 @@ class GCM_EXPORT GCMUnregistrationRequestHandler :
     public UnregistrationRequest::CustomRequestHandler {
  public:
   GCMUnregistrationRequestHandler(const std::string& app_id);
+
+  GCMUnregistrationRequestHandler(const GCMUnregistrationRequestHandler&) =
+      delete;
+  GCMUnregistrationRequestHandler& operator=(
+      const GCMUnregistrationRequestHandler&) = delete;
+
   ~GCMUnregistrationRequestHandler() override;
 
   // UnregistrationRequest::CustomRequestHandler overrides:
@@ -26,8 +32,6 @@ class GCM_EXPORT GCMUnregistrationRequestHandler :
 
  private:
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMUnregistrationRequestHandler);
 };
 
 }  // namespace gcm

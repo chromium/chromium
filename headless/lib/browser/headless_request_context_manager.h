@@ -34,6 +34,11 @@ class HeadlessRequestContextManager {
 
   HeadlessRequestContextManager(const HeadlessBrowserContextOptions* options,
                                 base::FilePath user_data_path);
+
+  HeadlessRequestContextManager(const HeadlessRequestContextManager&) = delete;
+  HeadlessRequestContextManager& operator=(
+      const HeadlessRequestContextManager&) = delete;
+
   ~HeadlessRequestContextManager();
 
   void ConfigureNetworkContextParams(
@@ -63,8 +68,6 @@ class HeadlessRequestContextManager {
 
   mojo::PendingRemote<::network::mojom::NetworkContext> system_context_;
   std::unique_ptr<content::ResourceContext> resource_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessRequestContextManager);
 };
 
 }  // namespace headless

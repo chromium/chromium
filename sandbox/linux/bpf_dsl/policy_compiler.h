@@ -28,6 +28,10 @@ class SANDBOX_EXPORT PolicyCompiler {
   using PanicFunc = bpf_dsl::ResultExpr (*)(const char* error);
 
   PolicyCompiler(const Policy* policy, TrapRegistry* registry);
+
+  PolicyCompiler(const PolicyCompiler&) = delete;
+  PolicyCompiler& operator=(const PolicyCompiler&) = delete;
+
   ~PolicyCompiler();
 
   // Compile registers any trap handlers needed by the policy and
@@ -143,8 +147,6 @@ class SANDBOX_EXPORT PolicyCompiler {
 
   CodeGen gen_;
   bool has_unsafe_traps_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCompiler);
 };
 
 }  // namespace bpf_dsl

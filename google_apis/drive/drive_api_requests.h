@@ -115,6 +115,11 @@ bool ParseMultipartResponse(const std::string& content_type,
 class DriveApiPartialFieldRequest : public DriveUrlFetchRequestBase {
  public:
   explicit DriveApiPartialFieldRequest(RequestSender* sender);
+
+  DriveApiPartialFieldRequest(const DriveApiPartialFieldRequest&) = delete;
+  DriveApiPartialFieldRequest& operator=(const DriveApiPartialFieldRequest&) =
+      delete;
+
   ~DriveApiPartialFieldRequest() override;
 
   // Optional parameter.
@@ -131,8 +136,6 @@ class DriveApiPartialFieldRequest : public DriveUrlFetchRequestBase {
 
  private:
   std::string fields_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveApiPartialFieldRequest);
 };
 
 //============================ DriveApiDataRequest ===========================
@@ -151,6 +154,10 @@ class DriveApiDataRequest : public DriveApiPartialFieldRequest {
       : DriveApiPartialFieldRequest(sender), callback_(std::move(callback)) {
     DCHECK(!callback_.is_null());
   }
+
+  DriveApiDataRequest(const DriveApiDataRequest&) = delete;
+  DriveApiDataRequest& operator=(const DriveApiDataRequest&) = delete;
+
   ~DriveApiDataRequest() override {}
 
  protected:
@@ -201,8 +208,6 @@ class DriveApiDataRequest : public DriveApiPartialFieldRequest {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveApiDataRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveApiDataRequest);
 };
 
 //=============================== FilesGetRequest =============================
@@ -215,6 +220,10 @@ class FilesGetRequest : public DriveApiDataRequest<FileResource> {
   FilesGetRequest(RequestSender* sender,
                   const DriveApiUrlGenerator& url_generator,
                   FileResourceCallback callback);
+
+  FilesGetRequest(const FilesGetRequest&) = delete;
+  FilesGetRequest& operator=(const FilesGetRequest&) = delete;
+
   ~FilesGetRequest() override;
 
   // Required parameter.
@@ -235,8 +244,6 @@ class FilesGetRequest : public DriveApiDataRequest<FileResource> {
   const DriveApiUrlGenerator url_generator_;
   std::string file_id_;
   GURL embed_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesGetRequest);
 };
 
 //============================ FilesInsertRequest =============================
@@ -257,6 +264,10 @@ class FilesInsertRequest : public DriveApiDataRequest<FileResource> {
   FilesInsertRequest(RequestSender* sender,
                      const DriveApiUrlGenerator& url_generator,
                      FileResourceCallback callback);
+
+  FilesInsertRequest(const FilesInsertRequest&) = delete;
+  FilesInsertRequest& operator=(const FilesInsertRequest&) = delete;
+
   ~FilesInsertRequest() override;
 
   // Optional parameter
@@ -308,8 +319,6 @@ class FilesInsertRequest : public DriveApiDataRequest<FileResource> {
   std::vector<std::string> parents_;
   std::string title_;
   Properties properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesInsertRequest);
 };
 
 //============================== FilesPatchRequest ============================
@@ -322,6 +331,10 @@ class FilesPatchRequest : public DriveApiDataRequest<FileResource> {
   FilesPatchRequest(RequestSender* sender,
                     const DriveApiUrlGenerator& url_generator,
                     FileResourceCallback callback);
+
+  FilesPatchRequest(const FilesPatchRequest&) = delete;
+  FilesPatchRequest& operator=(const FilesPatchRequest&) = delete;
+
   ~FilesPatchRequest() override;
 
   // Required parameter.
@@ -388,8 +401,6 @@ class FilesPatchRequest : public DriveApiDataRequest<FileResource> {
   base::Time last_viewed_by_me_date_;
   std::vector<std::string> parents_;
   Properties properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesPatchRequest);
 };
 
 //============================= FilesCopyRequest ==============================
@@ -403,6 +414,10 @@ class FilesCopyRequest : public DriveApiDataRequest<FileResource> {
   FilesCopyRequest(RequestSender* sender,
                    const DriveApiUrlGenerator& url_generator,
                    FileResourceCallback callback);
+
+  FilesCopyRequest(const FilesCopyRequest&) = delete;
+  FilesCopyRequest& operator=(const FilesCopyRequest&) = delete;
+
   ~FilesCopyRequest() override;
 
   // Required parameter.
@@ -441,8 +456,6 @@ class FilesCopyRequest : public DriveApiDataRequest<FileResource> {
   base::Time modified_date_;
   std::vector<std::string> parents_;
   std::string title_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesCopyRequest);
 };
 
 //========================== TeamDriveListRequest =============================
@@ -458,6 +471,10 @@ class TeamDriveListRequest : public DriveApiDataRequest<TeamDriveList> {
   TeamDriveListRequest(RequestSender* sender,
                        const DriveApiUrlGenerator& url_generator,
                        TeamDriveListCallback callback);
+
+  TeamDriveListRequest(const TeamDriveListRequest&) = delete;
+  TeamDriveListRequest& operator=(const TeamDriveListRequest&) = delete;
+
   ~TeamDriveListRequest() override;
 
   // Optional parameter
@@ -477,8 +494,6 @@ class TeamDriveListRequest : public DriveApiDataRequest<TeamDriveList> {
   const DriveApiUrlGenerator url_generator_;
   int max_results_;
   std::string page_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(TeamDriveListRequest);
 };
 
 //========================== StartPageTokenRequest =============================
@@ -493,6 +508,10 @@ class StartPageTokenRequest : public DriveApiDataRequest<StartPageToken> {
   StartPageTokenRequest(RequestSender* sender,
                         const DriveApiUrlGenerator& url_generator,
                         StartPageTokenCallback callback);
+
+  StartPageTokenRequest(const StartPageTokenRequest&) = delete;
+  StartPageTokenRequest& operator=(const StartPageTokenRequest&) = delete;
+
   ~StartPageTokenRequest() override;
 
   // Optional parameter
@@ -508,8 +527,6 @@ class StartPageTokenRequest : public DriveApiDataRequest<StartPageToken> {
  private:
   const DriveApiUrlGenerator url_generator_;
   std::string team_drive_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartPageTokenRequest);
 };
 
 //============================= FilesListRequest =============================
@@ -525,6 +542,10 @@ class FilesListRequest : public DriveApiDataRequest<FileList> {
   FilesListRequest(RequestSender* sender,
                    const DriveApiUrlGenerator& url_generator,
                    FileListCallback callback);
+
+  FilesListRequest(const FilesListRequest&) = delete;
+  FilesListRequest& operator=(const FilesListRequest&) = delete;
+
   ~FilesListRequest() override;
 
   // Optional parameter
@@ -558,8 +579,6 @@ class FilesListRequest : public DriveApiDataRequest<FileList> {
   FilesListCorpora corpora_;
   std::string team_drive_id_;
   std::string q_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesListRequest);
 };
 
 //========================= FilesListNextPageRequest ==========================
@@ -571,6 +590,10 @@ class FilesListRequest : public DriveApiDataRequest<FileList> {
 class FilesListNextPageRequest : public DriveApiDataRequest<FileList> {
  public:
   FilesListNextPageRequest(RequestSender* sender, FileListCallback callback);
+
+  FilesListNextPageRequest(const FilesListNextPageRequest&) = delete;
+  FilesListNextPageRequest& operator=(const FilesListNextPageRequest&) = delete;
+
   ~FilesListNextPageRequest() override;
 
   const GURL& next_link() const { return next_link_; }
@@ -582,8 +605,6 @@ class FilesListNextPageRequest : public DriveApiDataRequest<FileList> {
 
  private:
   GURL next_link_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesListNextPageRequest);
 };
 
 //============================= FilesDeleteRequest =============================
@@ -596,6 +617,10 @@ class FilesDeleteRequest : public EntryActionRequest {
   FilesDeleteRequest(RequestSender* sender,
                      const DriveApiUrlGenerator& url_generator,
                      EntryActionCallback callback);
+
+  FilesDeleteRequest(const FilesDeleteRequest&) = delete;
+  FilesDeleteRequest& operator=(const FilesDeleteRequest&) = delete;
+
   ~FilesDeleteRequest() override;
 
   // Required parameter.
@@ -613,8 +638,6 @@ class FilesDeleteRequest : public EntryActionRequest {
   const DriveApiUrlGenerator url_generator_;
   std::string file_id_;
   std::string etag_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesDeleteRequest);
 };
 
 //============================= FilesTrashRequest ==============================
@@ -627,6 +650,10 @@ class FilesTrashRequest : public DriveApiDataRequest<FileResource> {
   FilesTrashRequest(RequestSender* sender,
                     const DriveApiUrlGenerator& url_generator,
                     FileResourceCallback callback);
+
+  FilesTrashRequest(const FilesTrashRequest&) = delete;
+  FilesTrashRequest& operator=(const FilesTrashRequest&) = delete;
+
   ~FilesTrashRequest() override;
 
   // Required parameter.
@@ -643,8 +670,6 @@ class FilesTrashRequest : public DriveApiDataRequest<FileResource> {
  private:
   const DriveApiUrlGenerator url_generator_;
   std::string file_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilesTrashRequest);
 };
 
 //============================== AboutGetRequest =============================
@@ -657,6 +682,10 @@ class AboutGetRequest : public DriveApiDataRequest<AboutResource> {
   AboutGetRequest(RequestSender* sender,
                   const DriveApiUrlGenerator& url_generator,
                   AboutResourceCallback callback);
+
+  AboutGetRequest(const AboutGetRequest&) = delete;
+  AboutGetRequest& operator=(const AboutGetRequest&) = delete;
+
   ~AboutGetRequest() override;
 
  protected:
@@ -665,8 +694,6 @@ class AboutGetRequest : public DriveApiDataRequest<AboutResource> {
 
  private:
   const DriveApiUrlGenerator url_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutGetRequest);
 };
 
 //============================ ChangesListRequest ============================
@@ -682,6 +709,10 @@ class ChangesListRequest : public DriveApiDataRequest<ChangeList> {
   ChangesListRequest(RequestSender* sender,
                      const DriveApiUrlGenerator& url_generator,
                      ChangeListCallback callback);
+
+  ChangesListRequest(const ChangesListRequest&) = delete;
+  ChangesListRequest& operator=(const ChangesListRequest&) = delete;
+
   ~ChangesListRequest() override;
 
   // Optional parameter
@@ -719,8 +750,6 @@ class ChangesListRequest : public DriveApiDataRequest<ChangeList> {
   std::string page_token_;
   int64_t start_change_id_;
   std::string team_drive_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChangesListRequest);
 };
 
 //======================== ChangesListNextPageRequest =========================
@@ -733,6 +762,11 @@ class ChangesListNextPageRequest : public DriveApiDataRequest<ChangeList> {
  public:
   ChangesListNextPageRequest(RequestSender* sender,
                              ChangeListCallback callback);
+
+  ChangesListNextPageRequest(const ChangesListNextPageRequest&) = delete;
+  ChangesListNextPageRequest& operator=(const ChangesListNextPageRequest&) =
+      delete;
+
   ~ChangesListNextPageRequest() override;
 
   const GURL& next_link() const { return next_link_; }
@@ -744,8 +778,6 @@ class ChangesListNextPageRequest : public DriveApiDataRequest<ChangeList> {
 
  private:
   GURL next_link_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChangesListNextPageRequest);
 };
 
 //========================== ChildrenInsertRequest ============================
@@ -758,6 +790,10 @@ class ChildrenInsertRequest : public EntryActionRequest {
   ChildrenInsertRequest(RequestSender* sender,
                         const DriveApiUrlGenerator& url_generator,
                         EntryActionCallback callback);
+
+  ChildrenInsertRequest(const ChildrenInsertRequest&) = delete;
+  ChildrenInsertRequest& operator=(const ChildrenInsertRequest&) = delete;
+
   ~ChildrenInsertRequest() override;
 
   // Required parameter.
@@ -779,8 +815,6 @@ class ChildrenInsertRequest : public EntryActionRequest {
   const DriveApiUrlGenerator url_generator_;
   std::string folder_id_;
   std::string id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildrenInsertRequest);
 };
 
 //========================== ChildrenDeleteRequest ============================
@@ -794,6 +828,10 @@ class ChildrenDeleteRequest : public EntryActionRequest {
   ChildrenDeleteRequest(RequestSender* sender,
                         const DriveApiUrlGenerator& url_generator,
                         EntryActionCallback callback);
+
+  ChildrenDeleteRequest(const ChildrenDeleteRequest&) = delete;
+  ChildrenDeleteRequest& operator=(const ChildrenDeleteRequest&) = delete;
+
   ~ChildrenDeleteRequest() override;
 
   // Required parameter.
@@ -812,8 +850,6 @@ class ChildrenDeleteRequest : public EntryActionRequest {
   const DriveApiUrlGenerator url_generator_;
   std::string child_id_;
   std::string folder_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildrenDeleteRequest);
 };
 
 //======================= InitiateUploadNewFileRequest =======================
@@ -832,6 +868,11 @@ class InitiateUploadNewFileRequest : public InitiateUploadRequestBase {
                                const std::string& parent_resource_id,
                                const std::string& title,
                                InitiateUploadCallback callback);
+
+  InitiateUploadNewFileRequest(const InitiateUploadNewFileRequest&) = delete;
+  InitiateUploadNewFileRequest& operator=(const InitiateUploadNewFileRequest&) =
+      delete;
+
   ~InitiateUploadNewFileRequest() override;
 
   // Optional parameters.
@@ -865,8 +906,6 @@ class InitiateUploadNewFileRequest : public InitiateUploadRequestBase {
   base::Time modified_date_;
   base::Time last_viewed_by_me_date_;
   Properties properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitiateUploadNewFileRequest);
 };
 
 //==================== InitiateUploadExistingFileRequest =====================
@@ -887,6 +926,12 @@ class InitiateUploadExistingFileRequest : public InitiateUploadRequestBase {
                                     const std::string& resource_id,
                                     const std::string& etag,
                                     InitiateUploadCallback callback);
+
+  InitiateUploadExistingFileRequest(const InitiateUploadExistingFileRequest&) =
+      delete;
+  InitiateUploadExistingFileRequest& operator=(
+      const InitiateUploadExistingFileRequest&) = delete;
+
   ~InitiateUploadExistingFileRequest() override;
 
   // Optional parameters.
@@ -929,8 +974,6 @@ class InitiateUploadExistingFileRequest : public InitiateUploadRequestBase {
   base::Time modified_date_;
   base::Time last_viewed_by_me_date_;
   Properties properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitiateUploadExistingFileRequest);
 };
 
 // Callback used for ResumeUpload() and GetUploadStatus().
@@ -954,6 +997,10 @@ class ResumeUploadRequest : public ResumeUploadRequestBase {
                       const base::FilePath& local_file_path,
                       UploadRangeCallback callback,
                       ProgressCallback progress_callback);
+
+  ResumeUploadRequest(const ResumeUploadRequest&) = delete;
+  ResumeUploadRequest& operator=(const ResumeUploadRequest&) = delete;
+
   ~ResumeUploadRequest() override;
 
  protected:
@@ -963,8 +1010,6 @@ class ResumeUploadRequest : public ResumeUploadRequestBase {
 
  private:
   UploadRangeCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResumeUploadRequest);
 };
 
 //========================== GetUploadStatusRequest ==========================
@@ -978,6 +1023,10 @@ class GetUploadStatusRequest : public GetUploadStatusRequestBase {
                          const GURL& upload_url,
                          int64_t content_length,
                          UploadRangeCallback callback);
+
+  GetUploadStatusRequest(const GetUploadStatusRequest&) = delete;
+  GetUploadStatusRequest& operator=(const GetUploadStatusRequest&) = delete;
+
   ~GetUploadStatusRequest() override;
 
  protected:
@@ -987,8 +1036,6 @@ class GetUploadStatusRequest : public GetUploadStatusRequestBase {
 
  private:
   UploadRangeCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUploadStatusRequest);
 };
 
 //======================= MultipartUploadNewFileDelegate =======================
@@ -1012,6 +1059,12 @@ class MultipartUploadNewFileDelegate : public MultipartUploadRequestBase {
                                  const DriveApiUrlGenerator& url_generator,
                                  FileResourceCallback callback,
                                  ProgressCallback progress_callback);
+
+  MultipartUploadNewFileDelegate(const MultipartUploadNewFileDelegate&) =
+      delete;
+  MultipartUploadNewFileDelegate& operator=(
+      const MultipartUploadNewFileDelegate&) = delete;
+
   ~MultipartUploadNewFileDelegate() override;
 
  protected:
@@ -1022,8 +1075,6 @@ class MultipartUploadNewFileDelegate : public MultipartUploadRequestBase {
  private:
   const bool has_modified_date_;
   const DriveApiUrlGenerator url_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipartUploadNewFileDelegate);
 };
 
 //====================== MultipartUploadExistingFileDelegate ===================
@@ -1049,6 +1100,12 @@ class MultipartUploadExistingFileDelegate : public MultipartUploadRequestBase {
                                       const DriveApiUrlGenerator& url_generator,
                                       FileResourceCallback callback,
                                       ProgressCallback progress_callback);
+
+  MultipartUploadExistingFileDelegate(
+      const MultipartUploadExistingFileDelegate&) = delete;
+  MultipartUploadExistingFileDelegate& operator=(
+      const MultipartUploadExistingFileDelegate&) = delete;
+
   ~MultipartUploadExistingFileDelegate() override;
 
  protected:
@@ -1062,8 +1119,6 @@ class MultipartUploadExistingFileDelegate : public MultipartUploadRequestBase {
   const std::string etag_;
   const bool has_modified_date_;
   const DriveApiUrlGenerator url_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipartUploadExistingFileDelegate);
 };
 
 //========================== DownloadFileRequest ==========================
@@ -1079,9 +1134,11 @@ class DownloadFileRequest : public DownloadFileRequestBase {
                       DownloadActionCallback download_action_callback,
                       const GetContentCallback& get_content_callback,
                       ProgressCallback progress_callback);
-  ~DownloadFileRequest() override;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileRequest);
+  DownloadFileRequest(const DownloadFileRequest&) = delete;
+  DownloadFileRequest& operator=(const DownloadFileRequest&) = delete;
+
+  ~DownloadFileRequest() override;
 };
 
 //========================== PermissionsInsertRequest ==========================
@@ -1109,6 +1166,10 @@ class PermissionsInsertRequest : public EntryActionRequest {
   PermissionsInsertRequest(RequestSender* sender,
                            const DriveApiUrlGenerator& url_generator,
                            EntryActionCallback callback);
+
+  PermissionsInsertRequest(const PermissionsInsertRequest&) = delete;
+  PermissionsInsertRequest& operator=(const PermissionsInsertRequest&) = delete;
+
   ~PermissionsInsertRequest() override;
 
   void set_id(const std::string& id) { id_ = id; }
@@ -1128,8 +1189,6 @@ class PermissionsInsertRequest : public EntryActionRequest {
   PermissionType type_;
   PermissionRole role_;
   std::string value_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsInsertRequest);
 };
 
 //======================= SingleBatchableDelegateRequest =======================
@@ -1139,6 +1198,12 @@ class SingleBatchableDelegateRequest : public DriveUrlFetchRequestBase {
  public:
   SingleBatchableDelegateRequest(RequestSender* sender,
                                  std::unique_ptr<BatchableDelegate> delegate);
+
+  SingleBatchableDelegateRequest(const SingleBatchableDelegateRequest&) =
+      delete;
+  SingleBatchableDelegateRequest& operator=(
+      const SingleBatchableDelegateRequest&) = delete;
+
   ~SingleBatchableDelegateRequest() override;
 
  private:
@@ -1159,8 +1224,6 @@ class SingleBatchableDelegateRequest : public DriveUrlFetchRequestBase {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SingleBatchableDelegateRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleBatchableDelegateRequest);
 };
 
 //========================== BatchUploadRequest ==========================
@@ -1168,20 +1231,25 @@ class SingleBatchableDelegateRequest : public DriveUrlFetchRequestBase {
 class BatchUploadChildEntry {
  public:
   explicit BatchUploadChildEntry(BatchableDelegate* request);
+
+  BatchUploadChildEntry(const BatchUploadChildEntry&) = delete;
+  BatchUploadChildEntry& operator=(const BatchUploadChildEntry&) = delete;
+
   ~BatchUploadChildEntry();
   std::unique_ptr<BatchableDelegate> request;
   bool prepared;
   int64_t data_offset;
   int64_t data_size;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BatchUploadChildEntry);
 };
 
 class BatchUploadRequest : public DriveUrlFetchRequestBase {
  public:
   BatchUploadRequest(RequestSender* sender,
                      const DriveApiUrlGenerator& url_generator);
+
+  BatchUploadRequest(const BatchUploadRequest&) = delete;
+  BatchUploadRequest& operator=(const BatchUploadRequest&) = delete;
+
   ~BatchUploadRequest() override;
 
   // Adds request to the batch request. The instance takes ownership of
@@ -1256,8 +1324,6 @@ class BatchUploadRequest : public DriveUrlFetchRequestBase {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BatchUploadRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatchUploadRequest);
 };
 
 }  // namespace drive

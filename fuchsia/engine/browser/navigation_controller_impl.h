@@ -27,6 +27,10 @@ class NavigationControllerImpl final
       public favicon::FaviconDriverObserver {
  public:
   explicit NavigationControllerImpl(content::WebContents* web_contents);
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
   ~NavigationControllerImpl() override;
 
   void AddBinding(
@@ -104,8 +108,6 @@ class NavigationControllerImpl final
   bool send_favicon_ = false;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 // Computes the differences from old_entry to new_entry and stores the result in

@@ -22,6 +22,10 @@ class HeadlessHandler : public DomainHandler,
  public:
   HeadlessHandler(HeadlessBrowserImpl* browser,
                   content::WebContents* web_contents);
+
+  HeadlessHandler(const HeadlessHandler&) = delete;
+  HeadlessHandler& operator=(const HeadlessHandler&) = delete;
+
   ~HeadlessHandler() override;
 
   // DomainHandler implementation
@@ -40,7 +44,6 @@ class HeadlessHandler : public DomainHandler,
   HeadlessBrowserImpl* browser_;
   content::WebContents* web_contents_;
   std::unique_ptr<HeadlessExperimental::Frontend> frontend_;
-  DISALLOW_COPY_AND_ASSIGN(HeadlessHandler);
 };
 
 }  // namespace protocol

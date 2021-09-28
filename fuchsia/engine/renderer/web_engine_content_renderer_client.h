@@ -17,6 +17,12 @@ class MultiSourceMemoryPressureMonitor;
 class WebEngineContentRendererClient : public content::ContentRendererClient {
  public:
   WebEngineContentRendererClient();
+
+  WebEngineContentRendererClient(const WebEngineContentRendererClient&) =
+      delete;
+  WebEngineContentRendererClient& operator=(
+      const WebEngineContentRendererClient&) = delete;
+
   ~WebEngineContentRendererClient() override;
 
   // Returns the WebEngineRenderFrameObserver corresponding to
@@ -61,8 +67,6 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // is limited.
   std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
       memory_pressure_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineContentRendererClient);
 };
 
 #endif  // FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_

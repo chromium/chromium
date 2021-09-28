@@ -58,6 +58,10 @@ class CookieManagerImplTest : public testing::Test {
         cookie_manager_(
             base::BindRepeating(&CookieManagerImplTest::GetNetworkContext,
                                 base::Unretained(this))) {}
+
+  CookieManagerImplTest(const CookieManagerImplTest&) = delete;
+  CookieManagerImplTest& operator=(const CookieManagerImplTest&) = delete;
+
   ~CookieManagerImplTest() override = default;
 
  protected:
@@ -140,9 +144,6 @@ class CookieManagerImplTest : public testing::Test {
   mojo::Remote<network::mojom::CookieManager> mojo_cookie_manager_;
 
   CookieManagerImpl cookie_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieManagerImplTest);
 };
 
 // Calls GetNext() on the supplied |iterator| and lets the caller express
@@ -153,6 +154,10 @@ class GetNextCookiesIteratorResult {
       fuchsia::web::CookiesIterator* iterator) {
     iterator->GetNext(cr_fuchsia::CallbackToFitFunction(result_.GetCallback()));
   }
+
+  GetNextCookiesIteratorResult(const GetNextCookiesIteratorResult&) = delete;
+  GetNextCookiesIteratorResult& operator=(const GetNextCookiesIteratorResult&) =
+      delete;
 
   ~GetNextCookiesIteratorResult() = default;
 
@@ -194,8 +199,6 @@ class GetNextCookiesIteratorResult {
 
  protected:
   base::test::TestFuture<std::vector<fuchsia::web::Cookie>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetNextCookiesIteratorResult);
 };
 
 }  // namespace

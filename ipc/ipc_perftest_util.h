@@ -71,6 +71,9 @@ class LockThreadAffinity {
  public:
   explicit LockThreadAffinity(int cpu_number);
 
+  LockThreadAffinity(const LockThreadAffinity&) = delete;
+  LockThreadAffinity& operator=(const LockThreadAffinity&) = delete;
+
   ~LockThreadAffinity();
 
  private:
@@ -80,8 +83,6 @@ class LockThreadAffinity {
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   cpu_set_t old_cpuset_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(LockThreadAffinity);
 };
 
 // Avoid core 0 due to conflicts with Intel's Power Gadget.

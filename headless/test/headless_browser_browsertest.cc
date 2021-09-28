@@ -342,6 +342,9 @@ class CookieSetter {
                        base::Unretained(this)));
   }
 
+  CookieSetter(const CookieSetter&) = delete;
+  CookieSetter& operator=(const CookieSetter&) = delete;
+
   ~CookieSetter() {
     web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
   }
@@ -361,8 +364,6 @@ class CookieSetter {
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<network::SetCookieResult> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSetter);
 };
 
 }  // namespace
@@ -571,6 +572,9 @@ class TraceHelper : public tracing::ExperimentalObserver {
         base::BindOnce(&TraceHelper::OnTracingStarted, base::Unretained(this)));
   }
 
+  TraceHelper(const TraceHelper&) = delete;
+  TraceHelper& operator=(const TraceHelper&) = delete;
+
   ~TraceHelper() override {
     target_->DetachClient(client_.get());
     EXPECT_FALSE(target_->IsAttached());
@@ -604,8 +608,6 @@ class TraceHelper : public tracing::ExperimentalObserver {
   std::unique_ptr<HeadlessDevToolsClient> client_;
 
   std::unique_ptr<base::ListValue> tracing_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceHelper);
 };
 
 }  // namespace

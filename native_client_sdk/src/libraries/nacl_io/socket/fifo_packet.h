@@ -28,6 +28,10 @@ class Packet;
 class FIFOPacket : public FIFOInterface {
  public:
   explicit FIFOPacket(size_t size);
+
+  FIFOPacket(const FIFOPacket&) = delete;
+  FIFOPacket& operator=(const FIFOPacket&) = delete;
+
   virtual ~FIFOPacket();
 
   virtual bool IsEmpty();
@@ -56,8 +60,6 @@ class FIFOPacket : public FIFOInterface {
   std::list<Packet*> packets_;
   uint32_t max_bytes_;
   uint32_t cur_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(FIFOPacket);
 };
 
 }  // namespace nacl_io

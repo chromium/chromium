@@ -34,6 +34,11 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   explicit HeadlessContentMainDelegate(
       std::unique_ptr<HeadlessBrowserImpl> browser);
   explicit HeadlessContentMainDelegate(HeadlessBrowser::Options options);
+
+  HeadlessContentMainDelegate(const HeadlessContentMainDelegate&) = delete;
+  HeadlessContentMainDelegate& operator=(const HeadlessContentMainDelegate&) =
+      delete;
+
   ~HeadlessContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation:
@@ -78,8 +83,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 
   std::unique_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowser::Options> options_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentMainDelegate);
 };
 
 }  // namespace headless

@@ -61,6 +61,11 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
       public internal::MessageDispatcher {
  public:
   HeadlessDevToolsClientImpl();
+
+  HeadlessDevToolsClientImpl(const HeadlessDevToolsClientImpl&) = delete;
+  HeadlessDevToolsClientImpl& operator=(const HeadlessDevToolsClientImpl&) =
+      delete;
+
   ~HeadlessDevToolsClientImpl() override;
 
   // HeadlessDevToolsClient implementation:
@@ -226,8 +231,6 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   tracing::ExperimentalDomain tracing_domain_;
   scoped_refptr<base::SequencedTaskRunner> browser_main_thread_;
   base::WeakPtrFactory<HeadlessDevToolsClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsClientImpl);
 };
 
 }  // namespace headless

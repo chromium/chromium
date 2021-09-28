@@ -116,6 +116,10 @@ intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,
 class DenyOpenPolicy : public bpf_dsl::Policy {
  public:
   explicit DenyOpenPolicy(InitializedOpenBroker* iob) : iob_(iob) {}
+
+  DenyOpenPolicy(const DenyOpenPolicy&) = delete;
+  DenyOpenPolicy& operator=(const DenyOpenPolicy&) = delete;
+
   ~DenyOpenPolicy() override {}
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -141,8 +145,6 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
 
  private:
   InitializedOpenBroker* iob_;
-
-  DISALLOW_COPY_AND_ASSIGN(DenyOpenPolicy);
 };
 
 // We use a InitializedOpenBroker class, so that we can run unsandboxed
@@ -493,6 +495,12 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
   explicit HandleFilesystemViaBrokerPolicy(BrokerProcess* broker_process,
                                            int denied_errno)
       : broker_process_(broker_process), denied_errno_(denied_errno) {}
+
+  HandleFilesystemViaBrokerPolicy(const HandleFilesystemViaBrokerPolicy&) =
+      delete;
+  HandleFilesystemViaBrokerPolicy& operator=(
+      const HandleFilesystemViaBrokerPolicy&) = delete;
+
   ~HandleFilesystemViaBrokerPolicy() override = default;
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -518,8 +526,6 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
  private:
   BrokerProcess* broker_process_;
   int denied_errno_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleFilesystemViaBrokerPolicy);
 };
 }  // namespace syscall_broker
 

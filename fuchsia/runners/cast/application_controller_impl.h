@@ -19,6 +19,11 @@ class ApplicationControllerImpl final
  public:
   ApplicationControllerImpl(fuchsia::web::Frame* frame,
                             chromium::cast::ApplicationContext* context);
+
+  ApplicationControllerImpl(const ApplicationControllerImpl&) = delete;
+  ApplicationControllerImpl& operator=(const ApplicationControllerImpl&) =
+      delete;
+
   ~ApplicationControllerImpl() override;
 
  protected:
@@ -33,8 +38,6 @@ class ApplicationControllerImpl final
  private:
   fidl::Binding<chromium::cast::ApplicationController> binding_;
   fuchsia::web::Frame* const frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationControllerImpl);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_APPLICATION_CONTROLLER_IMPL_H_

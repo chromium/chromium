@@ -18,6 +18,10 @@ namespace perf_test {
 class LuciTestResultTest : public testing::Test {
  public:
   LuciTestResultTest() = default;
+
+  LuciTestResultTest(const LuciTestResultTest&) = delete;
+  LuciTestResultTest& operator=(const LuciTestResultTest&) = delete;
+
   ~LuciTestResultTest() override = default;
 
   // testing::Test:
@@ -53,8 +57,6 @@ class LuciTestResultTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LuciTestResultTest);
 };
 
 TEST_F(LuciTestResultTest, Basic) {

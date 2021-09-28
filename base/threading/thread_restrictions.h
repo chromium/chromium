@@ -506,14 +506,18 @@ INLINE_OR_NOT_TAIL_CALLED void DisallowBaseSyncPrimitives()
 class BASE_EXPORT ScopedDisallowBaseSyncPrimitives {
  public:
   ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowBaseSyncPrimitives(const ScopedDisallowBaseSyncPrimitives&) =
+      delete;
+  ScopedDisallowBaseSyncPrimitives& operator=(
+      const ScopedDisallowBaseSyncPrimitives&) = delete;
+
   ~ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisallowBaseSyncPrimitives);
 };
 
 class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
@@ -731,14 +735,16 @@ INLINE_OR_NOT_TAIL_CALLED void DisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 class BASE_EXPORT ScopedDisallowSingleton {
  public:
   ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowSingleton(const ScopedDisallowSingleton&) = delete;
+  ScopedDisallowSingleton& operator=(const ScopedDisallowSingleton&) = delete;
+
   ~ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisallowSingleton);
 };
 
 // Asserts that running long CPU work is allowed in the current scope.

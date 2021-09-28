@@ -23,6 +23,10 @@ class LifecycleImpl : public ::fuchsia::modular::Lifecycle {
  public:
   LifecycleImpl(sys::OutgoingDirectory* outgoing_directory,
                 base::OnceClosure on_terminate);
+
+  LifecycleImpl(const LifecycleImpl&) = delete;
+  LifecycleImpl& operator=(const LifecycleImpl&) = delete;
+
   ~LifecycleImpl() override;
 
   // fuchsia::modular::Lifecycle implementation.
@@ -32,8 +36,6 @@ class LifecycleImpl : public ::fuchsia::modular::Lifecycle {
   const base::ScopedServiceBinding<::fuchsia::modular::Lifecycle> binding_;
 
   base::OnceClosure on_terminate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleImpl);
 };
 
 }  // namespace cr_fuchsia

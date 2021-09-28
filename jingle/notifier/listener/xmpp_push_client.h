@@ -41,6 +41,10 @@ class XmppPushClient :
       public SendPingTaskDelegate {
  public:
   explicit XmppPushClient(const NotifierOptions& notifier_options);
+
+  XmppPushClient(const XmppPushClient&) = delete;
+  XmppPushClient& operator=(const XmppPushClient&) = delete;
+
   ~XmppPushClient() override;
 
   // PushClient implementation.
@@ -85,8 +89,6 @@ class XmppPushClient :
   base::WeakPtr<jingle_xmpp::XmppTaskParentInterface> base_task_;
 
   std::vector<Notification> pending_notifications_to_send_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmppPushClient);
 };
 
 }  // namespace notifier

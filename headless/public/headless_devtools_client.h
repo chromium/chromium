@@ -124,16 +124,20 @@ class Domain;
 // An interface for controlling and receiving events from a devtools target.
 class HEADLESS_EXPORT HeadlessDevToolsClient {
  public:
+  HeadlessDevToolsClient(const HeadlessDevToolsClient&) = delete;
+  HeadlessDevToolsClient& operator=(const HeadlessDevToolsClient&) = delete;
+
   virtual ~HeadlessDevToolsClient() {}
 
   class HEADLESS_EXPORT ExternalHost {
    public:
     ExternalHost() {}
+
+    ExternalHost(const ExternalHost&) = delete;
+    ExternalHost& operator=(const ExternalHost&) = delete;
+
     virtual ~ExternalHost() {}
     virtual void SendProtocolMessage(base::span<const uint8_t> message) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ExternalHost);
   };
 
   static std::unique_ptr<HeadlessDevToolsClient> Create();
@@ -185,15 +189,16 @@ class HEADLESS_EXPORT HeadlessDevToolsClient {
   class HEADLESS_EXPORT RawProtocolListener {
    public:
     RawProtocolListener() {}
+
+    RawProtocolListener(const RawProtocolListener&) = delete;
+    RawProtocolListener& operator=(const RawProtocolListener&) = delete;
+
     virtual ~RawProtocolListener() {}
 
     // Returns true if the listener handled the message.
     virtual bool OnProtocolMessage(
         base::span<const uint8_t> json_message,
         const base::DictionaryValue& parsed_message) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RawProtocolListener);
   };
 
   virtual void AttachToChannel(
@@ -222,8 +227,6 @@ class HEADLESS_EXPORT HeadlessDevToolsClient {
   friend class HeadlessDevToolsClientImpl;
 
   HeadlessDevToolsClient() {}
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsClient);
 };
 
 }  // namespace headless

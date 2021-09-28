@@ -28,6 +28,11 @@ class ScopedTestNSSDB;
 class CRYPTO_EXPORT ScopedTestSystemNSSKeySlot {
  public:
   ScopedTestSystemNSSKeySlot();
+
+  ScopedTestSystemNSSKeySlot(const ScopedTestSystemNSSKeySlot&) = delete;
+  ScopedTestSystemNSSKeySlot& operator=(const ScopedTestSystemNSSKeySlot&) =
+      delete;
+
   ~ScopedTestSystemNSSKeySlot();
 
   bool ConstructedSuccessfully() const;
@@ -35,8 +40,6 @@ class CRYPTO_EXPORT ScopedTestSystemNSSKeySlot {
 
  private:
   std::unique_ptr<ScopedTestNSSDB> test_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestSystemNSSKeySlot);
 };
 
 }  // namespace crypto

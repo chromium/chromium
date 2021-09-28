@@ -36,11 +36,14 @@ CRYPTO_EXPORT ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
 class CRYPTO_EXPORT AutoSECMODListReadLock {
  public:
   AutoSECMODListReadLock();
+
+  AutoSECMODListReadLock(const AutoSECMODListReadLock&) = delete;
+  AutoSECMODListReadLock& operator=(const AutoSECMODListReadLock&) = delete;
+
   ~AutoSECMODListReadLock();
 
  private:
   SECMODListLock* lock_;
-  DISALLOW_COPY_AND_ASSIGN(AutoSECMODListReadLock);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

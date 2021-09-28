@@ -30,6 +30,12 @@ class PushNotificationsSubscribeTask : public jingle_xmpp::XmppTask {
   PushNotificationsSubscribeTask(jingle_xmpp::XmppTaskParentInterface* parent,
                                  const SubscriptionList& subscriptions,
                                  Delegate* delegate);
+
+  PushNotificationsSubscribeTask(const PushNotificationsSubscribeTask&) =
+      delete;
+  PushNotificationsSubscribeTask& operator=(
+      const PushNotificationsSubscribeTask&) = delete;
+
   ~PushNotificationsSubscribeTask() override;
 
   // Overridden from XmppTask.
@@ -48,8 +54,6 @@ class PushNotificationsSubscribeTask : public jingle_xmpp::XmppTask {
 
   FRIEND_TEST_ALL_PREFIXES(PushNotificationsSubscribeTaskTest,
                            MakeSubscriptionMessage);
-
-  DISALLOW_COPY_AND_ASSIGN(PushNotificationsSubscribeTask);
 };
 
 typedef PushNotificationsSubscribeTask::Delegate

@@ -39,6 +39,10 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   // Constructs a sandbox starter helper. The |build_sdk_int| and |device| are
   // used to detect whether Seccomp is supported.
   SeccompStarterAndroid(int build_sdk_int, const char* device);
+
+  SeccompStarterAndroid(const SeccompStarterAndroid&) = delete;
+  SeccompStarterAndroid& operator=(const SeccompStarterAndroid&) = delete;
+
   ~SeccompStarterAndroid();
 
   // Sets the BPF policy to apply. This must be called before StartSandbox()
@@ -64,8 +68,6 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   const char* const device_;
   SeccompSandboxStatus status_ = SeccompSandboxStatus::NOT_SUPPORTED;
   std::unique_ptr<bpf_dsl::Policy> policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeccompStarterAndroid);
 };
 
 }  // namespace sandbox

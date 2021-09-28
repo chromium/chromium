@@ -56,6 +56,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
       scoped_refptr<SpecialStoragePolicy> special_storage_policy,
       const FileSystemOptions& file_system_options,
       leveldb::Env* env_override);
+
+  PluginPrivateFileSystemBackend(const PluginPrivateFileSystemBackend&) =
+      delete;
+  PluginPrivateFileSystemBackend& operator=(
+      const PluginPrivateFileSystemBackend&) = delete;
+
   ~PluginPrivateFileSystemBackend() override;
 
   // This must be used to open 'private' filesystem instead of regular
@@ -151,8 +157,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   std::unique_ptr<AsyncFileUtil> file_util_;
   FileSystemIDToPluginMap* plugin_map_;  // Owned by file_util_.
   base::WeakPtrFactory<PluginPrivateFileSystemBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPrivateFileSystemBackend);
 };
 
 }  // namespace storage

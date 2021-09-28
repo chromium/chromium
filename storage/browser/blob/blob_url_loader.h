@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
       const net::HttpRequestHeaders& headers,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       std::unique_ptr<BlobDataHandle> blob_handle);
+
+  BlobURLLoader(const BlobURLLoader&) = delete;
+  BlobURLLoader& operator=(const BlobURLLoader&) = delete;
+
   ~BlobURLLoader() override;
 
  private:
@@ -95,8 +99,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
   mojo::ScopedDataPipeConsumerHandle response_body_consumer_handle_;
 
   base::WeakPtrFactory<BlobURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobURLLoader);
 };
 
 }  // namespace storage

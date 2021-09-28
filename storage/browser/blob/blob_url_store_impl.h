@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
  public:
   BlobURLStoreImpl(base::WeakPtr<BlobUrlRegistry> registry,
                    BlobRegistryImpl::Delegate* delegate);
+
+  BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
+  BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
+
   ~BlobURLStoreImpl() override;
 
   void Register(
@@ -50,7 +54,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   std::set<GURL> urls_;
 
   base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobURLStoreImpl);
 };
 
 }  // namespace storage

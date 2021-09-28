@@ -164,6 +164,9 @@ class IsolatedContext::Instance {
   // could be registered by IsolatedContext::RegisterDraggedFileSystem().
   Instance(FileSystemType type, const std::set<MountPointInfo>& files);
 
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
+
   ~Instance();
 
   FileSystemType type() const { return type_; }
@@ -194,8 +197,6 @@ class IsolatedContext::Instance {
   // Reference counts. Note that an isolated filesystem is created with ref==0
   // and will get deleted when the ref count reaches <=0.
   int ref_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Instance);
 };
 
 IsolatedContext::Instance::Instance(FileSystemType type,

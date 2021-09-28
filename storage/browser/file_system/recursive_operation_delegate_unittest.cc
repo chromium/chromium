@@ -43,6 +43,11 @@ class LoggingRecursiveOperation : public RecursiveOperationDelegate {
       : RecursiveOperationDelegate(file_system_context),
         root_(root),
         callback_(std::move(callback)) {}
+
+  LoggingRecursiveOperation(const LoggingRecursiveOperation&) = delete;
+  LoggingRecursiveOperation& operator=(const LoggingRecursiveOperation&) =
+      delete;
+
   ~LoggingRecursiveOperation() override = default;
 
   const std::vector<LogEntry>& log_entries() const { return log_entries_; }
@@ -115,7 +120,6 @@ class LoggingRecursiveOperation : public RecursiveOperationDelegate {
   FileSystemURL error_url_;
 
   base::WeakPtrFactory<LoggingRecursiveOperation> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LoggingRecursiveOperation);
 };
 
 void ReportStatus(base::File::Error* out_error, base::File::Error error) {

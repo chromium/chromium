@@ -23,6 +23,10 @@ class BrokerHost {
   BrokerHost(const BrokerPermissionList& broker_permission_list,
              const BrokerCommandSet& allowed_command_set,
              BrokerChannel::EndPoint ipc_channel);
+
+  BrokerHost(const BrokerHost&) = delete;
+  BrokerHost& operator=(const BrokerHost&) = delete;
+
   ~BrokerHost();
 
   // Receive system call requests and handle them forevermore.
@@ -32,8 +36,6 @@ class BrokerHost {
   const BrokerPermissionList& broker_permission_list_;
   const BrokerCommandSet allowed_command_set_;
   const BrokerChannel::EndPoint ipc_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerHost);
 };
 
 }  // namespace syscall_broker

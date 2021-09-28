@@ -29,6 +29,10 @@ class URLLoaderImpl : public ::fuchsia::net::oldhttp::URLLoader,
   URLLoaderImpl(
       std::unique_ptr<net::URLRequestContext> context,
       ::fidl::InterfaceRequest<::fuchsia::net::oldhttp::URLLoader> request);
+
+  URLLoaderImpl(const URLLoaderImpl&) = delete;
+  URLLoaderImpl& operator=(const URLLoaderImpl&) = delete;
+
   ~URLLoaderImpl() override;
 
   // Returns the number of active requests. Used for testing.
@@ -118,8 +122,6 @@ class URLLoaderImpl : public ::fuchsia::net::oldhttp::URLLoader,
   // writable, |buffered_bytes_| is used to store the number of bytes waiting
   // in |buffer_|.
   int buffered_bytes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderImpl);
 };
 
 #endif  // FUCHSIA_HTTP_URL_LOADER_IMPL_H_

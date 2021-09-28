@@ -16,6 +16,9 @@ class HandleToFile {
  public:
   HandleToFile() { file_ = nullptr; }
 
+  HandleToFile(const HandleToFile&) = delete;
+  HandleToFile& operator=(const HandleToFile&) = delete;
+
   // Note: c_file_handle_ does not need to be closed because fclose does it.
   ~HandleToFile() {
     if (file_) {
@@ -57,8 +60,6 @@ class HandleToFile {
  private:
   // the FILE* returned. We need to closed it at the end.
   FILE* file_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleToFile);
 };
 
 #endif  // SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_

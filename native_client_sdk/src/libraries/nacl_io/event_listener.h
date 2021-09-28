@@ -91,6 +91,10 @@ typedef std::map<EventEmitter*, EventRequest*> EmitterRequestMap_t;
 class EventListener {
  public:
   EventListener();
+
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+
   ~EventListener();
 
   // Called by EventEmitter to signal the Listener that a new event is
@@ -99,7 +103,6 @@ class EventListener {
 
  protected:
   pthread_cond_t signal_cond_;
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 // EventListenerLock
@@ -111,6 +114,10 @@ class EventListener {
 class EventListenerLock : public EventListener {
  public:
   explicit EventListenerLock(EventEmitter* emitter);
+
+  EventListenerLock(const EventListenerLock&) = delete;
+  EventListenerLock& operator=(const EventListenerLock&) = delete;
+
   ~EventListenerLock();
 
   // Called by EventEmitter to signal the Listener that a new event is
@@ -130,7 +137,6 @@ class EventListenerLock : public EventListener {
  private:
   EventEmitter* emitter_;
   sdk_util::AutoLock* lock_;
-  DISALLOW_COPY_AND_ASSIGN(EventListenerLock);
 };
 
 class EventListenerPoll : public EventListener {

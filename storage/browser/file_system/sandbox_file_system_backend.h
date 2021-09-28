@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
     : public FileSystemBackend {
  public:
   explicit SandboxFileSystemBackend(SandboxFileSystemBackendDelegate* delegate);
+
+  SandboxFileSystemBackend(const SandboxFileSystemBackend&) = delete;
+  SandboxFileSystemBackend& operator=(const SandboxFileSystemBackend&) = delete;
+
   ~SandboxFileSystemBackend() override;
 
   // FileSystemBackend overrides.
@@ -75,8 +79,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
 
  private:
   SandboxFileSystemBackendDelegate* delegate_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileSystemBackend);
 };
 
 }  // namespace storage

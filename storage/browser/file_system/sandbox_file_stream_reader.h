@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
                           const FileSystemURL& url,
                           int64_t initial_offset,
                           const base::Time& expected_modification_time);
+
+  SandboxFileStreamReader(const SandboxFileStreamReader&) = delete;
+  SandboxFileStreamReader& operator=(const SandboxFileStreamReader&) = delete;
+
   ~SandboxFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -74,8 +78,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   scoped_refptr<ShareableFileReference> snapshot_ref_;
   bool has_pending_create_snapshot_;
   base::WeakPtrFactory<SandboxFileStreamReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileStreamReader);
 };
 
 }  // namespace storage

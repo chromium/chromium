@@ -20,6 +20,10 @@
 class FakePepperInterface : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterface();
+
+  FakePepperInterface(const FakePepperInterface&) = delete;
+  FakePepperInterface& operator=(const FakePepperInterface&) = delete;
+
   virtual ~FakePepperInterface();
 
   virtual nacl_io::CoreInterface* GetCoreInterface();
@@ -48,8 +52,6 @@ class FakePepperInterface : public nacl_io::PepperInterfaceDummy {
   FakeVarDictionaryInterface var_dictionary_interface_;
   FakeHostResolverInterface resolver_interface_;
   FakeNetAddressInterface net_address_interface_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_H_

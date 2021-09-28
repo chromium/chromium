@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
       std::unique_ptr<FileSystemOperationContext> operation_context,
       base::PassKey<FileSystemOperation>);
 
+  FileSystemOperationImpl(const FileSystemOperationImpl&) = delete;
+  FileSystemOperationImpl& operator=(const FileSystemOperationImpl&) = delete;
+
   ~FileSystemOperationImpl() override;
 
   // FileSystemOperation overrides.
@@ -210,8 +213,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
 
   base::WeakPtr<FileSystemOperationImpl> weak_ptr_;
   base::WeakPtrFactory<FileSystemOperationImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationImpl);
 };
 
 }  // namespace storage

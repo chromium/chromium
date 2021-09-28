@@ -83,6 +83,10 @@ class Message;
 class TestSink : public Channel {
  public:
   TestSink();
+
+  TestSink(const TestSink&) = delete;
+  TestSink& operator=(const TestSink&) = delete;
+
   ~TestSink() override;
 
   // Interface in IPC::Channel. This copies the message to the sink and then
@@ -132,8 +136,6 @@ class TestSink : public Channel {
   // The actual list of received messages.
   std::vector<Message> messages_;
   base::ObserverList<Listener>::Unchecked filter_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSink);
 };
 
 }  // namespace IPC

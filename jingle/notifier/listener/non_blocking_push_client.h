@@ -39,6 +39,10 @@ class NonBlockingPushClient : public PushClient {
   explicit NonBlockingPushClient(
       const scoped_refptr<base::SingleThreadTaskRunner>& delegate_task_runner,
       CreateBlockingPushClientCallback create_blocking_push_client_callback);
+
+  NonBlockingPushClient(const NonBlockingPushClient&) = delete;
+  NonBlockingPushClient& operator=(const NonBlockingPushClient&) = delete;
+
   ~NonBlockingPushClient() override;
 
   // PushClient implementation.
@@ -67,8 +71,6 @@ class NonBlockingPushClient : public PushClient {
   base::ObserverList<PushClientObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<NonBlockingPushClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NonBlockingPushClient);
 };
 
 }  // namespace notifier

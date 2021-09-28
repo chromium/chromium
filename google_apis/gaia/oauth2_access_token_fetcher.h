@@ -24,6 +24,10 @@
 class OAuth2AccessTokenFetcher {
  public:
   explicit OAuth2AccessTokenFetcher(OAuth2AccessTokenConsumer* consumer);
+
+  OAuth2AccessTokenFetcher(const OAuth2AccessTokenFetcher&) = delete;
+  OAuth2AccessTokenFetcher& operator=(const OAuth2AccessTokenFetcher&) = delete;
+
   virtual ~OAuth2AccessTokenFetcher();
 
   // Starts the flow with the given parameters.
@@ -49,8 +53,6 @@ class OAuth2AccessTokenFetcher {
 
  private:
   OAuth2AccessTokenConsumer* const consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenFetcher);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_H_

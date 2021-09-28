@@ -19,6 +19,10 @@ namespace sandbox {
 class SignedDispatcher : public Dispatcher {
  public:
   explicit SignedDispatcher(PolicyBase* policy_base);
+
+  SignedDispatcher(const SignedDispatcher&) = delete;
+  SignedDispatcher& operator=(const SignedDispatcher&) = delete;
+
   ~SignedDispatcher() override {}
 
   // Dispatcher interface.
@@ -29,7 +33,6 @@ class SignedDispatcher : public Dispatcher {
   bool CreateSection(IPCInfo* ipc, HANDLE file_handle);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(SignedDispatcher);
 };
 
 }  // namespace sandbox

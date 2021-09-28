@@ -19,6 +19,10 @@ class FakeResourceTracker;
 class FakeResourceManager {
  public:
   FakeResourceManager();
+
+  FakeResourceManager(const FakeResourceManager&) = delete;
+  FakeResourceManager& operator=(const FakeResourceManager&) = delete;
+
   ~FakeResourceManager();
 
   PP_Resource Create(FakeResource* resource,
@@ -37,8 +41,6 @@ class FakeResourceManager {
   PP_Resource next_handle_;
   ResourceMap resource_map_;
   sdk_util::SimpleLock lock_;  // Protects next_handle_ and resource_map_.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeResourceManager);
 };
 
 // FakeResourceTracker wraps a FakeResource to keep metadata about the
@@ -49,6 +51,10 @@ class FakeResourceTracker {
                       const char* classname,
                       const char* file,
                       int line);
+
+  FakeResourceTracker(const FakeResourceTracker&) = delete;
+  FakeResourceTracker& operator=(const FakeResourceTracker&) = delete;
+
   ~FakeResourceTracker();
 
   void AddRef() { sdk_util::AtomicAddFetch(&ref_count_, 1); }
@@ -85,21 +91,20 @@ class FakeResourceTracker {
   const char* file_;        // Weak reference.
   int line_;
   int32_t ref_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeResourceTracker);
 };
 
 class FakeResource {
  public:
   FakeResource() {}
+
+  FakeResource(const FakeResource&) = delete;
+  FakeResource& operator=(const FakeResource&) = delete;
+
   // Called when the resource is destroyed. For debugging purposes, this does
   // not happen until the resource manager is destroyed.
   virtual ~FakeResource() {}
   // Called when the last reference to the resource is released.
   virtual void Destroy() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeResource);
 };
 
 template <typename T>

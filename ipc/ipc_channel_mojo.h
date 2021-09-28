@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 
+  ChannelMojo(const ChannelMojo&) = delete;
+  ChannelMojo& operator=(const ChannelMojo&) = delete;
+
   ~ChannelMojo() override;
 
   // Channel implementation
@@ -132,8 +135,6 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       associated_interfaces_;
 
   base::WeakPtrFactory<ChannelMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMojo);
 };
 
 }  // namespace IPC

@@ -72,6 +72,10 @@ class ControllerMemoryDumpProvider
         this, "IPCChannel", nullptr);
   }
 
+  ControllerMemoryDumpProvider(const ControllerMemoryDumpProvider&) = delete;
+  ControllerMemoryDumpProvider& operator=(const ControllerMemoryDumpProvider&) =
+      delete;
+
   ~ControllerMemoryDumpProvider() override {
     base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
         this);
@@ -94,8 +98,6 @@ class ControllerMemoryDumpProvider
  private:
   base::Lock lock_;
   std::set<ChannelAssociatedGroupController*> controllers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerMemoryDumpProvider);
 };
 
 ControllerMemoryDumpProvider& GetMemoryDumpProvider() {
@@ -436,6 +438,9 @@ class ChannelAssociatedGroupController
     MessageWrapper(MessageWrapper&& other)
         : controller_(other.controller_), value_(std::move(other.value_)) {}
 
+    MessageWrapper(const MessageWrapper&) = delete;
+    MessageWrapper& operator=(const MessageWrapper&) = delete;
+
     ~MessageWrapper() {
       if (value_.associated_endpoint_handles()->empty())
         return;
@@ -458,8 +463,6 @@ class ChannelAssociatedGroupController
    private:
     ChannelAssociatedGroupController* controller_ = nullptr;
     mojo::Message value_;
-
-    DISALLOW_COPY_AND_ASSIGN(MessageWrapper);
   };
 
   class Endpoint : public base::RefCountedThreadSafe<Endpoint>,
@@ -1129,6 +1132,9 @@ class MojoBootstrapImpl : public MojoBootstrap {
         associated_group_(controller),
         handle_(std::move(handle)) {}
 
+  MojoBootstrapImpl(const MojoBootstrapImpl&) = delete;
+  MojoBootstrapImpl& operator=(const MojoBootstrapImpl&) = delete;
+
   ~MojoBootstrapImpl() override {
     controller_->ShutDown();
   }
@@ -1162,8 +1168,6 @@ class MojoBootstrapImpl : public MojoBootstrap {
   mojo::AssociatedGroup associated_group_;
 
   mojo::ScopedMessagePipeHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoBootstrapImpl);
 };
 
 }  // namespace

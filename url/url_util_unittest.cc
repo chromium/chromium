@@ -20,12 +20,14 @@ namespace url {
 class URLUtilTest : public testing::Test {
  public:
   URLUtilTest() = default;
+
+  URLUtilTest(const URLUtilTest&) = delete;
+  URLUtilTest& operator=(const URLUtilTest&) = delete;
+
   ~URLUtilTest() override = default;
 
  private:
   ScopedSchemeRegistryForTests scoped_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLUtilTest);
 };
 
 TEST_F(URLUtilTest, FindAndCompareScheme) {

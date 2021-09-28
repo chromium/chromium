@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // If 'path' is empty, an in memory database will be used.
   explicit QuotaDatabase(const base::FilePath& path);
+
+  QuotaDatabase(const QuotaDatabase&) = delete;
+  QuotaDatabase& operator=(const QuotaDatabase&) = delete;
+
   ~QuotaDatabase();
 
   // Returns whether the record could be found.
@@ -300,7 +304,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kIndexCount;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(QuotaDatabase);
 };
 
 }  // namespace storage

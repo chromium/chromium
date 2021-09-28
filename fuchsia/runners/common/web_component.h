@@ -46,6 +46,9 @@ class WebComponent : public fuchsia::sys::ComponentController,
                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                    controller_request);
 
+  WebComponent(const WebComponent&) = delete;
+  WebComponent& operator=(const WebComponent&) = delete;
+
   ~WebComponent() override;
 
   // Enables remote debugging on this WebComponent. Must be called before
@@ -137,8 +140,6 @@ class WebComponent : public fuchsia::sys::ComponentController,
   // process crashes.
   fidl::Binding<fuchsia::web::NavigationEventListener>
       navigation_listener_binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebComponent);
 };
 
 #endif  // FUCHSIA_RUNNERS_COMMON_WEB_COMPONENT_H_

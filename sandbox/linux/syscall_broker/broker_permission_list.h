@@ -31,6 +31,9 @@ class BrokerPermissionList {
   BrokerPermissionList(int denied_errno,
                        const std::vector<BrokerFilePermission>& permissions);
 
+  BrokerPermissionList(const BrokerPermissionList&) = delete;
+  BrokerPermissionList& operator=(const BrokerPermissionList&) = delete;
+
   ~BrokerPermissionList();
 
   // Check if calling access() should be allowed on |requested_filename| with
@@ -88,8 +91,6 @@ class BrokerPermissionList {
   // permissions_ and is used in async signal safe methods.
   const BrokerFilePermission* permissions_array_;
   const size_t num_of_permissions_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerPermissionList);
 };
 
 }  // namespace syscall_broker

@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
     MemoryAllocation(base::WeakPtr<BlobMemoryController> controller,
                      uint64_t item_id,
                      size_t length);
+
+    MemoryAllocation(const MemoryAllocation&) = delete;
+    MemoryAllocation& operator=(const MemoryAllocation&) = delete;
+
     ~MemoryAllocation();
 
     size_t length() const { return length_; }
@@ -95,8 +99,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
     base::WeakPtr<BlobMemoryController> controller_;
     uint64_t item_id_;
     size_t length_;
-
-    DISALLOW_COPY_AND_ASSIGN(MemoryAllocation);
   };
 
   class QuotaAllocationTask {

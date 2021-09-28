@@ -50,10 +50,11 @@ class WebEngineBrowserContext::ResourceContext
     : public content::ResourceContext {
  public:
   ResourceContext() = default;
-  ~ResourceContext() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceContext);
+  ResourceContext(const ResourceContext&) = delete;
+  ResourceContext& operator=(const ResourceContext&) = delete;
+
+  ~ResourceContext() override = default;
 };
 
 // static

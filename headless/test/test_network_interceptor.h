@@ -19,6 +19,10 @@ class TestNetworkInterceptor {
   class Impl;
 
   TestNetworkInterceptor();
+
+  TestNetworkInterceptor(const TestNetworkInterceptor&) = delete;
+  TestNetworkInterceptor& operator=(const TestNetworkInterceptor&) = delete;
+
   ~TestNetworkInterceptor();
 
   struct Response {
@@ -54,8 +58,6 @@ class TestNetworkInterceptor {
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 
   base::WeakPtrFactory<TestNetworkInterceptor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkInterceptor);
 };
 
 }  // namespace headless

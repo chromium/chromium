@@ -31,6 +31,10 @@ class WEB_ENGINE_EXPORT CookieManagerImpl final
   // |get_network_context| will be called to (re)connect to CookieManager,
   // on-demand, in response to query/observation requests.
   explicit CookieManagerImpl(GetNetworkContextCallback get_network_context);
+
+  CookieManagerImpl(const CookieManagerImpl&) = delete;
+  CookieManagerImpl& operator=(const CookieManagerImpl&) = delete;
+
   ~CookieManagerImpl() override;
 
   // fuchsia::web::CookieManager implementation:
@@ -59,8 +63,6 @@ class WEB_ENGINE_EXPORT CookieManagerImpl final
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   base::OnceClosure on_mojo_disconnected_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManagerImpl);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_COOKIE_MANAGER_IMPL_H_

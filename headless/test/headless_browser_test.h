@@ -31,6 +31,10 @@ class LoadObserver : public page::Observer, public network::Observer {
  public:
   LoadObserver(HeadlessDevToolsClient* devtools_client,
                base::OnceClosure callback);
+
+  LoadObserver(const LoadObserver&) = delete;
+  LoadObserver& operator=(const LoadObserver&) = delete;
+
   ~LoadObserver() override;
 
   // page::Observer implementation:
@@ -47,8 +51,6 @@ class LoadObserver : public page::Observer, public network::Observer {
   HeadlessDevToolsClient* devtools_client_;  // Not owned.
 
   bool navigation_succeeded_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadObserver);
 };
 
 // Base class for tests which require a full instance of the headless browser.

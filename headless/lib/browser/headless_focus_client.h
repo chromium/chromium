@@ -17,6 +17,10 @@ class HeadlessFocusClient : public aura::client::FocusClient,
                             public aura::WindowObserver {
  public:
   HeadlessFocusClient();
+
+  HeadlessFocusClient(const HeadlessFocusClient&) = delete;
+  HeadlessFocusClient& operator=(const HeadlessFocusClient&) = delete;
+
   ~HeadlessFocusClient() override;
 
  private:
@@ -35,8 +39,6 @@ class HeadlessFocusClient : public aura::client::FocusClient,
       observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessFocusClient);
 };
 
 }  // namespace headless

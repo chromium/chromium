@@ -14,15 +14,16 @@
 class HttpServiceImpl : public ::fuchsia::net::oldhttp::HttpService {
  public:
   HttpServiceImpl();
+
+  HttpServiceImpl(const HttpServiceImpl&) = delete;
+  HttpServiceImpl& operator=(const HttpServiceImpl&) = delete;
+
   ~HttpServiceImpl() override;
 
   // HttpService methods:
   void CreateURLLoader(
       fidl::InterfaceRequest<::fuchsia::net::oldhttp::URLLoader> request)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpServiceImpl);
 };
 
 #endif  // FUCHSIA_HTTP_HTTP_SERVICE_IMPL_H_
