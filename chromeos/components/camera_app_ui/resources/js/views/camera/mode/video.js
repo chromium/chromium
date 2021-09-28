@@ -206,37 +206,12 @@ export class VideoHandler {
 }
 
 /**
- * @enum {string}
+ * @enum {state.State}
  */
 const RecordType = {
-  NORMAL: 'normal',
-  GIF: 'gif',
+  NORMAL: state.State.RECORD_TYPE_NORMAL,
+  GIF: state.State.RECORD_TYPE_GIF,
 };
-
-const recordTypeValues = new Set(Object.values(RecordType));
-
-/**
- * @param {!HTMLInputElement} el
- * @return {!RecordType}
- */
-function getRecordTypeFromElement(el) {
-  const s = el.dataset['recordtype'];
-  assert(recordTypeValues.has(s), `No such recordtype: ${s}`);
-  return /** @type {!RecordType} */ (s);
-}
-
-/**
- * @param {!RecordType} type
- * @return {!HTMLInputElement}
- */
-function getElemetFromRecordType(type) {
-  return dom.get(`input[data-recordtype=${type}]`, HTMLInputElement);
-}
-
-/**
- * @type {!Array<!HTMLInputElement>}
- */
-const recordTypeInputs = [...recordTypeValues].map(getElemetFromRecordType);
 
 /**
  * Video mode capture controller.
@@ -368,9 +343,8 @@ export class Video extends ModeBase {
         !state.get(state.State.ENABLE_GIF_RECORDING)) {
       return RecordType.NORMAL;
     }
-    const checkedEl = assertInstanceof(
-        recordTypeInputs.find(({checked}) => checked), HTMLInputElement);
-    return getRecordTypeFromElement(checkedEl);
+    return Object.values(RecordType).find((t) => state.get(t)) ||
+        RecordType.NORMAL;
   }
 
   /**

@@ -48,6 +48,8 @@ export const State = {
   PLATFORM_SUPPORT_SCAN_DOCUMENT: 'platform-support-scan-document',
   PLAYING_RESULT_VIDEO: 'playing-result-video',
   PRINT_PERFORMANCE_LOGS: 'print-performance-logs',
+  RECORD_TYPE_GIF: 'record-type-gif',
+  RECORD_TYPE_NORMAL: 'record-type-normal',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
   RECORDING: 'recording',
   RECORDING_GIF: 'recording-gif',

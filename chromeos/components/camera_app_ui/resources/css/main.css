@@ -545,7 +545,7 @@ body.video.taking #recordvideo {
   background: transparent;
 }
 
-body:not(.video) #toggle-mic,
+body:is(:not(.video), .record-type-gif) #toggle-mic,
 body:not(.multi-camera) #switch-device {
   visibility: hidden;
 }
