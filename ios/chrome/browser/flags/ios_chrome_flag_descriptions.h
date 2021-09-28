@@ -189,6 +189,11 @@ extern const char kEnableNTPMemoryEnhancementDescription[];
 extern const char kEnableOptimizationGuideName[];
 extern const char kEnableOptimizationGuideDescription[];
 
+// Title and description for the flag to enable optimization guide metadata
+// validation.
+extern const char kEnableOptimizationGuideMetadataValidationName[];
+extern const char kEnableOptimizationGuideMetadataValidationDescription[];
+
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];

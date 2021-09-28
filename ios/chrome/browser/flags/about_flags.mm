@@ -480,6 +480,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOptimizationGuideName,
      flag_descriptions::kEnableOptimizationGuideDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(optimization_guide::features::kOptimizationHints)},
+    {"enable-optimization-guide-metadata-validation",
+     flag_descriptions::kEnableOptimizationGuideMetadataValidationName,
+     flag_descriptions::kEnableOptimizationGuideMetadataValidationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideMetadataValidation)},
     {"legacy-tls-interstitial",
      flag_descriptions::kIOSLegacyTLSInterstitialsName,
      flag_descriptions::kIOSLegacyTLSInterstitialsDescription, flags_ui::kOsIos,

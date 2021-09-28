@@ -2295,7 +2295,12 @@
   },
   {
     "name": "enable-optimization-guide",
-    "owners": [ "rajendrant", "robertogden" ],
+    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "enable-optimization-guide-metadata-validation",
+    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 100
   },
   {

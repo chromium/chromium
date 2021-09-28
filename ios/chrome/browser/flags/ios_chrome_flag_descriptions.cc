@@ -212,6 +212,12 @@ const char kEnableOptimizationGuideName[] = "Enable optimization guide";
 const char kEnableOptimizationGuideDescription[] =
     "Enables the optimization guide to provide intelligence for page loads.";
 
+const char kEnableOptimizationGuideMetadataValidationName[] =
+    "Enable optimization guide metadata validation";
+const char kEnableOptimizationGuideMetadataValidationDescription[] =
+    "Enables the validation of optimization guide metadata fetch and "
+    "allowlist/blocklist bloom filter.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
