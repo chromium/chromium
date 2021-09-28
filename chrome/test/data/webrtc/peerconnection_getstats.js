@@ -569,6 +569,8 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   nominated: 'boolean',
   writable: 'boolean',
   readable: 'boolean',
+  packetsSent: 'number',
+  packetsReceived: 'number',
   bytesSent: 'number',
   bytesReceived: 'number',
   totalRoundTripTime: 'number',
@@ -585,6 +587,8 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   consentRequestsSent: 'number',
   consentResponsesReceived: 'number',
   consentResponsesSent: 'number',
+  packetsDiscardedOnSend: 'number',
+  bytesDiscardedOnSend: 'number',
 });
 addRTCStatsToWhitelist(
     Presence.MANDATORY, 'candidate-pair', kRTCIceCandidatePairStats);
