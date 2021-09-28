@@ -67,7 +67,7 @@ default_args = {
 no_check_targets = [
   "//extensions:chrome_extensions_browsertests",  # 26 errors
   "//extensions:chrome_extensions_interactive_uitests",  # 2 errors
-  "//extensions:test_support",  # 2 errors
+
   "//headless:*",  # 107 errors
 
   "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
