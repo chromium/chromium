@@ -309,8 +309,8 @@ void Display::PresentationGroupTiming::OnPresent(
   // TODO(crbug.com/1157620): Move this check to SanitizePresentationFeedback
   // to handle all incorrect feedback cases.
   if (gpu_latency < base::TimeDelta::FromSeconds(0)) {
-    DLOG(ERROR) << "Gpu latency is negative : "
-                << gpu_latency.InMillisecondsF();
+    DVLOG(1) << "GPU latency is negative: " << gpu_latency.InMillisecondsF()
+             << " ms";
     return;
   }
   scheduler->SetGpuLatency(gpu_latency);
