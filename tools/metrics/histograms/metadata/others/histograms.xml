@@ -12414,7 +12414,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.EnergyImpact"
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.EnergyImpact{UsageScenario}"
     units="centi-EnergyImpact" expires_after="2021-11-30">
   <owner>siggi@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -12430,6 +12431,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Chrome processes no matter how short-lived, as well as XPC services running
     on Chrome's behalf.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime"
