@@ -28,7 +28,7 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Radio:'
 ++++android.view.View
 ++++++android.widget.TextView name='Range: '
-++++++android.widget.SeekBar role_description='slider' clickable focusable range name='Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
+++++++android.widget.SeekBar role_description='slider' clickable focusable range name='50, Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++++android.view.View
 ++++++android.widget.TextView name='Reset: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Reset:'

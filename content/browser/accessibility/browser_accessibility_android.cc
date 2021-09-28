@@ -317,6 +317,11 @@ bool BrowserAccessibilityAndroid::IsMultiselectable() const {
   return HasState(ax::mojom::State::kMultiselectable);
 }
 
+bool BrowserAccessibilityAndroid::IsRangeControlWithoutAriaValueText() const {
+  return GetData().IsRangeValueSupported() &&
+         !HasStringAttribute(ax::mojom::StringAttribute::kValue);
+}
+
 bool BrowserAccessibilityAndroid::IsReportingCheckable() const {
   // To communicate kMixed state Checkboxes, we will rely on state description,
   // so we will not report node as checkable to avoid duplicate utterances.
@@ -604,8 +609,15 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   }
 
   std::u16string text = GetNameAsString16();
-  if (text.empty())
+  if (text.empty()) {
+    // When a node does not have a name (e.g. a label), use its value instead.
     text = value;
+  } else if (ui::IsRangeValueSupported(GetRole()) && !value.empty()) {
+    // For controls that support range values such as sliders, when a non-empty
+    // name is present (e.g. a label), append this to the value so both the
+    // valuetext and label are included, rather than replacing the value.
+    text = value + u", " + text;
+  }
 
   // For almost all focusable nodes we try to get text from contents, but for
   // the root node that's redundant and often way too verbose.
@@ -1660,9 +1672,10 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
 
 int BrowserAccessibilityAndroid::GetItemIndex() const {
   int index = 0;
-  if (GetData().IsRangeValueSupported()) {
+  if (IsRangeControlWithoutAriaValueText()) {
     // Return a percentage here for live feedback in an AccessibilityEvent.
-    // The exact value is returned in RangeCurrentValue.
+    // The exact value is returned in RangeCurrentValue. Exclude sliders with
+    // an aria-valuetext set, as a percentage is not meaningful in those cases.
     float min = GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
     float max = GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
     float value = GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
@@ -1678,10 +1691,11 @@ int BrowserAccessibilityAndroid::GetItemIndex() const {
 
 int BrowserAccessibilityAndroid::GetItemCount() const {
   int count = 0;
-  if (GetData().IsRangeValueSupported()) {
+  if (IsRangeControlWithoutAriaValueText()) {
     // An AccessibilityEvent can only return integer information about a
     // seek control, so we return a percentage. The real range is returned
-    // in RangeMin and RangeMax.
+    // in RangeMin and RangeMax. Exclude sliders with an aria-valuetext set,
+    // as a percentage is not meaningful in those cases.
     count = 100;
   } else {
     if (IsCollection() && node()->GetSetSize())

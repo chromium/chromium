@@ -776,7 +776,7 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
   // update the cached node to work around this. This is not necessary on newer
   // versions of Android that contain the fix, see: ag/930331
   // TODO(mschillaci): Remove this when Android M is no longer supported.
-  if (node->GetData().IsRangeValueSupported()) {
+  if (node->IsRangeControlWithoutAriaValueText()) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
         env, obj, info, node->AndroidRangeType(), node->RangeMin(),
         node->RangeMax(), node->RangeCurrentValue());
@@ -896,7 +896,12 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info, node->RowIndex(), node->RowSpan(), node->ColumnIndex(),
         node->ColumnSpan(), node->IsHeading());
   }
-  if (node->GetData().IsRangeValueSupported()) {
+
+  // For sliders that are numeric, use the AccessibilityNodeInfo.RangeInfo
+  // object as expected. But for non-numeric ranges (e.g. "small", "medium",
+  // "large"), do not set the RangeInfo object and instead rely on announcing
+  // the aria-valuetext value, which will be included in the node's text value.
+  if (node->IsRangeControlWithoutAriaValueText()) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
         env, obj, info, node->AndroidRangeType(), node->RangeMin(),
         node->RangeMax(), node->RangeCurrentValue());

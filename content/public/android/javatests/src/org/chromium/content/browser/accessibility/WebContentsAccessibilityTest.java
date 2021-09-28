@@ -114,6 +114,8 @@ public class WebContentsAccessibilityTest {
             "node should have a Spannable with spelling correction for given text.";
     private static final String INPUT_RANGE_VALUE_MISMATCH =
             "Value for <input type='range'> is incorrect, did you honor 'step' value?";
+    private static final String INPUT_RANGE_VALUETEXT_MISMATCH =
+            "Value for <input type='range'> text is incorrect, did you honor aria-valuetext?";
     private static final String INPUT_RANGE_EVENT_ERROR =
             "TYPE_VIEW_SCROLLED event not received before timeout.";
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
@@ -403,6 +405,39 @@ public class WebContentsAccessibilityTest {
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
         }
+    }
+
+    /**
+     * Test <input type="range"> nodes are properly populated when aria-valuetext is set.
+     */
+    @Test
+    @SmallTest
+    public void testAccessibilityNodeInfo_inputTypeRange_withAriaValueText() {
+        // Build a simple web page with input nodes that have aria-valuetext.
+        setupTestWithHTML(
+                "<input id='in1' type='range' value='1' min='0' max='2' aria-valuetext='medium'>"
+                + "<label for='in2'>This is a test label"
+                + "  <input id='in2' type='range' value='0' min='0' max='2' aria-valuetext='small'>"
+                + "</label>");
+
+        int vvIdInput1 = waitForNodeMatching(sViewIdResourceNameMatcher, "in1");
+        int vvIdInput2 = waitForNodeMatching(sViewIdResourceNameMatcher, "in2");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvIdInput1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvIdInput2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Check the text of each element, and that RangeInfo has not been set.
+        mNodeInfo1 = createAccessibilityNodeInfo(vvIdInput1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvIdInput2);
+        Assert.assertEquals(
+                INPUT_RANGE_VALUETEXT_MISMATCH, "medium", mNodeInfo1.getText().toString());
+        Assert.assertEquals(INPUT_RANGE_VALUETEXT_MISMATCH, "small, This is a test label",
+                mNodeInfo2.getText().toString());
+        Assert.assertNull(INPUT_RANGE_VALUETEXT_MISMATCH, mNodeInfo1.getRangeInfo());
+        Assert.assertNull(INPUT_RANGE_VALUETEXT_MISMATCH, mNodeInfo2.getRangeInfo());
     }
 
     /**
