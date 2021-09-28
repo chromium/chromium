@@ -1,3 +1,1 @@
-monorail {
-  component: "OS>Software>Enterprise>ActiveDirectory"
-}
+mixins: "//chrome/browser/ash/kerberos/COMMON_METADATA"

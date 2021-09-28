@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>Storage>AppCache"
-}
-team_email: "storage-dev@chromium.org"
+mixins: "//content/browser/appcache/COMMON_METADATA"

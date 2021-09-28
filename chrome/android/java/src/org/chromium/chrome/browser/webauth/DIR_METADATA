@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>WebAuthentication"
-}
-team_email: "identity-dev@chromium.org"
+mixins: "//chrome/android/java/src/org/chromium/chrome/browser/webauth/COMMON_METADATA"

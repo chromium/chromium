@@ -1,0 +1,4 @@
+monorail: {
+  component: "UI>Browser>Interstitials"
+}
+team_email: "security-enamel@chromium.org"

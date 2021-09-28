@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Sharing"
-}
+mixins: "//chrome/browser/sharing/COMMON_METADATA"

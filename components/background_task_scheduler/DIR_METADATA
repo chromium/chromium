@@ -1,7 +1,2 @@
-monorail {
-  component: "Internals>BackgroundTaskScheduler"
-}
+mixins: "//components/background_task_scheduler/COMMON_METADATA"
 
-team_email: "clank-dev@google.com"
-
-os: ANDROID

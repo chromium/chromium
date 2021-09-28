@@ -1,4 +1,1 @@
-monorail: {
-  component: "Platform>Apps>Foundation>AppService"
-}
-team_email: "chromeos-apps-foundation-team@google.com"
+mixins: "//components/services/app_service/COMMON_METADATA"

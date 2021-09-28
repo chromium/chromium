@@ -1,1 +1,1 @@
-team_email: "fugu-dev@chromium.org"
+mixins: "//content/browser/idle/COMMON_METADATA"

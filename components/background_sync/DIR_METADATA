@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>BackgroundSync"
-}
+mixins: "//components/background_sync/COMMON_METADATA"
 
-team_email: "platform-capabilities@chromium.org"

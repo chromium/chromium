@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>Services>Device"
+}
+team_email: "device-dev@chromium.org"

@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Search>ContextualSearch"
+}
+team_email: "contextual-search-dev@chromium.org"

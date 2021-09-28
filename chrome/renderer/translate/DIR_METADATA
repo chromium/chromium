@@ -1,3 +1,1 @@
-monorail: {
-  component: "UI>Browser>Language>Translate"
-}
+mixins: "//components/translate/COMMON_METADATA"

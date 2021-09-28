@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>Preload>Prerender"
-}
+mixins: "//content/browser/prerender/COMMON_METADATA"
 
-team_email: "loading-dev@chromium.org"

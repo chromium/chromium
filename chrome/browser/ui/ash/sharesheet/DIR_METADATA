@@ -1,5 +1,1 @@
-monorail: {
-  component: "Platform>Apps>Foundation>Sharesheet"
-}
-team_email: "chromeos-apps-foundation-team@google.com"
-os: CHROME_OS
+mixins: "//chrome/browser/sharesheet/COMMON_METADATA"

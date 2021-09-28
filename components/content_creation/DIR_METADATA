@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>Creation"
-}
+mixins: "//components/content_creation/COMMON_METADATA"
 
-team_email: "chrome-creation@google.com"

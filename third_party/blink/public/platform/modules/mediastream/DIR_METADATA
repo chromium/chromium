@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>GetUserMedia"
-}
+mixins: "//third_party/blink/common/mediastream/COMMON_METADATA"
 
-team_email: "webrtc-dev@chromium.org"

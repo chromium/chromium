@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>PushAPI"
-}
+mixins: "//content/browser/push_messaging/COMMON_METADATA"
 
-team_email: "platform-capabilities@chromium.org"

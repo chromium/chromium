@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Joy"
+}
+team_email: "chrome-creation@google.com"

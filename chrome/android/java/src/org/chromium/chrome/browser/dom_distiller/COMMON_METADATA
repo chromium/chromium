@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>ReaderMode"
+}
+team_email: "dom-distiller-eng@google.com"

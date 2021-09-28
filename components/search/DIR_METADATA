@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>NewTabPage"
-}
+mixins: "//components/search/COMMON_METADATA"
 
-team_email: "ntp-dev@chromium.org"

@@ -2,4 +2,3 @@ monorail {
   component: "UI>Browser>Mobile>TrustedWebActivities"
 }
 team_email: "mwi-team-core@google.com"
-os: ANDROID

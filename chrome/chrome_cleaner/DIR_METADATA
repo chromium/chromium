@@ -1,4 +1,1 @@
-monorail: {
-  component: "Services>Safebrowsing>ChromeCleanup"
-}
-team_email: "safebrowsing@chromium.org"
+mixins: "//chrome/chrome_cleaner/COMMON_METADATA"

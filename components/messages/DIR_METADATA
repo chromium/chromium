@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>Mobile>Messages"
-}
+mixins: "//components/messages/COMMON_METADATA"
 
-team_email: "clank-app-team@google.com"

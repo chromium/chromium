@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>ConversionMeasurement"
-}
+mixins: "//content/browser/attribution_reporting/COMMON_METADATA"
 
-team_email: "privacy-sandbox-dev@chromium.org"

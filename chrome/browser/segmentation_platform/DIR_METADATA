@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>SegmentationPlatform"
-}
+mixins: "//components/segmentation_platform/COMMON_METADATA"
 
-team_email: "chrome-segmentation-platform@google.com"

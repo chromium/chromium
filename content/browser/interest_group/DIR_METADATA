@@ -1,3 +1,1 @@
-monorail {
-  component: "Blink>InterestGroups"
-}
+mixins: "//content/browser/interest_group/COMMON_METADATA"

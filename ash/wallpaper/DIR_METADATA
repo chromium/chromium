@@ -1,3 +1,1 @@
-monorail {
-  component: "OS>Systems>Wallpaper"
-}
+mixins: "//ash/wallpaper/COMMON_METADATA"
