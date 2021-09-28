@@ -23,7 +23,6 @@ optimization_guide::OptimizationGuideDecision
 ChromeAboutThisSiteServiceClient::CanApplyOptimization(
     const GURL& url,
     optimization_guide::OptimizationMetadata* optimization_metadata) {
-  // TODO(crbug.com/1250653): Call CanApplyOptimization method of
-  // `optimization_guide_decider_` after proto is added.
-  return optimization_guide::OptimizationGuideDecision::kUnknown;
+  return optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::ABOUT_THIS_SITE, optimization_metadata);
 }
