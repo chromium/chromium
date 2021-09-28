@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin_chromeos.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin.h"
 
 #include <stdint.h>
 

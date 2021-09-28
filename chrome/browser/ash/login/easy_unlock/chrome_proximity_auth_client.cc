@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin_chromeos.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chromeos/components/multidevice/logging/logging.h"
