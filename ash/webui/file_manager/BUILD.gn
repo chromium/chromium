@@ -18,6 +18,8 @@ static_library("file_manager_ui") {
     "file_manager_ui.cc",
     "file_manager_ui.h",
     "file_manager_ui_delegate.h",
+    "resource_loader.cc",
+    "resource_loader.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -31,5 +33,16 @@ static_library("file_manager_ui") {
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
     "//ui/web_dialogs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "resource_loader_unittest.cc" ]
+
+  deps = [
+    ":file_manager_ui",
+    "//content/test:test_support",
   ]
 }

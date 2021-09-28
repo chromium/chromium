@@ -20,6 +20,7 @@ test("ash_webui_unittests") {
     "//ash/webui/common/backend:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
+    "//ash/webui/file_manager:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/scanning:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",

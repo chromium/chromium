@@ -77,6 +77,9 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   // Protected for testing.
   virtual const base::DictionaryValue* GetLocalizedStrings() const;
 
+  // Protected for testing.
+  int PathToIdrOrDefault(const std::string& path) const;
+
  private:
   class InternalDataSource;
   friend class InternalDataSource;
@@ -89,8 +92,6 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void StartDataRequest(const GURL& url,
                         const WebContents::Getter& wc_getter,
                         URLDataSource::GotDataCallback callback);
-
-  int PathToIdrOrDefault(const std::string& path) const;
 
   // Note: this must be called before StartDataRequest() to have an effect.
   void disable_load_time_data_defaults_for_testing() {

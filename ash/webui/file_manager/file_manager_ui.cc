@@ -5,6 +5,7 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 
 #include "ash/webui/file_manager/file_manager_page_handler.h"
+#include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -20,21 +21,6 @@
 
 namespace ash {
 namespace file_manager {
-
-void AddFilesAppResources(content::WebUIDataSource* source,
-                          const webui::ResourcePath* entries,
-                          size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    std::string path(entries[i].path);
-    // Only load resources for Files app.
-    if (base::StartsWith(path, "file_manager/")) {
-      // Files app UI has all paths relative to //ui/file_manager/file_manager/
-      // so we remove the leading file_manager/ to match the existing paths.
-      base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
-      source->AddResourcePath(path, entries[i].id);
-    }
-  }
-}
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
