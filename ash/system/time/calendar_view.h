@@ -9,6 +9,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
@@ -46,9 +47,11 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewFocused(View* observed_view) override;
 
   // views::View:
   void OnThemeChanged() override;
+  void OnEvent(ui::Event* event) override;
 
   // TrayDetailedView:
   void CreateExtraTitleRowButtons() override;
@@ -104,6 +107,9 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // of today's month, otherwise we scroll to the position of today's row.
   void ScrollToToday();
 
+  // If currently focusing on any date cell.
+  bool IsDateCellViewFocused();
+
   // Unowned.
   UnifiedSystemTrayController* controller_;
 
@@ -139,7 +145,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
       scoped_calendar_view_controller_observer_{this};
-  base::ScopedObservation<views::View, views::ViewObserver>
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       scoped_view_observer_{this};
 };
 

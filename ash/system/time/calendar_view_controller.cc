@@ -71,4 +71,12 @@ std::u16string CalendarViewController::GetOnScreenMonthName() {
   return calendar_utils::GetMonthName(current_date_);
 }
 
+int CalendarViewController::GetTodayRowTopHeight() {
+  return (today_row_ - 1) * row_height_;
+}
+
+int CalendarViewController::GetTodayRowBottomHeight() {
+  return today_row_ * row_height_;
+}
+
 }  // namespace ash

@@ -124,8 +124,8 @@ TEST_F(CalendarMonthViewTest, TodayNotInMonth) {
   CreateMonthView(date);
 
   // Today's row position is not updated.
-  EXPECT_EQ(0, controller()->today_row_top_height());
-  EXPECT_EQ(0, controller()->today_row_bottom_height());
+  EXPECT_EQ(0, controller()->GetTodayRowTopHeight());
+  EXPECT_EQ(0, controller()->GetTodayRowBottomHeight());
 }
 
 // The position of today should be updated when today is in the month.
@@ -151,8 +151,8 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
   CreateMonthView(date);
 
   // Today's row position is updated because today is in this month.
-  int top = controller()->today_row_top_height();
-  int bottom = controller()->today_row_bottom_height();
+  int top = controller()->GetTodayRowTopHeight();
+  int bottom = controller()->GetTodayRowBottomHeight();
   EXPECT_NE(0, top);
   EXPECT_NE(0, bottom);
 

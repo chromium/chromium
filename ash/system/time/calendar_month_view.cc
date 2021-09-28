@@ -10,9 +10,10 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/grid_layout.h"
 
 namespace ash {
@@ -25,80 +26,128 @@ constexpr int kLineThickness = 2;
 // The radius used to draw rounded today's circle
 constexpr float kTodayRoundedRadius = 20.f;
 
+// The padding of the focus circle.
+constexpr int kFocusCirclePadding = 4;
+
+// Move to the next day. Both the column set and the current date are
+// moved to the next one.
+void MoveToNextDay(int& column_set_id,
+                   base::Time& current_date,
+                   base::Time::Exploded& current_date_exploded) {
+  current_date += base::TimeDelta::FromDays(1);
+  current_date.LocalExplode(&current_date_exploded);
+  column_set_id = (column_set_id + 1) % calendar_utils::kDateInOneWeek;
+}
+
 }  // namespace
 
 using views::GridLayout;
 
-// Renders a Calendar date cell. Pass in `true` as `is_grayed_out_date` if
-// the date is not in the current month view's month.
-// TODO(https://crbug.com/1236276): enable focusing, add has_event dot,
-// on-select effect.
-class CalendarDateCellView : public views::LabelButton {
- public:
-  CalendarDateCellView(base::Time::Exploded& date, bool is_grayed_out_date)
-      : views::LabelButton(
-            views::Button::PressedCallback(base::BindRepeating([]() {
-              // TODO(https://crbug.com/1238927): Add a menthod in the
-              // controller to open the expandable view and call it here.
-            })),
-            base::UTF8ToUTF16(base::NumberToString(date.day_of_month))),
-        date_(date),
-        grayed_out_(is_grayed_out_date) {
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
-    label()->SetElideBehavior(gfx::NO_ELIDE);
-    label()->SetSubpixelRenderingEnabled(false);
-    label()->SetFontList(views::Label::GetDefaultFontList().Derive(
-        1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  }
+// TODO(https://crbug.com/1236276): Fix the ChromeVox window position on this
+// view.
+CalendarDateCellView::CalendarDateCellView(base::Time::Exploded& date,
+                                           bool is_grayed_out_date)
+    : views::LabelButton(
+          views::Button::PressedCallback(base::BindRepeating([]() {
+            // TODO(https://crbug.com/1238927): Add a menthod in the
+            // controller to open the expandable view and call it here.
+          })),
+          base::UTF8ToUTF16(base::NumberToString(date.day_of_month))),
+      date_(date),
+      grayed_out_(is_grayed_out_date) {
+  SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
+  label()->SetElideBehavior(gfx::NO_ELIDE);
+  label()->SetSubpixelRenderingEnabled(false);
+  label()->SetFontList(views::Label::GetDefaultFontList().Derive(
+      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
-  ~CalendarDateCellView() override = default;
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColor(ColorProvider::Get()->GetControlsLayerColor(
+      ColorProvider::ControlsLayerType::kFocusRingColor));
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::CircleHighlightPathGenerator>(
+                gfx::Insets(kFocusCirclePadding)));
 
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
+  DisableFocus();
+}
 
-    // Gray-out the date that is not in the current month.
-    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                     : calendar_utils::GetPrimaryTextColor());
-  }
+CalendarDateCellView::~CalendarDateCellView() = default;
 
-  // Draws the background for 'today'. If today is a grayed out date, which is
-  // shown in its previous/next month, we won't draw this background.
-  void OnPaintBackground(gfx::Canvas* canvas) override {
-    if (grayed_out_ || !calendar_utils::IsToday(date_))
-      return;
+void CalendarDateCellView::OnThemeChanged() {
+  views::View::OnThemeChanged();
 
-    const AshColorProvider* color_provider = AshColorProvider::Get();
-    const SkColor bg_color = color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-    const SkColor border_color = color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor);
+  // Gray-out the date that is not in the current month.
+  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                   : calendar_utils::GetPrimaryTextColor());
+}
 
-    cc::PaintFlags highlight_background;
+// Draws the background for 'today'. If today is a grayed out date, which is
+// shown in its previous/next month, we won't draw this background.
+// TODO(https://crbug.com/1253620): Consider to make the text view a square and
+// use ` CreateRoundedRectBackground`.
+void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
+  const AshColorProvider* color_provider = AshColorProvider::Get();
+  const SkColor bg_color = color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  const SkColor border_color = color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor);
+
+  // If the view is focused, paint a solid background.
+  if (views::View::HasFocus()) {
+    // Change text color to the background color.
+    const SkColor text_color = color_provider->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent90);
+    SetEnabledTextColors(text_color);
+
+    cc::PaintFlags background;
     const gfx::Rect content = GetContentsBounds();
-    gfx::Point center(
+    const gfx::Point center(
         (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
         (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
-    highlight_background.setColor(bg_color);
-    highlight_background.setStyle(cc::PaintFlags::kFill_Style);
-    highlight_background.setAntiAlias(true);
-    canvas->DrawCircle(center, kTodayRoundedRadius, highlight_background);
+    background.setColor(border_color);
+    background.setStyle(cc::PaintFlags::kFill_Style);
+    background.setAntiAlias(true);
+    canvas->DrawCircle(center, kTodayRoundedRadius, background);
 
-    cc::PaintFlags highlight_border;
-    highlight_border.setColor(border_color);
-    highlight_border.setAntiAlias(true);
-    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
-    highlight_border.setStrokeWidth(kLineThickness);
-    canvas->DrawCircle(center, kTodayRoundedRadius, highlight_border);
+    return;
   }
 
- private:
-  // The date used to render this cell view.
-  base::Time::Exploded date_;
+  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                   : calendar_utils::GetPrimaryTextColor());
 
-  const bool grayed_out_;
-};
+  if (grayed_out_ || !calendar_utils::IsToday(date_))
+    return;
+
+  cc::PaintFlags highlight_background;
+  const gfx::Rect content = GetContentsBounds();
+  gfx::Point center(
+      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
+
+  highlight_background.setColor(bg_color);
+  highlight_background.setStyle(cc::PaintFlags::kFill_Style);
+  highlight_background.setAntiAlias(true);
+  canvas->DrawCircle(center, kTodayRoundedRadius, highlight_background);
+
+  cc::PaintFlags highlight_border;
+  highlight_border.setColor(border_color);
+  highlight_border.setAntiAlias(true);
+  highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
+  highlight_border.setStrokeWidth(kLineThickness);
+  canvas->DrawCircle(center, kTodayRoundedRadius, highlight_border);
+}
+
+void CalendarDateCellView::EnableFocus() {
+  if (grayed_out_)
+    return;
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+}
+
+void CalendarDateCellView::DisableFocus() {
+  SetFocusBehavior(FocusBehavior::NEVER);
+}
 
 CalendarMonthView::CalendarMonthView(
     const base::Time first_day_of_month,
@@ -113,44 +162,44 @@ CalendarMonthView::CalendarMonthView(
       calendar_utils::GetExploded(first_day_of_month);
 
   // Calculates the start date.
-  const base::Time start_of_the_first_row =
+  base::Time current_date =
       first_day_of_month -
       base::TimeDelta::FromDays(first_day_of_month_exploded.day_of_week);
-  base::Time::Exploded start_of_row_exploded =
-      calendar_utils::GetExploded(start_of_the_first_row);
-
-  base::Time current_date = start_of_the_first_row;
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExploded(current_date);
 
+  // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
+  // loops) into a method.
   int column_set_id = 0;
-  int row_number = 0;
-  bool get_to_today = false;
-  // Gray-out dates in the first row, which are from the previous month, and the
-  // non-gray-out dates of the current month.
-  while (current_date_exploded.month == start_of_row_exploded.month ||
-         current_date_exploded.month == first_day_of_month_exploded.month) {
-    bool is_in_current_month =
-        current_date_exploded.month == first_day_of_month_exploded.month;
-    if (!get_to_today) {
-      // Count a row when a new row starts.
-      if (column_set_id == 0)
-        row_number++;
-      // If this row has today, stop counting and subtract 1 from the row
-      // number.
-      if (is_in_current_month &&
-          calendar_utils::IsToday(current_date_exploded)) {
-        get_to_today = true;
-        row_number--;
-      }
-    }
+  // Gray-out dates in the first row, which are from the previous month.
+  while (current_date_exploded.month % 12 ==
+         (first_day_of_month_exploded.month - 1) % 12) {
+    AddDateCellToLayout(current_date_exploded, column_set_id,
+                        /*is_in_current_month=*/false);
+    MoveToNextDay(column_set_id, current_date, current_date_exploded);
+  }
 
-    // Next column set id is generated.
-    column_set_id =
-        AddDateCellToLayout(current_date_exploded, column_set_id,
-                            /*is_in_current_month=*/is_in_current_month);
-    current_date += base::TimeDelta::FromDays(1);
-    current_date.LocalExplode(&current_date_exploded);
+  int row_number = 0;
+  // Builds non-gray-out dates of the current month.
+  while (current_date_exploded.month == first_day_of_month_exploded.month) {
+    auto* cell = AddDateCellToLayout(current_date_exploded, column_set_id,
+                                     /*is_in_current_month=*/true);
+    // Add the first non-grayed-out cell of the row to the `focused_cells_`.
+    if (column_set_id == 0 || current_date_exploded.day_of_month == 1) {
+      focused_cells_.push_back(cell);
+      // Count a row when a new row starts.
+      ++row_number;
+    }
+    // If this row has today, updates today's row number and replaces today to
+    // the last element in the `focused_cells_`.
+    if (calendar_utils::IsToday(current_date_exploded)) {
+      calendar_view_controller_->set_row_height(
+          cell->GetPreferredSize().height());
+      calendar_view_controller_->set_today_row(row_number);
+      focused_cells_.back() = cell;
+      has_today_ = true;
+    }
+    MoveToNextDay(column_set_id, current_date, current_date_exploded);
   }
 
   // TODO(https://crbug.com/1236276): Handle some cases when the first day is
@@ -170,38 +219,37 @@ CalendarMonthView::CalendarMonthView(
   while (current_date_exploded.day_of_month <=
          end_of_row_exploded.day_of_month) {
     // Next column set id is generated.
-    column_set_id = AddDateCellToLayout(current_date_exploded, column_set_id,
-                                        /*is_in_current_month=*/false);
-    current_date += base::TimeDelta::FromDays(1);
-    current_date.LocalExplode(&current_date_exploded);
-  }
-
-  // If today is in this month view, use the height of the first cell row to
-  // calculate today's row height. This position will be used to calculate
-  // today's position in the scroll view.
-  if (get_to_today) {
-    calendar_view_controller_->update_today_row_top_height(
-        row_number * children()[0]->GetPreferredSize().height());
-    calendar_view_controller_->update_today_row_bottom_height(
-        (row_number + 1) * children()[0]->GetPreferredSize().height());
+    AddDateCellToLayout(current_date_exploded, column_set_id,
+                        /*is_in_current_month=*/false);
+    MoveToNextDay(column_set_id, current_date, current_date_exploded);
   }
 }
 
 CalendarMonthView::~CalendarMonthView() = default;
 
-int CalendarMonthView::AddDateCellToLayout(
+CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     base::Time::Exploded current_date_exploded,
     int column_set_id,
     bool is_in_current_month) {
   GridLayout* layout_manager = static_cast<GridLayout*>(GetLayoutManager());
   if (column_set_id == 0)
     layout_manager->StartRow(0, 0);
-
-  layout_manager->AddView(std::make_unique<CalendarDateCellView>(
+  return layout_manager->AddView(std::make_unique<CalendarDateCellView>(
       current_date_exploded,
       /*is_grayed_out_date=*/!is_in_current_month));
-
-  return (column_set_id + 1) % calendar_utils::kDateInOneWeek;
 }
+
+void CalendarMonthView::EnableFocus() {
+  for (auto* cell : children())
+    static_cast<CalendarDateCellView*>(cell)->EnableFocus();
+}
+
+void CalendarMonthView::DisableFocus() {
+  for (auto* cell : children())
+    static_cast<CalendarDateCellView*>(cell)->DisableFocus();
+}
+
+BEGIN_METADATA(CalendarDateCellView, views::View)
+END_METADATA
 
 }  // namespace ash

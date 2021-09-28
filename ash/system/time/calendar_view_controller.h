@@ -52,15 +52,15 @@ class ASH_EXPORT CalendarViewController {
   // Gets the month name of the previous month based `current_date_`'s month.
   std::u16string GetPreviousMonthName();
 
-  // Getters and setters of the today's row position, top and bottom.
-  int today_row_top_height() { return today_row_top_height_; }
-  void update_today_row_top_height(int position) {
-    today_row_top_height_ = position;
-  }
-  int today_row_bottom_height() { return today_row_bottom_height_; }
-  void update_today_row_bottom_height(int position) {
-    today_row_bottom_height_ = position;
-  }
+  // Getters of the today's row position, top and bottom.
+  int GetTodayRowTopHeight();
+  int GetTodayRowBottomHeight();
+
+  // Getters and setters of the today's row number and row height.
+  int today_row() { return today_row_; }
+  void set_today_row(int row) { today_row_ = row; }
+  int row_height() { return row_height_; }
+  void set_row_height(int height) { row_height_ = height; }
 
  private:
   // The current date, which can be today or the first day of the current month
@@ -69,10 +69,13 @@ class ASH_EXPORT CalendarViewController {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  // The height of today's date cell row (from the top and from the bottom) in
-  // its `CalendarMonthView`.
-  int today_row_top_height_ = 0;
-  int today_row_bottom_height_ = 0;
+  // The today's date cell row number (which is index +1) in its
+  // `CalendarMonthView`.
+  int today_row_ = 0;
+
+  // Each row's height. Every row should have the same height, so this height is
+  // only updated once with today's row.
+  int row_height_ = 0;
 };
 
 }  // namespace ash
