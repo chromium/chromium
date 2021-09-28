@@ -113,6 +113,7 @@ class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
 class StartupTabProviderImpl;
+class GaiaConfig;
 class WebEngineBrowserMainParts;
 
 Profile* GetLastProfileMac();
@@ -427,6 +428,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
   // in unit tests to avoid the friend requirement.
+  friend class ::GaiaConfig;
   friend class ::StartupTabProviderImpl;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::MojoUtils;  // http://crbug.com/1055467
