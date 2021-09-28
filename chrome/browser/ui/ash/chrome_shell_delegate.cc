@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/extensions/api/tabs/tabs_util.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -421,6 +422,11 @@ void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              chrome::kFeedbackSourceBentoBar,
                              /*description_template=*/"#BentoBar\n\n");
+}
+
+void ChromeShellDelegate::SetPinnedFromExo(aura::Window* window,
+                                           chromeos::WindowPinType type) {
+  extensions::tabs_util::SetLockedFullscreenStateFromExo(window, type);
 }
 
 // static

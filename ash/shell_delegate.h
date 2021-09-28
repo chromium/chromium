@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
@@ -119,6 +120,11 @@ class ASH_EXPORT ShellDelegate {
 
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
+
+  // Pin or unpin a window. This is used for Quiz modes and called from another
+  // client (e.g. Lacros) through Exo.
+  virtual void SetPinnedFromExo(aura::Window* window,
+                                chromeos::WindowPinType type) = 0;
 
   // Ui Dev Tools control.
   virtual bool IsUiDevToolsStarted() const;

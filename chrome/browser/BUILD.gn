@@ -5845,6 +5845,10 @@ static_library("browser") {
     ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/ui/base" ]
+  }
+
   if (is_posix && !is_mac) {
     # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     sources += [

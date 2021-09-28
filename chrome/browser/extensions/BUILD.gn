@@ -1155,8 +1155,28 @@ static_library("extensions") {
         "//chromeos/services/chromebox_for_meetings/public/mojom",
       ]
     }
+  } else if (is_chromeos_lacros) {
+    sources += [
+      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
+      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
+      "api/enterprise_reporting_private/keychain_data_helper_mac.h",
+      "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
+      "api/image_writer_private/operation_nonchromeos.cc",
+      "api/image_writer_private/removable_storage_provider_linux.cc",
+      "api/tabs/tabs_util_chromeos.cc",
+      "chrome_kiosk_delegate.cc",
+      "preinstalled_apps.cc",
+      "preinstalled_apps.h",
+    ]
+    deps += [
+      "//chromeos/ui/base",
+      "//components/enterprise",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//components/keep_alive_registry",
+    ]
   } else {
     assert(!is_chromeos_ash)
+    assert(!is_chromeos_lacros)
     sources += [
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
@@ -1173,7 +1193,7 @@ static_library("extensions") {
       "//components/enterprise/common/proto:connectors_proto",
       "//components/keep_alive_registry",
     ]
-    if (is_linux || is_chromeos) {
+    if (is_linux) {
       sources +=
           [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
     }

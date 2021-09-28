@@ -9,7 +9,13 @@
 // then define an empty implementation in tabs_util.cc, and put the actual code
 // in eg. tabs_util_chromeos.cc.
 
+#include "chromeos/ui/base/window_pin_type.h"
+
 class Browser;
+
+namespace aura {
+class Window;
+}
 
 namespace content {
 class WebContents;
@@ -20,7 +26,12 @@ namespace tabs_util {
 
 // Set up the browser in the locked fullscreen state, and do any additional
 // necessary adjustments.
-void SetLockedFullscreenState(Browser* browser, bool locked);
+void SetLockedFullscreenState(Browser* browser, chromeos::WindowPinType type);
+
+// A call from a wayland/Exo client (ARC++, Lacros) is asking to put the system
+// into a locked fullscreen state.
+void SetLockedFullscreenStateFromExo(aura::Window* window,
+                                     chromeos::WindowPinType type);
 
 // Checks whether screenshot of |web_contents| is restricted due to Data Leak
 // Prevention policy.

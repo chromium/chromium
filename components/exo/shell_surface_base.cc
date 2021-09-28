@@ -15,9 +15,11 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -588,11 +590,9 @@ void ShellSurfaceBase::UpdatePinned() {
     return;
   }
   if (current_pinned_state_ != pending_pinned_state_) {
-    // TODO(crbug/1234010) - This will be done in follow up patch: call Ash to
-    // inform Ash of the change.
-    // ash::ShellDelegate* shell = ash::Shell::Get()->shell_delegate();
-    // auto* window = widget_->GetNativeWindow();
-    // shell->SetPinnedFromExo(window, pending_pinned_state_);
+    ash::ShellDelegate* shell = ash::Shell::Get()->shell_delegate();
+    auto* window = widget_->GetNativeWindow();
+    shell->SetPinnedFromExo(window, pending_pinned_state_);
     current_pinned_state_ = pending_pinned_state_;
   }
 }

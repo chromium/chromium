@@ -446,7 +446,7 @@
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "6A4A0389E8D47118E96E6221B0B7221CA3715801",  // Apitest extension
       "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant

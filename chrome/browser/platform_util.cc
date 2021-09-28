@@ -13,6 +13,14 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/window.h"
+#endif
+
 using content::BrowserThread;
 
 namespace platform_util {
@@ -80,7 +88,17 @@ void OpenItem(Profile* profile,
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  aura::Window* window = browser->window()->GetNativeWindow();
+  // |window| can be nullptr inside of unit tests.
+  if (!window)
+    return false;
+
+  return window->GetProperty(chromeos::kWindowPinTypeKey) ==
+         chromeos::WindowPinType::kTrustedPinned;
+#else
   return false;
+#endif
 }
 
 }  // namespace platform_util

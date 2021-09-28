@@ -290,7 +290,7 @@ void BrowserCommandController::FullscreenStateChanged() {
   UpdateCommandsForFullscreenMode();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void BrowserCommandController::LockedFullscreenStateChanged() {
   UpdateCommandsForLockedFullscreenMode();
 }
@@ -1454,7 +1454,7 @@ void BrowserCommandController::UpdateCommandsForHostedAppAvailability() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_APP_MENU, has_toolbar);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 namespace {
 
 #if DCHECK_IS_ON()

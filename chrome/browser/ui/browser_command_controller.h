@@ -53,7 +53,7 @@ class BrowserCommandController : public CommandUpdater,
   void ZoomStateChanged();
   void ContentRestrictionsChanged();
   void FullscreenStateChanged();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Called when the browser goes in or out of the special locked fullscreen
   // mode. In this mode the user is basically locked into the current browser
   // window and tab hence we disable most keyboard shortcuts and we also
@@ -159,7 +159,7 @@ class BrowserCommandController : public CommandUpdater,
   // app windows.
   void UpdateCommandsForHostedAppAvailability();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Update commands whose state depends on whether the window is in locked
   // fullscreen mode or not.
   void UpdateCommandsForLockedFullscreenMode();

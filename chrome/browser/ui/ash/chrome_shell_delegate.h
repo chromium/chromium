@@ -60,6 +60,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
   desks_storage::DeskModel* GetDeskModel() override;
+  void SetPinnedFromExo(aura::Window* window,
+                        chromeos::WindowPinType type) override;
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
