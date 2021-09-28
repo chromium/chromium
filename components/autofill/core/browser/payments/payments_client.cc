@@ -1159,6 +1159,11 @@ PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails() = default;
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
     const UnmaskRequestDetails& other) {
+  *this = other;
+}
+PaymentsClient::UnmaskRequestDetails&
+PaymentsClient::UnmaskRequestDetails::operator=(
+    const PaymentsClient::UnmaskRequestDetails& other) {
   billing_customer_number = other.billing_customer_number;
   reason = other.reason;
   card = other.card;
@@ -1172,6 +1177,7 @@ PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
   context_token = other.context_token;
   otp = other.otp;
   last_committed_url_origin = other.last_committed_url_origin;
+  return *this;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 

@@ -209,15 +209,14 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskDetails& unmask_details);
 
-  // Determines what form of authentication is required.
-  UnmaskAuthFlowType GetAuthenticationType(bool get_unmask_details_returned);
+  // Determines what form of authentication is required and log it.
+  UnmaskAuthFlowType GetAndLogAuthenticationType(bool fido_information_fetched);
 
-  // If OnDidGetUnmaskDetails() was invoked by PaymentsClient, then
-  // |get_unmask_details_returned| should be set to true. Based on the
-  // contents of |unmask_details_|, either FIDO authentication or CVC
-  // authentication will be prompted. If |get_unmask_details_returned| is false,
-  // then only CVC authentication will be prompted.
-  void Authenticate(bool get_unmask_details_returned = false);
+  // Start the authentication process. |fido_information_fetched| suggests
+  // whether necessary information to perform FIDO authentication has been
+  // fetched. If |fido_information_fetched| is false, then only CVC
+  // authentication will be prompted.
+  void Authenticate(bool fido_information_fetched = false);
 
   // CreditCardCVCAuthenticator::Requester:
   void OnCVCAuthenticationComplete(
@@ -293,6 +292,14 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskResponseDetails& response_details);
 
+  // Invoked when CreditCardAccessManager stops waiting for UnmaskDetails to
+  // return. If OnDidGetUnmaskDetails() has been invoked,
+  // |get_unmask_details_returned| should be set to true.
+  void OnStopWaitingForUnmaskDetails(bool get_unmask_details_returned);
+
+  // Reset all the member variables of |this| and restore initial states.
+  void Reset();
+
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
@@ -319,15 +326,14 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   CreditCardFormEventLogger* form_event_logger_;
 
   // Timestamp used for preflight call metrics.
-  base::TimeTicks preflight_call_timestamp_;
+  absl::optional<base::TimeTicks> preflight_call_timestamp_;
 
   // Timestamp used for user-perceived latency metrics.
   absl::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
 
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
-  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_ =
-      absl::nullopt;
+  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
 
   // Authenticators for card unmasking.
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;

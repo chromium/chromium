@@ -97,6 +97,7 @@ class PaymentsClient {
   struct UnmaskRequestDetails {
     UnmaskRequestDetails();
     UnmaskRequestDetails(const UnmaskRequestDetails& other);
+    UnmaskRequestDetails& operator=(const UnmaskRequestDetails& other);
     ~UnmaskRequestDetails();
 
     int64_t billing_customer_number = 0;
@@ -304,7 +305,7 @@ class PaymentsClient {
   // along with any information to facilitate the authentication.
   virtual void GetUnmaskDetails(
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsClient::UnmaskDetails&)> callback,
+                              UnmaskDetails&)> callback,
       const std::string& app_locale);
 
   // The user has attempted to unmask a card with the given cvc.
@@ -315,11 +316,9 @@ class PaymentsClient {
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.
-  void OptChange(
-      const OptChangeRequestDetails request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsClient::OptChangeResponseDetails&)>
-          callback);
+  void OptChange(const OptChangeRequestDetails request_details,
+                 base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                         OptChangeResponseDetails&)> callback);
 
   // Determine if the user meets the Payments service's conditions for upload.
   // The service uses |addresses| (from which names and phone numbers are
