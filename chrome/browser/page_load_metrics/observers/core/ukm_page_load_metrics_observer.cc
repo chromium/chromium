@@ -1072,7 +1072,8 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   if (!clusters_helper)
     return;
   const history::VisitContextAnnotations context_annotations =
-      clusters_helper->OnUkmNavigationComplete(navigation_id_, page_end_reason);
+      clusters_helper->OnUkmNavigationComplete(
+          navigation_id_, total_foreground_duration_, page_end_reason);
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
   // we can be sure that the visit row already exists.

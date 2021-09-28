@@ -65,6 +65,8 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
     EXPECT_EQ(actual.duration_since_last_visit,
               expected.duration_since_last_visit);
     EXPECT_EQ(actual.page_end_reason, expected.page_end_reason);
+    EXPECT_EQ(actual.total_foreground_duration,
+              expected.total_foreground_duration);
   }
 
  private:

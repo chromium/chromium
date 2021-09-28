@@ -2455,6 +2455,48 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
+TEST_F(HistoryBackendDBTest,
+       MigrateContextAnnotationsAddTotalForegroundDurationColumn) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(49));
+
+  const VisitID visit_id = 1;
+
+  // Open the db for manual manipulation.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertContextAnnotationsStatement[] =
+      "INSERT INTO context_annotations "
+      "(visit_id,context_annotation_flags,duration_since_last_visit,"
+      "page_end_reason) "
+      "VALUES (?, ?, ?, ?)";
+
+  // Add an entry to "context_annotations" table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertContextAnnotationsStatement));
+    s.BindInt64(0, visit_id);
+    s.BindInt64(1, 1);
+    s.BindInt64(2, 3);
+    s.BindInt(3, 0);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 50);
+
+  // After the migration, the total foreground duration should have a default of
+  // -1.
+  {
+    VisitContextAnnotations visit_context_annotations;
+    db_->GetContextAnnotationsForVisit(visit_id, &visit_context_annotations);
+    EXPECT_EQ(visit_context_annotations.total_foreground_duration,
+              base::TimeDelta::FromSeconds(-1));
+  }
+}
+
 bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }

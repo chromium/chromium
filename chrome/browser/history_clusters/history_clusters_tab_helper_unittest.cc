@@ -413,12 +413,16 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
-  helper_->OnUkmNavigationComplete(0,
-                                   page_load_metrics::PageEndReason::END_OTHER);
+  helper_->OnUkmNavigationComplete(
+      0,
+      /*total_foreground_duration=*/base::TimeDelta::FromSeconds(20),
+      page_load_metrics::PageEndReason::END_OTHER);
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
   DeleteContents();
 }
 
@@ -445,7 +449,8 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
       web_contents(), base::BindLambdaForTesting([&]() {
         EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
         helper_->OnUkmNavigationComplete(
-            0, page_load_metrics::PageEndReason::END_OTHER);
+            0, base::TimeDelta::FromSeconds(20),
+            page_load_metrics::PageEndReason::END_OTHER);
         run_loop_quit_.Run();
       }));
 
@@ -455,6 +460,8 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
 }
 
 // Expect UKM -> history -> UKM -> destroy
@@ -474,12 +481,14 @@ TEST_F(HistoryClustersTabHelperTest,
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
-  helper_->OnUkmNavigationComplete(0,
+  helper_->OnUkmNavigationComplete(0, base::TimeDelta::FromSeconds(20),
                                    page_load_metrics::PageEndReason::END_OTHER);
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
   DeleteContents();
 }
 
@@ -498,13 +507,15 @@ TEST_F(HistoryClustersTabHelperTest,
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
   AddBookmark(GURL{"https://github.com"});
-  helper_->OnUkmNavigationComplete(0,
+  helper_->OnUkmNavigationComplete(0, base::TimeDelta::FromSeconds(20),
                                    page_load_metrics::PageEndReason::END_OTHER);
   auto visits = GetVisits();
   ASSERT_EQ(visits.size(), 1u);
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_FALSE(visits[0].context_annotations.is_new_bookmark);
   EXPECT_EQ(visits[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
 
   // Resolve the history request after `WebContentsDestroyed()` is invoked, but
   // before the `WebContents` has been destroyed.
@@ -522,6 +533,8 @@ TEST_F(HistoryClustersTabHelperTest,
   EXPECT_TRUE(visits[0].context_annotations.is_new_bookmark);
   EXPECT_EQ(visits[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
 }
 
 // Expect History -> expect UKM 1 -> UKM 1 -> history -> destroy
@@ -548,7 +561,7 @@ TEST_F(HistoryClustersTabHelperTest,
   EXPECT_EQ(visits[0].context_annotations.page_end_reason, 0);
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
-  helper_->OnUkmNavigationComplete(0,
+  helper_->OnUkmNavigationComplete(0, base::TimeDelta::FromSeconds(20),
                                    page_load_metrics::PageEndReason::END_OTHER);
 
   helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
@@ -560,6 +573,8 @@ TEST_F(HistoryClustersTabHelperTest,
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(visits[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
 }
@@ -590,15 +605,19 @@ TEST_F(HistoryClustersTabHelperTest,
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
 
-  helper_->OnUkmNavigationComplete(0,
+  helper_->OnUkmNavigationComplete(0, base::TimeDelta::FromSeconds(20),
                                    page_load_metrics::PageEndReason::END_OTHER);
   visits = GetVisits();
   ASSERT_EQ(visits.size(), 2u);
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(visits[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[1].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
 
   DeleteContents();
   visits = GetVisits();
@@ -606,8 +625,12 @@ TEST_F(HistoryClustersTabHelperTest,
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(visits[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[1].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
 }
 
 // Expect History -> Expect UKM 2 -> history -> destroy -> UKM 2
@@ -629,8 +652,12 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
   ASSERT_EQ(visits.size(), 2u);
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(visits[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[1].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
 
   helper_->TagNavigationAsExpectingUkmNavigationComplete(1);
   EXPECT_EQ(GetVisits().size(), 2u);
@@ -645,7 +672,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
       web_contents(), base::BindLambdaForTesting([&]() {
         EXPECT_EQ(GetVisits().size(), 2u);
         helper_->OnUkmNavigationComplete(
-            1, page_load_metrics::PageEndReason::END_OTHER);
+            1, base::TimeDelta::FromSeconds(20),
+            page_load_metrics::PageEndReason::END_OTHER);
         run_loop_quit_.Run();
       }));
 
@@ -654,9 +682,13 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
   ASSERT_EQ(visits.size(), 2u);
   EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_EQ(visits[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(-1));
   EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_EQ(visits[1].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[1].context_annotations.total_foreground_duration,
+            base::TimeDelta::FromSeconds(20));
 }
 
 }  // namespace

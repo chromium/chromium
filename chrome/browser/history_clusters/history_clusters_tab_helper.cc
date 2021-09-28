@@ -232,6 +232,7 @@ void HistoryClustersTabHelper::TagNavigationAsExpectingUkmNavigationComplete(
 history::VisitContextAnnotations
 HistoryClustersTabHelper::OnUkmNavigationComplete(
     int64_t navigation_id,
+    base::TimeDelta total_foreground_duration,
     const page_load_metrics::PageEndReason page_end_reason) {
   auto* history_clusters_service = GetHistoryClustersService();
   if (!history_clusters_service)
@@ -242,6 +243,8 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
           navigation_id);
   incomplete_visit_context_annotations.context_annotations.page_end_reason =
       page_end_reason;
+  incomplete_visit_context_annotations.context_annotations
+      .total_foreground_duration = total_foreground_duration;
   // `RecordPageEndMetricsIfNeeded()` will fail to complete the
   // `IncompleteVisitContextAnnotations` as `ukm_page_end_signals` hasn't been
   // set yet, but it will record metrics if needed (i.e. not already recorded)

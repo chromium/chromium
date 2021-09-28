@@ -740,6 +740,10 @@ struct VisitContextAnnotations {
   // Do not use this directly, as it's a raw integer for serialization, and not
   // a typesafe page_load_metrics::PageEndReason.
   int page_end_reason = 0;
+
+  // The total duration that this visit was in the foreground. Recorded as -1 if
+  // not recorded.
+  base::TimeDelta total_foreground_duration = base::TimeDelta::FromSeconds(-1);
 };
 
 // A `VisitRow` along with its corresponding `URLRow`,

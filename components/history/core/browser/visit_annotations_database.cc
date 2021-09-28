@@ -26,7 +26,7 @@ namespace {
   "annotation_flags,entities,related_searches "
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
   " visit_id,context_annotation_flags,duration_since_last_visit," \
-  "page_end_reason "
+  "page_end_reason,total_foreground_duration "
 
 // Converts the serialized categories into a vector of (`id`, `weight`)
 // pairs.
@@ -128,7 +128,8 @@ int64_t ContextAnnotationsToFlags(VisitContextAnnotations context_annotations) {
 VisitContextAnnotations ConstructContextAnnotationsWithFlags(
     int64_t flags,
     base::TimeDelta duration_since_last_visit,
-    int page_end_reason) {
+    int page_end_reason,
+    base::TimeDelta total_foreground_duration) {
   VisitContextAnnotations context_annotations;
   context_annotations.omnibox_url_copied =
       flags & static_cast<uint64_t>(ContextAnnotationFlags::kOmniboxUrlCopied);
@@ -147,6 +148,7 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
       flags & static_cast<uint64_t>(ContextAnnotationFlags::kIsNtpCustomLink);
   context_annotations.duration_since_last_visit = duration_since_last_visit;
   context_annotations.page_end_reason = page_end_reason;
+  context_annotations.total_foreground_duration = total_foreground_duration;
   return context_annotations;
 }
 
@@ -157,7 +159,8 @@ AnnotatedVisitRow StatementToAnnotatedVisitRow(sql::Statement& statement) {
           ConstructContextAnnotationsWithFlags(
               statement.ColumnInt64(1),
               base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-              statement.ColumnInt(3)),
+              statement.ColumnInt(3),
+              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4))),
           {}};
 }
 
@@ -195,7 +198,8 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
                        "visit_id INTEGER PRIMARY KEY,"
                        "context_annotation_flags INTEGER NOT NULL,"
                        "duration_since_last_visit INTEGER,"
-                       "page_end_reason INTEGER)")) {
+                       "page_end_reason INTEGER,"
+                       "total_foreground_duration INTEGER)")) {
     return false;
   }
 
@@ -271,12 +275,14 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO context_annotations(" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?)"));
+      ")VALUES(?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindInt64(1, ContextAnnotationsToFlags(visit_context_annotations));
   statement.BindInt64(
       2, visit_context_annotations.duration_since_last_visit.InMicroseconds());
   statement.BindInt(3, visit_context_annotations.page_end_reason);
+  statement.BindInt64(
+      4, visit_context_annotations.total_foreground_duration.InMicroseconds());
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -343,7 +349,8 @@ bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
   *out_context_annotations = ConstructContextAnnotationsWithFlags(
       statement.ColumnInt64(1),
       base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-      statement.ColumnInt(3));
+      statement.ColumnInt(3),
+      base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4)));
   return true;
 }
 
@@ -655,6 +662,22 @@ bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddVisibilityScore() {
   return GetDB().Execute(
       "ALTER TABLE content_annotations "
       "ADD COLUMN visibility_score NUMERIC DEFAULT -1");
+}
+
+bool VisitAnnotationsDatabase::
+    MigrateContextAnnotationsAddTotalForegroundDuration() {
+  if (!GetDB().DoesTableExist("context_annotations")) {
+    NOTREACHED() << " Context annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("context_annotations",
+                              "total_foreground_duration"))
+    return true;
+  // 1000000us = 1s which is the default duration for this DB.
+  return GetDB().Execute(
+      "ALTER TABLE context_annotations "
+      "ADD COLUMN total_foreground_duration NUMERIC DEFAULT -1000000");
 }
 
 }  // namespace history
