@@ -10,7 +10,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 
 class GURL;
 
@@ -39,8 +38,7 @@ class AboutThisSiteService : public KeyedService {
   AboutThisSiteService& operator=(const AboutThisSiteService&) = delete;
 
   // Returns "About this site" information for the website with |url|.
-  absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo(
-      const GURL& url) const;
+  std::u16string GetAboutThisSiteDescription(const GURL& url) const;
 
  private:
   std::unique_ptr<Client> client_;
