@@ -94,7 +94,7 @@ class ConversionNetworkSenderTest : public testing::Test {
 TEST_F(ConversionNetworkSenderTest,
        ConversionReportReceived_NetworkRequestMade) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(report, std::move(base::DoNothing()));
+  network_sender_->SendReport(report, base::DoNothing());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));

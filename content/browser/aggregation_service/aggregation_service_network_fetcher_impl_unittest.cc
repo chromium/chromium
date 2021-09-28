@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/callback_helpers.h"
@@ -81,7 +80,7 @@ class AggregationServiceNetworkFetcherTest : public testing::Test {
 
 TEST_F(AggregationServiceNetworkFetcherTest, RequestAttributes) {
   network_fetcher_->FetchPublicKeys(url::Origin::Create(GURL(kExampleOrigin)),
-                                    std::move(base::DoNothing()));
+                                    base::DoNothing());
 
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -166,7 +165,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, FetchPublicKeysLargeBody_Failed) {
 TEST_F(AggregationServiceNetworkFetcherTest,
        FetcherDeletedDuringRequest_NoCrash) {
   network_fetcher_->FetchPublicKeys(url::Origin::Create(GURL(kExampleOrigin)),
-                                    std::move(base::DoNothing()));
+                                    base::DoNothing());
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   network_fetcher_.reset();
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(

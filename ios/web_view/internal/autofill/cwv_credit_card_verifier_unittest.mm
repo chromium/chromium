@@ -181,7 +181,7 @@ TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
 // Tests CWVCreditCardVerifier's verification method handles success case.
 TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
   NSString* cvc = @"123";
-  [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
+  [credit_card_verifier_ loadRiskData:base::DoNothing()];
   __block BOOL completionCalled = NO;
   __block NSError* completionError;
   [credit_card_verifier_
@@ -208,7 +208,7 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
 // Tests CWVCreditCardVerifier's verification method handles failure case.
 TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
   NSString* cvc = @"123";
-  [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
+  [credit_card_verifier_ loadRiskData:base::DoNothing()];
   __block NSError* completionError;
   [credit_card_verifier_
           verifyWithCVC:cvc

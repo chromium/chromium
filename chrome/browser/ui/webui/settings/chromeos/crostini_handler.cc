@@ -631,8 +631,8 @@ void CrostiniHandler::HandleShutdownCrostini(const base::ListValue* args) {
 
   const std::string vm_name = "termina";
 
-  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
-      std::move(vm_name), std::move(base::DoNothing()));
+  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(std::move(vm_name),
+                                                             base::DoNothing());
 }
 
 }  // namespace settings

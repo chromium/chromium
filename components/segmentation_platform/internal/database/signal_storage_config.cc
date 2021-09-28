@@ -219,8 +219,7 @@ void SignalStorageConfig::WriteToDB() {
 
   entries_to_save->emplace_back(std::make_pair(kDatabaseKey, config_));
   database_->UpdateEntries(std::move(entries_to_save),
-                           std::move(keys_to_delete),
-                           std::move(base::DoNothing()));
+                           std::move(keys_to_delete), base::DoNothing());
 }
 
 }  // namespace segmentation_platform
