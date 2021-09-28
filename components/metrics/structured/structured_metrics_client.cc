@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-
 #include "components/metrics/structured/event.h"
 
 namespace metrics {

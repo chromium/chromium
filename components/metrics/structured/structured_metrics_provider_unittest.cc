@@ -104,6 +104,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+    StructuredMetricsClient::Get()->SetDelegate(Recorder::GetInstance());
     // Move the mock date forward from day 0, because KeyData assumes that day 0
     // is a bug.
     task_environment_.AdvanceClock(base::TimeDelta::FromDays(1000));

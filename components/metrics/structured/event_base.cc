@@ -12,6 +12,7 @@
 #include "components/metrics/structured/event_validator.h"
 #include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/recorder.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +33,7 @@ EventBase::EventBase(const EventBase& other) = default;
 EventBase::~EventBase() = default;
 
 void EventBase::Record() {
-  Recorder::GetInstance()->Record(std::move(*this));
+  StructuredMetricsClient::Get()->Record(std::move(*this));
 }
 
 absl::optional<int> EventBase::LastKeyRotation() {
