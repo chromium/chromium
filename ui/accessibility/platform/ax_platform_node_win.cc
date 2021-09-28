@@ -8259,7 +8259,6 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     // These properties are used by non-screenreader UIA clients. They should
     // not cause additional enablement.
     case UIA_HasKeyboardFocusPropertyId:
-    case UIA_IsControlElementPropertyId:
     case UIA_FrameworkIdPropertyId:
     case UIA_IsEnabledPropertyId:
       break;
