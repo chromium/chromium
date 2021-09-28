@@ -105,7 +105,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
   auto profile = CreateRegularProfile(user_email);
   reporter->OnLogin(profile.get());
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -146,7 +146,7 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   auto profile = CreateRegularProfile(user_email);
   reporter->OnLogin(profile.get());
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -184,7 +184,7 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogin) {
   auto profile = CreatePublicAccountProfile();
   reporter->OnLogin(profile.get());
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_TRUE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -244,7 +244,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
   reporter->OnSessionTerminationStarted(
       ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_login_event());
@@ -285,7 +285,7 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   reporter->OnSessionTerminationStarted(
       ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_login_event());
@@ -323,7 +323,7 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogout) {
   reporter->OnSessionTerminationStarted(
       ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_TRUE(record.is_guest_session());
   EXPECT_FALSE(record.has_login_event());
@@ -382,7 +382,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginFailure) {
           AccountId::FromUserEmail(std::string(user_email))));
   reporter->OnLoginFailure(chromeos::AuthFailure(AuthFailure::OWNER_REQUIRED));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -426,7 +426,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginAuthenticationFailure) {
   reporter->OnLoginFailure(
       chromeos::AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -469,7 +469,7 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLoginFailure) {
           AccountId::FromUserEmail(std::string(user_email))));
   reporter->OnLoginFailure(chromeos::AuthFailure(AuthFailure::TPM_ERROR));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -511,7 +511,7 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLoginFailure) {
   reporter->OnLoginFailure(
       chromeos::AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp());
   EXPECT_TRUE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());

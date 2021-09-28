@@ -125,7 +125,7 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
     record.mutable_affiliated_user()->set_user_email(user_email);
   }
 
-  reporter_helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+  reporter_helper_->ReportEvent(&record, ::reporting::Priority::SECURITY);
 }
 
 void LoginLogoutReporter::OnLogin(Profile* profile) {
