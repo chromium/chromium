@@ -2871,22 +2871,6 @@
             ]
         }
     ],
-    "DirectActions": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "DirectActions",
-                    "enable_features": [
-                        "DirectActions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DirectCompositionForceFullDamage": [
         {
             "platforms": [
