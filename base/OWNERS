@@ -21,14 +21,13 @@ wez@chromium.org
 per-file BUILD.gn=*
 
 # For Android-specific changes:
-per-file *android*=file://base/android/OWNERS
-per-file BUILD.gn=file://base/android/OWNERS
+per-file ..._android*=file://base/android/OWNERS
 
 # For Fuchsia-specific changes:
 per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 
 # For Windows-specific changes:
-per-file *_win*=file://base/win/OWNERS
+per-file ..._win*=file://base/win/OWNERS
 
 per-file callback_list*=pkasting@chromium.org
 per-file feature_list*=asvitkine@chromium.org
