@@ -346,7 +346,9 @@ void MaybeReportDangerousDownloadBlocked(
   if (download_restriction !=
           DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES &&
       download_restriction !=
-          DownloadPrefs::DownloadRestriction::DANGEROUS_FILES) {
+          DownloadPrefs::DownloadRestriction::DANGEROUS_FILES &&
+      download_restriction !=
+          DownloadPrefs::DownloadRestriction::MALICIOUS_FILES) {
     return;
   }
 
