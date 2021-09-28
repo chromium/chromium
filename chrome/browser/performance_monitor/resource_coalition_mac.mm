@@ -136,6 +136,12 @@ ResourceCoalition::ResourceCoalition() {
   SetCoalitionId(GetCurrentCoalitionId(&availability_details));
   base::UmaHistogramEnumeration(kCoalitionAvailabilityHistogram,
                                 availability_details);
+
+  // Initialize the machine timebase.
+  kern_return_t kr = mach_timebase_info(&mach_timebase_);
+  DCHECK_EQ(kr, KERN_SUCCESS);
+  DCHECK(mach_timebase_.numer);
+  DCHECK(mach_timebase_.denom);
 }
 ResourceCoalition::~ResourceCoalition() = default;
 
@@ -177,7 +183,7 @@ ResourceCoalition::ReadEnergyImpactCoefficientsFromPath(
     if (!energy_constants)
       return absl::nullopt;
 
-    EnergyImpactCoefficients coefficients;
+    EnergyImpactCoefficients coefficients{};
     coefficients.kcpu_time =
         GetNamedCoefficientOrZero(energy_constants, @"kcpu_time");
     coefficients.kcpu_wakeups =
@@ -231,7 +237,6 @@ ResourceCoalition::ReadEnergyImpactOrDefaultForBoardId(
       directory.Append(FILE_PATH_LITERAL("default.plist")));
 }
 
-// static
 double ResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
     const EnergyImpactCoefficients& coefficients,
     const coalition_resource_usage& data_sample) {
@@ -260,22 +265,27 @@ double ResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
   // of GPU time energy to CPU time energy. There is a fairly wide spread on
   // this constant seen in /usr/share/pmenergy. On macOS 11.5.2 the spread is
   // from 0 through 5.9.
-  cpu_time_equivalent_ns += coefficients.kgpu_time * data_sample.gpu_time;
+  cpu_time_equivalent_ns +=
+      coefficients.kgpu_time * MachTimeToNs(data_sample.gpu_time);
 
-  cpu_time_equivalent_ns += coefficients.kqos_background *
-                            data_sample.cpu_time_eqos[THREAD_QOS_BACKGROUND];
   cpu_time_equivalent_ns +=
-      coefficients.kqos_default * data_sample.cpu_time_eqos[THREAD_QOS_DEFAULT];
+      coefficients.kqos_background *
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_BACKGROUND]);
   cpu_time_equivalent_ns +=
-      coefficients.kqos_legacy * data_sample.cpu_time_eqos[THREAD_QOS_LEGACY];
+      coefficients.kqos_default *
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_DEFAULT]);
+  cpu_time_equivalent_ns +=
+      coefficients.kqos_legacy *
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_LEGACY]);
   cpu_time_equivalent_ns +=
       coefficients.kqos_user_initiated *
-      data_sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED];
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED]);
   cpu_time_equivalent_ns +=
       coefficients.kqos_user_interactive *
-      data_sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE];
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE]);
   cpu_time_equivalent_ns +=
-      coefficients.kqos_utility * data_sample.cpu_time_eqos[THREAD_QOS_UTILITY];
+      coefficients.kqos_utility *
+      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_UTILITY]);
 
   // The conversion ratio for CPU time/EnergyImpact is ns/10ms
   constexpr double kNsToEI = 1E-7;
@@ -308,6 +318,11 @@ void ResourceCoalition::SetEnergyImpactCoefficientsForTesting(
   energy_impact_coefficients_ = coefficients;
 }
 
+void ResourceCoalition::SetMachTimebaseForTesting(
+    const mach_timebase_info_data_t& mach_timebase) {
+  mach_timebase_ = mach_timebase;
+}
+
 void ResourceCoalition::EnsureEnergyImpactCoefficientsIfAvailable() {
   if (energy_impact_coefficients_initialized_)
     return;
@@ -328,6 +343,15 @@ void ResourceCoalition::SetCoalitionId(absl::optional<uint64_t> coalition_id) {
     last_data_sample_ = GetResourceUsageData(coalition_id_.value());
     last_data_sample_timestamp_ = base::TimeTicks::Now();
   }
+}
+
+uint64_t ResourceCoalition::MachTimeToNs(uint64_t mach_time) {
+  if (mach_timebase_.numer == mach_timebase_.denom)
+    return mach_time;
+
+  CHECK(
+      !__builtin_umulll_overflow(mach_time, mach_timebase_.numer, &mach_time));
+  return mach_time / mach_timebase_.denom;
 }
 
 absl::optional<ResourceCoalition::DataRate>
@@ -366,12 +390,16 @@ ResourceCoalition::GetCoalitionDataDiff(
     return diff / interval_length.InSecondsF();
   };
 
-  auto get_timedelta_rate_per_second =
-      [&interval_length](uint64_t new_sample, uint64_t old_sample) -> double {
+  auto get_timedelta_rate_per_second = [&interval_length, self = this](
+                                           uint64_t new_sample,
+                                           uint64_t old_sample) -> double {
     DCHECK_GE(new_sample, old_sample);
-    base::TimeDelta time_delta =
-        base::TimeDelta::FromNanoseconds(new_sample - old_sample);
-    return time_delta.InSecondsF() / interval_length.InSecondsF();
+    // Compute the delta in s, being careful to avoid truncation due to integral
+    // division.
+    double delta_sample_s =
+        self->MachTimeToNs(new_sample - old_sample) /
+        static_cast<double>(base::Time::kNanosecondsPerSecond);
+    return delta_sample_s / interval_length.InSecondsF();
   };
 
   ret.cpu_time_per_second =

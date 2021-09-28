@@ -7,8 +7,11 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_MAC)
+#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
+#endif
 
 namespace performance_monitor {
 

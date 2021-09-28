@@ -11,7 +11,9 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#if defined(OS_MAC)
 #include "chrome/browser/performance_monitor/resource_coalition_mac.h"
+#endif
 
 namespace performance_monitor {
 
