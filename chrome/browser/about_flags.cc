@@ -4659,7 +4659,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     "OmniboxBundledExperimentV1")},
 
     {"memories", flag_descriptions::kMemoriesName,
-     flag_descriptions::kMemoriesDescription, kOsAll,
+     flag_descriptions::kMemoriesDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::kMemories,
                                     kMemoriesVariations,
                                     "Memories")},

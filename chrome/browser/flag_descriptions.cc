@@ -1603,11 +1603,11 @@ const char kMediaSessionWebRTCDescription[] =
     "Adds new actions into Media Session for video conferencing.";
 
 const char kMemoriesName[] = "Memories";
-const char kMemoriesDescription[] = "Enables chrome://history/journeys.";
+const char kMemoriesDescription[] = "Enables the history clusters UI.";
 
 const char kMemoriesDebugName[] = "Memories Debug";
 const char kMemoriesDebugDescription[] =
-    "Shows visit metadata in chrome://history to debug history clustering.";
+    "Shows debug information in the history clusters UI.";
 
 const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
