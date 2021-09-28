@@ -66,6 +66,8 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_model.h"
@@ -1084,6 +1086,34 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFolder) {
   // Test traversal triggered by left.
   TestFocusTraversal(is_rtl_ ? forward_view_list : backward_view_list,
                      ui::VKEY_LEFT, false);
+}
+
+TEST_F(AppListViewFocusTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
+  Show();
+
+  // Transition to FULLSCREEN_ALL_APPS state and open the folder.
+  SetAppListState(ash::AppListViewState::kFullscreenAllApps);
+  folder_item_view()->RequestFocus();
+  SimulateKeyPress(ui::VKEY_RETURN, false);
+  auto* apps_container_view = contents_view()->apps_container_view();
+  ASSERT_TRUE(apps_container_view->IsInFolderView());
+
+  // Note: For fullscreen app list, the search box is part of the focus cycle
+  // when a folder is open.
+  auto* suggestion_chip_container =
+      apps_container_view->suggestion_chip_container_view_for_test();
+  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsLeaf());
+
+  // Close the folder.
+  SimulateKeyPress(ui::VKEY_ESCAPE, false);
+
+  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 }
 
 // Tests the vertical focus traversal by in PEEKING state.

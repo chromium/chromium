@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
@@ -355,6 +356,8 @@ void AppListBubbleView::ReparentDragEnded() {
 
 void AppListBubbleView::DisableFocusForShowingActiveFolder(bool disabled) {
   search_box_view_->SetEnabled(!disabled);
+  SetViewIgnoredForAccessibility(search_box_view_, disabled);
+
   apps_page_->DisableFocusForShowingActiveFolder(disabled);
 }
 

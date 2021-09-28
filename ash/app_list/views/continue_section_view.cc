@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/continue_task_view.h"
@@ -84,6 +85,11 @@ size_t ContinueSectionView::GetTasksSuggestionsCount() const {
 
 void ContinueSectionView::DisableFocusForShowingActiveFolder(bool disabled) {
   suggestions_container_->DisableFocusForShowingActiveFolder(disabled);
+
+  // Prevent items from being accessed by ChromeVox.
+  // TODO(crbug.com/1254015): This does not ignore the "Continue" label itself.
+  // Explicitly ignoring that view doesn't work either.
+  SetViewIgnoredForAccessibility(this, disabled);
 }
 
 ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(

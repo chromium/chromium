@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -198,6 +199,9 @@ RecentAppsView::~RecentAppsView() = default;
 void RecentAppsView::DisableFocusForShowingActiveFolder(bool disabled) {
   for (views::View* child : children())
     child->SetEnabled(!disabled);
+
+  // Prevent items from being accessed by ChromeVox.
+  SetViewIgnoredForAccessibility(this, disabled);
 }
 
 bool RecentAppsView::OnKeyPressed(const ui::KeyEvent& event) {

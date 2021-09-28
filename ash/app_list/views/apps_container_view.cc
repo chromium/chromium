@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -973,9 +974,7 @@ void AppsContainerView::DisableFocusForShowingActiveFolder(bool disabled) {
 
   // Ignore the page switcher in accessibility tree so that buttons inside it
   // will not be accessed by ChromeVox.
-  page_switcher_->GetViewAccessibility().OverrideIsIgnored(disabled);
-  page_switcher_->GetViewAccessibility().NotifyAccessibilityEvent(
-      ax::mojom::Event::kTreeChanged);
+  SetViewIgnoredForAccessibility(page_switcher_, disabled);
 }
 
 int AppsContainerView::GetExpectedSuggestionChipY(float progress) {

@@ -396,9 +396,7 @@ void AppsGridView::DisableFocusForShowingActiveFolder(bool disabled) {
 
   // Ignore the grid view in accessibility tree so that items inside it will not
   // be accessed by ChromeVox.
-  GetViewAccessibility().OverrideIsIgnored(disabled);
-  GetViewAccessibility().NotifyAccessibilityEvent(
-      ax::mojom::Event::kTreeChanged);
+  SetViewIgnoredForAccessibility(this, disabled);
 }
 
 void AppsGridView::SetModel(AppListModel* model) {

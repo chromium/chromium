@@ -39,6 +39,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
@@ -124,6 +125,10 @@ class AppListBubbleViewTest : public AshTestBase {
 
   void AddAppItems(int num_items) {
     app_list_test_model_->PopulateApps(num_items);
+  }
+
+  void AddFolderWithApps(int count) {
+    app_list_test_model_->CreateAndPopulateFolderWithApps(count);
   }
 
   void LeftClickOn(views::View* view) {
@@ -356,7 +361,7 @@ TEST_F(AppListBubbleViewTest, BackActionsCloseAppList) {
 }
 
 TEST_F(AppListBubbleViewTest, BackActionsCloseFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -384,7 +389,7 @@ TEST_F(AppListBubbleViewTest, BackActionsCloseFolder) {
 }
 
 TEST_F(AppListBubbleViewTest, BackActionWithSelectedItemSelectsFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -487,8 +492,8 @@ TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsSameColumnInAppsGrid) {
 
 TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsLastColumnInAppsGrid) {
   AddRecentApps(5);
-  app_list_test_model_->CreateAndPopulateFolderWithApps(2);
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(2);
+  AddFolderWithApps(3);
   ShowAppList();
 
   // There are only 2 folders, and hence 2 columns, in the top level apps grid.
@@ -561,7 +566,7 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToContinueTasks) {
 }
 
 TEST_F(AppListBubbleViewTest, ClickOnFolderOpensFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -574,7 +579,7 @@ TEST_F(AppListBubbleViewTest, ClickOnFolderOpensFolder) {
 
 TEST_F(AppListBubbleViewTest, LargeFolderViewFitsInsideMainBubble) {
   // Create more apps than fit in the default sized folder.
-  app_list_test_model_->CreateAndPopulateFolderWithApps(30);
+  AddFolderWithApps(30);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -595,7 +600,7 @@ TEST_F(AppListBubbleViewTest, LargeFolderViewFitsInsideMainBubble) {
 }
 
 TEST_F(AppListBubbleViewTest, ClickOutsideFolderClosesFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -614,7 +619,7 @@ TEST_F(AppListBubbleViewTest, ClickOutsideFolderClosesFolder) {
 }
 
 TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -646,7 +651,7 @@ TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
 }
 
 TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item =
@@ -669,7 +674,7 @@ TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
 }
 
 TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -682,7 +687,7 @@ TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
 }
 
 TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -705,8 +710,44 @@ TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
   }
 }
 
+TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  AddFolderWithApps(5);
+  ShowAppList();
+
+  // Open the folder.
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  auto* search_box = GetSearchBoxView();
+  EXPECT_TRUE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(search_box->GetViewAccessibility().IsLeaf());
+  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
+  EXPECT_TRUE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(continue_section->GetViewAccessibility().IsLeaf());
+  auto* recent_apps = GetRecentAppsView();
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsLeaf());
+  auto* apps_grid = GetAppsGridView();
+  EXPECT_TRUE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(apps_grid->GetViewAccessibility().IsLeaf());
+
+  // Close the folder.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_FALSE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(search_box->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(continue_section->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(apps_grid->GetViewAccessibility().IsLeaf());
+}
+
 TEST_F(AppListBubbleViewTest, OpenFolderWithKeyboardFocusesFirstItem) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -723,7 +764,7 @@ TEST_F(AppListBubbleViewTest, OpenFolderWithKeyboardFocusesFirstItem) {
 }
 
 TEST_F(AppListBubbleViewTest, CloseFolderWithNoSelectedItemFocusesSearchBox) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -732,11 +773,8 @@ TEST_F(AppListBubbleViewTest, CloseFolderWithNoSelectedItemFocusesSearchBox) {
   auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
   ASSERT_FALSE(folder_view->items_grid_view()->has_selected_view());
 
-  // TODO(jamescook): Switch to using keyboard to close folder.
-  gfx::Point outside_view =
-      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
-  GetEventGenerator()->MoveMouseTo(outside_view);
-  GetEventGenerator()->ClickLeftButton();
+  // Close the folder.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
 
   SearchBoxView* search_box_view = GetSearchBoxView();
   EXPECT_TRUE(search_box_view->search_box()->HasFocus())
@@ -745,7 +783,7 @@ TEST_F(AppListBubbleViewTest, CloseFolderWithNoSelectedItemFocusesSearchBox) {
 }
 
 TEST_F(AppListBubbleViewTest, CloseFolderWithSelectedItemFocusesFolderItem) {
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AddFolderWithApps(3);
   ShowAppList();
 
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
@@ -755,11 +793,8 @@ TEST_F(AppListBubbleViewTest, CloseFolderWithSelectedItemFocusesFolderItem) {
   folder_view->items_grid_view()->GetItemViewAt(0)->RequestFocus();
   ASSERT_TRUE(folder_view->items_grid_view()->has_selected_view());
 
-  // TODO(jamescook): Switch to using keyboard to close folder.
-  gfx::Point outside_view =
-      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
-  GetEventGenerator()->MoveMouseTo(outside_view);
-  GetEventGenerator()->ClickLeftButton();
+  // Close the folder.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
 
   // Folder item is selected and focused.
   auto* root_apps_grid_view = GetAppsGridView();
