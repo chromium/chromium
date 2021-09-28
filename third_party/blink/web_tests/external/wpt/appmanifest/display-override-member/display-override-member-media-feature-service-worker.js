@@ -6,11 +6,14 @@ const CACHE_NAME = `cache-v${cacheVersion}`;
 
 // The resources cached by this service worker.
 const resources = [
+  "display-override-member-app-region-window-controls-overlay-manual.tentative.html",
+  "display-override-member-css-environment-variables-window-controls-overlay-manual.tentative.html",
   "display-override-member-media-feature-browser-manual.tentative.html",
   "display-override-member-media-feature-fullscreen-manual.tentative.html",
   "display-override-member-media-feature-minimal-ui-manual.tentative.html",
   "display-override-member-media-feature-standalone-manual.tentative.html",
   "display-override-member-media-feature-standalone-overrides-browser-manual.tentative.html",
+  "display-override-member-media-feature-window-controls-overlay-overrides-browser-manual.tentative.html",
   "display-override-member-media-feature-service-worker.js",
   "resources/display-override-member-media-feature-manual.js",
   "resources/icon.png",
