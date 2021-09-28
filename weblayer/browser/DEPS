@@ -69,6 +69,7 @@ include_rules = [
   "+components/sessions",
   "+components/signin/core/browser",
   "+components/signin/public",
+  "+components/site_engagement/content",
   "+components/site_isolation",
   "+components/spellcheck/browser",
   "+components/ssl_errors",
