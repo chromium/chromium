@@ -82,12 +82,8 @@ double BrightnessLowerBound(double reference_brightness,
   DCHECK_GT(scale, 0.0);
   DCHECK_GE(offset, 0.0);
 
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  return base::BrokenClampThatShouldNotBeUsed(reference_brightness / scale, 0.0,
-                                              reference_brightness - offset);
+  return base::clamp(reference_brightness / scale, 0.0,
+                     std::max(reference_brightness - offset, 0.0));
 }
 
 // Calculates upper bound from |reference_brightness| using the max of
@@ -100,12 +96,8 @@ double BrightnessUpperBound(double reference_brightness,
   DCHECK_GT(scale, 0.0);
   DCHECK_GE(offset, 0.0);
 
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  return base::BrokenClampThatShouldNotBeUsed(
-      reference_brightness * scale, reference_brightness + offset, 100.0);
+  return base::clamp(reference_brightness * scale,
+                     std::min(reference_brightness + offset, 100.0), 100.0);
 }
 
 // Returns whether |brightness| is an outlier from a |reference_brightness|.
@@ -144,13 +136,7 @@ double BoundedBrightnessAdjustment(double brightness_old,
   UMA_HISTOGRAM_ENUMERATION(
       "AutoScreenBrightness.ModelTraining.BrightnessChange", change);
 
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  return base::BrokenClampThatShouldNotBeUsed(brightness_new, lower_bound,
-                                              upper_bound) -
-         brightness_old;
+  return base::clamp(brightness_new, lower_bound, upper_bound) - brightness_old;
 }
 
 // Calculates recommended brightness change, given old brightness, user's
@@ -508,24 +494,15 @@ void GaussianTrainer::AdjustCurveWithSingleDataPoint(
 
 void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
   DCHECK_LT(center_index, ambient_log_lux_.size());
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  brightness_[center_index] = base::BrokenClampThatShouldNotBeUsed(
-      brightness_[center_index], params_.min_brightness, 100.0);
+  brightness_[center_index] =
+      base::clamp(brightness_[center_index], params_.min_brightness, 100.0);
 
   // Updates control points to the left of |center_index| so that brightness
   // values satisfy min/max ratio requirement.
   for (size_t i = center_index; i > 0; --i) {
     const double min_value = brightness_[i] / max_ratios_[i - 1];
     const double max_value = brightness_[i] / min_ratios_[i - 1];
-    // This is a broken clamp function that successfully returns a bogus value
-    // when invalid inputs are provided, rather than crashing.
-    // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-    // from base/cxx17_backports.h, and fix all the broken tests that result.
-    brightness_[i - 1] = base::BrokenClampThatShouldNotBeUsed(
-        brightness_[i - 1], min_value, max_value);
+    brightness_[i - 1] = base::clamp(brightness_[i - 1], min_value, max_value);
     if (brightness_[i - 1] > 100.0) {
       brightness_[i - 1] = 100.0;
     }
@@ -536,12 +513,7 @@ void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
   for (size_t i = center_index; i < ambient_log_lux_.size() - 1; ++i) {
     const double min_value = brightness_[i] * min_ratios_[i];
     const double max_value = brightness_[i] * max_ratios_[i];
-    // This is a broken clamp function that successfully returns a bogus value
-    // when invalid inputs are provided, rather than crashing.
-    // TODO(https://crbug.com/1232264): Migrate this call to use base::clamp()
-    // from base/cxx17_backports.h, and fix all the broken tests that result.
-    brightness_[i + 1] = base::BrokenClampThatShouldNotBeUsed(
-        brightness_[i + 1], min_value, max_value);
+    brightness_[i + 1] = base::clamp(brightness_[i + 1], min_value, max_value);
     if (brightness_[i + 1] > 100.0) {
       brightness_[i + 1] = 100.0;
     }
