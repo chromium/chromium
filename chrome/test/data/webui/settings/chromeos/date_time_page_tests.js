@@ -256,7 +256,7 @@ suite('settings-date-time-page', function() {
   });
 
   function getTimeZoneSelector(id) {
-    return dateTime.$$('timezone-selector').$$(id);
+    return dateTime.$$('timezone-selector').shadowRoot.querySelector(id);
   }
 
   function verifyAutoDetectSetting(autoDetect, managed) {
@@ -349,7 +349,8 @@ suite('settings-date-time-page', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect').$$('cr-toggle');
+    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

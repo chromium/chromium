@@ -267,7 +267,8 @@ suite('ManageAccessibilityPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = page.$$('#enableSwitchAccess').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#enableSwitchAccess').shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

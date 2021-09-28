@@ -209,7 +209,8 @@ suite('SearchSubpage', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
 
-    const deepLinkElement = page.$$('#quick-answers-enable').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#quick-answers-enable').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -226,8 +227,8 @@ suite('SearchSubpage', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
 
-    const deepLinkElement =
-        page.$$('#quick-answers-definition-enable').$$('cr-toggle');
+    const deepLinkElement = page.$$('#quick-answers-definition-enable')
+                                .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -244,8 +245,8 @@ suite('SearchSubpage', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
 
-    const deepLinkElement =
-        page.$$('#quick-answers-translation-enable').$$('cr-toggle');
+    const deepLinkElement = page.$$('#quick-answers-translation-enable')
+                                .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -262,8 +263,8 @@ suite('SearchSubpage', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
 
-    const deepLinkElement =
-        page.$$('#quick-answers-unit-conversion-enable').$$('cr-toggle');
+    const deepLinkElement = page.$$('#quick-answers-unit-conversion-enable')
+                                .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(

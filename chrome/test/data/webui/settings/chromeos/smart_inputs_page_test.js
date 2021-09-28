@@ -66,8 +66,8 @@ suite('SmartInputsPage', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        smartInputsPage.$$('#emojiSuggestion').$$('cr-toggle');
+    const deepLinkElement = smartInputsPage.$$('#emojiSuggestion')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -101,8 +101,8 @@ suite('SmartInputsPage', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        smartInputsPage.$$('#predictiveWriting').$$('cr-toggle');
+    const deepLinkElement = smartInputsPage.$$('#predictiveWriting')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

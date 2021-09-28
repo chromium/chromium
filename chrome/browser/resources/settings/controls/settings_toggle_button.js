@@ -12,21 +12,21 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 // </if>
 
-import {SettingsBooleanControlBehavior, SettingsBooleanControlBehaviorInterface} from './settings_boolean_control_behavior.js';
+import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_behavior.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBooleanControlBehaviorInterface}
+ * @implements {SettingsBooleanControlMixinInterface}
  */
 const SettingsToggleButtonElementBase =
-    mixinBehaviors([SettingsBooleanControlBehavior], PolymerElement);
+    SettingsBooleanControlMixin(PolymerElement);
 
 /** @polymer */
 export class SettingsToggleButtonElement extends

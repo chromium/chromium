@@ -10,17 +10,16 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBooleanControlBehavior, SettingsBooleanControlBehaviorInterface} from './settings_boolean_control_behavior.js';
+import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBooleanControlBehaviorInterface}
+ * @implements {SettingsBooleanControlMixinInterface}
  */
-const SettingsCheckboxElementBase =
-    mixinBehaviors([SettingsBooleanControlBehavior], PolymerElement);
+const SettingsCheckboxElementBase = SettingsBooleanControlMixin(PolymerElement);
 
 /** @polymer */
 export class SettingsCheckboxElement extends SettingsCheckboxElementBase {

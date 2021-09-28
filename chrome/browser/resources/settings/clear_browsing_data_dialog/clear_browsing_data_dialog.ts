@@ -28,7 +28,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefControlBehaviorInterface} from '../controls/pref_control_behavior.js';
+import {PrefControlMixinInterface} from '../controls/pref_control_behavior.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox_ts.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu_ts.js';
@@ -484,7 +484,7 @@ class SettingsClearBrowsingDataDialogElement extends
     const tab = this.$.tabs.selectedItem as HTMLElement;
     const dataTypes = this.getSelectedDataTypes_(tab);
     const timePeriod = (tab.querySelector('.time-range-select') as unknown as
-                        PrefControlBehaviorInterface)
+                        PrefControlMixinInterface)
                            .pref!.value;
 
     if (tab.id === 'basic-tab') {

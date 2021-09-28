@@ -382,8 +382,8 @@ suite('AppsPageTests', function() {
       params.append('settingId', '703');
       settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
 
-      const deepLinkElement =
-          appsPage.$$('#onStartupDropdown').$$('#dropdownMenu');
+      const deepLinkElement = appsPage.$$('#onStartupDropdown')
+                                  .shadowRoot.querySelector('#dropdownMenu');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

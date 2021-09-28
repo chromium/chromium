@@ -64,7 +64,8 @@ suite('DownloadsHandler', function() {
         downloadsPage.shadowRoot.querySelector('#changeDownloadsPath');
     assertTrue(!!button);
     button.click();
-    button.fire('transitionend');
+    button.dispatchEvent(
+        new CustomEvent('transitionend', {bubbles: true, composed: true}));
     return downloadsBrowserProxy.whenCalled('selectDownloadLocation');
   });
 

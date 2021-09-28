@@ -388,8 +388,8 @@ cr.define('settings_people_page_quick_unlock', function() {
         settings.Router.getInstance().navigateTo(
             settings.routes.LOCK_SCREEN, params);
 
-        const deepLinkElement =
-            getFromElement('#enableLockScreen').$$('cr-toggle');
+        const deepLinkElement = getFromElement('#enableLockScreen')
+                                    .shadowRoot.querySelector('cr-toggle');
         assert(!!deepLinkElement);
         await test_util.waitAfterNextRender(deepLinkElement);
         assertEquals(
