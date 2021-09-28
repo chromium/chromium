@@ -151,8 +151,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // lifetime.
   //
   // However, because of prerender activations, the RenderFrameHost that this
-  // navigation is committed into may later transfer to another FrameTreeNode,
-  // so this value is not necessarily constant over the lifetime of the frame.
+  // navigation is committed into may later transfer to another FrameTreeNode.
   // See documentation for RenderFrameHost::GetFrameTreeNodeId() for more
   // details.
   virtual int GetFrameTreeNodeId() = 0;
