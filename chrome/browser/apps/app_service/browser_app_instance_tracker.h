@@ -83,11 +83,15 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   const BrowserAppInstance* GetAppInstance(
       content::WebContents* contents) const;
 
-  // Get app instance running in a |contents|. Returns null if no app is found.
+  // Get app instance by ID. Returns null if no app is found.
   const BrowserAppInstance* GetAppInstanceById(base::UnguessableToken id) const;
 
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserWindowInstance* GetWindowInstance(Browser* browser) const;
+
+  // Get Chrome browser window instance by ID. Returns null if not found.
+  const BrowserWindowInstance* GetBrowserWindowInstanceById(
+      base::UnguessableToken id) const;
 
   // Activate the given instance within its tabstrip. If the instance lives in
   // its own window, this will have no effect.

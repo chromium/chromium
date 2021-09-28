@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "components/exo/shell_surface_util.h"
-#include "extensions/common/constants.h"
 
 namespace apps {
 
@@ -53,6 +52,25 @@ BrowserAppInstanceRegistry::GetAppInstancesByAppId(
                          });
 }
 
+const BrowserAppInstance* BrowserAppInstanceRegistry::GetAppInstanceById(
+    base::UnguessableToken id) const {
+  auto it = lacros_app_instances_.find(id);
+  if (it != lacros_app_instances_.end()) {
+    return it->second.get();
+  }
+  return ash_instance_tracker_.GetAppInstanceById(id);
+}
+
+const BrowserWindowInstance*
+BrowserAppInstanceRegistry::GetBrowserWindowInstanceById(
+    base::UnguessableToken id) const {
+  auto it = lacros_window_instances_.find(id);
+  if (it != lacros_window_instances_.end()) {
+    return it->second.get();
+  }
+  return ash_instance_tracker_.GetBrowserWindowInstanceById(id);
+}
+
 const BrowserAppInstance*
 BrowserAppInstanceRegistry::GetActiveAppInstanceForWindow(
     aura::Window* window) {
@@ -72,6 +90,14 @@ bool BrowserAppInstanceRegistry::IsAppRunning(const std::string& app_id) const {
                         [&app_id](const BrowserAppInstance& instance) {
                           return instance.app_id == app_id;
                         }) != nullptr;
+}
+
+bool BrowserAppInstanceRegistry::IsAshBrowserRunning() const {
+  return ash_instance_tracker_.IsBrowserRunning();
+}
+
+bool BrowserAppInstanceRegistry::IsLacrosBrowserRunning() const {
+  return lacros_window_instances_.size() > 0;
 }
 
 void BrowserAppInstanceRegistry::ActivateTabInstance(

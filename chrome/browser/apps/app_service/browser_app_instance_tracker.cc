@@ -30,7 +30,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "ui/aura/window.h"
 
@@ -202,6 +201,15 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstanceById(
 const BrowserWindowInstance* BrowserAppInstanceTracker::GetWindowInstance(
     Browser* browser) const {
   return GetInstance(window_instances_, browser);
+}
+
+const BrowserWindowInstance*
+BrowserAppInstanceTracker::GetBrowserWindowInstanceById(
+    base::UnguessableToken id) const {
+  return FindInstanceIf(window_instances_,
+                        [&id](const BrowserWindowInstance& instance) {
+                          return instance.id == id;
+                        });
 }
 
 void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {

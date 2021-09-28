@@ -61,25 +61,25 @@ class BrowserAppInstanceRegistry
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
       const std::string& app_id) const;
 
-  // Get the currently active app instance for a window.
+  // Get a single app instance by ID (Ash or Lacros).
+  const BrowserAppInstance* GetAppInstanceById(base::UnguessableToken id) const;
+
+  // Get a single browser window instance by ID (Ash or Lacros).
+  const BrowserWindowInstance* GetBrowserWindowInstanceById(
+      base::UnguessableToken id) const;
+
+  // Get the currently active app instance for a window (Ash or Lacros).
   const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
 
   // Checks if an app with |app_id| is running (in Ash or Lacros).
   bool IsAppRunning(const std::string& app_id) const;
 
+  bool IsAshBrowserRunning() const;
+  bool IsLacrosBrowserRunning() const;
+
   // Activate the given instance within its tabstrip (in Ash or Lacros). If the
   // instance lives in its own window, this will have no effect.
   void ActivateTabInstance(const base::UnguessableToken& id);
-
-  // Checks if any Ash tabbed browser window are opens.
-  bool IsAshBrowserRunnig() const {
-    return ash_instance_tracker_.IsBrowserRunning();
-  }
-
-  // Checks if any Lacros tabbed browser window are opens.
-  bool IsLacrosBrowserRunnig() const {
-    return lacros_window_instances_.size() > 0;
-  }
 
   void AddObserver(BrowserAppInstanceObserver* observer) {
     observers_.AddObserver(observer);
