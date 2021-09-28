@@ -32,7 +32,4 @@ specific_include_rules = {
     # To access sandbox includes.
     "+sandbox/policy",
   ],
- "load_and_launch_browsertest.cc": [
-  "+ui/ozone/public/ozone_switches.h"
-  ],
 }
