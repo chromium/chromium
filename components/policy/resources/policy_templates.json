@@ -5915,7 +5915,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the default search provider',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the default search provider',
+        },
+        {
+          'value': None,
+          'caption': 'Enable the default search provider and allow users to modify the search provier list',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 40,
       'caption': '''Enable the default search provider''',
       'tags': [],
@@ -5936,6 +5951,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable access to the default search provider context menu',
+        },
+        {
+          'value': False,
+          'caption': 'Disable access to the default search provider context menu',
+        },
+      ],
       'example_value': True,
       'id': 715,
       'caption': '''Allow default search provider context menu search access''',
@@ -7808,6 +7833,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow insecure websites to make requests to any network endpoint',
+        },
+        {
+          'value': False,
+          'caption': 'Use default behavior when determining if insecure websites can make requests to any network endpoint',
+        },
+      ],
       'example_value': False,
       'id': 766,
       'caption': '''Specifies whether to allow insecure websites to make requests to more-private network endpoints''',
@@ -8220,6 +8255,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow both user-level and system-level native messaging hosts',
+        },
+        {
+          'value': False,
+          'caption': 'Allow only system-level native messaging hosts',
+        },
+      ],
       'example_value': False,
       'id': 253,
       'caption': '''Allow user-level Native Messaging hosts (installed without admin permissions)''',
@@ -8238,6 +8283,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable support for 3D graphics APIs',
+        },
+        {
+          'value': False,
+          'caption': 'Enable support for 3D graphics APIs',
+        },
+      ],
       'example_value': False,
       'id': 55,
       'caption': '''Disable support for 3D graphics APIs''',
@@ -8435,7 +8490,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Lock the device when it becomes idle or suspended',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent the device from locking when it becomes idle or suspended',
+        },
+        {
+          'value': None,
+          'caption': 'Allow users to decide whether the device should lock when it becomes idle or suspended',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 61,
       'caption': '''Enable lock when the device become idle or suspended''',
       'tags': [],
@@ -8510,6 +8580,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable signing in with additional Google accounts',
+        },
+        {
+          'value': False,
+          'caption': 'Disable signing in with additional Google accounts',
+        },
+      ],
       'example_value': False,
       'id': 406,
       'caption': '''Allow Sign-in To Additional Google Accounts''',
