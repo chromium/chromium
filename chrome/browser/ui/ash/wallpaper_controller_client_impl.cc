@@ -529,7 +529,7 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service)
     return false;
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // If in client use profile otherwise use GetUserPrefServiceSyncable.
     return sync_service->GetUserSettings()->IsOsSyncFeatureEnabled() &&
            profile->GetPrefs()->GetBoolean(
