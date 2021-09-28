@@ -32,11 +32,11 @@ void TrySubset(hb_face_t* face,
   hb_set_t* codepoints = hb_subset_input_unicode_set(input.get());
 
   if (!drop_layout) {
-    hb_set_del(hb_subset_input_drop_tables_set(input.get()),
+    hb_set_del(hb_subset_input_set(input.get(), HB_SUBSET_SETS_DROP_TABLE_TAG),
                HB_TAG('G', 'S', 'U', 'B'));
-    hb_set_del(hb_subset_input_drop_tables_set(input.get()),
+    hb_set_del(hb_subset_input_set(input.get(), HB_SUBSET_SETS_DROP_TABLE_TAG),
                HB_TAG('G', 'P', 'O', 'S'));
-    hb_set_del(hb_subset_input_drop_tables_set(input.get()),
+    hb_set_del(hb_subset_input_set(input.get(), HB_SUBSET_SETS_DROP_TABLE_TAG),
                HB_TAG('G', 'D', 'E', 'F'));
   }
 
