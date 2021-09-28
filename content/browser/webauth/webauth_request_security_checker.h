@@ -75,7 +75,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       const GURL& url);
 
  protected:
-  friend class RefCounted<WebAuthRequestSecurityChecker>;
+  friend class base::RefCounted<WebAuthRequestSecurityChecker>;
   virtual ~WebAuthRequestSecurityChecker();
 
  private:

@@ -102,7 +102,7 @@ class IOSChromePasswordCheckManager
   }
 
  private:
-  friend class RefCounted<IOSChromePasswordCheckManager>;
+  friend class base::RefCounted<IOSChromePasswordCheckManager>;
   friend class IOSChromePasswordCheckManagerProxy;
 
   explicit IOSChromePasswordCheckManager(ChromeBrowserState* browser_state);

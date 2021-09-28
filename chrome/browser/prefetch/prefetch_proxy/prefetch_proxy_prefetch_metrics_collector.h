@@ -78,7 +78,7 @@ class PrefetchProxyPrefetchMetricsCollector
                                const GURL& subresource_url);
 
  private:
-  friend class RefCounted<PrefetchProxyPrefetchMetricsCollector>;
+  friend class base::RefCounted<PrefetchProxyPrefetchMetricsCollector>;
   ~PrefetchProxyPrefetchMetricsCollector();
 
   // Helper method that makes a corresponding entry in

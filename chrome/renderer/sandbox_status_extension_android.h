@@ -36,7 +36,7 @@ class SandboxStatusExtension
   void DidClearWindowObject() override;
 
  protected:
-  friend class RefCountedThreadSafe<SandboxStatusExtension>;
+  friend class base::RefCountedThreadSafe<SandboxStatusExtension>;
   ~SandboxStatusExtension() override;
 
  private:

@@ -86,7 +86,7 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
       uint8_t configuration_value = 1);
 
  protected:
-  friend class RefCounted<FakeUsbDeviceInfo>;
+  friend class base::RefCounted<FakeUsbDeviceInfo>;
   virtual ~FakeUsbDeviceInfo();
 
  private:

@@ -95,7 +95,7 @@ struct COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponseSendOption
   absl::optional<base::RepeatingCallback<bool()>> cancelled_callback;
 
  private:
-  friend class RefCounted<MdnsResponseSendOption>;
+  friend class base::RefCounted<MdnsResponseSendOption>;
 
   ~MdnsResponseSendOption();
 };

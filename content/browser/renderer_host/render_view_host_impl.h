@@ -311,7 +311,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // to keep them consistent).
 
  protected:
-  friend class RefCounted<RenderViewHostImpl>;
+  friend class base::RefCounted<RenderViewHostImpl>;
   ~RenderViewHostImpl() override;
 
   // RenderWidgetHostOwnerDelegate overrides.

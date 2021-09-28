@@ -36,7 +36,7 @@ class ObsoleteClientsDbHolder
   void set_success(bool success) { success_ &= success; }
 
  private:
-  friend class RefCounted<ObsoleteClientsDbHolder>;
+  friend class base::RefCounted<ObsoleteClientsDbHolder>;
   ~ObsoleteClientsDbHolder() { std::move(callback_).Run(success_); }
 
   bool success_;
