@@ -90,8 +90,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
   int destroyed() const { return destroyed_; }
 
   // ExtensionHostRegistry::Observer:
-  void OnExtensionHostCreated(content::BrowserContext* browser_context,
-                              ExtensionHost* host) override {
+  void OnExtensionHostRenderProcessReady(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override {
     // Only track lifetimes for popup window ExtensionHost instances.
     if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
       return;
@@ -466,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   // Open the extension's popup.
   ExtensionHostTestHelper host_helper(profile(), extension->id());
   OpenPopupViaToolbar(extension->id());
-  ExtensionHost* extension_host = host_helper.WaitForExtensionHostCreated();
+  ExtensionHost* extension_host = host_helper.WaitForRenderProcessReady();
   ASSERT_TRUE(extension_host);
   content::WebContents* popup_contents = extension_host->host_contents();
 

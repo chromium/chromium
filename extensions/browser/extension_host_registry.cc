@@ -94,8 +94,8 @@ void ExtensionHostRegistry::ExtensionHostRenderProcessReady(
   DCHECK(base::Contains(extension_hosts_, extension_host));
 
   for (Observer& observer : observers_) {
-    observer.OnExtensionHostCreated(extension_host->browser_context(),
-                                    extension_host);
+    observer.OnExtensionHostRenderProcessReady(
+        extension_host->browser_context(), extension_host);
   }
 }
 

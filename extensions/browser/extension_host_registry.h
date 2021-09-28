@@ -27,14 +27,13 @@ class ExtensionHostRegistry : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when a new ExtensionHost is created and the associated
-    // RenderProcessHost is ready. The `browser_context` is the context
-    // associated with that host (which might be an incognito version of
+    // Called when the RenderProcessHost for an ExtensionHost is ready.
+    // In practice, this corresponds to "shortly after" the first render frame
+    // is created in the host.
+    // The `browser_context` is the context associated with that host (which
+    // might be an incognito version of
     // ExtensionHostRegistry::browser_context_).
-    // TODO(devlin): Rename this to OnExtensionHostRenderProcessReady(). It's
-    // not sent in response to the ExtensionHost construction, so it's
-    // misleading.
-    virtual void OnExtensionHostCreated(
+    virtual void OnExtensionHostRenderProcessReady(
         content::BrowserContext* browser_context,
         ExtensionHost* host) {}
 

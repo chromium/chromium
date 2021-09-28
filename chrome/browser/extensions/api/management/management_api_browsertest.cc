@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
     SetEnabled(true, true, std::string(), source_extension);
-    host_helper.WaitForExtensionHostCreated();
+    host_helper.WaitForRenderProcessReady();
   }
 
   {

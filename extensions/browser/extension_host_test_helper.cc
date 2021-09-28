@@ -24,10 +24,10 @@ ExtensionHostTestHelper::ExtensionHostTestHelper(
 
 ExtensionHostTestHelper::~ExtensionHostTestHelper() = default;
 
-void ExtensionHostTestHelper::OnExtensionHostCreated(
+void ExtensionHostTestHelper::OnExtensionHostRenderProcessReady(
     content::BrowserContext* browser_context,
     ExtensionHost* host) {
-  EventSeen(host, HostEvent::kCreated);
+  EventSeen(host, HostEvent::kRenderProcessReady);
 }
 
 void ExtensionHostTestHelper::OnExtensionHostDocumentElementAvailable(

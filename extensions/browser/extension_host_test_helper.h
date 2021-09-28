@@ -54,8 +54,8 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // destroyed (which can happen if the host was closed before this method was
   // called or if the host is destroyed synchronously from creation), before
   // the run loop is quit.
-  ExtensionHost* WaitForExtensionHostCreated() {
-    return WaitFor(HostEvent::kCreated);
+  ExtensionHost* WaitForRenderProcessReady() {
+    return WaitFor(HostEvent::kRenderProcessReady);
   }
   ExtensionHost* WaitForDocumentElementAvailable() {
     return WaitFor(HostEvent::kDocumentElementAvailable);
@@ -70,15 +70,16 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
  private:
   // The different types of events this class can wait for.
   enum class HostEvent {
-    kCreated,
+    kRenderProcessReady,
     kDocumentElementAvailable,
     kCompletedFirstLoad,
     kDestroyed,
   };
 
   // ExtensionHostRegistry::Observer:
-  void OnExtensionHostCreated(content::BrowserContext* browser_context,
-                              ExtensionHost* host) override;
+  void OnExtensionHostRenderProcessReady(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
   void OnExtensionHostDocumentElementAvailable(
       content::BrowserContext* browser_context,
       ExtensionHost* host) override;
