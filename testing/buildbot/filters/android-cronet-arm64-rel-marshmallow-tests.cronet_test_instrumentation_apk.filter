@@ -1,0 +1,4 @@
+# crbug.com/1248421
+-NQETest.testQuicDisable
+-QuicTest.testQuicLoadUrl
+-QuicTest.testNQEWithQuic
