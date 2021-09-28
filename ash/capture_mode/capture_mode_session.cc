@@ -681,6 +681,10 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
     capture_mode_settings_widget_.reset();
     capture_mode_advanced_settings_view_ = nullptr;
     capture_mode_settings_view_ = nullptr;
+    // After closing CaptureMode settings view, show CaptureLabel view if it has
+    // been hidden.
+    if (capture_label_widget_ && !capture_label_widget_->IsVisible())
+      capture_label_widget_->Show();
     return;
   }
 
@@ -705,6 +709,14 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
     }
     parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());
     focus_cycler_->OnSettingsMenuWidgetCreated();
+
+    if (capture_label_widget_ && capture_label_widget_->IsVisible()) {
+      // Hide CaptureLabel view if it overlaps with CaptureMode settings view.
+      if (capture_mode_settings_widget_->GetWindowBoundsInScreen().Intersects(
+              capture_label_widget_->GetWindowBoundsInScreen())) {
+        capture_label_widget_->Hide();
+      }
+    }
     capture_mode_settings_widget_->Show();
   }
 }

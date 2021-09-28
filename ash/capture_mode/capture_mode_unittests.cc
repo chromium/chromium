@@ -8,6 +8,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
@@ -4743,4 +4744,52 @@ TEST_F(CaptureModeAdvancedSettingsTest, AudioInputSettingsMenu) {
   StartImageRegionCapture();
   EXPECT_TRUE(controller->enable_audio_recording());
 }
+
+// Tests that when capture label widget overlaps with settings widget, hide
+// capture label widget. Show capture label widget after closing settings
+// widget.
+TEST_F(CaptureModeAdvancedSettingsTest,
+       CaptureLabelViewOverlapsWithSettingsView) {
+  // Update the display size to make sure capture label widget will not overlap
+  // with settings widget
+  UpdateDisplay("1200x1000");
+
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+
+  // Tests that the capture label widget doesn't overlap with settings widget.
+  // Both capture label widget and settings widget are visible.
+  views::Widget* capture_label_widget = GetCaptureModeLabelWidget();
+  ClickOnView(GetSettingsButton(), event_generator);
+  views::Widget* settings_widget = GetCaptureModeSettingsWidget();
+  EXPECT_FALSE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
+      settings_widget->GetWindowBoundsInScreen()));
+  EXPECT_TRUE(capture_label_widget->IsVisible());
+  EXPECT_TRUE(settings_widget->IsVisible());
+
+  // Close settings widget. Capture label widget is visible.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(capture_label_widget->IsVisible());
+  controller->Stop();
+
+  // Update display size to make capture label widget overlap with settings
+  // widget.
+  UpdateDisplay("1100x800");
+  controller = StartImageRegionCapture();
+
+  // Tests that capture label widget overlaps with settings widget and is hidden
+  // after setting widget is shown.
+  capture_label_widget = GetCaptureModeLabelWidget();
+  ClickOnView(GetSettingsButton(), event_generator);
+  settings_widget = GetCaptureModeSettingsWidget();
+  EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
+      settings_widget->GetWindowBoundsInScreen()));
+  EXPECT_FALSE(GetCaptureModeLabelWidget()->IsVisible());
+  EXPECT_TRUE(settings_widget->IsVisible());
+
+  // Tests that capture label widget is visible after settings widget is closed.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(capture_label_widget->IsVisible());
+}
+
 }  // namespace ash
