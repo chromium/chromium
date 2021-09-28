@@ -48,9 +48,16 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       ModelTypeSet model_types = {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES,
                                   SEARCH_ENGINES};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SyncSettingsCategorization makes Printers a separate OS setting.
-      if (!chromeos::features::IsSyncSettingsCategorizationEnabled())
+      if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+        // SyncSettingsCategorization makes Printers a separate OS setting.
         model_types.Put(PRINTERS);
+
+        // Workspace desk template is an OS-only feature. When
+        // SyncSettingsCategorization is disabled, WORKSPACE_DESK should be
+        // enabled with user preferences. Otherwise, WORKSPACE_DESK should be
+        // enabled with OS preferences below.
+        model_types.Put(WORKSPACE_DESK);
+      }
 #endif
       return {kPreferencesTypeName, PREFERENCES, model_types};
     }

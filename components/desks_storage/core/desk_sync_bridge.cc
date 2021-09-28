@@ -655,7 +655,7 @@ void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
   }
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-  if (uuid.is_valid()) {
+  if (!uuid.is_valid()) {
     std::move(callback).Run(GetEntryByUuidStatus::kInvalidUuid,
                             std::unique_ptr<DeskTemplate>());
     return;
@@ -686,11 +686,9 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
     return;
   }
 
-  std::string trimmed_name = base::UTF16ToUTF8(
+  auto entry = new_entry->Clone();
+  entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
-
-  auto entry = std::make_unique<DeskTemplate>(
-      uuid.AsLowercaseString(), trimmed_name, new_entry->created_time());
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();

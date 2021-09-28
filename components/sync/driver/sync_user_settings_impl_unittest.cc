@@ -34,8 +34,8 @@ ModelTypeSet GetUserTypes() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These types only exist when SyncSettingsCategorization is enabled.
   if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    user_types.RemoveAll({OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
-                          WIFI_CONFIGURATIONS, WORKSPACE_DESK});
+    user_types.RemoveAll(
+        {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, WIFI_CONFIGURATIONS});
   }
 #else
   // Ignore all Chrome OS types on non-Chrome OS platforms.

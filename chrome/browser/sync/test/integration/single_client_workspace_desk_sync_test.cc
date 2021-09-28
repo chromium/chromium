@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "base/guid.h"
 #include "base/test/bind.h"
@@ -65,9 +66,15 @@ class SingleClientWorkspaceDeskSyncTest : public SyncConsentOptionalSyncTest {
   void DisableDeskSync() {
     syncer::SyncService* service = GetSyncService(0);
 
-    // Disable all OS types, including the desk sync type.
-    service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
+    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+      // Disable all OS types, including the desk sync type.
+      service->GetUserSettings()->SetSelectedOsTypes(
+          /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
+    } else {
+      // Disable all user types, including the desk sync type.
+      service->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+    }
 
     GetClient(0)->AwaitSyncSetupCompletion();
   }
@@ -172,6 +179,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   DisableDeskSync();
+
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
 
   desks_storage::DeskModel* model =
       DeskSyncServiceFactory::GetForProfile(GetProfile(0))->GetDeskModel();
