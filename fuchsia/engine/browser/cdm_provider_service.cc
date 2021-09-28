@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/media_resource_provider_service.h"
+#include "fuchsia/engine/browser/cdm_provider_service.h"
 
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
@@ -13,61 +13,51 @@
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_service_base.h"
-#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/switches.h"
-#include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
 #include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace {
 
-class MediaResourceProviderImpl final
-    : public content::DocumentServiceBase<
-          media::mojom::FuchsiaMediaResourceProvider> {
+class CdmProviderImpl final
+    : public content::DocumentServiceBase<media::mojom::FuchsiaCdmProvider> {
  public:
-  MediaResourceProviderImpl(
+  CdmProviderImpl(
       media::FuchsiaCdmManager* cdm_manager,
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
-          receiver);
-  ~MediaResourceProviderImpl() override;
+      mojo::PendingReceiver<media::mojom::FuchsiaCdmProvider> receiver);
+  ~CdmProviderImpl() override;
 
-  MediaResourceProviderImpl(const MediaResourceProviderImpl&) = delete;
-  MediaResourceProviderImpl& operator=(const MediaResourceProviderImpl&) =
-      delete;
+  CdmProviderImpl(const CdmProviderImpl&) = delete;
+  CdmProviderImpl& operator=(const CdmProviderImpl&) = delete;
 
-  // media::mojom::FuchsiaMediaResourceProvider implementation.
+  // media::mojom::FuchsiaCdmProvider implementation.
   void CreateCdm(
       const std::string& key_system,
       fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
           request) override;
-  void CreateAudioConsumer(
-      fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) override;
-  void CreateAudioCapturer(
-      fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) override;
 
  private:
   media::FuchsiaCdmManager* const cdm_manager_;
 };
 
-MediaResourceProviderImpl::MediaResourceProviderImpl(
+CdmProviderImpl::CdmProviderImpl(
     media::FuchsiaCdmManager* cdm_manager,
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
+    mojo::PendingReceiver<media::mojom::FuchsiaCdmProvider> receiver)
     : DocumentServiceBase(render_frame_host, std::move(receiver)),
       cdm_manager_(cdm_manager) {
   DCHECK(cdm_manager_);
 }
 
-MediaResourceProviderImpl::~MediaResourceProviderImpl() = default;
+CdmProviderImpl::~CdmProviderImpl() = default;
 
-void MediaResourceProviderImpl::CreateCdm(
+void CdmProviderImpl::CreateCdm(
     const std::string& key_system,
     fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
         request) {
@@ -81,52 +71,6 @@ void MediaResourceProviderImpl::CreateCdm(
       &content::CreateProvisionFetcher, std::move(loader_factory));
   cdm_manager_->CreateAndProvision(
       key_system, origin(), std::move(create_fetcher_cb), std::move(request));
-}
-
-void MediaResourceProviderImpl::CreateAudioConsumer(
-    fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAudioOutput)) {
-    LOG(WARNING)
-        << "Could not create AudioConsumer because audio output feature flag "
-           "was not enabled.";
-    return;
-  }
-
-  auto factory = base::ComponentContextForProcess()
-                     ->svc()
-                     ->Connect<fuchsia::media::SessionAudioConsumerFactory>();
-  factory->CreateAudioConsumer(
-      FrameImpl::FromRenderFrameHost(render_frame_host())->media_session_id(),
-      std::move(request));
-}
-
-void MediaResourceProviderImpl::CreateAudioCapturer(
-    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAudioInput)) {
-    LOG(WARNING)
-        << "Could not create AudioCapturer because audio input feature flag "
-           "was not enabled.";
-    return;
-  }
-
-  if (render_frame_host()
-          ->GetBrowserContext()
-          ->GetPermissionController()
-          ->GetPermissionStatusForFrame(
-              content::PermissionType::AUDIO_CAPTURE, render_frame_host(),
-              origin().GetURL()) != blink::mojom::PermissionStatus::GRANTED) {
-    DLOG(WARNING)
-        << "Received CreateAudioCapturer request from an origin that doesn't "
-           "have AUDIO_CAPTURE permission.";
-    return;
-  }
-
-  auto factory = base::ComponentContextForProcess()
-                     ->svc()
-                     ->Connect<fuchsia::media::Audio>();
-  factory->CreateAudioCapturer(std::move(request), /*loopback=*/false);
 }
 
 template <typename KeySystemInterface>
@@ -186,16 +130,13 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
 
 }  // namespace
 
-MediaResourceProviderService::MediaResourceProviderService()
-    : cdm_manager_(CreateCdmManager()) {}
+CdmProviderService::CdmProviderService() : cdm_manager_(CreateCdmManager()) {}
 
-MediaResourceProviderService::~MediaResourceProviderService() = default;
+CdmProviderService::~CdmProviderService() = default;
 
-void MediaResourceProviderService::Bind(
+void CdmProviderService::Bind(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
-        receiver) {
+    mojo::PendingReceiver<media::mojom::FuchsiaCdmProvider> receiver) {
   // The object will delete itself when connection to the frame is broken.
-  new MediaResourceProviderImpl(cdm_manager_.get(), frame_host,
-                                std::move(receiver));
+  new CdmProviderImpl(cdm_manager_.get(), frame_host, std::move(receiver));
 }

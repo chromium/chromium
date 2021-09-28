@@ -34,8 +34,8 @@
 #include "content/public/common/result_codes.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/base/legacymetrics_client.h"
+#include "fuchsia/engine/browser/cdm_provider_service.h"
 #include "fuchsia/engine/browser/context_impl.h"
-#include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/browser/web_engine_memory_inspector.h"
@@ -188,11 +188,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   screen_ = std::move(screen_ozone);
   display::Screen::SetScreenInstance(screen_.get());
 
-  // Create the MediaResourceProviderService at startup rather than on-demand,
+  // Create the CdmProviderService at startup rather than on-demand,
   // to allow it to perform potentially expensive startup work in the
   // background.
-  media_resource_provider_service_ =
-      std::make_unique<MediaResourceProviderService>();
+  cdm_provider_service_ = std::make_unique<CdmProviderService>();
 
   // Disable RenderFrameHost's Javascript injection restrictions so that the
   // Context and Frames can implement their own JS injection policy at a higher

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "media/fuchsia/mojom/fuchsia_cdm_provider.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace blink {
@@ -35,8 +35,7 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
 
  private:
   blink::BrowserInterfaceBrokerProxy* const interface_broker_;
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider_;
+  mojo::Remote<media::mojom::FuchsiaCdmProvider> cdm_provider_;
 };
 
 }  // namespace media

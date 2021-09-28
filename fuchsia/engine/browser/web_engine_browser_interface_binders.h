@@ -11,7 +11,7 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-class MediaResourceProviderService;
+class CdmProviderService;
 
 // PopulateFuchsiaFrameBinders() registers BrowserInterfaceBroker's
 // GetInterface() handler callbacks for Fuchsia-specific RenferFrame-scoped
@@ -19,6 +19,6 @@ class MediaResourceProviderService;
 // for handling InterfaceProvider's GetInterface() calls (see crbug.com/718652).
 void PopulateFuchsiaFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
-    MediaResourceProviderService* media_resource_provider_service);
+    CdmProviderService* cdm_provider_service);
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_INTERFACE_BINDERS_H_
