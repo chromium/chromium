@@ -19,32 +19,12 @@
 <dom-module id="oobe-loading-dialog">
   <template>
     <style include="oobe-dialog-host-styles">
-      paper-spinner-lite {
-        height: 38px;
-        margin-bottom: 28px;
-        width: 38px;
-      }
-
-      #comment {
-        color: #747474;
-      }
-
       #spinner {
         max-height: 286px;
         max-width: 286px;
       }
     </style>
-    <oobe-content-dialog id="dialogOld" role="dialog" no-footer-padding
-        no-buttons hidden="[[isNewLayout_]]">
-      <div slot="content" class="flex layout vertical center center-justified">
-        <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
-        <div id="comment" aria-live="polite" class="focus-on-show"
-            aria-label$="[[i18nDynamic(locale, titleKey)]]">
-          [[i18nDynamic(locale, titleKey)]]
-        </div>
-      </div>
-    </oobe-content-dialog>
-    <oobe-adaptive-dialog id="dialog" role="dialog" hidden="[[!isNewLayout_]]">
+    <oobe-adaptive-dialog id="dialog" role="dialog">
       <slot slot="icon" name="icon"></slot>
       <h1 slot="title">[[i18nDynamic(locale, titleKey)]]</h1>
       <div slot="subtitle">[[localizeSubtitle_(locale, subtitleKey)]]</div>

@@ -16,30 +16,14 @@ Polymer({
       type: String,
       value: '',
     },
-
-    isNewLayout_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      },
-      readOnly: true,
-    }
   },
 
   onBeforeShow() {
-    if (this.isNewLayout_) {
-      this.$.dialog.onBeforeShow();
-      this.$.spinner.setPlay(true);
-    } else {
-      this.$.dialogOld.onBeforeShow();
-    }
+    this.$.spinner.setPlay(true);
   },
 
   onBeforeHide() {
-    if (this.isNewLayout_) {
-      this.$.spinner.setPlay(false);
-    }
+    this.$.spinner.setPlay(false);
   },
 
   /**

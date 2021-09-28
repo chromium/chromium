@@ -107,8 +107,6 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
                base::Value(ash::TabletMode::Get()->InTabletMode()));
   dict->SetKey("isDemoModeEnabled",
                base::Value(DemoSetupController::IsDemoModeAllowed()));
-  // TODO(crbug.com/1202135):: Remove along with JS part.
-  dict->SetKey("newLayoutEnabled", base::Value(true));
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     dict->SetKey("flowType", base::Value("meet"));
   }

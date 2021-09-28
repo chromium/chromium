@@ -26,17 +26,11 @@
       }
     </style>
     <oobe-adaptive-dialog id="app-downloading-dialog" role="dialog"
-        aria-label$="[[getDialogTitleA11yString_(numOfApps)]]"
+        aria-label$="[[i18nDynamic(locale, 'appDownloadingScreenTitle')]]"
         no-footer-padding>
       <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
       </iron-icon>
-      <h1 slot="title" id="title-singular" hidden="[[!singularTitleVisible_]]">
-        [[i18nDynamic(locale, 'appDownloadingScreenTitleSingular')]]
-      </h1>
-      <h1 slot="title" id="title-plural" hidden="[[!pluralTitleVisible_]]">
-        [[i18nDynamic(locale, 'appDownloadingScreenTitlePlural', numOfApps)]]
-      </h1>
-      <h1 slot="title" id="title" hidden="[[!newLayoutEnabled_]]">
+      <h1 slot="title" id="title">
         [[i18nDynamic(locale, 'appDownloadingScreenTitle')]]
       </h1>
       <div slot="subtitle">

@@ -12,38 +12,7 @@ Polymer({
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
-  properties: {
-    numOfApps: Number,
-
-    /** Whether the user selected one app. */
-    hasSingleApp: {
-      type: Boolean,
-      computed: 'hasSingleApp_(numOfApps)',
-    },
-
-    /**
-     * Whether new OOBE layout is enabled.
-     *
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      }
-    },
-
-    pluralTitleVisible_: {
-      type: Boolean,
-      value: false,
-    },
-
-    singularTitleVisible_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  properties: {},
 
   ready() {
     this.initializeLoginScreen('AppDownloadingScreen', {
@@ -71,20 +40,15 @@ Polymer({
   },
 
   /** Called when dialog is shown */
-  onBeforeShow(data) {
-    this.numOfApps = data.numOfApps;
-    if (!this.newLayoutEnabled_) {
-      this.singularTitleVisible_ = this.hasSingleApp_(this.numOfApps);
-      this.pluralTitleVisible_ = !this.hasSingleApp_(this.numOfApps);
-    }
-    if (this.$.downloadingApps && this.newLayoutEnabled_) {
+  onBeforeShow() {
+    if (this.$.downloadingApps) {
       this.$.downloadingApps.setPlay(true);
     }
   },
 
   /** Called when dialog is hidden */
   onBeforeHide() {
-    if (this.$.downloadingApps && this.newLayoutEnabled_) {
+    if (this.$.downloadingApps) {
       this.$.downloadingApps.setPlay(false);
     }
   },
@@ -92,21 +56,5 @@ Polymer({
   /** @private */
   onContinue_() {
     this.userActed('appDownloadingContinueSetup');
-  },
-
-  /** @private */
-  hasSingleApp_(numOfApps) {
-    return numOfApps === 1;
-  },
-
-  /** @private */
-  getDialogTitleA11yString_(numOfApps) {
-    if (this.newLayoutEnabled_)
-      return this.i18n('appDownloadingScreenTitle');
-    if (this.hasSingleApp_(numOfApps)) {
-      return this.i18n('appDownloadingScreenTitleSingular');
-    } else {
-      return this.i18n('appDownloadingScreenTitlePlural', numOfApps);
-    }
   },
 });

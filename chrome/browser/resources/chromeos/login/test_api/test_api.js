@@ -123,14 +123,7 @@ class WelcomeScreen extends ScreenElementApi {
   clickNext() {
     if (!this.nextButton) {
       let mainStep = new PolymerElementApi(this, '#welcomeScreen');
-      const newLayout = loadTimeData.valueExists('newLayoutEnabled') &&
-          loadTimeData.getBoolean('newLayoutEnabled');
-
-      if (newLayout) {
-        this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
-      } else {
-        this.nextButton = new PolymerElementApi(mainStep, '#welcomeNextButton');
-      }
+      this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
     }
 
     assert(this.nextButton);

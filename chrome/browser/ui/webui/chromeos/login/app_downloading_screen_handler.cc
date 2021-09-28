@@ -48,10 +48,6 @@ void AppDownloadingScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT);
   builder->Add("appDownloadingScreenTitle",
                IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE);
-  builder->Add("appDownloadingScreenTitleSingular",
-               IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR);
-  builder->Add("appDownloadingScreenTitlePlural",
-               IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL);
 }
 
 void AppDownloadingScreenHandler::RegisterMessages() {

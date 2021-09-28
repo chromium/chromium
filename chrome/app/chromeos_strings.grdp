@@ -1259,12 +1259,6 @@
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING" desc="Message shown while the recommended app list is being downloaded.">
     Please wait...
   </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR" desc="The title of the dialog that tells the user the selected Android App is downloading.">
-    We'll install that app for you
-  </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
-    We'll install those <ph name="NUMBER_OF_APPS">$1<ex>10</ex></ph> apps for you
-  </message>
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     Apps downloading
   </message>
