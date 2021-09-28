@@ -89,6 +89,9 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     /** @public */
     this.updateDailyRefreshWallpaperResponse = true;
 
+    /** @public */
+    this.wallpaperObserverUpdateTimeout = 0;
+
     /**
      * @public
      * @type {?chromeos.personalizationApp.mojom.WallpaperObserverInterface}
@@ -142,7 +145,9 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   setWallpaperObserver(remote) {
     this.methodCalled('setWallpaperObserver');
     this.wallpaperObserverRemote = remote;
-    this.wallpaperObserverRemote.onWallpaperChanged(this.currentWallpaper);
+    window.setTimeout(() => {
+      this.wallpaperObserverRemote.onWallpaperChanged(this.currentWallpaper);
+    }, this.wallpaperObserverUpdateTimeout);
   }
 
   /** @override */

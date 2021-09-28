@@ -375,7 +375,13 @@ function errorReducer(state, action) {
       if (success) {
         return null;
       }
-      return loadTimeData.getString('setWallpaperError');
+      return state || loadTimeData.getString('setWallpaperError');
+    case ActionName.SET_SELECTED_IMAGE:
+        const {image} = /** @type {{name: string, image: ?Object}} */(action);
+        if (image) {
+          return state;
+        }
+        return state || loadTimeData.getString('loadWallpaperError');
     case ActionName.DISMISS_ERROR:
       if (!state) {
         console.warn(

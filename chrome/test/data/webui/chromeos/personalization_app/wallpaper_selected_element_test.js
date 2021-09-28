@@ -7,8 +7,8 @@
 import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {mockTimeoutForTesting, WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
@@ -289,4 +289,56 @@ export function WallpaperSelectedTest() {
                 'refreshWallpaper');
         assertFalse(newRefreshWallpaper.hidden);
       });
+
+  test('sets current image to null after timeout', async () => {
+    let timeoutCallback;
+    mockTimeoutForTesting({
+      setTimeout(callback, delay) {
+        assertEquals(120 * 1000, delay);
+        timeoutCallback = callback;
+        return 1234;
+      },
+      clearTimeout(id) {
+        assertNotReached('Should not clear timeout');
+      },
+    });
+
+    wallpaperProvider.wallpaperObserverUpdateTimeout = 100;
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    personalizationStore.expectAction(ActionName.SET_SELECTED_IMAGE);
+
+    timeoutCallback.call(wallpaperSelectedElement);
+
+    const action =
+        await personalizationStore.waitForAction(ActionName.SET_SELECTED_IMAGE);
+    assertEquals(null, action.image);
+  });
+
+  test('cancels timeout after receiving first image', async () => {
+    const timeoutId = 1234;
+    const clearTimeoutPromise = new Promise(resolve => {
+      mockTimeoutForTesting({
+        setTimeout(callback, delay) {
+          return timeoutId;
+        },
+        clearTimeout(id) {
+          assertEquals(timeoutId, id);
+          resolve();
+        },
+      });
+    });
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+        wallpaperProvider.currentWallpaper);
+
+    await clearTimeoutPromise;
+  });
 }

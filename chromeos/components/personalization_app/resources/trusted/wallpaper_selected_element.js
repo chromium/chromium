@@ -22,6 +22,15 @@ import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
+let setTimeout = window.setTimeout;
+let clearTimeout = window.clearTimeout;
+
+/** @param {{setTimeout: Function, clearTimeout: Function}} mock */
+export function mockTimeoutForTesting(mock) {
+  setTimeout = mock.setTimeout;
+  clearTimeout = mock.clearTimeout;
+}
+
 /**
  * Set up the observer to listen for wallpaper changes.
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
@@ -124,6 +133,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       isLoading_: {
         type: Boolean,
+        observer: 'onIsLoadingChanged_',
       },
 
       /** @private */
@@ -223,6 +233,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
         'dailyRefreshCollectionId_', state => state.dailyRefresh.collectionId);
     this.updateFromStore();
     getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
+    /**
+     * Set a 2 minute timer. If no wallpaper information has been received by
+     * then, dispatch a failure state.
+     * @type {?number}
+     */
+    this.initialLoadTimeout_ = setTimeout(() => {
+      // If still loading the initial currently selected wallpaper image after
+      // 120 seconds, consider this an error and update the store.
+      this.dispatch(setSelectedImageAction(null));
+      this.initialLoadTimeout_ = null;
+    }, 120 * 1000);
   }
 
   /** @override */
@@ -236,6 +257,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
    *     currentWallpaper
    */
   onWallpaperChanged(currentWallpaper) {
+    // Clear the initial load timer if wallpaper information is received.
+    if (this.initialLoadTimeout_) {
+      clearTimeout(this.initialLoadTimeout_);
+      this.initialLoadTimeout_ = null;
+    }
     this.dispatch(setSelectedImageAction(currentWallpaper));
   }
 

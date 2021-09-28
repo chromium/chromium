@@ -77,6 +77,7 @@ void AddStrings(content::WebUIDataSource* source) {
       // Using old wallpaper app error string pending final revision.
       // TODO(b/195609442)
       {"setWallpaperError", IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR},
+      {"loadWallpaperError", IDS_PERSONALIZATION_APP_LOAD_WALLPAPER_ERROR},
       {"dismiss", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelViewFullScreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_VIEW_FULL_SCREEN}};

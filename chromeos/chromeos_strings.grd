@@ -1891,6 +1891,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_NETWORK_ERROR" desc="Label for the error page when wallpaper information cannot be downloaded">
         Please connect to a network and reload the page to view wallpaper.
       </message>
+      <message name="IDS_PERSONALIZATION_APP_LOAD_WALLPAPER_ERROR" desc="Label for the error toast notification when loading current wallpaper failed">
+        Something went wrong. Try reopening the app.
+      </message>
       <message name="IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR" desc="Label for the error toast notification when setting wallpaper failed">
         There was an error. Please try again by choosing other images.
       </message>
