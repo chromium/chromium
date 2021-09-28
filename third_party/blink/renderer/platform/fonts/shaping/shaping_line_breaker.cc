@@ -378,12 +378,12 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // available space adjusted to take the reshaping into account.
   scoped_refptr<const ShapeResult> line_start_result;
   if (first_safe != start) {
+    if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
+      break_opportunity.offset =
+          std::max(start + 1, *break_opportunity.non_hangable_run_end);
+    }
     if (first_safe >= break_opportunity.offset) {
       // There is no safe-to-break, reshape the whole range.
-      if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
-        break_opportunity.offset =
-            std::max(start + 1, *break_opportunity.non_hangable_run_end);
-      }
       SetBreakOffset(break_opportunity, text, result_out);
       CheckBreakOffset(result_out->break_offset, start, range_end);
       return ShapeResultView::Create(
