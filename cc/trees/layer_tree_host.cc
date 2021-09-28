@@ -984,9 +984,6 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::ScrollOffset& delta,
     const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
-  if (mutator_host_->WillCancelScrollAnimation(id))
-    return;
-
   if (IsUsingLayerLists()) {
     auto& scroll_tree = property_trees()->scroll_tree;
     auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
