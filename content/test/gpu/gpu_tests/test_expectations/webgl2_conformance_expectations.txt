@@ -456,7 +456,7 @@ crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-rendere
 # Mac Intel
 crbug.com/886970 [ mac intel-0xa2e ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
 crbug.com/678526 [ mac intel ] conformance2/rendering/framebuffer-texture-level1.html [ Failure ]
-crbug.com/679692 [ mac no-passthrough intel ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
+crbug.com/679692 [ mac intel ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
 crbug.com/641209 [ mac intel ] deqp/functional/gles3/fbomultisample* [ Failure ]
 crbug.com/606074 [ mac intel ] deqp/functional/gles3/texturefiltering/2d_combinations_01.html [ Failure ]
 crbug.com/606074 [ mac intel ] deqp/functional/gles3/texturefiltering/cube_combinations_01.html [ Failure ]
