@@ -186,7 +186,9 @@ bool WaylandConnection::Initialize() {
                               &WaylandZwpPointerGestures::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpRelativePointerManager::kInterfaceName,
                               &WaylandZwpRelativePointerManager::Instantiate);
-  RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceName,
+  RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV1,
+                              &XdgForeignWrapper::Instantiate);
+  RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV2,
                               &XdgForeignWrapper::Instantiate);
   RegisterGlobalObjectFactory(ZwpIdleInhibitManager::kInterfaceName,
                               &ZwpIdleInhibitManager::Instantiate);

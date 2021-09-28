@@ -145,7 +145,10 @@ wayland_protocol("color_management_protocol") {
 }
 
 wayland_protocol("xdg_foreign") {
-  sources = [ "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml" ]
+  sources = [
+    "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
+    "src/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
+  ]
 }
 
 wayland_protocol("extended_drag") {

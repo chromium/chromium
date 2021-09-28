@@ -29,6 +29,7 @@
 #include <wayland-drm-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-foreign-unstable-v1-client-protocol.h>
+#include <xdg-foreign-unstable-v2-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
@@ -173,6 +174,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_decoration_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exporter_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exported_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exporter_v2)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exported_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_output_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_output_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_popup_v6)
