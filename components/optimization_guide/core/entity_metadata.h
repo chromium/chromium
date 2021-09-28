@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 
 namespace optimization_guide {
 
@@ -24,6 +25,9 @@ struct EntityMetadata {
   // locale to the confidence that the category is related to the entity. Will
   // contain the top 5 entries based on confidence score.
   base::flat_map<std::string, float> human_readable_categories;
+
+  // A set of aliases for |human_readable_name|. Will contain at most 5 entries.
+  base::flat_set<std::string> human_readable_aliases;
 };
 
 }  // namespace optimization_guide
