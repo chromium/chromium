@@ -58,6 +58,7 @@ class PasswordGenerationControllerImpl
   void GeneratedPasswordRejected(
       autofill::password_generation::PasswordGenerationType type) override;
   gfx::NativeWindow top_level_native_window() const override;
+  content::WebContents* web_contents() const override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Additionally, it allows injecting mocks for

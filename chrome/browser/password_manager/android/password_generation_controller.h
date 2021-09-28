@@ -110,6 +110,8 @@ class PasswordGenerationController {
 
   virtual gfx::NativeWindow top_level_native_window() const = 0;
 
+  virtual content::WebContents* web_contents() const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PasswordGenerationController);
 };

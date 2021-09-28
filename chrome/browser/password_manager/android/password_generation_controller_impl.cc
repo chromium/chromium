@@ -171,6 +171,10 @@ gfx::NativeWindow PasswordGenerationControllerImpl::top_level_native_window()
   return web_contents_->GetTopLevelNativeWindow();
 }
 
+content::WebContents* PasswordGenerationControllerImpl::web_contents() const {
+  return web_contents_;
+}
+
 // static
 void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,

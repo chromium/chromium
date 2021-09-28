@@ -15,8 +15,7 @@ namespace password_manager {
 absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                                                               bool is_syncing);
 
-absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
-                                                              bool is_syncing);
+absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile);
 
 }  // namespace password_manager
 
