@@ -29,7 +29,7 @@ const base::Feature kV8LazyFeedbackAllocation{"V8LazyFeedbackAllocation",
 
 // Enables concurrent inlining in TurboFan.
 const base::Feature kV8ConcurrentInlining{"V8ConcurrentInlining",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables per-context marking worklists in V8 GC.
 const base::Feature kV8PerContextMarkingWorklist{
