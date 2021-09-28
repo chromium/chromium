@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,7 +14,6 @@
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -95,13 +93,7 @@ HintsFetcher::HintsFetcher(
       network_connection_tracker_(network_connection_tracker),
       time_clock_(base::DefaultClock::GetInstance()) {
   url_loader_factory_ = std::move(url_loader_factory);
-  // Allow non-https scheme only when it is overridden in command line. This is
-  // needed for iOS EG2 tests which don't support HTTPS embedded test servers
-  // due to ssl certificate validation. So, the EG2 tests use HTTP hints
-  // servers.
-  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme) ||
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kOptimizationGuideServiceGetHintsURL));
+  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme));
   DCHECK(features::IsRemoteFetchingEnabled());
 }
 

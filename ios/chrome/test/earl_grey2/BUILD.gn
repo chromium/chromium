@@ -79,7 +79,6 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/metrics:eg2_tests",
     "//ios/chrome/browser/net:eg2_tests",
     "//ios/chrome/browser/ntp_tiles:eg2_tests",
-    "//ios/chrome/browser/optimization_guide:eg2_tests",
     "//ios/chrome/browser/passwords:eg2_tests",
     "//ios/chrome/browser/policy:eg2_tests",
     "//ios/chrome/browser/policy_url_blocking:eg2_tests",

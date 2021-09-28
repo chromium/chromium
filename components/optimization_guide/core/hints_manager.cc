@@ -1388,11 +1388,6 @@ HintsManager::push_notification_manager() {
   return push_notification_manager_.get();
 }
 
-optimization_guide::HintsFetcherFactory*
-HintsManager::GetHintsFetcherFactory() {
-  return hints_fetcher_factory_.get();
-}
-
 bool HintsManager::HasAllInformationForDecisionAvailable(
     const GURL& navigation_url,
     optimization_guide::proto::OptimizationType optimization_type) {

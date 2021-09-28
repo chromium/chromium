@@ -88,7 +88,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/metrics:eg_app_support+eg2",
     "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/optimization_guide:eg_app_support+eg2",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:eg_app_support+eg2",
     "//ios/chrome/browser/policy:eg_app_support+eg2",

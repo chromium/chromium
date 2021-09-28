@@ -67,6 +67,13 @@
 
 namespace {
 
+enum class HintsFetcherRemoteResponseType {
+  kSuccessful = 0,
+  kUnsuccessful = 1,
+  kMalformed = 2,
+  kHung = 3,
+};
+
 constexpr char kGoogleHost[] = "www.google.com";
 
 constexpr char kGoogleSearchUrlPath[] = "/search?q=search_results_page.html";
@@ -228,8 +235,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
         network::mojom::ConnectionType::CONNECTION_2G);
   }
 
-  void SetResponseType(
-      optimization_guide::HintsFetcherRemoteResponseType response_type) {
+  void SetResponseType(HintsFetcherRemoteResponseType response_type) {
     response_type_ = response_type;
   }
 
@@ -301,8 +307,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
   std::unique_ptr<net::EmbeddedTestServer> hints_server_;
-  optimization_guide::HintsFetcherRemoteResponseType response_type_ =
-      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful;
+  HintsFetcherRemoteResponseType response_type_ =
+      HintsFetcherRemoteResponseType::kSuccessful;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleOriginRequest(
@@ -334,8 +340,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     if (!hints_request.hosts().empty())
       VerifyHintsMatchExpectedHostsAndUrls(hints_request);
 
-    if (response_type_ ==
-        optimization_guide::HintsFetcherRemoteResponseType::kSuccessful) {
+    if (response_type_ == HintsFetcherRemoteResponseType::kSuccessful) {
       response->set_code(net::HTTP_OK);
 
       optimization_guide::proto::GetHintsResponse get_hints_response;
@@ -350,18 +355,15 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       get_hints_response.SerializeToString(&serialized_request);
       response->set_content(serialized_request);
     } else if (response_type_ ==
-               optimization_guide::HintsFetcherRemoteResponseType::
-                   kUnsuccessful) {
+               HintsFetcherRemoteResponseType::kUnsuccessful) {
       response->set_code(net::HTTP_NOT_FOUND);
 
-    } else if (response_type_ ==
-               optimization_guide::HintsFetcherRemoteResponseType::kMalformed) {
+    } else if (response_type_ == HintsFetcherRemoteResponseType::kMalformed) {
       response->set_code(net::HTTP_OK);
 
       std::string serialized_request = "Not a proto";
       response->set_content(serialized_request);
-    } else if (response_type_ ==
-               optimization_guide::HintsFetcherRemoteResponseType::kHung) {
+    } else if (response_type_ == HintsFetcherRemoteResponseType::kHung) {
       return std::make_unique<net::test_server::HungResponse>();
     } else {
       NOTREACHED();
@@ -563,8 +565,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcherWithResponsesSuccessful) {
-  SetResponseType(
-      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+  SetResponseType(HintsFetcherRemoteResponseType::kSuccessful);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
@@ -595,8 +596,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcherWithResponsesUnsuccessful) {
-  SetResponseType(
-      optimization_guide::HintsFetcherRemoteResponseType::kUnsuccessful);
+  SetResponseType(HintsFetcherRemoteResponseType::kUnsuccessful);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
@@ -626,8 +626,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcherWithResponsesMalformed) {
-  SetResponseType(
-      optimization_guide::HintsFetcherRemoteResponseType::kMalformed);
+  SetResponseType(HintsFetcherRemoteResponseType::kMalformed);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
@@ -661,8 +660,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcherWithResponsesUnsuccessfulAtNavigationTime) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  SetResponseType(
-      optimization_guide::HintsFetcherRemoteResponseType::kUnsuccessful);
+  SetResponseType(HintsFetcherRemoteResponseType::kUnsuccessful);
 
   // Set the connection online to force a fetch at navigation time.
   SetNetworkConnectionOnline();
@@ -682,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(
     HintsFetcherWithResponsesHungShouldRecordWhenActiveRequestCanceled) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  SetResponseType(optimization_guide::HintsFetcherRemoteResponseType::kHung);
+  SetResponseType(HintsFetcherRemoteResponseType::kHung);
 
   // Set the connection online to force a fetch at navigation time.
   SetNetworkConnectionOnline();
