@@ -110,6 +110,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           /*folder_delegate=*/nullptr, scroll_view_, folder_controller));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
+  scrollable_apps_grid_view_->SetMaxColumns(5);
   scrollable_apps_grid_view_->Init();
   AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);

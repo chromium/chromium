@@ -218,6 +218,19 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
                                           /*folder_delegate=*/nullptr,
                                           /*folder_controller=*/this,
                                           /*container_delegate=*/this));
+
+  apps_grid_view_->SetMaxColumns(GetAppListConfig().preferred_cols());
+
+  const int preferred_rows = GetAppListConfig().preferred_rows();
+  if (!features::IsAppListBubbleEnabled()) {
+    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/preferred_rows,
+                                /*max_row=*/preferred_rows);
+  } else {
+    apps_grid_view_->SetMaxRows(
+        /*max_rows_in_first_page=*/preferred_rows - 1,
+        /*max_row=*/preferred_rows);
+  }
+
   apps_grid_view_->Init();
   if (features::IsAppListBubbleEnabled())
     apps_grid_view_->pagination_model()->AddObserver(this);
@@ -527,8 +540,16 @@ void AppsContainerView::Layout() {
   rect.set_height(rect.height() -
                   GetExpectedSuggestionChipY(kAppListFullscreenProgressValue) -
                   chip_container_rect.height());
-  const GridLayout grid_layout = CalculateGridLayout();
-  apps_grid_view_->SetLayout(grid_layout.columns, grid_layout.rows);
+
+  // If AppListBubble feature is enabled, the grid configuration does not change
+  // depending on the display/available space, so it's OK to keep using
+  // configuration set up when the apps grid view is first initialized.
+  if (!features::IsAppListBubbleEnabled()) {
+    const GridLayout grid_layout = CalculateGridLayout();
+    apps_grid_view_->SetMaxColumns(grid_layout.columns);
+    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/grid_layout.rows,
+                                /*max_rows=*/grid_layout.rows);
+  }
 
   // Layout apps grid.
   const gfx::Insets grid_insets = apps_grid_view_->GetInsets();

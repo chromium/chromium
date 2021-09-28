@@ -64,6 +64,10 @@ namespace {
 
 constexpr int kNumOfSuggestedApps = 3;
 
+constexpr size_t kMaxItemsPerFolderPage =
+    AppListFolderView::kMaxFolderColumns * AppListFolderView::kMaxFolderColumns;
+constexpr size_t kMaxItemsInFolder = 48;
+
 class PageFlipWaiter : public PaginationModelObserver {
  public:
   explicit PageFlipWaiter(PaginationModel* model) : model_(model) {
@@ -993,9 +997,7 @@ TEST_F(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
 
 // AppListBubble uses scrollable folders, so this test disables AppListBubble.
 TEST_F(AppsGridViewNonBubbleTest, PageResetAfterOpenFolder) {
-  const size_t kTotalItems = GetAppListConfig().max_folder_pages() *
-                             GetAppListConfig().max_folder_items_per_page();
-  model_->CreateAndPopulateFolderWithApps(kTotalItems);
+  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
             model_->top_level_item_list()->item_at(0)->GetItemType());
@@ -1030,34 +1032,36 @@ TEST_P(AppsGridViewClamshellTest, FolderColsAndRows) {
 
   // Check the number of cols and rows for each opened folder.
   AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
+  AppsGridViewTestApi folder_grid_test_api(items_grid_view);
   test_api_->PressItemAt(0);
   EXPECT_EQ(2, items_grid_view->view_model()->view_size());
   EXPECT_EQ(2, items_grid_view->cols());
-  EXPECT_EQ(1, items_grid_view->rows_per_page());
+  EXPECT_EQ(2, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(1);
   EXPECT_EQ(5, items_grid_view->view_model()->view_size());
   EXPECT_EQ(3, items_grid_view->cols());
-  EXPECT_EQ(2, items_grid_view->rows_per_page());
+  EXPECT_EQ(6, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(2);
   EXPECT_EQ(9, items_grid_view->view_model()->view_size());
   EXPECT_EQ(3, items_grid_view->cols());
-  EXPECT_EQ(3, items_grid_view->rows_per_page());
+  EXPECT_EQ(9, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(3);
   EXPECT_EQ(15, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
-  EXPECT_EQ(4, items_grid_view->rows_per_page());
+  EXPECT_EQ(16, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(4);
   EXPECT_EQ(17, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
-  EXPECT_EQ(4, items_grid_view->rows_per_page());
+  EXPECT_EQ(features::IsAppListBubbleEnabled() ? 20 : 16,
+            folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 }
 
@@ -1126,8 +1130,8 @@ TEST_P(AppsGridViewClamshellTest, AddItemsToFolderShouldUpdateBounds) {
 
   // Create a folder with a full page of apps. Add an item to the folder should
   // not change the size of the folder view.
-  AppListFolderItem* folder_full = model_->CreateAndPopulateFolderWithApps(
-      GetAppListConfig().max_folder_items_per_page());
+  AppListFolderItem* folder_full =
+      model_->CreateAndPopulateFolderWithApps(kMaxItemsPerFolderPage);
   test_api_->PressItemAt(2);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   gfx::Rect full_folder_view = items_grid_view->GetBoundsInScreen();
@@ -1139,7 +1143,7 @@ TEST_P(AppsGridViewClamshellTest, AddItemsToFolderShouldUpdateBounds) {
 }
 
 TEST_P(AppsGridViewRTLTest, ScrollDownShouldNotExitFolder) {
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  const size_t kTotalItems = kMaxItemsPerFolderPage;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
@@ -1192,8 +1196,7 @@ TEST_F(AppsGridViewTest, AppIconSelectedWhenMenuIsShown) {
 
 // Tests that the context menu for app item appears at the right position.
 TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
-  const size_t kItemsInPage =
-      apps_grid_view_->cols() * apps_grid_view_->rows_per_page();
+  const size_t kItemsInPage = GetTilesPerPage(0);
   const size_t kPages = 2;
   model_->PopulateApps(kItemsInPage * kPages);
 
@@ -1340,7 +1343,7 @@ TEST_P(AppsGridViewDragTest, MouseDragSecondItemIntoFolder) {
 
 TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
   // Creates a folder item.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  const size_t kTotalItems = kMaxItemsPerFolderPage;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
 
@@ -1355,7 +1358,7 @@ TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   // AppListBubble uses scrollable folders, not paged.
   if (!features::IsAppListBubbleEnabled()) {
-    EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
+    EXPECT_EQ(16, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
     EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
     EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   }
@@ -1364,7 +1367,7 @@ TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
 
 TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
   // Creates a folder item.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  const size_t kTotalItems = kMaxItemsPerFolderPage;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
@@ -1405,7 +1408,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
 // AppListBubble does not use paged folders.
 TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
   // Creates a folder item with enough views to have a second page.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page() + 1;
+  const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
 
   // Switch to second page and check it's contents.
@@ -1415,7 +1418,7 @@ TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
 
   EXPECT_EQ(1, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
+  EXPECT_EQ(16, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
@@ -1424,7 +1427,7 @@ TEST_P(AppsGridViewDragNonBubbleTest, MouseDragItemOutOfFolderSecondPage) {
   ASSERT_FALSE(features::IsAppListBubbleEnabled());
 
   // Creates a folder item with enough views to have a second page.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page() + 1;
+  const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
@@ -1473,7 +1476,7 @@ TEST_P(AppsGridViewDragNonBubbleTest, MouseDropItemFromFolderSecondPage) {
   ASSERT_FALSE(features::IsAppListBubbleEnabled());
 
   // Creates a folder item with enough views to have a second page.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page() + 1;
+  const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
@@ -1531,12 +1534,11 @@ TEST_P(AppsGridViewDragNonBubbleTest, MouseDropItemFromFolderSecondPage) {
 }
 
 TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolder) {
-  // Create and add a folder with |kMaxFolderItemsFullscreen - 1| items.
-  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
-                           GetAppListConfig().max_folder_pages();
-  const size_t kTotalItems = kMaxItems - 1;
+  // Create and add an almost full folder.
+  const size_t kTotalItems = kMaxItemsInFolder - 1;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
+  ASSERT_FALSE(folder_item->IsFolderFull());
   // Create and add another item.
   model_->PopulateAppWithId(kTotalItems);
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
@@ -1550,17 +1552,18 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolder) {
 
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(folder_item->id(), model_->top_level_item_list()->item_at(0)->id());
-  EXPECT_EQ(kMaxItems, folder_item->ChildItemCount());
+  EXPECT_EQ(kTotalItems + 1, folder_item->ChildItemCount());
+  EXPECT_TRUE(folder_item->IsFolderFull());
 }
 
 TEST_P(AppsGridViewDragTest, MouseDragExceedMaxItemsInFolder) {
-  // Create and add a folder with |kMaxFolderItemsFullscreen - 1| items.
-  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
-                           GetAppListConfig().max_folder_pages();
+  // Create and add a full folder.
   AppListFolderItem* folder_item =
-      model_->CreateAndPopulateFolderWithApps(kMaxItems);
+      model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
+  EXPECT_TRUE(folder_item->IsFolderFull());
+
   // Create and add another 2 item.
-  model_->PopulateAppWithId(kMaxItems + 1);
+  model_->PopulateAppWithId(kMaxItemsInFolder + 1);
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
 
@@ -1572,16 +1575,15 @@ TEST_P(AppsGridViewDragTest, MouseDragExceedMaxItemsInFolder) {
   test_api_->LayoutToIdealBounds();
 
   EXPECT_EQ(2u, model_->top_level_item_list()->item_count());
-  EXPECT_EQ(kMaxItems, folder_item->ChildItemCount());
+  EXPECT_EQ(kMaxItemsInFolder, folder_item->ChildItemCount());
+  EXPECT_TRUE(folder_item->IsFolderFull());
 }
 
 TEST_P(AppsGridViewDragTest, MouseDragMovement) {
-  // Create and add a folder with |kMaxFolderItemsFullscreen| in it.
-  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
-                           GetAppListConfig().max_folder_pages();
-  model_->CreateAndPopulateFolderWithApps(kMaxItems);
+  // Create and add a full folder.
+  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
   // Create and add another item.
-  model_->PopulateAppWithId(kMaxItems);
+  model_->PopulateAppWithId(kMaxItemsInFolder);
   UpdateLayout();
   AppListItemView* folder_view =
       GetItemViewForPoint(GetItemRectOnCurrentPageAt(0, 0).CenterPoint());
@@ -1606,14 +1608,12 @@ TEST_P(AppsGridViewDragTest, MouseDragMovement) {
 // Check that moving items around doesn't allow a drop to happen into a full
 // folder.
 TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
-  // Create and add a folder with |kMaxFolderItemsFullscreen| in it.
-  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
-                           GetAppListConfig().max_folder_pages();
-  model_->CreateAndPopulateFolderWithApps(kMaxItems);
+  // Create and add a full folder.
+  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
   AppListFolderItem* folder_item = static_cast<AppListFolderItem*>(
       model_->top_level_item_list()->item_at(0));
   // Create and add another item.
-  model_->PopulateAppWithId(kMaxItems);
+  model_->PopulateAppWithId(kMaxItemsInFolder);
   // Drag the new item to the left so that the grid reorders.
   AppListItemView* dragged_view = InitiateDragForItemAtCurrentPageAt(
       AppsGridView::MOUSE, 0, 1, apps_grid_view_);
@@ -1632,7 +1632,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
 
   // The item should not have moved into the folder.
   EXPECT_EQ(2u, model_->top_level_item_list()->item_count());
-  EXPECT_EQ(kMaxItems, folder_item->ChildItemCount());
+  EXPECT_EQ(kMaxItemsInFolder, folder_item->ChildItemCount());
   test_api_->LayoutToIdealBounds();
 }
 
@@ -2037,8 +2037,7 @@ TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
         test_api_->GetViewAtIndex(moved_view_index));
 
     const GridIndex swapped_view_index(
-        0,
-        apps_grid_view_->cols() * (apps_grid_view_->rows_per_page() - 1) + i);
+        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
     AppListItemView* moved_view = test_api_->GetViewAtIndex(moved_view_index);
     AppListItemView* swapped_view =
         test_api_->GetViewAtIndex(swapped_view_index);
@@ -2057,8 +2056,7 @@ TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {
     GetPaginationModel()->SelectPage(1, false /*animate*/);
     const GridIndex moved_view_index(
-        0,
-        apps_grid_view_->cols() * (apps_grid_view_->rows_per_page() - 1) + i);
+        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
     apps_grid_view_->GetFocusManager()->SetFocusedView(
         test_api_->GetViewAtIndex(moved_view_index));
 
@@ -2079,8 +2077,7 @@ TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
   // For the final item on the first page, moving right to a full page should
   // swap with the first item on the next page.
   GetPaginationModel()->SelectPage(0, false /*animate*/);
-  GridIndex moved_view_index(
-      0, apps_grid_view_->cols() * apps_grid_view_->rows_per_page() - 1);
+  GridIndex moved_view_index(0, GetTilesPerPage(1) - 1);
   GridIndex swapped_view_index(1, 0);
   AppListItemView* moved_view = test_api_->GetViewAtIndex(moved_view_index);
   AppListItemView* swapped_view = test_api_->GetViewAtIndex(swapped_view_index);
@@ -2137,10 +2134,8 @@ TEST_F(AppsGridViewTest, ControlArrowDownAndRightCreatesNewPage) {
 
   // The slot where |moving_item| originated should be empty because items get
   // dumped on pages with room, and only swap if the destination page is full.
-  EXPECT_EQ(
-      nullptr,
-      test_api_->GetViewAtIndex(GridIndex(
-          0, apps_grid_view_->cols() * apps_grid_view_->rows_per_page() - 1)));
+  EXPECT_EQ(nullptr,
+            test_api_->GetViewAtIndex(GridIndex(0, GetTilesPerPage(0) - 1)));
   EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(1, 0)));
   EXPECT_EQ(kTilesPerPageStart - 1, test_api_->AppsOnPage(0));
   EXPECT_EQ(1, test_api_->AppsOnPage(1));
@@ -2337,8 +2332,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFailsToFolderAcrossPages) {
   // the next page fails.
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {
     const GridIndex moved_view_index(
-        0,
-        apps_grid_view_->cols() * (apps_grid_view_->rows_per_page() - 1) + i);
+        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
     AppListItemView* attempted_folder_view =
         test_api_->GetViewAtIndex(moved_view_index);
     apps_grid_view_->GetFocusManager()->SetFocusedView(attempted_folder_view);
@@ -2351,8 +2345,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFailsToFolderAcrossPages) {
   }
   // The last item on the col is selected, try moving right and test that that
   // fails as well.
-  GridIndex moved_view_index(
-      0, apps_grid_view_->cols() * apps_grid_view_->rows_per_page() - 1);
+  GridIndex moved_view_index(0, GetTilesPerPage(0) - 1);
   AppListItemView* attempted_folder_view =
       test_api_->GetViewAtIndex(moved_view_index);
 
@@ -2722,7 +2715,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithTwoApps) {
 
 TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
   // Creates a folder item.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  const size_t kTotalItems = kMaxItemsPerFolderPage;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
 
@@ -2735,7 +2728,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
             model_->top_level_item_list()->item_at(0)->GetItemType());
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
+  EXPECT_EQ(16, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
   EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
   EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
@@ -3094,7 +3087,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   // Verify that all items in the current page fit within the background card.
   gfx::Rect background_card_bounds =
       paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-  gfx::Rect clip_rect = paged_apps_grid_view_->layer()->clip_rect();
+  gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+      paged_apps_grid_view_->layer()->clip_rect());
   gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
   EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
@@ -3104,7 +3098,10 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << first_item_bounds.ToString();
 
-  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(3, 4);
+  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+      GetTilesPerPage(0) / apps_grid_view_->cols() - 1,
+      apps_grid_view_->cols() - 1);
+
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
       << " background card bounds " << background_card_bounds.ToString()
       << " item bounds " << last_item_bounds.ToString();
@@ -3114,6 +3111,7 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
 
   // Simulate screen rotation (r = 90 degrees clockwise).
   UpdateDisplay("1024x768/r");
+  app_list_view_->OnParentWindowBoundsChanged();
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
   ASSERT_EQ(kExpectedBackgroundCardCount,
@@ -3122,7 +3120,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   // Verify that all items in the current page fit within the background card.
   background_card_bounds =
       paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-  clip_rect = paged_apps_grid_view_->layer()->clip_rect();
+  clip_rect = paged_apps_grid_view_->GetMirroredRect(
+      paged_apps_grid_view_->layer()->clip_rect());
   first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
   EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
@@ -3132,7 +3131,10 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << first_item_bounds.ToString();
 
-  last_item_bounds = GetItemRectOnCurrentPageAt(4, 3);
+  last_item_bounds = GetItemRectOnCurrentPageAt(
+      GetTilesPerPage(0) / apps_grid_view_->cols() - 1,
+      apps_grid_view_->cols() - 1);
+
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
       << " background card bounds " << background_card_bounds.ToString()
       << " item bounds " << last_item_bounds.ToString();
@@ -3171,7 +3173,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
   // Verify that all items in the current page fit within the background card.
   gfx::Rect background_card_bounds =
       paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-  gfx::Rect clip_rect = paged_apps_grid_view_->layer()->clip_rect();
+  gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+      paged_apps_grid_view_->layer()->clip_rect());
   gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
   EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
@@ -3181,7 +3184,10 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << first_item_bounds.ToString();
 
-  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(3, 4);
+  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+      GetTilesPerPage(1) / apps_grid_view_->cols() - 1,
+      apps_grid_view_->cols() - 1);
+
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
       << " background card bounds " << background_card_bounds.ToString()
       << " item bounds " << last_item_bounds.ToString();
@@ -3199,7 +3205,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
   // Verify that all items in the current page fit within the background card.
   background_card_bounds =
       paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-  clip_rect = paged_apps_grid_view_->layer()->clip_rect();
+  clip_rect = paged_apps_grid_view_->GetMirroredRect(
+      paged_apps_grid_view_->layer()->clip_rect());
   first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
   EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
@@ -3209,7 +3216,10 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << first_item_bounds.ToString();
 
-  last_item_bounds = GetItemRectOnCurrentPageAt(4, 3);
+  last_item_bounds = GetItemRectOnCurrentPageAt(
+      GetTilesPerPage(1) / apps_grid_view_->cols() - 1,
+      apps_grid_view_->cols() - 1);
+
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
       << " background card bounds " << background_card_bounds.ToString()
       << " item bounds " << last_item_bounds.ToString();
@@ -3269,7 +3279,7 @@ TEST_P(AppsGridViewCardifiedStateTest,
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Creates a folder item and open it.
-  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  const size_t kTotalItems = kMaxItemsPerFolderPage;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
   test_api_->PressItemAt(0);

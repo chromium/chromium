@@ -96,6 +96,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Returns the number of child items if it has any (e.g. is a folder) or 0.
   virtual size_t ChildItemCount() const;
 
+  // Returns whether the item is a folder with max allowed children.
+  bool IsFolderFull() const;
+
   std::string ToDebugString() const;
 
   bool is_folder() const { return metadata_->is_folder; }

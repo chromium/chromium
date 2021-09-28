@@ -200,6 +200,8 @@ PagedAppsGridView::PagedAppsGridView(
                            ? PagedViewStructure::Mode::kFullPages
                            : PagedViewStructure::Mode::kPartialPages);
 
+  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
+                                           kOverscrollPageTransitionDuration);
   pagination_model_.AddObserver(this);
 
   pagination_controller_ = std::make_unique<PaginationController>(
@@ -214,14 +216,6 @@ PagedAppsGridView::PagedAppsGridView(
 
 PagedAppsGridView::~PagedAppsGridView() {
   pagination_model_.RemoveObserver(this);
-}
-
-void PagedAppsGridView::Init() {
-  const auto& config = GetAppListConfig();
-  SetLayout(config.preferred_cols(), config.preferred_rows());
-  AppsGridView::Init();
-  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
-                                           kOverscrollPageTransitionDuration);
 }
 
 void PagedAppsGridView::OnTabletModeChanged(bool started) {
@@ -327,6 +321,13 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
         current_page[j]->layer()->SetOpacity(opacity);
     }
   }
+}
+
+void PagedAppsGridView::SetMaxRows(int max_rows_on_first_page, int max_rows) {
+  DCHECK_LE(max_rows_on_first_page, max_rows);
+
+  max_rows_on_first_page_ = max_rows_on_first_page;
+  max_rows_ = max_rows;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -463,7 +464,7 @@ void PagedAppsGridView::Layout() {
 
   // Prepare |page_size| * number-of-pages for |items_container_|, and sets the
   // origin properly to show the correct page.
-  const gfx::Size page_size = GetTileGridSize();
+  const gfx::Size page_size = GetPageSize();
   const int pages = pagination_model_.total_pages();
   const int current_page = pagination_model_.selected_page();
   if (pagination_controller_->scroll_axis() ==
@@ -517,11 +518,7 @@ gfx::Insets PagedAppsGridView::GetTilePadding() const {
 }
 
 gfx::Size PagedAppsGridView::GetTileGridSize() const {
-  gfx::Rect rect(GetTotalTileSize());
-  rect.set_size(
-      gfx::Size(rect.width() * cols(), rect.height() * rows_per_page()));
-  rect.Inset(-GetTilePadding());
-  return rect.size();
+  return GetTileGridSizeForPage(pagination_model_.selected_page());
 }
 
 int PagedAppsGridView::GetPaddingBetweenPages() const {
@@ -655,14 +652,17 @@ void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
                             kMaxAppListAppMovingType);
 }
 
-int PagedAppsGridView::TilesPerPage(int page) const {
-  if (IsInFolder())
-    return GetAppListConfig().max_folder_items_per_page();
+int PagedAppsGridView::GetMaxRowsInPage(int page) const {
+  return page == 0 ? max_rows_on_first_page_ : max_rows_;
+}
 
-  if (is_app_list_bubble_enabled_)
-    return page == 0 ? 15 : 20;
-
-  return cols() * rows_per_page();
+gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
+  if (!cardified_state_)
+    return gfx::Vector2d();
+  const gfx::Rect bounds = GetContentsBounds();
+  const gfx::Size grid_size = GetTileGridSizeForPage(page);
+  return gfx::Vector2d((bounds.width() - grid_size.width()) / 2,
+                       (bounds.height() - grid_size.height()) / 2);
 }
 
 void PagedAppsGridView::UpdatePaging() {
@@ -704,8 +704,6 @@ void PagedAppsGridView::RecordPageMetrics() {
 
 const gfx::Vector2d PagedAppsGridView::CalculateTransitionOffset(
     int page_of_view) const {
-  gfx::Size grid_size = GetTileGridSize();
-
   // If there is a transition, calculates offset for current and target page.
   const int current_page = GetSelectedPage();
   const PaginationModel::Transition& transition =
@@ -724,14 +722,15 @@ const gfx::Vector2d PagedAppsGridView::CalculateTransitionOffset(
     }
   }
 
+  const gfx::Size page_size = GetPageSize();
   if (IsScrollAxisVertical()) {
-    const int page_height = grid_size.height() + GetPaddingBetweenPages();
+    const int page_height = page_size.height() + GetPaddingBetweenPages();
     return gfx::Vector2d(0, page_height * multiplier);
   }
 
   // Page size including padding pixels. A tile.x + page_width means the same
   // tile slot in the next page.
-  const int page_width = grid_size.width() + GetPaddingBetweenPages();
+  const int page_width = page_size.width() + GetPaddingBetweenPages();
   return gfx::Vector2d(page_width * multiplier, 0);
 }
 
@@ -819,16 +818,16 @@ void PagedAppsGridView::TransitionChanged() {
     return;
 
   // Sets the transform to locate the scrolled content.
-  gfx::Size grid_size = GetTileGridSize();
+  const gfx::Size page_size = GetPageSize();
   gfx::Vector2dF translate;
   const int dir =
       transition.target_page > pagination_model_.selected_page() ? -1 : 1;
   if (pagination_controller_->scroll_axis() ==
       PaginationController::SCROLL_AXIS_HORIZONTAL) {
-    const int page_width = grid_size.width() + GetPaddingBetweenPages();
+    const int page_width = page_size.width() + GetPaddingBetweenPages();
     translate.set_x(page_width * transition.progress * dir);
   } else {
-    const int page_height = grid_size.height() + GetPaddingBetweenPages();
+    const int page_height = page_size.height() + GetPaddingBetweenPages();
     translate.set_y(page_height * transition.progress * dir);
   }
   gfx::Transform transform;
@@ -893,7 +892,8 @@ bool PagedAppsGridView::FirePageFlipTimerForTest() {
 gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
     size_t card_index) {
   DCHECK_LT(card_index, background_cards_.size());
-  gfx::Rect bounds_in_items_container = background_cards_[card_index]->bounds();
+  gfx::Rect bounds_in_items_container = items_container()->GetMirroredRect(
+      background_cards_[card_index]->bounds());
   gfx::Point origin_in_apps_grid = bounds_in_items_container.origin();
   views::View::ConvertPointToTarget(items_container(), this,
                                     &origin_in_apps_grid);
@@ -902,6 +902,25 @@ gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
 
 ////////////////////////////////////////////////////////////////////////////////
 // private:
+
+gfx::Size PagedAppsGridView::GetPageSize() const {
+  // Calculate page size as the tile grid size on non-leading page (which may
+  // have reduced number of tiles to accommodate continue section and recent
+  // apps UI in the apps container).
+  // NOTE: This assumes that tile padding is the same between different pages,
+  // if this assumption changes, this logic will have to be updated to use the
+  // tile padding for non-leading pages.
+  return GetTileGridSizeForPage(1);
+}
+
+gfx::Size PagedAppsGridView::GetTileGridSizeForPage(int page) const {
+  gfx::Rect rect(GetTotalTileSize());
+  const int tiles_per_page = TilesPerPage(page);
+  const int rows = tiles_per_page / cols();
+  rect.set_size(gfx::Size(rect.width() * cols(), rect.height() * rows));
+  rect.Inset(-GetTilePadding());
+  return rect.size();
+}
 
 bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
   // If |pagination_model_| is empty, don't handle scroll events.
@@ -1185,7 +1204,7 @@ void PagedAppsGridView::MaybeCallOnBoundsAnimatorDone() {
 void PagedAppsGridView::RecenterItemsContainer() {
   const int pages = pagination_model_.total_pages();
   const int current_page = pagination_model_.selected_page();
-  const int page_height = GetTileGridSize().height() + GetPaddingBetweenPages();
+  const int page_height = GetPageSize().height() + GetPaddingBetweenPages();
   items_container()->SetBoundsRect(gfx::Rect(0, -page_height * current_page,
                                              GetContentsBounds().width(),
                                              page_height * pages));
@@ -1193,29 +1212,37 @@ void PagedAppsGridView::RecenterItemsContainer() {
 
 gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
   // The size of the grid excluding the outer padding.
-  const gfx::Size grid_size = GetTileGridSize();
+  const gfx::Size grid_size = GetTileGridSizeForPage(new_page_index);
   // The size for the background card that will be displayed. The outer padding
   // of the grid need to be added.
   const gfx::Size background_card_size =
       grid_size +
       gfx::Size(2 * horizontal_tile_padding_, 2 * vertical_tile_padding_);
-  const int padding_between_pages = GetPaddingBetweenPages();
-  // The space that each page occupies in the items container. This is the size
-  // of the grid without outer padding plus the padding between pages.
-  const int grid_size_height = grid_size.height() + padding_between_pages;
-  // We position a new card in the last place in items container view.
-  const int vertical_page_start_offset = grid_size_height * new_page_index;
-  // Add a padding on the sides to make space for pagination preview.
+
+  // Add a padding on the sides to make space for pagination preview, but make
+  // sure the padding doesn't exceed the tile padding (otherwise the background
+  // bounds would clip the apps grid bounds).
+  const int extra_padding_for_cardified_state =
+      std::min(horizontal_tile_padding_, kCardifiedHorizontalPadding);
   const int horizontal_padding =
       (GetContentsBounds().width() - background_card_size.width()) / 2 +
-      kCardifiedHorizontalPadding;
+      extra_padding_for_cardified_state;
+
   // The vertical padding should account for the fadeout mask.
   const int vertical_padding =
       (GetContentsBounds().height() - background_card_size.height()) / 2 +
       GetAppListConfig().grid_fadeout_mask_height();
+
+  const int padding_between_pages = GetPaddingBetweenPages();
+  // The space that each page occupies in the items container. This is the size
+  // of the grid without outer padding plus the padding between pages.
+  const int total_page_height = GetPageSize().height() + padding_between_pages;
+  // We position a new card in the last place in items container view.
+  const int vertical_page_start_offset = total_page_height * new_page_index;
+
   return gfx::Rect(
       horizontal_padding, vertical_padding + vertical_page_start_offset,
-      background_card_size.width() - 2 * kCardifiedHorizontalPadding,
+      background_card_size.width() - 2 * extra_padding_for_cardified_state,
       background_card_size.height());
 }
 
@@ -1272,19 +1299,27 @@ void PagedAppsGridView::UpdateTilePadding() {
 
   gfx::Size content_size = GetContentsBounds().size();
   const gfx::Size tile_size = GetTileViewSize();
-  if (cardified_state_)
-    content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale);
-
+  if (cardified_state_) {
+    content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale) -
+                   gfx::Size(2 * kCardifiedHorizontalPadding, 0);
+  }
   // Item tiles should be evenly distributed in this view.
   horizontal_tile_padding_ =
       cols() > 1 ? (content_size.width() - cols() * tile_size.width()) /
                        ((cols() - 1) * 2)
                  : 0;
 
+  // Calculate padding for default page size, to ensure the spacing between
+  // pages remains the same when the selected page changes from/to the first
+  // page.
+  // NOTE: If the padding changes depending on the current page, `GetPageSize()`
+  // has to be updated, too.
+  const int rows_per_page = max_rows_;
+  DCHECK_EQ(TilesPerPage(1), rows_per_page * cols());
   vertical_tile_padding_ =
-      rows_per_page() > 1
-          ? (content_size.height() - rows_per_page() * tile_size.height()) /
-                ((rows_per_page() - 1) * 2)
+      rows_per_page > 1
+          ? (content_size.height() - rows_per_page * tile_size.height()) /
+                ((rows_per_page - 1) * 2)
           : 0;
 }
 

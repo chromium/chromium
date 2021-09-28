@@ -307,10 +307,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return folder_dropping_circle_radius_;
   }
   int page_flip_zone_size() const { return page_flip_zone_size_; }
-  size_t max_folder_pages() const { return max_folder_pages_; }
-  size_t max_folder_items_per_page() const {
-    return max_folder_items_per_page_;
-  }
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -464,12 +460,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Width in pixels of the area on the sides that triggers a page flip.
   const int page_flip_zone_size_;
-
-  // Max pages allowed in a folder.
-  const size_t max_folder_pages_;
-
-  // Max items per page allowed in a folder.
-  const size_t max_folder_items_per_page_;
 };
 
 }  // namespace ash

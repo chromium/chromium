@@ -380,9 +380,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // to AppListFolderView.
   std::vector<gfx::Rect> GetFirstPageItemViewsBounds() {
     std::vector<gfx::Rect> items_bounds;
-    const size_t count =
-        std::min(folder_view_->GetAppListConfig().max_folder_items_per_page(),
-                 folder_view_->folder_item()->ChildItemCount());
+    // Go over items in the folder, and collect bounds of items that fit within
+    // the folder bounds.
+    const size_t count = folder_view_->folder_item()->ChildItemCount();
     for (size_t i = 0; i < count; ++i) {
       const gfx::Rect rect =
           folder_view_->items_grid_view()->GetItemViewAt(i)->bounds();
@@ -390,6 +390,11 @@ class TopIconAnimation : public AppListFolderView::Animation,
           folder_view_->items_grid_view()->ConvertRectToParent(rect);
       const gfx::Rect to_folder =
           folder_view_->contents_container()->ConvertRectToParent(to_container);
+      // Stop if the item bounds are not within the folder view bounds - assumes
+      // that subsequent item bounds would not be within the folder bounds
+      // either.
+      if (!to_folder.Intersects(folder_view_->GetLocalBounds()))
+        break;
       items_bounds.emplace_back(to_folder);
     }
     return items_bounds;
@@ -549,14 +554,21 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
 
 void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
   DCHECK(contents_view);
-  items_grid_view_ =
+  // Cache typed apps grid view pointer to perform setup specific to
+  // PagedAppsGridView (e.g. `SetMaxRows()`) without requiring static cast.
+  PagedAppsGridView* items_grid_view =
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
           contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr,
           /*container_delegate=*/this));
-  items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
-                                        kTileSpacingInFolder / 2);
-  items_grid_view_->Init();
-  items_grid_view_->SetModel(model_);
+  items_grid_view_ = items_grid_view;
+
+  items_grid_view->SetMaxColumns(kMaxFolderColumns);
+  items_grid_view->SetMaxRows(/*max_rows_in_first_page=*/kMaxFolderColumns,
+                              /*max_rows=*/kMaxFolderColumns);
+  items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
+                                       kTileSpacingInFolder / 2);
+  items_grid_view->Init();
+  items_grid_view->SetModel(model_);
 
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
@@ -565,8 +577,8 @@ void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
 
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
-          static_cast<PagedAppsGridView*>(items_grid_view_)->pagination_model(),
-          false /* vertical */, view_delegate_->IsInTabletMode(),
+          items_grid_view->pagination_model(), false /* vertical */,
+          view_delegate_->IsInTabletMode(),
           AppListColorProvider::Get()->GetFolderBackgroundColor()));
 
   contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -608,6 +620,7 @@ void AppListFolderView::InitWithScrollableAppsGrid() {
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_, view_delegate_, this, scroll_view_,
           /*folder_controller=*/nullptr));
+  items_grid_view_->SetMaxColumns(kMaxFolderColumns);
   items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                         kTileSpacingInFolder / 2);
   items_grid_view_->Init();

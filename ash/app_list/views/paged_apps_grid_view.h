@@ -78,6 +78,15 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                      float apps_opacity_change_start,
                      float apps_opacity_change_end);
 
+  // Sets the number of max rows in grid pages. Special-cases the first page,
+  // which may allow smaller number of rows in certain spaces (to make room for
+  // other UI elements like continue section).
+  // For non-folder item grid, this generally describes the number of slots
+  // shown in the page. For folders, the number of displayed slots will also
+  // depend on number of items in the grid (e.g. folder with 4 items will have
+  // 2x2 grid).
+  void SetMaxRows(int max_rows_on_first_page, int max_rows);
+
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -86,7 +95,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void Layout() override;
 
   // AppsGridView:
-  void Init() override;
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
@@ -106,7 +114,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void SetFocusAfterEndDrag() override;
   void CalculateIdealBoundsForNonFolder() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
-  int TilesPerPage(int page) const override;
+  int GetMaxRowsInPage(int page) const override;
+  gfx::Vector2d GetGridCenteringOffset(int page) const override;
   void UpdatePaging() override;
   void RecordPageMetrics() override;
   const gfx::Vector2d CalculateTransitionOffset(
@@ -143,6 +152,14 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   friend class test::AppsGridViewTest;
 
   class FadeoutLayerDelegate;
+
+  // Returns the size reserved for a single apps grid page. May not match the
+  // tile grid size when the first page selected, as the first page may have
+  // reduced number of tiles.
+  gfx::Size GetPageSize() const;
+
+  // Gets the tile grid size on the provided apps grid page.
+  gfx::Size GetTileGridSizeForPage(int page) const;
 
   // Indicates whether the drag event (from the gesture or mouse) should be
   // handled by PagedAppsGridView.
@@ -251,6 +268,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Whether the AppListBubble is enabled.
   const bool is_app_list_bubble_enabled_;
+
+  // Maximum number of rows on the first grid page.
+  int max_rows_on_first_page_ = 0;
+
+  // Maximum number of rows allowed in apps grid pages.
+  int max_rows_ = 0;
 
   PaginationModel pagination_model_{this};
 

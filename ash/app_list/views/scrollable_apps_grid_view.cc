@@ -61,14 +61,6 @@ ScrollableAppsGridView::~ScrollableAppsGridView() {
   EndDrag(/*cancel=*/true);
 }
 
-void ScrollableAppsGridView::Init() {
-  // `rows_per_page` is an arbitrary large number, chosen to be small enough
-  // that cols*rows_per_page will not overflow.
-  // TODO(crbug.com/1211608): Get rid of rows_per_page_ in the base class.
-  SetLayout(/*cols=*/5, /*rows_per_page=*/100000);
-  AppsGridView::Init();
-}
-
 void ScrollableAppsGridView::Layout() {
   if (ignore_layout())
     return;
@@ -297,8 +289,14 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
                             kMaxAppListAppMovingType);
 }
 
-int ScrollableAppsGridView::TilesPerPage(int page) const {
-  return cols() * rows_per_page();
+int ScrollableAppsGridView::GetMaxRowsInPage(int page) const {
+  // Return an arbitrary large number, chosen to be small enough
+  // that cols*rows_per_page will not overflow.
+  return 100000;
+}
+
+gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
+  return gfx::Vector2d();
 }
 
 void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {

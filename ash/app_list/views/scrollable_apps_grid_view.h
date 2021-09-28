@@ -42,7 +42,6 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void Layout() override;
 
   // AppsGridView:
-  void Init() override;
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
@@ -57,7 +56,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
                                    ui::EventType type) override;
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
-  int TilesPerPage(int page) const override;
+  int GetMaxRowsInPage(int page) const override;
+  gfx::Vector2d GetGridCenteringOffset(int page) const override;
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;

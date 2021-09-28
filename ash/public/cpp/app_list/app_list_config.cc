@@ -300,9 +300,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
           ItemIconInFolderIconDimensionForType(type)),
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
       folder_dropping_circle_radius_(folder_bubble_radius_),
-      page_flip_zone_size_(20),
-      max_folder_pages_(3),
-      max_folder_items_per_page_(16) {
+      page_flip_zone_size_(20) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }
@@ -405,9 +403,7 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
           MinScale(base_config.folder_dropping_circle_radius_,
                    scale_x,
                    inner_tile_scale_y)),
-      page_flip_zone_size_(base_config.page_flip_zone_size_),
-      max_folder_pages_(base_config.max_folder_pages_),
-      max_folder_items_per_page_(base_config.max_folder_items_per_page_) {
+      page_flip_zone_size_(base_config.page_flip_zone_size_) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }

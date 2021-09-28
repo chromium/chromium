@@ -47,6 +47,10 @@ class ASH_EXPORT AppListFolderView
  public:
   METADATA_HEADER(AppListFolderView);
 
+  // The maximum number of columns a folder can have. When using paged folder
+  // item grid, the value also indicates the maximum allowed number of rows.
+  static constexpr int kMaxFolderColumns = 4;
+
   AppListFolderView(AppListFolderController* folder_controller,
                     AppsGridView* root_apps_grid_view,
                     AppListModel* model,

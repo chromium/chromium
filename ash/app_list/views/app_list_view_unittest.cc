@@ -77,6 +77,9 @@ namespace {
 
 constexpr int kInitialItems = 34;
 
+constexpr int kMaxItemsPerFolderPage =
+    AppListFolderView::kMaxFolderColumns * AppListFolderView::kMaxFolderColumns;
+
 // Constants used for for testing app list layout in fullscreen state:
 
 // The total height of search box and suggestion chips views, including the
@@ -1243,8 +1246,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
-  for (int i = GetAppListConfig().max_folder_items_per_page();
-       i < view_model->view_size();
+  for (int i = kMaxItemsPerFolderPage; i < view_model->view_size();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
   }

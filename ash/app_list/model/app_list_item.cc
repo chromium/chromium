@@ -9,6 +9,18 @@
 
 namespace ash {
 
+namespace {
+
+// The maximum number of children that a folder is allowed to have. The
+// restriction was a result of UI restrictions for paged folder views, with a
+// goal to reduce size taken by the page switcher within the folder UI. While
+// this is not relevant concern when the folder items grid is scrollabe, the
+// restriction is kept to reduce risk of creating overflown folders via sync on
+// devices that do not yet use scrollable folder UI.
+constexpr int kMaxFolderChildren = 48;
+
+}  // namespace
+
 AppListItem::AppListItem(const std::string& id)
     : metadata_(std::make_unique<AppListItemMetadata>()) {
   metadata_->id = id;
@@ -94,6 +106,10 @@ AppListItem* AppListItem::FindChildItem(const std::string& id) {
 
 size_t AppListItem::ChildItemCount() const {
   return 0;
+}
+
+bool AppListItem::IsFolderFull() const {
+  return is_folder() && ChildItemCount() >= kMaxFolderChildren;
 }
 
 std::string AppListItem::ToDebugString() const {

@@ -288,24 +288,6 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
     DCHECK(folder_controller_);
 }
 
-void AppsGridView::Init() {
-  DCHECK_GT(cols_, 0);
-  DCHECK_GT(rows_per_page_, 0);
-  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  // Clip any icons that are outside the grid view's bounds. These icons would
-  // otherwise be visible to the user when the grid view is off screen.
-  layer()->SetMasksToBounds(true);
-
-  items_container_ = AddChildView(std::make_unique<views::View>());
-  items_container_->SetPaintToLayer();
-  items_container_->layer()->SetFillsBoundsOpaquely(false);
-  bounds_animator_ = std::make_unique<views::BoundsAnimator>(
-      items_container_, /*use_transforms=*/true);
-  bounds_animator_->AddObserver(this);
-
-  UpdateBorder();
-}
-
 AppsGridView::~AppsGridView() {
   bounds_animator_->RemoveObserver(this);
   // Coming here |drag_view_| should already be canceled since otherwise the
@@ -332,9 +314,34 @@ AppsGridView::~AppsGridView() {
   RemoveAllChildViews();
 }
 
-void AppsGridView::SetLayout(int cols, int rows_per_page) {
-  cols_ = cols;
-  rows_per_page_ = rows_per_page;
+void AppsGridView::Init() {
+  DCHECK_GT(cols_, 0);
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  // Clip any icons that are outside the grid view's bounds. These icons would
+  // otherwise be visible to the user when the grid view is off screen.
+  layer()->SetMasksToBounds(true);
+
+  items_container_ = AddChildView(std::make_unique<views::View>());
+  items_container_->SetPaintToLayer();
+  items_container_->layer()->SetFillsBoundsOpaquely(false);
+  bounds_animator_ = std::make_unique<views::BoundsAnimator>(
+      items_container_, /*use_transforms=*/true);
+  bounds_animator_->AddObserver(this);
+
+  UpdateBorder();
+}
+
+void AppsGridView::SetMaxColumns(int max_cols) {
+  if (max_cols_ == max_cols)
+    return;
+
+  max_cols_ = max_cols;
+
+  if (IsInFolder()) {
+    UpdateColsAndRowsForFolder();
+  } else {
+    cols_ = max_cols_;
+  }
 }
 
 void AppsGridView::SetFixedTilePadding(int horizontal_padding,
@@ -348,15 +355,6 @@ gfx::Size AppsGridView::GetTotalTileSize() const {
   gfx::Rect rect(GetTileViewSize());
   rect.Inset(GetTilePadding());
   return rect.size();
-}
-
-gfx::Size AppsGridView::GetTileGridSizeWithPadding() const {
-  gfx::Size size(GetTileViewSize());
-  size.SetSize(size.width() * cols_, size.height() * rows_per_page_);
-
-  size.Enlarge(horizontal_tile_padding_ * 2 * (cols_ - 1),
-               vertical_tile_padding_ * 2 * (rows_per_page_ - 1));
-  return size;
 }
 
 gfx::Size AppsGridView::GetMinimumTileGridSize(int cols,
@@ -992,6 +990,22 @@ bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
   return drag_view_hider_ && drag_view_hider_->drag_view() == view;
 }
 
+int AppsGridView::TilesPerPage(int page) const {
+  const int max_rows = GetMaxRowsInPage(page);
+
+  // In folders, the grid size depends on the number of items in the page.
+  if (IsInFolder()) {
+    // Leave room for at least one item.
+    if (!view_model()->view_size())
+      return 1;
+
+    int rows = (view_model()->view_size() - 1) / cols() + 1;
+    return std::min(max_rows, rows) * cols();
+  }
+
+  return max_rows * cols();
+}
+
 void AppsGridView::CalculateIdealBounds() {
   if (!folder_delegate_) {
     CalculateIdealBoundsForNonFolder();
@@ -1162,12 +1176,8 @@ bool AppsGridView::DropTargetIsValidFolder() {
   // Items can only be dropped into non-folders (which have no children) or
   // folders that have fewer than the max allowed items.
   // The OEM folder does not allow drag/drop of other items into it.
-  const size_t kMaxItemCount = GetAppListConfig().max_folder_items_per_page() *
-                               GetAppListConfig().max_folder_pages();
-  if (target_item->ChildItemCount() >= kMaxItemCount ||
-      IsOEMFolderItem(target_item)) {
+  if (target_item->IsFolderFull() || IsOEMFolderItem(target_item))
     return false;
-  }
 
   if (!IsValidIndex(drop_target_))
     return false;
@@ -1261,15 +1271,6 @@ bool AppsGridView::DraggedItemCanEnterFolder() {
   return false;
 }
 
-gfx::Vector2d AppsGridView::GetGridCenteringOffset() const {
-  if (!cardified_state_)
-    return gfx::Vector2d();
-  const gfx::Rect bounds = GetContentsBounds();
-  const gfx::Size tile_grid_size = GetTileGridSize();
-  return gfx::Vector2d((bounds.width() - tile_grid_size.width()) / 2,
-                       (bounds.height() - tile_grid_size.height()) / 2);
-}
-
 void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   gfx::Rect bounds = GetContentsBounds();
   bounds.Inset(GetTilePadding());
@@ -1297,10 +1298,11 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
       x_offset_direction * (total_tile_size.width() / 2 -
                             GetAppListConfig().folder_dropping_circle_radius() *
                                 (cardified_state_ ? kCardifiedScale : 1.0f));
-  int col = (point.x() - bounds.x() + x_offset - GetGridCenteringOffset().x()) /
+  const int selected_page = GetSelectedPage();
+  int col = (point.x() - bounds.x() + x_offset -
+             GetGridCenteringOffset(selected_page).x()) /
             total_tile_size.width();
   col = base::clamp(col, 0, cols_ - 1);
-  const int selected_page = GetSelectedPage();
   drop_target_ =
       std::min(GridIndex(selected_page, row * cols_ + col),
                view_structure_.GetLastTargetIndexOfPage(selected_page));
@@ -1534,21 +1536,20 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
 }
 
 void AppsGridView::UpdateColsAndRowsForFolder() {
-  if (!folder_delegate_ || !item_list_->item_count())
+  if (!folder_delegate_)
     return;
 
-  int prev_cols = cols_;
-  int prev_rows = rows_per_page_;
+  const int item_count = item_list_ ? item_list_->item_count() : 0;
 
-  // Try to shape the apps grid into a square.
-  int items_in_one_page = std::min(
-      GetAppListConfig().max_folder_items_per_page(), item_list_->item_count());
-  cols_ = std::sqrt(items_in_one_page - 1) + 1;
-  rows_per_page_ = (items_in_one_page - 1) / cols_ + 1;
+  // Ensure that there is always at least one column.
+  if (item_count == 0) {
+    cols_ = 1;
+  } else {
+    int preferred_cols = std::sqrt(item_list_->item_count() - 1) + 1;
+    cols_ = base::clamp(preferred_cols, 1, max_cols_);
+  }
 
-  // Update the folder bounds if the number of columns or rows changed.
-  if (prev_cols != cols_ || prev_rows != rows_per_page_)
-    PreferredSizeChanged();
+  PreferredSizeChanged();
 }
 
 void AppsGridView::DispatchDragEventForReparent(Pointer pointer,
@@ -2095,15 +2096,19 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   const int current_page = GetSelectedPage();
   bounds.Inset(GetTilePadding());
   const gfx::Size total_tile_size = GetTotalTileSize();
-  const gfx::Vector2d grid_offset = GetGridCenteringOffset();
+  const gfx::Vector2d grid_offset = GetGridCenteringOffset(current_page);
+
   DCHECK_GT(total_tile_size.width(), 0);
   int col = base::clamp(
       (point.x() - bounds.x() - grid_offset.x()) / total_tile_size.width(), 0,
       cols_ - 1);
+
   DCHECK_GT(total_tile_size.height(), 0);
+  int max_row = TilesPerPage(current_page) / cols_ - 1;
   int row = base::clamp(
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height(), 0,
-      rows_per_page_ - 1);
+      max_row);
+
   return GridIndex(current_page, row * cols_ + col);
 }
 
@@ -2120,7 +2125,7 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
                                    bounds.y() + row * total_tile_size.height()),
                         total_tile_size);
 
-  tile_bounds.Offset(GetGridCenteringOffset());
+  tile_bounds.Offset(GetGridCenteringOffset(index.page));
   tile_bounds.Inset(-GetTilePadding());
   return tile_bounds;
 }

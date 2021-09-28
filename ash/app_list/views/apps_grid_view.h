@@ -106,14 +106,18 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Initializes the class. Calls virtual methods, so its code cannot be in the
   // constructor.
-  virtual void Init();
+  void Init();
 
-  // Sets fixed layout parameters. After setting this, CalculateLayout below
-  // is no longer called to dynamically choosing those layout params.
-  void SetLayout(int cols, int rows_per_page);
+  // Sets the max number of columns that the grid can have.
+  // For root apps grid view, the grid size depends on the space available to
+  // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
+  // grid doesn't have enough items to fill out all columns, it will leave empty
+  // spaces in the UI.
+  // For folder item grid, the grid size also depends on the number of items in
+  // the grid, so number of actual columns may be smaller than `max_columns`.
+  void SetMaxColumns(int max_columns);
 
   int cols() const { return cols_; }
-  int rows_per_page() const { return rows_per_page_; }
 
   // Sets padding for apps grid items to use during layout if fixed padding
   // should be used. Otherwise, for paged apps grid, the padding will be
@@ -124,9 +128,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the size of a tile view including its padding.
   gfx::Size GetTotalTileSize() const;
-
-  // Returns the size of the entire tile grid with padding between tiles.
-  gfx::Size GetTileGridSizeWithPadding() const;
 
   // Returns the minimum size of the entire tile grid.
   gfx::Size GetMinimumTileGridSize(int cols, int rows_per_page) const;
@@ -336,10 +337,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
-  // Returns the number of app tiles per page. Takes a page number as an
-  // argument as the first page might have less apps shown. Folder grids may
-  // have different numbers of tiles from the main grid.
-  virtual int TilesPerPage(int page) const = 0;
+  // Returns the max number of rows the grid can have on a page.
+  virtual int GetMaxRowsInPage(int page) const = 0;
+
+  // Calculates the offset distance to center the grid in the container.
+  virtual gfx::Vector2d GetGridCenteringOffset(int page) const = 0;
 
   // Returns the padding between each page of the apps grid, or zero if the grid
   // does not use pages.
@@ -400,6 +402,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
   gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
+
+  // Returns the number of app tiles per page. Takes a page number as an
+  // argument as the first page might have less apps shown. Folder grids may
+  // have different numbers of tiles from the main grid.
+  int TilesPerPage(int page) const;
 
   GridIndex GetIndexOfView(const AppListItemView* view) const;
   AppListItemView* GetViewAtIndex(const GridIndex& index) const;
@@ -658,9 +665,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // slot if |point| is outside the page's bounds.
   GridIndex GetNearestTileIndexForPoint(const gfx::Point& point) const;
 
-  // Calculates the offset distance to center the grid in the container.
-  gfx::Vector2d GetGridCenteringOffset() const;
-
   // Gets the item view currently displayed at |slot| on the current page. If
   // there is no item displayed at |slot|, returns nullptr. Note that this finds
   // an item *displayed* at a slot, which may differ from the item's location in
@@ -787,8 +791,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Keeps the individual AppListItemView. Owned by views hierarchy.
   views::View* items_container_ = nullptr;
 
+  // The max number of columns the grid can have.
+  int max_cols_ = 0;
+
   int cols_ = 0;
-  int rows_per_page_ = 0;
 
   // List of app item views. There is a view per item in |model_|.
   views::ViewModelT<AppListItemView> view_model_;
