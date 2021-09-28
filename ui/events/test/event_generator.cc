@@ -24,11 +24,6 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#if defined(USE_X11)
-#include "ui/events/test/events_test_utils_x11.h"
-#include "ui/events/x/events_x_utils.h"
-#endif
-
 #if defined(OS_WIN)
 #include <windows.h>
 

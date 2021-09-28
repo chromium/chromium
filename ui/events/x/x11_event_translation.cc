@@ -21,10 +21,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/xproto.h"
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace ui {
 
 namespace {
@@ -172,12 +168,10 @@ std::unique_ptr<TouchEvent> CreateTouchEvent(EventType type,
       type, EventLocationFromXEvent(xev), EventTimeFromXEvent(xev),
       GetTouchPointerDetailsFromXEvent(xev));
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     // Touch events don't usually have |root_location| set differently than
     // |location|, since there is a touch device to display association, but
     // this doesn't happen in Ozone X11.
     event->set_root_location(EventSystemLocationFromXEvent(xev));
-  }
 #endif
   return event;
 }

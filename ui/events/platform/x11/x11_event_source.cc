@@ -38,10 +38,6 @@
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 #endif
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace ui {
 
 namespace {
@@ -301,16 +297,5 @@ void X11EventSource::OnDispatcherListChanged() {
     hotplug_event_handler_->OnHotplugEvent();
   }
 }
-
-// static
-#if defined(USE_X11)
-std::unique_ptr<PlatformEventSource> PlatformEventSource::CreateDefault() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return nullptr;
-#endif
-  return std::make_unique<X11EventSource>(x11::Connection::Get());
-}
-#endif
 
 }  // namespace ui
