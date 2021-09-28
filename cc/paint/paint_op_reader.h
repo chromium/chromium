@@ -200,9 +200,7 @@ class CC_PAINT_EXPORT PaintOpReader {
                        DeserializationError error_on_factory_failure);
 
   template <typename Enum, Enum kMaxValue = Enum::kMaxValue>
-  NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-      void
-      ReadEnum(Enum* enum_value) {
+  void ReadEnum(Enum* enum_value) {
     static_assert(static_cast<unsigned>(kMaxValue) <= 255,
                   "Max value must fit in uint8_t");
     uint8_t value = 0u;

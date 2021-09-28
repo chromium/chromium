@@ -82,12 +82,10 @@ void PaintOpReader::FixupMatrixPostSerialization(SkMatrix* matrix) {
 }
 
 // static
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    bool
-    PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
-                                           size_t input_size,
-                                           uint8_t* type,
-                                           uint32_t* skip) {
+bool PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
+                                            size_t input_size,
+                                            uint8_t* type,
+                                            uint32_t* skip) {
   if (input_size < 4)
     return false;
   uint32_t first_word = reinterpret_cast<const volatile uint32_t*>(input)[0];
@@ -104,9 +102,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 }
 
 template <typename T>
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadSimple(T* val) {
+void PaintOpReader::ReadSimple(T* val) {
   static_assert(base::is_trivially_copyable<T>::value,
                 "Not trivially copyable");
 
@@ -140,12 +136,10 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
 }
 
 template <typename T>
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadFlattenable(
-        sk_sp<T>* val,
-        Factory<T> factory,
-        DeserializationError error_on_factory_failure) {
+void PaintOpReader::ReadFlattenable(
+    sk_sp<T>* val,
+    Factory<T> factory,
+    DeserializationError error_on_factory_failure) {
   size_t bytes = 0;
   ReadSize(&bytes);
   if (remaining_bytes_ < bytes)
@@ -165,9 +159,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   remaining_bytes_ -= bytes;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadData(size_t bytes, void* data) {
+void PaintOpReader::ReadData(size_t bytes, void* data) {
   if (remaining_bytes_ < bytes)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
   if (!valid_)
@@ -180,66 +172,47 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   remaining_bytes_ -= bytes;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadSize(size_t* size) {
+void PaintOpReader::ReadSize(size_t* size) {
   AlignMemory(8);
   uint64_t size64 = 0;
   ReadSimple(&size64);
   *size = size64;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkScalar* data) {
+void PaintOpReader::Read(SkScalar* data) {
   ReadSimple(data);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     void
     PaintOpReader::Read(uint8_t* data) {
   ReadSimple(data);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(uint32_t* data) {
+void PaintOpReader::Read(uint32_t* data) {
   ReadSimple(data);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(uint64_t* data) {
+void PaintOpReader::Read(uint64_t* data) {
   ReadSimple(data);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(int32_t* data) {
+void PaintOpReader::Read(int32_t* data) {
   ReadSimple(data);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkRect* rect) {
+void PaintOpReader::Read(SkRect* rect) {
   ReadSimple(rect);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkIRect* rect) {
+void PaintOpReader::Read(SkIRect* rect) {
   ReadSimple(rect);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkRRect* rect) {
+void PaintOpReader::Read(SkRRect* rect) {
   ReadSimple(rect);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkPath* path) {
+void PaintOpReader::Read(SkPath* path) {
   uint32_t path_id;
   ReadSimple(&path_id);
   if (!valid_)
@@ -293,9 +266,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(PaintFlags* flags) {
+void PaintOpReader::Read(PaintFlags* flags) {
   ReadSimple(&flags->color_);
   Read(&flags->width_);
   Read(&flags->miter_limit_);
@@ -327,9 +298,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   Read(&flags->shader_);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(PaintImage* image) {
+void PaintOpReader::Read(PaintImage* image) {
   uint8_t serialized_type_int = 0u;
   Read(&serialized_type_int);
   if (serialized_type_int >
@@ -489,9 +458,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
   remaining_bytes_ -= bytes;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
+void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
   size_t size = 0;
   ReadSize(&size);
   if (remaining_bytes_ < size)
@@ -509,9 +476,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   remaining_bytes_ -= size;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
+void PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
   AlignMemory(4);
   uint32_t blob_id = 0u;
   Read(&blob_id);
@@ -560,9 +525,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   remaining_bytes_ -= data_bytes;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(sk_sp<PaintShader>* shader) {
+void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   bool has_shader = false;
   ReadSimple(&has_shader);
   if (!has_shader) {
@@ -696,22 +659,16 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkMatrix* matrix) {
+void PaintOpReader::Read(SkMatrix* matrix) {
   ReadSimple(matrix);
   FixupMatrixPostSerialization(matrix);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkM44* matrix) {
+void PaintOpReader::Read(SkM44* matrix) {
   ReadSimple(matrix);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkSamplingOptions* sampling) {
+void PaintOpReader::Read(SkSamplingOptions* sampling) {
   bool useCubic;
   Read(&useCubic);
   if (useCubic) {
@@ -728,9 +685,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
+void PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
   uint32_t raw_yuv_color_space = kIdentity_SkYUVColorSpace;
   ReadSimple(&raw_yuv_color_space);
 
@@ -742,9 +697,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   *yuv_color_space = static_cast<SkYUVColorSpace>(raw_yuv_color_space);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkYUVAInfo::PlaneConfig* plane_config) {
+void PaintOpReader::Read(SkYUVAInfo::PlaneConfig* plane_config) {
   uint32_t raw_plane_config =
       static_cast<uint32_t>(SkYUVAInfo::PlaneConfig::kUnknown);
   ReadSimple(&raw_plane_config);
@@ -758,9 +711,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   *plane_config = static_cast<SkYUVAInfo::PlaneConfig>(raw_plane_config);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkYUVAInfo::Subsampling* subsampling) {
+void PaintOpReader::Read(SkYUVAInfo::Subsampling* subsampling) {
   uint32_t raw_subsampling =
       static_cast<uint32_t>(SkYUVAInfo::Subsampling::kUnknown);
   ReadSimple(&raw_subsampling);
@@ -773,18 +724,14 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   *subsampling = static_cast<SkYUVAInfo::Subsampling>(raw_subsampling);
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(gpu::Mailbox* mailbox) {
+void PaintOpReader::Read(gpu::Mailbox* mailbox) {
   ReadData(sizeof(gpu::Mailbox::Name), (*mailbox).name);
 }
 
 // Android does not use skottie. Remove below section to keep binary size to a
 // minimum.
 #if !defined(OS_ANDROID)
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
+void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
   if (!options_.is_privileged) {
     valid_ = false;
     return;
@@ -855,9 +802,7 @@ const volatile void* PaintOpReader::ExtractReadableMemory(size_t bytes) {
   return extracted_memory;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
+void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
   PaintFilter::Type type;
   ReadEnum(&type);
   if (!valid_)
@@ -954,11 +899,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadColorFilterPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadColorFilterPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   sk_sp<SkColorFilter> color_filter;
   sk_sp<PaintFilter> input;
 
@@ -974,11 +917,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                            base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadBlurPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadBlurPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkScalar sigma_x = 0.f;
   SkScalar sigma_y = 0.f;
   SkTileMode tile_mode;
@@ -995,11 +936,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                     base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadDropShadowPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadDropShadowPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkScalar dx = 0.f;
   SkScalar dy = 0.f;
   SkScalar sigma_x = 0.f;
@@ -1023,11 +962,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                           base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadMagnifierPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadMagnifierPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkRect src_rect = SkRect::MakeEmpty();
   SkScalar inset = 0.f;
   sk_sp<PaintFilter> input;
@@ -1041,11 +978,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                          base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadComposePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadComposePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   sk_sp<PaintFilter> outer;
   sk_sp<PaintFilter> inner;
 
@@ -1056,11 +991,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   filter->reset(new ComposePaintFilter(std::move(outer), std::move(inner)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadAlphaThresholdPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadAlphaThresholdPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkRegion region;
   SkScalar inner_min = 0.f;
   SkScalar outer_max = 0.f;
@@ -1077,11 +1010,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadXfermodePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadXfermodePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkBlendMode blend_mode;
   sk_sp<PaintFilter> background;
   sk_sp<PaintFilter> foreground;
@@ -1097,11 +1028,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                         base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadArithmeticPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadArithmeticPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   float k1 = 0.f;
   float k2 = 0.f;
   float k3 = 0.f;
@@ -1123,11 +1052,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       std::move(foreground), base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadMatrixConvolutionPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadMatrixConvolutionPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkISize kernel_size = SkISize::MakeEmpty();
   SkScalar gain = 0.f;
   SkScalar bias = 0.f;
@@ -1163,11 +1090,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       convolve_alpha, std::move(input), base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadDisplacementMapEffectPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadDisplacementMapEffectPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkColorChannel channel_x;
   SkColorChannel channel_y;
   SkScalar scale = 0.f;
@@ -1187,11 +1112,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadImagePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadImagePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   PaintImage image;
   Read(&image);
   if (!image) {
@@ -1212,11 +1135,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       new ImagePaintFilter(std::move(image), src_rect, dst_rect, quality));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadRecordPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadRecordPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   bool has_filter = false;
   ReadSimple(&has_filter);
   if (!has_filter) {
@@ -1250,11 +1171,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                       raster_scale, scaling_behavior));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadMergePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadMergePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   size_t input_count = 0;
   ReadSize(&input_count);
 
@@ -1276,11 +1195,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                      base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadMorphologyPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadMorphologyPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   MorphologyPaintFilter::MorphType morph_type;
   float radius_x = 0;
   float radius_y = 0;
@@ -1296,11 +1213,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                           base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadOffsetPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadOffsetPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkScalar dx = 0.f;
   SkScalar dy = 0.f;
   sk_sp<PaintFilter> input;
@@ -1314,11 +1229,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                       base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadTilePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadTilePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkRect src = SkRect::MakeEmpty();
   SkRect dst = SkRect::MakeEmpty();
   sk_sp<PaintFilter> input;
@@ -1331,11 +1244,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   filter->reset(new TilePaintFilter(src, dst, std::move(input)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadTurbulencePaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadTurbulencePaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   TurbulencePaintFilter::TurbulenceType turbulence_type;
   SkScalar base_frequency_x = 0.f;
   SkScalar base_frequency_y = 0.f;
@@ -1356,11 +1267,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       &tile_size, base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadShaderPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadShaderPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   using Dither = SkImageFilters::Dither;
 
   sk_sp<PaintShader> shader;
@@ -1380,11 +1289,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                       base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadMatrixPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadMatrixPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkMatrix matrix = SkMatrix::I();
   PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kNone;
   sk_sp<PaintFilter> input;
@@ -1398,11 +1305,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       new MatrixPaintFilter(matrix, filter_quality, std::move(input)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadLightingDistantPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadLightingDistantPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   PaintFilter::LightingType lighting_type;
   SkPoint3 direction = SkPoint3::Make(0.f, 0.f, 0.f);
   SkColor light_color = SK_ColorBLACK;
@@ -1425,11 +1330,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       shininess, std::move(input), base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadLightingPointPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadLightingPointPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   PaintFilter::LightingType lighting_type;
   SkPoint3 location = SkPoint3::Make(0.f, 0.f, 0.f);
   SkColor light_color = SK_ColorBLACK;
@@ -1452,11 +1355,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       std::move(input), base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadLightingSpotPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadLightingSpotPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   PaintFilter::LightingType lighting_type;
   SkPoint3 location = SkPoint3::Make(0.f, 0.f, 0.f);
   SkPoint3 target = SkPoint3::Make(0.f, 0.f, 0.f);
@@ -1487,11 +1388,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::ReadStretchPaintFilter(
-        sk_sp<PaintFilter>* filter,
-        const absl::optional<PaintFilter::CropRect>& crop_rect) {
+void PaintOpReader::ReadStretchPaintFilter(
+    sk_sp<PaintFilter>* filter,
+    const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkScalar stretch_x = 0.f;
   SkScalar stretch_y = 0.f;
   SkScalar width = 0.f;
@@ -1511,9 +1410,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
                                        base::OptionalOrNullptr(crop_rect)));
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    size_t
-    PaintOpReader::Read(sk_sp<PaintRecord>* record) {
+size_t PaintOpReader::Read(sk_sp<PaintRecord>* record) {
   size_t size_bytes = 0;
   ReadSize(&size_bytes);
   AlignMemory(PaintOpBuffer::PaintOpAlign);
@@ -1544,9 +1441,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   return size_bytes;
 }
 
-NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
-    void
-    PaintOpReader::Read(SkRegion* region) {
+void PaintOpReader::Read(SkRegion* region) {
   size_t region_bytes = 0;
   ReadSize(&region_bytes);
   if (region_bytes == 0)
