@@ -59,6 +59,10 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
 
       break;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Needed for dlopen.
+    case __NR_fstatfs:
+#endif
     case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))

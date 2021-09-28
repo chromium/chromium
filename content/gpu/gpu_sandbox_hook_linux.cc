@@ -249,7 +249,19 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // first platform to support WebGPU. As we start rolling out WebGPU on
       // more platforms, we should move this into |AddStandardGpuPermissions|.
       "/usr/lib64/libvulkan.so.1",
-      "/usr/lib64/libvulkan_intel.so"};
+      "/usr/lib64/libvulkan_intel.so",
+      // To support threads in mesa we use --gpu-sandbox-start-early and
+      // that requires the following libs and files to be accessible.
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/dri/i965_dri.so",
+      "/usr/lib64/dri/iris_dri.so",
+      // Allow libglvnd files and libs.
+      "/usr/share/glvnd/egl_vendor.d",
+      "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
+      "/usr/lib64/libEGL_mesa.so",
+      "/usr/lib64/libGLdispatch.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
