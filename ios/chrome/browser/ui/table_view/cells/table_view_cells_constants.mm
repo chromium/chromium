@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,7 +31,7 @@ NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
 
 CGFloat HorizontalPadding() {
-  if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
+  if (!IsSmallDevice())
     return 0;
   return kTableViewHorizontalSpacing;
 }

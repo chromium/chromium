@@ -7,9 +7,6 @@
 const base::Feature kExpandedTabStrip{"ExpandedTabStrip",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSettingsRefresh{"SettingsRefresh",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kTestFeature{"TestFeature",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 

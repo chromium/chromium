@@ -11,9 +11,6 @@
 // Feature to open tab switcher after sliding down the toolbar.
 extern const base::Feature kExpandedTabStrip;
 
-// Feature to apply UI Refresh theme to the settings.
-extern const base::Feature kSettingsRefresh;
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.

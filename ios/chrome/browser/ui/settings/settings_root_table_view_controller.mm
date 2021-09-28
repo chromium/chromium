@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -167,10 +166,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  }
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil

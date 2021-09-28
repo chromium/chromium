@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,7 +22,7 @@ const CGFloat kDefaultHeaderHeight = 10;
 
 UITableViewStyle ChromeTableViewStyle() {
   if (@available(iOS 13, *)) {
-    if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
+    if (!IsSmallDevice())
       return UITableViewStyleInsetGrouped;
   }
   return UITableViewStyleGrouped;
@@ -31,7 +30,7 @@ UITableViewStyle ChromeTableViewStyle() {
 
 CGFloat ChromeTableViewHeightForHeaderInSection(NSInteger section) {
   if (@available(iOS 13, *)) {
-    if (base::FeatureList::IsEnabled(kSettingsRefresh) && section == 0)
+    if (section == 0)
       return kFirstHeaderHeight;
   }
   return kDefaultHeaderHeight;

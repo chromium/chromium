@@ -7,7 +7,6 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,19 +35,12 @@
   self.navigationBar.prefersLargeTitles = YES;
   self.toolbar.translucent = NO;
 
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.navigationBar.barTintColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    self.toolbar.barTintColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    self.view.backgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  } else {
-    self.navigationBar.barTintColor =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.toolbar.barTintColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  }
+  self.navigationBar.barTintColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.toolbar.barTintColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 @end

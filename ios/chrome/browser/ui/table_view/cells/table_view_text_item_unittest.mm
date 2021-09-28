@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 
 #include "base/mac/foundation_util.h"
-#include "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,27 +59,6 @@ TEST_F(TableViewTextItemTest, MaskedTextLabels) {
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:textCell withStyler:styler];
   EXPECT_NSEQ(kMaskedPassword, textCell.textLabel.text);
-}
-
-TEST_F(TableViewTextItemTest, ConfigureCellWithStyler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kSettingsRefresh);
-
-  TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:0];
-  TableViewTextCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewTextCell class]]);
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testTextColor = UIColor.redColor;
-  styler.cellTitleColor = testTextColor;
-  UIColor* testCellBackgroundColor = UIColor.blueColor;
-  styler.tableViewBackgroundColor = testCellBackgroundColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_NSEQ(testCellBackgroundColor, cell.backgroundColor);
-  // TextLabel.backgroundColor has to be clear in (IOS 13) as the cell
-  // background color doesn't apply to the textlabel background color anymore.
-  EXPECT_NSEQ(UIColor.clearColor, cell.textLabel.backgroundColor);
-  EXPECT_NSEQ(testTextColor, cell.textLabel.textColor);
 }
 
 TEST_F(TableViewTextItemTest, ConfigureLabelColorWithProperty) {

@@ -44,12 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    self.styler.cellBackgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  }
+
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 

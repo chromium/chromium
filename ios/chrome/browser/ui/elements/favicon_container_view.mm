@@ -20,8 +20,6 @@ const CGFloat kFaviconWidth = 16;
 const CGFloat kFaviconCornerRadius = 7.0;
 // Width of the favicon border ImageView.
 const CGFloat kFaviconBorderWidth = 1.5;
-// The legacy width and height of the favicon container view.
-const CGFloat kFaviconContainerLegacyWidth = 28;
 // The width and height of the favicon container view.
 const CGFloat kFaviconContainerWidth = 30;
 }  // namespace
@@ -31,27 +29,15 @@ const CGFloat kFaviconContainerWidth = 30;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-      [self.traitCollection performAsCurrentTraitCollection:^{
-        if (self.traitCollection.userInterfaceStyle ==
-            UIUserInterfaceStyleDark) {
-          self.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-        }
-        self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
-      }];
-      self.layer.borderWidth = kFaviconBorderWidth;
-      self.layer.cornerRadius = kFaviconCornerRadius;
-      self.layer.masksToBounds = YES;
-    } else {
-      UIImage* containerBackground =
-          [[UIImage imageNamed:@"table_view_cell_favicon_background"]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      UIView* legacyBackground =
-          [[UIImageView alloc] initWithImage:containerBackground];
-      legacyBackground.tintColor = [UIColor colorNamed:kFaviconBackgroundColor];
-      [self addSubview:legacyBackground];
-      AddSameConstraints(self, legacyBackground);
-    }
+    [self.traitCollection performAsCurrentTraitCollection:^{
+      if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        self.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+      }
+      self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
+    }];
+    self.layer.borderWidth = kFaviconBorderWidth;
+    self.layer.cornerRadius = kFaviconCornerRadius;
+    self.layer.masksToBounds = YES;
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.contentMode = UIViewContentModeScaleAspectFit;
@@ -67,11 +53,7 @@ const CGFloat kFaviconContainerWidth = 30;
       [_faviconView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
       [_faviconView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
 
-      [self.heightAnchor
-          constraintEqualToConstant:base::FeatureList::IsEnabled(
-                                        kSettingsRefresh)
-                                        ? kFaviconContainerWidth
-                                        : kFaviconContainerLegacyWidth],
+      [self.heightAnchor constraintEqualToConstant:kFaviconContainerWidth],
       [self.widthAnchor constraintEqualToAnchor:self.heightAnchor],
     ]];
   }

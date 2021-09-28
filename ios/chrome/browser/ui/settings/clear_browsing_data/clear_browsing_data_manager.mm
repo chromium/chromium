@@ -203,8 +203,6 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 - (void)loadModel:(ListModel*)model {
   self.tableViewTimeRangeItem = [self timeRangeItem];
-  self.tableViewTimeRangeItem.useCustomSeparator =
-      base::FeatureList::IsEnabled(kSettingsRefresh) ? NO : YES;
 
   [model addSectionWithIdentifier:SectionIdentifierTimeRange];
   [model addItem:self.tableViewTimeRangeItem
@@ -447,8 +445,6 @@ static NSDictionary* _imageNamesByItemTypes = @{
       [self accessibilityIdentifierFromItemType:itemType];
   clearDataItem.dataTypeMask = mask;
   clearDataItem.prefName = prefName;
-  clearDataItem.useCustomSeparator =
-      base::FeatureList::IsEnabled(kSettingsRefresh) ? NO : YES;
   clearDataItem.checkedBackgroundColor = [[UIColor colorNamed:kBlueColor]
       colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
   clearDataItem.imageName = [_imageNamesByItemTypes

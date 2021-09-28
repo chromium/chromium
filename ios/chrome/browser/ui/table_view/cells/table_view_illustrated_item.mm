@@ -6,7 +6,6 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,9 +69,7 @@ const CGFloat kButtonCornerRadius = 8.0;
   } else {
     cell.button.hidden = YES;
   }
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    cell.backgroundColor = nil;
-  }
+  cell.backgroundColor = nil;
 
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;

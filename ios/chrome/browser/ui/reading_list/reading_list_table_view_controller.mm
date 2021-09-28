@@ -129,9 +129,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @dynamic tableViewModel;
 
 - (instancetype)init {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _toolbarManager = [[ReadingListToolbarButtonManager alloc] init];

@@ -398,9 +398,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDcheckIsFatalDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(base::kDCheckIsFatalFeature)},
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
-    {"settings-refresh", flag_descriptions::kSettingsRefreshName,
-     flag_descriptions::kSettingsRefreshDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSettingsRefresh)},
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,
      flag_descriptions::kAutofillUseMobileLabelDisambiguationDescription,

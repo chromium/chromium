@@ -7007,21 +7007,6 @@
             ]
         }
     ],
-    "SettingsRefresh": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SettingsRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "SettingsResetPrompt": [
         {
             "platforms": [

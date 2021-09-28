@@ -416,11 +416,6 @@ const char kSendUmaOverAnyNetwork[] =
 const char kSendUmaOverAnyNetworkDescription[] =
     "When enabled, will send UMA data over either WiFi or cellular by default.";
 
-const char kSettingsRefreshName[] = "Enable the UI Refresh for Settings";
-const char kSettingsRefreshDescription[] =
-    "Change the UI appearance of the settings to have something in phase with "
-    "UI Refresh.";
-
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
