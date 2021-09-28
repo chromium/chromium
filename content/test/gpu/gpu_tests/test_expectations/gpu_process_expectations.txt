@@ -92,6 +92,7 @@ crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performan
 
 # Flakily hits a DCHECK during shared image creation.
 crbug.com/1188437 [ linux intel display-server-wayland ] GpuProcess_webgl [ RetryOnFailure ]
+crbug.com/1253917 [ linux intel display-server-wayland ] GpuProcess_disable_gpu [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
