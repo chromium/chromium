@@ -1511,6 +1511,14 @@ _CONFIG = [
             'base::NoDestructor',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/webdatabase/dom_window_web_database.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+        ]
+    },
 ]
 
 

@@ -70,5 +70,9 @@ const char kTargetBlankImpliesNoOpener[] =
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
 #endif  // defined(OS_ANDROID)
 
+// Boolean policy to force enable WebSQL in third-party contexts.
+const char kWebSQLInThirdPartyContextEnabled[] =
+    "policy.web_sql_in_third_party_context_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

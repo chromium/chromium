@@ -921,6 +921,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kTargetBlankImpliesNoOpener, true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kWebSQLInThirdPartyContextEnabled, false);
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);

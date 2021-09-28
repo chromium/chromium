@@ -28,6 +28,7 @@ POLICY_EXPORT extern const char kTargetBlankImpliesNoOpener[];
 #if defined(OS_ANDROID)
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
 #endif  // defined(OS_ANDROID)
+POLICY_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
 
 }  // namespace policy_prefs
 }  // namespace policy

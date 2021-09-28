@@ -6,9 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -72,6 +74,21 @@ TEST(DOMWindowWebDatabaseTest, FirstPartyContextWebSQLIFrame) {
     EXPECT_EQ(scope.GetExceptionState().Code(),
               static_cast<int>(DOMExceptionCode::kInvalidStateError));
   }
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      blink::switches::kWebSQLInThirdPartyContextEnabled);
+  {
+    V8TestingScope scope;
+    OpenWebDatabaseInIFrame("http://example.test:0/",
+                            "first_party/nested-originA.html",
+                            "http://example.test:0/", "first_party/empty.html",
+                            scope.GetExceptionState());
+    // Insufficient state exists to actually open a database, but this error
+    // means it was tried.
+    EXPECT_TRUE(scope.GetExceptionState().HadException());
+    EXPECT_EQ(scope.GetExceptionState().Code(),
+              static_cast<int>(DOMExceptionCode::kInvalidStateError));
+  }
 }
 
 TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrame) {
@@ -100,6 +117,21 @@ TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrame) {
     EXPECT_TRUE(scope.GetExceptionState().HadException());
     EXPECT_EQ(scope.GetExceptionState().Code(),
               static_cast<int>(DOMExceptionCode::kSecurityError));
+  }
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      blink::switches::kWebSQLInThirdPartyContextEnabled);
+  {
+    V8TestingScope scope;
+    OpenWebDatabaseInIFrame("http://not-example.test:0/",
+                            "first_party/nested-originA.html",
+                            "http://example.test:0/", "first_party/empty.html",
+                            scope.GetExceptionState());
+    // Insufficient state exists to actually open a database, but this error
+    // means it was tried.
+    EXPECT_TRUE(scope.GetExceptionState().HadException());
+    EXPECT_EQ(scope.GetExceptionState().Code(),
+              static_cast<int>(DOMExceptionCode::kInvalidStateError));
   }
 }
 

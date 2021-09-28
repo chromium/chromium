@@ -26427,6 +26427,7 @@ Called by update_document_policy_enum.py.-->
   <int value="899" label="CloudUserPolicyOverridesCloudMachinePolicy"/>
   <int value="900" label="ReportDeviceSecurityStatus"/>
   <int value="901" label="EnableDeviceGranularReporting"/>
+  <int value="902" label="WebSQLInThirdPartyContextEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

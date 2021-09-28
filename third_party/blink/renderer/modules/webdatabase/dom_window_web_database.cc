@@ -26,8 +26,10 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/dom_window_web_database.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -74,7 +76,9 @@ Database* DOMWindowWebDatabase::openDatabase(
       Deprecation::CountDeprecation(
           &window, WebFeature::kOpenWebDatabaseThirdPartyContext);
       if (!base::FeatureList::IsEnabled(
-              features::kWebSQLInThirdPartyContextEnabled)) {
+              features::kWebSQLInThirdPartyContextEnabled) &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              blink::switches::kWebSQLInThirdPartyContextEnabled)) {
         exception_state.ThrowSecurityError(
             "Access to the WebDatabase API is denied in third party contexts.");
         return nullptr;

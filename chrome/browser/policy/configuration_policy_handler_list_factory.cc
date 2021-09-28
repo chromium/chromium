@@ -1488,6 +1488,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     extensions::pref_names::kChromeAppsEnabled,
     base::Value::Type::BOOLEAN },
 #endif
+
+  { key::kWebSQLInThirdPartyContextEnabled,
+    policy_prefs::kWebSQLInThirdPartyContextEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

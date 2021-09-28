@@ -15787,5 +15787,44 @@
         }
       }
     ]
+  },
+  "WebSQLInThirdPartyContextEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.web_sql_in_third_party_context_enabled": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLInThirdPartyContextEnabled": false },
+        "prefs": {
+          "policy.web_sql_in_third_party_context_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLInThirdPartyContextEnabled": true },
+        "prefs": {
+          "policy.web_sql_in_third_party_context_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }
