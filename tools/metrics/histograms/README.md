@@ -685,10 +685,12 @@ This example defines metadata for 12 (= 3 x 4) concrete histograms, such as
 </histogram>
 ```
 
-Note that each token `<variant>` defines what text should be substituted for it,
-both in the histogram name and in the summary text. As shorthand, a `<variant>`
-that omits the `summary` attribute substitutes the value of the `name` attribute
-in the histogram's `<summary>` text as well.
+Each token `<variant>` defines what text should be substituted for it, 
+both in the histogram name and in the summary text. The name part gets 
+substituted into the histogram name; the summary part gets substituted in 
+the summary field (the histogram description). As shorthand, a
+`<variant>` that omits the `summary` attribute substitutes the value of
+the `name` attribute in the histogram's `<summary>` text as well.
 
 *** promo
 Tip: You can declare an optional token by listing an empty name: `<variant
