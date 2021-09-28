@@ -261,10 +261,6 @@ source_set("lib") {
     sources += [ "keycode_text_conversion_win.cc" ]
   }
 
-  if (use_x11) {
-    sources += [ "keycode_text_conversion_x.cc" ]
-  }
-
   deps = [
     ":automation_client_lib",
     "//base",
@@ -293,14 +289,21 @@ source_set("lib") {
     "//ui/gfx/geometry",
   ]
 
-  # The X11 implementation uses part of Ozone implementation.
-  if (use_ozone || use_x11) {
+  if (use_ozone) {
     sources += [ "keycode_text_conversion_ozone.cc" ]
-    deps += [ "//ui/events/ozone/layout" ]
-  }
+    deps += [
+      "//ui/events/ozone/layout",
+      "//ui/ozone:buildflags",
+    ]
 
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
+    # TODO(1239521): clean up usages of ozone_platform_x11.
+    # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,
+    # use plain X11 keyboard conversion code until Ozone/X11 uses a non-stub
+    # engine.
+    if (ozone_platform_x11) {
+      sources += [ "keycode_text_conversion_x.cc" ]
+      deps += [ "//ui/gfx/x" ]
+    }
   }
 
   if (is_mac) {
@@ -330,9 +333,7 @@ executable("$chromedriver_output") {
   ]
 
   if (is_mac && is_component_ffmpeg) {
-    ldflags = [
-      "-Wl,-rpath,@executable_path/.",
-    ]
+    ldflags = [ "-Wl,-rpath,@executable_path/." ]
   }
 }
 
