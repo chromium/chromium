@@ -6,9 +6,15 @@
 
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_playstore_shortcut_shelf_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 ChromeShelfItemFactory::ChromeShelfItemFactory() = default;
 
@@ -26,6 +32,25 @@ bool ChromeShelfItemFactory::CreateShelfItemForAppId(
   if (app_id == arc::kPlayStoreAppId) {
     *delegate = std::make_unique<ArcPlaystoreShortcutShelfItemController>();
     return true;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    auto* proxy =
+        apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
+    apps::mojom::AppType app_type =
+        proxy->AppRegistryCache().GetAppType(app_id);
+    switch (app_type) {
+      case apps::mojom::AppType::kWeb:
+      case apps::mojom::AppType::kSystemWeb:
+      case apps::mojom::AppType::kStandaloneBrowser:
+        *delegate =
+            std::make_unique<BrowserAppShelfItemController>(shelf_id, profile);
+        return true;
+      default:
+        // Ignore the rest.
+        break;
+    }
   }
 
   *delegate = std::make_unique<AppShortcutShelfItemController>(shelf_id);

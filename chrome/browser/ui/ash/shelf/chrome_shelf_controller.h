@@ -38,10 +38,6 @@ class Profile;
 class ShelfControllerHelper;
 class ShelfSpinnerController;
 
-namespace apps {
-class BrowserAppInstanceTracker;
-}
-
 namespace ash {
 class ShelfModel;
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
@@ -59,6 +55,8 @@ class Image;
 namespace ui {
 class BaseWindow;
 }
+
+class BrowserAppShelfController;
 
 // ChromeShelfController helps manage Ash's shelf for Chrome prefs and apps.
 // It helps synchronize shelf state with profile preferences and app content.
@@ -462,9 +460,6 @@ class ChromeShelfController
   // The owned browser status monitor.
   std::unique_ptr<BrowserStatusMonitor> browser_status_monitor_;
 
-  // The browser app instance tracker for the current profile.
-  apps::BrowserAppInstanceTracker* browser_app_instance_tracker_{nullptr};
-
   // A special observer class to detect user switches.
   std::unique_ptr<ChromeShelfControllerUserSwitchObserver>
       user_switch_observer_;
@@ -473,6 +468,9 @@ class ChromeShelfController
 
   // Responsible for bridging between the shelf and sync/prefs.
   std::unique_ptr<ChromeShelfPrefs> shelf_prefs_;
+
+  // Manages shelf item for browser-based apps and Lacros.
+  std::unique_ptr<BrowserAppShelfController> browser_app_shelf_controller_;
 
   // The list of running & un-pinned applications for different users on hidden
   // desktops.

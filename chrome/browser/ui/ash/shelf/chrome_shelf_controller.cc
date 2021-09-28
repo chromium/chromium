@@ -36,7 +36,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -51,7 +50,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -63,10 +61,12 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/browser_app_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -253,10 +253,9 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  if (base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
-    browser_app_instance_tracker_ =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->BrowserAppInstanceTracker();
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+    browser_app_shelf_controller_ = std::make_unique<BrowserAppShelfController>(
+        profile, *model_, *shelf_item_factory_, *shelf_spinner_controller_);
   }
 }
 
@@ -547,12 +546,6 @@ void ChromeShelfController::ActiveUserChanged(const AccountId& account_id) {
   AttachProfile(ProfileManager::GetActiveUserProfile());
   // Update the V1 applications.
   browser_status_monitor_->ActiveUserChanged(account_id.GetUserEmail());
-  // Switch app tracker instance.
-  if (base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
-    browser_app_instance_tracker_ = apps::AppServiceProxyFactory::GetForProfile(
-                                        ProfileManager::GetActiveUserProfile())
-                                        ->BrowserAppInstanceTracker();
-  }
   // Save/restore spinners belonging to the old/new user. Must be called before
   // notifying the AppWindowControllers, as some of them assume spinners owned
   // by the new user have already been added to the shelf.

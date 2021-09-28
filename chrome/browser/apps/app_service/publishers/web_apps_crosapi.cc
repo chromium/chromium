@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -153,10 +154,19 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                &menu_items);
   }
 
-  if (menu_type == apps::mojom::MenuType::kShelf &&
-      proxy->InstanceRegistry().ContainsAppId(app_id)) {
-    apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
-                         &menu_items);
+  if (menu_type == apps::mojom::MenuType::kShelf) {
+    // TODO(crbug.com/1203992): We cannot use InstanceRegistry with lacros yet,
+    // because InstanceRegistry updates for lacros isn't implemented yet, so we
+    // need to check BrowserAppInstanceRegistry directly. Remove this when
+    // InstanceRegistry updates are implemented.
+    bool app_running =
+        base::FeatureList::IsEnabled(features::kWebAppsCrosapi)
+            ? proxy->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
+            : proxy->InstanceRegistry().ContainsAppId(app_id);
+    if (app_running) {
+      apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
+                           &menu_items);
+    }
   }
 
   if (can_use_uninstall) {
