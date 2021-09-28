@@ -15,6 +15,10 @@ namespace base {
 class BASE_EXPORT ElapsedTimer {
  public:
   ElapsedTimer();
+
+  ElapsedTimer(const ElapsedTimer&) = delete;
+  ElapsedTimer& operator=(const ElapsedTimer&) = delete;
+
   ElapsedTimer(ElapsedTimer&& other);
 
   void operator=(ElapsedTimer&& other);
@@ -27,14 +31,15 @@ class BASE_EXPORT ElapsedTimer {
 
  private:
   TimeTicks begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElapsedTimer);
 };
 
 // A simple wrapper around ThreadTicks::Now().
 class BASE_EXPORT ElapsedThreadTimer {
  public:
   ElapsedThreadTimer();
+
+  ElapsedThreadTimer(const ElapsedThreadTimer&) = delete;
+  ElapsedThreadTimer& operator=(const ElapsedThreadTimer&) = delete;
 
   // Returns the ThreadTicks time elapsed since object construction.
   // Only valid if |is_supported()| returns true, otherwise returns TimeDelta().
@@ -45,8 +50,6 @@ class BASE_EXPORT ElapsedThreadTimer {
  private:
   const bool is_supported_;
   const ThreadTicks begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElapsedThreadTimer);
 };
 
 // Whenever there's a ScopedMockElapsedTimersForTest in scope,

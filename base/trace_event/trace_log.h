@@ -77,6 +77,9 @@ class BASE_EXPORT TraceLog :
 
   static TraceLog* GetInstance();
 
+  TraceLog(const TraceLog&) = delete;
+  TraceLog& operator=(const TraceLog&) = delete;
+
   // Retrieves a copy (for thread-safety) of the current TraceConfig.
   TraceConfig GetCurrentTraceConfig() const;
 
@@ -642,8 +645,6 @@ class BASE_EXPORT TraceLog :
 #if defined(OS_ANDROID)
   absl::optional<TraceConfig> atrace_startup_config_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TraceLog);
 };
 
 }  // namespace trace_event

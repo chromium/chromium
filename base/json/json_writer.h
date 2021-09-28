@@ -37,6 +37,9 @@ class BASE_EXPORT JSONWriter {
     OPTIONS_PRETTY_PRINT = 1 << 2,
   };
 
+  JSONWriter(const JSONWriter&) = delete;
+  JSONWriter& operator=(const JSONWriter&) = delete;
+
   // Given a root node, generates a JSON string and puts it into |json|.
   // The output string is overwritten and not appended.
   //
@@ -78,8 +81,6 @@ class BASE_EXPORT JSONWriter {
 
   // The number of times the writer has recursed (current stack depth).
   size_t stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSONWriter);
 };
 
 }  // namespace base

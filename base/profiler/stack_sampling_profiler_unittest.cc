@@ -221,14 +221,14 @@ struct TestProfilerInfo {
                  RepeatingClosure(),
                  delegate) {}
 
+  TestProfilerInfo(const TestProfilerInfo&) = delete;
+  TestProfilerInfo& operator=(const TestProfilerInfo&) = delete;
+
   // The order here is important to ensure objects being referenced don't get
   // destructed until after the objects referencing them.
   Profile profile;
   WaitableEvent completed;
   StackSamplingProfiler profiler;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProfilerInfo);
 };
 
 // Captures samples as specified by |params| on the TargetThread, and returns

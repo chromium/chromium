@@ -43,6 +43,9 @@ class ScopedCriticalAction {
    public:
     Core();
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     // Informs the OS that the background task has started. This is a
     // static method to ensure that the instance has a non-zero refcount.
     // |task_name| is used by the OS to log any leaked background tasks.
@@ -63,8 +66,6 @@ class ScopedCriticalAction {
     // can be used in .cc files.
     unsigned int background_task_id_ GUARDED_BY(background_task_id_lock_);
     Lock background_task_id_lock_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // The instance of the core that drives the background task.

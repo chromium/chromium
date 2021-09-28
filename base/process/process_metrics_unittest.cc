@@ -69,8 +69,8 @@ class SystemMetricsTest : public testing::Test {
  public:
   SystemMetricsTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemMetricsTest);
+  SystemMetricsTest(const SystemMetricsTest&) = delete;
+  SystemMetricsTest& operator=(const SystemMetricsTest&) = delete;
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

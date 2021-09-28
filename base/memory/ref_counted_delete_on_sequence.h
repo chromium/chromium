@@ -44,6 +44,10 @@ class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
     DCHECK(owning_task_runner_);
   }
 
+  RefCountedDeleteOnSequence(const RefCountedDeleteOnSequence&) = delete;
+  RefCountedDeleteOnSequence& operator=(const RefCountedDeleteOnSequence&) =
+      delete;
+
   void AddRef() const { AddRefImpl(T::kRefCountPreference); }
 
   void Release() const {
@@ -80,8 +84,6 @@ class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
   }
 
   const scoped_refptr<SequencedTaskRunner> owning_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedDeleteOnSequence);
 };
 
 }  // namespace base

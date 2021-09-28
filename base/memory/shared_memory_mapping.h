@@ -93,6 +93,10 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   // Default constructor initializes an invalid instance.
   ReadOnlySharedMemoryMapping();
 
+  ReadOnlySharedMemoryMapping(const ReadOnlySharedMemoryMapping&) = delete;
+  ReadOnlySharedMemoryMapping& operator=(const ReadOnlySharedMemoryMapping&) =
+      delete;
+
   // Move operations are allowed.
   ReadOnlySharedMemoryMapping(ReadOnlySharedMemoryMapping&&) noexcept;
   ReadOnlySharedMemoryMapping& operator=(
@@ -160,8 +164,6 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
                               size_t size,
                               size_t mapped_size,
                               const UnguessableToken& guid);
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedMemoryMapping);
 };
 
 // Class modeling a writable mapping of a shared memory region into the
@@ -171,6 +173,10 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
  public:
   // Default constructor initializes an invalid instance.
   WritableSharedMemoryMapping();
+
+  WritableSharedMemoryMapping(const WritableSharedMemoryMapping&) = delete;
+  WritableSharedMemoryMapping& operator=(const WritableSharedMemoryMapping&) =
+      delete;
 
   // Move operations are allowed.
   WritableSharedMemoryMapping(WritableSharedMemoryMapping&&) noexcept;
@@ -244,8 +250,6 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
                               size_t size,
                               size_t mapped_size,
                               const UnguessableToken& guid);
-
-  DISALLOW_COPY_AND_ASSIGN(WritableSharedMemoryMapping);
 };
 
 }  // namespace base

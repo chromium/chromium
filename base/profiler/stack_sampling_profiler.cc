@@ -160,6 +160,9 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   // Gets the single instance of this class.
   static SamplingThread* GetInstance();
 
+  SamplingThread(const SamplingThread&) = delete;
+  SamplingThread& operator=(const SamplingThread&) = delete;
+
   // Adds a new CollectionContext to the thread. This can be called externally
   // from any thread. This returns a collection id that can later be used to
   // stop the sampling.
@@ -271,8 +274,6 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   // vars, this must be accessed while holding |thread_execution_state_lock_|.
   int thread_execution_state_add_events_
       GUARDED_BY(thread_execution_state_lock_) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SamplingThread);
 };
 
 // static

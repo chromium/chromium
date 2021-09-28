@@ -28,13 +28,14 @@ class RunCallbackThread : public SimpleThread {
   explicit RunCallbackThread(OnceClosure callback)
       : SimpleThread("RunCallbackThread"), callback_(std::move(callback)) {}
 
+  RunCallbackThread(const RunCallbackThread&) = delete;
+  RunCallbackThread& operator=(const RunCallbackThread&) = delete;
+
  private:
   // SimpleThread:
   void Run() override { std::move(callback_).Run(); }
 
   OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackThread);
 };
 
 // Runs a callback on a new thread synchronously.
@@ -313,6 +314,9 @@ class ThreadCheckerMacroTest : public testing::Test {
  public:
   ThreadCheckerMacroTest() = default;
 
+  ThreadCheckerMacroTest(const ThreadCheckerMacroTest&) = delete;
+  ThreadCheckerMacroTest& operator=(const ThreadCheckerMacroTest&) = delete;
+
   void ExpectDeathOnOtherThread() {
 #if DCHECK_IS_ON()
     EXPECT_DCHECK_DEATH({ DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); });
@@ -328,9 +332,6 @@ class ThreadCheckerMacroTest : public testing::Test {
 
  protected:
   THREAD_CHECKER(thread_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerMacroTest);
 };
 
 }  // namespace

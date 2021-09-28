@@ -101,6 +101,9 @@ class Foo : public RefCounted<Foo> {
  public:
   Foo() : test_count_(0) {}
 
+  Foo(const Foo&) = delete;
+  Foo& operator=(const Foo&) = delete;
+
   void Test0() { ++test_count_; }
 
   void Test1ConstRef(const std::string& a) {
@@ -137,8 +140,6 @@ class Foo : public RefCounted<Foo> {
 
   int test_count_;
   std::string result_;
-
-  DISALLOW_COPY_AND_ASSIGN(Foo);
 };
 
 // This function runs slowly to simulate a large amount of work being done.

@@ -85,6 +85,11 @@ class BASE_EXPORT JSONReader {
     int error_column = 0;
   };
 
+  // This class contains only static methods.
+  JSONReader() = delete;
+  JSONReader(const JSONReader&) = delete;
+  JSONReader& operator=(const JSONReader&) = delete;
+
   // Reads and parses |json|, returning a Value.
   // If |json| is not a properly formed JSON string, returns absl::nullopt.
   static absl::optional<Value> Read(
@@ -108,10 +113,6 @@ class BASE_EXPORT JSONReader {
   static ValueWithError ReadAndReturnValueWithError(
       StringPiece json,
       int options = JSON_PARSE_RFC);
-
-  // This class contains only static methods.
-  JSONReader() = delete;
-  DISALLOW_COPY_AND_ASSIGN(JSONReader);
 };
 
 }  // namespace base

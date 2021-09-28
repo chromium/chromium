@@ -33,8 +33,9 @@ class BASE_EXPORT UnguessableTokenAndroid {
       JNIEnv* env,
       const JavaRef<jobject>& token);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnguessableTokenAndroid);
+  UnguessableTokenAndroid() = delete;
+  UnguessableTokenAndroid(const UnguessableTokenAndroid&) = delete;
+  UnguessableTokenAndroid& operator=(const UnguessableTokenAndroid&) = delete;
 };
 
 }  // namespace android

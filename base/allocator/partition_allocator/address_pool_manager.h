@@ -44,6 +44,9 @@ class BASE_EXPORT AddressPoolManager {
  public:
   static AddressPoolManager* GetInstance();
 
+  AddressPoolManager(const AddressPoolManager&) = delete;
+  AddressPoolManager& operator=(const AddressPoolManager&) = delete;
+
 #if defined(PA_HAS_64_BITS_POINTERS)
   pool_handle Add(uintptr_t address, size_t length);
   void Remove(pool_handle handle);
@@ -130,7 +133,6 @@ class BASE_EXPORT AddressPoolManager {
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
-  DISALLOW_COPY_AND_ASSIGN(AddressPoolManager);
 };
 
 ALWAYS_INLINE pool_handle GetNonBRPPool() {

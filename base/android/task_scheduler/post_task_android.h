@@ -16,6 +16,10 @@ namespace base {
 // C++ interface for PostTask.java
 class BASE_EXPORT PostTaskAndroid {
  public:
+  PostTaskAndroid() = delete;
+  PostTaskAndroid(const PostTaskAndroid&) = delete;
+  PostTaskAndroid& operator=(const PostTaskAndroid&) = delete;
+
   // Routes tasks posted via the Java PostTask APIs through the C++ PostTask
   // APIs. Invoked once the C++ PostTask APIs are fully initialized.
   static void SignalNativeSchedulerReady();
@@ -36,8 +40,6 @@ class BASE_EXPORT PostTaskAndroid {
   // the JNI environment and the bindings dynamically (albeit with caching).
   static void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
                           const std::string& runnable_class_name);
-
-  DISALLOW_COPY_AND_ASSIGN(PostTaskAndroid);
 };
 
 }  // namespace base

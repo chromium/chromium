@@ -117,6 +117,10 @@ class CapturingDestructionObserver
       : event_list_(event_list) {
   }
 
+  CapturingDestructionObserver(const CapturingDestructionObserver&) = delete;
+  CapturingDestructionObserver& operator=(const CapturingDestructionObserver&) =
+      delete;
+
   // DestructionObserver implementation:
   void WillDestroyCurrentMessageLoop() override {
     event_list_->push_back(THREAD_EVENT_MESSAGE_LOOP_DESTROYED);
@@ -125,8 +129,6 @@ class CapturingDestructionObserver
 
  private:
   EventList* event_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturingDestructionObserver);
 };
 
 // Task that adds a destruction observer to the current message loop.

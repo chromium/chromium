@@ -45,6 +45,11 @@ class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
     CurrentThread::Get()->SetTaskRunner(original_task_runner_);
   }
 
+  ScopedMockTimeMessageLoopTaskRunnerTest(
+      const ScopedMockTimeMessageLoopTaskRunnerTest&) = delete;
+  ScopedMockTimeMessageLoopTaskRunnerTest& operator=(
+      const ScopedMockTimeMessageLoopTaskRunnerTest&) = delete;
+
  protected:
   TestMockTimeTaskRunner* original_task_runner() {
     return original_task_runner_.get();
@@ -54,8 +59,6 @@ class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
   scoped_refptr<TestMockTimeTaskRunner> original_task_runner_;
 
   test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockTimeMessageLoopTaskRunnerTest);
 };
 
 // Verifies a new TaskRunner is installed while a

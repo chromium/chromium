@@ -193,6 +193,9 @@ class BASE_EXPORT PersistentHistogramAllocator {
     // The allocator must live beyond the lifetime of the iterator.
     explicit Iterator(PersistentHistogramAllocator* allocator);
 
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     // Gets the next histogram from persistent memory; returns null if there
     // are no more histograms to be found. This may still be called again
     // later to retrieve any new histograms added in the meantime.
@@ -209,14 +212,17 @@ class BASE_EXPORT PersistentHistogramAllocator {
     // The iterator used for stepping through objects in persistent memory.
     // It is lock-free and thread-safe which is why this class is also such.
     PersistentMemoryAllocator::Iterator memory_iter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   // A PersistentHistogramAllocator is constructed from a PersistentMemory-
   // Allocator object of which it takes ownership.
   explicit PersistentHistogramAllocator(
       std::unique_ptr<PersistentMemoryAllocator> memory);
+
+  PersistentHistogramAllocator(const PersistentHistogramAllocator&) = delete;
+  PersistentHistogramAllocator& operator=(const PersistentHistogramAllocator&) =
+      delete;
+
   virtual ~PersistentHistogramAllocator();
 
   // Direct access to underlying memory allocator. If the segment is shared
@@ -332,8 +338,6 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // trying to import what was just created.
   // TODO(bcwhite): Change this to std::atomic<PMA::Reference> when available.
   subtle::Atomic32 last_created_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramAllocator);
 };
 
 

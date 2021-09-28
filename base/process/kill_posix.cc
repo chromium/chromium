@@ -133,6 +133,9 @@ class BackgroundReaper : public PlatformThread::Delegate {
   BackgroundReaper(base::Process child_process, const TimeDelta& wait_time)
       : child_process_(std::move(child_process)), wait_time_(wait_time) {}
 
+  BackgroundReaper(const BackgroundReaper&) = delete;
+  BackgroundReaper& operator=(const BackgroundReaper&) = delete;
+
   void ThreadMain() override {
     if (!wait_time_.is_zero()) {
       child_process_.WaitForExitWithTimeout(wait_time_, nullptr);
@@ -145,7 +148,6 @@ class BackgroundReaper : public PlatformThread::Delegate {
  private:
   Process child_process_;
   const TimeDelta wait_time_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundReaper);
 };
 
 }  // namespace

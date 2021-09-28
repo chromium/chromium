@@ -36,6 +36,11 @@ namespace internal {
 // This class implements the underlying platform-specific spin-lock mechanism
 // used for the Lock class. Do not use, use Lock instead.
 class BASE_EXPORT LockImpl {
+ public:
+  LockImpl(const LockImpl&) = delete;
+  LockImpl& operator=(const LockImpl&) = delete;
+
+ private:
   friend class base::Lock;
   friend class base::ConditionVariable;
   friend class base::win::internal::AutoNativeLock;
@@ -73,8 +78,6 @@ class BASE_EXPORT LockImpl {
 
   void LockInternalWithTracking();
   NativeHandle native_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockImpl);
 };
 
 void LockImpl::Lock() {

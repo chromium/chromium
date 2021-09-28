@@ -72,6 +72,10 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   };
 
   MessagePumpGlib();
+
+  MessagePumpGlib(const MessagePumpGlib&) = delete;
+  MessagePumpGlib& operator=(const MessagePumpGlib&) = delete;
+
   ~MessagePumpGlib() override;
 
   // Part of WatchableIOMessagePumpPosix interface.
@@ -133,8 +137,6 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   std::unique_ptr<GPollFD> wakeup_gpollfd_;
 
   THREAD_CHECKER(watch_fd_caller_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpGlib);
 };
 
 }  // namespace base

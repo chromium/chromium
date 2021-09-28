@@ -168,14 +168,16 @@ void PostMessageLoopTask(const Location& from_here, OnceClosure task) {
 class MessagePumpGLibTest : public testing::Test {
  public:
   MessagePumpGLibTest() = default;
+
+  MessagePumpGLibTest(const MessagePumpGLibTest&) = delete;
+  MessagePumpGLibTest& operator=(const MessagePumpGLibTest&) = delete;
+
   EventInjector* injector() { return &injector_; }
 
  private:
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::UI};
   EventInjector injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpGLibTest);
 };
 
 }  // namespace

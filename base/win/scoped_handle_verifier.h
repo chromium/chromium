@@ -60,6 +60,9 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
  public:
   explicit ScopedHandleVerifier(bool enabled);
 
+  ScopedHandleVerifier(const ScopedHandleVerifier&) = delete;
+  ScopedHandleVerifier& operator=(const ScopedHandleVerifier&) = delete;
+
   // Retrieves the current verifier.
   static ScopedHandleVerifier* Get();
 
@@ -94,7 +97,6 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
   base::ThreadLocalBoolean closing_;
   base::internal::LockImpl* lock_;
   std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash> map_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedHandleVerifier);
 };
 
 // This testing function returns the module that the HandleVerifier concrete

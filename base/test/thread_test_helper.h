@@ -22,6 +22,9 @@ class ThreadTestHelper : public RefCountedThreadSafe<ThreadTestHelper> {
  public:
   explicit ThreadTestHelper(scoped_refptr<SequencedTaskRunner> target_sequence);
 
+  ThreadTestHelper(const ThreadTestHelper&) = delete;
+  ThreadTestHelper& operator=(const ThreadTestHelper&) = delete;
+
   // True if RunTest() was successfully executed on the target sequence.
   bool Run() WARN_UNUSED_RESULT;
 
@@ -41,8 +44,6 @@ class ThreadTestHelper : public RefCountedThreadSafe<ThreadTestHelper> {
   bool test_result_;
   scoped_refptr<SequencedTaskRunner> target_sequence_;
   WaitableEvent done_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadTestHelper);
 };
 
 }  // namespace base

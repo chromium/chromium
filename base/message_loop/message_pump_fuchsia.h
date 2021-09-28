@@ -126,6 +126,10 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   };
 
   MessagePumpFuchsia();
+
+  MessagePumpFuchsia(const MessagePumpFuchsia&) = delete;
+  MessagePumpFuchsia& operator=(const MessagePumpFuchsia&) = delete;
+
   ~MessagePumpFuchsia() override;
 
   bool WatchZxHandle(zx_handle_t handle,
@@ -156,8 +160,6 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   std::unique_ptr<async::Loop> async_loop_;
 
   base::WeakPtrFactory<MessagePumpFuchsia> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpFuchsia);
 };
 
 }  // namespace base

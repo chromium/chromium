@@ -92,6 +92,9 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   static PoissonAllocationSampler* Get();
 
+  PoissonAllocationSampler(const PoissonAllocationSampler&) = delete;
+  PoissonAllocationSampler& operator=(const PoissonAllocationSampler&) = delete;
+
  private:
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
@@ -123,8 +126,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class SamplingHeapProfilerTest;
   friend class ScopedMuteThreadSamples;
-
-  DISALLOW_COPY_AND_ASSIGN(PoissonAllocationSampler);
 };
 
 // static

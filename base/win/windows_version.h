@@ -116,6 +116,9 @@ class BASE_EXPORT OSInfo {
 
   static OSInfo* GetInstance();
 
+  OSInfo(const OSInfo&) = delete;
+  OSInfo& operator=(const OSInfo&) = delete;
+
   // Separate from the rest of OSInfo so it can be used during early process
   // initialization.
   static WindowsArchitecture GetArchitecture();
@@ -200,8 +203,6 @@ class BASE_EXPORT OSInfo {
   size_t allocation_granularity_;
   WOW64Status wow64_status_;
   std::string processor_model_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSInfo);
 };
 
 // Because this is by far the most commonly-requested value from the above

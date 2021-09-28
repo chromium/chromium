@@ -146,6 +146,9 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
                          TimeTicks start_ticks,
                          Type type = Type::kStandalone);
 
+  TestMockTimeTaskRunner(const TestMockTimeTaskRunner&) = delete;
+  TestMockTimeTaskRunner& operator=(const TestMockTimeTaskRunner&) = delete;
+
   // Fast-forwards virtual time by |delta|, causing all tasks with a remaining
   // delay less than or equal to |delta| to be executed. |delta| must be
   // non-negative.
@@ -232,6 +235,9 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     explicit MockClock(TestMockTimeTaskRunner* task_runner)
         : task_runner_(task_runner) {}
 
+    MockClock(const MockClock&) = delete;
+    MockClock& operator=(const MockClock&) = delete;
+
     // TickClock:
     TimeTicks NowTicks() const override;
 
@@ -240,8 +246,6 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
 
    private:
     TestMockTimeTaskRunner* task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockClock);
   };
 
   struct TestOrderedPendingTask;
@@ -309,8 +313,6 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   bool quit_run_loop_ = false;
 
   mutable MockClock mock_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMockTimeTaskRunner);
 };
 
 }  // namespace base

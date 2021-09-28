@@ -112,6 +112,9 @@ class LOCKABLE ThreadCheckerDoNothing {
 
   ThreadCheckerDoNothing() = default;
 
+  ThreadCheckerDoNothing(const ThreadCheckerDoNothing&) = delete;
+  ThreadCheckerDoNothing& operator=(const ThreadCheckerDoNothing&) = delete;
+
   // Moving between matching threads is allowed to help classes with
   // ThreadCheckers that want a default move-construct/assign.
   ThreadCheckerDoNothing(ThreadCheckerDoNothing&& other) = default;
@@ -122,9 +125,6 @@ class LOCKABLE ThreadCheckerDoNothing {
     return true;
   }
   void DetachFromThread() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerDoNothing);
 };
 
 // Note that ThreadCheckerImpl::CalledOnValidThread() returns false when called

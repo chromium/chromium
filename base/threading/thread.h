@@ -126,6 +126,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // name is a display string to identify the thread.
   explicit Thread(const std::string& name);
 
+  Thread(const Thread&) = delete;
+  Thread& operator=(const Thread&) = delete;
+
   // Destroys the thread, stopping it if necessary.
   //
   // NOTE: ALL SUBCLASSES OF Thread MUST CALL Stop() IN THEIR DESTRUCTORS (or
@@ -332,8 +335,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // This class is not thread-safe, use this to verify access from the owning
   // sequence of the Thread.
   SequenceChecker owning_sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 
 }  // namespace base

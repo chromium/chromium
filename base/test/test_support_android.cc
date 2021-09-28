@@ -49,6 +49,9 @@ class Waitable {
                            base::LeakySingletonTraits<Waitable>>::get();
   }
 
+  Waitable(const Waitable&) = delete;
+  Waitable& operator=(const Waitable&) = delete;
+
   // Signals that there are more work to do.
   void Signal() { waitable_event_.Signal(); }
 
@@ -68,8 +71,6 @@ class Waitable {
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   base::WaitableEvent waitable_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(Waitable);
 };
 
 // The MessagePumpForUI implementation for test purpose.

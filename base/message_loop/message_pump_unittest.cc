@@ -41,6 +41,9 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
  public:
   MockMessagePumpDelegate() = default;
 
+  MockMessagePumpDelegate(const MockMessagePumpDelegate&) = delete;
+  MockMessagePumpDelegate& operator=(const MockMessagePumpDelegate&) = delete;
+
   // MessagePump::Delegate:
   void BeforeWait() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
@@ -48,9 +51,6 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
 
   MOCK_METHOD0(OnBeginWorkItem, void(void));
   MOCK_METHOD0(OnEndWorkItem, void(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMessagePumpDelegate);
 };
 
 class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {

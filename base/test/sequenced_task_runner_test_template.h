@@ -41,6 +41,9 @@ class SequencedTaskTracker : public RefCountedThreadSafe<SequencedTaskTracker> {
  public:
   SequencedTaskTracker();
 
+  SequencedTaskTracker(const SequencedTaskTracker&) = delete;
+  SequencedTaskTracker& operator=(const SequencedTaskTracker&) = delete;
+
   // Posts the non-nestable task |task|, and records its post event.
   void PostWrappedNonNestableTask(SequencedTaskRunner* task_runner,
                                   OnceClosure task);
@@ -93,8 +96,6 @@ class SequencedTaskTracker : public RefCountedThreadSafe<SequencedTaskTracker> {
   // The number of task end events we've received.
   int task_end_count_;
   ConditionVariable task_end_cv_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskTracker);
 };
 
 void PrintTo(const TaskEvent& event, std::ostream* os);

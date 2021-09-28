@@ -26,6 +26,9 @@ class HistogramCache {
  public:
   HistogramCache() {}
 
+  HistogramCache(const HistogramCache&) = delete;
+  HistogramCache& operator=(const HistogramCache&) = delete;
+
   std::string HistogramConstructionParamsToString(HistogramBase* histogram) {
     std::string params_str = histogram->histogram_name();
     switch (histogram->GetHistogramType()) {
@@ -146,8 +149,6 @@ class HistogramCache {
   static HistogramBase* HistogramFromHint(jlong j_histogram_hint) {
     return reinterpret_cast<HistogramBase*>(j_histogram_hint);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramCache);
 };
 
 LazyInstance<HistogramCache>::Leaky g_histograms;

@@ -71,6 +71,9 @@ class IndexGenerator {
     ranges_to_split_.push({0, size_});
   }
 
+  IndexGenerator(const IndexGenerator&) = delete;
+  IndexGenerator& operator=(const IndexGenerator&) = delete;
+
   absl::optional<size_t> GetNext() {
     AutoLock auto_lock(lock_);
     if (!pending_indices_.empty()) {
@@ -112,8 +115,6 @@ class IndexGenerator {
   // Pending [start, end] (exclusive) ranges to split and hand out indices from.
   base::queue<std::pair<size_t, size_t>> ranges_to_split_ GUARDED_BY(lock_);
   const size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexGenerator);
 };
 
 struct WorkItem {
@@ -133,6 +134,9 @@ class WorkList {
       : num_incomplete_items_(num_work_items),
         items_(num_work_items),
         process_item_(std::move(process_item)) {}
+
+  WorkList(const WorkList&) = delete;
+  WorkList& operator=(const WorkList&) = delete;
 
   // Acquires work item at |index|. Returns true if successful, or false if the
   // item was already acquired.
@@ -157,8 +161,6 @@ class WorkList {
   std::atomic_size_t num_incomplete_items_;
   std::vector<WorkItem> items_;
   RepeatingCallback<void(size_t)> process_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkList);
 };
 
 RepeatingCallback<void(size_t)> BusyWaitCallback(TimeDelta delta) {
@@ -184,6 +186,9 @@ void DisruptivePostTasks(size_t task_count, TimeDelta delay) {
 class JobPerfTest : public testing::Test {
  public:
   JobPerfTest() = default;
+
+  JobPerfTest(const JobPerfTest&) = delete;
+  JobPerfTest& operator=(const JobPerfTest&) = delete;
 
   // Process |num_work_items| items with |process_item| in parallel. Work is
   // assigned by having each worker sequentially traversing all items and
@@ -395,8 +400,6 @@ class JobPerfTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment;
-
-  DISALLOW_COPY_AND_ASSIGN(JobPerfTest);
 };
 
 }  // namespace

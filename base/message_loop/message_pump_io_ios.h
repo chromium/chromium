@@ -63,6 +63,10 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   };
 
   MessagePumpIOSForIO();
+
+  MessagePumpIOSForIO(const MessagePumpIOSForIO&) = delete;
+  MessagePumpIOSForIO& operator=(const MessagePumpIOSForIO&) = delete;
+
   ~MessagePumpIOSForIO() override;
 
   bool WatchFileDescriptor(int fd,
@@ -83,8 +87,6 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   ThreadChecker watch_file_descriptor_caller_checker_;
 
   base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIO);
 };
 
 }  // namespace base

@@ -70,6 +70,9 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   ThreadActivityAnalyzer(PersistentMemoryAllocator* allocator,
                          PersistentMemoryAllocator::Reference reference);
 
+  ThreadActivityAnalyzer(const ThreadActivityAnalyzer&) = delete;
+  ThreadActivityAnalyzer& operator=(const ThreadActivityAnalyzer&) = delete;
+
   ~ThreadActivityAnalyzer();
 
   // Adds information from the global analyzer.
@@ -111,8 +114,6 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   // A reference into a persistent memory allocator, used by the global
   // analyzer to know where this tracker came from.
   PersistentMemoryAllocator::Reference allocator_reference_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadActivityAnalyzer);
 };
 
 

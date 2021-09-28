@@ -176,6 +176,9 @@ class MemoryDumpManagerTest : public testing::Test {
   MemoryDumpManagerTest(bool is_coordinator = false)
       : is_coordinator_(is_coordinator) {}
 
+  MemoryDumpManagerTest(const MemoryDumpManagerTest&) = delete;
+  MemoryDumpManagerTest& operator=(const MemoryDumpManagerTest&) = delete;
+
   void SetUp() override {
     // Bring up and initialize MemoryDumpManager while single-threaded (before
     // instantiating TaskEnvironment) to avoid data races if worker
@@ -263,16 +266,16 @@ class MemoryDumpManagerTest : public testing::Test {
   // Whether the test MemoryDumpManager should be initialized as the
   // coordinator.
   const bool is_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTest);
 };
 
 class MemoryDumpManagerTestAsCoordinator : public MemoryDumpManagerTest {
  public:
   MemoryDumpManagerTestAsCoordinator() : MemoryDumpManagerTest(true) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTestAsCoordinator);
+  MemoryDumpManagerTestAsCoordinator(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
+  MemoryDumpManagerTestAsCoordinator& operator=(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
 };
 
 // Basic sanity checks. Registers a memory dump provider and checks that it is

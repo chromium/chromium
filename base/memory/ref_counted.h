@@ -25,6 +25,9 @@ namespace subtle {
 
 class BASE_EXPORT RefCountedBase {
  public:
+  RefCountedBase(const RefCountedBase&) = delete;
+  RefCountedBase& operator=(const RefCountedBase&) = delete;
+
   bool HasOneRef() const { return ref_count_ == 1; }
   bool HasAtLeastOneRef() const { return ref_count_ >= 1; }
 
@@ -138,12 +141,13 @@ class BASE_EXPORT RefCountedBase {
 #endif
 
   DFAKE_MUTEX(add_release_);
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedBase);
 };
 
 class BASE_EXPORT RefCountedThreadSafeBase {
  public:
+  RefCountedThreadSafeBase(const RefCountedThreadSafeBase&) = delete;
+  RefCountedThreadSafeBase& operator=(const RefCountedThreadSafeBase&) = delete;
+
   bool HasOneRef() const;
   bool HasAtLeastOneRef() const;
 
@@ -229,8 +233,6 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   mutable bool needs_adopt_ref_ = false;
   mutable bool in_dtor_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafeBase);
 };
 
 }  // namespace subtle
@@ -324,6 +326,9 @@ class RefCounted : public subtle::RefCountedBase {
 
   RefCounted() : subtle::RefCountedBase(T::kRefCountPreference) {}
 
+  RefCounted(const RefCounted&) = delete;
+  RefCounted& operator=(const RefCounted&) = delete;
+
   void AddRef() const {
     subtle::RefCountedBase::AddRef();
   }
@@ -348,8 +353,6 @@ class RefCounted : public subtle::RefCountedBase {
   static void DeleteInternal(const U* x) {
     delete x;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RefCounted);
 };
 
 // Forward declaration.
@@ -392,6 +395,9 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
   explicit RefCountedThreadSafe()
       : subtle::RefCountedThreadSafeBase(T::kRefCountPreference) {}
 
+  RefCountedThreadSafe(const RefCountedThreadSafe&) = delete;
+  RefCountedThreadSafe& operator=(const RefCountedThreadSafe&) = delete;
+
   void AddRef() const { AddRefImpl(T::kRefCountPreference); }
 
   void Release() const {
@@ -418,8 +424,6 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
   void AddRefImpl(subtle::StartRefCountFromOneTag) const {
     subtle::RefCountedThreadSafeBase::AddRefWithCheck();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafe);
 };
 
 //

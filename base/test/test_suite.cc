@@ -108,6 +108,10 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
  public:
   ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {}
 
+  ResetCommandLineBetweenTests(const ResetCommandLineBetweenTests&) = delete;
+  ResetCommandLineBetweenTests& operator=(const ResetCommandLineBetweenTests&) =
+      delete;
+
   void OnTestStart(const testing::TestInfo& test_info) override {
     old_command_line_ = *CommandLine::ForCurrentProcess();
   }
@@ -118,8 +122,6 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
 
  private:
   CommandLine old_command_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetCommandLineBetweenTests);
 };
 
 // Initializes a base::test::ScopedFeatureList for each individual test, which
@@ -183,6 +185,9 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
  public:
   CheckForLeakedGlobals() = default;
 
+  CheckForLeakedGlobals(const CheckForLeakedGlobals&) = delete;
+  CheckForLeakedGlobals& operator=(const CheckForLeakedGlobals&) = delete;
+
   // Check for leaks in individual tests.
   void OnTestStart(const testing::TestInfo& test) override {
     feature_list_set_before_test_ = FeatureList::GetInstance();
@@ -212,8 +217,6 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   FeatureList* feature_list_set_before_case_ = nullptr;
   ThreadPoolInstance* thread_pool_set_before_test_ = nullptr;
   ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckForLeakedGlobals);
 };
 
 // base::Process is not available on iOS
@@ -221,6 +224,9 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
 class CheckProcessPriority : public testing::EmptyTestEventListener {
  public:
   CheckProcessPriority() { CHECK(!IsProcessBackgrounded()); }
+
+  CheckProcessPriority(const CheckProcessPriority&) = delete;
+  CheckProcessPriority& operator=(const CheckProcessPriority&) = delete;
 
   void OnTestStart(const testing::TestInfo& test) override {
     EXPECT_FALSE(IsProcessBackgrounded());
@@ -252,8 +258,6 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
     return Process::Current().IsProcessBackgrounded();
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CheckProcessPriority);
 };
 #endif  // !defined(OS_IOS)
 

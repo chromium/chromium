@@ -117,6 +117,9 @@ class BASE_EXPORT ScopedSafearray {
   explicit ScopedSafearray(SAFEARRAY* safearray = nullptr)
       : safearray_(safearray) {}
 
+  ScopedSafearray(const ScopedSafearray&) = delete;
+  ScopedSafearray& operator=(const ScopedSafearray&) = delete;
+
   // Move constructor
   ScopedSafearray(ScopedSafearray&& r) noexcept : safearray_(r.safearray_) {
     r.safearray_ = nullptr;
@@ -213,7 +216,6 @@ class BASE_EXPORT ScopedSafearray {
 
  private:
   SAFEARRAY* safearray_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedSafearray);
 };
 
 }  // namespace win

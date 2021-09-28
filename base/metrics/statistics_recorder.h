@@ -98,6 +98,9 @@ class BASE_EXPORT StatisticsRecorder {
 
   typedef std::vector<HistogramBase*> Histograms;
 
+  StatisticsRecorder(const StatisticsRecorder&) = delete;
+  StatisticsRecorder& operator=(const StatisticsRecorder&) = delete;
+
   // Restores the previous global recorder.
   //
   // When several temporary recorders are created using
@@ -372,8 +375,6 @@ class BASE_EXPORT StatisticsRecorder {
   // Stores a raw callback which should be called on any every histogram sample
   // which gets added.
   static std::atomic<GlobalSampleCallback> global_sample_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatisticsRecorder);
 };
 
 }  // namespace base

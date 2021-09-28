@@ -72,6 +72,9 @@ class TaskTracker : public RefCountedThreadSafe<TaskTracker> {
  public:
   TaskTracker();
 
+  TaskTracker(const TaskTracker&) = delete;
+  TaskTracker& operator=(const TaskTracker&) = delete;
+
   // Returns a closure that runs the given task and increments the run
   // count of |i| by one.  |task| may be null.  It is guaranteed that
   // only one task wrapped by a given tracker will be run at a time.
@@ -93,8 +96,6 @@ class TaskTracker : public RefCountedThreadSafe<TaskTracker> {
   std::map<int, int> task_run_counts_;
   int task_runs_;
   ConditionVariable task_runs_cv_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTracker);
 };
 
 }  // namespace test

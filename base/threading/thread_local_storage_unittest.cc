@@ -109,6 +109,10 @@ class UseTLSDuringDestructionRunner {
  public:
   UseTLSDuringDestructionRunner() = default;
 
+  UseTLSDuringDestructionRunner(const UseTLSDuringDestructionRunner&) = delete;
+  UseTLSDuringDestructionRunner& operator=(
+      const UseTLSDuringDestructionRunner&) = delete;
+
   // The order in which pthread_key destructors are called is not well defined.
   // Hopefully, by creating 10 both before and after initializing TLS on the
   // thread, at least 1 will be called after TLS destruction.
@@ -182,8 +186,6 @@ class UseTLSDuringDestructionRunner {
   static base::ThreadLocalStorage::Slot slot_;
   bool teardown_works_correctly_ = false;
   TLSState tls_states_[kKeyCount];
-
-  DISALLOW_COPY_AND_ASSIGN(UseTLSDuringDestructionRunner);
 };
 
 base::ThreadLocalStorage::Slot UseTLSDuringDestructionRunner::slot_;

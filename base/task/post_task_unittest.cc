@@ -44,6 +44,9 @@ class MockTaskExecutor : public TaskExecutor {
 #endif  // defined(OS_WIN)
   }
 
+  MockTaskExecutor(const MockTaskExecutor&) = delete;
+  MockTaskExecutor& operator=(const MockTaskExecutor&) = delete;
+
   // TaskExecutor:
   // Helper because gmock doesn't support move-only types.
   bool PostDelayedTask(const Location& from_here,
@@ -77,8 +80,6 @@ class MockTaskExecutor : public TaskExecutor {
  private:
   scoped_refptr<TestSimpleTaskRunner> runner_ =
       MakeRefCounted<TestSimpleTaskRunner>();
-
-  DISALLOW_COPY_AND_ASSIGN(MockTaskExecutor);
 };
 
 }  // namespace

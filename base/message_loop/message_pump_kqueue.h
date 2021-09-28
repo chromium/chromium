@@ -99,6 +99,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   };
 
   MessagePumpKqueue();
+
+  MessagePumpKqueue(const MessagePumpKqueue&) = delete;
+  MessagePumpKqueue& operator=(const MessagePumpKqueue&) = delete;
+
   ~MessagePumpKqueue() override;
 
   // MessagePump:
@@ -201,8 +205,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   std::vector<kevent64_s> events_{event_count_};
 
   WeakPtrFactory<MessagePumpKqueue> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpKqueue);
 };
 
 }  // namespace base

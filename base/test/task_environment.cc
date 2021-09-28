@@ -105,6 +105,9 @@ class TaskEnvironment::TestTaskTracker
  public:
   TestTaskTracker();
 
+  TestTaskTracker(const TestTaskTracker&) = delete;
+  TestTaskTracker& operator=(const TestTaskTracker&) = delete;
+
   // Allow running tasks. Returns whether tasks were previously allowed to run.
   bool AllowRunTasks();
 
@@ -151,8 +154,6 @@ class TaskEnvironment::TestTaskTracker
   // The set of tasks currently running, keyed by the id from
   // |next_task_number_|.
   base::flat_map<int64_t, Location> running_tasks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestTaskTracker);
 };
 
 class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,

@@ -92,6 +92,10 @@ class BASE_I18N_EXPORT MessageArg {
 
 class BASE_I18N_EXPORT MessageFormatter {
  public:
+  MessageFormatter() = delete;
+  MessageFormatter(const MessageFormatter&) = delete;
+  MessageFormatter& operator=(const MessageFormatter&) = delete;
+
   static std::u16string FormatWithNamedArgs(
       StringPiece16 msg,
       StringPiece name0 = StringPiece(),
@@ -118,10 +122,6 @@ class BASE_I18N_EXPORT MessageFormatter {
       const internal::MessageArg& arg4 = internal::MessageArg(),
       const internal::MessageArg& arg5 = internal::MessageArg(),
       const internal::MessageArg& arg6 = internal::MessageArg());
-
- private:
-  MessageFormatter() = delete;
-  DISALLOW_COPY_AND_ASSIGN(MessageFormatter);
 };
 
 }  // namespace i18n

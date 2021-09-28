@@ -152,12 +152,15 @@ subtle::Atomic32 StaticMemorySingletonTraits<Type>::dead_ = 0;
 //   class FooClass {
 //    public:
 //     static FooClass* GetInstance();  <-- See comment below on this.
+//
+//     FooClass(const FooClass&) = delete;
+//     FooClass& operator=(const FooClass&) = delete;
+//
 //     void Bar() { ... }
+//
 //    private:
 //     FooClass() { ... }
 //     friend struct base::DefaultSingletonTraits<FooClass>;
-//
-//     DISALLOW_COPY_AND_ASSIGN(FooClass);
 //   };
 //
 // In your source file:

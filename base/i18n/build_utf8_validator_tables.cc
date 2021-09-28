@@ -132,6 +132,9 @@ class TablePrinter {
   explicit TablePrinter(FILE* stream)
       : stream_(stream), values_on_this_line_(0), current_offset_(0) {}
 
+  TablePrinter(const TablePrinter&) = delete;
+  TablePrinter& operator=(const TablePrinter&) = delete;
+
   void PrintValue(uint8_t value) {
     if (values_on_this_line_ == 0) {
       fputs("   ", stream_);
@@ -164,8 +167,6 @@ class TablePrinter {
   int current_offset_;
 
   static const int kMaxValuesPerLine = 8;
-
-  DISALLOW_COPY_AND_ASSIGN(TablePrinter);
 };
 
 // Start by filling a PairVector with characters. The resulting vector goes from

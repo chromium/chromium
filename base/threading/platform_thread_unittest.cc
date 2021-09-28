@@ -41,14 +41,15 @@ class TrivialThread : public PlatformThread::Delegate {
   TrivialThread() : run_event_(WaitableEvent::ResetPolicy::MANUAL,
                                WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  TrivialThread(const TrivialThread&) = delete;
+  TrivialThread& operator=(const TrivialThread&) = delete;
+
   void ThreadMain() override { run_event_.Signal(); }
 
   WaitableEvent& run_event() { return run_event_; }
 
  private:
   WaitableEvent run_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrivialThread);
 };
 
 }  // namespace

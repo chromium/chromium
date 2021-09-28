@@ -122,6 +122,9 @@ class ReachedCodeProfiler {
     return instance.get();
   }
 
+  ReachedCodeProfiler(const ReachedCodeProfiler&) = delete;
+  ReachedCodeProfiler& operator=(const ReachedCodeProfiler&) = delete;
+
   // Starts to periodically send |kProfilerSignal| to all threads.
   void Start(LibraryProcessType library_process_type,
              base::TimeDelta sampling_interval) {
@@ -253,8 +256,6 @@ class ReachedCodeProfiler {
   bool is_enabled_;
 
   friend class NoDestructor<ReachedCodeProfiler>;
-
-  DISALLOW_COPY_AND_ASSIGN(ReachedCodeProfiler);
 };
 
 bool ShouldEnableReachedCodeProfiler() {

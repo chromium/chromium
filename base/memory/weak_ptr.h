@@ -359,6 +359,9 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
  public:
   SupportsWeakPtr() = default;
 
+  SupportsWeakPtr(const SupportsWeakPtr&) = delete;
+  SupportsWeakPtr& operator=(const SupportsWeakPtr&) = delete;
+
   WeakPtr<T> AsWeakPtr() {
     return WeakPtr<T>(weak_reference_owner_.GetRef(), static_cast<T*>(this));
   }
@@ -368,7 +371,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
 
  private:
   internal::WeakReferenceOwner weak_reference_owner_;
-  DISALLOW_COPY_AND_ASSIGN(SupportsWeakPtr);
 };
 
 // Helper function that uses type deduction to safely return a WeakPtr<Derived>

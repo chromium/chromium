@@ -87,6 +87,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
     kLudicrousSlackSuspended,
   };
 
+  MessagePumpCFRunLoopBase(const MessagePumpCFRunLoopBase&) = delete;
+  MessagePumpCFRunLoopBase& operator=(const MessagePumpCFRunLoopBase&) = delete;
+
   // MessagePump:
   void Run(Delegate* delegate) override;
   void Quit() override;
@@ -278,8 +281,6 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // work on entry and redispatch it as needed once a delegate is available.
   bool delegateless_work_;
   bool delegateless_idle_work_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpCFRunLoopBase);
 };
 
 class BASE_EXPORT MessagePumpCFRunLoop : public MessagePumpCFRunLoopBase {

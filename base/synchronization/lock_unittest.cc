@@ -21,6 +21,9 @@ class BasicLockTestThread : public PlatformThread::Delegate {
  public:
   explicit BasicLockTestThread(Lock* lock) : lock_(lock), acquired_(0) {}
 
+  BasicLockTestThread(const BasicLockTestThread&) = delete;
+  BasicLockTestThread& operator=(const BasicLockTestThread&) = delete;
+
   void ThreadMain() override {
     for (int i = 0; i < 10; i++) {
       lock_->Acquire();
@@ -47,8 +50,6 @@ class BasicLockTestThread : public PlatformThread::Delegate {
  private:
   Lock* lock_;
   int acquired_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicLockTestThread);
 };
 
 TEST(LockTest, Basic) {
@@ -96,6 +97,9 @@ class TryLockTestThread : public PlatformThread::Delegate {
  public:
   explicit TryLockTestThread(Lock* lock) : lock_(lock), got_lock_(false) {}
 
+  TryLockTestThread(const TryLockTestThread&) = delete;
+  TryLockTestThread& operator=(const TryLockTestThread&) = delete;
+
   void ThreadMain() override {
     // The local variable is required for the static analyzer to see that the
     // lock is properly released.
@@ -110,8 +114,6 @@ class TryLockTestThread : public PlatformThread::Delegate {
  private:
   Lock* lock_;
   bool got_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TryLockTestThread);
 };
 
 TEST(LockTest, TryLock) {
@@ -200,6 +202,9 @@ class MutexLockTestThread : public PlatformThread::Delegate {
  public:
   MutexLockTestThread(Lock* lock, int* value) : lock_(lock), value_(value) {}
 
+  MutexLockTestThread(const MutexLockTestThread&) = delete;
+  MutexLockTestThread& operator=(const MutexLockTestThread&) = delete;
+
   // Static helper which can also be called from the main thread.
   static void DoStuff(Lock* lock, int* value) {
     for (int i = 0; i < 40; i++) {
@@ -216,8 +221,6 @@ class MutexLockTestThread : public PlatformThread::Delegate {
  private:
   Lock* lock_;
   int* value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexLockTestThread);
 };
 
 TEST(LockTest, MutexTwoThreads) {

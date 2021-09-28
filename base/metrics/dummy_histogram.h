@@ -23,6 +23,9 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
  public:
   static DummyHistogram* GetInstance();
 
+  DummyHistogram(const DummyHistogram&) = delete;
+  DummyHistogram& operator=(const DummyHistogram&) = delete;
+
   // HistogramBase:
   void CheckName(const StringPiece& name) const override {}
   uint64_t name_hash() const override;
@@ -50,8 +53,6 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
 
   DummyHistogram() : HistogramBase("dummy_histogram") {}
   ~DummyHistogram() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DummyHistogram);
 };
 
 }  // namespace base

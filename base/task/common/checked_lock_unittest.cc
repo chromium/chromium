@@ -26,6 +26,9 @@ class BasicLockTestThread : public SimpleThread {
   explicit BasicLockTestThread(CheckedLock* lock)
       : SimpleThread("BasicLockTestThread"), lock_(lock), acquired_(0) {}
 
+  BasicLockTestThread(const BasicLockTestThread&) = delete;
+  BasicLockTestThread& operator=(const BasicLockTestThread&) = delete;
+
   int acquired() const { return acquired_; }
 
  private:
@@ -45,8 +48,6 @@ class BasicLockTestThread : public SimpleThread {
 
   CheckedLock* const lock_;
   int acquired_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicLockTestThread);
 };
 
 class BasicLockAcquireAndWaitThread : public SimpleThread {
@@ -59,6 +60,10 @@ class BasicLockAcquireAndWaitThread : public SimpleThread {
         main_thread_continue_event_(WaitableEvent::ResetPolicy::AUTOMATIC,
                                     WaitableEvent::InitialState::NOT_SIGNALED) {
   }
+
+  BasicLockAcquireAndWaitThread(const BasicLockAcquireAndWaitThread&) = delete;
+  BasicLockAcquireAndWaitThread& operator=(
+      const BasicLockAcquireAndWaitThread&) = delete;
 
   void WaitForLockAcquisition() { lock_acquire_event_.Wait(); }
 
@@ -75,8 +80,6 @@ class BasicLockAcquireAndWaitThread : public SimpleThread {
   CheckedLock* const lock_;
   WaitableEvent lock_acquire_event_;
   WaitableEvent main_thread_continue_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicLockAcquireAndWaitThread);
 };
 
 }  // namespace

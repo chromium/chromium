@@ -55,15 +55,18 @@ class BASE_EXPORT ScopedDeferTaskPosting {
                  Location from_here,
                  OnceClosure task,
                  base::TimeDelta delay);
+
+    DeferredTask(const DeferredTask&) = delete;
+    DeferredTask& operator=(const DeferredTask&) = delete;
+
     DeferredTask(DeferredTask&& task);
+
     ~DeferredTask();
 
     scoped_refptr<SequencedTaskRunner> task_runner;
     Location from_here;
     OnceClosure task;
     base::TimeDelta delay;
-
-    DISALLOW_COPY_AND_ASSIGN(DeferredTask);
   };
 
   std::vector<DeferredTask> deferred_tasks_;

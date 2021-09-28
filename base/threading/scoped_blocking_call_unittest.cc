@@ -36,15 +36,19 @@ class MockBlockingObserver : public internal::BlockingObserver {
  public:
   MockBlockingObserver() = default;
 
+  MockBlockingObserver(const MockBlockingObserver&) = delete;
+  MockBlockingObserver& operator=(const MockBlockingObserver&) = delete;
+
   MOCK_METHOD1(BlockingStarted, void(BlockingType));
   MOCK_METHOD0(BlockingTypeUpgraded, void());
   MOCK_METHOD0(BlockingEnded, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBlockingObserver);
 };
 
 class ScopedBlockingCallTest : public testing::Test {
+ public:
+  ScopedBlockingCallTest(const ScopedBlockingCallTest&) = delete;
+  ScopedBlockingCallTest& operator=(const ScopedBlockingCallTest&) = delete;
+
  protected:
   ScopedBlockingCallTest() {
     internal::SetBlockingObserverForCurrentThread(&observer_);
@@ -55,9 +59,6 @@ class ScopedBlockingCallTest : public testing::Test {
   }
 
   testing::StrictMock<MockBlockingObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockingCallTest);
 };
 
 }  // namespace

@@ -384,12 +384,13 @@ class DelayTimer {
                BindRepeating(method, Unretained(receiver)),
                tick_clock) {}
 
+  DelayTimer(const DelayTimer&) = delete;
+  DelayTimer& operator=(const DelayTimer&) = delete;
+
   void Reset() { timer_.Reset(); }
 
  private:
   RetainingOneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayTimer);
 };
 
 }  // namespace base

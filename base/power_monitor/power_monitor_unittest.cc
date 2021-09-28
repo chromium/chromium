@@ -14,6 +14,10 @@ namespace base {
 namespace test {
 
 class PowerMonitorTest : public testing::Test {
+ public:
+  PowerMonitorTest(const PowerMonitorTest&) = delete;
+  PowerMonitorTest& operator=(const PowerMonitorTest&) = delete;
+
  protected:
   PowerMonitorTest() = default;
 
@@ -26,8 +30,6 @@ class PowerMonitorTest : public testing::Test {
  private:
   TaskEnvironment task_environment_;
   absl::optional<ScopedPowerMonitorTestSource> power_monitor_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };
 
 // PowerMonitorSource is tightly coupled with the PowerMonitor, so this test

@@ -49,6 +49,9 @@ class TestSimpleTaskRunner : public SingleThreadTaskRunner {
  public:
   TestSimpleTaskRunner();
 
+  TestSimpleTaskRunner(const TestSimpleTaskRunner&) = delete;
+  TestSimpleTaskRunner& operator=(const TestSimpleTaskRunner&) = delete;
+
   // SingleThreadTaskRunner implementation.
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
@@ -88,8 +91,6 @@ class TestSimpleTaskRunner : public SingleThreadTaskRunner {
   mutable Lock lock_;
 
   base::circular_deque<TestPendingTask> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimpleTaskRunner);
 };
 
 }  // namespace base

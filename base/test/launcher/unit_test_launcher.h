@@ -97,6 +97,11 @@ class DefaultUnitTestPlatformDelegate : public UnitTestPlatformDelegate {
  public:
   DefaultUnitTestPlatformDelegate();
 
+  DefaultUnitTestPlatformDelegate(const DefaultUnitTestPlatformDelegate&) =
+      delete;
+  DefaultUnitTestPlatformDelegate& operator=(
+      const DefaultUnitTestPlatformDelegate&) = delete;
+
  private:
   // UnitTestPlatformDelegate:
 
@@ -116,8 +121,6 @@ class DefaultUnitTestPlatformDelegate : public UnitTestPlatformDelegate {
   std::string GetWrapperForChildGTestProcess() override;
 
   ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultUnitTestPlatformDelegate);
 };
 
 // Test launcher delegate for unit tests (mostly to support batching).

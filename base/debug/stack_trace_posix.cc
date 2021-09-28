@@ -465,14 +465,15 @@ class PrintBacktraceOutputHandler : public BacktraceOutputHandler {
  public:
   PrintBacktraceOutputHandler() = default;
 
+  PrintBacktraceOutputHandler(const PrintBacktraceOutputHandler&) = delete;
+  PrintBacktraceOutputHandler& operator=(const PrintBacktraceOutputHandler&) =
+      delete;
+
   void HandleOutput(const char* output) override {
     // NOTE: This code MUST be async-signal safe (it's used by in-process
     // stack dumping signal handler). NO malloc or stdio is allowed here.
     PrintToStderr(output);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintBacktraceOutputHandler);
 };
 
 class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
@@ -480,12 +481,14 @@ class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
   explicit StreamBacktraceOutputHandler(std::ostream* os) : os_(os) {
   }
 
+  StreamBacktraceOutputHandler(const StreamBacktraceOutputHandler&) = delete;
+  StreamBacktraceOutputHandler& operator=(const StreamBacktraceOutputHandler&) =
+      delete;
+
   void HandleOutput(const char* output) override { (*os_) << output; }
 
  private:
   std::ostream* os_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamBacktraceOutputHandler);
 };
 
 void WarmUpBacktrace() {
@@ -539,6 +542,9 @@ class SandboxSymbolizeHelper {
     return Singleton<SandboxSymbolizeHelper,
                      LeakySingletonTraits<SandboxSymbolizeHelper>>::get();
   }
+
+  SandboxSymbolizeHelper(const SandboxSymbolizeHelper&) = delete;
+  SandboxSymbolizeHelper& operator=(const SandboxSymbolizeHelper&) = delete;
 
  private:
   friend struct DefaultSingletonTraits<SandboxSymbolizeHelper>;
@@ -787,8 +793,6 @@ class SandboxSymbolizeHelper {
   // Cache for the process memory regions.  Produced by parsing the contents
   // of /proc/self/maps cache.
   std::vector<MappedMemoryRegion> regions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxSymbolizeHelper);
 };
 #endif  // USE_SYMBOLIZE
 

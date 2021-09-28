@@ -33,6 +33,9 @@ class BASE_EXPORT PowerMonitor {
   // Initialize(). |source| must not be nullptr.
   static void Initialize(std::unique_ptr<PowerMonitorSource> source);
 
+  PowerMonitor(const PowerMonitor&) = delete;
+  PowerMonitor& operator=(const PowerMonitor&) = delete;
+
   // Returns true if Initialize() has been called. Safe to call on any thread,
   // but must not be called while Initialize() or ShutdownForTesting() is being
   // invoked.
@@ -130,8 +133,6 @@ class BASE_EXPORT PowerMonitor {
   scoped_refptr<ObserverListThreadSafe<PowerThermalObserver>>
       thermal_state_observers_;
   std::unique_ptr<PowerMonitorSource> source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitor);
 };
 
 }  // namespace base

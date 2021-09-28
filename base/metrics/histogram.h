@@ -480,6 +480,9 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   // call sites.
   static HistogramBase* FactoryGet(const char* name, int32_t flags);
 
+  BooleanHistogram(const BooleanHistogram&) = delete;
+  BooleanHistogram& operator=(const BooleanHistogram&) = delete;
+
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       const char* name,
@@ -506,8 +509,6 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
       base::PickleIterator* iter);
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
-
-  DISALLOW_COPY_AND_ASSIGN(BooleanHistogram);
 };
 
 //------------------------------------------------------------------------------
@@ -529,6 +530,9 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   static HistogramBase* FactoryGet(const char* name,
                                    const std::vector<Sample>& custom_ranges,
                                    int32_t flags);
+
+  CustomHistogram(const CustomHistogram&) = delete;
+  CustomHistogram& operator=(const CustomHistogram&) = delete;
 
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
@@ -571,8 +575,6 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
 
   static bool ValidateCustomRanges(const std::vector<Sample>& custom_ranges);
-
-  DISALLOW_COPY_AND_ASSIGN(CustomHistogram);
 };
 
 }  // namespace base

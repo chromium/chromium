@@ -64,6 +64,10 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   };
 
   MessagePumpLibevent();
+
+  MessagePumpLibevent(const MessagePumpLibevent&) = delete;
+  MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
+
   ~MessagePumpLibevent() override;
 
   bool WatchFileDescriptor(int fd,
@@ -118,7 +122,6 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   event* wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpLibevent);
 };
 
 }  // namespace base

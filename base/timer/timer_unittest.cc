@@ -162,6 +162,9 @@ class RepeatingTimerTester {
         did_run_(did_run),
         delay_(delay) {}
 
+  RepeatingTimerTester(const RepeatingTimerTester&) = delete;
+  RepeatingTimerTester& operator=(const RepeatingTimerTester&) = delete;
+
   void Start() {
     started_time_ = TimeTicks::Now();
     timer_.Start(FROM_HERE, delay_, this, &RepeatingTimerTester::Run);
@@ -195,8 +198,6 @@ class RepeatingTimerTester {
 
   const TimeDelta delay_;
   TimeTicks started_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatingTimerTester);
 };
 
 // Basic test with same setup as RunTest_OneShotTimers_Cancel below to confirm
@@ -539,6 +540,10 @@ class OneShotSelfOwningTimerTester
  public:
   OneShotSelfOwningTimerTester() = default;
 
+  OneShotSelfOwningTimerTester(const OneShotSelfOwningTimerTester&) = delete;
+  OneShotSelfOwningTimerTester& operator=(const OneShotSelfOwningTimerTester&) =
+      delete;
+
   void StartTimer() {
     // Start timer with long delay in order to test the timer getting destroyed
     // while a timer task is still pending.
@@ -555,8 +560,6 @@ class OneShotSelfOwningTimerTester
   }
 
   OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotSelfOwningTimerTester);
 };
 
 TEST(TimerTest, TaskEnvironmentShutdownSelfOwningTimer) {

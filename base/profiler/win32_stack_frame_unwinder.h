@@ -63,6 +63,10 @@ class BASE_EXPORT Win32StackFrameUnwinder {
   };
 
   explicit Win32StackFrameUnwinder();
+
+  Win32StackFrameUnwinder(const Win32StackFrameUnwinder&) = delete;
+  Win32StackFrameUnwinder& operator=(const Win32StackFrameUnwinder&) = delete;
+
   ~Win32StackFrameUnwinder();
 
   // Attempts to unwind the frame represented by |context|, where the
@@ -78,8 +82,6 @@ class BASE_EXPORT Win32StackFrameUnwinder {
   friend class Win32StackFrameUnwinderTest;
 
   std::unique_ptr<UnwindFunctions> unwind_functions_;
-
-  DISALLOW_COPY_AND_ASSIGN(Win32StackFrameUnwinder);
 };
 
 }  // namespace base

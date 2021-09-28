@@ -54,6 +54,10 @@ class TestRecordHistogramChecker : public RecordHistogramChecker {
 // for histogram allocation. False will allocate histograms from the process
 // heap.
 class HistogramTest : public testing::TestWithParam<bool> {
+ public:
+  HistogramTest(const HistogramTest&) = delete;
+  HistogramTest& operator=(const HistogramTest&) = delete;
+
  protected:
   using CountAndBucketData = base::Histogram::CountAndBucketData;
 
@@ -114,9 +118,6 @@ class HistogramTest : public testing::TestWithParam<bool> {
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
   PersistentMemoryAllocator* allocator_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistogramTest);
 };
 
 // Run all HistogramTest cases with both heap and persistent memory.

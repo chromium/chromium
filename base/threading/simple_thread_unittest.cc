@@ -92,12 +92,13 @@ class SeqRunner : public DelegateSimpleThread::Delegate {
  public:
   explicit SeqRunner(AtomicSequenceNumber* seq) : seq_(seq) { }
 
+  SeqRunner(const SeqRunner&) = delete;
+  SeqRunner& operator=(const SeqRunner&) = delete;
+
  private:
   void Run() override { seq_->GetNext(); }
 
   AtomicSequenceNumber* seq_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeqRunner);
 };
 
 // We count up on a sequence number, firing on the event when we've hit our
@@ -108,6 +109,9 @@ class VerifyPoolRunner : public DelegateSimpleThread::Delegate {
   VerifyPoolRunner(AtomicSequenceNumber* seq,
                    int total, WaitableEvent* event)
       : seq_(seq), total_(total), event_(event) { }
+
+  VerifyPoolRunner(const VerifyPoolRunner&) = delete;
+  VerifyPoolRunner& operator=(const VerifyPoolRunner&) = delete;
 
  private:
   void Run() override {
@@ -121,8 +125,6 @@ class VerifyPoolRunner : public DelegateSimpleThread::Delegate {
   AtomicSequenceNumber* seq_;
   int total_;
   WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(VerifyPoolRunner);
 };
 
 }  // namespace

@@ -16,6 +16,11 @@ namespace base {
 namespace {
 
 class SequenceLocalStorageSlotTest : public testing::Test {
+ public:
+  SequenceLocalStorageSlotTest(const SequenceLocalStorageSlotTest&) = delete;
+  SequenceLocalStorageSlotTest& operator=(const SequenceLocalStorageSlotTest&) =
+      delete;
+
  protected:
   SequenceLocalStorageSlotTest()
       : scoped_sequence_local_storage_(&sequence_local_storage_) {}
@@ -23,9 +28,6 @@ class SequenceLocalStorageSlotTest : public testing::Test {
   internal::SequenceLocalStorageMap sequence_local_storage_;
   internal::ScopedSetSequenceLocalStorageMapForCurrentThread
       scoped_sequence_local_storage_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SequenceLocalStorageSlotTest);
 };
 
 }  // namespace

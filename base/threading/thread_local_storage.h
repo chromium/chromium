@@ -144,6 +144,9 @@ class BASE_EXPORT ThreadLocalStorage {
     uint32_t version_ = 0;
   };
 
+  ThreadLocalStorage(const ThreadLocalStorage&) = delete;
+  ThreadLocalStorage& operator=(const ThreadLocalStorage&) = delete;
+
  private:
   // In most cases, most callers should not need access to HasBeenDestroyed().
   // If you are working in code that runs during thread destruction, contact the
@@ -161,8 +164,6 @@ class BASE_EXPORT ThreadLocalStorage {
   friend class trace_event::MallocDumpProvider;
   friend class debug::GlobalActivityTracker;
   static bool HasBeenDestroyed();
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStorage);
 };
 
 }  // namespace base

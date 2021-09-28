@@ -149,6 +149,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     Iterator(const PersistentMemoryAllocator* allocator,
              Reference starting_after);
 
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     // Resets the iterator back to the beginning.
     void Reset();
 
@@ -224,8 +227,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
     // The number of records found; used for detecting loops.
     std::atomic<uint32_t> record_count_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   // Returned information about the internal state of the heap.
@@ -286,6 +287,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   PersistentMemoryAllocator(void* base, size_t size, size_t page_size,
                             uint64_t id, base::StringPiece name,
                             bool readonly);
+
+  PersistentMemoryAllocator(const PersistentMemoryAllocator&) = delete;
+  PersistentMemoryAllocator& operator=(const PersistentMemoryAllocator&) =
+      delete;
+
   virtual ~PersistentMemoryAllocator();
 
   // Check if memory segment is acceptable for creation of an Allocator. This
@@ -682,7 +688,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
-  DISALLOW_COPY_AND_ASSIGN(PersistentMemoryAllocator);
 };
 
 
