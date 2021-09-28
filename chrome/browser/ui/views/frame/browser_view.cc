@@ -1898,12 +1898,21 @@ qrcode_generator::QRCodeGeneratorBubbleView*
 BrowserView::ShowQRCodeGeneratorBubble(
     content::WebContents* contents,
     qrcode_generator::QRCodeGeneratorBubbleController* controller,
-    const GURL& url) {
+    const GURL& url,
+    bool show_back_button) {
   base::OnceClosure on_closing = base::BindOnce(
       &qrcode_generator::QRCodeGeneratorBubbleController::OnBubbleClosed,
       // Unretained is safe: controller is a WebContentsUserData, owned by
       // WebContents, and the bubble can't outlive the WebContents.
       base::Unretained(controller));
+  base::OnceClosure on_back_button_pressed;
+  if (show_back_button) {
+    on_back_button_pressed = base::BindOnce(
+        &qrcode_generator::QRCodeGeneratorBubbleController::OnBackButtonPressed,
+        // Unretained is safe: controller is a WebContentsUserData, owned by
+        // WebContents, and the bubble can't outlive the WebContents.
+        base::Unretained(controller));
+  }
 
   PageActionIconType icon_type =
       sharing_hub::SharingHubOmniboxEnabled(contents->GetBrowserContext())
@@ -1913,7 +1922,7 @@ BrowserView::ShowQRCodeGeneratorBubble(
   qrcode_generator::QRCodeGeneratorBubble* bubble =
       new qrcode_generator::QRCodeGeneratorBubble(
           toolbar_button_provider()->GetAnchorView(icon_type), contents,
-          std::move(on_closing), url);
+          std::move(on_closing), std::move(on_back_button_pressed), url);
 
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(icon_type);

@@ -51,6 +51,8 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
+  void BackButtonPressed();
+
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
 
   void OnManageDevicesClicked(const ui::Event& event);
@@ -60,6 +62,7 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
+  void AddedToWidget() override;
 
   // Creates the subtitle / hint text used in V2.
   void CreateHintTextLabel(views::GridLayout* layout);

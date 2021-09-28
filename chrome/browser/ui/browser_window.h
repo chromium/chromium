@@ -405,7 +405,8 @@ class BrowserWindow : public ui::BaseWindow {
   ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
       qrcode_generator::QRCodeGeneratorBubbleController* controller,
-      const GURL& url) = 0;
+      const GURL& url,
+      bool show_back_button) = 0;
 
   // Shows the "send tab to self" bubble.
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(

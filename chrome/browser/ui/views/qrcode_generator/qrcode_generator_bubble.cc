@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
@@ -92,13 +93,16 @@ void AddSmallPaddingRow(views::GridLayout* layout) {
 
 namespace qrcode_generator {
 
-QRCodeGeneratorBubble::QRCodeGeneratorBubble(views::View* anchor_view,
-                                             content::WebContents* web_contents,
-                                             base::OnceClosure on_closing,
-                                             const GURL& url)
+QRCodeGeneratorBubble::QRCodeGeneratorBubble(
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    base::OnceClosure on_closing,
+    base::OnceClosure on_back_button_pressed,
+    const GURL& url)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
       url_(url),
       on_closing_(std::move(on_closing)),
+      on_back_button_pressed_(std::move(on_back_button_pressed)),
       web_contents_(web_contents) {
   DCHECK(on_closing_);
 
@@ -356,6 +360,18 @@ void QRCodeGeneratorBubble::Init() {
     qr_code_service_remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
 }
 
+void QRCodeGeneratorBubble::AddedToWidget() {
+  if (!on_back_button_pressed_)
+    return;
+
+  // Adding a title view will replace the default title.
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<sharing_hub::TitleWithBackButtonView>(
+          base::BindRepeating(&QRCodeGeneratorBubble::BackButtonPressed,
+                              base::Unretained(this)),
+          GetWindowTitle()));
+}
+
 void QRCodeGeneratorBubble::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
@@ -467,6 +483,13 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   params->set_suggested_name(GetQRCodeFilenameForURL(url_));
   download_manager->DownloadUrl(std::move(params));
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DownloadQRCode"));
+}
+
+void QRCodeGeneratorBubble::BackButtonPressed() {
+  Hide();
+
+  DCHECK(on_back_button_pressed_);
+  std::move(on_back_button_pressed_).Run();
 }
 
 BEGIN_METADATA(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)

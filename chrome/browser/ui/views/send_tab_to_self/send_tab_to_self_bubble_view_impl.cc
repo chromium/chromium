@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -95,6 +96,13 @@ void SendTabToSelfBubbleViewImpl::WindowClosing() {
   }
 }
 
+void SendTabToSelfBubbleViewImpl::BackButtonPressed() {
+  if (controller_) {
+    controller_->OnBackButtonPressed();
+    Hide();
+  }
+}
+
 void SendTabToSelfBubbleViewImpl::DeviceButtonPressed(
     SendTabToSelfBubbleDeviceButton* device_button) {
   if (!controller_)
@@ -155,6 +163,18 @@ void SendTabToSelfBubbleViewImpl::Init() {
     margins.set_bottom(0);
     set_margins(margins);
   }
+}
+
+void SendTabToSelfBubbleViewImpl::AddedToWidget() {
+  if (!controller_->show_back_button())
+    return;
+
+  // Adding a title view will replace the default title.
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<sharing_hub::TitleWithBackButtonView>(
+          base::BindRepeating(&SendTabToSelfBubbleViewImpl::BackButtonPressed,
+                              base::Unretained(this)),
+          GetWindowTitle()));
 }
 
 void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(

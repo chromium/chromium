@@ -4352,6 +4352,8 @@ static_library("ui") {
       "views/sharing_hub/screenshot/screenshot_captured_bubble.h",
       "views/sharing_hub/sharing_hub_bubble_action_button.cc",
       "views/sharing_hub/sharing_hub_bubble_action_button.h",
+      "views/sharing_hub/sharing_hub_bubble_util.cc",
+      "views/sharing_hub/sharing_hub_bubble_util.h",
       "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
       "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       "views/sharing_hub/sharing_hub_icon_view.cc",

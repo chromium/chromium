@@ -123,7 +123,7 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
         anchor_widget_->SetContentsView(std::make_unique<views::View>());
     CHECK(anchor_view_);
     auto bubble = std::make_unique<QRCodeGeneratorBubble>(
-        anchor_view_, nullptr, base::DoNothing(),
+        anchor_view_, nullptr, base::DoNothing(), base::DoNothing(),
         GURL("https://www.chromium.org/a"));
     bubble->SetQRCodeServiceForTesting(
         mojo::Remote<mojom::QRCodeGeneratorService>(

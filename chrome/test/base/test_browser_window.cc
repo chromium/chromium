@@ -222,7 +222,8 @@ qrcode_generator::QRCodeGeneratorBubbleView*
 TestBrowserWindow::ShowQRCodeGeneratorBubble(
     content::WebContents* contents,
     qrcode_generator::QRCodeGeneratorBubbleController* controller,
-    const GURL& url) {
+    const GURL& url,
+    bool show_back_button) {
   return nullptr;
 }
 
