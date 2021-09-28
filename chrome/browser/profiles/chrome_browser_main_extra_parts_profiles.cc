@@ -139,6 +139,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
@@ -310,6 +311,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ConsentAuditorFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
+#if !defined(OS_ANDROID)
+  CouponServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
