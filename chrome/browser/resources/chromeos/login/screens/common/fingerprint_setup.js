@@ -7,9 +7,7 @@
  * Enrollment screen.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * These values must be kept in sync with the values in
@@ -30,116 +28,125 @@ var FingerprintResultType = {
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const FingerprintUIState = {
   START: 'start',
   PROGRESS: 'progress',
 };
 
-Polymer({
-  is: 'fingerprint-setup-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const FingerprintSetupBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+class FingerprintSetup extends FingerprintSetupBase {
+  static get is() {
+    return 'fingerprint-setup-element';
+  }
 
-  EXTERNAL_API: [
-    'onEnrollScanDone',
-    'enableAddAnotherFinger',
-  ],
+  /* #html_template_placeholder */
 
-  UI_STEPS: UIState,
-
-  properties: {
-    /**
-     * The percentage of completion that has been received during setup.
-     * The value within [0, 100] represents the percent of enrollment
-     * completion.
-     * @type {number}
-     */
-    percentComplete_: {
-      type: Number,
-      value: 0,
-      observer: 'onProgressChanged_',
-    },
-
-    /**
-     * Is current finger enrollment complete?
-     * @type {boolean}
-     */
-    complete_: {
-      type: Boolean,
-      value: false,
-      computed: 'enrollIsComplete_(percentComplete_)',
-    },
-
-    /**
-     * Can we add another finger?
-     * @type {boolean}
-     */
-    canAddFinger: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * The result of fingerprint enrollment scan.
-     * @type {FingerprintResultType}
-     * @private
-     */
-    scanResult_: {
-      type: Number,
-      value: FingerprintResultType.SUCCESS,
-    },
-
-    /**
-     * True if lottie animation file should be used instead of an illustration.
-     * @type {boolean}
-     * @private
-     */
-    shouldUseLottieAnimation_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('useLottieAnimationForFingerprint');
+  static get properties() {
+    return {
+      /**
+       * The percentage of completion that has been received during setup.
+       * The value within [0, 100] represents the percent of enrollment
+       * completion.
+       */
+      percentComplete_: {
+        type: Number,
+        observer: 'onProgressChanged_',
       },
-      readOnly: true,
-    },
 
-    /**
-     * Indicates whether user is a child account.
-     * @type {boolean}
-     */
-    isChildAccount_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Is current finger enrollment complete?
+       */
+      complete_: {
+        type: Boolean,
+        computed: 'enrollIsComplete_(percentComplete_)',
+      },
 
+      /**
+       * Can we add another finger?
+       */
+      canAddFinger: {
+        type: Boolean,
+      },
+
+      /**
+       * The result of fingerprint enrollment scan.
+       * @private
+       */
+      scanResult_: {
+        type: Number,
+      },
+
+      /**
+       * True if lottie animation file should be used instead of an
+       * illustration.
+       * @private
+       */
+      shouldUseLottieAnimation_: {
+        type: Boolean,
+      },
+
+      /**
+       * Indicates whether user is a child account.
+       */
+      isChildAccount_: {
+        type: Boolean,
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    this.UI_STEPS = FingerprintUIState;
+    this.percentComplete_ = 0;
+    this.complete_ = false;
+    this.canAddFinger = true;
+    this.scanResult_ = FingerprintResultType.SUCCESS;
+    this.shouldUseLottieAnimation_ =
+        loadTimeData.getBoolean('useLottieAnimationForFingerprint');
+    this.isChildAccount_ = false;
+  }
+
+  /** @override */
+  get EXTERNAL_API() {
+    return ['onEnrollScanDone', 'enableAddAnotherFinger'];
+  }
+
+  /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('FingerprintSetupScreen', {
       resetAllowed: false,
     });
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
-  },
+  }
 
+  /** @override */
   defaultUIStep() {
-    return UIState.START;
-  },
+    return FingerprintUIState.START;
+  }
 
   onBeforeShow(data) {
     this.isChildAccount_ = data['isChildAccount'];
     this.setAnimationState_(true);
-  },
+  }
 
   onBeforeHide() {
     this.setAnimationState_(false);
-  },
+  }
 
   /**
    * Called when a fingerprint enroll scan result is received.
@@ -148,11 +155,11 @@ Polymer({
    * @param {number} percentComplete Percentage of completion of the enrollment.
    */
   onEnrollScanDone(scanResult, isComplete, percentComplete) {
-    this.setUIStep(UIState.PROGRESS);
+    this.setUIStep(FingerprintUIState.PROGRESS);
 
     this.percentComplete_ = percentComplete;
     this.scanResult_ = scanResult;
-  },
+  }
 
   /**
    * Enable/disable add another finger.
@@ -160,7 +167,7 @@ Polymer({
    */
   enableAddAnotherFinger(enable) {
     this.canAddFinger = enable;
-  },
+  }
 
   /**
    * Check whether Add Another button should be shown.
@@ -169,7 +176,7 @@ Polymer({
    */
   isAnotherButtonVisible_(percentComplete, canAddFinger) {
     return percentComplete >= 100 && canAddFinger;
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Skip' button for 'START' step.
@@ -177,7 +184,7 @@ Polymer({
    */
   onSkipOnStart_(e) {
     this.userActed('setup-skipped-on-start');
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Skip' button for 'PROGRESS' step.
@@ -185,11 +192,12 @@ Polymer({
    */
   onSkipInProgress_(e) {
     this.userActed('setup-skipped-in-flow');
-  },
+  }
 
   /**
    * Enable/disable lottie animation.
    * @param {boolean} playing True if animation should be playing.
+   * @suppress {missingProperties}
    */
   setAnimationState_(playing) {
     if (this.shouldUseLottieAnimation_) {
@@ -199,7 +207,7 @@ Polymer({
       /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc)
           .setPlay(playing);
     }
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Done' button.
@@ -207,7 +215,7 @@ Polymer({
    */
   onDone_(e) {
     this.userActed('setup-done');
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Add another' button.
@@ -216,7 +224,7 @@ Polymer({
   onAddAnother_(e) {
     this.percentComplete_ = 0;
     this.userActed('add-another-finger');
-  },
+  }
 
   /**
    * Check whether fingerprint enrollment is in progress.
@@ -225,7 +233,7 @@ Polymer({
    */
   enrollIsComplete_(percent) {
     return percent >= 100;
-  },
+  }
 
   /**
    * Check whether fingerprint scan problem is IMMOBILE.
@@ -234,7 +242,7 @@ Polymer({
    */
   isProblemImmobile_(scan_result) {
     return scan_result === FingerprintResultType.IMMOBILE;
-  },
+  }
 
   /**
    * Check whether fingerprint scan problem is other than IMMOBILE.
@@ -244,7 +252,7 @@ Polymer({
   isProblemOther_(scan_result) {
     return scan_result != FingerprintResultType.SUCCESS &&
         scan_result != FingerprintResultType.IMMOBILE;
-  },
+  }
 
   /**
    * Observer for percentComplete_.
@@ -260,6 +268,7 @@ Polymer({
 
     /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc)
         .setProgress(oldValue, newValue, newValue === 100);
-  },
-});
-})();
+  }
+}
+
+customElements.define(FingerprintSetup.is, FingerprintSetup);
