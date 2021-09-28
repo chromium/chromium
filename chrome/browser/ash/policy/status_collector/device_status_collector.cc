@@ -453,6 +453,10 @@ void ReadTpmStatus(policy::DeviceStatusCollector::TpmStatusReceiver callback) {
       ::tpm_manager::GetDictionaryAttackInfoRequest(),
       base::BindOnce(&::policy::TpmStatusCombiner::OnGetDictionaryAttackInfo,
                      tpm_status_combiner));
+  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
+      ::tpm_manager::GetSupportedFeaturesRequest(),
+      base::BindOnce(&::policy::TpmStatusCombiner::OnGetSupportedFeatures,
+                     tpm_status_combiner));
 }
 
 base::Version GetPlatformVersion() {

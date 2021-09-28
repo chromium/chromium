@@ -2410,6 +2410,13 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
   da_info_reply->set_dictionary_attack_threshold(10);
   da_info_reply->set_dictionary_attack_lockout_in_effect(false);
   da_info_reply->set_dictionary_attack_lockout_seconds_remaining(0);
+  auto* supported_features_reply = chromeos::TpmManagerClient::Get()
+                                       ->GetTestInterface()
+                                       ->mutable_supported_features_reply();
+  supported_features_reply->set_is_allowed(false);
+  supported_features_reply->set_support_pinweaver(false);
+  supported_features_reply->set_support_runtime_selection(false);
+  supported_features_reply->set_support_u2f(false);
 
   GetStatus();
 
@@ -2439,6 +2446,20 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
   EXPECT_EQ(false, device_status_.tpm_status_info().boot_lockbox_finalized());
   EXPECT_EQ(tpm_status_reply->is_owner_password_present(),
             device_status_.tpm_status_info().owner_password_is_present());
+  EXPECT_EQ(
+      supported_features_reply->is_allowed(),
+      device_status_.tpm_status_info().tpm_supported_features().is_allowed());
+  EXPECT_EQ(supported_features_reply->support_pinweaver(),
+            device_status_.tpm_status_info()
+                .tpm_supported_features()
+                .support_pinweaver());
+  EXPECT_EQ(supported_features_reply->support_runtime_selection(),
+            device_status_.tpm_status_info()
+                .tpm_supported_features()
+                .support_runtime_selection());
+  EXPECT_EQ(
+      supported_features_reply->support_u2f(),
+      device_status_.tpm_status_info().tpm_supported_features().support_u2f());
 }
 
 // Checks if tpm status is partially reported even if any error happens
@@ -2455,12 +2476,16 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReportingAnyDBusError) {
   auto* da_info_reply = chromeos::TpmManagerClient::Get()
                             ->GetTestInterface()
                             ->mutable_dictionary_attack_info_reply();
+  auto* supported_features_reply = chromeos::TpmManagerClient::Get()
+                                       ->GetTestInterface()
+                                       ->mutable_supported_features_reply();
 
   tpm_status_reply->set_status(::tpm_manager::STATUS_DBUS_ERROR);
   enrollment_status_reply->set_prepared_for_enrollment(true);
   GetStatus();
   EXPECT_EQ(enrollment_status_reply->prepared_for_enrollment(),
             device_status_.tpm_status_info().attestation_prepared());
+  EXPECT_TRUE(device_status_.tpm_status_info().has_tpm_supported_features());
   // Reset the error status.
   tpm_status_reply->set_status(::tpm_manager::STATUS_SUCCESS);
 
@@ -2483,8 +2508,20 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReportingAnyDBusError) {
   EXPECT_TRUE(device_status_.has_tpm_status_info());
   EXPECT_EQ(tpm_status_reply->is_enabled(),
             device_status_.tpm_status_info().enabled());
-  // Reset the error status (for symmetry).
+  // Reset the error status.
   da_info_reply->set_status(::tpm_manager::STATUS_SUCCESS);
+
+  RestartStatusCollector();
+
+  supported_features_reply->set_status(::tpm_manager::STATUS_DBUS_ERROR);
+  tpm_status_reply->set_is_enabled(true);
+  GetStatus();
+  EXPECT_TRUE(device_status_.has_tpm_status_info());
+  EXPECT_EQ(tpm_status_reply->is_enabled(),
+            device_status_.tpm_status_info().enabled());
+  EXPECT_FALSE(device_status_.tpm_status_info().has_tpm_supported_features());
+  // Reset the error status (for symmetry).
+  supported_features_reply->set_status(::tpm_manager::STATUS_SUCCESS);
 }
 
 TEST_F(DeviceStatusCollectorTest, NoTimeZoneReporting) {

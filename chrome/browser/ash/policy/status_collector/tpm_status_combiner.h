@@ -48,6 +48,10 @@ class TpmStatusCombiner : public base::RefCounted<TpmStatusCombiner> {
   // `AttestationClient::GetDictionaryAttackInfoReply()`.
   void OnGetDictionaryAttackInfo(
       const ::tpm_manager::GetDictionaryAttackInfoReply& reply);
+  // Designed to be the callback of
+  // `TpmManagerClient::OnGetSupportedFeatures()`.
+  void OnGetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesReply& reply);
 
  private:
   // `RefCounted` subclass requires the destructor to be non-public.
@@ -68,6 +72,7 @@ class TpmStatusCombiner : public base::RefCounted<TpmStatusCombiner> {
   bool has_tpm_status_ = false;
   bool has_enrollment_status_ = false;
   bool has_dictionary_attack_info_ = false;
+  bool has_supported_features_ = false;
 };
 
 }  // namespace policy

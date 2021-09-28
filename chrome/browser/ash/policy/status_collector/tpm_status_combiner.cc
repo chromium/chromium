@@ -68,9 +68,29 @@ void TpmStatusCombiner::OnGetDictionaryAttackInfo(
   RunCallbackIfComplete();
 }
 
+void TpmStatusCombiner::OnGetSupportedFeatures(
+    const ::tpm_manager::GetSupportedFeaturesReply& reply) {
+  has_supported_features_ = true;
+  if (reply.status() == ::tpm_manager::STATUS_SUCCESS) {
+    enterprise_management::TpmSupportedFeatures* const
+        tpm_supported_features_proto =
+            tpm_status_info_.mutable_tpm_supported_features();
+    tpm_supported_features_proto->set_is_allowed(reply.is_allowed());
+    tpm_supported_features_proto->set_support_pinweaver(
+        reply.support_pinweaver());
+    tpm_supported_features_proto->set_support_runtime_selection(
+        reply.support_runtime_selection());
+    tpm_supported_features_proto->set_support_u2f(reply.support_u2f());
+  } else {
+    LOG(WARNING) << "Failed to get supported features.";
+  }
+
+  RunCallbackIfComplete();
+}
+
 void TpmStatusCombiner::RunCallbackIfComplete() {
   if (!has_tpm_status_ || !has_enrollment_status_ ||
-      !has_dictionary_attack_info_)
+      !has_dictionary_attack_info_ || !has_supported_features_)
     return;
   std::move(callback_).Run(tpm_status_info_);
 }

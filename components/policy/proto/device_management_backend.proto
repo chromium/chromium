@@ -3016,6 +3016,15 @@ message TpmStatusInfo {
   // DEPRECATED: Not filled by the client anymore (since b/172748724).
   optional bool boot_lockbox_finalized = 10 [deprecated = true];
   optional bool owner_password_is_present = 11;
+  optional TpmSupportedFeatures tpm_supported_features = 12;
+}
+
+// Contains information about specific features of the TPM unit.
+message TpmSupportedFeatures {
+  optional bool is_allowed = 1;
+  optional bool support_pinweaver = 2;
+  optional bool support_runtime_selection = 3;
+  optional bool support_u2f = 4;
 }
 
 // System state included with some log events.
