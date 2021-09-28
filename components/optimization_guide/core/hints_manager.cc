@@ -1322,8 +1322,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
       base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      navigation_data->GetWeakPtr(), url,
-                     base::flat_set<GURL>({url}),
-                     base::flat_set<std::string>({url.host()})));
+                     base::flat_set<GURL>(urls.begin(), urls.end()),
+                     base::flat_set<std::string>(hosts.begin(), hosts.end())));
   if (fetch_attempted) {
     navigation_data->set_hints_fetch_start(base::TimeTicks::Now());
 

@@ -2181,6 +2181,60 @@ TEST_F(HintsManagerFetchingTest,
       1);
 }
 
+TEST_F(HintsManagerFetchingTest,
+       HintsFetchedAtNavigationTime_DoesNotRemoveManualOverride) {
+  GURL example_url("http://www.example.com/hasoverride");
+
+  optimization_guide::proto::Configuration config;
+  optimization_guide::proto::Hint* hint = config.add_hints();
+  hint->set_key(example_url.spec());
+  hint->set_key_representation(optimization_guide::proto::FULL_URL);
+  optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("*");
+  optimization_guide::proto::Optimization* opt =
+      page_hint->add_allowlisted_optimizations();
+  opt->set_optimization_type(optimization_guide::proto::DEFER_ALL_SCRIPT);
+  std::string encoded_config;
+  config.SerializeToString(&encoded_config);
+  base::Base64Encode(encoded_config, &encoded_config);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      optimization_guide::switches::kHintsProtoOverride, encoded_config);
+
+  // Re-create hints manager with override.
+  CreateHintsManager(/*top_host_provider=*/nullptr);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+  hints_manager()->RegisterOptimizationTypes(
+      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+  auto navigation_data = CreateTestNavigationData(
+      example_url, {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  base::HistogramTester histogram_tester;
+  CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+      optimization_guide::RaceNavigationFetchAttemptStatus::
+          kRaceNavigationFetchHost,
+      1);
+
+  optimization_guide::OptimizationTypeDecision optimization_type_decision =
+      hints_manager()->CanApplyOptimization(
+          navigation_data->navigation_url(),
+          optimization_guide::proto::DEFER_ALL_SCRIPT,
+          /*optimization_metadata=*/nullptr);
+
+  EXPECT_EQ(optimization_type_decision,
+            optimization_guide::OptimizationTypeDecision::kAllowedByHint);
+}
+
 TEST_F(HintsManagerFetchingTest, URLHintsNotFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
