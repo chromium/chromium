@@ -24,8 +24,8 @@ void GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   if (res < 0) {
     // Print the stat() error message unless it was ENOENT and we're following
     // symlinks.
-    if (!(errno == ENOENT && !show_links))
-      DPLOG(ERROR) << "Couldn't stat" << path.value();
+    DPLOG_IF(ERROR, errno != ENOENT || show_links)
+        << "Cannot stat '" << path << "'";
     memset(st, 0, sizeof(*st));
   }
 }
