@@ -33,6 +33,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -185,12 +186,13 @@ class UkmRecorder;
 }
 
 namespace content {
-class ServiceWorkerContainerHost;
+
 class AgentSchedulingGroupHost;
 class AppCacheNavigationHandle;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class CrossOriginOpenerPolicyAccessReportManager;
+class DocumentServiceBaseInternal;
 class FeatureObserver;
 class FencedFrame;
 class FrameTree;
@@ -216,6 +218,7 @@ class RenderViewHostImpl;
 class RenderWidgetHostView;
 class RenderWidgetHostViewBase;
 class SensorProviderProxyImpl;
+class ServiceWorkerContainerHost;
 class SpeechSynthesisImpl;
 class SubresourceWebBundleNavigationInfo;
 class TimeoutMonitor;
@@ -2157,6 +2160,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     document_associated_data_->RemoveUserData(key);
   }
 
+  void AddDocumentService(DocumentServiceBaseInternal* document_service,
+                          base::PassKey<DocumentServiceBaseInternal>);
+  void RemoveDocumentService(DocumentServiceBaseInternal* document_service,
+                             base::PassKey<DocumentServiceBaseInternal>);
+
   // Called when we commit speculative RFH early due to not having an alive
   // current frame. This happens when the renderer crashes before navigating to
   // a new URL using speculative RenderFrameHost.
@@ -3864,9 +3872,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // associated with the reporting endpoint configuration in the network
     // service, as well as with any reports which are queued by this document.
     base::UnguessableToken reporting_source;
+
+    // "Owned" but not with std::unique_ptr, as a DocumentServiceBaseInternal is
+    // allowed to delete itself directly.
+    std::vector<DocumentServiceBaseInternal*> services;
   };
 
-  std::unique_ptr<DocumentAssociatedData> document_associated_data_;
+  // Reset immediately before a RenderFrameHost is reused for hosting a new
+  // document.
+  //
+  // Note: this is an absl::optional instead of a std::unique_ptr because:
+  // 1. it is always allocated
+  // 2. `~RenderFrameHostImpl` destroys `document_associated_data_` which
+  //    destroys any `DocumentServiceBase` objects tracking `this`. Destroying a
+  //    `DocumentServiceBase` unregisters it from `this`. A std::unique_ptr's
+  //    stored pointer value is (intentionally) undefined during destruction
+  //    (e.g. it could be nullptr), which would cause unregistration to
+  //    dereference a null pointer.
+  absl::optional<DocumentAssociatedData> document_associated_data_;
 
   // Keeps track of the scenario when RenderFrameHostManager::CommitPending is
   // called before the navigation commits. This becomes true if the previous

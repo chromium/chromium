@@ -13,7 +13,6 @@
 namespace content {
 
 class RenderFrameHost;
-class RenderFrameHostImpl;
 
 class CONTENT_EXPORT FlocServiceImpl final
     : public DocumentServiceBase<blink::mojom::FlocService> {
@@ -31,8 +30,6 @@ class CONTENT_EXPORT FlocServiceImpl final
  private:
   // |this| can only be destroyed by DocumentServiceBase.
   ~FlocServiceImpl() override;
-
-  RenderFrameHostImpl* const render_frame_host_;
 };
 
 }  // namespace content

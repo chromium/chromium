@@ -22,6 +22,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/media_drm_key_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"

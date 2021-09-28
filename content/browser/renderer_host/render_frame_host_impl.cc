@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/character_encoding.h"
@@ -152,6 +153,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/document_service_base_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_type.h"
@@ -1395,8 +1397,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
-      document_associated_data_(
-          std::make_unique<DocumentAssociatedData>(*this)),
+      document_associated_data_(absl::in_place, *this),
       lifecycle_state_(lifecycle_state),
       inner_tree_main_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
@@ -3092,16 +3093,17 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   const RenderFrameState old_render_frame_state = render_frame_state_;
   render_frame_state_ = RenderFrameState::kCreated;
 
-  // Clear all the document-associated data for this RenderFrameHost when its
-  // RenderFrame is recreated after a crash. Note that the user data is
-  // intentionally not cleared at the time of crash. Please refer to
-  // https://crbug.com/1099237 for more details.
-  //
-  // Clearing of user data should be called before RenderFrameCreated to ensure:
-  // - a) new new state set in RenderFrameCreated doesn't get deleted.
-  // - b) the old state is not leaked to a new RenderFrameHost.
   if (old_render_frame_state == RenderFrameState::kDeleted) {
-    document_associated_data_ = std::make_unique<DocumentAssociatedData>(*this);
+    // Clear all the document-associated data for this RenderFrameHost when its
+    // RenderFrame is recreated after a crash. Note that the user data is
+    // intentionally not cleared at the time of crash. Please refer to
+    // https://crbug.com/1099237 for more details.
+    //
+    // Clearing of user data should be called before RenderFrameCreated to
+    // ensure:
+    // - a) the new state set in RenderFrameCreated doesn't get deleted.
+    // - b) the old state is not leaked to a new RenderFrameHost.
+    document_associated_data_.emplace(*this);
 
     // Dispatch update notification when a Page is recreated after a crash.
     if (is_main_frame()) {
@@ -4362,18 +4364,18 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
 }
 
 void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
-  auto* document_data = document_associated_data_.get();
-
   // Don't dispatch notification if DidFinishLoad has not yet been invoked for
   // `rfh` i.e., when the url is nullopt.
-  if (!document_data->pending_did_finish_load_url_for_prerendering)
+  if (!document_associated_data_->pending_did_finish_load_url_for_prerendering)
     return;
 
   delegate_->OnDidFinishLoad(
-      this, *document_data->pending_did_finish_load_url_for_prerendering);
+      this,
+      *document_associated_data_->pending_did_finish_load_url_for_prerendering);
 
   // Set to nullopt to avoid calling DidFinishLoad twice.
-  document_data->pending_did_finish_load_url_for_prerendering.reset();
+  document_associated_data_->pending_did_finish_load_url_for_prerendering
+      .reset();
 }
 
 void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
@@ -5251,6 +5253,18 @@ void RenderFrameHostImpl::EnforceInsecureRequestPolicy(
 void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
     const std::vector<uint32_t>& set) {
   frame_tree_node()->SetInsecureNavigationsSet(set);
+}
+
+void RenderFrameHostImpl::AddDocumentService(
+    DocumentServiceBaseInternal* document_service,
+    base::PassKey<DocumentServiceBaseInternal>) {
+  document_associated_data_->services.push_back(document_service);
+}
+
+void RenderFrameHostImpl::RemoveDocumentService(
+    DocumentServiceBaseInternal* document_service,
+    base::PassKey<DocumentServiceBaseInternal>) {
+  base::Erase(document_associated_data_->services, document_service);
 }
 
 FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(
@@ -10380,8 +10394,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // RenderFrameHost commits before the navigation commits. This happens
       // when the current RenderFrameHost crashes before navigating to a new
       // URL.
-      document_associated_data_ =
-          std::make_unique<DocumentAssociatedData>(*this);
+      document_associated_data_.emplace(*this);
     }
 
     // Continue observing the events for the committed navigation.
@@ -12712,8 +12725,12 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
   reporting_source = base::UnguessableToken::Create();
 }
 
-RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
-    default;
+RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
+  while (!services.empty()) {
+    // DocumentServiceBaseInternal unregisters itself at destruction time.
+    delete services.back();
+  }
+}
 
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleStateImpl& s) {

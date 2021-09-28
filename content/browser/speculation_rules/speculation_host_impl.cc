@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/referrer.h"
@@ -59,7 +60,8 @@ void SpeculationHostImpl::Bind(
 SpeculationHostImpl::SpeculationHostImpl(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver)
-    : DocumentServiceBase(frame_host, std::move(receiver)) {
+    : DocumentServiceBase(frame_host, std::move(receiver)),
+      WebContentsObserver(WebContents::FromRenderFrameHost(frame_host)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_ = GetContentClient()->browser()->CreateSpeculationHostDelegate(

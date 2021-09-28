@@ -65,6 +65,18 @@ struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
 
+// Note: before adding a new `WebContentsObserver` subclass, consider if simpler
+// helpers will suffice:
+//
+// - Classes that have a 1:1 relationship with one RenderFrameHost can often
+//   use `RenderDocumentHostUserData` instead.
+// - Mojo interface implementations that have a 1 RenderFrameHost to many
+//   instances relationship can often use `DocumentServiceBase`  instead.
+//
+// These helpers can help avoid memory safety bugs, such as retaining a pointer
+// to a deleted RenderFrameHost, or other security issues, such as origin
+// confusion when a RenderFrameHost is reused after a cross-document navigation.
+
 // An observer API implemented by classes which are interested in various page
 // events from WebContents.  They also get a chance to filter IPC messages.
 // The difference between WebContentsDelegate (WCD) and WebContentsObserver

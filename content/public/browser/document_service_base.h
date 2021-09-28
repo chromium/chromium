@@ -10,103 +10,84 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_checker.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/document_service_base_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/origin.h"
 
 namespace content {
 
-// Base class for mojo interface implementations tied to a document's lifetime.
-// The service will be destroyed when any of the following happens:
-// 1. mojo interface connection error happened,
-// 2. the RenderFrameHost was deleted, or
-// 3. navigation was committed on the RenderFrameHost (not same document).
+// Helper to provide the safe equivalent of the mojo::MakeStrongReceiver<T>(...)
+// pattern for document-scoped Mojo interface implementations. Use of this
+// helper prevents logic bugs when Mojo IPCs for `Interface` race against Mojo
+// IPCs for navigation. One example of a past bug caused by this race is
+// https://crbug.com/769189, where an interface implementation performed a
+// permission check using the wrong origin.
 //
-// WARNING: To avoid race conditions, subclasses MUST only get the origin via
-// origin() instead of from |render_frame_host| passed in the constructor.
-// See https://crbug.com/769189 for an example of such a race.
+// Like C++ implementations owned by mojo::MakeStrongReceiver<T>(...), a
+// subclass of DocumentServiceBase<Interface> will delete itself when the
+// corresponding message pipe is disconnected by setting a disconnect handler on
+// the mojo::Receiver<T>.
+//
+// In addition, a subclass of DocumentServiceBase<Interface> will also track
+// the lifetime of the current document of the supplied RenderFrameHost and
+// delete itself:
+//
+// - if the RenderFrameHost is deleted (for example, the <iframe> element the
+//   RenderFrameHost represents is removed from the DOM) or
+// - if the RenderFrameHost commits a cross-document navigation. Specifically,
+//   DocumentServiceBase instances (and RenderDocumentHostUserData instances)
+//   are deleted with the same timing, before the last committed origin and
+//   URL have been updated.
+//
+// When to use:
+// Any Mojo interface implementation that references a RenderFrameHost, whether
+// directly via a RenderFrameHost pointer, or indirectly, via the
+// RenderFrameHost routing ID, should strongly consider:
+//
+// - `DocumentServiceBase` when there may be multiple instances per
+//   RenderFrameHost.
+// - `RenderDocumentHostUserData` when there should only be a single instance
+//   per RenderFrameHost.
+//
+// There are very few circumstances where a Mojo interface needs to be reused
+// after a cross-document navigation.
 template <typename Interface>
-class DocumentServiceBase : public Interface, public WebContentsObserver {
+class DocumentServiceBase : public Interface,
+                            public DocumentServiceBaseInternal {
  public:
   DocumentServiceBase(RenderFrameHost* render_frame_host,
                       mojo::PendingReceiver<Interface> pending_receiver)
-      : WebContentsObserver(
-            WebContents::FromRenderFrameHost(render_frame_host)),
-        render_frame_host_(render_frame_host),
-        origin_(render_frame_host_->GetLastCommittedOrigin()),
+      : DocumentServiceBaseInternal(render_frame_host),
         receiver_(this, std::move(pending_receiver)) {
     // |this| owns |receiver_|, so unretained is safe.
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&DocumentServiceBase::Close, base::Unretained(this)));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        [](DocumentServiceBaseInternal* document_service) {
+          delete document_service;
+        },
+        base::Unretained(this)));
   }
 
+  ~DocumentServiceBase() override = default;
+
  protected:
-  // Make the destructor private since |this| can only be deleted by Close().
-  virtual ~DocumentServiceBase() = default;
+  // `this` is promptly deleted if `render_frame_host_` commits a cross-document
+  // navigation, so it is always safe to simply call `GetLastCommittedOrigin()`
+  // and `GetLastCommittedURL()` directly.
+  const url::Origin& origin() const {
+    return render_frame_host()->GetLastCommittedOrigin();
+  }
 
-  // All subclasses should use this function to obtain the origin instead of
-  // trying to get it from the RenderFrameHost pointer directly.
-  const url::Origin& origin() const { return origin_; }
-
-  // Returns the RenderFrameHost held by this object.
-  RenderFrameHost* render_frame_host() const { return render_frame_host_; }
+  // Returns the RenderFrameHost tracked by this object. Guaranteed to never be
+  // null.
+  using DocumentServiceBaseInternal::render_frame_host;
 
   // Subclasses can use this to check thread safety.
   // For example: DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   THREAD_CHECKER(thread_checker_);
 
  private:
-  // Disallow calling web_contents() directly from the subclasses to ensure that
-  // tab-level state doesn't get queried or updated when the RenderFrameHost is
-  // not active.
-  // Use WebContents::From(render_frame_host()) instead, but please keep in mind
-  // that the render_frame_host() might not be active. See
-  // RenderFrameHost::IsActive() for details.
-  using WebContentsObserver::web_contents;
-
-  // WebContentsObserver implementation.
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) final {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (render_frame_host == render_frame_host_) {
-      DVLOG(1) << __func__ << ": RenderFrame destroyed.";
-      Close();
-    }
-  }
-
-  void DidFinishNavigation(NavigationHandle* navigation_handle) final {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!navigation_handle->HasCommitted() ||
-        navigation_handle->IsSameDocument() ||
-        navigation_handle->IsPageActivation()) {
-      return;
-    }
-
-    if (navigation_handle->GetRenderFrameHost() == render_frame_host_) {
-      // DocumentServiceBase is destroyed either when RenderFrameHost is
-      // destroyed (covered by RenderFrameDeleted) or when a new document
-      // commits in the same RenderFrameHost (covered by DidFinishNavigation).
-      // Only committed non-same-document non-bfcache non-prerendering
-      // activation navigations replace a document in existing RenderFrameHost.
-      DVLOG(1) << __func__ << ": Close connection on navigation.";
-      Close();
-    }
-  }
-
-  // Stops observing WebContents and delete |this|.
-  void Close() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DVLOG(1) << __func__;
-    delete this;
-  }
-
-  RenderFrameHost* const render_frame_host_ = nullptr;
-  const url::Origin origin_;
   mojo::Receiver<Interface> receiver_;
 };
 

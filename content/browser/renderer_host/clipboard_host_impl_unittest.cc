@@ -317,8 +317,8 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    fake_clipboard_host_impl_.reset(new FakeClipboardHostImpl(
-        web_contents()->GetMainFrame(), remote_.BindNewPipeAndPassReceiver()));
+    fake_clipboard_host_impl_ = new FakeClipboardHostImpl(
+        web_contents()->GetMainFrame(), remote_.BindNewPipeAndPassReceiver());
   }
 
   ~ClipboardHostImplScanTest() override {
@@ -326,7 +326,7 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
   }
 
   FakeClipboardHostImpl* clipboard_host_impl() {
-    return fake_clipboard_host_impl_.get();
+    return fake_clipboard_host_impl_;
   }
 
   mojo::Remote<blink::mojom::ClipboardHost>& mojo_clipboard() {
@@ -338,7 +338,9 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
   ui::Clipboard* const clipboard_;
-  std::unique_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_;
+  // `FakeClipboardHostImpl` is a `DocumentServiceBase` and manages its own
+  // lifetime.
+  FakeClipboardHostImpl* fake_clipboard_host_impl_;
 };
 
 TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
