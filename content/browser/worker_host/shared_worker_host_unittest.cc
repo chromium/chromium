@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -352,7 +353,19 @@ TEST_F(SharedWorkerHostTest, OnContextClosed) {
 }
 
 TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
+  // Enable COEPForSharedWorker, since CreateNetworkFactoryParamsForSubresources
+  // does more logic in that case.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kCOEPForSharedWorker);
+
   base::WeakPtr<SharedWorkerHost> host = CreateHost();
+
+  // Start the worker.
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+  StartWorker(host.get(), std::move(factory));
+
   network::mojom::URLLoaderFactoryParamsPtr params =
       host->CreateNetworkFactoryParamsForSubresources();
   EXPECT_EQ(host->GetStorageKey().origin(),
@@ -362,6 +375,11 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
 
 TEST_F(SharedWorkerHostTest,
        CreateNetworkFactoryParamsForSubresourcesWithNonce) {
+  // Enable COEPForSharedWorker, since CreateNetworkFactoryParamsForSubresources
+  // does more logic in that case.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kCOEPForSharedWorker);
+
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
@@ -374,6 +392,13 @@ TEST_F(SharedWorkerHostTest,
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
       network::CrossOriginEmbedderPolicy());
+
+  // Start the worker.
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+  StartWorker(host.get(), std::move(factory));
+
   network::mojom::URLLoaderFactoryParamsPtr params =
       host->CreateNetworkFactoryParamsForSubresources();
   EXPECT_EQ(url::Origin::Create(kWorkerUrl),
