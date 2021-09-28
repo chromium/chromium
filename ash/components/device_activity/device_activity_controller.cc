@@ -8,6 +8,8 @@
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
+#include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -45,7 +47,8 @@ DeviceActivityController::~DeviceActivityController() {
 
 void DeviceActivityController::Start(Trigger t) {
   if (t == Trigger::kNetwork) {
-    da_client_network_ = std::make_unique<DeviceActivityClient>(t);
+    da_client_network_ = std::make_unique<DeviceActivityClient>(
+        t, chromeos::NetworkHandler::Get()->network_state_handler());
   }
 }
 

@@ -12,6 +12,7 @@ component("device_activity") {
 
   deps = [
     "//base",
+    "//chromeos/network",
     "//components/prefs:prefs",
   ]
 
@@ -36,7 +37,10 @@ source_set("unit_tests") {
   deps = [
     ":device_activity",
     "//base/test:test_support",
+    "//chromeos/network",
+    "//chromeos/network:test_support",
     "//components/prefs:test_support",
+    "//dbus",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]

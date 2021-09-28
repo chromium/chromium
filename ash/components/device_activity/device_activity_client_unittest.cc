@@ -4,14 +4,26 @@
 
 #include "ash/components/device_activity/device_activity_client.h"
 
+#include "base/test/task_environment.h"
+#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
 namespace device_activity {
+namespace {
+
+constexpr char kWifiServiceGuid[] = "wifi_guid";
+
+}  // namespace
 
 class DeviceActivityClientTest : public testing::Test {
  public:
-  DeviceActivityClientTest() = default;
+  DeviceActivityClientTest()
+      : network_state_test_helper_(/*use_default_devices_and_services=*/false) {
+  }
+
   DeviceActivityClientTest(const DeviceActivityClientTest&) = delete;
   DeviceActivityClientTest& operator=(const DeviceActivityClientTest&) = delete;
   ~DeviceActivityClientTest() override = default;
@@ -19,13 +31,39 @@ class DeviceActivityClientTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    device_activity_client_ =
-        std::make_unique<DeviceActivityClient>(Trigger::kNetwork);
+    CreateWifiNetworkConfig();
+    device_activity_client_ = std::make_unique<DeviceActivityClient>(
+        Trigger::kNetwork, network_state_test_helper_.network_state_handler());
   }
 
-  void TearDown() override { device_activity_client_.reset(); }
+  void TearDown() override {}
 
+  void CreateWifiNetworkConfig() {
+    ASSERT_TRUE(wifi_network_service_path_.empty());
+
+    std::stringstream ss;
+    ss << "{"
+       << "  \"GUID\": \"" << kWifiServiceGuid << "\","
+       << "  \"Type\": \"" << shill::kTypeWifi << "\","
+       << "  \"State\": \"" << shill::kStateOffline << "\""
+       << "}";
+
+    wifi_network_service_path_ =
+        network_state_test_helper_.ConfigureService(ss.str());
+  }
+
+  // |network_state| is a shill network state, e.g. "shill::kStateIdle".
+  void SetWifiNetworkState(std::string network_state) {
+    network_state_test_helper_.SetServiceProperty(wifi_network_service_path_,
+                                                  shill::kStateProperty,
+                                                  base::Value(network_state));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  NetworkStateTestHelper network_state_test_helper_;
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
+  std::string wifi_network_service_path_;
 };
 
 }  // namespace device_activity
