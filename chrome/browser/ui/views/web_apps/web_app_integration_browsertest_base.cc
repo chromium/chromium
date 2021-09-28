@@ -975,13 +975,19 @@ void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
       content::NotificationService::AllSources());
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   active_app_id_ = observer.Wait();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   if (open_in_window) {
     app_loaded_observer.Wait();
     auto* browser_list = BrowserList::GetInstance();
-    app_browser_ = browser_list->GetLastActive();
-    DCHECK(AppBrowserController::IsWebApp(app_browser_));
+    app_browser_ = nullptr;
+    for (Browser* browser : *browser_list) {
+      if (AppBrowserController::IsForWebApp(browser, active_app_id_)) {
+        app_browser_ = browser;
+        return;
+      }
+    }
+    NOTREACHED() << "Unable to find app browser for app " << active_app_id_;
   }
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 }
 
 bool WebAppIntegrationBrowserTestBase::AreNoAppWindowsOpen(
