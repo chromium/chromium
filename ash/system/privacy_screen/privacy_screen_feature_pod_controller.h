@@ -35,7 +35,7 @@ class PrivacyScreenFeaturePodController
   void UpdateButton();
 
   // PrivacyScreenController::Observer:
-  void OnPrivacyScreenSettingChanged(bool enabled) override;
+  void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
   // Unowned.
   FeaturePodButton* button_ = nullptr;

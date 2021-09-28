@@ -28,7 +28,7 @@ class ASH_EXPORT PrivacyScreenController
   class Observer : public base::CheckedObserver {
    public:
     // Called when the privacy screen setting is changed.
-    virtual void OnPrivacyScreenSettingChanged(bool enabled) {}
+    virtual void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) {}
 
    protected:
     ~Observer() override = default;

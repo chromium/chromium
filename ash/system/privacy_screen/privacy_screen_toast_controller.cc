@@ -112,7 +112,12 @@ std::u16string PrivacyScreenToastController::GetAccessibleNameForBubble() {
   return toast_view_->GetAccessibleName();
 }
 
-void PrivacyScreenToastController::OnPrivacyScreenSettingChanged(bool enabled) {
+void PrivacyScreenToastController::OnPrivacyScreenSettingChanged(
+    bool enabled,
+    bool notify_ui) {
+  if (!notify_ui)
+    return;
+
   if (tray_->IsBubbleShown())
     return;
 

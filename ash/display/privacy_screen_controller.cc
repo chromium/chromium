@@ -71,7 +71,8 @@ void PrivacyScreenController::SetEnabled(bool enabled,
   if (IsManaged()) {
     const bool currently_enabled = GetEnabled();
     for (Observer& observer : observers_)
-      observer.OnPrivacyScreenSettingChanged(currently_enabled);
+      observer.OnPrivacyScreenSettingChanged(currently_enabled,
+                                             /*notify_ui=*/true);
     return;
   }
 
@@ -142,11 +143,8 @@ void PrivacyScreenController::OnStateChanged(bool notify_observers) {
   Shell::Get()->display_configurator()->SetPrivacyScreen(display_id,
                                                          is_enabled);
 
-  if (!notify_observers)
-    return;
-
   for (Observer& observer : observers_)
-    observer.OnPrivacyScreenSettingChanged(is_enabled);
+    observer.OnPrivacyScreenSettingChanged(is_enabled, notify_observers);
 }
 
 void PrivacyScreenController::InitFromUserPrefs() {
