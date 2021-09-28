@@ -15301,6 +15301,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.WillSendRequest">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Recorded when an XHR is about to be sent.
+  </summary>
+  <metric name="IsAddToCart" enum="Boolean">
+    <summary>
+      Whether the XHR is to add a product to a shopping cart. This has 50%
+      chance randomized.
+    </summary>
+  </metric>
+</event>
+
 <event name="SiteIsolation.XSD.Browser.Blocked">
   <obsolete>
     Removed in June 2019 / M77. Some old data has been saved in a
