@@ -141,9 +141,10 @@ TEST_F(CleanExitBeaconTest,
                                        1);
 }
 
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 // TODO(crbug/1248239): Run these tests on Android once the Extended Variations
 // Safe Mode experiment is enabled on Clank.
+// TODO(crbug/1244334): Enable this on iOS once the fix lands.
 INSTANTIATE_TEST_SUITE_P(
     All,
     CleanExitBeaconParameterizedTest,
@@ -255,14 +256,15 @@ TEST_F(CleanExitBeaconTest, CtorWithCrashAndVariationsFile) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
 // TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
 // experiment is enabled on Clank.
+// TODO(crbug/1244334): Enable this on iOS once the fix lands.
 
-// Verify that the beacon file, if any, is ignored on Android.
-TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
+// Verify that the beacon file, if any, is ignored on Android and iOS.
+TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnMobile) {
   // Set up the beacon file such that the previous session did not exit cleanly
   // and the running crash streak is 2. The file (and thus these values) are
   // expected to be ignored.
@@ -297,7 +299,7 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        expected_num_crashes, 1);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 // Verify that attempting to write synchronously is a no-op for clients that do
 // not belong to specific Extended Variations Safe Mode experiment groups.

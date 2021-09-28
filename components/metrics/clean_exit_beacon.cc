@@ -114,7 +114,7 @@ bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents,
 // the file in the first session after updating. It is also possible for a user
 // to delete the file or to reset their variations state with
 // kResetVariationState.
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 std::unique_ptr<base::Value> MaybeGetFileContents(
     const base::FilePath& beacon_file_path) {
   JSONFileValueDeserializer deserializer(beacon_file_path);
@@ -135,7 +135,7 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
     return beacon_file_contents;
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 }  // namespace
 
@@ -152,14 +152,16 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
   if (!user_data_dir.empty())
     beacon_file_path_ = user_data_dir.Append(variations::kVariationsFilename);
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
   // TODO(crbug/1248239): Allow the file to be used once the Extended Variations
   // Safe Mode experiment is enabled on Clank.
+  //
+  // TODO(crbug/1244334): Enable this on iOS once the fix lands.
   std::unique_ptr<base::Value> beacon_file_contents = nullptr;
 #else
   std::unique_ptr<base::Value> beacon_file_contents =
       MaybeGetFileContents(beacon_file_path_);
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
   did_previous_session_exit_cleanly_ =
       DidPreviousSessionExitCleanly(beacon_file_contents.get(), local_state_);
