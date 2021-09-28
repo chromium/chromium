@@ -341,6 +341,15 @@ void FakeSessionManagerClient::StopSession(
   session_stopped_ = true;
 }
 
+void FakeSessionManagerClient::LoadShillProfile(
+    const cryptohome::AccountIdentifier& cryptohome_id) {
+  if (on_load_shill_profile_callback_.is_null())
+    return;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(on_load_shill_profile_callback_, cryptohome_id));
+}
+
 void FakeSessionManagerClient::StartDeviceWipe() {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {

@@ -2521,6 +2521,7 @@ if (!is_android) {
         "../browser/ash/login/screens/user_selection_screen_browsertest.cc",
         "../browser/ash/login/screens/welcome_screen_browsertest.cc",
         "../browser/ash/login/screens/wrong_hwid_screen_browsertest.cc",
+        "../browser/ash/login/shill_profile_loading_browsertest.cc",
         "../browser/ash/profiles/profile_helper_browsertest.cc",
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",

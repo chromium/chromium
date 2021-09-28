@@ -208,6 +208,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // the device. Use SessionTerminationManager::StopSession instead.
   virtual void StopSession(login_manager::SessionStopReason reason) = 0;
 
+  // Triggers loading the shill profile for |cryptohome_id|.
+  virtual void LoadShillProfile(
+      const cryptohome::AccountIdentifier& cryptohome_id) = 0;
+
   // Starts the factory reset.
   virtual void StartDeviceWipe() = 0;
 
