@@ -189,12 +189,13 @@ void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
   }
 }
 
-void GPUDevice::OnDeviceLostError(const char* message) {
+void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason, const char* message) {
   if (!GetExecutionContext())
     return;
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {
+    // TODO(crbug.com/1253721): Add the `reason` attribute to GPUDeviceLostInfo.
     auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(message);
     lost_property_->Resolve(device_lost_info);
   }
