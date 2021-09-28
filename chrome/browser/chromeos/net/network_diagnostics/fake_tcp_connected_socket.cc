@@ -12,6 +12,8 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+
 FakeTCPConnectedSocket::FakeTCPConnectedSocket() = default;
 
 FakeTCPConnectedSocket::~FakeTCPConnectedSocket() = default;
@@ -62,3 +64,5 @@ void FakeTCPConnectedSocket::BindReceiver(
 
   receiver_.Bind(std::move(socket));
 }
+
+}  // namespace chromeos

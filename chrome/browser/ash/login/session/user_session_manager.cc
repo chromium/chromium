@@ -1675,7 +1675,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       // SecureDnsManager is only needed if DNS-over-HTTPS is enabled for the
       // dns-proxy service.
       if (base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH)) {
-        secure_dns_manager_ = std::make_unique<net::SecureDnsManager>(
+        secure_dns_manager_ = std::make_unique<SecureDnsManager>(
             g_browser_process->local_state());
       }
     }

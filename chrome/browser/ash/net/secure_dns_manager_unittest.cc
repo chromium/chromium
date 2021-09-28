@@ -19,6 +19,7 @@
 
 #include "base/logging.h"
 
+namespace ash {
 namespace {
 
 constexpr const char kGoogleDns[] = "https://dns.google/dns-query{?dns}";
@@ -55,11 +56,6 @@ std::map<std::string, std::string> GetDOHProviders() {
   EXPECT_TRUE(success);
   return props;
 }
-
-}  // namespace
-
-namespace net {
-namespace {
 
 class SecureDnsManagerTest : public testing::Test {
  public:
@@ -156,4 +152,4 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
 }
 
 }  // namespace
-}  // namespace net
+}  // namespace ash

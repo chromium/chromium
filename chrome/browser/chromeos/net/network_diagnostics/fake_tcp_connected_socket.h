@@ -10,6 +10,8 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
+namespace chromeos {
+
 class FakeTCPConnectedSocket : public network::mojom::TCPConnectedSocket {
  public:
   FakeTCPConnectedSocket();
@@ -52,5 +54,7 @@ class FakeTCPConnectedSocket : public network::mojom::TCPConnectedSocket {
   net::Error tls_upgrade_code_;
   bool disconnect_ = false;
 };
+
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_FAKE_TCP_CONNECTED_SOCKET_H_

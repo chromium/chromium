@@ -666,7 +666,7 @@ class UserSessionManager
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 
-  std::unique_ptr<net::SecureDnsManager> secure_dns_manager_;
+  std::unique_ptr<SecureDnsManager> secure_dns_manager_;
 
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 

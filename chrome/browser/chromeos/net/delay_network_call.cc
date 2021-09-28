@@ -16,10 +16,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-const unsigned chromeos::kDefaultNetworkRetryDelayMS = 3000;
+namespace chromeos {
 
-void chromeos::DelayNetworkCall(base::TimeDelta retry,
-                                base::OnceClosure callback) {
+const unsigned kDefaultNetworkRetryDelayMS = 3000;
+
+void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback) {
   bool delay_network_call = false;
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -48,9 +49,10 @@ void chromeos::DelayNetworkCall(base::TimeDelta retry,
   if (delay_network_call) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&chromeos::DelayNetworkCall, retry, std::move(callback)),
-        retry);
+        base::BindOnce(&DelayNetworkCall, retry, std::move(callback)), retry);
   } else {
     std::move(callback).Run();
   }
 }
+
+}  // namespace chromeos
