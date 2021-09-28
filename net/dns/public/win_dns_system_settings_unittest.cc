@@ -74,9 +74,8 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
   return heap;
 }
 
-// TODO(crbug/1253805): Fix and reenable the test.
-TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersEmpty) {
-  AdapterInfo infos[2] = {
+TEST(WinDnsSystemSettings, GetAllNameServersEmpty) {
+  AdapterInfo infos[3] = {
       {
           .if_type = IF_TYPE_USB,
           .oper_status = IfOperStatusUp,
@@ -89,7 +88,7 @@ TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersEmpty) {
           .dns_suffix = L"foo.bar",
           .dns_server_addresses = {},
       },
-  };
+      {0}};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
@@ -99,10 +98,8 @@ TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersEmpty) {
   EXPECT_TRUE(nameservers.value().empty());
 }
 
-// TODO(crbug/1253805): Fix and reenable the test.
-TEST(WinDnsSystemSettings,
-     DISABLED_GetAllNameServersStatelessDiscoveryAdresses) {
-  AdapterInfo infos[2] = {
+TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
+  AdapterInfo infos[3] = {
       {
           .if_type = IF_TYPE_USB,
           .oper_status = IfOperStatusUp,
@@ -114,7 +111,8 @@ TEST(WinDnsSystemSettings,
           .oper_status = IfOperStatusUp,
           .dns_suffix = L"foo.bar",
           .dns_server_addresses = {"fec0:0:0:ffff::3"},
-      }};
+      },
+      {0}};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
@@ -124,9 +122,8 @@ TEST(WinDnsSystemSettings,
   EXPECT_TRUE(nameservers.value().empty());
 }
 
-// TODO(crbug/1253805): Fix and reenable the test.
-TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersValid) {
-  AdapterInfo infos[2] = {
+TEST(WinDnsSystemSettings, GetAllNameServersValid) {
+  AdapterInfo infos[3] = {
       {.if_type = IF_TYPE_USB,
        .oper_status = IfOperStatusUp,
        .dns_suffix = L"example.com",
@@ -137,7 +134,8 @@ TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersValid) {
        .dns_suffix = L"foo.bar",
        .dns_server_addresses = {"2001:ffff::1111",
                                 "aaaa:bbbb:cccc:dddd:eeee:ffff:0:1"},
-       .ports = {33, 44}}};
+       .ports = {33, 44}},
+      {0}};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
