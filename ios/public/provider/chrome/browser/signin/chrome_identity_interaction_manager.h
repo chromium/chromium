@@ -28,17 +28,10 @@ typedef void (^SigninCompletionCallback)(ChromeIdentity* identity,
 // on iOS.
 @interface ChromeIdentityInteractionManager : NSObject
 
+// If |userEmail| is not set:
 // Starts the add account operation for a user. Presents user with the screen to
 // enter credentials.
-// Note: Calling this method will fail and the completion will be called with a
-// CHROME_IDENTITY_OPERATION_ONGOING error if there is already another add
-// account or reauthenticate operation ongoing.
-// * |viewController| will display the add account screens.
-// * |completion| will be called once the operation has finished.
-- (void)addAccountWithPresentingViewController:(UIViewController*)viewController
-                                    completion:
-                                        (SigninCompletionCallback)completion;
-
+// If |userEmail| is set:
 // Starts the reauthentication operation for a user. Presents user with the
 // screen to enter credentials with the email pre-entered.
 // Note: Calling this method will fail and the completion will be called with a

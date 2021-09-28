@@ -106,6 +106,7 @@ static ChromeIdentity* _identity = nil;
 }
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
+                                     userEmail:(NSString*)userEmail
                                     completion:
                                         (SigninCompletionCallback)completion {
   self.completionCallback = completion;
@@ -117,14 +118,6 @@ static ChromeIdentity* _identity = nil;
                              completion:^() {
                                weakSelf.viewControllerPresented = YES;
                              }];
-}
-
-- (void)addAccountWithPresentingViewController:(UIViewController*)viewController
-                                     userEmail:(NSString*)userEmail
-                                    completion:
-                                        (SigninCompletionCallback)completion {
-  [self addAccountWithPresentingViewController:viewController
-                                    completion:completion];
 }
 
 - (void)cancelAddAccountAnimated:(BOOL)animated
