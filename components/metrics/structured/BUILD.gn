@@ -213,6 +213,7 @@ static_library("neutrino_logging") {
   ]
 
   deps = [
+    ":common",
     ":structured_events",
     "//base",
   ]

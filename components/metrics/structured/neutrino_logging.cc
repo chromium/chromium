@@ -5,7 +5,8 @@
 #include "components/metrics/structured/neutrino_logging.h"
 
 #include "base/time/time.h"
-#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 
 namespace {
 
@@ -28,7 +29,7 @@ void NeutrinoDevicesLog(NeutrinoDevicesLocation location) {
 
 void NeutrinoDevicesLogWithClientId(const std::string& client_id,
                                     NeutrinoDevicesLocation location) {
-  auto code_point = events::neutrino_devices::CodePoint();
+  events::v2::neutrino_devices::CodePoint code_point;
   if (!client_id.empty())
     code_point.SetClientId(client_id);
   code_point.SetLocation(static_cast<int64_t>(location)).Record();
@@ -37,7 +38,7 @@ void NeutrinoDevicesLogWithClientId(const std::string& client_id,
 void NeutrinoDevicesLogPolicy(const std::string& client_id,
                               bool is_managed,
                               NeutrinoDevicesLocation location) {
-  auto enrollment = metrics::structured::events::neutrino_devices::Enrollment();
+  events::v2::neutrino_devices::Enrollment enrollment;
   if (!client_id.empty())
     enrollment.SetClientId(client_id);
   enrollment.SetIsManagedPolicy(is_managed)
@@ -49,8 +50,7 @@ void NeutrinoDevicesLogClientIdCleared(
     const std::string& client_id,
     int64_t install_date_timestamp,
     int64_t metrics_reporting_enabled_timestamp) {
-  auto client_id_cleared =
-      metrics::structured::events::neutrino_devices::ClientIdCleared();
+  events::v2::neutrino_devices::ClientIdCleared client_id_cleared;
   if (!client_id.empty())
     client_id_cleared.SetInitialClientId(client_id);
   client_id_cleared
@@ -66,15 +66,16 @@ void NeutrinoDevicesLogClientIdChanged(
     int64_t install_date_timestamp,
     int64_t metrics_reporting_enabled_timestamp,
     NeutrinoDevicesLocation location) {
-  auto client_id_changed =
-      metrics::structured::events::neutrino_devices::ClientIdChanged();
+  events::v2::neutrino_devices::ClientIdChanged client_id_changed;
+  auto event_base = EventBase::FromEvent(client_id_changed);
+
   if (!initial_client_id.empty())
     client_id_changed.SetInitialClientId(initial_client_id);
   if (!client_id.empty())
     client_id_changed.SetFinalClientId(client_id);
 
-  const absl::optional<int> last_key_rotation =
-      client_id_changed.LastKeyRotation();
+  const absl::optional<int> last_key_rotation = event_base->LastKeyRotation();
+
   if (last_key_rotation.has_value()) {
     int days_since_rotation =
         (base::Time::Now() - base::Time::UnixEpoch()).InDays() -

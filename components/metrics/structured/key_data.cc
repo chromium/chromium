@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/structured_events.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 
