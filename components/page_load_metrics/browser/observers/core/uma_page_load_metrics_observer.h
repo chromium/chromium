@@ -138,11 +138,6 @@ extern const char
 extern const char
     kHistogramNavigationTimingFinalLoaderCallbackToNavigationCommitSent[];
 
-// 103 Early Hints metrics for experiment (https://crbug.com/1093693).
-extern const char kHistogramEarlyHintsFirstRequestStartToEarlyHints[];
-extern const char kHistogramEarlyHintsFinalRequestStartToEarlyHints[];
-extern const char kHistogramEarlyHintsEarlyHintsToFinalResponseStart[];
-
 // V8 memory usage metrics.
 extern const char kHistogramMemoryMainframe[];
 extern const char kHistogramMemorySubframeAggregate[];
