@@ -40,6 +40,11 @@ enum NotificationSetting {
   NOTIFICATIONS_ON = 1;
 }
 
+enum CameraRollSetting {
+  CAMERA_ROLL_OFF = 0;
+  CAMERA_ROLL_ON = 1;
+}
+
 enum ChargingState {
   NOT_CHARGING = 0;
   CHARGING_AC = 1;
@@ -162,6 +167,7 @@ message App {
 
 message CrosState {
   NotificationSetting notification_setting = 1;
+  CameraRollSetting camera_roll_setting = 2;
 }
 
 message Action {
