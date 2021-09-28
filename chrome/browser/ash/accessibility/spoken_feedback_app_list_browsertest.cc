@@ -15,6 +15,8 @@
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
@@ -94,7 +96,11 @@ class SpokenFeedbackAppListTest
   }
 
   // Populate apps grid with |num| items.
-  void PopulateApps(size_t num) { app_list_test_model_->PopulateApps(num); }
+  virtual void PopulateApps(size_t num) {
+    // TODO(https://crbug.com/1251617): use `ChromeAppListModelUpdater` instead
+    // of `app_list_test_model_` to populate apps.
+    app_list_test_model_->PopulateApps(num);
+  }
 
   // Populate |num| suggestion chips.
   void PopulateChips(size_t num) {
@@ -549,78 +555,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.Replay();
 }
 
-// Checks that app list keyboard reordering is announced.
-// TODO(mmourgos): The current method of accessibility announcements for item
-// reordering uses alerts, this works for spoken feedback but does not work as
-// well for braille users. The preferred way to handle this is to actually
-// change focus as the user navigates, and to have each object's
-// accessible name describe its position. (See crbug.com/1098495)
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
-  // Add 7 apps.
-  PopulateApps(22);
-
-  EnableChromeVox();
-
-  sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
-  });
-  sm_.ExpectSpeech("Shelf");
-  // Press space on the launcher button in shelf, this opens peeking
-  // launcher.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech("Launcher, partial view");
-  // Send a key press to enable keyboard traversal
-  sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_TAB); });
-  // Move focus to expand all apps button.
-  sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_TAB); });
-  sm_.ExpectSpeech("Expand to all apps");
-  // Press space on expand arrow to go to fullscreen launcher.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech("Launcher, all apps");
-
-  // Move focus to first app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Item 0");
-  sm_.ExpectSpeech("Button");
-
-  // Move the first item to the right.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 1, column 2.");
-
-  // Move the focused item down.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 2, column 2.");
-
-  // Move the focused item down.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 3, column 2.");
-
-  // Move the focused item down.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 4, column 2.");
-
-  // Move the focused item down to page 2.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 2, row 1, column 2.");
-
-  // Move the focused item to the left.
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_LEFT); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 2, row 1, column 1.");
-
-  // Move the focused item back up to page 1..
-  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_UP); });
-  sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 4, column 1.");
-
-  sm_.Replay();
-}
-
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
                        LauncherWindowTitleAnnouncement) {
   EnableChromeVox();
@@ -655,6 +589,133 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeechPattern("Displaying *");
   sm_.Call([this]() { ReadWindowTitle(); });
   sm_.ExpectSpeech("Launcher");
+  sm_.Replay();
+}
+
+// The test with `ChromeAppListModelUpdater` set.
+class SpokenFeedbackWithChromeAppListModelUpdaterTest
+    : public SpokenFeedbackAppListTest {
+ public:
+  SpokenFeedbackWithChromeAppListModelUpdaterTest() = default;
+  ~SpokenFeedbackWithChromeAppListModelUpdaterTest() override = default;
+
+  void SetUpOnMainThread() override {
+    SpokenFeedbackAppListTest::SetUpOnMainThread();
+    AppListClientImpl::GetInstance()->UpdateProfile();
+  }
+  void PopulateApps(size_t num) override {
+    // Only folders or page breaks are allowed to be added from the Ash side.
+    // Therefore new apps should be added through `ChromeAppListModelUpdater`.
+    ::test::PopulateDummyAppListItems(num);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
+                         SpokenFeedbackWithChromeAppListModelUpdaterTest,
+                         ::testing::Values(kTestAsNormalUser,
+                                           kTestAsGuestUser));
+
+// Checks that app list keyboard reordering is announced.
+// TODO(mmourgos): The current method of accessibility announcements for item
+// reordering uses alerts, this works for spoken feedback but does not work as
+// well for braille users. The preferred way to handle this is to actually
+// change focus as the user navigates, and to have each object's
+// accessible name describe its position. (See crbug.com/1098495)
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithChromeAppListModelUpdaterTest,
+                       AppListReordering) {
+  const int default_app_count =
+      AppListClientImpl::GetInstance()->GetModelUpdaterForTest()->ItemCount();
+
+  PopulateApps(22);
+  EnableChromeVox();
+
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeech("Shelf");
+  // Press space on the launcher button in shelf, this opens peeking
+  // launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, partial view");
+  // Send a key press to enable keyboard traversal
+  sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_TAB); });
+  // Move focus to expand all apps button.
+  sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_TAB); });
+  sm_.ExpectSpeech("Expand to all apps");
+  // Press space on expand arrow to go to fullscreen launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, all apps");
+
+  // Move focus to first app;
+  sm_.Call([this, &default_app_count]() {
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+    if (default_app_count) {
+      // Skip the suggestion chips.
+      SendKeyPressWithSearch(ui::VKEY_DOWN);
+
+      // Skip the default installed apps.
+      for (int i = 0; i < default_app_count; ++i)
+        SendKeyPressWithSearch(ui::VKEY_RIGHT);
+    }
+  });
+  sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("Button");
+
+  // The default column of app 0.
+  const int original_column = default_app_count + 1;
+
+  // The column of app 0 after rightward move.
+  const int column_after_horizontal_move = original_column + 1;
+
+  // Move the first item to the right.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+
+  std::string expected_text;
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 1, row 1, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 1, row 2, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 1, row 3, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 1, row 4, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down to page 2.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 2, row 1, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item to the left.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_LEFT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to Page 2, row 1, column %d.", original_column));
+
+  // Move the focused item back up to page 1..
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_UP); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to Page 1, row 4, column %d.", original_column));
+
   sm_.Replay();
 }
 
