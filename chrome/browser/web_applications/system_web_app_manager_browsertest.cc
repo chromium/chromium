@@ -1048,6 +1048,9 @@ class SystemWebAppManagerMigrationTest : public SystemWebAppBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// DISABLED_ does not work together with PRE_.
+#if 0
+
 // These tests use the App Service which is only enabled on Chrome OS.
 // TODO(crbug.com/1201318): Re-enable this test on Chrome OS
 IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
@@ -1064,6 +1067,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
       });
   ASSERT_TRUE(app_found);
 }
+
+#endif
 
 // These tests use the App Service which is only enabled on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
