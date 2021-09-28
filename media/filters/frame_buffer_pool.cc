@@ -13,6 +13,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -141,9 +142,13 @@ bool FrameBufferPool::OnMemoryDump(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::trace_event::MemoryAllocatorDump* memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
   base::trace_event::MemoryAllocatorDump* used_memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool/used");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/used/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
 
   pmd->AddSuballocation(memory_dump->guid(),
                         base::trace_event::MemoryDumpManager::GetInstance()
