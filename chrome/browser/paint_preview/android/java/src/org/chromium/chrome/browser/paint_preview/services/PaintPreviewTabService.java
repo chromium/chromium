@@ -114,6 +114,11 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         return mNativePaintPreviewBaseService;
     }
 
+    @VisibleForTesting
+    public boolean hasNativeServiceForTesting() {
+        return mNativePaintPreviewTabService != 0;
+    }
+
     /**
      * Returns whether there exists a capture for the tab ID.
      * @param tabId the id for the tab requested.
@@ -168,7 +173,8 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         auditArtifacts(tabIds);
     }
 
-    private boolean isNativeCacheInitialized() {
+    @VisibleForTesting
+    public boolean isNativeCacheInitialized() {
         if (mNativePaintPreviewTabService == 0) return false;
 
         return PaintPreviewTabServiceJni.get().isCacheInitializedAndroid(

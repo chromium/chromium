@@ -299,6 +299,9 @@ class PaintPreviewCompositorBeginCompositeTest
 
   GURL url_{"https://www.chromium.org"};
 
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
  private:
   PaintPreviewCompositorImpl compositor_{mojo::NullReceiver(), nullptr,
                                          base::DoNothing()};
