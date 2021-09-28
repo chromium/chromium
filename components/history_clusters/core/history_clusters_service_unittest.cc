@@ -15,6 +15,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -223,6 +224,7 @@ class HistoryClustersServiceTest : public testing::Test {
 };
 
 TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
+  base::HistogramTester histogram_tester;
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
@@ -278,6 +280,13 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   run_loop_.Run();
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumClustersReturned",
+      static_cast<int>(clusters.size()), 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
 }
 
 TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
@@ -429,6 +438,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
+  base::HistogramTester histogram_tester;
   AddHardcodedTestDataToHistoryService();
 
   struct TestData {
@@ -553,6 +563,17 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   }
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.NumClustersReturned", 2, base::size(test_data));
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.NumVisitsToCluster", 2, base::size(test_data));
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.PercentClustersFilteredByQuery", 0, 2);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.PercentClustersFilteredByQuery", 100, 1);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.PercentClustersFilteredByQuery", 50,
+      base::size(test_data) - 3);
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {

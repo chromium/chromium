@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -505,6 +506,8 @@ void HistoryClustersService::QueryClusters(
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
   NotifyDebugMessage(base::StringPrintf("  max_count = %zu", max_count));
+
+  // TODO(crbug/1243049) : Add timing metrics for the history service DB query.
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
@@ -701,6 +704,10 @@ void HistoryClustersService::OnGotHistoryVisits(
   NotifyDebugMessage(GetDebugJSONForVisits(annotated_visits));
 
   NotifyDebugMessage("Calling backend_->GetClusters()");
+  base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
+                               static_cast<int>(annotated_visits.size()));
+  // TODO(crbug/1243049) : Add timing metrics for the on-device clustering
+  // backend.
   backend_->GetClusters(
       base::BindOnce(&HistoryClustersService::OnGotClusters,
                      weak_ptr_factory_.GetWeakPtr(), query,
@@ -722,6 +729,18 @@ void HistoryClustersService::OnGotClusters(
   auto filtered_raw_clusters = FilterClustersMatchingQuery(query, clusters);
   result.clusters = CollapseDuplicateVisits(filtered_raw_clusters);
   result.clusters = SortClusters(result.clusters);
+
+  base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
+                               static_cast<int>(clusters.size()));
+
+  if (!clusters.empty()) {
+    // Log the percentage of clusters that get filtered (e.g., 100 - % of
+    // clusters that remain).
+    base::UmaHistogramCounts100(
+        "History.Clusters.PercentClustersFilteredByQuery",
+        static_cast<int>(
+            100 - (result.clusters.size() / (1.0 * clusters.size()) * 100)));
+  }
 
   NotifyDebugMessage("  Clusters JSON follows:");
   NotifyDebugMessage(GetDebugJSONForClusters(clusters));

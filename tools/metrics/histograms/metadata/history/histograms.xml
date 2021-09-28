@@ -383,8 +383,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Actions.DidMakeQuery" units="BooleanQueried"
+    expires_after="M101">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g. closed
+    tab, navigated in the same tab, or closed browser). Logs whether the user
+    made a query on their history from the journeys page.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Actions.FinalState"
+    units="HistoryClustersFinalState" expires_after="M101">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g. closed
+    tab, navigated in the same tab, or closed browser). Logs the final state
+    that ended the use of the journeys page (e.g., a link click away from the
+    page).
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Actions.InitialState"
+    units="HistoryClustersInitialState" expires_after="M101">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g. closed
+    tab, navigated in the same tab, or closed browser). Logs the state that
+    started the use of the journeys page (e.g., a direct navigation to journeys
+    page).
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Actions.LinksOpened" units="links opened"
-    expires_after="2022-02-25">
+    expires_after="M101">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -394,8 +429,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Actions.NumQueries"
+    units="number queries made" expires_after="M101">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g. closed
+    tab, navigated in the same tab, or closed browser). Logs the number of
+    queries the user made while on the journeys page, only logged if at least
+    one query was made.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.ServiceLatency" units="ms"
-    expires_after="2022-02-25">
+    expires_after="M101">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>

@@ -9796,6 +9796,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Profile was Signed In"/>
 </enum>
 
+<enum name="BooleanQueried">
+  <int value="0" label="Not Queried"/>
+  <int value="1" label="Queried"/>
+</enum>
+
 <enum name="BooleanRaced">
   <int value="0" label="Did Not Race"/>
   <int value="1" label="Raced"/>

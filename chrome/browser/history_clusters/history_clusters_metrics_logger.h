@@ -25,7 +25,7 @@ enum class HistoryClustersInitialState {
   // chrome://history sidebar.
   kIndirectNavigation = 2,
   // Add new values above this line.
-  kMax = kIndirectNavigation,
+  kMaxValue = kIndirectNavigation,
 };
 
 // The final state, or outcome, of an interaction on the HistoryClusters UI.
@@ -41,7 +41,7 @@ enum class HistoryClustersFinalState {
   //  should differentiate this case.
   kCloseTab = 2,
   // Add new values above this line.
-  kMax = kCloseTab,
+  kMaxValue = kCloseTab,
 };
 
 // HistoryClustersMetricsLogger contains all the metrics/events associated with

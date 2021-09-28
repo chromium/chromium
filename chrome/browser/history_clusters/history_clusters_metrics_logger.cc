@@ -45,6 +45,18 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   // Record UMA metrics.
   base::UmaHistogramExactLinear("History.Clusters.Actions.LinksOpened",
                                 links_opened_count_, 100);
+  base::UmaHistogramEnumeration("History.Clusters.Actions.InitialState",
+                                *init_state_);
+  base::UmaHistogramEnumeration("History.Clusters.Actions.FinalState",
+                                *final_state_);
+  base::UmaHistogramBoolean("History.Clusters.Actions.DidMakeQuery",
+                            num_queries_ > 0);
+  if (num_queries_ > 0) {
+    // Only log if at least 1 query was made so we measure the distribution of
+    // the number of queries when made.
+    base::UmaHistogramCounts100("History.Clusters.Actions.NumQueries",
+                                num_queries_);
+  }
 }
 
 PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger)
