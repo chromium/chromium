@@ -163,10 +163,9 @@ VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
 const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
     scoped_refptr<VideoFrame> frame,
     bool use_protected) {
-  if (frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
-      !frame->HasGpuMemoryBuffer()) {
+  if (!frame->HasGpuMemoryBuffer())
     return nullptr;
-  }
+  DCHECK_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
   const gfx::GpuMemoryBufferId gmb_id = frame->GetGpuMemoryBuffer()->GetId();
   if (base::Contains(allocated_va_surfaces_, gmb_id)) {
