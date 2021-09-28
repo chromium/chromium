@@ -112,7 +112,7 @@ class AuditorTest(unittest.TestCase):
     """Tests that FileFilter.get_files_from_git() returns correct files given
     a mock git_list.txt file. It also inherently checks
     FileFilter._is_supported_source_file()."""
-    filter = FileFilter()
+    filter = FileFilter([".cc", ".mm"])
     filter.git_file_for_testing = CPP_TESTS_DIR / "git_list.txt"
     filter.get_files_from_git()
 
@@ -133,7 +133,7 @@ class AuditorTest(unittest.TestCase):
   def test_get_source_files(self):
     """Tests that FileFilter.get_source_files() gives the correct list of
     files, given a mock git_list.txt file."""
-    filter = FileFilter()
+    filter = FileFilter([".cc", ".mm"])
     filter.git_file_for_testing = CPP_TESTS_DIR / "git_list.txt"
     filter.get_files_from_git()
 
@@ -642,7 +642,7 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual([], errors)
 
     # The content of annotations.xml shouldn't change when writing it.
-    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text(encoding="utf-8")
+    old_xml = exporter.annotations_xml_path.read_text(encoding="utf-8")
     new_xml = exporter._generate_serialized_xml()
     self.assertEqual(old_xml, new_xml)
 

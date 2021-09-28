@@ -43,6 +43,17 @@ class Language(NamedTuple):
 # Exit code for parsing errors. Other runtime errors return 1.
 EX_PARSE_ERROR = 2
 
+# A regex that scans more quickly than the other regexen below, for
+# pre-filtering. A first pass will check for these strings, and skip any files
+# that don't contain them. Keep this regex simple, so it's fast.
+#
+# N.B.: this regex MUST match anything that would be matched by the other
+# regexen below, or we will get false negatives (i.e., we will miss some
+# annotations because pre-filtering is too strict).
+PREFILTER_REGEX = re.compile(r'''
+  TrafficAnnotation | TRAFFIC_ANNOTATION
+''', re.VERBOSE | re.IGNORECASE)
+
 # Language definition for C++ source files.
 CPP_ANNOTATION_TYPES = {
     'DefineNetworkTrafficAnnotation': AnnotationType.COMPLETE,
@@ -242,7 +253,16 @@ def is_inside_comment(string, pos):
   # TODO(crbug/966883): Add multi-line comment support.
 
 
-def extract_annotations(file_path: Path):
+def may_contain_annotations(file_path: Path) -> bool:
+  """Returns False if |file_path| is guaranteed not to contain annotations.
+
+  This runs much faster than extract_annotations(), and is meant for
+  pre-filtering. If this returns True, then |file_path| *might* contain
+  annotations. Call extract_annotations() to know for sure."""
+  return bool(PREFILTER_REGEX.search(file_path.read_text()))
+
+
+def extract_annotations(file_path: Path) -> List[Annotation]:
   """Extracts and returns annotations from the file at |file_path|."""
   if file_path.suffix not in LANGUAGE_MAPPING:
     raise ValueError("Unrecognized extension '{}' for file '{}'.".format(
