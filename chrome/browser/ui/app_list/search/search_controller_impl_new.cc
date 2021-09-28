@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
-#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -285,7 +285,7 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
     base::Time::Exploded now_exploded;
     now.LocalExplode(&now_exploded);
 
-    metrics::structured::events::launcher_usage::LauncherUsage()
+    metrics::structured::events::v2::launcher_usage::LauncherUsage()
         .SetTarget(NormalizeId(launch_data.id))
         .SetApp(last_launched_app_id_)
         .SetSearchQuery(base::UTF16ToUTF8(last_query_))
