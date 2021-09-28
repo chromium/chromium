@@ -248,12 +248,14 @@ MetricsStateManager::MetricsStateManager(
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info)
+    LoadClientInfoCallback retrieve_client_info,
+    base::StringPiece external_client_id)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       store_client_info_(std::move(store_client_info)),
       load_client_info_(std::move(retrieve_client_info)),
       clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
+      external_client_id_(external_client_id),
       entropy_state_(local_state),
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
       metrics_ids_were_reset_(false),
@@ -400,6 +402,13 @@ void MetricsStateManager::ForceClientIdCreation() {
              switches::kForceEnableMetricsReporting) ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kMetricsRecordingOnly));
+  if (!external_client_id_.empty()) {
+    client_id_ = external_client_id_;
+    base::UmaHistogramEnumeration("UMA.ClientIdSource",
+                                  ClientIdSource::kClientIdFromExternal);
+    local_state_->SetString(prefs::kMetricsClientID, client_id_);
+    return;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string previous_client_id = client_id_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -452,8 +461,8 @@ void MetricsStateManager::ForceClientIdCreation() {
     }
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdBackupRecovered);
-    UMA_HISTOGRAM_COUNTS_10000("UMA.ClientIdBackupRecoveredWithAge",
-                               recovered_installation_age.InHours());
+    base::UmaHistogramCounts10000("UMA.ClientIdBackupRecoveredWithAge",
+                                  recovered_installation_age.InHours());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     LogClientIdChanged(
         metrics::structured::NeutrinoDevicesLocation::kClientIdBackupRecovered,
@@ -537,7 +546,8 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info) {
+    LoadClientInfoCallback retrieve_client_info,
+    base::StringPiece external_client_id) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {
@@ -548,7 +558,8 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
                                     : std::move(store_client_info),
         retrieve_client_info.is_null()
             ? base::BindRepeating(&NoOpLoadClientInfoBackup)
-            : std::move(retrieve_client_info)));
+            : std::move(retrieve_client_info),
+        external_client_id));
   }
   return result;
 }
@@ -607,8 +618,8 @@ void MetricsStateManager::UpdateEntropySourceReturnedValue(
     return;
 
   entropy_source_returned_ = type;
-  UMA_HISTOGRAM_ENUMERATION("UMA.EntropySourceType", type,
-                            ENTROPY_SOURCE_ENUM_SIZE);
+  base::UmaHistogramEnumeration("UMA.EntropySourceType", type,
+                                ENTROPY_SOURCE_ENUM_SIZE);
 }
 
 void MetricsStateManager::ResetMetricsIDsIfNecessary() {
@@ -617,7 +628,7 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
   metrics_ids_were_reset_ = true;
   previous_client_id_ = ReadClientId(local_state_);
 
-  UMA_HISTOGRAM_BOOLEAN("UMA.MetricsIDsReset", true);
+  base::UmaHistogramBoolean("UMA.MetricsIDsReset", true);
 
   DCHECK(client_id_.empty());
 

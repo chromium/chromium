@@ -60,6 +60,10 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace metrics {
 namespace internal {
 
@@ -297,11 +301,20 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     startup_visibility = metrics::StartupVisibility::kForeground;
 #endif  // defined(OS_ANDROID)
 
+    std::string client_id;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Read metrics service client id from ash chrome if it's present.
+    auto* init_params = chromeos::LacrosService::Get()->init_params();
+    if (init_params->metrics_service_client_id.has_value())
+      client_id = init_params->metrics_service_client_id.value();
+#endif
+
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
         base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
+        client_id);
   }
   return metrics_state_manager_.get();
 }

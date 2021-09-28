@@ -89,6 +89,7 @@
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -777,6 +778,13 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
+  // |metrics_service| could be nullptr in tests.
+  if (auto* metrics_service = g_browser_process->metrics_service()) {
+    // Send metrics service client id to Lacros if it's present.
+    std::string client_id = metrics_service->GetClientId();
+    if (!client_id.empty())
+      params->metrics_service_client_id = client_id;
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kOndeviceHandwritingSwitch)) {

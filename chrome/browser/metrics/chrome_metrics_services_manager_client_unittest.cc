@@ -17,6 +17,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#include "content/public/test/browser_task_environment.h"
+#endif
+
 TEST(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   TestingPrefServiceSimple local_state;
 
@@ -71,6 +76,12 @@ TEST(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 }
 
 TEST(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set up ScopedLacrosServiceTestHelper needed for Lacros.
+  content::BrowserTaskEnvironment task_environment;
+  chromeos::ScopedLacrosServiceTestHelper helper;
+#endif
+
   // Set up Local State prefs.
   TestingPrefServiceSimple local_state;
   ChromeMetricsServiceClient::RegisterPrefs(local_state.registry());

@@ -12945,6 +12945,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="2" label="From backup"/>
   <int value="3" label="New"/>
   <int value="4" label="From provisional id"/>
+  <int value="5" label="From external"/>
 </enum>
 
 <enum name="ClientSidePhishingResult">

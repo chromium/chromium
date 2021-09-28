@@ -577,8 +577,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 26
-// Next id: 26
+// Next version: 27
+// Next id: 27
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -736,6 +736,11 @@ struct BrowserInitParams {
   // The set of device settings Lacros needs to know about.
   [MinVersion=25]
   DeviceSettings? device_settings@25;
+
+  // Metrics service client id of ash chrome.
+  // Lacros needs to use the same client id as ash chrome.
+  [MinVersion=26]
+  string? metrics_service_client_id@26;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

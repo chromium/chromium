@@ -73,7 +73,8 @@ class MetricsStateManagerTest : public testing::Test {
     MetricsService::RegisterPrefs(prefs_.registry());
   }
 
-  std::unique_ptr<MetricsStateManager> CreateStateManager() {
+  std::unique_ptr<MetricsStateManager> CreateStateManager(
+      const std::string& external_client_id = "") {
     std::unique_ptr<MetricsStateManager> state_manager =
         MetricsStateManager::Create(
             &prefs_, enabled_state_provider_.get(), std::wstring(),
@@ -83,7 +84,8 @@ class MetricsStateManagerTest : public testing::Test {
                 base::Unretained(this)),
             base::BindRepeating(
                 &MetricsStateManagerTest::LoadFakeClientInfoBackup,
-                base::Unretained(this)));
+                base::Unretained(this)),
+            external_client_id);
     state_manager->InstantiateFieldTrialList();
     return state_manager;
   }
@@ -735,6 +737,17 @@ TEST_F(MetricsStateManagerTest,
               cloned_install_info.first_timestamp());
     EXPECT_NE(cloned_install_info.last_timestamp(), 0);
   }
+}
+
+TEST_F(MetricsStateManagerTest, UseExternalClientId) {
+  base::HistogramTester histogram_tester;
+  std::string external_client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
+  std::unique_ptr<MetricsStateManager> state_manager(
+      CreateStateManager(external_client_id));
+  EnableMetricsReporting();
+  state_manager->ForceClientIdCreation();
+  EXPECT_EQ(external_client_id, state_manager->client_id());
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdSource", 5, 1);
 }
 
 }  // namespace metrics
