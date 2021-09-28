@@ -81,7 +81,7 @@ export class SettingsPersonalizationOptionsElement extends
       metricsReportingPref_: {
         type: Object,
         value() {
-          // TODO(dbeam): this is basically only to appease PrefControlMixin.
+          // TODO(dbeam): this is basically only to appease PrefControlBehavior.
           // Maybe add a no-validate attribute instead? This makes little sense.
           return {};
         },

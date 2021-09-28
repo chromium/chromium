@@ -435,7 +435,7 @@ Polymer({
           .then(() => {
             afterNextRender(this, () => {
               this.$$('.peripheral-data-access-protection')
-                  .shadowRoot.querySelector('#control')
+                  .$$('#control')
                   .addEventListener(
                       'keydown', this.onDataAccessToggleKeyPress_.bind(this));
             });

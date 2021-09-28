@@ -37,8 +37,7 @@ suite('A11yPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = a11yPage.$$('#optionsInMenuToggle')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement = a11yPage.$$('#optionsInMenuToggle').$$('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

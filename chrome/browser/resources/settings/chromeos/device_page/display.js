@@ -1163,8 +1163,7 @@ Polymer({
       return;
     }
 
-    const sliderValue =
-        this.$.displaySizeSlider.shadowRoot.querySelector('#slider').value;
+    const sliderValue = this.$.displaySizeSlider.$$('#slider').value;
     const zoomFactor = this.$.displaySizeSlider.ticks[sliderValue].value;
     this.updateLogicalResolutionText_(
         /** @type {number} */ (zoomFactor));

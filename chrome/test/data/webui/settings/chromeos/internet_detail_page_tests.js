@@ -390,7 +390,7 @@ suite('InternetDetailPage', function() {
 
       const deepLinkElement = internetDetailPage.$$('network-proxy-section')
                                   .$$('#allowShared')
-                                  .shadowRoot.querySelector('#control');
+                                  .$$('#control');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -447,8 +447,7 @@ suite('InternetDetailPage', function() {
       return flushAsync().then(() => {
         const disconnectButton = getButton('connectDisconnect');
         assertFalse(disconnectButton.hasAttribute('enforced_'));
-        assertFalse(!!disconnectButton.shadowRoot.querySelector(
-            'cr-policy-pref-indicator'));
+        assertFalse(!!disconnectButton.$$('cr-policy-pref-indicator'));
       });
     });
 
@@ -459,8 +458,7 @@ suite('InternetDetailPage', function() {
       return flushAsync().then(() => {
         const disconnectButton = getButton('connectDisconnect');
         assertTrue(disconnectButton.hasAttribute('enforced_'));
-        assertTrue(!!disconnectButton.shadowRoot.querySelector(
-            'cr-policy-pref-indicator'));
+        assertTrue(!!disconnectButton.$$('cr-policy-pref-indicator'));
       });
     });
 
@@ -643,8 +641,7 @@ suite('InternetDetailPage', function() {
 
       await flushAsync();
 
-      const deepLinkElement =
-          getButton('connectDisconnect').shadowRoot.querySelector('cr-button');
+      const deepLinkElement = getButton('connectDisconnect').$$('cr-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -1154,8 +1151,7 @@ suite('InternetDetailPage', function() {
 
       await flushAsync();
 
-      const deepLinkElement =
-          getButton('connectDisconnect').shadowRoot.querySelector('cr-button');
+      const deepLinkElement = getButton('connectDisconnect').$$('cr-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

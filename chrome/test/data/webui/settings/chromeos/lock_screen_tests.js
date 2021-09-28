@@ -37,8 +37,8 @@ suite('LockScreenPage', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = lockScreenPage.$$('#enableLockScreen')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        lockScreenPage.$$('#enableLockScreen').$$('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(

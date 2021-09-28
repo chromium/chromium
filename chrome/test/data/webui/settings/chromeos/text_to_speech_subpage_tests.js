@@ -99,8 +99,7 @@ suite('TextToSpeechSubpageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        ttsPage.$$('#textToSpeechRate').shadowRoot.querySelector('cr-slider');
+    const deepLinkElement = ttsPage.$$('#textToSpeechRate').$$('cr-slider');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

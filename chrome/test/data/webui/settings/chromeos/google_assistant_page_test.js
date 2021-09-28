@@ -150,7 +150,7 @@ suite('GoogleAssistantHandler', function() {
     Polymer.dom.flush();
     const button = page.$$('#google-assistant-hotword-enable');
     const indicator = page.$$('#google-assistant-hotword-enable')
-                          .shadowRoot.querySelector('cr-policy-pref-indicator');
+                          .$$('cr-policy-pref-indicator');
     assertTrue(!!button);
     assertTrue(!!indicator);
     assertTrue(button.disabled);
@@ -209,8 +209,7 @@ suite('GoogleAssistantHandler', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.GOOGLE_ASSISTANT, params);
 
-    const deepLinkElement =
-        page.$$('#retrain-voice-model').shadowRoot.querySelector('cr-button');
+    const deepLinkElement = page.$$('#retrain-voice-model').$$('cr-button');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

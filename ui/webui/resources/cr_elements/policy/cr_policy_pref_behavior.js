@@ -6,66 +6,48 @@
  * @fileoverview Behavior for policy controlled settings prefs.
  */
 
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/** @polymerBehavior */
+export const CrPolicyPrefBehavior = {
+  properties: {
+    /**
+     * Showing that an extension is controlling a pref is sometimes done with a
+     * different UI (e.g. extension-controlled-indicator). In  those cases,
+     * avoid showing an (extra) indicator here.
+     * @public
+     */
+    noExtensionIndicator: Boolean,
+  },
 
-/**
- * @polymer
- * @mixinFunction
- */
-export const CrPolicyPrefMixin = dedupingMixin(superClass => {
   /**
-   * @polymer
-   * @mixinClass
-   * @implements {CrPolicyPrefMixinInterface}
+   * Is the |pref| controlled by something that prevents user control of the
+   * preference.
+   * @return {boolean} True if |this.pref| is controlled by an enforced policy.
    */
-  class CrPolicyPrefMixin extends superClass {
-    static get properties() {
-      return {
-        /**
-         * Showing that an extension is controlling a pref is sometimes done
-         * with a different UI (e.g. extension-controlled-indicator). In  those
-         * cases, avoid showing an (extra) indicator here.
-         * @public
-         */
-        noExtensionIndicator: Boolean,
-      };
-    }
+  isPrefEnforced() {
+    return !!this.pref &&
+        this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  },
 
-    /**
-     * Is the |pref| controlled by something that prevents user control of the
-     * preference.
-     * @return {boolean} True if |this.pref| is controlled by an enforced
-     *     policy.
-     */
-    isPrefEnforced() {
-      return !!this.pref &&
-          this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  /**
+   * @return {boolean} True if |this.pref| has a recommended or enforced policy.
+   */
+  hasPrefPolicyIndicator() {
+    if (!this.pref) {
+      return false;
     }
-
-    /**
-     * @return {boolean} True if |this.pref| has a recommended or enforced
-     *     policy.
-     */
-    hasPrefPolicyIndicator() {
-      if (!this.pref) {
-        return false;
-      }
-      if (this.noExtensionIndicator &&
-          this.pref.controlledBy ===
-              chrome.settingsPrivate.ControlledBy.EXTENSION) {
-        return false;
-      }
-      return this.isPrefEnforced() ||
-          this.pref.enforcement ===
-          chrome.settingsPrivate.Enforcement.RECOMMENDED;
+    if (this.noExtensionIndicator &&
+        this.pref.controlledBy ===
+            chrome.settingsPrivate.ControlledBy.EXTENSION) {
+      return false;
     }
-  }
-
-  return CrPolicyPrefMixin;
-});
+    return this.isPrefEnforced() ||
+        this.pref.enforcement ===
+        chrome.settingsPrivate.Enforcement.RECOMMENDED;
+  },
+};
 
 /** @interface */
-export class CrPolicyPrefMixinInterface {
+export class CrPolicyPrefBehaviorInterface {
   /** @param {boolean} enabled */
   set noExtensionIndicator(enabled) {}
 

@@ -36,7 +36,7 @@ suite('FilesPageTests', function() {
         assert(filesPage.$$('#disconnectGoogleDriveAccount'));
     assertFalse(disconnectGoogleDrive.checked);
 
-    disconnectGoogleDrive.shadowRoot.querySelector('cr-toggle').click();
+    disconnectGoogleDrive.$$('cr-toggle').click();
     Polymer.dom.flush();
     assertTrue(disconnectGoogleDrive.checked);
   });
@@ -58,8 +58,8 @@ suite('FilesPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = filesPage.$$('#disconnectGoogleDriveAccount')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        filesPage.$$('#disconnectGoogleDriveAccount').$$('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

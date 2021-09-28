@@ -16,18 +16,19 @@ import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '../settings_shared_css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_behavior.js';
+import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {PrefControlMixinInterface}
+ * @implements {PrefControlBehaviorInterface}
  */
-const SettingsRadioGroupElementBase = PrefControlMixin(PolymerElement);
+const SettingsRadioGroupElementBase =
+    mixinBehaviors([PrefControlBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {

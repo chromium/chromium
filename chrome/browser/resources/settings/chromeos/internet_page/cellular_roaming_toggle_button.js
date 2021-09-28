@@ -103,7 +103,7 @@ Polymer({
       return /** @type {?CrToggleElement} */ (this.$$('#control'));
     }
     return /** @type {?CrToggleElement} */ (
-        this.$$('#cellularRoamingToggle').shadowRoot.querySelector('#control'));
+        this.$$('#cellularRoamingToggle').$$('#control'));
   },
 
   /** @private */

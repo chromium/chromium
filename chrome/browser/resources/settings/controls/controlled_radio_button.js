@@ -13,16 +13,16 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {prefToString} from '../prefs/pref_util.js';
 
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_behavior.js';
+import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {CrRadioButtonBehaviorInterface}
- * @implements {PrefControlMixinInterface}
+ * @implements {PrefControlBehaviorInterface}
  */
-const ControlledRadioButtonElementBase =
-    mixinBehaviors([CrRadioButtonBehavior], PrefControlMixin(PolymerElement));
+const ControlledRadioButtonElementBase = mixinBehaviors(
+    [PrefControlBehavior, CrRadioButtonBehavior], PolymerElement);
 
 /** @polymer */
 class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {

@@ -4,7 +4,6 @@
 
 import 'chrome://settings/settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
 suite('SettingsDropdownMenu', function() {
@@ -24,7 +23,9 @@ suite('SettingsDropdownMenu', function() {
   let customOption;
 
   function waitUntilDropdownUpdated() {
-    return waitAfterNextRender(dropdown);
+    return new Promise(function(resolve) {
+      dropdown.async(resolve);
+    });
   }
 
   function simulateChangeEvent(value) {
@@ -37,7 +38,7 @@ suite('SettingsDropdownMenu', function() {
     PolymerTest.clearBody();
     dropdown = document.createElement('settings-dropdown-menu');
     document.body.appendChild(dropdown);
-    selectElement = dropdown.shadowRoot.querySelector('select');
+    selectElement = dropdown.$$('select');
     assertTrue(!!selectElement);
     const options = selectElement.options;
     customOption = options[options.length - 1];
