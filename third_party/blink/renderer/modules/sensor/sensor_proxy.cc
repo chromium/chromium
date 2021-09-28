@@ -27,10 +27,9 @@ SensorProxy::SensorProxy(device::mojom::blink::SensorType sensor_type,
     : PageVisibilityObserver(page),
       FocusChangedObserver(page),
       type_(sensor_type),
-      state_(SensorProxy::kUninitialized),
       provider_(provider) {}
 
-SensorProxy::~SensorProxy() {}
+SensorProxy::~SensorProxy() = default;
 
 void SensorProxy::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
