@@ -24,18 +24,18 @@ struct ParsedCopyToOptions {
                       ExceptionState&);
 
   struct Plane {
-    // Offset in destination buffer.
+    // Offset and stride in destination buffer.
     uint32_t offset = 0;
-    // Stride in destination buffer.
     uint32_t stride = 0;
 
-    // Crop top, in samples.
+    // Crop, in samples.
+    uint32_t left = 0;
     uint32_t top = 0;
-    // Crop height, in samples.
     uint32_t height = 0;
-    // Crop left, in bytes.
+    uint32_t width = 0;
+
+    // Crop, in bytes.
     uint32_t left_bytes = 0;
-    // Crop width, in bytes (aka row_bytes).
     uint32_t width_bytes = 0;
   };
 

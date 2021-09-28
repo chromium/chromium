@@ -170,28 +170,89 @@ const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
     base::TimeDelta::FromSeconds(10);
 
-bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
-  if (!frame.IsMappable() && !frame.HasGpuMemoryBuffer())
-    return false;
+absl::optional<media::VideoPixelFormat> CopyToFormat(
+    const media::VideoFrame& frame) {
+  const bool mappable = frame.IsMappable() || frame.HasGpuMemoryBuffer();
+  const bool texturable = frame.HasTextures();
+  if (!(mappable || texturable))
+    return absl::nullopt;
 
-  const size_t num_planes = frame.layout().num_planes();
+  const size_t num_planes =
+      mappable ? frame.layout().num_planes() : frame.NumTextures();
+
   switch (frame.format()) {
     case media::PIXEL_FORMAT_I420:
+    case media::PIXEL_FORMAT_I420A:
     case media::PIXEL_FORMAT_I422:
     case media::PIXEL_FORMAT_I444:
-      return num_planes == 3;
-    case media::PIXEL_FORMAT_I420A:
-      return num_planes == 4;
-    case media::PIXEL_FORMAT_NV12:
-      return num_planes == 2;
     case media::PIXEL_FORMAT_XBGR:
-    case media::PIXEL_FORMAT_XRGB:
     case media::PIXEL_FORMAT_ABGR:
+    case media::PIXEL_FORMAT_XRGB:
     case media::PIXEL_FORMAT_ARGB:
-      return num_planes == 1;
+      break;
+    case media::PIXEL_FORMAT_NV12:
+      // Single-texture NV12 is sampled as RGBA even though the underlying
+      // graphics buffer is NV12.
+      if (!mappable && num_planes == 1)
+        return media::PIXEL_FORMAT_XRGB;
+      break;
     default:
-      return false;
+      return absl::nullopt;
   }
+
+  // Make sure layout() is as expected before committing to being able to read
+  // back pixels.
+  if (num_planes != media::VideoFrame::NumPlanes(frame.format()))
+    return absl::nullopt;
+
+  return frame.format();
+}
+
+void CopyMappablePlanes(const media::VideoFrame& src_frame,
+                        const ParsedCopyToOptions& layout,
+                        base::span<uint8_t> dest_buffer) {
+  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
+    const uint8_t* src = src_frame.data(i) +
+                         layout.planes[i].top * src_frame.stride(i) +
+                         layout.planes[i].left_bytes;
+    libyuv::CopyPlane(src, static_cast<int>(src_frame.stride(i)),
+                      dest_buffer.data() + layout.planes[i].offset,
+                      static_cast<int>(layout.planes[i].stride),
+                      static_cast<int>(layout.planes[i].width_bytes),
+                      static_cast<int>(layout.planes[i].height));
+  }
+}
+
+bool CopyTexturablePlanes(const media::VideoFrame& src_frame,
+                          const ParsedCopyToOptions& layout,
+                          base::span<uint8_t> dest_buffer) {
+  auto wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!wrapper)
+    return false;
+
+  auto* provider = wrapper->ContextProvider();
+  if (!provider)
+    return false;
+
+  auto* ri = provider->RasterInterface();
+  auto* gr_context = provider->GetGrContext();
+  if (!ri)
+    return false;
+
+  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
+    gfx::Rect src_rect(layout.planes[i].left, layout.planes[i].top,
+                       layout.planes[i].width, layout.planes[i].height);
+    uint8_t* dest_pixels = dest_buffer.data() + layout.planes[i].offset;
+    if (!media::ReadbackTexturePlaneToMemorySync(
+            src_frame, i, src_rect, dest_pixels, layout.planes[i].stride, ri,
+            gr_context)) {
+      // It's possible to fail after copying some but not all planes, leaving
+      // the output buffer in a corrupt state D:
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -569,10 +630,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
 absl::optional<V8VideoPixelFormat> VideoFrame::format() const {
   auto local_frame = handle_->frame();
-  if (!local_frame || !IsSupportedPlanarFormat(*local_frame))
+  if (!local_frame)
     return absl::nullopt;
 
-  switch (local_frame->format()) {
+  auto copy_to_format = CopyToFormat(*local_frame);
+  if (!copy_to_format)
+    return absl::nullopt;
+
+  switch (*copy_to_format) {
     case media::PIXEL_FORMAT_I420:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
     case media::PIXEL_FORMAT_I420A:
@@ -707,16 +772,15 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
     return 0;
   }
 
-  // TODO(crbug.com/1176464): Determine the format readback will occur in, use
-  // that to compute the layout.
-  if (!IsSupportedPlanarFormat(*local_frame)) {
+  auto copy_to_format = CopyToFormat(*local_frame);
+  if (!copy_to_format) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "allocationSize() is not yet implemented when format is null.");
     return 0;
   }
 
-  ParsedCopyToOptions layout(options, local_frame->format(),
+  ParsedCopyToOptions layout(options, *copy_to_format,
                              local_frame->coded_size(),
                              local_frame->visible_rect(), exception_state);
   if (exception_state.HadException())
@@ -737,7 +801,8 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
   }
 
   // TODO(crbug.com/1176464): Use async texture readback.
-  if (!IsSupportedPlanarFormat(*local_frame)) {
+  auto copy_to_format = CopyToFormat(*local_frame);
+  if (!copy_to_format) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "copyTo() is not yet implemented when format is null.");
@@ -745,7 +810,7 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
   }
 
   // Compute layout.
-  ParsedCopyToOptions layout(options, local_frame->format(),
+  ParsedCopyToOptions layout(options, *copy_to_format,
                              local_frame->coded_size(),
                              local_frame->visible_rect(), exception_state);
   if (exception_state.HadException())
@@ -762,27 +827,24 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // Map buffers if necessary.
-  if (!local_frame->IsMappable()) {
-    DCHECK(local_frame->HasGpuMemoryBuffer());
-    local_frame = media::ConvertToMemoryMappedFrame(local_frame);
-    if (!local_frame) {
+  // Copy planes.
+  if (local_frame->IsMappable()) {
+    CopyMappablePlanes(*local_frame, layout, buffer);
+  } else if (local_frame->HasGpuMemoryBuffer()) {
+    auto mapped_frame = media::ConvertToMemoryMappedFrame(local_frame);
+    if (!mapped_frame) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
       return ScriptPromise();
     }
-  }
-
-  // Copy data.
-  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
-    uint8_t* src = local_frame->data(i) +
-                   layout.planes[i].top * local_frame->stride(i) +
-                   layout.planes[i].left_bytes;
-    libyuv::CopyPlane(src, static_cast<int>(local_frame->stride(i)),
-                      buffer.data() + layout.planes[i].offset,
-                      static_cast<int>(layout.planes[i].stride),
-                      static_cast<int>(layout.planes[i].width_bytes),
-                      static_cast<int>(layout.planes[i].height));
+    CopyMappablePlanes(*mapped_frame, layout, buffer);
+  } else {
+    DCHECK(local_frame->HasTextures());
+    if (!CopyTexturablePlanes(*local_frame, layout, buffer)) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Failed to read VideoFrame data.");
+      return ScriptPromise();
+    }
   }
 
   // Convert and return |layout|.

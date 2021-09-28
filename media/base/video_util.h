@@ -153,6 +153,17 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     GrDirectContext* gr_context,
     VideoFramePool* pool = nullptr);
 
+// Synchronously reads a single plane. |src_rect| is relative to the plane,
+// which may be smaller than |frame| due to subsampling.
+MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
+    const VideoFrame& src_frame,
+    size_t src_plane,
+    gfx::Rect& src_rect,
+    uint8_t* dest_pixels,
+    size_t dest_stride,
+    gpu::raster::RasterInterface* ri,
+    GrDirectContext* gr_context);
+
 // Converts a frame with I420A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame);

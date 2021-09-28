@@ -28,9 +28,11 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options):
     for source_type in frame_sources:
       yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html',
-             ('{ source_type : "%s" }' % (source_type)))
+             ('{ source_type : "%s" }' % (source_type, )))
       yield ('WebCodecs_TexImage2d_' + source_type, 'tex-image-2d.html',
-             ('{ source_type : "%s" }' % (source_type)))
+             ('{ source_type : "%s" }' % (source_type, )))
+      yield ('WebCodecs_copyTo_' + source_type, 'copyTo.html',
+             ('{ source_type : "%s" }' % (source_type, )))
 
     for codec in codecs:
       yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html',

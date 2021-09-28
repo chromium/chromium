@@ -76,10 +76,12 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     uint32_t sample_bytes = media::VideoFrame::BytesPerElement(format, i);
 
+    planes[i].left = rect.x() / sample_size.width();
     planes[i].top = rect.y() / sample_size.height();
+    planes[i].width = rect.width() / sample_size.width();
     planes[i].height = rect.height() / sample_size.height();
-    planes[i].left_bytes = rect.x() / sample_size.width() * sample_bytes;
-    planes[i].width_bytes = rect.width() / sample_size.width() * sample_bytes;
+    planes[i].left_bytes = planes[i].left * sample_bytes;
+    planes[i].width_bytes = planes[i].width * sample_bytes;
 
     // If an explicit layout was not provided, planes and rows are tightly
     // packed.

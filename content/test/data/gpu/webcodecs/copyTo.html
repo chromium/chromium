@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+Take frames coming from various sources and read them using copyTo().
+-->
+<title>copyTo() test</title>
+<script src="webcodecs_common.js"></script>
+<script type="text/javascript">
+  'use strict';
+
+  async function main(arg) {
+    let source_type = arg.source_type;
+    let source = await createFrameSource(source_type, 640, 480);
+    if (!source) {
+      TEST.log('Skipping unsupported source: ' + source_type);
+      return;
+    }
+
+    let frame = await source.getNextFrame();
+    let size = frame.allocationSize();
+    let buf = new ArrayBuffer(size);
+    await frame.copyTo(buf);
+    // TODO(crbug.com/1206000): Compare |buf| to the frame.
+    frame.close();
+  }
+</script>
