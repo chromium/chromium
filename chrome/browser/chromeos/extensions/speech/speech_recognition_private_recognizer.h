@@ -16,21 +16,25 @@ class SpeechRecognizer;
 
 namespace extensions {
 
+using OnResultCallback =
+    base::RepeatingCallback<void(const std::u16string& transcript,
+                                 bool isFinal)>;
+
 // This class is a wrapper around SpeechRecognizer and can be used to start and
 // stop speech recognition. It routes speech recognition events to the API
 // manager using callbacks. It is also responsible for deciding whether to
 // use the on-device or network speech recognition.
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
  public:
-  explicit SpeechRecognitionPrivateRecognizer(
-      base::RepeatingClosure on_stop_callback);
+  SpeechRecognitionPrivateRecognizer(base::RepeatingClosure on_stop_calback,
+                                     OnResultCallback on_result_callback);
   ~SpeechRecognitionPrivateRecognizer() override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(const std::u16string& text,
                       bool is_final,
                       const absl::optional<media::SpeechRecognitionResult>&
-                          full_result) override {}
+                          full_result) override;
   void OnSpeechSoundLevelChanged(int16_t level) override {}
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
@@ -66,9 +70,14 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   SpeechRecognizerStatus current_state_ = SPEECH_RECOGNIZER_OFF;
   std::string locale_ = speech::kUsEnglishLocale;
   bool interim_results_ = false;
+  // A callback that is run when speech recognition starts. Note, this is a
+  // OnceClosure and is updated whenever HandleStart() is called.
   base::OnceClosure on_start_callback_;
   // A callback that is run whenever speech recognition stops.
   base::RepeatingClosure on_stop_callback_;
+  // A callback that is run whenever speech recognition results are received
+  // from the speech recognition service.
+  OnResultCallback on_result_callback_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
 
   base::WeakPtrFactory<SpeechRecognitionPrivateRecognizer> weak_ptr_factory_{

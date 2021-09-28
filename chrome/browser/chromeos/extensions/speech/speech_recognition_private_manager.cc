@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -162,6 +163,29 @@ void SpeechRecognitionPrivateManager::DispatchOnStopEvent(
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
+void SpeechRecognitionPrivateManager::DispatchOnResultEvent(
+    const std::string& key,
+    const std::u16string& transcript,
+    bool is_final) {
+  std::string extension_id = GetExtensionIdFromKey(key);
+  absl::optional<int> client_id = GetClientIdFromKey(key);
+  EventRouter* event_router = EventRouter::Get(context_);
+
+  api::speech_recognition_private::SpeechRecognitionResultEvent event;
+  event.transcript = base::UTF16ToUTF8(transcript);
+  event.is_final = is_final;
+  if (client_id)
+    event.client_id = std::make_unique<int>(*client_id);
+
+  auto event_args = api::speech_recognition_private::OnResult::Create(event);
+  std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
+      events::SPEECH_RECOGNITION_PRIVATE_ON_RESULT,
+      api::speech_recognition_private::OnResult::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventToExtension(extension_id, std::move(event_ptr));
+}
+
 std::string SpeechRecognitionPrivateManager::CreateKey(
     const std::string& extension_id,
     absl::optional<int> client_id) {
@@ -178,7 +202,10 @@ SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
     recognizer = std::make_unique<SpeechRecognitionPrivateRecognizer>(
         base::BindRepeating(
             &SpeechRecognitionPrivateManager::DispatchOnStopEvent, GetWeakPtr(),
-            key));
+            key),
+        base::BindRepeating(
+            &SpeechRecognitionPrivateManager::DispatchOnResultEvent,
+            GetWeakPtr(), key));
 
   return recognizer.get();
 }

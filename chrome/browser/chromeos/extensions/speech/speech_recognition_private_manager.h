@@ -61,6 +61,10 @@ class SpeechRecognitionPrivateManager : public KeyedService {
   // an explicit call to HandleStop() e.g. when speech recognition encounters
   // a fatal error.
   void DispatchOnStopEvent(const std::string& key);
+  // Dispatches an event when speech recognition returns a result.
+  void DispatchOnResultEvent(const std::string& key,
+                             const std::u16string& transcript,
+                             bool is_final);
 
   // Retrieves the factory instance for SpeechRecognitionPrivateManager.
   static BrowserContextKeyedServiceFactory* GetFactory();

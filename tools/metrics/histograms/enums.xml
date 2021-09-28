@@ -27694,6 +27694,7 @@ Called by update_extension_histograms.py.-->
   <int value="479" label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION"/>
   <int value="480" label="WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST"/>
   <int value="481" label="SPEECH_RECOGNITION_PRIVATE_ON_STOP"/>
+  <int value="482" label="SPEECH_RECOGNITION_PRIVATE_ON_RESULT"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

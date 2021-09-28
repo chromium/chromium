@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
+#include "chrome/browser/speech/fake_speech_recognition_service.h"
+#include "content/public/test/fake_speech_recognition_manager.h"
 
 namespace {
 const char kEnglishLocale[] = "en-US";
@@ -27,6 +30,9 @@ class SpeechRecognitionPrivateRecognizerTest
     recognizer_ = std::make_unique<SpeechRecognitionPrivateRecognizer>(
         base::BindRepeating(
             &SpeechRecognitionPrivateRecognizerTest::OnStopRepeatingCallback,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &SpeechRecognitionPrivateRecognizerTest::OnResultCallback,
             base::Unretained(this)));
     SpeechRecognitionPrivateBaseTest::SetUpOnMainThread();
   }
@@ -64,6 +70,10 @@ class SpeechRecognitionPrivateRecognizerTest
     recognizer_->OnSpeechRecognitionStateChanged(new_state);
   }
 
+  void SendInterimFakeSpeechResult(const std::u16string& transcript) {
+    recognizer_->OnSpeechResult(transcript, false, absl::nullopt);
+  }
+
   void OnStartCallback() { ran_on_start_callback_ = true; }
   void OnStopOnceCallback(absl::optional<std::string> error) {
     if (error.has_value())
@@ -74,6 +84,10 @@ class SpeechRecognitionPrivateRecognizerTest
     ran_on_stop_once_callback_ = true;
   }
   void OnStopRepeatingCallback() { ran_on_stop_repeating_callback_ = true; }
+  void OnResultCallback(const std::u16string& transcript, bool is_final) {
+    last_transcript_ = transcript;
+    last_is_final_ = is_final;
+  }
 
   bool ran_on_start_callback() { return ran_on_start_callback_; }
   void set_ran_on_start_callback(bool value) { ran_on_start_callback_ = value; }
@@ -94,11 +108,15 @@ class SpeechRecognitionPrivateRecognizerTest
   std::string on_stop_once_callback_error() {
     return on_stop_once_callback_error_;
   }
+  std::u16string last_transcript() { return last_transcript_; }
+  bool last_is_final() { return last_is_final_; }
 
   bool ran_on_start_callback_ = false;
   bool ran_on_stop_once_callback_ = false;
   std::string on_stop_once_callback_error_;
   bool ran_on_stop_repeating_callback_ = false;
+  std::u16string last_transcript_;
+  bool last_is_final_ = false;
   std::unique_ptr<SpeechRecognitionPrivateRecognizer> recognizer_;
 };
 
@@ -257,6 +275,36 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
   ASSERT_TRUE(ran_on_stop_repeating_callback());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
+}
+
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
+  HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
+
+  // Set interim_results to false. This means we should only respond to final
+  // speech recognition results.
+  MaybeUpdateProperties(absl::optional<std::string>(),
+                        absl::optional<bool>(false));
+  SendInterimFakeSpeechResult(u"Interim result");
+  ASSERT_EQ(u"", last_transcript());
+  ASSERT_FALSE(last_is_final());
+
+  SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
+      "Final result");
+  ASSERT_EQ(u"Final result", last_transcript());
+  ASSERT_TRUE(last_is_final());
+
+  // Set interim_results to true. This means we should respond to both final
+  // and interim speech recognition results.
+  MaybeUpdateProperties(absl::optional<std::string>(),
+                        absl::optional<bool>(true));
+  SendInterimFakeSpeechResult(u"Interim result");
+  ASSERT_EQ(u"Interim result", last_transcript());
+  ASSERT_FALSE(last_is_final());
+
+  SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
+      "Final result");
+  ASSERT_EQ(u"Final result", last_transcript());
+  ASSERT_TRUE(last_is_final());
 }
 
 }  // namespace extensions

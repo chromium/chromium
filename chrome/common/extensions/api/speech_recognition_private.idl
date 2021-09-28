@@ -13,6 +13,16 @@ namespace speechRecognitionPrivate {
     long? clientId;
   };
 
+  // Interface for a speech recognition result event.
+  dictionary SpeechRecognitionResultEvent {
+    // Optional client ID.
+    long? clientId;
+    // The recognized phrase or sentence.
+    DOMString transcript;
+    // Whether the result is a final or an interim result.
+    boolean isFinal;
+  };
+
   // Interface for options used when starting speech recognition.
   dictionary StartOptions {
     // An optional ID to specify the client.
@@ -51,5 +61,7 @@ namespace speechRecognitionPrivate {
   interface Events {
     // Fired when speech recognition stops.
     static void onStop(SpeechRecognitionStopEvent event);
+    // Fired when a speech recognition result is returned.
+    static void onResult(SpeechRecognitionResultEvent event);
   };
 };

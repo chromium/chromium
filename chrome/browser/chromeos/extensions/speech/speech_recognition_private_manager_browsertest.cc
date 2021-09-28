@@ -64,6 +64,12 @@ class SpeechRecognitionPrivateManagerTest
     manager_->DispatchOnStopEvent(key);
   }
 
+  void DispatchOnResultEvent(const std::string& key,
+                             const std::u16string transcript,
+                             bool is_final) {
+    manager_->DispatchOnResultEvent(key, transcript, is_final);
+  }
+
  private:
   SpeechRecognitionPrivateManager* manager_;
 };
@@ -167,6 +173,44 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
     ExtensionTestMessageListener listener(test.expected, false);
     DispatchOnStopEvent(test.key);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+}
+
+// Tests that events can be dispatched from the SpeechRecognitionPrivateManager
+// and received and processed in an extension.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
+                       DispatchOnResultEvent) {
+  ASSERT_TRUE(
+      RunExtensionTest("speech/speech_recognition_private/onresult_event"))
+      << message_;
+
+  const char* kFirstClient = "egfdjlfmgnehecnclamagfafdccgfndp.1";
+  const char* kSecondClient = "egfdjlfmgnehecnclamagfafdccgfndp.2";
+  const char* kSuccess = "Received result";
+  const char* kFirstClientSkip = "Skipping event in first listener";
+  const char* kSecondClientSkip = "Skipping event in second listener";
+  const std::u16string kTranscript = u"This is a test";
+
+  const struct {
+    const char* key;
+    const std::u16string transcript;
+    const bool is_final;
+    const char* expected_success_message;
+    const char* expected_skip_message;
+  } kTestCases[] = {
+      {kFirstClient, kTranscript, false, kSuccess, kSecondClientSkip},
+      {kSecondClient, kTranscript, true, kSuccess, kFirstClientSkip}};
+
+  for (const auto& test : kTestCases) {
+    // For each onResult event, verify that it was successfully handled in one
+    // listener and dropped in the other (there are only two listeners).
+    ExtensionTestMessageListener success_listener(test.expected_success_message,
+                                                  false);
+    ExtensionTestMessageListener skip_listener(test.expected_skip_message,
+                                               false);
+    DispatchOnResultEvent(test.key, test.transcript, test.is_final);
+    ASSERT_TRUE(success_listener.WaitUntilSatisfied());
+    ASSERT_TRUE(skip_listener.WaitUntilSatisfied());
   }
 }
 

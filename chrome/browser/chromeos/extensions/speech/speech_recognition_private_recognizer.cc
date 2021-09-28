@@ -19,10 +19,29 @@ const char kSpeechRecognitionOffError[] = "Speech recognition already stopped";
 namespace extensions {
 
 SpeechRecognitionPrivateRecognizer::SpeechRecognitionPrivateRecognizer(
-    base::RepeatingClosure on_stop_callback)
-    : on_stop_callback_(std::move(on_stop_callback)) {}
+    base::RepeatingClosure on_stop_callback,
+    OnResultCallback on_result_callback)
+    : on_stop_callback_(std::move(on_stop_callback)),
+      on_result_callback_(std::move(on_result_callback)) {}
 
 SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() {}
+
+void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
+    const std::u16string& text,
+    bool is_final,
+    const absl::optional<media::SpeechRecognitionResult>& full_result) {
+  // TODO(crbug.com/1220107): NetworkSpeechRecognizer adds spaces between
+  // results, but OnDeviceSpeechRecognizer doesn't. Add behavior in
+  // OnDeviceSpeechRecognizer so it's consistent with NetworkSpeechRecognizer.
+  if (!interim_results_ && !is_final) {
+    // If |interim_results_| is false, then don't run on_result_callback_
+    // unless this is a final result.
+    return;
+  }
+
+  DCHECK(!on_result_callback_.is_null());
+  on_result_callback_.Run(text, is_final);
+}
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {

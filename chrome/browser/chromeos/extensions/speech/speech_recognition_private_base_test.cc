@@ -93,4 +93,20 @@ void SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped() {
   base::RunLoop().RunUntilIdle();
 }
 
+void SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
+    const std::string& transcript) {
+  base::RunLoop loop;
+  if (GetParam() == kNetworkRecognition) {
+    fake_speech_recognition_manager_->SetFakeResult(transcript);
+    fake_speech_recognition_manager_->SendFakeResponse(
+        false /* end recognition */, loop.QuitClosure());
+    loop.Run();
+  } else if (GetParam() == kOnDeviceRecognition) {
+    EXPECT_TRUE(fake_service_->is_capturing_audio());
+    fake_service_->SendSpeechRecognitionResult(
+        media::SpeechRecognitionResult(transcript, /*is_final=*/true));
+    loop.RunUntilIdle();
+  }
+}
+
 }  // namespace extensions

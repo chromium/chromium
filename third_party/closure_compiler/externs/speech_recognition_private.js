@@ -24,6 +24,15 @@ chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 /**
  * @typedef {{
  *   clientId: (number|undefined),
+ *   transcript: string,
+ *   isFinal: boolean
+ * }}
+ */
+chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
+
+/**
+ * @typedef {{
+ *   clientId: (number|undefined),
  *   locale: (string|undefined),
  *   interimResults: (boolean|undefined)
  * }}
@@ -48,7 +57,8 @@ chrome.speechRecognitionPrivate.start = function(options, callback) {};
 
 /**
  * Stops listening to audio from the user. The callback is invoked when speech
- * recognition has stopped.
+ * recognition has stopped. If speech recognition has already stopped when
+ * calling stop(), the callback is run with an error.
  * @param {!chrome.speechRecognitionPrivate.StopOptions} options
  * @param {function(): void} callback Called when speech recogntion has stopped
  *     listening to the user's audio.
@@ -60,3 +70,9 @@ chrome.speechRecognitionPrivate.stop = function(options, callback) {};
  * @type {!ChromeEvent}
  */
 chrome.speechRecognitionPrivate.onStop;
+
+/**
+ * Fired when a speech recognition result is returned.
+ * @type {!ChromeEvent}
+ */
+chrome.speechRecognitionPrivate.onResult;
