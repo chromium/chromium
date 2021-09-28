@@ -2489,11 +2489,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-safe-browsing-per-profile-network-contexts",
-    "owners": [ "drubery" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-save-data",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.
@@ -4688,14 +4683,6 @@
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak", "guidou" ],
     "expiry_milestone": 95
-  },
-  {
-    "name": "safe-browsing-client-side-detection-android",
-    "owners": [
-      "bdea",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 93
   },
   {
     "name": "safe-browsing-enhanced-protection-promo-android",

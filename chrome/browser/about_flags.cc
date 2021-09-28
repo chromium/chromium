@@ -5862,12 +5862,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSearchHistoryLink)},
 
 #if defined(OS_ANDROID)
-    {"safe-browsing-client-side-detection-android",
-     flag_descriptions::kSafeBrowsingClientSideDetectionAndroidName,
-     flag_descriptions::kSafeBrowsingClientSideDetectionAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kClientSideDetectionForAndroid)},
-
     {"safe-browsing-enhanced-protection-promo-android",
      flag_descriptions::kEnhancedProtectionPromoAndroidName,
      flag_descriptions::kEnhancedProtectionPromoAndroidDescription, kOsAndroid,
@@ -7569,12 +7563,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareContextMenuDescription, kOsAll,
      FEATURE_VALUE_TYPE(share::kShareMenu)},
 #endif
-
-    {"enable-safe-browsing-per-profile-network-contexts",
-     flag_descriptions::kSafeBrowsingPerProfileNetworkContextsName,
-     flag_descriptions::kSafeBrowsingPerProfileNetworkContextsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSeparateNetworkContexts)},
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"multi-profile-account-consistency",
