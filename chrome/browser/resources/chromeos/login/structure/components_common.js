@@ -42,7 +42,6 @@ function loadCommonComponents() {
 // <include src="../family_link_notice.js">
 // <include src="../user_creation.js">
 // <include src="../screen_signin_fatal_error.js">
-// <include src="../parental_handoff.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../oobe_screen_autolaunch.js">
 // <include src="../screen_error_message.js">

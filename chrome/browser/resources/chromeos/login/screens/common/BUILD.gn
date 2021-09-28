@@ -15,6 +15,7 @@ group("polymer3_elements") {
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
     ":marketing_opt_in_module",
+    ":parental_handoff_module",
   ]
 }
 
@@ -37,6 +38,7 @@ js_type_check("closure_compile_module") {
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
     ":marketing_opt_in.m",
+    ":parental_handoff.m",
   ]
 }
 
@@ -99,6 +101,18 @@ js_library("marketing_opt_in.m") {
   extra_deps = [ ":marketing_opt_in_module" ]
 }
 
+js_library("parental_handoff.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":parental_handoff_module" ]
+}
+
 polymer_modulizer("fingerprint_setup") {
   js_file = "fingerprint_setup.js"
   html_file = "fingerprint_setup.html"
@@ -121,4 +135,13 @@ polymer_modulizer("marketing_opt_in") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("parental_handoff") {
+  js_file = "parental_handoff.js"
+  html_file = "parental_handoff.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+  ignore_imports = [ "//oobe/custom_elements.html" ]
 }
