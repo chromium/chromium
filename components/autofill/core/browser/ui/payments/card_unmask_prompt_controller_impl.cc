@@ -230,7 +230,7 @@ int CardUnmaskPromptControllerImpl::GetCvcImageRid() const {
 }
 
 bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {
-  return card_.ShouldUpdateExpiration(AutofillClock::Now()) ||
+  return card_.ShouldUpdateExpiration() ||
          new_card_link_clicked_;
 }
 

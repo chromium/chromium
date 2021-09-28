@@ -245,7 +245,7 @@ class CreditCard : public AutofillDataModel {
   bool IsExpired(const base::Time& current_time) const;
 
   // Whether the card expiration date should be updated.
-  bool ShouldUpdateExpiration(const base::Time& current_time) const;
+  bool ShouldUpdateExpiration() const;
 
   const std::string& billing_address_id() const { return billing_address_id_; }
   void set_billing_address_id(const std::string& id) {

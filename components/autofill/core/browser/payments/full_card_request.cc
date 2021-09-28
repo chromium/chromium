@@ -108,7 +108,7 @@ void FullCardRequest::GetFullCardImpl(
   should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||
                         card.record_type() == CreditCard::VIRTUAL_CARD ||
                         (card.record_type() == CreditCard::FULL_SERVER_CARD &&
-                         card.ShouldUpdateExpiration(AutofillClock::Now())) ||
+                         card.ShouldUpdateExpiration()) ||
                         card.record_type() == CreditCard::VIRTUAL_CARD;
   if (should_unmask_card_) {
     payments_client_->Prepare();

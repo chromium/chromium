@@ -1133,10 +1133,8 @@ bool CreditCard::IsExpired(const base::Time& current_time) const {
                                           current_time);
 }
 
-bool CreditCard::ShouldUpdateExpiration(const base::Time& current_time) const {
-  // Local cards always have OK server status.
-  DCHECK(server_status_ == OK || record_type_ != LOCAL_CARD);
-  return server_status_ == EXPIRED || IsExpired(current_time);
+bool CreditCard::ShouldUpdateExpiration() const {
+  return IsExpired(AutofillClock::Now());
 }
 
 // So we can compare CreditCards with EXPECT_EQ().

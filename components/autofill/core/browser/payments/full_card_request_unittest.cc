@@ -372,38 +372,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForFullServerCard) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify getting the CVC for an unmasked server card with EXPIRED server
-// status.
-TEST_F(FullCardRequestTest,
-       GetFullCardPanAndCvcForFullServerCardInExpiredStatus) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestSucceeded(
-                                      testing::Ref(*request()),
-                                      CardMatches(CreditCard::FULL_SERVER_CARD,
-                                                  "4111", "12", "2051"),
-                                      testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*personal_data(), UpdateServerCreditCard(_)).Times(0);
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "server_id");
-  test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12", "2050",
-                          "1");
-  full_server_card.SetServerStatus(CreditCard::EXPIRED);
-  request()->GetFullCard(
-      full_server_card, AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_year = u"2051";
-  details.exp_month = u"12";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify getting the CVC for an unmasked server card with OK status, but
-// expiration date in the past.
+// Verify getting the CVC for an unmasked server card with expiration date in the past.
 TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   EXPECT_CALL(*result_delegate(), OnFullCardRequestSucceeded(
                                       testing::Ref(*request()),
@@ -418,6 +387,37 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   base::Time::Exploded today;
   AutofillClock::Now().LocalExplode(&today);
   CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "server_id");
+  test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
+                          base::StringPrintf("%d", today.year - 1).c_str(),
+                          "1");
+  full_server_card.SetServerStatus(CreditCard::OK);
+  request()->GetFullCard(
+      full_server_card, AutofillClient::UnmaskCardReason::kAutofill,
+      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = u"123";
+  details.exp_year = u"2051";
+  details.exp_month = u"12";
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// Verify getting the CVC for a masked server card with expiration date in the past.
+TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
+  EXPECT_CALL(*result_delegate(), OnFullCardRequestSucceeded(
+                                      testing::Ref(*request()),
+                                      CardMatches(CreditCard::FULL_SERVER_CARD,
+                                                  "4111", "12", "2051"),
+                                      testing::Eq(u"123")));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*personal_data(), UpdateServerCreditCard(_)).Times(0);
+  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
+                                  AutofillClient::PaymentsRpcResult::kSuccess));
+
+  base::Time::Exploded today;
+  AutofillClock::Now().LocalExplode(&today);
+  CreditCard full_server_card(CreditCard::MASKED_SERVER_CARD, "server_id");
   test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
                           base::StringPrintf("%d", today.year - 1).c_str(),
                           "1");

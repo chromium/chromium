@@ -196,7 +196,7 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   constexpr int kPadding = 16;
 
   bool requesting_expiration =
-      credit_card_.ShouldUpdateExpiration(autofill::AutofillClock::Now());
+      credit_card_.ShouldUpdateExpiration();
   if (requesting_expiration) {
     // Month dropdown column
     cvc_field_columns->AddColumn(
@@ -315,7 +315,7 @@ void CvcUnmaskViewController::CvcConfirmed() {
   if (unmask_delegate_) {
     autofill::CardUnmaskDelegate::UserProvidedUnmaskDetails details;
     details.cvc = cvc;
-    if (credit_card_.ShouldUpdateExpiration(autofill::AutofillClock::Now())) {
+    if (credit_card_.ShouldUpdateExpiration()) {
       views::Combobox* month = static_cast<views::Combobox*>(
           dialog()->GetViewByID(static_cast<int>(DialogViewID::CVC_MONTH)));
       DCHECK(month);
@@ -354,7 +354,7 @@ void CvcUnmaskViewController::UpdatePayButtonState() {
       dialog()->GetViewByID(static_cast<int>(DialogViewID::CVC_YEAR)));
 
   bool expiration_date_valid =
-      !credit_card_.ShouldUpdateExpiration(autofill::AutofillClock::Now());
+      !credit_card_.ShouldUpdateExpiration();
 
   if (month && year) {
     DCHECK(!expiration_date_valid);
