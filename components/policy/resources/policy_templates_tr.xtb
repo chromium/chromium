@@ -3974,7 +3974,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5921713479449475707">HTTP aracılığıyla otomatik güncelleme indirmeye izin ver</translation>
 <translation id="5928633129285224981"><ph name="PRODUCT_NAME" /> üzerinde PDF yazdırılırken Resim olarak yazdır'ın varsayılan olarak seçilip seçilmeyeceğini kontrol eder.
 
-      Bu politika Etkin olarak belirlendiğinde, <ph name="PRODUCT_NAME" /> varsayılan olarak PDF yazdırırken Yazdırma Önizleme'de Resim olarak yazdır seçeneğini ayarlar.
+      Bu politika Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> varsayılan olarak PDF yazdırırken Yazdırma Önizleme'de Resim olarak yazdır seçeneğini ayarlar.
 
       Bu politika Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> üzerinde Resim olarak yazdır seçeneği baştan seçilmemiş olur.  Seçeneğin kullanılabildiği durumlarda kullanıcı, ayrı ayrı her bir PDF'nin yazdırma işi için bu seçimi yapabilir.
 
