@@ -40,6 +40,7 @@ enum ProbeCategoryEnum {
   kBootPerformance,
   kBus,
   kTpm,
+  kGraphics,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -887,6 +888,47 @@ struct TpmSupportedFeatures {
   bool is_allowed;
 };
 
+// Graphics probe result. Can either be populated with the GraphicsInfo or an
+// error retrieving the information.
+union GraphicsResult {
+  // Valid GraphicsInfo.
+  GraphicsInfo graphics_info;
+  // The error that occurred attempting to retrieve the GraphicsInfo.
+  ProbeError error;
+};
+
+// Graphics information.
+struct GraphicsInfo {
+  // OpenGL | ES information.
+  GLESInfo gles_info;
+  // EGL information.
+  EGLInfo egl_info;
+};
+
+struct GLESInfo {
+  // GL version.
+  string version;
+  // GL shading version.
+  string shading_version;
+  // GL vendor.
+  string vendor;
+  // GL renderer.
+  string renderer;
+  // GL extensions.
+  array<string> extensions;
+};
+
+struct EGLInfo {
+  // EGL version.
+  string version;
+  // EGL vendor.
+  string vendor;
+  // EGL client API.
+  string client_api;
+  // EGL extensions.
+  array<string> extensions;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -947,4 +989,7 @@ struct TelemetryInfo {
   // Information about the tpm. Only present when kTpm was included in
   // the categories input to ProbeTelemetryInfo.
   TpmResult? tpm_result;
+  // Information about the graphics. Only present when kGraphics was included in
+  // the categories input to ProbeTelemetryInfo.
+  GraphicsResult? graphics_result;
 };
