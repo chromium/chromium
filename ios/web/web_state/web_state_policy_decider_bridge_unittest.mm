@@ -55,7 +55,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       should_allow_request_info->request_info.transition_type));
 }
 
-// Tests |decidePolicyForNavigationResponse:forMainFrame:completionHandler:|
+// Tests |decidePolicyForNavigationResponse:responseInfo:completionHandler:|
 // forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
   ASSERT_FALSE([decider_ decidePolicyForNavigationResponseInfo]);
@@ -64,16 +64,18 @@ TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
                                                       MIMEType:@"text/html"
                                          expectedContentLength:0
                                               textEncodingName:nil];
-  bool for_main_frame = true;
-  decider_bridge_.ShouldAllowResponse(response, for_main_frame,
+  const bool for_main_frame = true;
+  const WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+  decider_bridge_.ShouldAllowResponse(response, response_info,
                                       base::DoNothing());
   const FakeDecidePolicyForNavigationResponseInfo*
       decide_policy_for_navigation_response_info =
           [decider_ decidePolicyForNavigationResponseInfo];
   ASSERT_TRUE(decide_policy_for_navigation_response_info);
   EXPECT_EQ(response, decide_policy_for_navigation_response_info->response);
-  EXPECT_EQ(for_main_frame,
-            decide_policy_for_navigation_response_info->for_main_frame);
+  EXPECT_EQ(
+      for_main_frame,
+      decide_policy_for_navigation_response_info->response_info.for_main_frame);
 }
 
 }  // namespace web

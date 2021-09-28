@@ -498,8 +498,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       });
 
   if ([self shouldRenderResponse:WKResponse]) {
-    self.webStateImpl->ShouldAllowResponse(
-        WKResponse.response, WKResponse.forMainFrame, std::move(callback));
+    const web::WebStatePolicyDecider::ResponseInfo response_info(
+        WKResponse.forMainFrame);
+    self.webStateImpl->ShouldAllowResponse(WKResponse.response, response_info,
+                                           std::move(callback));
     return;
   }
 

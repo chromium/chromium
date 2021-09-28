@@ -979,7 +979,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest, ClosedWebStateInShouldAllowRequest) {
       std::move(callback).Run(PolicyDecision::Allow());
     }
     void ShouldAllowResponse(NSURLResponse* response,
-                             bool for_main_frame,
+                             ResponseInfo response_info,
                              PolicyDecisionCallback callback) override {
       std::move(callback).Run(PolicyDecision::Allow());
     }

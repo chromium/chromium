@@ -116,11 +116,11 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
 
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
-      base::OnceCallback<void(PolicyDecision)> callback) override {
+      web::WebStatePolicyDecider::ResponseInfo response_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     if ([response.MIMEType hasPrefix:@"audio/"] ||
         [response.MIMEType hasPrefix:@"video/"]) {
-      if (for_main_frame) {
+      if (response_info.for_main_frame) {
         main_frame_navigation_blocked_ = true;
       }
       std::move(callback).Run(PolicyDecision::Cancel());

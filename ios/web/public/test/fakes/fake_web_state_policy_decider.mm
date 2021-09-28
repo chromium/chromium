@@ -27,7 +27,7 @@ void FakeWebStatePolicyDecider::ShouldAllowRequest(
 
 void FakeWebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    ResponseInfo response_info,
     PolicyDecisionCallback callback) {
   std::move(callback).Run(PolicyDecision::Allow());
 }

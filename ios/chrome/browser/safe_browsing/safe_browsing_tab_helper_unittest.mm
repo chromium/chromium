@@ -106,7 +106,8 @@ class SafeBrowsingTabHelperTest
           policy_decision = decision;
           callback_called = true;
         });
-    web_state_.ShouldAllowResponse(response, for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+    web_state_.ShouldAllowResponse(response, response_info,
                                    std::move(callback));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(callback_called);

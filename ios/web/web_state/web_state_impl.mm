@@ -500,7 +500,7 @@ bool WebStateImpl::ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
 
 void WebStateImpl::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    WebStatePolicyDecider::ResponseInfo response_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   auto response_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));
@@ -511,7 +511,7 @@ void WebStateImpl::ShouldAllowResponse(
       base::Owned(std::move(response_state_tracker)));
   int num_decisions_requested = 0;
   for (auto& policy_decider : policy_deciders_) {
-    policy_decider.ShouldAllowResponse(response, for_main_frame,
+    policy_decider.ShouldAllowResponse(response, response_info,
                                        policy_decider_callback);
     num_decisions_requested++;
     if (response_state_tracker_ptr->DeterminedFinalResult())

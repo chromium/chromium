@@ -13,7 +13,7 @@
 namespace web {
 
 PolicyDecisionStateTracker::PolicyDecisionStateTracker(
-    base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback)
+    WebStatePolicyDecider::PolicyDecisionCallback callback)
     : callback_(std::move(callback)) {}
 
 PolicyDecisionStateTracker::~PolicyDecisionStateTracker() {

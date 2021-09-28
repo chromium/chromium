@@ -133,7 +133,7 @@ class AccountConsistencyService::AccountConsistencyHandler
   // should continue and updates authentication cookies on Google domains.
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void WebStateDestroyed() override;
 
@@ -185,7 +185,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
 
 void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   NSHTTPURLResponse* http_response =
       base::mac::ObjCCast<NSHTTPURLResponse>(response);

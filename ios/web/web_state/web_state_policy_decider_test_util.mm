@@ -20,4 +20,9 @@ bool RequestInfoMatch(WebStatePolicyDecider::RequestInfo expected,
          (got.has_user_gesture == expected.has_user_gesture);
 }
 
+bool ResponseInfoMatch(WebStatePolicyDecider::ResponseInfo expected,
+                       WebStatePolicyDecider::ResponseInfo got) {
+  return (got.for_main_frame == expected.for_main_frame);
+}
+
 }  // namespace web

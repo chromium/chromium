@@ -102,7 +102,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
     std::move(callback).Run(decision);
   }
   void ShouldAllowResponse(NSURLResponse* response,
-                           bool for_main_frame,
+                           ResponseInfo response_info,
                            PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(response.URL);

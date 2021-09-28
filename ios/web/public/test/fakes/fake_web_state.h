@@ -131,7 +131,7 @@ class FakeWebState : public WebState {
   // to PolicyDecision::Allow().
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
   std::u16string GetLastExecutedJavascript() const;
   // Returns a copy of the last added callback, if one has been added.

@@ -167,7 +167,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // the first PolicyDecision::CancelAndDisplayError() result that was received.
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   // Returns the UIView used to contain the WebView for sizing purposes. Can be

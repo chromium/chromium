@@ -118,8 +118,8 @@ class FakeWebState : public web::FakeWebState {
         base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
           policyDecision = decision;
         });
-    decider_->ShouldAllowResponse(response, for_main_frame,
-                                  std::move(callback));
+    web::WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+    decider_->ShouldAllowResponse(response, response_info, std::move(callback));
     return policyDecision.ShouldAllowNavigation();
   }
   void WebStateDestroyed() {

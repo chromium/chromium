@@ -20,9 +20,10 @@ FakeShouldAllowRequestInfo::FakeShouldAllowRequestInfo(
 FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
 
 FakeDecidePolicyForNavigationResponseInfo::
-    FakeDecidePolicyForNavigationResponseInfo(NSURLResponse* response,
-                                              BOOL for_main_frame)
-    : response(response), for_main_frame(for_main_frame) {}
+    FakeDecidePolicyForNavigationResponseInfo(
+        NSURLResponse* response,
+        WebStatePolicyDecider::ResponseInfo response_info)
+    : response(response), response_info(response_info) {}
 
 FakeDecidePolicyForNavigationResponseInfo::
     ~FakeDecidePolicyForNavigationResponseInfo() = default;
@@ -33,7 +34,7 @@ FakeDecidePolicyForNavigationResponseInfo::
   // Arguments passed to |shouldAllowRequest:requestInfo:|.
   std::unique_ptr<web::FakeShouldAllowRequestInfo> _shouldAllowRequestInfo;
   // Arguments passed to
-  // |decidePolicyForNavigationResponse:forMainFrame:completionHandler:|.
+  // |decidePolicyForNavigationResponse:responseInfo:completionHandler:|.
   std::unique_ptr<web::FakeDecidePolicyForNavigationResponseInfo>
       _decidePolicyForNavigationResponseInfo;
 }
@@ -57,13 +58,14 @@ FakeDecidePolicyForNavigationResponseInfo::
   decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
-- (void)decidePolicyForNavigationResponse:(NSURLResponse*)response
-                             forMainFrame:(BOOL)forMainFrame
-                          decisionHandler:
-                              (PolicyDecisionHandler)decisionHandler {
+- (void)
+    decidePolicyForNavigationResponse:(NSURLResponse*)response
+                         responseInfo:(web::WebStatePolicyDecider::ResponseInfo)
+                                          responseInfo
+                      decisionHandler:(PolicyDecisionHandler)decisionHandler {
   _decidePolicyForNavigationResponseInfo =
       std::make_unique<web::FakeDecidePolicyForNavigationResponseInfo>(
-          response, forMainFrame);
+          response, responseInfo);
   decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 

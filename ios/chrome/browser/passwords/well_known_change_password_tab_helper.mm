@@ -81,7 +81,7 @@ void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
 
 void WellKnownChangePasswordTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL url = net::GURLWithNSURL(response.URL);
   // True if the TabHelper expects the response from .well-known/change-password

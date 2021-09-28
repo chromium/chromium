@@ -31,7 +31,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
 
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     LookalikeUrlContainer* lookalike_container =
         LookalikeUrlContainer::FromWebState(web_state_);

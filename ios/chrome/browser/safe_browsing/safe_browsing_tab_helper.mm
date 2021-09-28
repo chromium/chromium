@@ -221,7 +221,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
 
 void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
   SafeBrowsingService* safe_browsing_service =
@@ -232,7 +232,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  if (for_main_frame) {
+  if (response_info.for_main_frame) {
     HandleMainFrameResponsePolicy(response_url, std::move(callback));
   } else {
     HandleSubFrameResponsePolicy(response_url, std::move(callback));
