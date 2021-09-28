@@ -1,3 +1,4 @@
+<script src="../../resources/gesture-util.js"></script>
 <body style="margin:0">
 <script>
 if (window.testRunner) {
@@ -15,13 +16,16 @@ if (window.testRunner) {
 
 <script>
 if (window.eventSender) {
-    eventSender.mouseMoveTo(390, 300);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    eventSender.mouseDown();
-    eventSender.mouseUp();
+    waitForCompositorCommit().then(() => {
+        eventSender.mouseMoveTo(390, 300);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+        eventSender.mouseDown();
+        eventSender.mouseUp();
 
-    setTimeout(finished, 1000);
+        // TODO(crbug.com/1253956): Don't use setTimeout here.
+        setTimeout(finished, 1000);
+    });
 }
 
 function finished()

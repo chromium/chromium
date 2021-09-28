@@ -33,6 +33,7 @@
         <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-attachment" />
         <meta name="flags" content="" />
         <meta name="assert" content="If 'background-attachment: local' the background scrolls along with the element's contents (the UA may treat 'background-clip: border-box' as the same as 'background-clip: padding-box')." />
+        <script src="../../../resources/gesture-util.js"></script>
         <style type="text/css">
             #test
             {
@@ -74,11 +75,14 @@
 
     <script>
         if (window.eventSender) {
-            eventSender.mouseMoveTo(240, 250);
-            eventSender.mouseDown();
-            eventSender.mouseUp();
+            waitForCompositorCommit().then(() => {
+                eventSender.mouseMoveTo(240, 250);
+                eventSender.mouseDown();
+                eventSender.mouseUp();
 
-            setTimeout(finished, 1000);
+                // TODO(crbug.com/1253956): Don't use setTimeout here.
+                setTimeout(finished, 1000);
+            });
         }
 
         function finished()
