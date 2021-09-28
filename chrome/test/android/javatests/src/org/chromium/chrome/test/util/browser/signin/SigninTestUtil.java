@@ -43,7 +43,7 @@ public final class SigninTestUtil {
     /**
      * Signs the user into the given account.
      */
-    static void signin(CoreAccountInfo coreAccountInfo) {
+    public static void signin(CoreAccountInfo coreAccountInfo) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
