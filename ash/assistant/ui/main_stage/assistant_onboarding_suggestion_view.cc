@@ -51,20 +51,22 @@ struct ColorPalette {
 };
 
 SkColor GetBackgroundColor(int index) {
-  // Opacity 0x4c is 30%. It comes from 255 * 0.3 = 75.5 and 0x4c=76.
+  // Opacity values:
+  // 0x19: 10%
+  // 0x4c: 30%
   constexpr ColorPalette kBackgroundColors[] = {
       {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
-       SkColorSetA(gfx::kGoogleBlue600, 0x4c)},
+       SkColorSetA(gfx::kGoogleBlue600, 0x19)},
       {gfx::kGoogleRed050, SkColorSetA(gfx::kGoogleRed300, 0x4c),
-       SkColorSetA(gfx::kGoogleRed600, 0x4c)},
+       SkColorSetA(gfx::kGoogleRed600, 0x19)},
       {gfx::kGoogleYellow050, SkColorSetA(gfx::kGoogleYellow300, 0x4c),
-       SkColorSetA(gfx::kGoogleYellow600, 0x4c)},
+       SkColorSetA(gfx::kGoogleYellow600, 0x19)},
       {gfx::kGoogleGreen050, SkColorSetA(gfx::kGoogleGreen300, 0x4c),
-       SkColorSetA(gfx::kGoogleGreen600, 0x4c)},
+       SkColorSetA(gfx::kGoogleGreen600, 0x19)},
       {SkColorSetRGB(0xF6, 0xE9, 0xF8), SkColorSetARGB(0x4c, 0xf8, 0x82, 0xff),
-       SkColorSetARGB(0x4c, 0xc6, 0x1a, 0xd9)},
+       SkColorSetARGB(0x19, 0xc6, 0x1a, 0xd9)},
       {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
-       SkColorSetA(gfx::kGoogleBlue600, 0x4c)}};
+       SkColorSetA(gfx::kGoogleBlue600, 0x19)}};
 
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(base::size(kBackgroundColors)));
@@ -83,7 +85,7 @@ SkColor GetForegroundColor(int index) {
       {gfx::kGoogleRed800, gfx::kGoogleRed200, gfx::kGoogleRed800},
       {SkColorSetRGB(0xBF, 0x50, 0x00), gfx::kGoogleYellow200,
        SkColorSetRGB(0xBF, 0x50, 0x00)},
-      {gfx::kGoogleGreen800, gfx::kGoogleGreen200, gfx::kGoogleGreen700},
+      {gfx::kGoogleGreen800, gfx::kGoogleGreen200, gfx::kGoogleGreen800},
       {SkColorSetRGB(0x8A, 0x0E, 0x9E), SkColorSetRGB(0xf8, 0x82, 0xff),
        SkColorSetRGB(0xaa, 0x00, 0xb8)},
       {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
