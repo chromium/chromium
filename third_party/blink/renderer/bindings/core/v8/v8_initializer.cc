@@ -806,6 +806,8 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
   isolate->SetModifyCodeGenerationFromStringsCallback(
       CodeGenerationCheckCallbackInMainThread);
+  isolate->SetAllowWasmCodeGenerationCallback(
+      WasmCodeGenerationCheckCallbackInMainThread);
 }
 
 }  // namespace blink
