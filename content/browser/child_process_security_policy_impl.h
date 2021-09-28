@@ -547,6 +547,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void IncludeIsolationContext(int child_id,
                                const IsolationContext& isolation_context);
 
+  // Stores the number of RenderFrameHosts currently active on the
+  // RenderProcessHost corresponding to |child_id| so that it's accessible on
+  // the IO thread.
+  // Diagnostic for debugging https://crbug.com/1148542.
+  void SetRenderFrameHostCount(int child_id, int count);
+
   // Sets the process identified by |child_id| as only permitted to access data
   // for the origin specified by |site_info|'s process_lock_url(). Most callers
   // should use RenderProcessHostImpl::SetProcessLock instead of calling this

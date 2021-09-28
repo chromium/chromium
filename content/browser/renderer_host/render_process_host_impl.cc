@@ -2848,9 +2848,13 @@ size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
 
 void RenderProcessHostImpl::IncrementRfhCount() {
   render_frame_host_count_++;
+  ChildProcessSecurityPolicyImpl::GetInstance()->SetRenderFrameHostCount(
+      GetID(), render_frame_host_count_);
 }
 void RenderProcessHostImpl::DecrementRfhCount() {
   render_frame_host_count_--;
+  ChildProcessSecurityPolicyImpl::GetInstance()->SetRenderFrameHostCount(
+      GetID(), render_frame_host_count_);
 }
 int RenderProcessHostImpl::GetRfhCount() const {
   return render_frame_host_count_;
