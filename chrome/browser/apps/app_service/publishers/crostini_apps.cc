@@ -263,7 +263,7 @@ apps::mojom::AppPtr CrostiniApps::Convert(
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kCrostini, registration.app_id(),
       apps::mojom::Readiness::kReady, registration.Name(),
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   const std::string& executable_file_name = registration.ExecutableFileName();
   if (!executable_file_name.empty()) {

@@ -40,7 +40,7 @@ apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp() {
       apps::mojom::AppType::kStandaloneBrowser, extension_misc::kLacrosAppId,
       apps::mojom::Readiness::kReady,
       "Lacros",  // TODO(jamescook): Localized name.
-      apps::mojom::InstallSource::kSystem);
+      apps::mojom::InstallReason::kSystem);
   // Make Lacros searchable with the term "chrome", too.
   app->additional_search_terms.push_back("chrome");
   app->icon_key = NewIconKey(State::kReady);

@@ -36,11 +36,11 @@ constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 
 apps::mojom::AppPtr MakeApp(const char* app_id,
                             apps::mojom::AppType app_type,
-                            apps::mojom::InstallSource install_source) {
+                            apps::mojom::InstallReason install_reason) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_id = app_id;
   app->app_type = app_type;
-  app->install_source = install_source;
+  app->install_reason = install_reason;
   return app;
 }
 
@@ -82,7 +82,7 @@ class ArcGhostWindowViewTest : public testing::Test {
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(app_id.c_str(), apps::mojom::AppType::kArc,
-                             apps::mojom::InstallSource::kUser));
+                             apps::mojom::InstallReason::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }

@@ -13,7 +13,7 @@ import '//resources/cr_elements/icons.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallReason, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
 import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
 

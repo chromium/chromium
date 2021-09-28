@@ -866,15 +866,15 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
-  apps::mojom::InstallSource install_source =
-      apps::mojom::InstallSource::kUnknown;
+  apps::mojom::InstallReason install_reason =
+      apps::mojom::InstallReason::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
-        install_source = update.InstallSource();
+        install_reason = update.InstallSource();
       });
 
-  EXPECT_EQ(install_source, apps::mojom::InstallSource::kOem);
+  EXPECT_EQ(install_reason, apps::mojom::InstallReason::kOem);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

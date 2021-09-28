@@ -101,7 +101,7 @@ bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
-        if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+        if (update.InstallSource() == apps::mojom::InstallReason::kSystem) {
           is_system_web_app = true;
         }
       });

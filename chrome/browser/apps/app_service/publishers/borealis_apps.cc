@@ -70,7 +70,7 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
       allowed ? apps::mojom::Readiness::kReady
               : apps::mojom::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,
@@ -139,7 +139,7 @@ apps::mojom::AppPtr BorealisApps::Convert(
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, registration.app_id(),
       apps::mojom::Readiness::kReady, registration.Name(),
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   const std::string& executable_file_name = registration.ExecutableFileName();
   if (!executable_file_name.empty()) {
@@ -288,7 +288,7 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, shelf_app_id,
       apps::mojom::Readiness::kReady, shelf_app_name,
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,

@@ -32,21 +32,21 @@ bool IsChromeApp(const extensions::Extension* extension) {
   return extension->is_platform_app();
 }
 
-apps::mojom::InstallSource GetInstallSource(
+apps::mojom::InstallReason GetInstallReason(
     const extensions::Extension* extension) {
   if (extensions::Manifest::IsComponentLocation(extension->location()))
-    return apps::mojom::InstallSource::kSystem;
+    return apps::mojom::InstallReason::kSystem;
 
   if (extensions::Manifest::IsPolicyLocation(extension->location()))
-    return apps::mojom::InstallSource::kPolicy;
+    return apps::mojom::InstallReason::kPolicy;
 
   if (extension->was_installed_by_oem())
-    return apps::mojom::InstallSource::kOem;
+    return apps::mojom::InstallReason::kOem;
 
   if (extension->was_installed_by_default())
-    return apps::mojom::InstallSource::kDefault;
+    return apps::mojom::InstallReason::kDefault;
 
-  return apps::mojom::InstallSource::kUser;
+  return apps::mojom::InstallReason::kUser;
 }
 
 }  // namespace
@@ -271,7 +271,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       app->install_time = base::Time();
     }
 
-    app->install_source = GetInstallSource(extension);
+    app->install_reason = GetInstallReason(extension);
     app->recommendable = apps::mojom::OptionalBool::kTrue;
     app->searchable = apps::mojom::OptionalBool::kTrue;
     app->paused = apps::mojom::OptionalBool::kFalse;

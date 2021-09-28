@@ -73,13 +73,13 @@ apps::mojom::AppPtr MakeApp(const char* app_id,
                             apps::mojom::AppType app_type,
                             const std::string& publisher_id,
                             apps::mojom::Readiness readiness,
-                            apps::mojom::InstallSource install_source) {
+                            apps::mojom::InstallReason install_reason) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_id = app_id;
   app->app_type = app_type;
   app->publisher_id = publisher_id;
   app->readiness = readiness;
-  app->install_source = install_source;
+  app->install_reason = install_reason;
   return app;
 }
 
@@ -162,67 +162,67 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
     deltas.push_back(MakeApp(/*app_id=*/"a", apps::mojom::AppType::kArc,
                              "com.google.A", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kUser));
+                             apps::mojom::InstallReason::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kArc,
                  true /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(/*app_id=*/"bu", apps::mojom::AppType::kBuiltIn,
                              "", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kSystem));
+                             apps::mojom::InstallReason::kSystem));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kBuiltIn,
                  true /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(/*app_id=*/"c", apps::mojom::AppType::kCrostini,
                              "", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kUser));
+                             apps::mojom::InstallReason::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kCrostini,
                  true /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(/*app_id=*/"w", apps::mojom::AppType::kWeb,
                              "https://foo.com", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kSync));
+                             apps::mojom::InstallReason::kSync));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
                  false /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(/*app_id=*/"w2", apps::mojom::AppType::kWeb,
                              "https://foo2.com", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kSync));
+                             apps::mojom::InstallReason::kSync));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
                  true /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(
         /*app_id=*/"s", apps::mojom::AppType::kSystemWeb, "https://os-settings",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kSystem));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSystem));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
                  true /* should_notify_initialized */);
     deltas.clear();
 
     deltas.push_back(MakeApp(/*app_id=*/"u", apps::mojom::AppType::kUnknown, "",
                              apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kUnknown));
+                             apps::mojom::InstallReason::kUnknown));
     deltas.push_back(MakeApp(
         /*app_id=*/"m", apps::mojom::AppType::kMacOs, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kUnknown));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUnknown));
     deltas.push_back(MakeApp(
         /*app_id=*/"p", apps::mojom::AppType::kPluginVm, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kUser));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser));
     deltas.push_back(MakeApp(
         /*app_id=*/"l", apps::mojom::AppType::kStandaloneBrowser, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kSystem));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSystem));
     deltas.push_back(MakeApp(
         /*app_id=*/"lcr", apps::mojom::AppType::kStandaloneBrowserExtension, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kUser));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", apps::mojom::AppType::kRemote, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kPolicy));
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kPolicy));
     deltas.push_back(MakeApp(/*app_id=*/"bo", apps::mojom::AppType::kBorealis,
                              "", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallSource::kOem));
+                             apps::mojom::InstallReason::kOem));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -236,7 +236,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(app_id.c_str(), app_type, publisher_id, readiness,
-                             apps::mojom::InstallSource::kUser));
+                             apps::mojom::InstallReason::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -247,7 +247,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kArc, apps::mojom::InstallSource::kUser),
+            AppTypeName::kArc, apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -255,7 +255,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kBuiltIn, apps::mojom::InstallSource::kSystem),
+            AppTypeName::kBuiltIn, apps::mojom::InstallReason::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -263,7 +263,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kCrostini, apps::mojom::InstallSource::kUser),
+            AppTypeName::kCrostini, apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -274,7 +274,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kWeb, apps::mojom::InstallSource::kSync),
+            AppTypeName::kWeb, apps::mojom::InstallReason::kSync),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -282,7 +282,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kMacOs, apps::mojom::InstallSource::kUnknown),
+            AppTypeName::kMacOs, apps::mojom::InstallReason::kUnknown),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -290,7 +290,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kPluginVm, apps::mojom::InstallSource::kUser),
+            AppTypeName::kPluginVm, apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -299,7 +299,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
             AppTypeName::kStandaloneBrowser,
-            apps::mojom::InstallSource::kSystem),
+            apps::mojom::InstallReason::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -308,7 +308,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
             AppTypeName::kStandaloneBrowserExtension,
-            apps::mojom::InstallSource::kUser),
+            apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -317,7 +317,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
             AppTypeName::kStandaloneBrowserExtension,
-            apps::mojom::InstallSource::kUser),
+            apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -325,7 +325,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kRemote, apps::mojom::InstallSource::kPolicy),
+            AppTypeName::kRemote, apps::mojom::InstallReason::kPolicy),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -333,7 +333,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kBorealis, apps::mojom::InstallSource::kOem),
+            AppTypeName::kBorealis, apps::mojom::InstallReason::kOem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -341,7 +341,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
-            AppTypeName::kSystemWeb, apps::mojom::InstallSource::kSystem),
+            AppTypeName::kSystemWeb, apps::mojom::InstallReason::kSystem),
         /*expected_count=*/1);
   }
 
@@ -568,7 +568,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
   void VerifyInstalledAppsUkm(const std::string& app_info,
                               AppTypeName app_type_name,
-                              apps::mojom::InstallSource install_source,
+                              apps::mojom::InstallReason install_reason,
                               InstallTime install_time) {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InstalledApp");
@@ -583,7 +583,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
       test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                              (int)app_type_name);
       test_ukm_recorder()->ExpectEntryMetric(entry, "InstallSource",
-                                             (int)install_source);
+                                             (int)install_reason);
       test_ukm_recorder()->ExpectEntryMetric(entry, "InstallTime",
                                              (int)install_time);
     }
@@ -1399,15 +1399,15 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Verify the apps installed during the init phase.
   VerifyInstalledAppsUkm("app://com.google.A", AppTypeName::kArc,
-                         apps::mojom::InstallSource::kUser, InstallTime::kInit);
+                         apps::mojom::InstallReason::kUser, InstallTime::kInit);
   VerifyInstalledAppsUkm("app://bu", AppTypeName::kBuiltIn,
-                         apps::mojom::InstallSource::kSystem,
+                         apps::mojom::InstallReason::kSystem,
                          InstallTime::kInit);
   VerifyInstalledAppsUkm("app://s", AppTypeName::kSystemWeb,
-                         apps::mojom::InstallSource::kSystem,
+                         apps::mojom::InstallReason::kSystem,
                          InstallTime::kInit);
   VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kWeb,
-                         apps::mojom::InstallSource::kSync, InstallTime::kInit);
+                         apps::mojom::InstallReason::kSync, InstallTime::kInit);
 
   // Install a new ARC app during the running time.
   InstallOneApp("aa", apps::mojom::AppType::kArc, "com.google.AA",
@@ -1415,7 +1415,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
 
   // Verify the ARC app installed during the running time.
   VerifyInstalledAppsUkm("app://com.google.AA", AppTypeName::kArc,
-                         apps::mojom::InstallSource::kUser,
+                         apps::mojom::InstallReason::kUser,
                          InstallTime::kRunning);
 }
 

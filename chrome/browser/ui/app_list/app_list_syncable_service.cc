@@ -105,7 +105,7 @@ bool AppIsDefault(Profile* profile, const std::string& id) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(id, [&result](const apps::AppUpdate& update) {
-        result = update.InstallSource() == apps::mojom::InstallSource::kDefault;
+        result = update.InstallSource() == apps::mojom::InstallReason::kDefault;
       });
   return result;
 }
@@ -114,7 +114,7 @@ void SetAppIsDefaultForTest(Profile* profile, const std::string& id) {
   apps::mojom::AppPtr delta = apps::mojom::App::New();
   delta->app_type = apps::mojom::AppType::kExtension;
   delta->app_id = id;
-  delta->install_source = apps::mojom::InstallSource::kDefault;
+  delta->install_reason = apps::mojom::InstallReason::kDefault;
 
   std::vector<apps::mojom::AppPtr> deltas;
   deltas.push_back(std::move(delta));
@@ -1398,14 +1398,14 @@ syncer::StringOrdinal AppListSyncableService::GetPreferredOemFolderPos() {
 
 bool AppListSyncableService::AppIsOem(const std::string& id) {
   // For Arc and web apps, it is sufficient to check the install source.
-  apps::mojom::InstallSource install_source =
-      apps::mojom::InstallSource::kUnknown;
+  apps::mojom::InstallReason install_reason =
+      apps::mojom::InstallReason::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(id, [&install_source](const apps::AppUpdate& update) {
-        install_source = update.InstallSource();
+      .ForOneApp(id, [&install_reason](const apps::AppUpdate& update) {
+        install_reason = update.InstallSource();
       });
-  if (install_source == apps::mojom::InstallSource::kOem)
+  if (install_reason == apps::mojom::InstallReason::kOem)
     return true;
 
   if (!extension_system_->extension_service())

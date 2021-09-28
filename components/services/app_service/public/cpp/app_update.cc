@@ -95,8 +95,8 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     state->permissions.clear();
     ClonePermissions(delta->permissions, &state->permissions);
   }
-  if (delta->install_source != apps::mojom::InstallSource::kUnknown) {
-    state->install_source = delta->install_source;
+  if (delta->install_reason != apps::mojom::InstallReason::kUnknown) {
+    state->install_reason = delta->install_reason;
   }
   if (delta->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
     state->is_platform_app = delta->is_platform_app;
@@ -337,31 +337,31 @@ bool AppUpdate::PermissionsChanged() const {
          (!state_ || (delta_->permissions != state_->permissions));
 }
 
-apps::mojom::InstallSource AppUpdate::InstallSource() const {
+apps::mojom::InstallReason AppUpdate::InstallSource() const {
   if (delta_ &&
-      (delta_->install_source != apps::mojom::InstallSource::kUnknown)) {
-    return delta_->install_source;
+      (delta_->install_reason != apps::mojom::InstallReason::kUnknown)) {
+    return delta_->install_reason;
   }
   if (state_) {
-    return state_->install_source;
+    return state_->install_reason;
   }
-  return apps::mojom::InstallSource::kUnknown;
+  return apps::mojom::InstallReason::kUnknown;
 }
 
 bool AppUpdate::InstallSourceChanged() const {
   return delta_ &&
-         (delta_->install_source != apps::mojom::InstallSource::kUnknown) &&
-         (!state_ || (delta_->install_source != state_->install_source));
+         (delta_->install_reason != apps::mojom::InstallReason::kUnknown) &&
+         (!state_ || (delta_->install_reason != state_->install_reason));
 }
 
 apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
   switch (InstallSource()) {
-    case apps::mojom::InstallSource::kUnknown:
+    case apps::mojom::InstallReason::kUnknown:
       return apps::mojom::OptionalBool::kUnknown;
-    case apps::mojom::InstallSource::kSystem:
-    case apps::mojom::InstallSource::kPolicy:
-    case apps::mojom::InstallSource::kOem:
-    case apps::mojom::InstallSource::kDefault:
+    case apps::mojom::InstallReason::kSystem:
+    case apps::mojom::InstallReason::kPolicy:
+    case apps::mojom::InstallReason::kOem:
+    case apps::mojom::InstallReason::kDefault:
       return apps::mojom::OptionalBool::kTrue;
     default:
       return apps::mojom::OptionalBool::kFalse;

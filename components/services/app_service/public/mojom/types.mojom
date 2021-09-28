@@ -40,7 +40,7 @@ struct App {
   array<Permission> permissions;
 
   // Whether the app was installed by sync, policy or as a default app.
-  InstallSource install_source;
+  InstallReason install_reason;
 
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
@@ -132,7 +132,7 @@ enum Readiness {
 // enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-enum InstallSource {
+enum InstallReason {
   kUnknown = 0,
   kSystem,     // Installed with the system and is considered a part of the OS.
   kPolicy,     // Installed by policy.

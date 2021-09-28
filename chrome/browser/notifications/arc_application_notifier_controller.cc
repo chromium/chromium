@@ -55,7 +55,7 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
       }
       DCHECK(permission->value_type == apps::mojom::PermissionValueType::kBool);
       // Do not include notifier metadata for system apps.
-      if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+      if (update.InstallSource() == apps::mojom::InstallReason::kSystem) {
         return;
       }
       notifier_dataset.push_back(NotifierDataset{

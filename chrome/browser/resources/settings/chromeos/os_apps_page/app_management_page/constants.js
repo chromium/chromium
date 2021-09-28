@@ -57,7 +57,7 @@ export const TriState = apps.mojom.TriState;
 
 export const OptionalBool = apps.mojom.OptionalBool;
 
-export const InstallSource = apps.mojom.InstallSource;
+export const InstallReason = apps.mojom.InstallReason;
 
 export const WindowMode = apps.mojom.WindowMode;
 

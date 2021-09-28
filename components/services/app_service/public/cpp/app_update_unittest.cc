@@ -49,7 +49,7 @@ class AppUpdateTest : public testing::Test {
   std::vector<apps::mojom::PermissionPtr> expect_permissions_;
   bool expect_permissions_changed_;
 
-  apps::mojom::InstallSource expect_install_source_;
+  apps::mojom::InstallReason expect_install_source_;
   bool expect_install_source_changed_;
 
   apps::mojom::OptionalBool expect_is_platform_app_;
@@ -226,7 +226,7 @@ class AppUpdateTest : public testing::Test {
     expect_last_launch_time_ = base::Time();
     expect_install_time_ = base::Time();
     expect_permissions_.clear();
-    expect_install_source_ = apps::mojom::InstallSource::kUnknown;
+    expect_install_source_ = apps::mojom::InstallReason::kUnknown;
     expect_is_platform_app_ = apps::mojom::OptionalBool::kUnknown;
     expect_recommendable_ = apps::mojom::OptionalBool::kUnknown;
     expect_searchable_ = apps::mojom::OptionalBool::kUnknown;
@@ -469,17 +469,17 @@ class AppUpdateTest : public testing::Test {
       CheckExpects(u);
     }
 
-    // InstallSource tests.
+    // InstallReason tests.
     if (state) {
-      state->install_source = apps::mojom::InstallSource::kUser;
-      expect_install_source_ = apps::mojom::InstallSource::kUser;
+      state->install_reason = apps::mojom::InstallReason::kUser;
+      expect_install_source_ = apps::mojom::InstallReason::kUser;
       expect_install_source_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->install_source = apps::mojom::InstallSource::kPolicy;
-      expect_install_source_ = apps::mojom::InstallSource::kPolicy;
+      delta->install_reason = apps::mojom::InstallReason::kPolicy;
+      expect_install_source_ = apps::mojom::InstallReason::kPolicy;
       expect_install_source_changed_ = true;
       CheckExpects(u);
     }

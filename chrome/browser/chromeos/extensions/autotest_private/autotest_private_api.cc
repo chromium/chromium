@@ -359,23 +359,23 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
 }
 
 api::autotest_private::AppInstallSource GetAppInstallSource(
-    apps::mojom::InstallSource source) {
-  switch (source) {
-    case apps::mojom::InstallSource::kUnknown:
+    apps::mojom::InstallReason install_reason) {
+  switch (install_reason) {
+    case apps::mojom::InstallReason::kUnknown:
       return api::autotest_private::AppInstallSource::
           APP_INSTALL_SOURCE_UNKNOWN;
-    case apps::mojom::InstallSource::kSystem:
+    case apps::mojom::InstallReason::kSystem:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SYSTEM;
-    case apps::mojom::InstallSource::kPolicy:
+    case apps::mojom::InstallReason::kPolicy:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_POLICY;
-    case apps::mojom::InstallSource::kOem:
+    case apps::mojom::InstallReason::kOem:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_OEM;
-    case apps::mojom::InstallSource::kDefault:
+    case apps::mojom::InstallReason::kDefault:
       return api::autotest_private::AppInstallSource::
           APP_INSTALL_SOURCE_DEFAULT;
-    case apps::mojom::InstallSource::kSync:
+    case apps::mojom::InstallReason::kSync:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SYNC;
-    case apps::mojom::InstallSource::kUser:
+    case apps::mojom::InstallReason::kUser:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_USER;
   }
   NOTREACHED();

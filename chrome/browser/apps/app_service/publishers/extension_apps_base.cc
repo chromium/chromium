@@ -113,26 +113,26 @@ ash::ShelfLaunchSource ConvertLaunchSource(
   }
 }
 
-apps::mojom::InstallSource GetInstallSource(
+apps::mojom::InstallReason GetInstallSource(
     const Profile* profile,
     const extensions::Extension* extension) {
   if (extensions::Manifest::IsComponentLocation(extension->location())) {
-    return apps::mojom::InstallSource::kSystem;
+    return apps::mojom::InstallReason::kSystem;
   }
 
   if (extensions::Manifest::IsPolicyLocation(extension->location())) {
-    return apps::mojom::InstallSource::kPolicy;
+    return apps::mojom::InstallReason::kPolicy;
   }
 
   if (extension->was_installed_by_oem()) {
-    return apps::mojom::InstallSource::kOem;
+    return apps::mojom::InstallReason::kOem;
   }
 
   if (extension->was_installed_by_default()) {
-    return apps::mojom::InstallSource::kDefault;
+    return apps::mojom::InstallReason::kDefault;
   }
 
-  return apps::mojom::InstallSource::kUser;
+  return apps::mojom::InstallReason::kUser;
 }
 
 }  // namespace
@@ -535,7 +535,7 @@ void ExtensionAppsBase::OnExtensionLoaded(
   app->app_id = extension->id();
   app->readiness = apps::mojom::Readiness::kReady;
   app->name = extension->name();
-  app->install_source = GetInstallSource(profile_, extension);
+  app->install_reason = GetInstallSource(profile_, extension);
   Publish(std::move(app), subscribers_);
 }
 

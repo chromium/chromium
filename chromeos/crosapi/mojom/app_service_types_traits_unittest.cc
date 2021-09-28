@@ -35,7 +35,7 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   input->last_launch_time = base::Time() + base::TimeDelta::FromDays(1);
   input->install_time = base::Time() + base::TimeDelta::FromDays(2);
 
-  input->install_source = apps::mojom::InstallSource::kUser;
+  input->install_reason = apps::mojom::InstallReason::kUser;
   input->recommendable = apps::mojom::OptionalBool::kTrue;
   input->searchable = apps::mojom::OptionalBool::kTrue;
   input->paused = apps::mojom::OptionalBool::kFalse;
@@ -77,7 +77,7 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
             base::Time() + base::TimeDelta::FromDays(1));
   EXPECT_EQ(output->install_time, base::Time() + base::TimeDelta::FromDays(2));
 
-  EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+  EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);
@@ -112,7 +112,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   input->readiness = apps::mojom::Readiness::kReady;
   input->additional_search_terms = {"1", "2"};
 
-  input->install_source = apps::mojom::InstallSource::kUser;
+  input->install_reason = apps::mojom::InstallReason::kUser;
   input->recommendable = apps::mojom::OptionalBool::kTrue;
   input->searchable = apps::mojom::OptionalBool::kTrue;
   input->paused = apps::mojom::OptionalBool::kFalse;
@@ -139,7 +139,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(output->readiness, apps::mojom::Readiness::kReady);
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
 
-  EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+  EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);
@@ -270,57 +270,57 @@ TEST(AppServiceTypesTraitsTest, RoundTripReadiness) {
 }
 
 // Test that serialization and deserialization works with updating install
-// source.
+// reason.
 TEST(AppServiceTypesTraitsTest, RoundTripInstallSource) {
   apps::mojom::AppPtr input = apps::mojom::App::New();
   {
-    input->install_source = apps::mojom::InstallSource::kUnknown;
+    input->install_reason = apps::mojom::InstallReason::kUnknown;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUnknown);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUnknown);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kSystem;
+    input->install_reason = apps::mojom::InstallReason::kSystem;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kSystem);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kSystem);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kPolicy;
+    input->install_reason = apps::mojom::InstallReason::kPolicy;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kPolicy);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kPolicy);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kOem;
+    input->install_reason = apps::mojom::InstallReason::kOem;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kOem);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kOem);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kDefault;
+    input->install_reason = apps::mojom::InstallReason::kDefault;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kDefault);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kDefault);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kSync;
+    input->install_reason = apps::mojom::InstallReason::kSync;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kSync);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kSync);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kUser;
+    input->install_reason = apps::mojom::InstallReason::kUser;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
   }
 }
 

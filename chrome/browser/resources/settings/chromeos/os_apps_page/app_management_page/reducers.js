@@ -22,7 +22,7 @@ AppState.addApp = function(apps, action) {
   if (apps[action.app.id]) {
     const stringifyApp = (app) => {
       return `id: ${app.id}, type: ${app.type}, install source: ${
-          app.installSource} title: ${app.title}`;
+          app.installReason} title: ${app.title}`;
     };
     const errorMessage = `Attempted to add an app that already exists.
                           New app: ${stringifyApp(action.app)}.

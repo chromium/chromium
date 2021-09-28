@@ -1338,29 +1338,29 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
                        is_placeholder_icon, icon_effects, std::move(callback));
 }
 
-apps::mojom::InstallSource GetInstallSource(
+apps::mojom::InstallReason GetInstallSource(
     const ArcAppListPrefs* prefs,
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
   // Sticky represents apps that cannot be uninstalled and are installed by the
   // system.
   if (app_info.sticky) {
-    return apps::mojom::InstallSource::kSystem;
+    return apps::mojom::InstallReason::kSystem;
   }
 
   if (prefs->IsOem(app_id)) {
-    return apps::mojom::InstallSource::kOem;
+    return apps::mojom::InstallReason::kOem;
   }
 
   if (prefs->IsDefault(app_id)) {
-    return apps::mojom::InstallSource::kDefault;
+    return apps::mojom::InstallReason::kDefault;
   }
 
   if (prefs->IsControlledByPolicy(app_info.package_name)) {
-    return apps::mojom::InstallSource::kPolicy;
+    return apps::mojom::InstallReason::kPolicy;
   }
 
-  return apps::mojom::InstallSource::kUser;
+  return apps::mojom::InstallReason::kUser;
 }
 
 apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,

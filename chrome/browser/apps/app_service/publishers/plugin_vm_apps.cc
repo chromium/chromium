@@ -94,7 +94,7 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
       allowed ? apps::mojom::Readiness::kReady
               : apps::mojom::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME),
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,
@@ -292,7 +292,7 @@ apps::mojom::AppPtr PluginVmApps::Convert(
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kPluginVm, registration.app_id(),
       apps::mojom::Readiness::kReady, registration.Name(),
-      apps::mojom::InstallSource::kUser);
+      apps::mojom::InstallReason::kUser);
 
   if (new_icon_key) {
     auto icon_effects = IconEffects::kCrOsStandardIcon;

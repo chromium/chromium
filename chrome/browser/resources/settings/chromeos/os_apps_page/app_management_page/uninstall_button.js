@@ -12,7 +12,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallReason, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
 import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
 
@@ -48,15 +48,15 @@ Polymer({
       return true;
     }
 
-    switch (app.installSource) {
-      case InstallSource.kSystem:
-      case InstallSource.kPolicy:
+    switch (app.installReason) {
+      case InstallReason.kSystem:
+      case InstallReason.kPolicy:
         return true;
-      case InstallSource.kOem:
-      case InstallSource.kDefault:
-      case InstallSource.kSync:
-      case InstallSource.kUser:
-      case InstallSource.kUnknown:
+      case InstallReason.kOem:
+      case InstallReason.kDefault:
+      case InstallReason.kSync:
+      case InstallReason.kUser:
+      case InstallReason.kUnknown:
         return false;
       default:
         assertNotReached();
@@ -74,7 +74,7 @@ Polymer({
     if (!app) {
       return false;
     }
-    return app.installSource === InstallSource.kPolicy;
+    return app.installReason === InstallReason.kPolicy;
   },
 
   /**
@@ -86,7 +86,7 @@ Polymer({
     if (!app) {
       return false;
     }
-    return app.installSource !== InstallSource.kSystem;
+    return app.installReason !== InstallReason.kSystem;
   },
 
   /**

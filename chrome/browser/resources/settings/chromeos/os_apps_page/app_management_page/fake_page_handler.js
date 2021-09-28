@@ -98,7 +98,7 @@ export class FakePageHandler {
       size: '9.0MB',
       isPinned: apps.mojom.OptionalBool.kFalse,
       isPolicyPinned: apps.mojom.OptionalBool.kFalse,
-      installSource: apps.mojom.InstallSource.kUser,
+      installReason: apps.mojom.InstallReason.kUser,
       permissions: {},
       hideMoreSettings: false,
       hidePinToShelf: false,

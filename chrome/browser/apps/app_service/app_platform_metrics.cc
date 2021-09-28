@@ -158,7 +158,7 @@ apps::AppTypeName GetAppTypeNameForWebApp(
             // The app type may be kSystemWeb (system web apps in Ash when
             // Lacros web apps are enabled), or kWeb (all other cases).
             type_name =
-                (update.InstallSource() == apps::mojom::InstallSource::kSystem)
+                (update.InstallSource() == apps::mojom::InstallReason::kSystem)
                     ? apps::AppTypeName::kSystemWeb
                     : apps::AppTypeName::kWeb;
             window_mode = update.WindowMode();
@@ -184,21 +184,21 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   return apps::AppTypeName::kWeb;
 }
 
-std::string GetInstallSource(apps::mojom::InstallSource install_source) {
-  switch (install_source) {
-    case apps::mojom::InstallSource::kUnknown:
+std::string GetInstallSource(apps::mojom::InstallReason install_reason) {
+  switch (install_reason) {
+    case apps::mojom::InstallReason::kUnknown:
       return kInstallSourceUnknownHistogram;
-    case apps::mojom::InstallSource::kSystem:
+    case apps::mojom::InstallReason::kSystem:
       return kInstallSourceSystemHistogram;
-    case apps::mojom::InstallSource::kPolicy:
+    case apps::mojom::InstallReason::kPolicy:
       return kInstallSourcePolicyHistogram;
-    case apps::mojom::InstallSource::kOem:
+    case apps::mojom::InstallReason::kOem:
       return kInstallSourceOemHistogram;
-    case apps::mojom::InstallSource::kDefault:
+    case apps::mojom::InstallReason::kDefault:
       return kInstallSourcePreloadHistogram;
-    case apps::mojom::InstallSource::kSync:
+    case apps::mojom::InstallReason::kSync:
       return kInstallSourceSyncHistogram;
-    case apps::mojom::InstallSource::kUser:
+    case apps::mojom::InstallReason::kUser:
       return kInstallSourceUserHistogram;
   }
 }
@@ -644,10 +644,10 @@ std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
 std::string
 AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
     AppTypeName app_type_name,
-    apps::mojom::InstallSource install_source) {
+    apps::mojom::InstallReason install_reason) {
   return kAppsCountPerInstallSourceHistogramPrefix +
          GetAppTypeHistogramName(app_type_name) + "." +
-         GetInstallSource(install_source);
+         GetInstallSource(install_reason);
 }
 
 // static
@@ -1049,7 +1049,7 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
   std::map<AppTypeName, int> app_count;
-  std::map<AppTypeName, std::map<apps::mojom::InstallSource, int>>
+  std::map<AppTypeName, std::map<apps::mojom::InstallReason, int>>
       app_count_per_install_source;
   app_registry_cache_.ForEachApp(
       [app_type, this, &app_count,
@@ -1244,11 +1244,11 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb: {
       std::string publisher_id;
-      apps::mojom::InstallSource install_source;
-      app_registry_cache_.ForOneApp(app_id, [&publisher_id, &install_source](
+      apps::mojom::InstallReason install_reason;
+      app_registry_cache_.ForOneApp(app_id, [&publisher_id, &install_reason](
                                                 const apps::AppUpdate& update) {
         publisher_id = update.PublisherId();
-        install_source = update.InstallSource();
+        install_reason = update.InstallSource();
       });
       if (publisher_id.empty()) {
         return ukm::kInvalidSourceId;
@@ -1259,7 +1259,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
         break;
       }
       if (app_type == apps::mojom::AppType::kSystemWeb ||
-          install_source == apps::mojom::InstallSource::kSystem) {
+          install_reason == apps::mojom::InstallReason::kSystem) {
         // For system web apps, call GetSourceIdForChromeApp to record the app
         // id because the url could be filtered by the server side.
         source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);

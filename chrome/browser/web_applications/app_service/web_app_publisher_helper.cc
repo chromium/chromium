@@ -77,7 +77,7 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::NOTIFICATIONS,
 };
 
-apps::mojom::InstallSource GetHighestPriorityInstallSource(
+apps::mojom::InstallReason GetHighestPriorityInstallSource(
     const WebApp* web_app) {
   // TODO(crbug.com/1189949): Introduce kOem as a new Source::Type value
   // immediately below web_app::Source::kSystem, so that this custom behavior
@@ -86,21 +86,21 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
     auto& chromeos_data = web_app->chromeos_data().value();
     if (chromeos_data.oem_installed) {
       DCHECK(!web_app->IsSystemApp());
-      return apps::mojom::InstallSource::kOem;
+      return apps::mojom::InstallReason::kOem;
     }
   }
 
   switch (web_app->GetHighestPrioritySource()) {
     case Source::kSystem:
-      return apps::mojom::InstallSource::kSystem;
+      return apps::mojom::InstallReason::kSystem;
     case Source::kPolicy:
-      return apps::mojom::InstallSource::kPolicy;
+      return apps::mojom::InstallReason::kPolicy;
     case Source::kWebAppStore:
-      return apps::mojom::InstallSource::kUser;
+      return apps::mojom::InstallReason::kUser;
     case Source::kSync:
-      return apps::mojom::InstallSource::kSync;
+      return apps::mojom::InstallReason::kSync;
     case Source::kDefault:
-      return apps::mojom::InstallSource::kDefault;
+      return apps::mojom::InstallReason::kDefault;
   }
 }
 
@@ -270,7 +270,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   // For system web apps (only), the install source is |kSystem|.
   DCHECK_EQ(web_app->IsSystemApp(),
-            app->install_source == apps::mojom::InstallSource::kSystem);
+            app->install_reason == apps::mojom::InstallReason::kSystem);
 
   app->description = web_app->description();
   app->additional_search_terms = web_app->additional_search_terms();

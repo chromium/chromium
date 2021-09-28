@@ -14,7 +14,7 @@ import '/app-management/app_management.mojom-lite.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {AppType, InstallSource, PwaPermissionType, TriState} from './constants.js';
+import {AppType, InstallReason, PwaPermissionType, TriState} from './constants.js';
 import {FakePageHandler} from './fake_page_handler.js';
 
 export class BrowserProxy {
@@ -49,7 +49,7 @@ export class BrowserProxy {
             {
               title: 'Built in app, not implemented',
               type: AppType.kBuiltIn,
-              installSource: InstallSource.kSystem,
+              installReason: InstallReason.kSystem,
             },
             ),
         FakePageHandler.createApp(
@@ -57,7 +57,7 @@ export class BrowserProxy {
             {
               title: 'Arc app',
               type: AppType.kArc,
-              installSource: InstallSource.kUser,
+              installReason: InstallReason.kUser,
             },
             ),
         FakePageHandler.createApp(
@@ -65,7 +65,7 @@ export class BrowserProxy {
             {
               title: 'Crostini app, not implemented',
               type: AppType.kCrostini,
-              installSource: InstallSource.kUser,
+              installReason: InstallReason.kUser,
             },
             ),
         FakePageHandler.createApp(
@@ -89,7 +89,7 @@ export class BrowserProxy {
               title: 'Chrome App, OEM installed',
               type: AppType.kExtension,
               description: 'A Chrome App installed by an OEM.',
-              installSource: InstallSource.kOem,
+              installReason: InstallReason.kOem,
             },
             ),
         FakePageHandler.createApp(
@@ -99,7 +99,7 @@ export class BrowserProxy {
               type: AppType.kWeb,
               isPinned: apps.mojom.OptionalBool.kTrue,
               isPolicyPinned: apps.mojom.OptionalBool.kTrue,
-              installSource: apps.mojom.InstallSource.kPolicy,
+              installReason: apps.mojom.InstallReason.kPolicy,
               permissions:
                   FakePageHandler.createWebPermissions(permissionOptions),
             },

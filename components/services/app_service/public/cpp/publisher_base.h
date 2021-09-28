@@ -34,7 +34,7 @@ class PublisherBase : public apps::mojom::Publisher {
                                      std::string app_id,
                                      apps::mojom::Readiness readiness,
                                      const std::string& name,
-                                     apps::mojom::InstallSource install_source);
+                                     apps::mojom::InstallReason install_reason);
 
   void FlushMojoCallsForTesting();
 

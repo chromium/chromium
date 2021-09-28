@@ -55,7 +55,7 @@ apps::mojom::AppPtr RemoteApps::Convert(
     const ash::RemoteAppsModel::AppInfo& info) {
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       mojom::AppType::kRemote, info.id, mojom::Readiness::kReady, info.name,
-      mojom::InstallSource::kUser);
+      mojom::InstallReason::kUser);
   app->show_in_launcher = mojom::OptionalBool::kTrue;
   app->show_in_management = mojom::OptionalBool::kFalse;
   app->show_in_search = mojom::OptionalBool::kTrue;
