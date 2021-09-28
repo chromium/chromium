@@ -9,6 +9,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
+#include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
@@ -88,6 +89,7 @@ ShareSubmenuModel::~ShareSubmenuModel() = default;
 
 void ShareSubmenuModel::ExecuteCommand(int id, int event_flags) {
   any_option_selected_for_metrics_ = true;
+  LogShareSourceDesktop(ShareSourceDesktop::kWebContextMenu);
   switch (id) {
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
       base::RecordAction(

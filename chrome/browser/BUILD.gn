@@ -4149,6 +4149,8 @@ static_library("browser") {
       "sessions/closed_tab_cache_service.h",
       "sessions/closed_tab_cache_service_factory.cc",
       "sessions/closed_tab_cache_service_factory.h",
+      "share/share_metrics.cc",
+      "share/share_metrics.h",
       "share/share_submenu_model.cc",
       "share/share_submenu_model.h",
       "sharesheet/sharesheet_controller.h",

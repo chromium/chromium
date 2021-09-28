@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -33,22 +34,6 @@
 namespace sharing_hub {
 
 namespace {
-
-// The source from which the sharing hub was launched from.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with ShareSourceDesktop
-// in src/tools/metrics/histograms/enums.xml.
-enum class ShareSourceDesktop {
-  kUnknown = 0,
-  kOmniboxSharingHub = 1,
-  kMaxValue = kOmniboxSharingHub,
-};
-
-const char kAnyShareStarted[] = "Sharing.AnyShareStartedDesktop";
-
-void LogShareSourceDesktop(ShareSourceDesktop source) {
-  UMA_HISTOGRAM_ENUMERATION(kAnyShareStarted, source);
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Result of the CrOS sharesheet, i.e. whether the user selects a share target
@@ -122,7 +107,7 @@ void SharingHubBubbleController::ShowBubble() {
 #else
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents_, this, true);
-  LogShareSourceDesktop(ShareSourceDesktop::kOmniboxSharingHub);
+  share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 #endif
 }
 
