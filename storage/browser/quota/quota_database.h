@@ -81,8 +81,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     base::Time last_modified;
   };
 
-  enum class LazyOpenMode { kCreateIfNotFound, kFailIfNotFound };
-
   // If 'path' is empty, an in memory database will be used.
   explicit QuotaDatabase(const base::FilePath& path);
 
@@ -218,6 +216,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void SetDisabledForTesting(bool disable) { is_disabled_ = disable; }
 
  private:
+  enum class EnsureOpenedMode { kCreateIfNotFound, kFailIfNotFound };
+
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
     std::string host;
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
@@ -257,7 +257,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void Commit();
   void ScheduleCommit();
 
-  QuotaError LazyOpen(LazyOpenMode mode);
+  QuotaError EnsureOpened(EnsureOpenedMode mode);
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
   bool ResetSchema();
