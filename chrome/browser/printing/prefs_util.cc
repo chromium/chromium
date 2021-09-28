@@ -2,30 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/printing/browser/prefs_util.h"
+#include "chrome/browser/printing/prefs_util.h"
 
 #include <string>
 
 #include "base/values.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/backend/printing_restrictions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace {
-
-constexpr char kPrintingPaperSizeDefault[] = "printing.paper_size_default";
-
-}  // namespace
-
 namespace printing {
 
 absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
-  if (!prefs.HasPrefPath(kPrintingPaperSizeDefault))
+  if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
     return absl::nullopt;
 
-  const base::Value* paper_size_value = prefs.Get(kPrintingPaperSizeDefault);
+  const base::Value* paper_size_value =
+      prefs.Get(prefs::kPrintingPaperSizeDefault);
   if (!paper_size_value || paper_size_value->DictEmpty())
     return absl::nullopt;
 

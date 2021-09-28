@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRINTING_BROWSER_PREFS_UTIL_H_
-#define COMPONENTS_PRINTING_BROWSER_PREFS_UTIL_H_
+#ifndef CHROME_BROWSER_PRINTING_PREFS_UTIL_H_
+#define CHROME_BROWSER_PRINTING_PREFS_UTIL_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,4 +17,4 @@ absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs);
 
 }  // namespace printing
 
-#endif  // COMPONENTS_PRINTING_BROWSER_PREFS_UTIL_H_
+#endif  // CHROME_BROWSER_PRINTING_PREFS_UTIL_H_
