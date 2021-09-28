@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -67,15 +68,15 @@ constexpr int kAutofillPopupWidthMultiple = 12;
 constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 16;
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
-// TODO(crbug.com/1250729): Rename and cleanup once launched.
-constexpr int kAutofillExperimentalAddressesPopupMaxWidth =
-    kAutofillPopupWidthMultiple * 20;
-constexpr int kAutofillExperimentalCreditCardPopupMaxWidth =
-    kAutofillPopupWidthMultiple * 27;
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
 constexpr int kAutofillPopupPasswordMaxWidth = 108;
+
+// TODO(crbug.com/1250729): Rename and cleanup once launched.
+constexpr int kAutofillExperimentalPopupMinWidth = 0;
+// Max width for address profile suggestion text.
+constexpr int kAutofillPopupAddressProfileMaxWidth = 192;
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
@@ -367,16 +368,23 @@ class AutofillPopupSuggestionView : public AutofillPopupItemView {
   static AutofillPopupSuggestionView* Create(
       AutofillPopupViewNativeViews* popup_view,
       int line_number,
-      int frontend_id);
+      int frontend_id,
+      PopupType popup_type);
 
  protected:
   // AutofillPopupItemView:
   int GetPrimaryTextStyle() override;
   gfx::Font::Weight GetPrimaryTextWeight() const override;
+  std::unique_ptr<views::Label> CreateMainTextView() override;
   std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
   AutofillPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number,
-                              int frontend_id);
+                              int frontend_id,
+                              PopupType popup_type);
+
+ private:
+  // The popup type to which this suggestion belongs.
+  PopupType popup_type_;
 };
 
 BEGIN_METADATA(AutofillPopupSuggestionView, AutofillPopupItemView)
@@ -797,9 +805,10 @@ void AutofillPopupItemView::AddSpacerWithSize(int spacer_width,
 AutofillPopupSuggestionView* AutofillPopupSuggestionView::Create(
     AutofillPopupViewNativeViews* popup_view,
     int line_number,
-    int frontend_id) {
-  AutofillPopupSuggestionView* result =
-      new AutofillPopupSuggestionView(popup_view, line_number, frontend_id);
+    int frontend_id,
+    PopupType popup_type) {
+  AutofillPopupSuggestionView* result = new AutofillPopupSuggestionView(
+      popup_view, line_number, frontend_id, popup_type);
   result->Init();
   return result;
 }
@@ -815,9 +824,22 @@ gfx::Font::Weight AutofillPopupSuggestionView::GetPrimaryTextWeight() const {
 AutofillPopupSuggestionView::AutofillPopupSuggestionView(
     AutofillPopupViewNativeViews* popup_view,
     int line_number,
-    int frontend_id)
-    : AutofillPopupItemView(popup_view, line_number, frontend_id) {
+    int frontend_id,
+    PopupType popup_type)
+    : AutofillPopupItemView(popup_view, line_number, frontend_id),
+      popup_type_(popup_type) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+}
+
+std::unique_ptr<views::Label>
+AutofillPopupSuggestionView::CreateMainTextView() {
+  std::unique_ptr<views::Label> label =
+      AutofillPopupItemView::CreateMainTextView();
+  if (popup_type_ == PopupType::kAddresses &&
+      base::FeatureList::IsEnabled(features::kAutofillTypeSpecificPopupWidth)) {
+    label->SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
+  }
+  return label;
 }
 
 std::vector<std::unique_ptr<views::View>>
@@ -837,6 +859,11 @@ AutofillPopupSuggestionView::CreateSubtextViews() {
         text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY);
     KeepLabel(label.get());
+    if (popup_type_ == PopupType::kAddresses &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillTypeSpecificPopupWidth)) {
+      label->SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
+    }
     labels.emplace_back(std::move(label));
   }
 
@@ -899,7 +926,10 @@ PasswordPopupSuggestionView::PasswordPopupSuggestionView(
     AutofillPopupViewNativeViews* popup_view,
     int line_number,
     int frontend_id)
-    : AutofillPopupSuggestionView(popup_view, line_number, frontend_id) {
+    : AutofillPopupSuggestionView(popup_view,
+                                  line_number,
+                                  frontend_id,
+                                  PopupType::kPasswords) {
   origin_ = popup_view->controller()->GetSuggestionLabelAt(line_number);
   masked_password_ =
       popup_view->controller()->GetSuggestionAt(line_number).additional_label;
@@ -1265,8 +1295,8 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
         break;
 
       default:
-        rows_.push_back(AutofillPopupSuggestionView::Create(this, line_number,
-                                                            frontend_id));
+        rows_.push_back(AutofillPopupSuggestionView::Create(
+            this, line_number, frontend_id, controller_->GetPopupType()));
     }
 
     if (has_footer)
@@ -1334,47 +1364,28 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   }
 }
 
-AutofillPopupViewNativeViews::PopupWidthLimits
-AutofillPopupViewNativeViews::GetMinimumAndMaximumPopupWidth() const {
-  // TODO(crbug.com/1250729): Remove once launched.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTypeSpecificPopupWidth)) {
-    return {kAutofillPopupMinWidth, kAutofillPopupMaxWidth};
-  }
-
-  switch (controller_->GetPopupType()) {
-    case PopupType::kAddresses:
-    case PopupType::kPasswords:
-      return {0, kAutofillExperimentalAddressesPopupMaxWidth};
-
-    case PopupType::kCreditCards:
-      return {0, kAutofillExperimentalCreditCardPopupMaxWidth};
-
-    case PopupType::kPersonalInformation:
-    case PopupType::kUnspecified:
-      return {kAutofillPopupMinWidth, kAutofillPopupMaxWidth};
-  }
-}
-
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
-  PopupWidthLimits width_limits = GetMinimumAndMaximumPopupWidth();
-
-  if (width >= width_limits.maximum_width)
-    return width_limits.maximum_width;
+  if (width >= kAutofillPopupMaxWidth)
+    return kAutofillPopupMaxWidth;
 
   int elem_width = gfx::ToEnclosingRect(controller_->element_bounds()).width();
+
+  int popup_min_width =
+      base::FeatureList::IsEnabled(features::kAutofillTypeSpecificPopupWidth)
+          ? kAutofillExperimentalPopupMinWidth
+          : kAutofillPopupMinWidth;
 
   // If the element width is within the range of legal sizes for the popup, use
   // it as the min width, so that the popup will align with its edges when
   // possible. Do not use this mechanisms if horizontally-centered popups are
   // enabled and always return the minimum widths.
   // TODO(crbug.com/1250729): Remove this mechanisms once launched.
-  int min_width = (width_limits.minimum_width <= elem_width &&
-                   elem_width < width_limits.maximum_width &&
-                   !base::FeatureList::IsEnabled(
-                       features::kAutofillCenterAlignedSuggestions))
-                      ? elem_width
-                      : width_limits.minimum_width;
+  int min_width =
+      (popup_min_width <= elem_width && elem_width < kAutofillPopupMaxWidth &&
+       !base::FeatureList::IsEnabled(
+           features::kAutofillCenterAlignedSuggestions))
+          ? elem_width
+          : popup_min_width;
 
   if (width <= min_width)
     return min_width;
@@ -1393,7 +1404,6 @@ int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
 bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = CalculatePreferredSize();
   gfx::Rect popup_bounds;
-
 
   // When a bubble border is shown, the contents area (inside the shadow) is
   // supposed to be aligned with input element boundaries.

@@ -102,16 +102,6 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   AutofillPopupController* controller() { return controller_; }
 
  private:
-  // Limits for the popup width.
-  struct PopupWidthLimits {
-    int minimum_width;
-    int maximum_width;
-  };
-
-  // Returns the minimum and maximum width for the current popup type determined
-  // from |controller_->PopupType()|.
-  PopupWidthLimits GetMinimumAndMaximumPopupWidth() const;
-
   void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
                             absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
