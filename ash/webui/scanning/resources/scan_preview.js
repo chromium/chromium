@@ -533,14 +533,9 @@ Polymer({
     this.dialogButtonText_ = this.i18n(
         isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel');
 
-    // Leave the confirmation text blank if removing a single page from a set of
-    // multiple pages.
-    const isRemoveSinglePage = isRemovePageDialog && this.objectUrls.length > 1;
-    this.dialogConfirmationText_ = isRemoveSinglePage ?
-        '' :
-        this.i18n(
-            isRemovePageDialog ? 'removePageConfirmationText' :
-                                 'rescanPageConfirmationText');
+    this.dialogConfirmationText_ = this.i18n(
+        isRemovePageDialog ? 'removePageConfirmationText' :
+                             'rescanPageConfirmationText');
     this.browserProxy_
         .getPluralString(
             isRemovePageDialog ? 'removePageDialogTitle' :
@@ -548,7 +543,15 @@ Polymer({
             this.objectUrls.length === 1 ? 0 : pageIndex + 1)
         .then(
             /* @type {string} */ (pluralString) => {
-              this.dialogTitleText_ = pluralString;
+              // When removing a page while more than one page exists, leave the
+              // title empty and move the title text into the body.
+              const isRemoveFromMultiplePages =
+                  isRemovePageDialog && this.objectUrls.length > 1;
+              this.dialogTitleText_ =
+                  isRemoveFromMultiplePages ? '' : pluralString;
+              if (isRemoveFromMultiplePages) {
+                this.dialogConfirmationText_ = pluralString
+              }
 
               // Once strings are loaded, open the dialog.
               this.$$('#scanPreviewDialog').showModal();
