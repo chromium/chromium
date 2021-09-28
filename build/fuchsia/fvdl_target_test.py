@@ -87,10 +87,9 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
     with tempfile.TemporaryDirectory() as logs_dir:
       self.args.logs_dir = logs_dir
       with FvdlTarget.CreateFromArgs(self.args) as target:
-        emu_command = []
-        target._ConfigureEmulatorLog(emu_command)
-        self.assertIn('--emulator-log', emu_command)
-        self.assertIn('--envs', emu_command)
+        build_command = target._BuildCommand()
+        self.assertIn('--emulator-log', build_command)
+        self.assertIn('--envs', build_command)
 
 
 if __name__ == '__main__':

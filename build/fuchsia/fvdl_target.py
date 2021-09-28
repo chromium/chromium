@@ -121,6 +121,7 @@ class FvdlTarget(emu_target.EmuTarget):
         '--device-proto',
         self._device_proto_file.name
     ]
+    self._ConfigureEmulatorLog(emu_command)
 
     if not self._require_kvm:
       emu_command.append('--noacceleration')
