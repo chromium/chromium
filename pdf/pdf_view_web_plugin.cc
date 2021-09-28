@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -69,6 +70,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/screen_info.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
@@ -595,8 +597,38 @@ void PdfViewWebPlugin::RotateView(blink::WebPlugin::RotationType type) {
   }
 }
 
+bool PdfViewWebPlugin::ShouldDispatchImeEventsToPlugin() {
+  return true;
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
+}
+
+gfx::Rect PdfViewWebPlugin::GetPluginCaretBounds() {
+  return caret_rect_;
+}
+
+void PdfViewWebPlugin::ImeSetCompositionForPlugin(
+    const blink::WebString& text,
+    const std::vector<ui::ImeTextSpan>& /*ime_text_spans*/,
+    const gfx::Range& /*replacement_range*/,
+    int /*selection_start*/,
+    int /*selection_end*/) {
+  composition_text_ = text;
+}
+
+void PdfViewWebPlugin::ImeCommitTextForPlugin(
+    const blink::WebString& text,
+    const std::vector<ui::ImeTextSpan>& /*ime_text_spans*/,
+    const gfx::Range& /*replacement_range*/,
+    int /*relative_cursor_pos*/) {
+  HandleImeCommit(text);
+}
+
+void PdfViewWebPlugin::ImeFinishComposingTextForPlugin(
+    bool /*keep_selection*/) {
+  HandleImeCommit(composition_text_);
 }
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
@@ -610,6 +642,11 @@ void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
   DCHECK_GE(current_find_index, -1);
   container_wrapper_->ReportFindInPageSelection(find_identifier_,
                                                 current_find_index + 1);
+}
+
+void PdfViewWebPlugin::CaretChanged(const gfx::Rect& caret_rect) {
+  caret_rect_ = gfx::ScaleToEnclosingRectSafe(
+      caret_rect + available_area().OffsetFromOrigin(), device_to_css_scale_);
 }
 
 void PdfViewWebPlugin::Alert(const std::string& message) {
@@ -955,6 +992,32 @@ bool PdfViewWebPlugin::Redo() {
 
   engine()->Redo();
   return true;
+}
+
+void PdfViewWebPlugin::HandleImeCommit(const blink::WebString& text) {
+  if (text.IsEmpty())
+    return;
+
+  std::u16string text16 = text.Utf16();
+  composition_text_.Reset();
+
+  size_t i = 0;
+  for (base::i18n::UTF16CharIterator iterator(text16); iterator.Advance();) {
+    blink::WebKeyboardEvent char_event(blink::WebInputEvent::Type::kChar,
+                                       blink::WebInputEvent::kNoModifiers,
+                                       ui::EventTimeForNow());
+    char_event.windows_key_code = text16[i];
+    char_event.native_key_code = text16[i];
+
+    for (const size_t char_start = i; i < iterator.array_pos(); ++i) {
+      char_event.text[i - char_start] = text16[i];
+      char_event.unmodified_text[i - char_start] = text16[i];
+    }
+
+    blink::WebCoalescedInputEvent input_event(char_event, ui::LatencyInfo());
+    ui::Cursor dummy_cursor_info;
+    HandleInputEvent(input_event, &dummy_cursor_info);
+  }
 }
 
 void PdfViewWebPlugin::OnInvokePrintDialog(int32_t /*result*/) {

@@ -198,11 +198,27 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void StopFind() override;
   bool CanRotateView() override;
   void RotateView(blink::WebPlugin::RotationType type) override;
+
+  bool ShouldDispatchImeEventsToPlugin() override;
   blink::WebTextInputType GetPluginTextInputType() override;
+  gfx::Rect GetPluginCaretBounds() override;
+  void ImeSetCompositionForPlugin(
+      const blink::WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int selection_start,
+      int selection_end) override;
+  void ImeCommitTextForPlugin(
+      const blink::WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int relative_cursor_pos) override;
+  void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
   // PdfViewPluginBase:
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
+  void CaretChanged(const gfx::Rect& caret_rect) override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
@@ -302,6 +318,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Undo();
   bool Redo();
 
+  // Helper method for converting IME text to input events.
+  // TODO(crbug.com/1253665): Consider handling composition events.
+  void HandleImeCommit(const blink::WebString& text);
+
   // Callback to print without re-entrancy issues. The callback prevents the
   // invocation of printing in the middle of an event handler, which is risky;
   // see crbug.com/66334.
@@ -330,6 +350,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
+
+  gfx::Rect caret_rect_;
+
+  blink::WebString composition_text_;
 
   // Whether the plugin element currently has focus.
   bool has_focus_ = false;
