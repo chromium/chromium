@@ -94,14 +94,14 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlers(
 }
 
 std::vector<ProtocolHandler>
-WebAppProtocolHandlerManager::GetApprovedHandlersForProtocol(
+WebAppProtocolHandlerManager::GetAllowedHandlersForProtocol(
     const std::string& protocol) const {
   std::vector<ProtocolHandler> protocol_handlers;
 
   for (const WebApp& web_app : app_registrar_->GetApps()) {
     web_app::AppId app_id = web_app.app_id();
 
-    if (!app_registrar_->IsApprovedLaunchProtocol(app_id, protocol))
+    if (!app_registrar_->IsAllowedLaunchProtocol(app_id, protocol))
       continue;
 
     for (const auto& info : web_app.protocol_handlers()) {

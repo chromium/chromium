@@ -369,14 +369,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       CreateRandomDownloadedShortcutsMenuIconsSizes(random));
   app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
-  const int num_approved_launch_protocols = random.next_uint(8);
-  std::vector<std::string> approved_launch_protocols(
-      num_approved_launch_protocols);
-  for (int i = 0; i < num_approved_launch_protocols; ++i) {
-    approved_launch_protocols[i] =
+  const int num_allowed_launch_protocols = random.next_uint(8);
+  std::vector<std::string> allowed_launch_protocols(
+      num_allowed_launch_protocols);
+  for (int i = 0; i < num_allowed_launch_protocols; ++i) {
+    allowed_launch_protocols[i] =
         "web+test_" + seed_str + "_" + base::NumberToString(i);
   }
-  app->SetApprovedLaunchProtocols(std::move(approved_launch_protocols));
+  app->SetAllowedLaunchProtocols(std::move(allowed_launch_protocols));
 
   const int num_disallowed_launch_protocols = random.next_uint(8);
   std::vector<std::string> disallowed_launch_protocols(

@@ -118,14 +118,14 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
       ProtocolHandlerRegistry::ProtocolHandlerList handlers);
 
   // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
-  void UpdateAllApprovedLaunchProtocols();
+  void UpdateAllAllowedLaunchProtocols();
 
   // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
   void UpdateAllDisallowedLaunchProtocols();
 
   // Remove an approved app handler.
   // |args| is a list of [protocol, url, app_id].
-  void HandleRemoveApprovedAppHandler(base::Value::ConstListView args);
+  void HandleRemoveAllowedAppHandler(base::Value::ConstListView args);
 
   // Remove a disallowed app handler.
   // |args| is a list of [protocol, url, app_id].

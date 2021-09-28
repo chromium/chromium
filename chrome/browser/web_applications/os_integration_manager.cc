@@ -341,12 +341,12 @@ std::vector<ProtocolHandler> OsIntegrationManager::GetAppProtocolHandlers(
 }
 
 std::vector<ProtocolHandler>
-OsIntegrationManager::GetApprovedHandlersForProtocol(
+OsIntegrationManager::GetAllowedHandlersForProtocol(
     const std::string& protocol) {
   if (!protocol_handler_manager_)
     return std::vector<ProtocolHandler>();
 
-  return protocol_handler_manager_->GetApprovedHandlersForProtocol(protocol);
+  return protocol_handler_manager_->GetAllowedHandlersForProtocol(protocol);
 }
 
 std::vector<ProtocolHandler>

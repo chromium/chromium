@@ -105,17 +105,17 @@ class WebAppRegistrar : public ProfileManagerObserver {
       ExternalInstallSource install_source) const;
 
   // Returns true if the web app with the |app_id| contains |protocol_scheme|
-  // as one of its approved launch protocols.
-  bool IsApprovedLaunchProtocol(const AppId& app_id,
-                                std::string protocol_scheme) const;
+  // as one of its allowed launch protocols.
+  bool IsAllowedLaunchProtocol(const AppId& app_id,
+                               std::string protocol_scheme) const;
 
   // Returns true if the web app with the |app_id| contains |protocol_scheme|
   // as one of its disallowed launch protocols.
   bool IsDisallowedLaunchProtocol(const AppId& app_id,
                                   std::string protocol_scheme) const;
 
-  // Gets all approved launch protocols from all installed apps.
-  base::flat_set<std::string> GetAllApprovedLaunchProtocols() const;
+  // Gets all allowed launch protocols from all installed apps.
+  base::flat_set<std::string> GetAllAllowedLaunchProtocols() const;
 
   // Gets all disallowed launch protocols from all installed apps.
   base::flat_set<std::string> GetAllDisallowedLaunchProtocols() const;

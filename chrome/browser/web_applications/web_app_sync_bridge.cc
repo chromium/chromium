@@ -346,7 +346,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
     web_app->SetUserLaunchOrdinal(launch_ordinal);
 }
 
-void WebAppSyncBridge::AddApprovedLaunchProtocol(
+void WebAppSyncBridge::AddAllowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
   // Use a scope here, so that the web app registry is updated when
@@ -356,17 +356,17 @@ void WebAppSyncBridge::AddApprovedLaunchProtocol(
     ScopedRegistryUpdate update(this);
     web_app::WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
-        app_to_update->approved_launch_protocols());
+        app_to_update->allowed_launch_protocols());
 
     DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
     protocol_handlers.insert(protocol_scheme);
-    app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+    app_to_update->SetAllowedLaunchProtocols(std::move(protocol_handlers));
   }
-  // Notify observers that the list of approved protocols was updated.
+  // Notify observers that the list of allowed protocols was updated.
   registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
-void WebAppSyncBridge::RemoveApprovedLaunchProtocol(
+void WebAppSyncBridge::RemoveAllowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
   // Use a scope here, so that the web app registry is updated when
@@ -376,11 +376,11 @@ void WebAppSyncBridge::RemoveApprovedLaunchProtocol(
     ScopedRegistryUpdate update(this);
     web_app::WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
-        app_to_update->approved_launch_protocols());
+        app_to_update->allowed_launch_protocols());
     protocol_handlers.erase(protocol_scheme);
-    app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+    app_to_update->SetAllowedLaunchProtocols(std::move(protocol_handlers));
   }
-  // Notify observers that the list of approved protocols was updated.
+  // Notify observers that the list of allowed protocols was updated.
   registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 

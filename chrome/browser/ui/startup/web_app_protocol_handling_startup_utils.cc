@@ -161,7 +161,7 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
   }
 
   // Check if we have permission to launch the app directly.
-  if (registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
+  if (registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
     LaunchApp(
         profile, app_id, command_line, cur_dir, protocol_url,
         base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),

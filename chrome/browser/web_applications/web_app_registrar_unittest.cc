@@ -926,7 +926,7 @@ TEST_F(WebAppRegistrarTest, WindowControlsOverlay) {
   EXPECT_EQ(false, registrar().GetWindowControlsOverlayEnabled(app_id));
 }
 
-TEST_F(WebAppRegistrarTest, ApprovedLaunchProtocols) {
+TEST_F(WebAppRegistrarTest, AllowedLaunchProtocols) {
   controller().Init();
 
   auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
@@ -939,33 +939,33 @@ TEST_F(WebAppRegistrarTest, ApprovedLaunchProtocols) {
   const std::string protocol_scheme2 = "test2";
   RegisterApp(std::move(web_app2));
 
-  // Test we can add and remove approved protocols.
+  // Test we can add and remove allowed protocols.
   EXPECT_EQ(false,
-            registrar().IsApprovedLaunchProtocol(app_id1, protocol_scheme1));
+            registrar().IsAllowedLaunchProtocol(app_id1, protocol_scheme1));
 
-  sync_bridge().AddApprovedLaunchProtocol(app_id1, protocol_scheme1);
+  sync_bridge().AddAllowedLaunchProtocol(app_id1, protocol_scheme1);
   EXPECT_EQ(true,
-            registrar().IsApprovedLaunchProtocol(app_id1, protocol_scheme1));
+            registrar().IsAllowedLaunchProtocol(app_id1, protocol_scheme1));
 
-  sync_bridge().RemoveApprovedLaunchProtocol(app_id1, protocol_scheme1);
+  sync_bridge().RemoveAllowedLaunchProtocol(app_id1, protocol_scheme1);
   EXPECT_EQ(false,
-            registrar().IsApprovedLaunchProtocol(app_id1, protocol_scheme1));
+            registrar().IsAllowedLaunchProtocol(app_id1, protocol_scheme1));
 
-  // Test that we can get approved protocols from multiple web apps.
-  sync_bridge().AddApprovedLaunchProtocol(app_id1, protocol_scheme1);
-  sync_bridge().AddApprovedLaunchProtocol(app_id2, protocol_scheme2);
+  // Test that we can get allowed protocols from multiple web apps.
+  sync_bridge().AddAllowedLaunchProtocol(app_id1, protocol_scheme1);
+  sync_bridge().AddAllowedLaunchProtocol(app_id2, protocol_scheme2);
 
   {
-    auto approved_protocols = registrar().GetAllApprovedLaunchProtocols();
-    EXPECT_TRUE(base::Contains(approved_protocols, protocol_scheme1));
-    EXPECT_TRUE(base::Contains(approved_protocols, protocol_scheme2));
+    auto allowed_protocols = registrar().GetAllAllowedLaunchProtocols();
+    EXPECT_TRUE(base::Contains(allowed_protocols, protocol_scheme1));
+    EXPECT_TRUE(base::Contains(allowed_protocols, protocol_scheme2));
 
-    sync_bridge().RemoveApprovedLaunchProtocol(app_id2, protocol_scheme2);
+    sync_bridge().RemoveAllowedLaunchProtocol(app_id2, protocol_scheme2);
   }
   {
-    auto approved_protocols = registrar().GetAllApprovedLaunchProtocols();
-    EXPECT_TRUE(base::Contains(approved_protocols, protocol_scheme1));
-    EXPECT_FALSE(base::Contains(approved_protocols, protocol_scheme2));
+    auto allowed_protocols = registrar().GetAllAllowedLaunchProtocols();
+    EXPECT_TRUE(base::Contains(allowed_protocols, protocol_scheme1));
+    EXPECT_FALSE(base::Contains(allowed_protocols, protocol_scheme2));
   }
 }
 

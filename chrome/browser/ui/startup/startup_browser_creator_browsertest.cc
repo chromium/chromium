@@ -2444,10 +2444,10 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
-  bool approved_protocols_notified = false;
+  bool allowed_protocols_notified = false;
   web_app::WebAppTestRegistryObserverAdapter observer(browser()->profile());
-  observer.SetWebAppProtocolSettingsChangedDelegate(base::BindLambdaForTesting(
-      [&]() { approved_protocols_notified = true; }));
+  observer.SetWebAppProtocolSettingsChangedDelegate(
+      base::BindLambdaForTesting([&]() { allowed_protocols_notified = true; }));
 
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       true);
@@ -2464,11 +2464,11 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
 
-  // Check that we added this protocol to web app's approved_launch_protocols
+  // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
-  EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
-  EXPECT_TRUE(approved_protocols_notified);
+  EXPECT_TRUE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
+  EXPECT_TRUE(allowed_protocols_notified);
 
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -2520,7 +2520,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
+    WebAppLaunch_WebAppIsLaunchedWithAllowedProtocolUrlPref) {
   if (!AreProtocolHandlersSupported())
     return;
 
@@ -2549,10 +2549,10 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for app launch task to complete and launches a new browser.
   ui_test_utils::WaitForBrowserToOpen();
 
-  // Check that we added this protocol to web app's approved_launch_protocols
+  // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
-  EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
+  EXPECT_TRUE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
 
   // Check the first app window is created.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -2568,7 +2568,7 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::WaitForBrowserToOpen();
 
   // Check the second app window is launched directly this time. The dialog
-  // is skipped because we have the approved protocol scheme for the same
+  // is skipped because we have the allowed protocol scheme for the same
   // app launch.
   Browser* app_browser2;
   // There should be 3 browser windows opened at the moment.
@@ -2589,7 +2589,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
-                       WebAppLaunch_WebAppIsLaunchedWithApprovedProtocol) {
+                       WebAppLaunch_WebAppIsLaunchedWithAllowedProtocol) {
   if (!AreProtocolHandlersSupported())
     return;
 
@@ -2617,9 +2617,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   ui_test_utils::WaitForBrowserToOpen();
 
   // Check that we did not add this protocol to web app's
-  // approved_launch_protocols on accept.
+  // allowed_launch_protocols on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
-  EXPECT_FALSE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
+  EXPECT_FALSE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
 
   // Check the first app window is created.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -2689,7 +2689,7 @@ IN_PROC_BROWSER_TEST_F(
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       false);
 
-  // Check that we added this protocol to web app's approved_launch_protocols
+  // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_TRUE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
@@ -2725,7 +2725,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   // Check that we did not add this protocol to web app's
-  // approved_launch_protocols on accept.
+  // allowed_launch_protocols on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_FALSE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
 

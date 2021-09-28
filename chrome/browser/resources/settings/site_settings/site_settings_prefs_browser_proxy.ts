@@ -328,7 +328,7 @@ export interface SiteSettingsPrefsBrowserProxy {
 
   /**
    * observes _all_ of the the app protocol handler state, which includes a
-   * list that is returned through 'setAppApprovedProtocolHandlers' events.
+   * list that is returned through 'setAppAllowedProtocolHandlers' events.
    */
   observeAppProtocolHandlers(): void;
 
@@ -365,12 +365,12 @@ export interface SiteSettingsPrefsBrowserProxy {
   removeProtocolHandler(protocol: string, url: string): void;
 
   /**
-   * Deletes a protocol handler by url from the app approved list.
+   * Deletes a protocol handler by url from the app allowed list.
    * @param protocol The protocol to delete the url from.
    * @param url The url to delete.
    * @param appId The web app's ID to delete.
    */
-  removeAppApprovedHandler(protocol: string, url: string, appId: string): void;
+  removeAppAllowedHandler(protocol: string, url: string, appId: string): void;
 
   /**
    * Deletes a protocol handler by url from the app approved list.
@@ -537,8 +537,8 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('removeHandler', [protocol, url]);
   }
 
-  removeAppApprovedHandler(protocol: string, url: string, appId: string) {
-    chrome.send('removeAppApprovedHandler', [protocol, url, appId]);
+  removeAppAllowedHandler(protocol: string, url: string, appId: string) {
+    chrome.send('removeAppAllowedHandler', [protocol, url, appId]);
   }
 
   removeAppDisallowedHandler(protocol: string, url: string, app_id: string) {

@@ -37,7 +37,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
       'observeAppProtocolHandlers',
       'observeProtocolHandlers',
       'observeProtocolHandlersEnabledState',
-      'removeAppApprovedHandler',
+      'removeAppAllowedHandler',
       'removeAppDisallowedHandler',
       'removeIgnoredHandler',
       'removeProtocolHandler',
@@ -99,7 +99,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
     this.zoomList_ = [];
 
     /** @private {!Array<!AppProtocolEntry>} */
-    this.appApprovedProtocolHandlers_ = [];
+    this.appAllowedProtocolHandlers_ = [];
 
     /** @private {!Array<!AppProtocolEntry>} */
     this.appDisallowedProtocolHandlers_ = [];
@@ -215,9 +215,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
    * @param {!Array<AppProtocolEntry>} list The web app protocol handlers
    *    list to set.
    */
-  setAppApprovedProtocolHandlers(list) {
+  setAppAllowedProtocolHandlers(list) {
     // Shallow copy of the passed-in array so mutation won't impact the source
-    this.appApprovedProtocolHandlers_ = list.slice();
+    this.appAllowedProtocolHandlers_ = list.slice();
   }
 
   /**
@@ -518,8 +518,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   /** @override */
   observeAppProtocolHandlers() {
     webUIListenerCallback(
-        'setAppApprovedProtocolHandlers',
-        this.appApprovedProtocolHandlers_);
+        'setAppAllowedProtocolHandlers', this.appAllowedProtocolHandlers_);
     webUIListenerCallback(
         'setAppDisallowedProtocolHandlers',
         this.appDisallowedProtocolHandlers_);
@@ -543,8 +542,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  removeAppApprovedHandler() {
-    this.methodCalled('removeAppApprovedHandler', arguments);
+  removeAppAllowedHandler() {
+    this.methodCalled('removeAppAllowedHandler', arguments);
   }
 
   /** @override */

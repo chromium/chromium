@@ -149,8 +149,8 @@ class WebApp {
     return protocol_handlers_;
   }
 
-  const base::flat_set<std::string>& approved_launch_protocols() const {
-    return approved_launch_protocols_;
+  const base::flat_set<std::string>& allowed_launch_protocols() const {
+    return allowed_launch_protocols_;
   }
 
   const base::flat_set<std::string>& disallowed_launch_protocols() const {
@@ -271,8 +271,8 @@ class WebApp {
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
-  void SetApprovedLaunchProtocols(
-      base::flat_set<std::string> approved_launch_protocols);
+  void SetAllowedLaunchProtocols(
+      base::flat_set<std::string> allowed_launch_protocols);
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
@@ -339,7 +339,7 @@ class WebApp {
   absl::optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
-  base::flat_set<std::string> approved_launch_protocols_;
+  base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
   apps::UrlHandlers url_handlers_;
   GURL note_taking_new_note_url_;

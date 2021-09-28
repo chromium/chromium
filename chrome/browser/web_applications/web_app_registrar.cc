@@ -457,12 +457,12 @@ bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
          web_app->chromeos_data()->oem_installed;
 }
 
-bool WebAppRegistrar::IsApprovedLaunchProtocol(
+bool WebAppRegistrar::IsAllowedLaunchProtocol(
     const AppId& app_id,
     std::string protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app &&
-         base::Contains(web_app->approved_launch_protocols(), protocol_scheme);
+         base::Contains(web_app->allowed_launch_protocols(), protocol_scheme);
 }
 
 bool WebAppRegistrar::IsDisallowedLaunchProtocol(
@@ -473,12 +473,12 @@ bool WebAppRegistrar::IsDisallowedLaunchProtocol(
                                    protocol_scheme);
 }
 
-base::flat_set<std::string> WebAppRegistrar::GetAllApprovedLaunchProtocols()
+base::flat_set<std::string> WebAppRegistrar::GetAllAllowedLaunchProtocols()
     const {
   base::flat_set<std::string> protocols;
   for (const WebApp& web_app : GetApps()) {
-    protocols.insert(web_app.approved_launch_protocols().begin(),
-                     web_app.approved_launch_protocols().end());
+    protocols.insert(web_app.allowed_launch_protocols().begin(),
+                     web_app.allowed_launch_protocols().end());
   }
   return protocols;
 }

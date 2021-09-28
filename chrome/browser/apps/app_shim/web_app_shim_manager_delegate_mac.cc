@@ -245,7 +245,7 @@ void WebAppShimManagerDelegate::LaunchApp(
       return;
     }
 
-    if (!registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
+    if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
       auto launch_callback = base::BindOnce(&OnProtocolHandlerDialogCompleted,
                                             std::move(params), profile);
 

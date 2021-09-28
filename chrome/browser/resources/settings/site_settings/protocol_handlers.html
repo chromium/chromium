@@ -123,13 +123,13 @@
       <h2>$i18n{siteSettingsAppProtocolHandlers}</h2>
     </div>
 
-    <div class="column-header" hidden$="[[!appApprovedProtocols.length]]">
+    <div class="column-header" hidden$="[[!appAllowedProtocols.length]]">
       <div id="appHandlerSubHeading" class="secondary">
-        $i18n{siteSettingsAppApprovedProtocolHandlersDescription}
+        $i18n{siteSettingsAppAllowedProtocolHandlersDescription}
       </div>
     </div>
 
-    <template is="dom-repeat" items="[[appApprovedProtocols]]" as="appProtocol">
+    <template is="dom-repeat" items="[[appAllowedProtocols]]" as="appProtocol">
       <div class="column-header">[[appProtocol.protocol_display_name]]</div>
       <div class="list-frame menu-content vertical-list">
         <template is="dom-repeat" items="[[appProtocol.handlers]]">
@@ -139,7 +139,7 @@
               <span class="url-directionality">[[item.host]]</span>
             </div>
             <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
-                on-click="onRemoveAppApprovedHandlerButtonClick_"
+                on-click="onRemoveAppAllowedHandlerButtonClick_"
                 title="$i18n{handlerRemove}">
             </cr-icon-button>
           </div>

@@ -45,7 +45,7 @@ class WebAppProtocolHandlerManager {
       const std::string& protocol) const;
 
   // Gets the list of handlers with launch permissions for a given protocol.
-  std::vector<ProtocolHandler> GetApprovedHandlersForProtocol(
+  std::vector<ProtocolHandler> GetAllowedHandlersForProtocol(
       const std::string& protocol) const;
 
   // Gets the list of disallowed handlers for a given protocol.

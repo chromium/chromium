@@ -276,8 +276,8 @@ void PersistProtocolHandlersUserChoice(
       os_integration_manager.GetAppProtocolHandlers(app_id);
 
   if (allowed) {
-    provider->sync_bridge().AddApprovedLaunchProtocol(app_id,
-                                                      protocol_url.scheme());
+    provider->sync_bridge().AddAllowedLaunchProtocol(app_id,
+                                                     protocol_url.scheme());
   } else {
     provider->sync_bridge().AddDisallowedLaunchProtocol(app_id,
                                                         protocol_url.scheme());

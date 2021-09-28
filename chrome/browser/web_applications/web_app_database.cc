@@ -432,10 +432,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     protocol_handler_proto->set_url(protocol_handler.url.spec());
   }
 
-  for (const auto& approved_launch_protocols :
-       web_app.approved_launch_protocols()) {
-    DCHECK(!approved_launch_protocols.empty());
-    local_data->add_approved_launch_protocols(approved_launch_protocols);
+  for (const auto& allowed_launch_protocols :
+       web_app.allowed_launch_protocols()) {
+    DCHECK(!allowed_launch_protocols.empty());
+    local_data->add_allowed_launch_protocols(allowed_launch_protocols);
   }
 
   for (const auto& disallowed_launch_protocols :
@@ -865,16 +865,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetProtocolHandlers(std::move(protocol_handlers));
 
-  std::vector<std::string> approved_launch_protocols;
-  for (const std::string& approved_launch_protocol :
-       local_data.approved_launch_protocols()) {
-    if (approved_launch_protocol.empty()) {
-      DLOG(ERROR) << "WebApp ApprovedLaunchProtocols proto action parse error";
+  std::vector<std::string> allowed_launch_protocols;
+  for (const std::string& allowed_launch_protocol :
+       local_data.allowed_launch_protocols()) {
+    if (allowed_launch_protocol.empty()) {
+      DLOG(ERROR) << "WebApp AllowedLaunchProtocols proto action parse error";
       return nullptr;
     }
-    approved_launch_protocols.push_back(approved_launch_protocol);
+    allowed_launch_protocols.push_back(allowed_launch_protocol);
   }
-  web_app->SetApprovedLaunchProtocols(std::move(approved_launch_protocols));
+  web_app->SetAllowedLaunchProtocols(std::move(allowed_launch_protocols));
 
   std::vector<std::string> disallowed_launch_protocols;
   for (const std::string& disallowed_launch_protocol :

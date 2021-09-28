@@ -249,9 +249,9 @@ void WebApp::SetProtocolHandlers(
   protocol_handlers_ = std::move(handlers);
 }
 
-void WebApp::SetApprovedLaunchProtocols(
-    base::flat_set<std::string> approved_launch_protocols) {
-  approved_launch_protocols_ = std::move(approved_launch_protocols);
+void WebApp::SetAllowedLaunchProtocols(
+    base::flat_set<std::string> allowed_launch_protocols) {
+  allowed_launch_protocols_ = std::move(allowed_launch_protocols);
 }
 
 void WebApp::SetDisallowedLaunchProtocols(
@@ -408,7 +408,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
-        app.approved_launch_protocols_,
+        app.allowed_launch_protocols_,
         app.disallowed_launch_protocols_,
         app.url_handlers_,
         app.note_taking_new_note_url_,
@@ -473,8 +473,8 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("app_service_icon_url",
                     base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
 
-  root.SetKey("approved_launch_protocols",
-              ConvertList(approved_launch_protocols_));
+  root.SetKey("allowed_launch_protocols",
+              ConvertList(allowed_launch_protocols_));
 
   root.SetKey("disallowed_launch_protocols",
               ConvertList(disallowed_launch_protocols_));
