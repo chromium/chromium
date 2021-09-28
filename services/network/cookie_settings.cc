@@ -175,10 +175,10 @@ CookieSettings::GetCookieSettingWithMetadata(
         });
     if (entry != content_settings_.end()) {
       cookie_setting = entry->GetContentSetting();
-      // Site-specific settings override the global "block third-party cookies"
-      // setting.
+      // Site-specific settings and global blocks override the "block
+      // third-party cookies" setting.
       // Note: global settings are implemented as a catch-all (*, *) pattern.
-      if (IsExplicitSetting(*entry))
+      if (IsExplicitSetting(*entry) || cookie_setting == CONTENT_SETTING_BLOCK)
         blocked_by_third_party_setting = false;
     }
   }

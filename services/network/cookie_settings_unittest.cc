@@ -604,6 +604,19 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_SamePartyConsideredFirstParty) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
               ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
+
+  // If the SameParty cookie is blocked by the global default setting (i.e. if
+  // the user has blocked all cookies), it should not be accessible.
+  settings.set_content_settings(
+      {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kFPSOwnerURL))));
+  // It wasn't blocked by third-party cookie blocking settings, so we shouldn't
+  // record the metric.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
 TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
