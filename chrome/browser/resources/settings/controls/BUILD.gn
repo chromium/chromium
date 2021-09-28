@@ -29,7 +29,7 @@ js_library("controlled_button") {
   deps = [
     ":pref_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
   ]
 }
 
@@ -73,7 +73,7 @@ js_library("settings_boolean_control_behavior") {
   deps = [
     ":pref_control_behavior",
     "../prefs:prefs_types",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -91,7 +91,7 @@ js_library("settings_dropdown_menu") {
     "../prefs:pref_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -112,7 +112,7 @@ js_library("settings_slider") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

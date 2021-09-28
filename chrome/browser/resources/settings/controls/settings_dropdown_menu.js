@@ -16,7 +16,7 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -7,7 +7,7 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 
-import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';

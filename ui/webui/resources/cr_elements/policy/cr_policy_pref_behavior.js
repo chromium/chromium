@@ -7,7 +7,7 @@
  */
 
 /** @polymerBehavior */
-/* #export */ const CrPolicyPrefBehavior = {
+export const CrPolicyPrefBehavior = {
   properties: {
     /**
      * Showing that an extension is controlling a pref is sometimes done with a
@@ -47,7 +47,7 @@
 };
 
 /** @interface */
-/* #export */ class CrPolicyPrefBehaviorInterface {
+export class CrPolicyPrefBehaviorInterface {
   /** @param {boolean} enabled */
   set noExtensionIndicator(enabled) {}
 

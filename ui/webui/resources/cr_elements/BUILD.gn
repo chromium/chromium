@@ -54,6 +54,7 @@ preprocess_if_expr("preprocess_src") {
     "cr_splitter/cr_splitter.js",
     "find_shortcut_behavior.js",
     "mouse_hoverable_mixin.js",
+    "policy/cr_policy_pref_behavior.js",
   ]
 }
 
@@ -107,8 +108,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "policy/cr_policy_indicator_behavior.js",
     "policy/cr_policy_indicator.html",
     "policy/cr_policy_indicator.js",
-    "policy/cr_policy_pref_behavior.html",
-    "policy/cr_policy_pref_behavior.js",
     "policy/cr_policy_pref_indicator.html",
     "policy/cr_policy_pref_indicator.js",
     "policy/cr_tooltip_icon.html",
@@ -198,7 +197,6 @@ preprocess_if_expr("preprocess_generated") {
     "mwb_shared_vars.js",
     "policy/cr_policy_indicator_behavior.m.js",
     "policy/cr_policy_indicator.m.js",
-    "policy/cr_policy_pref_behavior.m.js",
     "policy/cr_policy_pref_indicator.m.js",
     "policy/cr_tooltip_icon.m.js",
     "search_highlight_style_css.js",

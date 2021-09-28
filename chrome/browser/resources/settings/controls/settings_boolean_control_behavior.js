@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrPolicyPrefBehavior} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {CrPolicyPrefBehavior} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
