@@ -77,8 +77,7 @@ export class BaseSettings extends View {
      * @const {!HTMLElement}
      * @private
      */
-    this.defaultFocus_ =
-        dom.getFrom(this.rootElement_, '[tabindex]', HTMLElement);
+    this.defaultFocus_ = dom.getFrom(this.root, '[tabindex]', HTMLElement);
 
     /**
      * The DOM element to be focused when the focus on view is reset by calling

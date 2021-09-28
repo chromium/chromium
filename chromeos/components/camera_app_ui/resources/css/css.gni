@@ -14,5 +14,5 @@ css_files = [
   "mode/video.css",
   "new_feature_toast.css",
   "ptz_panel.css",
-  "review_document.css",
+  "review.css",
 ]

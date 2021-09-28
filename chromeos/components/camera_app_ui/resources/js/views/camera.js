@@ -66,7 +66,7 @@ import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {Dialog} from './dialog.js';
 import {PTZPanel} from './ptz_panel.js';
-import {ReviewDocument} from './review_document.js';
+import * as review from './review.js';
 import {PrimarySettings} from './settings.js';
 import {PTZPanelOptions, View} from './view.js';
 import {WarningType} from './warning.js';
@@ -124,10 +124,10 @@ export class Camera extends View {
     this.perfLogger_ = perfLogger;
 
     /**
-     * @type {!ReviewDocument}
+     * @type {!review.Review}
      * @private
      */
-    this.reviewDocumentView_ = new ReviewDocument();
+    this.review_ = new review.Review();
 
     /**
      * @type {!Dialog}
@@ -142,7 +142,7 @@ export class Camera extends View {
     this.subViews_ = [
       new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
       new PTZPanel(),
-      this.reviewDocumentView_,
+      this.review_,
       this.docModeDialogView_,
       new View(ViewName.FLASH),
     ];
@@ -777,7 +777,7 @@ export class Camera extends View {
     await this.preview_.close();
     await this.scanOptions_.detachPreview();
     try {
-      await this.reviewDocumentView_.setReviewDocument(blob);
+      await this.review_.setReviewPhoto(blob);
     } catch (e) {
       await this.restorePreviewInScanMode_();
       throw e;
@@ -788,7 +788,11 @@ export class Camera extends View {
    * @override
    */
   async getDocumentReviewResult() {
-    const result = await this.reviewDocumentView_.startReview();
+    const primary =
+        new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, MimeType.PDF);
+    const others = [new review.Option(
+        I18nString.LABEL_SAVE_PHOTO_DOCUMENT, MimeType.JPEG)];
+    const result = await this.review_.startReview({primary, others});
     await this.restorePreviewInScanMode_();
     return result;
   }

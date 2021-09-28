@@ -82,10 +82,9 @@ export class View {
     this.name = name;
 
     /**
-     * @type {!HTMLElement}
-     * @protected
+     * @const {!HTMLElement}
      */
-    this.rootElement_ = dom.get(`#${name}`, HTMLElement);
+    this.root = dom.get(`#${name}`, HTMLElement);
 
     /**
      * Signal it to ends the session.
@@ -101,19 +100,10 @@ export class View {
     this.dismissByEsc_ = dismissByEsc;
 
     if (dismissByBkgndClick) {
-      this.rootElement_.addEventListener(
+      this.root.addEventListener(
           'click',
-          (event) =>
-              event.target === this.rootElement_ && this.leave({bkgnd: true}));
+          (event) => event.target === this.root && this.leave({bkgnd: true}));
     }
-  }
-
-  /**
-   * HTML root node of this view.
-   * @return {!HTMLElement}
-   */
-  get root() {
-    return this.rootElement_;
   }
 
   /**

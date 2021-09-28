@@ -2,13 +2,13 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#view-review-document {
+#view-review {
   background: var(--grey-900);
 }
 
-#document-frame {
+#review-frame {
   align-items: center;
-  border: 1px solid rgba(232, 234, 237, 0.38);
+  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
   bottom: calc(var(--bottom-line) * 2);
   display: flex;
   justify-content: center;
@@ -18,36 +18,37 @@
   top: 0;
 }
 
-#document-image {
+#review-image {
   max-height: 100%;
   max-width: 100%;
 }
 
-#review-document-button-groups {
+#view-review .button-groups {
+  align-items: center;
   bottom: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
   left: calc(var(--left-line) * 2);
   position: absolute;
   right: calc(var(--right-line) * 2);
   top: calc(100% - calc(var(--bottom-line) * 2));
 }
 
-#review-document-button-groups button {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+#view-review .positive-button-groups {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
 }
 
-/* float direction */
-
-#save-pdf-document,
-#save-photo-document {
-  float: right;
+#view-review .positive-button-groups button {
+  margin: 0 8px;
 }
 
-#retake-document {
-  float: left;
+#view-review .positive-button-groups button:first-child {
+  margin-inline-end: 0;
 }
 
-#save-photo-document {
-  margin-right: 8px;  /* csschecker-disable-line left-right */
+#view-review .positive-button-groups button:last-child {
+  margin-inline-start: 0;
 }
