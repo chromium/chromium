@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 import {
-  Blob as MojoBlob,  // eslint-disable-line no-unused-vars
-} from '/media/capture/mojom/image_capture.mojom-webui.js';
-import {
   CameraAppDeviceProvider,
   CameraAppDeviceProviderRemote,  // eslint-disable-line no-unused-vars
   CameraAppDeviceRemote,          // eslint-disable-line no-unused-vars
@@ -31,6 +28,7 @@ import {
 } from
     '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
 
+import {AsyncJobQueue} from '../async_job_queue.js';
 import {assert, assertNotReached} from '../chrome_util.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
@@ -127,6 +125,12 @@ let instance = null;
 const readyEvent = new WaitableEvent();
 
 /**
+ * Job queue to sequentialize devices operations.
+ * @type {!AsyncJobQueue}
+ */
+const operationQueue = new AsyncJobQueue();
+
+/**
  * Notified when the camera resource is ready.
  */
 export function notifyCameraResourceReady() {
@@ -163,7 +167,7 @@ export class DeviceOperator {
      * Map which maps from device id to the remote of devices. We want to have
      * only one remote for each devices to avoid unnecessary wastes of resources
      * and also makes it easier to control the connection.
-     * @type {!Map<string, !CameraAppDeviceRemote>}
+     * @type {!Map<string, !Promise<!CameraAppDeviceRemote>>}
      * @private
      */
     this.devices_ = new Map();
@@ -181,21 +185,27 @@ export class DeviceOperator {
     if (d !== undefined) {
       return d;
     }
-
-    const {device, status} =
-        await this.deviceProvider_.getCameraAppDevice(deviceId);
-    if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
-      throw new Error(`Invalid device id`);
-    }
-    if (device === null) {
-      throw new Error('Unknown error');
-    }
-    device.onConnectionError.addListener(() => {
-      this.dropConnection(deviceId);
-    });
-    const deviceProxy = wrapEndpoint(device);
-    this.devices_.set(deviceId, deviceProxy);
-    return deviceProxy;
+    const newDevice = (async () => {
+      try {
+        const {device, status} =
+            await this.deviceProvider_.getCameraAppDevice(deviceId);
+        if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
+          throw new Error(`Invalid device id`);
+        }
+        if (device === null) {
+          throw new Error('Unknown error');
+        }
+        device.onConnectionError.addListener(() => {
+          this.devices_.delete(deviceId);
+        });
+        return wrapEndpoint(device);
+      } catch (e) {
+        this.devices_.delete(deviceId);
+        throw e;
+      }
+    })();
+    this.devices_.set(deviceId, newDevice);
+    return newDevice;
   }
 
   /**
@@ -618,9 +628,10 @@ export class DeviceOperator {
   /**
    * Drops the connection to the video capture device in Chrome.
    * @param {string} deviceId Id of the target device.
+   * @return {!Promise}
    */
-  dropConnection(deviceId) {
-    const device = this.devices_.get(deviceId);
+  async dropConnection(deviceId) {
+    const device = await this.devices_.get(deviceId);
     if (device !== undefined) {
       closeEndpoint(device);
       this.devices_.delete(deviceId);
@@ -664,7 +675,10 @@ export class DeviceOperator {
   /**
    * Creates a new instance of DeviceOperator if it is not set. Returns the
    *     exist instance.
-   * @return {!Promise<?DeviceOperator>} The singleton instance.
+   * TODO(b/172340451): Use force casting rather than template for the type
+   *     checking of Proxy after switching to TypeScript.
+   * @return {!Promise<?T>} The singleton instance.
+   * @template T
    */
   static async getInstance() {
     await readyEvent.wait();
@@ -674,7 +688,18 @@ export class DeviceOperator {
     if (!await instance.isSupported_) {
       return null;
     }
-    return instance;
+
+    // Using a wrapper to ensure all the device operations are sequentialized.
+    const deviceOperatorWrapper = {
+      get: function(target, property) {
+        if (target[property] instanceof Function) {
+          return (...args) =>
+                     operationQueue.push(() => target[property](...args));
+        }
+        return target[property];
+      },
+    };
+    return /** @type {!T} */ (new Proxy(instance, deviceOperatorWrapper));
   }
 
   /**

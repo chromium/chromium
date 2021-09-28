@@ -1094,8 +1094,6 @@ export class Camera extends View {
    * @private
    */
   async stopStreams_() {
-    // Stopping preview will wait device close. Therefore, we clear
-    // mode before stopping preview to close extra stream first.
     await this.modes_.clear();
     await this.preview_.close();
     await this.scanOptions_.detachPreview();

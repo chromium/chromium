@@ -45,56 +45,6 @@ export let DeviceInfo;
 let VirtualMap;
 
 /**
- * Creates extra stream for the current mode.
- */
-export class CaptureStream {
-  /**
-   * @param {string} deviceId Device id of currently working video device
-   * @param {!MediaStream} stream Capture stream
-   * @public
-   */
-  constructor(deviceId, stream) {
-    /**
-     * Device id of currently working video device.
-     * @type {string}
-     * @private
-     */
-    this.deviceId_ = deviceId;
-
-    /**
-     * Capture stream
-     * @type {!MediaStream}
-     * @protected
-     */
-    this.stream_ = stream;
-  }
-
-  /**
-   * @return {!MediaStream}
-   * @public
-   */
-  get stream() {
-    return this.stream_;
-  }
-
-  /**
-   * Closes stream.
-   * @public
-   */
-  async close() {
-    this.stream_.getVideoTracks()[0].stop();
-    if (await DeviceOperator.isSupported()) {
-      try {
-        await StreamManager.getInstance().setMultipleStreamsEnabled(
-            this.deviceId_, false);
-      } catch (e) {
-        reportError(ErrorType.MULTIPLE_STREAMS_FAILURE, ErrorLevel.ERROR, e);
-      }
-    }
-  }
-}
-
-/**
  * Monitors device change and provides different listener callbacks for
  * device changes. It also provides streams for different modes.
  */
@@ -148,6 +98,13 @@ export class StreamManager {
     this.waitVirtual_ = null;
 
     /**
+     * Signal to indicate that the virtual device is successfully removed.
+     * @type {?WaitableEvent}
+     * @private
+     */
+    this.waitVirtualRemoved_ = null;
+
+    /**
      * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
      * @const {!Promise<function(!VideoConfig): boolean>}
      * @private
@@ -185,7 +142,7 @@ export class StreamManager {
   /**
    * Creates extra stream according to the constraints.
    * @param {!StreamConstraints} constraints
-   * @return {!Promise<!CaptureStream>}
+   * @return {!Promise<!MediaStream>}
    */
   async openCaptureStream(constraints) {
     const realDeviceId = constraints.deviceId;
@@ -200,7 +157,28 @@ export class StreamManager {
 
     const stream = await navigator.mediaDevices.getUserMedia(
         toMediaStreamConstraints(constraints));
-    return new CaptureStream(realDeviceId, stream);
+    return stream;
+  }
+
+  /**
+   * Closes the given capture stream.
+   * @param {!MediaStream} captureStream
+   * @return {!Promise}
+   */
+  async closeCaptureStream(captureStream) {
+    captureStream.getVideoTracks()[0].stop();
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator !== null) {
+      // We need to cache |virtualId| first since it will be wiped out after
+      // disabling multi-stream.
+      const virtualId = this.virtualMap_.virtualId;
+      try {
+        await this.setMultipleStreamsEnabled(this.virtualMap_.realId, false);
+      } catch (e) {
+        reportError(ErrorType.MULTIPLE_STREAMS_FAILURE, ErrorLevel.ERROR, e);
+      }
+      await deviceOperator.dropConnection(virtualId);
+    }
   }
 
   /**
@@ -249,6 +227,11 @@ export class StreamManager {
     if (virtualDevices.length === 1 && this.waitVirtual_ !== null) {
       this.waitVirtual_.signal(virtualDevices[0].v1Info.deviceId);
       this.waitVirtual_ = null;
+    }
+
+    if (virtualDevices.length === 0 && this.waitVirtualRemoved_ !== null) {
+      this.waitVirtualRemoved_.signal();
+      this.waitVirtualRemoved_ = null;
     }
 
     let isRealDeviceChange = false;
@@ -327,24 +310,22 @@ export class StreamManager {
    */
   async setMultipleStreamsEnabled(deviceId, enabled) {
     assert(await DeviceOperator.isSupported());
-    let waitEvent;
+    const waitEvent = new WaitableEvent();
     if (enabled) {
-      this.waitVirtual_ = new WaitableEvent();
-      waitEvent = this.waitVirtual_;
+      this.waitVirtual_ = waitEvent;
     } else {
-      this.virtualMap_ = null;
+      this.waitVirtualRemoved_ = waitEvent;
     }
     const deviceOperator = await DeviceOperator.getInstance();
     await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
     await this.deviceUpdate();
+
     if (enabled) {
-      try {
-        const virtualId = await waitEvent.timedWait(3000);
-        this.virtualMap_ = {realId: deviceId, virtualId};
-      } catch (e) {
-        throw new Error(
-            `${deviceId} set multiple streams to ${enabled} failed`);
-      }
+      const virtualId = await waitEvent.timedWait(3000);
+      this.virtualMap_ = {realId: deviceId, virtualId};
+    } else {
+      await waitEvent.timedWait(3000);
+      this.virtualMap_ = null;
     }
   }
 }

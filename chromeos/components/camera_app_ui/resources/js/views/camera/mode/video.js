@@ -7,7 +7,6 @@ import {assert, assertInstanceof} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {
-  CaptureStream,  // eslint-disable-line no-unused-vars
   StreamManager,
 } from '../../../device/stream_manager.js';
 import * as dom from '../../../dom.js';
@@ -278,7 +277,7 @@ export class Video extends ModeBase {
     this.handler_ = handler;
 
     /**
-     * @type {?CaptureStream}
+     * @type {?MediaStream}
      * @private
      */
     this.captureStream_ = null;
@@ -354,7 +353,8 @@ export class Video extends ModeBase {
   async clear() {
     await this.stopCapture();
     if (this.captureStream_ !== null) {
-      await this.captureStream_.close();
+      await StreamManager.getInstance().closeCaptureStream(this.captureStream_);
+      this.captureStream_ = null;
     }
   }
 
@@ -472,7 +472,7 @@ export class Video extends ModeBase {
    */
   getRecordingStream_() {
     if (this.captureStream_ !== null) {
-      return this.captureStream_.stream;
+      return this.captureStream_;
     }
     return this.stream_;
   }
