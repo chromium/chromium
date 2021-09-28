@@ -109,6 +109,7 @@ struct CookieMonsterTestTraits {
   static const bool has_exact_change_ordering = true;
   static const int creation_time_granularity_in_ms = 0;
   static const bool supports_cookie_access_semantics = true;
+  static const bool supports_partitioned_cookies = true;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(CookieMonster,

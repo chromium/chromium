@@ -170,14 +170,20 @@ std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForCookie(
     const GURL& gurl,
     const std::string& name,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   return cookie_store_->AddCallbackForCookie(gurl, name, std::move(callback));
 }
 
 std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForUrl(
     const GURL& gurl,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   // Implement when needed by iOS consumers.
   NOTIMPLEMENTED();
   return nullptr;

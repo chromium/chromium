@@ -25,6 +25,7 @@ class NET_EXPORT CookiePartitionKey {
   ~CookiePartitionKey();
 
   bool operator==(const CookiePartitionKey& other) const;
+  bool operator!=(const CookiePartitionKey& other) const;
   bool operator<(const CookiePartitionKey& other) const;
 
   // Methods for serializing and deserializing a partition key to/from a string.

@@ -150,6 +150,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const GURL& url,
            const net::SiteForCookies& site_for_cookies,
            const url::Origin& top_frame_origin,
+           const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
            net::CookieOptions options,
            mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
       : cookie_store_(cookie_store),
@@ -162,13 +163,14 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // TODO(pwnall): add a constructor w/options to net::CookieChangeDispatcher.
     cookie_store_subscription_ =
         cookie_store->GetChangeDispatcher().AddCallbackForUrl(
-            url, base::BindRepeating(
-                     &Listener::OnCookieChange,
-                     // Safe because net::CookieChangeDispatcher guarantees that
-                     // the callback will stop being called immediately after we
-                     // remove the subscription, and the cookie store lives on
-                     // the same thread as we do.
-                     base::Unretained(this)));
+            url, cookie_partition_key,
+            base::BindRepeating(
+                &Listener::OnCookieChange,
+                // Safe because net::CookieChangeDispatcher guarantees that
+                // the callback will stop being called immediately after we
+                // remove the subscription, and the cookie store lives on
+                // the same thread as we do.
+                base::Unretained(this)));
   }
 
   Listener(const Listener&) = delete;
@@ -299,9 +301,7 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options,
-      net::CookiePartitionKey::FromNetworkIsolationKey(
-          isolation_info_.network_isolation_key()),
+      url, net_options, CookiePartitionKey(),
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),
@@ -501,8 +501,8 @@ void RestrictedCookieManager::AddChangeListener(
       role_, url, site_for_cookies, isolation_info_, cookie_settings(),
       cookie_store_->cookie_access_delegate());
   auto listener = std::make_unique<Listener>(
-      cookie_store_, this, url, site_for_cookies, top_frame_origin, net_options,
-      std::move(mojo_listener));
+      cookie_store_, this, url, site_for_cookies, top_frame_origin,
+      CookiePartitionKey(), net_options, std::move(mojo_listener));
 
   listener->mojo_listener().set_disconnect_handler(
       base::BindOnce(&RestrictedCookieManager::RemoveChangeListener,

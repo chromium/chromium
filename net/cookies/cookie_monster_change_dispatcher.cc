@@ -33,11 +33,13 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
     std::string domain_key,
     std::string name_key,
     GURL url,
+    absl::optional<CookiePartitionKey> cookie_partition_key,
     net::CookieChangeCallback callback)
     : change_dispatcher_(std::move(change_dispatcher)),
       domain_key_(std::move(domain_key)),
       name_key_(std::move(name_key)),
       url_(std::move(url)),
+      cookie_partition_key_(std::move(cookie_partition_key)),
       callback_(std::move(callback)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(url_.is_valid() || url_.is_empty());
@@ -78,6 +80,11 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
              .status.IsInclude()) {
       return;
     }
+  }
+
+  if (change.cookie.IsPartitioned() &&
+      change.cookie.PartitionKey() != cookie_partition_key_) {
+    return;
   }
 
   // TODO(mmenke, pwnall): Run callbacks synchronously?
@@ -130,12 +137,13 @@ std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForCookie(
     const GURL& url,
     const std::string& name,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      std::move(callback));
+      cookie_partition_key, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -144,12 +152,14 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForUrl(
     const GURL& url,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
-      std::string(kGlobalNameKey), url, std::move(callback));
+      std::string(kGlobalNameKey), url, cookie_partition_key,
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -162,7 +172,8 @@ CookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), std::string(kGlobalDomainKey),
-      std::string(kGlobalNameKey), GURL(""), std::move(callback));
+      std::string(kGlobalNameKey), GURL(""), CookiePartitionKey::Todo(),
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;

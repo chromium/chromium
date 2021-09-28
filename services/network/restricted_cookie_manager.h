@@ -160,6 +160,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     return isolation_info_.top_frame_origin().value();
   }
 
+  const absl::optional<net::CookiePartitionKey> CookiePartitionKey() const {
+    return net::CookiePartitionKey::FromNetworkIsolationKey(
+        isolation_info_.network_isolation_key());
+  }
+
   const mojom::RestrictedCookieManagerRole role_;
   net::CookieStore* const cookie_store_;
   const CookieSettings& cookie_settings_;

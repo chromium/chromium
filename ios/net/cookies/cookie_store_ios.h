@@ -165,9 +165,11 @@ class CookieStoreIOS : public net::CookieStore,
     std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
         const GURL& url,
         const std::string& name,
+        const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
         CookieChangeCallback callback) override WARN_UNUSED_RESULT;
     std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
         const GURL& url,
+        const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
         CookieChangeCallback callback) override WARN_UNUSED_RESULT;
     std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
         CookieChangeCallback callback) override WARN_UNUSED_RESULT;

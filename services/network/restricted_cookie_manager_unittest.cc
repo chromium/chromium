@@ -188,6 +188,47 @@ class RestrictedCookieManagerSync {
   mojom::RestrictedCookieManager* cookie_service_;
 };
 
+namespace {
+
+// Stashes the cookie changes it receives, for testing.
+class TestCookieChangeListener : public network::mojom::CookieChangeListener {
+ public:
+  explicit TestCookieChangeListener(
+      mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~TestCookieChangeListener() override = default;
+
+  // Spin in a run loop until a change is received.
+  void WaitForChange() {
+    base::RunLoop loop;
+    run_loop_ = &loop;
+    loop.Run();
+    run_loop_ = nullptr;
+  }
+
+  // Changes received by this listener.
+  const std::vector<net::CookieChangeInfo>& observed_changes() const {
+    return observed_changes_;
+  }
+
+  // network::mojom::CookieChangeListener
+  void OnCookieChange(const net::CookieChangeInfo& change) override {
+    observed_changes_.emplace_back(change);
+
+    if (run_loop_)  // Set in WaitForChange().
+      run_loop_->Quit();
+  }
+
+ private:
+  std::vector<net::CookieChangeInfo> observed_changes_;
+  mojo::Receiver<network::mojom::CookieChangeListener> receiver_;
+
+  // If not null, will be stopped when a cookie change notification is received.
+  base::RunLoop* run_loop_ = nullptr;
+};
+
+}  // namespace
+
 class RestrictedCookieManagerTest
     : public testing::TestWithParam<mojom::RestrictedCookieManagerRole> {
  public:
@@ -276,6 +317,18 @@ class RestrictedCookieManagerTest
             /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
             net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
         "https", /* can_modify_httponly = */ true));
+  }
+
+  std::unique_ptr<TestCookieChangeListener> CreateCookieChangeListener(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin) {
+    mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
+    mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
+        listener_remote.InitWithNewPipeAndPassReceiver();
+    sync_service_->AddChangeListener(url, site_for_cookies, top_frame_origin,
+                                     std::move(listener_remote));
+    return std::make_unique<TestCookieChangeListener>(std::move(receiver));
   }
 
   void ExpectBadMessage() { expecting_bad_message_ = true; }
@@ -1161,82 +1214,33 @@ TEST_P(RestrictedCookieManagerTest, SameSiteCookiesSpecialScheme) {
               IsEmpty());
 }
 
-namespace {
-
-// Stashes the cookie changes it receives, for testing.
-class TestCookieChangeListener : public network::mojom::CookieChangeListener {
- public:
-  explicit TestCookieChangeListener(
-      mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver)
-      : receiver_(this, std::move(receiver)) {}
-  ~TestCookieChangeListener() override = default;
-
-  // Spin in a run loop until a change is received.
-  void WaitForChange() {
-    base::RunLoop loop;
-    run_loop_ = &loop;
-    loop.Run();
-    run_loop_ = nullptr;
-  }
-
-  // Changes received by this listener.
-  const std::vector<net::CookieChangeInfo>& observed_changes() const {
-    return observed_changes_;
-  }
-
-  // network::mojom::CookieChangeListener
-  void OnCookieChange(const net::CookieChangeInfo& change) override {
-    observed_changes_.emplace_back(change);
-
-    if (run_loop_)  // Set in WaitForChange().
-      run_loop_->Quit();
-  }
-
- private:
-  std::vector<net::CookieChangeInfo> observed_changes_;
-  mojo::Receiver<network::mojom::CookieChangeListener> receiver_;
-
-  // If not null, will be stopped when a cookie change notification is received.
-  base::RunLoop* run_loop_ = nullptr;
-};
-
-}  // anonymous namespace
-
 TEST_P(RestrictedCookieManagerTest, ChangeDispatch) {
-  mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-  mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-      listener_remote.InitWithNewPipeAndPassReceiver();
-  sync_service_->AddChangeListener(kDefaultUrlWithPath, kDefaultSiteForCookies,
-                                   kDefaultOrigin, std::move(listener_remote));
-  TestCookieChangeListener listener(std::move(receiver));
+  auto listener = CreateCookieChangeListener(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin);
 
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(0));
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
 
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
-  listener.WaitForChange();
+  listener->WaitForChange();
 
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(1));
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
-            listener.observed_changes()[0].cause);
-  EXPECT_THAT(listener.observed_changes()[0].cookie,
+            listener->observed_changes()[0].cause);
+  EXPECT_THAT(listener->observed_changes()[0].cookie,
               net::MatchesCookieNameValue("cookie-name", "cookie-value"));
 }
 
 TEST_P(RestrictedCookieManagerTest, ChangeSettings) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-  mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-  mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-      listener_remote.InitWithNewPipeAndPassReceiver();
-  sync_service_->AddChangeListener(kDefaultUrlWithPath, net::SiteForCookies(),
-                                   kDefaultOrigin, std::move(listener_remote));
-  TestCookieChangeListener listener(std::move(receiver));
+  auto listener = CreateCookieChangeListener(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin);
 
-  EXPECT_THAT(listener.observed_changes(), IsEmpty());
+  EXPECT_THAT(listener->observed_changes(), IsEmpty());
 
   cookie_settings_.set_block_third_party_cookies(true);
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(listener.observed_changes(), IsEmpty());
+  EXPECT_THAT(listener->observed_changes(), IsEmpty());
 }
 
 TEST_P(RestrictedCookieManagerTest, AddChangeListenerFromWrongOrigin) {
@@ -1304,23 +1308,18 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
         std::set<net::SchemefulSite>{
             net::SchemefulSite(GURL("https://member1.com"))}));
 
-    mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-    mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-        listener_remote.InitWithNewPipeAndPassReceiver();
-    sync_service_->AddChangeListener(kDefaultUrlWithPath, net::SiteForCookies(),
-                                     kDefaultOrigin,
-                                     std::move(listener_remote));
-    TestCookieChangeListener listener(std::move(receiver));
+    auto listener = CreateCookieChangeListener(
+        kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin);
 
-    ASSERT_THAT(listener.observed_changes(), IsEmpty());
+    ASSERT_THAT(listener->observed_changes(), IsEmpty());
 
     SetSamePartyCookie("cookie-name", "cookie-value", "example.com", "/");
-    listener.WaitForChange();
+    listener->WaitForChange();
 
-    ASSERT_THAT(listener.observed_changes(), testing::SizeIs(1));
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
     EXPECT_EQ(net::CookieChangeCause::INSERTED,
-              listener.observed_changes()[0].cause);
-    EXPECT_THAT(listener.observed_changes()[0].cookie,
+              listener->observed_changes()[0].cause);
+    EXPECT_THAT(listener->observed_changes()[0].cookie,
                 net::MatchesCookieNameValue("cookie-name", "cookie-value"));
   }
   // Cross Party.
@@ -1331,17 +1330,12 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
         std::set<net::SchemefulSite>{
             net::SchemefulSite(GURL("https://not-example.com"))}));
 
-    mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-    mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-        listener_remote.InitWithNewPipeAndPassReceiver();
-    sync_service_->AddChangeListener(kDefaultUrlWithPath, net::SiteForCookies(),
-                                     kDefaultOrigin,
-                                     std::move(listener_remote));
-    TestCookieChangeListener listener(std::move(receiver));
+    auto listener = CreateCookieChangeListener(
+        kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin);
 
-    EXPECT_THAT(listener.observed_changes(), IsEmpty());
+    EXPECT_THAT(listener->observed_changes(), IsEmpty());
     SetSamePartyCookie("cookie-name", "cookie-value", "example.com", "/");
-    EXPECT_THAT(listener.observed_changes(), IsEmpty());
+    EXPECT_THAT(listener->observed_changes(), IsEmpty());
   }
 }
 
@@ -1354,17 +1348,12 @@ TEST_P(RestrictedCookieManagerTest, ChangeNotificationIncludesAccessSemantics) {
       "example.com", net::CookieAccessSemantics::LEGACY);
   cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
 
-  mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-  mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-      listener_remote.InitWithNewPipeAndPassReceiver();
-
   // Use a cross-site site_for_cookies.
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-  sync_service_->AddChangeListener(kDefaultUrlWithPath, net::SiteForCookies(),
-                                   kDefaultOrigin, std::move(listener_remote));
-  TestCookieChangeListener listener(std::move(receiver));
+  auto listener = CreateCookieChangeListener(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin);
 
-  ASSERT_THAT(listener.observed_changes(), IsEmpty());
+  ASSERT_THAT(listener->observed_changes(), IsEmpty());
 
   auto cookie = net::CanonicalCookie::Create(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
@@ -1379,11 +1368,11 @@ TEST_P(RestrictedCookieManagerTest, ChangeNotificationIncludesAccessSemantics) {
   ASSERT_TRUE(callback.result().status.IsInclude());
 
   // The listener only receives the change because the cookie is legacy.
-  listener.WaitForChange();
+  listener->WaitForChange();
 
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(1));
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
   EXPECT_EQ(net::CookieAccessSemantics::LEGACY,
-            listener.observed_changes()[0].access_result.access_semantics);
+            listener->observed_changes()[0].access_result.access_semantics);
 }
 
 TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
@@ -1393,17 +1382,12 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
       "example.com", net::CookieAccessSemantics::NONLEGACY);
   cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
 
-  mojo::PendingRemote<network::mojom::CookieChangeListener> listener_remote;
-  mojo::PendingReceiver<network::mojom::CookieChangeListener> receiver =
-      listener_remote.InitWithNewPipeAndPassReceiver();
-
   // Use a cross-site site_for_cookies.
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-  sync_service_->AddChangeListener(kDefaultUrlWithPath, net::SiteForCookies(),
-                                   kDefaultOrigin, std::move(listener_remote));
-  TestCookieChangeListener listener(std::move(receiver));
+  auto listener = CreateCookieChangeListener(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin);
 
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(0));
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
 
   auto unspecified_cookie = net::CanonicalCookie::Create(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
@@ -1425,7 +1409,7 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
   // Listener doesn't receive notification because cookie is not included for
   // request URL for being unspecified and treated as lax.
   base::RunLoop().RunUntilIdle();
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(0));
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
 
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback2;
   cookie_monster_.SetCanonicalCookieAsync(
@@ -1435,13 +1419,13 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
   ASSERT_TRUE(callback2.result().status.IsInclude());
 
   // Listener only receives notification about the SameSite=None cookie.
-  listener.WaitForChange();
-  ASSERT_THAT(listener.observed_changes(), testing::SizeIs(1));
+  listener->WaitForChange();
+  ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
 
   EXPECT_EQ("samesite_none_cookie",
-            listener.observed_changes()[0].cookie.Name());
+            listener->observed_changes()[0].cookie.Name());
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
-            listener.observed_changes()[0].access_result.access_semantics);
+            listener->observed_changes()[0].access_result.access_semantics);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1487,6 +1471,25 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
     ASSERT_EQ(1u, cookies.size());
     EXPECT_FALSE(cookies[0].IsPartitioned());
     EXPECT_EQ("__Host-foo", cookies[0].Name());
+
+    auto listener = CreateCookieChangeListener(kCookieURL, kSiteForCookies,
+                                               kTopFrameOrigin);
+
+    // Update partitioned cookie Max-Age: None -> 7200.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
+            "Max-Age=7200",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            net::CookiePartitionKey::FromNetworkIsolationKey(
+                kIsolationInfo.network_isolation_key())),
+        "https", false /* can_modify_httponly */));
+
+    // If Partitioned cookies are disabled, the change listener should see the
+    // change to the cookie on this top-level site.
+    listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
   }
 
   {  // Test request from another top-level site.
@@ -1510,6 +1513,25 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
     ASSERT_EQ(1u, cookies.size());
     EXPECT_FALSE(cookies[0].IsPartitioned());
     EXPECT_EQ("__Host-foo", cookies[0].Name());
+
+    auto listener = CreateCookieChangeListener(kCookieURL, kOtherSiteForCookies,
+                                               kOtherTopFrameOrigin);
+
+    // Update partitioned cookie Max-Age: 7200 -> 3600.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
+            "Max-Age=3600",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            net::CookiePartitionKey::FromNetworkIsolationKey(
+                kIsolationInfo.network_isolation_key())),
+        "https", false /* can_modify_httponly */));
+
+    // If Partitioned cookies are disabled, the change listener should see the
+    // change to the cookie on the other top-level site as well.
+    listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
   }
 }
 
@@ -1542,6 +1564,25 @@ TEST_P(PartitionedCookiesEnabledRestrictedCookieManagerTest,
         net::CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
         cookies[0].PartitionKey());
     EXPECT_EQ("__Host-foo", cookies[0].Name());
+
+    auto listener = CreateCookieChangeListener(kCookieURL, kSiteForCookies,
+                                               kTopFrameOrigin);
+
+    // Update partitioned cookie Max-Age: None -> 7200.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
+            "Max-Age=7200",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            net::CookiePartitionKey::FromNetworkIsolationKey(
+                kIsolationInfo.network_isolation_key())),
+        "https", false /* can_modify_httponly */));
+
+    // If Partitioned cookies are enabled, the change listener should see the
+    // change to the cookie on this top-level site.
+    listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
   }
 
   {  // Test request from another top-level site.
@@ -1563,6 +1604,32 @@ TEST_P(PartitionedCookiesEnabledRestrictedCookieManagerTest,
         sync_service_->GetAllForUrl(kCookieURL, kOtherSiteForCookies,
                                     kOtherTopFrameOrigin, std::move(options));
     ASSERT_EQ(0u, cookies.size());
+
+    auto listener = CreateCookieChangeListener(kCookieURL, kOtherSiteForCookies,
+                                               kOtherTopFrameOrigin);
+
+    // Set a new listener with the original IsolationInfo, we wait for this
+    // listener to receive an event to verify that the second listener was
+    // either called or skipped.
+    service_->OverrideIsolationInfoForTesting(kIsolationInfo);
+    auto second_listener = CreateCookieChangeListener(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin);
+
+    // Update partitioned cookie Max-Age: 7200 -> 3600.
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::Create(
+            kCookieURL,
+            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
+            "Max-Age=3600",
+            base::Time::Now(), absl::nullopt /* server_time */,
+            net::CookiePartitionKey::FromNetworkIsolationKey(
+                kIsolationInfo.network_isolation_key())),
+        "https", false /* can_modify_httponly */));
+
+    // If Partitioned cookies are enabled, the listener should not see cookie
+    // change events on this top-level site.
+    second_listener->WaitForChange();
+    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
   }
 }
 

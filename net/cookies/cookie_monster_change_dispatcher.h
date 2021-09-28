@@ -53,9 +53,11 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
       const GURL& url,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
@@ -74,6 +76,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
                  std::string domain_key,
                  std::string name_key,
                  GURL url,
+                 absl::optional<CookiePartitionKey> cookie_partition_key,
                  net::CookieChangeCallback callback);
 
     Subscription(const Subscription&) = delete;
@@ -99,6 +102,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     const std::string domain_key_;  // kGlobalDomainKey means no filtering.
     const std::string name_key_;    // kGlobalNameKey means no filtering.
     const GURL url_;                // empty() means no URL-based filtering.
+    // nullopt means all Partitioned cookies will be ignored.
+    const absl::optional<CookiePartitionKey> cookie_partition_key_;
     const net::CookieChangeCallback callback_;
 
     void DoDispatchChange(const CookieChangeInfo& change) const;

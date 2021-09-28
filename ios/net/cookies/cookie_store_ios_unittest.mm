@@ -70,6 +70,7 @@ struct CookieStoreIOSTestTraits {
   static const bool has_exact_change_ordering = false;
   static const int creation_time_granularity_in_ms = 1000;
   static const bool supports_cookie_access_semantics = false;
+  static const bool supports_partitioned_cookies = false;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -142,6 +143,7 @@ class CookieStoreIOSTest : public PlatformTest {
     cookie_change_subscription_ =
         store_->GetChangeDispatcher().AddCallbackForCookie(
             kTestCookieURLFooBar, "abc",
+            /*cookie_partition_key=*/absl::nullopt,
             base::BindRepeating(&RecordCookieChanges, &cookies_changed_,
                                 &cookies_removed_));
   }
@@ -363,6 +365,7 @@ TEST_F(CookieStoreIOSTest, NoInitialNotifyWithNoCookie) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
 }
@@ -373,6 +376,7 @@ TEST_F(CookieStoreIOSTest, NoInitialNotifyWithSystemCookie) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   DeleteSystemCookie(kTestCookieURLFooBar, "abc");
@@ -384,6 +388,7 @@ TEST_F(CookieStoreIOSTest, NotifyOnAdd) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, &removes));
   EXPECT_EQ(0U, cookies.size());
   EXPECT_EQ(0U, removes.size());
@@ -408,6 +413,7 @@ TEST_F(CookieStoreIOSTest, NotifyOnChange) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, &removes));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFooBar, "abc", "def");
@@ -432,6 +438,7 @@ TEST_F(CookieStoreIOSTest, NotifyOnDelete) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, &removes));
   EXPECT_EQ(0U, cookies.size());
   DeleteSystemCookie(kTestCookieURLFooBar, "abc");
@@ -450,6 +457,7 @@ TEST_F(CookieStoreIOSTest, NoNotifyOnNoChange) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFooBar, "abc", "def");
@@ -467,18 +475,22 @@ TEST_F(CookieStoreIOSTest, MultipleNotifies) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   std::unique_ptr<net::CookieChangeSubscription> handle2 =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBaz, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies2, nullptr));
   std::unique_ptr<net::CookieChangeSubscription> handle3 =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFoo, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies3, nullptr));
   std::unique_ptr<net::CookieChangeSubscription> handle4 =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLBarBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies4, nullptr));
   SetSystemCookie(kTestCookieURLFooBar, "abc", "def");
   SetSystemCookie(kTestCookieURLFooBaz, "abc", "def");
@@ -500,6 +512,7 @@ TEST_F(CookieStoreIOSTest, LessSpecificNestedCookie) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBaz, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFoo, "abc", "ghi");
@@ -513,6 +526,7 @@ TEST_F(CookieStoreIOSTest, MoreSpecificNestedCookie) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBaz, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFooBaz, "abc", "ghi");
@@ -526,6 +540,7 @@ TEST_F(CookieStoreIOSTest, MoreSpecificNestedCookieWithSameValue) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBaz, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFooBaz, "abc", "def");
@@ -539,6 +554,7 @@ TEST_F(CookieStoreIOSTest, RemoveCallback) {
   std::unique_ptr<net::CookieChangeSubscription> handle =
       store_->GetChangeDispatcher().AddCallbackForCookie(
           kTestCookieURLFooBar, "abc",
+          /*cookie_partition_key=*/absl::nullopt,
           base::BindRepeating(&RecordCookieChanges, &cookies, nullptr));
   EXPECT_EQ(0U, cookies.size());
   SetSystemCookie(kTestCookieURLFooBar, "abc", "ghi");
