@@ -3524,6 +3524,8 @@ static_library("browser") {
       "apps/app_discovery_service/test_fetcher.h",
       "apps/app_service/app_icon_factory.cc",
       "apps/app_service/app_icon_factory.h",
+      "apps/app_service/app_icon_loading.cc",
+      "apps/app_service/app_icon_loading.h",
       "apps/app_service/app_icon_source.cc",
       "apps/app_service/app_icon_source.h",
       "apps/app_service/app_launch_params.cc",
