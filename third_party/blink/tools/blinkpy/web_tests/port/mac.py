@@ -56,7 +56,22 @@ class MacPort(base.Port):
     @classmethod
     def determine_full_port_name(cls, host, options, port_name):
         if port_name.endswith('mac'):
-            version = host.platform.os_version
+            # TODO(crbug.com/1253659): verify this under native arm.
+            if (host.platform.get_machine() == 'arm64'
+                    or host.platform.is_running_rosetta()):
+                version = 'mac11-arm64'
+            # TODO(crbug.com/1114885): This is to workaround the failure of
+            # blink_python_tests on mac10.10 and 10.11 waterfall bots. Remove this
+            # when we remove the step from the bots.
+            elif (host.platform.os_version == 'mac10.10'
+                  or host.platform.os_version == 'mac10.11'):
+                version = 'mac10.12'
+            # TODO(crbug.com/1126062): Workaround for Big sur using 10.16 version,
+            # use mac11.0 instead.
+            elif host.platform.os_version == 'mac10.16':
+                version = 'mac11.0'
+            else:
+                version = host.platform.os_version
             return port_name + '-' + version
         return port_name
 
@@ -64,18 +79,8 @@ class MacPort(base.Port):
         super(MacPort, self).__init__(host, port_name, **kwargs)
 
         self._version = port_name[port_name.index('mac-') + len('mac-'):]
-        # TODO(crbug.com/1114885): This is to workaround the failure of
-        # blink_python_tests on mac10.10 and 10.11 waterfall bots. Remove this
-        # when we remove the step from the bots.
-        if self._version == 'mac10.10' or self._version == 'mac10.11':
-            self._version = 'mac10.12'
-        # TODO(crbug.com/1126062): Workaround for Big sur using 10.16 version,
-        # use mac11.0 instead.
-        if self._version == 'mac10.16':
-            self._version = 'mac11.0'
 
-        if self._version == 'mac11.0' and host.platform.is_running_rosetta():
-            self._version = 'mac11-arm64'
+        if self._version == 'mac11-arm64':
             self._architecture = 'arm64'
 
         assert self._version in self.SUPPORTED_VERSIONS

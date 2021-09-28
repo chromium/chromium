@@ -143,6 +143,9 @@ class PlatformInfo(object):
         except Exception:  # pylint: disable=broad-except
             return sys.maxsize
 
+    def get_machine(self):
+        return self._platform_module.machine()
+
     def linux_distribution(self):
         if not self.is_linux():
             return None
