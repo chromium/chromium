@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#include <memory>
+#include <iterator>
 #include <vector>
 
 #include "base/check_op.h"
@@ -18,8 +18,6 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace chrome_pdf {
 
@@ -33,18 +31,6 @@ TestPDFiumEngine::TestPDFiumEngine(PDFEngine::Client* client)
     : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
-
-bool TestPDFiumEngine::HandleInputEvent(const blink::WebInputEvent& event) {
-  // Since blink::WebInputEvent is an abstract class, we cannot use equal
-  // matcher to verify its value. Here we test with blink::WebMouseEvent
-  // specifically.
-  if (!blink::WebInputEvent::IsMouseEventType(event.GetType()))
-    return false;
-
-  scaled_mouse_event_ = std::make_unique<blink::WebMouseEvent>();
-  *scaled_mouse_event_ = static_cast<const blink::WebMouseEvent&>(event);
-  return true;
-}
 
 bool TestPDFiumEngine::HasPermission(DocumentPermission permission) const {
   return base::Contains(permissions_, permission);

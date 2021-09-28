@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
@@ -253,7 +254,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     auto wrapper =
         std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
-    auto engine = std::make_unique<TestPDFiumEngine>(plugin_.get());
+    auto engine = CreateEngine();
     engine_ptr_ = engine.get();
     EXPECT_TRUE(
         plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
@@ -263,6 +264,11 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     wrapper_ptr_ = nullptr;
 
     PdfViewWebPluginWithoutInitializeTest::TearDown();
+  }
+
+  // Allow derived test classes to create their own custom TestPDFiumEngine.
+  virtual std::unique_ptr<TestPDFiumEngine> CreateEngine() {
+    return std::make_unique<TestPDFiumEngine>(plugin_.get());
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
@@ -479,7 +485,45 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PdfViewWebPluginTestUseZoomForDSF,
                          testing::Bool());
 
-TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFEnabled) {
+class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
+ public:
+  class TestPDFiumEngineForMouseEvents : public TestPDFiumEngine {
+   public:
+    explicit TestPDFiumEngineForMouseEvents(PDFEngine::Client* client)
+        : TestPDFiumEngine(client) {}
+
+    // TestPDFiumEngine:
+    bool HandleInputEvent(const blink::WebInputEvent& event) override {
+      // Since blink::WebInputEvent is an abstract class, we cannot use equal
+      // matcher to verify its value. Here we test with blink::WebMouseEvent
+      // specifically.
+      if (!blink::WebInputEvent::IsMouseEventType(event.GetType()))
+        return false;
+
+      scaled_mouse_event_ = std::make_unique<blink::WebMouseEvent>();
+      *scaled_mouse_event_ = static_cast<const blink::WebMouseEvent&>(event);
+      return true;
+    }
+
+    const blink::WebMouseEvent* GetScaledMouseEvent() const {
+      return scaled_mouse_event_.get();
+    }
+
+   private:
+    std::unique_ptr<blink::WebMouseEvent> scaled_mouse_event_;
+  };
+
+  std::unique_ptr<TestPDFiumEngine> CreateEngine() override {
+    return std::make_unique<TestPDFiumEngineForMouseEvents>(plugin_.get());
+  }
+
+  TestPDFiumEngineForMouseEvents* engine() {
+    return static_cast<TestPDFiumEngineForMouseEvents*>(engine_ptr_);
+  }
+};
+
+TEST_F(PdfViewWebPluginMouseEventsTest,
+       HandleInputEventWithUseZoomForDSFEnabled) {
   // Test when using zoom for DSF is enabled.
   EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
       .WillRepeatedly(Return(true));
@@ -492,12 +536,13 @@ TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFEnabled) {
                                     ui::LatencyInfo()),
       &dummy_cursor);
 
-  ASSERT_TRUE(engine_ptr_->GetScaledMouseEvent());
-  EXPECT_EQ(gfx::PointF(-10.0f, 0.0f),
-            engine_ptr_->GetScaledMouseEvent()->PositionInWidget());
+  const blink::WebMouseEvent* event = engine()->GetScaledMouseEvent();
+  ASSERT_TRUE(event);
+  EXPECT_EQ(gfx::PointF(-10.0f, 0.0f), event->PositionInWidget());
 }
 
-TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFDisabled) {
+TEST_F(PdfViewWebPluginMouseEventsTest,
+       HandleInputEventWithUseZoomForDSFDisabled) {
   // Test when using zoom for DSF is disabled.
   EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
       .WillRepeatedly(Return(false));
@@ -510,9 +555,9 @@ TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFDisabled) {
                                     ui::LatencyInfo()),
       &dummy_cursor);
 
-  ASSERT_TRUE(engine_ptr_->GetScaledMouseEvent());
-  EXPECT_EQ(gfx::PointF(-20.0f, 0.0f),
-            engine_ptr_->GetScaledMouseEvent()->PositionInWidget());
+  const blink::WebMouseEvent* event = engine()->GetScaledMouseEvent();
+  ASSERT_TRUE(event);
+  EXPECT_EQ(gfx::PointF(-20.0f, 0.0f), event->PositionInWidget());
 }
 
 TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
