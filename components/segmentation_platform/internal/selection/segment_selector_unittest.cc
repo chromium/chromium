@@ -145,6 +145,29 @@ TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
                                       metadata));
 }
 
+TEST_F(SegmentSelectorTest, CheckDiscreteMappingInNonAscendingOrder) {
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping[][2] = {{0.2, 1}, {0.7, 4}, {0.5, 3}};
+  segment_database_->AddDiscreteMapping(segment_id, mapping, 3,
+                                        config_.segmentation_key);
+  proto::SegmentInfo* segment_info =
+      segment_database_->FindOrCreateSegment(segment_id);
+  const proto::SegmentationModelMetadata& metadata =
+      segment_info->model_metadata();
+
+  ASSERT_EQ(0, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.1,
+                                      metadata));
+  ASSERT_EQ(1, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.4,
+                                      metadata));
+  ASSERT_EQ(3, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.5,
+                                      metadata));
+  ASSERT_EQ(3, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.6,
+                                      metadata));
+  ASSERT_EQ(4, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.9,
+                                      metadata));
+}
+
 TEST_F(SegmentSelectorTest, CheckMissingDiscreteMapping) {
   OptimizationTarget segment_id =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;

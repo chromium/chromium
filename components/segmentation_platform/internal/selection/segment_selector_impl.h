@@ -87,7 +87,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Helper method to convert continuous to discrete score.
   int ConvertToDiscreteScore(OptimizationTarget segment_id,
                              const std::string& mapping_key,
-                             float score,
+                             float input_score,
                              const proto::SegmentationModelMetadata& metadata);
 
   // The database storing metadata and results.
