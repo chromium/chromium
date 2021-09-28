@@ -22,6 +22,7 @@
 namespace updater {
 
 class Configurator;
+struct RegistrationRequest;
 
 // The COM objects involved in this server are free threaded. Incoming COM calls
 // arrive on COM RPC threads. Outgoing COM calls are posted from a blocking
@@ -71,6 +72,9 @@ class ComServerApp : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapRPCInterfaces() override;
+  bool ConvertLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) override;
   void UninstallSelf() override;
 
   // Registers and unregisters the out-of-process COM class factories.

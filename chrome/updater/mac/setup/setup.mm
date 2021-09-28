@@ -31,6 +31,7 @@
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/mac/setup/keystone.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
@@ -116,63 +117,6 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
 
   if (!base::CopyDirectory(base::mac::OuterBundlePath(), dest_path, true)) {
     LOG(ERROR) << "Copying app to '" << dest_path.value().c_str() << "' failed";
-    return false;
-  }
-  return true;
-}
-
-bool CopyKeystoneBundle(UpdaterScope scope) {
-  // The Keystone Bundle is in
-  // GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle.
-  base::FilePath keystone_bundle_path =
-      base::mac::OuterBundlePath()
-          .Append(FILE_PATH_LITERAL("Contents"))
-          .Append(FILE_PATH_LITERAL("Helpers"))
-          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));
-
-  if (!base::PathExists(keystone_bundle_path)) {
-    LOG(ERROR) << "Path to the Keystone bundle does not exist! "
-               << keystone_bundle_path;
-    return false;
-  }
-
-  const absl::optional<base::FilePath> dest_folder_path =
-      GetKeystoneFolderPath(scope);
-  if (!dest_folder_path)
-    return false;
-  const base::FilePath dest_path = *dest_folder_path;
-  if (!base::PathExists(dest_path)) {
-    base::File::Error error;
-    if (!base::CreateDirectoryAndGetError(dest_path, &error)) {
-      LOG(ERROR) << "Failed to create '" << dest_path.value().c_str()
-                 << "' directory: " << base::File::ErrorToString(error);
-      return false;
-    }
-  }
-
-  // For system installs, set file permissions to be drwxr-xr-x
-  if (scope == UpdaterScope::kSystem) {
-    constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                     base::FILE_PERMISSION_READ_BY_GROUP |
-                                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-                                     base::FILE_PERMISSION_READ_BY_OTHERS |
-                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-    if (!base::SetPosixFilePermissions(
-            GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
-            kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetUpdaterFolderPath(scope),
-                                       kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetVersionedUpdaterFolderPath(scope),
-                                       kPermissionsMask)) {
-      LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
-                 << dest_path.value().c_str();
-      return false;
-    }
-  }
-
-  if (!base::CopyDirectory(keystone_bundle_path, dest_path, true)) {
-    LOG(ERROR) << "Copying keystone bundle '" << keystone_bundle_path
-               << "' to '" << dest_path.value().c_str() << "' failed.";
     return false;
   }
   return true;
@@ -452,45 +396,6 @@ int DoSetup(UpdaterScope scope) {
   return setup_exit_codes::kSuccess;
 }
 
-void UninstallKeystone(UpdaterScope scope) {
-  const absl::optional<base::FilePath> keystone_folder_path =
-      GetKeystoneFolderPath(scope);
-  if (!keystone_folder_path) {
-    LOG(ERROR) << "Can't find Keystone path.";
-    return;
-  }
-  if (!base::PathExists(*keystone_folder_path)) {
-    LOG(ERROR) << "Keystone path '" << *keystone_folder_path
-               << "' doesn't exist.";
-    return;
-  }
-
-  base::FilePath ksinstall_path =
-      keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
-          .Append(FILE_PATH_LITERAL("Contents"))
-          .Append(FILE_PATH_LITERAL("Helpers"))
-          .Append(FILE_PATH_LITERAL("ksinstall"));
-  base::CommandLine command_line(ksinstall_path);
-  command_line.AppendSwitch("uninstall");
-  if (scope == UpdaterScope::kSystem)
-    command_line = MakeElevated(command_line);
-  base::Process process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to launch ksinstall.";
-    return;
-  }
-  int exit_code = 0;
-
-  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(30),
-                                      &exit_code)) {
-    LOG(ERROR) << "Uninstall Keystone didn't finish in the allowed time.";
-    return;
-  }
-  if (exit_code != 0) {
-    LOG(ERROR) << "Uninstall Keystone returned exit code: " << exit_code << ".";
-  }
-}
-
 }  // namespace
 
 int Setup(UpdaterScope scope) {
@@ -513,9 +418,6 @@ int PromoteCandidate(UpdaterScope scope) {
 
   if (!StartLaunchdServiceJob(scope))
     return setup_exit_codes::kFailedToStartLaunchdActiveServiceJob;
-
-  if (!CopyKeystoneBundle(scope))
-    return setup_exit_codes::kFailedToCopyKeystoneBundle;
 
   // Wait for launchd to finish the load operation for the update service.
   base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));

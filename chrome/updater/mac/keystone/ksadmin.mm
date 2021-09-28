@@ -143,6 +143,8 @@ bool KSAdminApp::NewTicketValuesSpecified() {
 void KSAdminApp::PrintRequestedInfo() {
   if (print_usage_)
     PrintUsage();
+  if (print_tickets_)
+    printf("No tickets\n");
 }
 
 void KSAdminApp::PrintUsage() {

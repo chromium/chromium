@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_APP_APP_SERVER_H_
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/external_constants.h"
@@ -16,6 +17,7 @@ namespace updater {
 class UpdateServiceInternal;
 class GlobalPrefs;
 class UpdateService;
+struct RegistrationRequest;
 
 // AppServer runs as the updater server process. Multiple servers of different
 // application versions can be run side-by-side. Each such server is called a
@@ -51,6 +53,12 @@ class AppServer : public App {
   // Sets up all non-side-by-side RPC interfaces to point to this candidate
   // server.
   virtual bool SwapRPCInterfaces() = 0;
+
+  // Ingests metadata from incompatible legacy updaters, then replaces those
+  // updaters with shims.
+  virtual bool ConvertLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) = 0;
 
   // Uninstalls this candidate version of the updater.
   virtual void UninstallSelf() = 0;

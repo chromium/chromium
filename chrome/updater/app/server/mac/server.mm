@@ -8,6 +8,7 @@
 #include <xpc/xpc.h>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
@@ -22,6 +23,7 @@
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/mac/setup/keystone.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
@@ -90,6 +92,12 @@ void AppServerMac::UninstallSelf() {
 
 bool AppServerMac::SwapRPCInterfaces() {
   return PromoteCandidate(updater_scope()) == setup_exit_codes::kSuccess;
+}
+
+bool AppServerMac::ConvertLegacyUpdaters(
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  return ConvertKeystone(updater_scope(), register_callback);
 }
 
 void AppServerMac::TaskStarted() {

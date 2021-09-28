@@ -28,6 +28,7 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -240,6 +241,14 @@ bool ComServerApp::SwapRPCInterfaces() {
   }
 
   return list->Do();
+}
+
+bool ComServerApp::ConvertLegacyUpdaters(
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  // TODO(crbug.com/1250524): Implement. Note we will need both user and system
+  // scopes here.
+  return true;
 }
 
 }  // namespace updater

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -44,6 +45,10 @@ class AppServerTest : public AppServer {
               (scoped_refptr<UpdateServiceInternal>),
               (override));
   MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
+  MOCK_METHOD(bool,
+              ConvertLegacyUpdaters,
+              (base::RepeatingCallback<void(const RegistrationRequest&)>),
+              (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
 
  protected:
@@ -104,6 +109,7 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   // Expect the app to ActiveDuty then SelfUninstall.
   EXPECT_CALL(*app, ActiveDuty).Times(1);
   EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
+  EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(1);
   EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
@@ -121,6 +127,7 @@ TEST_F(AppServerTestCase, SelfPromote) {
     // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
     EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -138,6 +145,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
     // In this case it bypasses qualification.
     EXPECT_CALL(*app, ActiveDuty).Times(1);
     EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
     EXPECT_FALSE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
@@ -160,6 +168,7 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
     // Expect the app to SwapRpcInterfaces and then Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
     EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
@@ -185,6 +194,7 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
     // Expect the app to ActiveDuty and then Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
     EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -212,6 +222,7 @@ TEST_F(AppServerTestCase, StateDirty) {
     // Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
     EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -238,6 +249,7 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
     // Expect the app to SwapRpcInterfaces and Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
     EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
+    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
