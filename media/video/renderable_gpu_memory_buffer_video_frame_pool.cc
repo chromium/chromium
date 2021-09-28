@@ -14,6 +14,7 @@
 #include "base/bind_post_task.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -145,10 +146,17 @@ FrameResources::~FrameResources() {
 bool FrameResources::Initialize() {
   auto* context = pool_->GetContext();
 
+  constexpr gfx::BufferUsage kBufferUsage =
+#if defined(OS_MAC)
+      gfx::BufferUsage::SCANOUT_VEA_CPU_READ
+#else
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+#endif
+      ;
+
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
-      coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::SCANOUT_VEA_CPU_READ);
+      coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR, kBufferUsage);
   if (!gpu_memory_buffer_) {
     DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame.";
     return false;
@@ -158,17 +166,24 @@ bool FrameResources::Initialize() {
   constexpr size_t kNumPlanes = 2;
   constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                     gfx::BufferPlane::UV};
-  constexpr uint32_t kUsage =
+  constexpr uint32_t kSharedImageUsage =
+#if defined(OS_MAC)
+      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+#endif
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
     context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kUsage,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
         mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
     // TODO(https://crbug.com/1191956): This should be parameterized.
+#if defined(OS_MAC)
     mailbox_holders_[plane].texture_target = GL_TEXTURE_RECTANGLE_ARB;
+#else
+    mailbox_holders_[plane].texture_target = GL_TEXTURE_2D;
+#endif
   }
   return true;
 }
@@ -189,10 +204,17 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
     return nullptr;
 
   video_frame->set_color_space(color_space_);
+
   // TODO(https://crbug.com/1191956): This should depend on the platform and
   // format.
   video_frame->metadata().allow_overlay = true;
-  video_frame->metadata().read_lock_fences_enabled = true;
+
+  // Only native (non shared memory) GMBs require waiting on GPU fences.
+  const bool has_native_gmb =
+      video_frame->HasGpuMemoryBuffer() &&
+      video_frame->GetGpuMemoryBuffer()->GetType() != gfx::SHARED_MEMORY_BUFFER;
+  video_frame->metadata().read_lock_fences_enabled = has_native_gmb;
+
   return video_frame;
 }
 

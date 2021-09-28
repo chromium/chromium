@@ -9,6 +9,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -17,6 +18,7 @@
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace {
 
@@ -172,14 +174,34 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
   ri->Flush();
 
-  // Set `completion_sync_token` to mark the completion of the copy.
-  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
+  const size_t num_planes = dst_video_frame->layout().num_planes();
+
+  // For shared memory GMBs on Windows we needed to explicitly request a copy
+  // from the shared image GPU texture to the GMB. Set `completion_sync_token`
+  // to mark the completion of the copy.
+  if (dst_video_frame->HasGpuMemoryBuffer() &&
+      dst_video_frame->GetGpuMemoryBuffer()->GetType() ==
+          gfx::SHARED_MEMORY_BUFFER) {
+    auto* sii = provider->SharedImageInterface();
+
+    gpu::SyncToken blit_done_sync_token;
+    ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
+
+    for (size_t plane = 0; plane < num_planes; ++plane) {
+      const auto& mailbox = dst_video_frame->mailbox_holder(plane).mailbox;
+      sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+    }
+
+    completion_sync_token = sii->GenVerifiedSyncToken();
+  } else {
+    ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
+  }
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
   // GpuMemoryBuffer and SharedImage resources are returned to the pool.
   SimpleSyncTokenClient simple_client(completion_sync_token);
-  for (size_t plane = 0; plane < 2; ++plane)
+  for (size_t plane = 0; plane < num_planes; ++plane)
     dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
