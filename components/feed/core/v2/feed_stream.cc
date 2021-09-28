@@ -281,7 +281,8 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
       stream.type, result.load_from_store_status, result.final_status,
       result.load_type == LoadType::kInitialLoad,
       result.loaded_new_content_from_network, result.stored_content_age,
-      content_stats, std::move(result.latencies));
+      content_stats, GetRequestMetadata(stream.type, false),
+      std::move(result.latencies));
 
   UpdateIsActivityLoggingEnabled(result.stream_type);
   stream.model_loading_in_progress = false;

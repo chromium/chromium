@@ -34,6 +34,7 @@
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/test/test_util.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/http/http_status_code.h"
@@ -387,6 +388,7 @@ class TestMetricsReporter : public MetricsReporter {
                     bool loaded_new_content_from_network,
                     base::TimeDelta stored_content_age,
                     const ContentStats& content_stats,
+                    const RequestMetadata& request_metadata,
                     std::unique_ptr<LoadLatencyTimes> latencies) override;
   void OnLoadMoreBegin(const StreamType& stream_type,
                        SurfaceId surface_id) override;

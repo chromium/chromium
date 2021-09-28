@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -85,6 +86,18 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
       return "QueryRequest";
     case LoadLatencyTimes::kStreamViewed:
       return "StreamView";
+  }
+}
+
+base::StringPiece ContentOrderToString(ContentOrder content_order) {
+  switch (content_order) {
+    case ContentOrder::kUnspecified:
+      NOTREACHED();
+      FALLTHROUGH;
+    case ContentOrder::kGrouped:
+      return "Grouped";
+    case ContentOrder::kReverseChron:
+      return "ReverseChron";
   }
 }
 
@@ -611,6 +624,7 @@ void MetricsReporter::OnLoadStream(
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
     const ContentStats& content_stats,
+    const RequestMetadata& request_metadata,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
   DVLOG(1) << "OnLoadStream load_from_store_status=" << load_from_store_status
            << " final_status=" << final_status;
@@ -656,6 +670,12 @@ void MetricsReporter::OnLoadStream(
         base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                       "LoadedCardCount"}),
         content_stats.card_count);
+    if (stream_type.IsWebFeed()) {
+      base::UmaHistogramSparse(
+          base::StrCat({"ContentSuggestions.Feed.WebFeed.LoadedCardCount.",
+                        ContentOrderToString(request_metadata.content_order)}),
+          content_stats.card_count);
+    }
   }
   if (stream_type.IsWebFeed()) {
     delegate_->SubscribedWebFeedCount(base::BindOnce(

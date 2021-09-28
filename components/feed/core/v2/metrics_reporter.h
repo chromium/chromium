@@ -83,6 +83,7 @@ class MetricsReporter {
                             bool loaded_new_content_from_network,
                             base::TimeDelta stored_content_age,
                             const ContentStats& content_stats,
+                            const RequestMetadata& request_metadata,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(const StreamType& stream_type,
                                    LoadStreamStatus final_status);

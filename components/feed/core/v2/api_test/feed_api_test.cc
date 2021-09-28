@@ -691,6 +691,7 @@ void TestMetricsReporter::OnLoadStream(
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
     const ContentStats& content_stats,
+    const RequestMetadata& request_metadata,
     std::unique_ptr<LoadLatencyTimes> latencies) {
   load_stream_from_store_status = load_from_store_status;
   load_stream_status = final_status;
@@ -699,7 +700,7 @@ void TestMetricsReporter::OnLoadStream(
   MetricsReporter::OnLoadStream(
       stream_type, load_from_store_status, final_status, is_initial_load,
       loaded_new_content_from_network, stored_content_age, content_stats,
-      std::move(latencies));
+      request_metadata, std::move(latencies));
 }
 void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
                                           SurfaceId surface_id) {
