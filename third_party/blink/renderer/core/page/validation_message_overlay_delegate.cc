@@ -113,10 +113,11 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
     // The overlay frame is has a standalone paint property tree. Paint it in
     // its root space into a paint record, then draw the record into the proper
     // target space in the overlaid frame.
-    PaintRecordBuilder paint_record_builder(context);
-    FrameView().PaintOutsideOfLifecycle(paint_record_builder.Context(),
+    auto* paint_record_builder =
+        MakeGarbageCollected<PaintRecordBuilder>(context);
+    FrameView().PaintOutsideOfLifecycle(paint_record_builder->Context(),
                                         kGlobalPaintNormalPhase);
-    context.DrawRecord(paint_record_builder.EndRecording());
+    context.DrawRecord(paint_record_builder->EndRecording());
   }
 }
 

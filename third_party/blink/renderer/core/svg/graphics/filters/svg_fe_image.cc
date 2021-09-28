@@ -181,9 +181,9 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   cc::PaintCanvas* canvas = paint_recorder.beginRecording(crop_rect);
   canvas->concat(AffineTransformToSkMatrix(transform));
   {
-    PaintRecordBuilder builder;
-    SVGObjectPainter(layout_object).PaintResourceSubtree(builder.Context());
-    builder.EndRecording(*canvas);
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    SVGObjectPainter(layout_object).PaintResourceSubtree(builder->Context());
+    builder->EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
       paint_recorder.finishRecordingAsPicture(), crop_rect);

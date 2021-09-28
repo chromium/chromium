@@ -310,8 +310,8 @@ class ChromePrintContext : public PrintContext {
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
     FloatRect bounds(0, 0, printed_page_height_, printed_page_width_);
-    PaintRecordBuilder builder;
-    GraphicsContext& context = builder.Context();
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
     context.BeginRecording(bounds);
@@ -339,8 +339,8 @@ class ChromePrintContext : public PrintContext {
     FloatRect all_pages_rect(0, 0, spool_size_in_pixels.Width(),
                              spool_size_in_pixels.Height());
 
-    PaintRecordBuilder builder;
-    GraphicsContext& context = builder.Context();
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
     context.BeginRecording(all_pages_rect);
@@ -423,23 +423,23 @@ class ChromePrintContext : public PrintContext {
     auto property_tree_state =
         frame_view->GetLayoutView()->FirstFragment().LocalBorderBoxProperties();
 
-    PaintRecordBuilder builder(context);
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
     frame_view->PaintContentsOutsideOfLifecycle(
-        builder.Context(),
+        builder->Context(),
         kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
             kGlobalPaintAddUrlMetadata,
         CullRect(page_rect));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
-          builder.Context().GetPaintController(), property_tree_state, builder,
-          DisplayItem::kPrintedContentDestinationLocations);
+          builder->Context().GetPaintController(), property_tree_state,
+          *builder, DisplayItem::kPrintedContentDestinationLocations);
       DrawingRecorder line_boundary_recorder(
-          builder.Context(), builder,
+          builder->Context(), *builder,
           DisplayItem::kPrintedContentDestinationLocations);
-      OutputLinkedDestinations(builder.Context(), page_rect);
+      OutputLinkedDestinations(builder->Context(), page_rect);
     }
 
-    context.DrawRecord(builder.EndRecording(property_tree_state.Unalias()));
+    context.DrawRecord(builder->EndRecording(property_tree_state.Unalias()));
     context.Restore();
 
     return scale;
@@ -507,9 +507,9 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   // NativeTheme doesn't play well with scaling. Scaling is done browser side
   // instead. Returns the scale to be applied.
   float SpoolPage(GraphicsContext& context, int page_number) override {
-    PaintRecordBuilder builder(context);
-    plugin_->PrintPage(page_number, builder.Context());
-    context.DrawRecord(builder.EndRecording());
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
+    plugin_->PrintPage(page_number, builder->Context());
+    context.DrawRecord(builder->EndRecording());
 
     return 1.0;
   }
@@ -544,8 +544,8 @@ class PaintPreviewContext : public PrintContext {
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
       return false;
-    PaintRecordBuilder builder;
-    builder.Context().SetPaintPreviewTracker(canvas->GetPaintPreviewTracker());
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    builder->Context().SetPaintPreviewTracker(canvas->GetPaintPreviewTracker());
 
     LocalFrameView* frame_view = GetFrame()->View();
     DCHECK(frame_view);
@@ -559,19 +559,19 @@ class PaintPreviewContext : public PrintContext {
     if (include_linked_destinations)
       flags |= kGlobalPaintAddUrlMetadata;
 
-    frame_view->PaintContentsOutsideOfLifecycle(builder.Context(), flags,
+    frame_view->PaintContentsOutsideOfLifecycle(builder->Context(), flags,
                                                 CullRect(bounds));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
-          builder.Context().GetPaintController(), property_tree_state, builder,
-          DisplayItem::kPrintedContentDestinationLocations);
+          builder->Context().GetPaintController(), property_tree_state,
+          *builder, DisplayItem::kPrintedContentDestinationLocations);
       DrawingRecorder line_boundary_recorder(
-          builder.Context(), builder,
+          builder->Context(), *builder,
           DisplayItem::kPrintedContentDestinationLocations);
-      OutputLinkedDestinations(builder.Context(), bounds);
+      OutputLinkedDestinations(builder->Context(), bounds);
     }
-    canvas->drawPicture(builder.EndRecording(property_tree_state.Unalias()));
+    canvas->drawPicture(builder->EndRecording(property_tree_state.Unalias()));
     return true;
   }
 };

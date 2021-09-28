@@ -54,13 +54,13 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
     return cached_paint_record_;
 
   SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecordBuilder builder(context);
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
 
   ColorFilter mask_content_filter =
       StyleRef().ColorInterpolation() == EColorInterpolation::kLinearrgb
           ? kColorFilterSRGBToLinearRGB
           : kColorFilterNone;
-  builder.Context().SetColorFilter(mask_content_filter);
+  builder->Context().SetColorFilter(mask_content_filter);
 
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
@@ -70,10 +70,10 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
     if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
-    SVGObjectPainter(*layout_object).PaintResourceSubtree(builder.Context());
+    SVGObjectPainter(*layout_object).PaintResourceSubtree(builder->Context());
   }
 
-  cached_paint_record_ = builder.EndRecording();
+  cached_paint_record_ = builder->EndRecording();
   return cached_paint_record_;
 }
 

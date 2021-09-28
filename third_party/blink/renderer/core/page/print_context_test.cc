@@ -126,8 +126,8 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
     GetPrintContext().BeginPrintMode(page_rect.Width(), page_rect.Height());
     UpdateAllLifecyclePhasesForTest();
-    PaintRecordBuilder builder;
-    GraphicsContext& context = builder.Context();
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    GraphicsContext& context = builder->Context();
     context.SetPrinting(true);
     GetDocument().View()->PaintContentsOutsideOfLifecycle(
         context, kGlobalPaintAddUrlMetadata, CullRect(page_rect));
@@ -137,7 +137,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
           DisplayItem::kPrintedContentDestinationLocations);
       GetPrintContext().OutputLinkedDestinations(context, page_rect);
     }
-    builder.EndRecording()->Playback(&canvas);
+    builder->EndRecording()->Playback(&canvas);
     GetPrintContext().EndPrintMode();
   }
 

@@ -422,20 +422,20 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   pattern_transform.setTranslate(tiling_info.phase.X() + spaced_tile.X(),
                                  tiling_info.phase.Y() + spaced_tile.Y());
 
-  PaintRecordBuilder builder(context);
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
   {
-    DrawingRecorder recorder(builder.Context(), builder,
+    DrawingRecorder recorder(builder->Context(), *builder,
                              DisplayItem::Type::kSVGImage);
     // When generating an expanded tile, make sure we don't draw into the
     // spacing area.
     if (!tiling_info.spacing.IsZero())
-      builder.Context().Clip(tile);
-    DrawForContainer(draw_info, builder.Context().Canvas(), PaintFlags(), tile,
+      builder->Context().Clip(tile);
+    DrawForContainer(draw_info, builder->Context().Canvas(), PaintFlags(), tile,
                      tiling_info.image_rect);
   }
 
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
-      builder.EndRecording(), spaced_tile, SkTileMode::kRepeat,
+      builder->EndRecording(), spaced_tile, SkTileMode::kRepeat,
       SkTileMode::kRepeat, &pattern_transform);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),
@@ -557,10 +557,10 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
   PaintController::CycleScope cycle_scope(*paint_controller_,
                                           view->PaintDebugInfoEnabled());
-  PaintRecordBuilder builder(*paint_controller_);
-  builder.Context().SetDarkModeEnabled(draw_info.IsDarkModeEnabled());
-  view->PaintOutsideOfLifecycle(builder.Context(), kGlobalPaintNormalPhase);
-  return builder.EndRecording();
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(*paint_controller_);
+  builder->Context().SetDarkModeEnabled(draw_info.IsDarkModeEnabled());
+  view->PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase);
+  return builder->EndRecording();
 }
 
 static bool DrawNeedsLayer(const PaintFlags& flags) {

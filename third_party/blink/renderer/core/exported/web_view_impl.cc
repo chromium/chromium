@@ -1389,16 +1389,16 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   DCHECK(main_view.GetLayoutView()->GetDocument().Lifecycle().GetState() ==
          DocumentLifecycle::kPaintClean);
 
-  PaintRecordBuilder builder;
-  main_view.PaintOutsideOfLifecycle(builder.Context(), kGlobalPaintNormalPhase,
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  main_view.PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase,
                                     CullRect(IntRect(rect)));
   // Don't bother to save/restore here as the caller is expecting the canvas
   // to be modified and take care of it.
   canvas->clipRect(gfx::RectToSkRect(rect));
-  builder.EndRecording(*canvas, main_view.GetLayoutView()
-                                    ->FirstFragment()
-                                    .LocalBorderBoxProperties()
-                                    .Unalias());
+  builder->EndRecording(*canvas, main_view.GetLayoutView()
+                                     ->FirstFragment()
+                                     .LocalBorderBoxProperties()
+                                     .Unalias());
 }
 
 // static

@@ -184,14 +184,14 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
   if (cached_paint_record_)
     return cached_paint_record_;
 
-  PaintRecordBuilder builder;
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   // Switch to a paint behavior where all children of this <clipPath> will be
   // laid out using special constraints:
   // - fill-opacity/stroke-opacity/opacity set to 1
   // - masker/filter not applied when laying out the children
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
-  PaintInfo info(builder.Context(), CullRect::Infinite(),
+  PaintInfo info(builder->Context(), CullRect::Infinite(),
                  PaintPhase::kForeground, kGlobalPaintNormalPhase,
                  kPaintLayerPaintingRenderingClipPathAsMask |
                      kPaintLayerPaintingRenderingResourceSubtree);
@@ -206,7 +206,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
     layout_object->Paint(info);
   }
 
-  cached_paint_record_ = builder.EndRecording();
+  cached_paint_record_ = builder->EndRecording();
   return cached_paint_record_;
 }
 

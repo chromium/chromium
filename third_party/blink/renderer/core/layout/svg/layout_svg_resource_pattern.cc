@@ -230,13 +230,13 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
 
   SubtreeContentTransformScope content_transform_scope(content_transform);
 
-  PaintRecordBuilder builder;
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   for (LayoutObject* child = pattern_layout_object->FirstChild(); child;
        child = child->NextSibling())
-    SVGObjectPainter(*child).PaintResourceSubtree(builder.Context());
+    SVGObjectPainter(*child).PaintResourceSubtree(builder->Context());
   canvas->save();
   canvas->concat(AffineTransformToSkMatrix(tile_transform));
-  builder.EndRecording(*canvas);
+  builder->EndRecording(*canvas);
   canvas->restore();
   return paint_recorder.finishRecordingAsPicture();
 }

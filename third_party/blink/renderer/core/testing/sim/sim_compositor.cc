@@ -60,13 +60,13 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
     return SimCanvas::Commands();
 
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
-  PaintRecordBuilder builder;
-  frame->View()->PaintOutsideOfLifecycle(builder.Context(),
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  frame->View()->PaintOutsideOfLifecycle(builder->Context(),
                                          kGlobalPaintFlattenCompositingLayers);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
   SimCanvas canvas(infinite_rect.Width(), infinite_rect.Height());
-  builder.EndRecording()->Playback(&canvas);
+  builder->EndRecording()->Playback(&canvas);
   return canvas.GetCommands();
 }
 

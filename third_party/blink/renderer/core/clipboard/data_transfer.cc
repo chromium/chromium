@@ -135,11 +135,11 @@ class DraggedNodeImageBuilder {
     PaintLayerPaintingInfo painting_info(
         layer, CullRect(EnclosingIntRect(bounding_box)),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
-    PaintRecordBuilder builder;
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder.Context(), painting_info,
+    PaintLayerPainter(*layer).Paint(builder->Context(), painting_info,
                                     kPaintLayerNoFlag);
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
@@ -155,8 +155,8 @@ class DraggedNodeImageBuilder {
         FloatPoint(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f,
-        bounding_box.Size(), paint_offset, builder, border_box_properties);
+        *local_frame_, 1.0f, bounding_box.Size(), paint_offset, *builder,
+        border_box_properties);
   }
 
  private:

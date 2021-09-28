@@ -165,13 +165,12 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
   block->RecalcFragmentsVisualOverflow();
   bounds = FloatRect(block->PhysicalVisualOverflowRect());
-
-  PaintRecordBuilder paint_record_builder;
-  PaintInfo paint_info(paint_record_builder.Context(), CullRect::Infinite(),
+  auto* paint_record_builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintInfo paint_info(paint_record_builder->Context(), CullRect::Infinite(),
                        PaintPhase::kForeground, kGlobalPaintNormalPhase, 0);
   NGBoxFragmentPainter(fragment).PaintObject(
       paint_info, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)));
-  return paint_record_builder.EndRecording();
+  return paint_record_builder->EndRecording();
 }
 
 }  // namespace blink

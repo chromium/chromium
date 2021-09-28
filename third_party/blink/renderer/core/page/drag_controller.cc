@@ -1162,9 +1162,9 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
   GlobalPaintFlags paint_flags =
       kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers;
 
-  PaintRecordBuilder builder;
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame.View()->PaintContentsOutsideOfLifecycle(
-      builder.Context(), paint_flags,
+      builder->Context(), paint_flags,
       CullRect(EnclosingIntRect(painting_rect)));
 
   auto property_tree_state = frame.View()
@@ -1173,7 +1173,7 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
                                  .LocalBorderBoxProperties()
                                  .Unalias();
   return DataTransfer::CreateDragImageForFrame(
-      frame, opacity, painting_rect.Size(), painting_rect.Location(), builder,
+      frame, opacity, painting_rect.Size(), painting_rect.Location(), *builder,
       property_tree_state);
 }
 
