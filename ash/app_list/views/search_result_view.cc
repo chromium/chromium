@@ -677,7 +677,7 @@ void SearchResultView::OnGetContextMenu(
 }
 
 bool SearchResultView::IsRichImage() const {
-  return app_list_features::IsOmniboxRichEntitiesEnabled() && result() &&
+  return result() &&
          result()->omnibox_type() == SearchResultOmniboxDisplayType::kRichImage;
 }
 
