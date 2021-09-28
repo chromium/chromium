@@ -269,6 +269,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SideSearchNotAvailableInOTR) {
+  Browser* browser2 = CreateIncognitoBrowser();
+  EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
+  NavigateActiveTab(browser2, kGoogleSearchURL);
+  NavigateActiveTab(browser2, kNonGoogleURL);
+
+  EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
+  EXPECT_EQ(nullptr, GetSidePanelFor(browser2));
+}
+
 class SideSearchStatePerTabBrowserControllerTest
     : public SideSearchBrowserControllerTest {
  public:
