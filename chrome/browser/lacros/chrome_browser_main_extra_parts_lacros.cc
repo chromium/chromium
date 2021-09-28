@@ -17,6 +17,7 @@
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 
 namespace {
 
@@ -67,4 +68,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   field_trial_observer_ = std::make_unique<FieldTrialObserver>();
   field_trial_observer_->Start();
+
+  metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 }

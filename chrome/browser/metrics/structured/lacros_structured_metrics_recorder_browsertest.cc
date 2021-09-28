@@ -71,10 +71,6 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
   }
 
-  void SetUpOnMainThread() override {
-    ChromeStructuredMetricsRecorder::Get()->Initialize();
-  }
-
   void TearDownInProcessBrowserTestFixture() override {
     if (observer_)
       recorder_->RemoveObserver(observer_.get());

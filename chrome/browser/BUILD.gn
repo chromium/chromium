@@ -4785,7 +4785,6 @@ static_library("browser") {
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/telemetry",
-      "//chrome/browser/metrics/structured",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",
@@ -5076,6 +5075,7 @@ static_library("browser") {
       "platform_keys/platform_keys.h",
     ]
     deps += [
+      "//chrome/browser/metrics/structured",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/crosapi/cpp",
