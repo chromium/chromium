@@ -20,6 +20,11 @@ public class DeprecatedChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 "Chrome.Flags.PaintPreviewTestEnabled",
+                "Chrome.Flags.SafeBool.*",
+                "Chrome.Flags.SafeDouble.*",
+                "Chrome.Flags.SafeInt.*",
+                "Chrome.Flags.SafeString.*",
+                "Chrome.Flags.SafeValuesVersion",
                 "Chrome.OfflineMeasurements.HttpProbeResultsList",
                 "Chrome.OfflineMeasurements.IsAirplaneModeEnabledList",
                 "Chrome.OfflineMeasurements.IsRoaming",

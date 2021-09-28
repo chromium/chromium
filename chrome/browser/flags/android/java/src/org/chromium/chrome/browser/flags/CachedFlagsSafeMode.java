@@ -4,21 +4,25 @@
 
 package org.chromium.chrome.browser.flags;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.KeyPrefix;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,6 +37,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 class CachedFlagsSafeMode {
     private static final String TAG = "Flags";
     private static final int CRASH_STREAK_TO_ENTER_SAFE_MODE = 2;
+
+    private static final String SAFE_VALUES_FILE =
+            "org.chromium.chrome.browser.flags.SafeModeValues";
+    @VisibleForTesting
+    static final String PREF_SAFE_VALUES_VERSION = "Chrome.Flags.SafeValuesVersion";
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -64,8 +73,8 @@ class CachedFlagsSafeMode {
         synchronized (mBehavior) {
             if (mBehavior.get() != Behavior.UNKNOWN) return;
             if (shouldEnterSafeMode()) {
-                String cachedVersion = SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_VERSION, "");
+                String cachedVersion =
+                        getSafeValuePreferences().getString(PREF_SAFE_VALUES_VERSION, "");
                 int behavior;
                 if (cachedVersion.isEmpty()) {
                     behavior = Behavior.ENGAGED_WITHOUT_SAFE_VALUES;
@@ -149,17 +158,40 @@ class CachedFlagsSafeMode {
         }
     }
 
-    private void writeSafeValues(ValuesReturned safeValuesReturned) {
-        // TODO(crbug.com/1217708): Write safe values.
+    @VisibleForTesting
+    static SharedPreferences getSafeValuePreferences() {
+        return ContextUtils.getApplicationContext().getSharedPreferences(
+                SAFE_VALUES_FILE, Context.MODE_PRIVATE);
     }
 
-    private static <T> Map<String, T> prependPrefixToKeys(KeyPrefix prefix, Map<String, T> map) {
-        Map<String, T> prefixed = new HashMap<>();
-        for (Map.Entry<String, T> kv : map.entrySet()) {
-            String safeKey = prefix.createKey(kv.getKey());
-            prefixed.put(safeKey, kv.getValue());
+    private void writeSafeValues(ValuesReturned safeValuesReturned) {
+        TraceEvent.begin("writeSafeValues");
+        SharedPreferences.Editor editor = getSafeValuePreferences().edit();
+
+        synchronized (safeValuesReturned.boolValues) {
+            for (Entry<String, Boolean> pair : safeValuesReturned.boolValues.entrySet()) {
+                editor.putBoolean(pair.getKey(), pair.getValue());
+            }
         }
-        return prefixed;
+        synchronized (safeValuesReturned.intValues) {
+            for (Entry<String, Integer> pair : safeValuesReturned.intValues.entrySet()) {
+                editor.putInt(pair.getKey(), pair.getValue());
+            }
+        }
+        synchronized (safeValuesReturned.doubleValues) {
+            for (Entry<String, Double> pair : safeValuesReturned.doubleValues.entrySet()) {
+                long ieee754LongValue = Double.doubleToRawLongBits(pair.getValue());
+                editor.putLong(pair.getKey(), ieee754LongValue);
+            }
+        }
+        synchronized (safeValuesReturned.stringValues) {
+            for (Entry<String, String> pair : safeValuesReturned.stringValues.entrySet()) {
+                editor.putString(pair.getKey(), pair.getValue());
+            }
+        }
+        editor.putString(PREF_SAFE_VALUES_VERSION, ChromeVersionInfo.getProductVersion());
+        editor.apply();
+        TraceEvent.end("writeSafeValues");
     }
 
     @Behavior
@@ -167,7 +199,12 @@ class CachedFlagsSafeMode {
         return mBehavior.get();
     }
 
-    void clearForTesting() {
+    void clearMemoryForTesting() {
         mBehavior.set(Behavior.UNKNOWN);
+    }
+
+    @SuppressLint({"ApplySharedPref"})
+    static void clearDiskForTesting() {
+        getSafeValuePreferences().edit().clear().commit();
     }
 }
