@@ -5,8 +5,16 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_NATIVE_MESSAGING_HOST_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_NATIVE_MESSAGING_HOST_H_
 
+#include <memory>
+
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
+
+namespace mojo {
+class IsolatedConnection;
+}  // namespace mojo
 
 namespace remoting {
 
@@ -17,24 +25,33 @@ class RemoteWebAuthnNativeMessagingHost final
  public:
   explicit RemoteWebAuthnNativeMessagingHost(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  RemoteWebAuthnNativeMessagingHost(const RemoteWebAuthnNativeMessagingHost&) =
+      delete;
+  RemoteWebAuthnNativeMessagingHost& operator=(
+      const RemoteWebAuthnNativeMessagingHost&) = delete;
   ~RemoteWebAuthnNativeMessagingHost() override;
 
   void OnMessage(const std::string& message) override;
   void Start(extensions::NativeMessageHost::Client* client) override;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const override;
 
-  RemoteWebAuthnNativeMessagingHost(const RemoteWebAuthnNativeMessagingHost&) =
-      delete;
-  RemoteWebAuthnNativeMessagingHost& operator=(
-      const RemoteWebAuthnNativeMessagingHost&) = delete;
-
  private:
   void ProcessHello(base::Value response);
+  void ProcessIsUvpaa(const base::Value& request, base::Value response);
 
+  void OnIpcDisconnected();
+  void OnIsUvpaaResponse(base::Value response, bool is_available);
+
+  // Attempts to connect to the IPC server if the connection has not been
+  // established. Returns a boolean indicating whether there is a valid IPC
+  // connection to the crd host
+  bool EnsureIpcConnection();
   void SendMessageToClient(base::Value message);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   extensions::NativeMessageHost::Client* client_ = nullptr;
+  std::unique_ptr<mojo::IsolatedConnection> connection_;
+  mojo::Remote<mojom::WebAuthnProxy> remote_;
 };
 
 }  // namespace remoting

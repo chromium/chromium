@@ -10,6 +10,7 @@ mojom("mojom") {
     "remote_support.mojom",
     "remote_url_opener.mojom",
     "testing.mojom",
+    "webauthn_proxy.mojom",
   ]
 
   deps = [

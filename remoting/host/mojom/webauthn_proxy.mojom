@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// An interface for the host-side chromoting extension to pass intercepted Web
+// Authentication API requests to the client side chromoting security extension
+// through a chromoting host process.
+// The remote of this interface is always owned by a low-trust native messaging
+// host process; on Windows, the receiver is bound in a low-trust chromoting
+// network process, while on Linux, the receiver is bound in a high-trust
+// chromoting host process.
+// Note that both processes are chromoting-only and they don't make IPCs with
+// Chrome processes.
+interface WebAuthnProxy {
+  // Handles a
+  // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() call
+  // remotely.
+  IsUserVerifyingPlatformAuthenticatorAvailable() => (bool is_available);
+};

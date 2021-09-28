@@ -4,10 +4,17 @@
 
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
+#include <memory>
+
+#include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
+#include "remoting/host/webauthn/remote_webauthn_constants.h"
 
 namespace remoting {
 
@@ -35,6 +42,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
 
   if (type == kHelloMessage) {
     ProcessHello(std::move(response));
+  } else if (type == kIsUvpaaMessageType) {
+    ProcessIsUvpaa(request, std::move(response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
   }
@@ -59,6 +68,72 @@ void RemoteWebAuthnNativeMessagingHost::ProcessHello(base::Value response) {
 
   ProcessNativeMessageHelloResponse(response);
   SendMessageToClient(std::move(response));
+}
+
+void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
+    const base::Value& request,
+    base::Value response) {
+  // IsUvpaa request: {id: string, type: 'isUvpaa'}
+  // IsUvpaa response:
+  //   {id: string, type: 'isUvpaaResponse', isAvailable: boolean}
+
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (!EnsureIpcConnection()) {
+    response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, false);
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  remote_->IsUserVerifyingPlatformAuthenticatorAvailable(
+      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse,
+                     base::Unretained(this), std::move(response)));
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // Unbinds the remote so that EnsureIpcConnection() knows that the connection
+  // has been disconnected.
+  remote_.reset();
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(base::Value response,
+                                                          bool is_available) {
+  response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, is_available);
+  SendMessageToClient(std::move(response));
+}
+
+bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (remote_.is_bound()) {
+    return true;
+  }
+
+  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(
+      GetRemoteWebAuthnChannelName());
+  if (!endpoint.is_valid()) {
+    // TODO(yuweih): The NMH lasts longer than individual remote sessions.
+    // Detect remote session state and maintain the IPC connection by
+    // periodically attempting to connect to the IPC server.
+    LOG(WARNING) << "Can't make IPC connection. The desktop session is "
+                 << "probably not remoted.";
+    return false;
+  }
+  connection_ = std::make_unique<mojo::IsolatedConnection>();
+  mojo::PendingRemote<mojom::WebAuthnProxy> pending_remote(
+      connection_->Connect(std::move(endpoint)), /* version= */ 0);
+  if (!pending_remote.is_valid()) {
+    LOG(WARNING) << "Invalid message pipe.";
+    connection_.reset();
+    return false;
+  }
+  remote_.Bind(std::move(pending_remote));
+  remote_.set_disconnect_handler(
+      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected,
+                     base::Unretained(this)));
+  return true;
 }
 
 void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(

@@ -7,6 +7,8 @@ static_library("mojo_ipc") {
     "ipc_server.h",
     "mojo_ipc_server.cc",
     "mojo_ipc_server.h",
+    "mojo_ipc_util.cc",
+    "mojo_ipc_util.h",
   ]
   deps = [
     "//base",

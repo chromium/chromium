@@ -4,7 +4,10 @@
 
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
+#include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
@@ -13,23 +16,88 @@ namespace remoting {
 RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
     const std::string& name,
     std::unique_ptr<protocol::MessagePipe> pipe)
-    : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {}
+    : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {
+  ipc_server_ = std::make_unique<MojoIpcServer<mojom::WebAuthnProxy>>(
+      GetRemoteWebAuthnChannelName(), this);
+}
 
-RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() = default;
+RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  OnDisconnecting();
+}
 
 void RemoteWebAuthnMessageHandler::OnConnected() {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ipc_server_->StartServer();
 }
 
 void RemoteWebAuthnMessageHandler::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto remote_webauthn =
       protocol::ParseMessage<protocol::RemoteWebAuthn>(message.get());
-  NOTIMPLEMENTED();
+  if (!remote_webauthn->has_id()) {
+    LOG(ERROR) << "Response doesn't have a message ID.";
+    return;
+  }
+  switch (remote_webauthn->message_case()) {
+    case protocol::RemoteWebAuthn::kIsUvpaaResponse:
+      OnIsUvpaaResponse(remote_webauthn->id(),
+                        remote_webauthn->is_uvpaa_response());
+      break;
+    default:
+      LOG(ERROR) << "Unknown message case: " << remote_webauthn->message_case();
+  }
 }
 
 void RemoteWebAuthnMessageHandler::OnDisconnecting() {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Run mojo callbacks with error/default response then clean them up.
+  for (auto& entry : is_uvpaa_callbacks_) {
+    std::move(entry.second).Run(false);
+  }
+  is_uvpaa_callbacks_.clear();
+
+  ipc_server_->StopServer();
+}
+
+void RemoteWebAuthnMessageHandler::
+    IsUserVerifyingPlatformAuthenticatorAvailable(
+        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  uint64_t id = AssignNextMessageId();
+  is_uvpaa_callbacks_[id] = std::move(callback);
+
+  protocol::RemoteWebAuthn remote_webauthn;
+  remote_webauthn.set_id(id);
+  // This simply creates the is_uvpaa_request.
+  remote_webauthn.mutable_is_uvpaa_request();
+  Send(remote_webauthn, base::DoNothing());
+}
+
+void RemoteWebAuthnMessageHandler::OnIsUvpaaResponse(
+    uint64_t id,
+    const protocol::RemoteWebAuthn_IsUvpaaResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = is_uvpaa_callbacks_.find(id);
+  if (it == is_uvpaa_callbacks_.end()) {
+    LOG(WARNING) << "No IsUvpaa IPC callback associated with ID: " << id;
+    return;
+  }
+  std::move(it->second).Run(response.is_available());
+  is_uvpaa_callbacks_.erase(it);
+}
+
+uint64_t RemoteWebAuthnMessageHandler::AssignNextMessageId() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return current_message_id_++;
 }
 
 }  // namespace remoting
