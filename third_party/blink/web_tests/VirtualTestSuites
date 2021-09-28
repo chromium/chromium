@@ -64,6 +64,7 @@
   {
     "prefix": "prefer_compositing_to_lcd_text",
     "bases": ["compositing/overflow",
+              "compositing/squashing/keep-lcd-text.html",
               "scrollbars"],
     "args": ["--enable-prefer-compositing-to-lcd-text"]
   },
