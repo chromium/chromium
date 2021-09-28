@@ -26,9 +26,11 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/public/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
+#import "ios/chrome/browser/ui/popup_menu/public/swift.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -269,6 +271,25 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;
+
+  if (IsNewOverflowMenuEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIViewController* menu = [OverflowMenuViewProvider makeViewController];
+      UISheetPresentationController* sheetPC = menu.sheetPresentationController;
+      if (sheetPC) {
+        sheetPC.detents = @[
+          [UISheetPresentationControllerDetent mediumDetent],
+          [UISheetPresentationControllerDetent largeDetent]
+        ];
+      }
+
+      [self.UIUpdater updateUIForMenuDisplayed:type];
+      [self.baseViewController presentViewController:menu
+                                            animated:YES
+                                          completion:nil];
+      return;
+    }
+  }
 
   self.presenter = [[PopupMenuPresenter alloc] init];
   self.presenter.baseViewController = self.baseViewController;
