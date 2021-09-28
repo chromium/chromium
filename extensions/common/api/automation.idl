@@ -509,7 +509,8 @@ enum MarkerType {
   grammar,
   textMatch,
   activeSuggestion,
-  suggestion
+  suggestion,
+  highlight
 };
 
 // The following three enums are associated with an $(ref:automation.AutomationIntent).

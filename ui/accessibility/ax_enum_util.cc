@@ -1115,6 +1115,8 @@ const char* ToString(ax::mojom::MarkerType marker_type) {
       return "activeSuggestion";
     case ax::mojom::MarkerType::kSuggestion:
       return "suggestion";
+    case ax::mojom::MarkerType::kHighlight:
+      return "highlight";
   }
 
   return "";

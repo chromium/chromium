@@ -301,7 +301,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   const DocumentMarker::MarkerTypes markers_used_by_accessibility(
       DocumentMarker::kSpelling | DocumentMarker::kGrammar |
       DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
-      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment);
+      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
+      DocumentMarker::kHighlight);
   // "MarkersIntersectingRange" performs a binary search through the document
   // markers list for markers in the given range and of the given types. It
   // should be of a logarithmic complexity.

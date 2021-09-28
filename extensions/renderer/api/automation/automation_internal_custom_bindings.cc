@@ -101,6 +101,8 @@ api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
       return api::automation::MARKER_TYPE_ACTIVESUGGESTION;
     case ax::mojom::MarkerType::kSuggestion:
       return api::automation::MARKER_TYPE_SUGGESTION;
+    case ax::mojom::MarkerType::kHighlight:
+      return api::automation::MARKER_TYPE_HIGHLIGHT;
   }
 }
 

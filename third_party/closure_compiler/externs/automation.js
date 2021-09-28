@@ -510,6 +510,7 @@ chrome.automation.MarkerType = {
   TEXT_MATCH: 'textMatch',
   ACTIVE_SUGGESTION: 'activeSuggestion',
   SUGGESTION: 'suggestion',
+  HIGHLIGHT: 'highlight',
 };
 
 /**

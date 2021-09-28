@@ -901,6 +901,7 @@ enum MarkerType {
   // purposes
   kActiveSuggestion = 16,
   kSuggestion = 32,
+  kHighlight = 64,
 };
 
 // Describes a move direction in the accessibility tree that is independent of

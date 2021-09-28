@@ -306,6 +306,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementHighlight) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-highlight.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSPseudoElementPositioned) {
   RunCSSTest(FILE_PATH_LITERAL("pseudo-element-positioned.html"));
 }
