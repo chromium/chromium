@@ -1933,7 +1933,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.ScrubbedInInterval.KeyPress" units="tabs"
-    expires_after="2021-10-01">
+    expires_after="2022-02-13">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -1945,7 +1945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.ScrubbedInInterval.MousePress" units="tabs"
-    expires_after="2021-10-01">
+    expires_after="2022-02-13">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
