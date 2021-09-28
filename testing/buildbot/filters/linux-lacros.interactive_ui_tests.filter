@@ -7,7 +7,7 @@
 -BookmarkBarViewTest*
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
 -ClipboardTest/PlatformClipboardTest.ReadAvailablePlatformSpecificFormatNamesTest
--CrossSiteSubframe/DragAndDropBrowserTest*
+-CrossSiteSubframe/DragAndDrop*BrowserTest*
 -DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
 -DesktopWindowTreeHostLinuxTest.CaptureEventForwarding
 -DesktopWindowTreeHostLinuxTest.Deactivate
