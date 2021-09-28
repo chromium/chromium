@@ -31,48 +31,25 @@ export class OnboardingWaitForManualWpDisablePageElement extends
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @protected {boolean} */
+      /** @protected */
       hwwpEnabled_: {
         type: Boolean,
         value: true,
       },
-
-      /**
-       * Receiver responsible for observing hardware write protection state.
-       * @private {
-       *  ?HardwareWriteProtectionStateObserverReceiver}
-       */
-      hardwareWriteProtectionStateObserverReceiver_: {
-        type: Object,
-        value: null,
-      },
-
     };
   }
 
-  // TODO: battery_status_card.js uses created() and detached() to create and
-  // close observer.
+  // TODO(gavindodd): battery_status_card.js uses created() and detached() to
+  // create and close observer. Is that the pattern that should be used here?
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.observeHardwareWriteProtectionState_();
-  }
-
-  /** @private */
-  observeHardwareWriteProtectionState_() {
+    /** @private {?HardwareWriteProtectionStateObserverReceiver} */
     this.hardwareWriteProtectionStateObserverReceiver_ =
         new HardwareWriteProtectionStateObserverReceiver(
-            /**
-             * @type {!HardwareWriteProtectionStateObserverInterface}
-             */
+            /** @type {!HardwareWriteProtectionStateObserverInterface} */
             (this));
 
     this.shimlessRmaService_.observeHardwareWriteProtectionState(

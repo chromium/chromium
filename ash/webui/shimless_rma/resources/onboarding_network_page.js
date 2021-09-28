@@ -50,18 +50,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: null,
-      },
-
-      /** @private {?NetworkConfigServiceInterface} */
-      networkConfig_: {
-        type: Object,
-        value: null,
-      },
-
       /**
        * Array of available networks
        * @protected
@@ -75,7 +63,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * Tracks whether network has configuration to be connected
        * @protected
-       * @type {boolean}
        */
       enableConnect_: {
         type: Boolean,
@@ -84,7 +71,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * The type of network to be configured as a string. May be set initially
        * or updated by network-config.
-       * @type {string}
        * @protected
        */
       networkType_: {
@@ -95,7 +81,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * The name of the network. May be set initially or updated by
        * network-config.
-       * @type {string}
        * @protected
        */
       networkName_: {
@@ -115,7 +100,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
       /**
        * Set to true to show the 'connect' button instead of 'disconnect'.
-       * @type {boolean}
        * @protected
        */
       networkShowConnect_: {
@@ -134,11 +118,17 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+    /** @private {?NetworkConfigServiceInterface} */
+    this.networkConfig_ = getNetworkConfigService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
-    this.networkConfig_ = getNetworkConfigService();
     this.refreshNetworks();
   }
 

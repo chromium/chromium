@@ -38,7 +38,7 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @protected {string} */
+      /** @protected */
       calibrationInstructions_: {
         type: String,
         value: '',

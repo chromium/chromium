@@ -34,13 +34,7 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @protected {number} */
+      /** @protected */
       canvasSize_: {
         type: Number,
         value: 0,
@@ -52,13 +46,13 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
         value: () => [],
       },
 
-      /** @protected {string} */
+      /** @protected */
       rsuHwid_: {
         type: String,
         value: '',
       },
 
-      /** @protected {string} */
+      /** @protected */
       rsuCode_: {
         type: String,
         value: '',
@@ -67,10 +61,15 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
     this.getRsuChallengeAndHwid_();
   }
 

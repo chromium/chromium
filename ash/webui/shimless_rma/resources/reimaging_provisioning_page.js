@@ -39,34 +39,19 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /**
-       * Receiver responsible for observing provisioning progress.
-       * @private {ProvisioningObserverReceiver}
-       */
-      provisioningObserverReceiver_: {
-        type: Object,
-        value: null,
-      },
-
       /** @protected {!ProvisioningStep} */
       step_: {
         type: Object,
         value: ProvisioningStep.kProvisioningUnknown,
       },
 
-      /** @protected {number} */
+      /** @protected */
       progress_: {
         type: Number,
         value: 0.0,
       },
 
-      /** @protected {string} */
+      /** @protected */
       statusString_: {
         type: String,
         computed: 'getStatusString_(step_, progress_)',
@@ -74,15 +59,11 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.observeProvisioningProgress_();
-  }
-
-  /** @private */
-  observeProvisioningProgress_() {
+    /** @private {ProvisioningObserverReceiver} */
     this.provisioningObserverReceiver_ = new ProvisioningObserverReceiver(
         /**
          * @type {!ProvisioningObserverInterface}

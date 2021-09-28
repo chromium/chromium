@@ -29,23 +29,17 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @private {string} */
+      /** @private */
       destinationOwner_: {
         type: String,
-        value: "",
+        value: '',
       },
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 

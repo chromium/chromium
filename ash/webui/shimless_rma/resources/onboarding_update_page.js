@@ -46,28 +46,13 @@ export class OnboardingUpdatePageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @protected
-       * @type {string}
-       */
-      currentVersion: {
-        type: String,
-        value: '',
-      },
-
-      /**
-       * @protected
-       * @type {string}
-       */
+      /** @protected */
       currentVersionText_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @protected
-       * @type {string}
-       */
+      /** @protected */
       updateProgressMessage_: {
         type: String,
         value: '',
@@ -75,53 +60,25 @@ export class OnboardingUpdatePageElement extends PolymerElement {
 
       /**
        * TODO(joonbug): populate this and make private.
-       * @type {boolean}
        */
       networkAvailable: {
         type: Boolean,
         value: true,
       },
 
-      /**
-       * @protected
-       * @type {boolean}
-       */
+      /** @protected */
       checkInProgress_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @protected
-       * @type {boolean}
-       */
+      /** @protected */
       updateInProgress_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private
-       * @type {?ShimlessRmaServiceInterface}
-       */
-      shimlessRmaService_: {
-        type: Object,
-        value: null,
-      },
-
-      /**
-       * Receiver responsible for observing OS update progress.
-       * @protected {?OsUpdateObserverReceiver}
-       */
-      osUpdateObserverReceiver_: {
-        type: Object,
-        value: null,
-      },
-
-      /**
-       * @protected
-       * @type {boolean}
-       */
+      /** @protected */
       updateAvailable_: {
         type: Boolean,
         value: false,
@@ -129,12 +86,27 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+    /** @protected {string} */
+    this.currentVersion_ = '';
+    /** @protected {?OsUpdateObserverReceiver} */
+    this.osUpdateObserverReceiver_ = new OsUpdateObserverReceiver(
+      /**
+       * @type {!OsUpdateObserverInterface}
+       */
+      (this));
+
+    this.shimlessRmaService_.observeOsUpdateProgress(
+        this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
     this.getCurrentVersionText_();
-    this.observeOsUpdateProgress_();
   }
 
   /**
@@ -142,8 +114,8 @@ export class OnboardingUpdatePageElement extends PolymerElement {
    */
   getCurrentVersionText_() {
     this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
-      this.currentVersion = res.version;
-      this.currentVersionText_ = `Current version ${this.currentVersion}`;
+      this.currentVersion_ = res.version;
+      this.currentVersionText_ = `Current version ${this.currentVersion_}`;
     });
     // TODO(joonbug): i18n string
   }
@@ -156,11 +128,11 @@ export class OnboardingUpdatePageElement extends PolymerElement {
         this.updateAvailable_ = true;
         // TODO(joonbug): i18n string
         this.currentVersionText_ =
-            `Current version ${this.currentVersion} is out of date`;
+            `Current version ${this.currentVersion_} is out of date`;
       } else {
         // TODO(joonbug): i18n string
         this.currentVersionText_ =
-            `Current version ${this.currentVersion} is up to date`;
+            `Current version ${this.currentVersion_} is up to date`;
       }
       this.checkInProgress_ = false;
     });
@@ -188,18 +160,6 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.updateOsSkipped();
-  }
-
-  /** @private */
-  observeOsUpdateProgress_() {
-    this.osUpdateObserverReceiver_ = new OsUpdateObserverReceiver(
-        /**
-         * @type {!OsUpdateObserverInterface}
-         */
-        (this));
-
-    this.shimlessRmaService_.observeOsUpdateProgress(
-        this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /**

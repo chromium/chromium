@@ -29,38 +29,32 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @protected {boolean} */
+      /** @protected */
       disableResetSerialNumber_: {
         type: Boolean,
         computed:
             'getDisableResetSerialNumber_(originalSerialNumber_, serialNumber_)',
       },
 
-      /** @protected {boolean} */
+      /** @protected */
       disableResetRegion_: {
         type: Boolean,
         computed: 'getDisableResetRegion_(originalRegionIndex_, regionIndex_)',
       },
 
-      /** @protected {boolean} */
+      /** @protected */
       disableResetSku_: {
         type: Boolean,
         computed: 'getDisableResetSku_(originalSkuIndex_, skuIndex_)',
       },
 
-      /** @protected {string} */
+      /** @protected */
       originalSerialNumber_: {
         type: String,
         value: '',
       },
 
-      /** @protected {string} */
+      /** @protected */
       serialNumber_: {
         type: String,
         value: '',
@@ -72,13 +66,13 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
         value: () => [],
       },
 
-      /** @protected {number} */
+      /** @protected */
       originalRegionIndex_: {
         type: Number,
         value: 0,
       },
 
-      /** @protected {number} */
+      /** @protected */
       regionIndex_: {
         type: Number,
         value: 0,
@@ -90,13 +84,13 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
         value: () => [],
       },
 
-      /** @protected {number} */
+      /** @protected */
       originalSkuIndex_: {
         type: Number,
         value: 0,
       },
 
-      /** @protected {number} */
+      /** @protected */
       skuIndex_: {
         type: Number,
         value: 0,
@@ -105,10 +99,15 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
     this.getOriginalSerialNumber_();
     this.getOriginalRegionAndRegionList_();
     this.getOriginalSkuAndSkuList_();

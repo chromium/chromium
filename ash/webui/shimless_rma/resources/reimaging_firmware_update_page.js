@@ -27,19 +27,13 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @private {string} */
+      /** @private */
       reimageMethod_: {
         type: String,
         value: '',
       },
 
-      /** @private {boolean} */
+      /** @private */
       reimageRequired_: {
         type: Boolean,
         value: true,
@@ -47,10 +41,15 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
     this.shimlessRmaService_.reimageRequired().then((result) => {
       this.reimageRequired_ =
           (result && result.required != undefined) ? result.required : true;

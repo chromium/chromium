@@ -40,13 +40,7 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {?ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: null,
-      },
-
-      /** @private {!Array<!ComponentCheckbox>} */
+      /** @protected {!Array<!ComponentCheckbox>} */
       componentCheckboxes_: {
         type: Array,
         value: () => [],
@@ -54,10 +48,15 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
     this.getComponents_();
   }
 
