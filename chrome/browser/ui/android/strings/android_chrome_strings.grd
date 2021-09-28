@@ -5132,6 +5132,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
         Upgrade navigations to HTTPS and warn you before loading sites that don’t support it
       </message>
+
+      <!-- Auto-darken web content -->
+      <!-- TODO(https://crbug.com/1248571): Update the placeholders. -->
+      <message name="IDS_AUTO_DARK_MESSAGE_TITLE" translateable="false" desc="Message shown that informs the user auto darkening of website contents has been enabled.">
+        Auto Dark web contents enabled
+      </message>
+      <message name="IDS_AUTO_DARK_MESSAGE_DESCRIPTION" translateable="false" desc="Description shown that informs the user on how to disable auto darkening of website contents.">
+        This can be disabled per-site in the 3-dot menu or globally in theme settings
+      </message>
+      <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" translateable="false" desc="The label for the button to enter theme settings.">
+        Open theme settings
+      </message>
     </messages>
   </release>
 </grit>

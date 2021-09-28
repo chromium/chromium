@@ -107,6 +107,8 @@ public class MessagesMetrics {
                 return "NearOomReduction";
             case MessageIdentifier.INSTALLABLE_AMBIENT_BADGE:
                 return "InstallableAmbientBadge";
+            case MessageIdentifier.AUTO_DARK_WEB_CONTENTS:
+                return "AutoDarkWebContents";
             default:
                 return "Unknown";
         }

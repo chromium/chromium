@@ -55,6 +55,8 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
             sharedPreferencesManager.writeInt(UI_THEME_SETTING, theme);
             return true;
         });
+
+        // TODO(crbug.com/1252868): Notify feature engagement system that settings were opened.
     }
 
     @Override

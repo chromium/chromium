@@ -91,6 +91,7 @@ enum class MessageIdentifier {
   SHARED_HIGHLIGHTING = 18,
   NEAR_OOM_REDUCTION = 19,
   INSTALLABLE_AMBIENT_BADGE = 20,
+  AUTO_DARK_WEB_CONTENTS = 21,
 
   // Insert new values before this line.
   COUNT

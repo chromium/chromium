@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
@@ -617,6 +619,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> mToolbarManager.getMenuButtonView(), R.id.add_to_homescreen_id);
         AppBannerInProductHelpControllerFactory.attach(
                 mWindowAndroid, mAppBannerInProductHelpController);
+
+        if (!didTriggerPromo
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
+            // TODO(crbug.com/1252965): Investigate locking feature engagement system during
+            // "second run promos" to avoid !didTriggerPromo check.
+            WebContentsDarkModeMessageController.sendMessageIfAutoDarkEnabled(
+                    mActivity, new SettingsLauncherImpl(), mMessageDispatcher);
+        }
 
         if (FeedFeatures.isWebFeedUIEnabled()) {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,

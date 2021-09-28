@@ -214,7 +214,7 @@ public class RootUiCoordinator
     protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
-    private ManagedMessageDispatcher mMessageDispatcher;
+    protected ManagedMessageDispatcher mMessageDispatcher;
     @Nullable
     private MessageContainerCoordinator mMessageContainerCoordinator;
     @Nullable

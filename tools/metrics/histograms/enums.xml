@@ -50391,6 +50391,7 @@ from previous Chrome versions.
   <int value="209341217"
       label="WebAuthenticationAuthenticatorAttachment:disabled"/>
   <int value="209792775" label="TabGroupsAndroid:enabled"/>
+  <int value="209805234" label="MessagesForAndroidAutoDarkWebContents:enabled"/>
   <int value="211313007" label="CrOSEnforceSystemAecNs:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
@@ -51723,6 +51724,8 @@ from previous Chrome versions.
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
   <int value="1245889469" label="enable-surface-worker"/>
+  <int value="1246022849"
+      label="MessagesForAndroidAutoDarkWebContents:disabled"/>
   <int value="1246486472"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
@@ -55923,6 +55926,7 @@ Called by update_use_counter_css.py.-->
   <int value="18" label="SharedHighlighting"/>
   <int value="19" label="NearOomReduction"/>
   <int value="20" label="InstallableAmbientBadge"/>
+  <int value="21" label="AutoDarkWebContents"/>
 </enum>
 
 <enum name="MessageLoopProblems">
