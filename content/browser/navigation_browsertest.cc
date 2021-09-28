@@ -42,6 +42,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -89,6 +90,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -6008,6 +6010,61 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_NE(anonymous_nonce, anonymous_nonce_b);
   EXPECT_EQ(anonymous_nonce_b,
             child_b->current_frame_host()->storage_key().nonce().value());
+}
+
+// Ensures that OpenURLParams::FromNavigationHandle translates navigation params
+// correctly when used to initiate a navigation in another WebContents.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    FromNavigationHandleTranslatesNavigationParamsCorrectly) {
+  // Test that the params are translated correctly for a redirected navigation.
+  const GURL kRedirectedURL(
+      embedded_test_server()->GetURL("/server-redirect?/simple_page.html"));
+  NavigationController::LoadURLParams load_params(kRedirectedURL);
+  TestNavigationManager first_tab_manager(web_contents(), kRedirectedURL);
+  web_contents()->GetController().LoadURLWithParams(load_params);
+
+  // Wait for response to allow the navigation to resolve the redirect.
+  EXPECT_TRUE(first_tab_manager.WaitForResponse());
+
+  // Create LoadURLParams from the navigation after redirection.
+  NavigationController::LoadURLParams load_url_params(
+      OpenURLParams::FromNavigationHandle(
+          first_tab_manager.GetNavigationHandle()));
+  Shell* second_tab = CreateBrowser();
+  TestNavigationManager second_tab_manager(second_tab->web_contents(),
+                                           load_url_params.url);
+  second_tab->web_contents()->GetController().LoadURLWithParams(
+      load_url_params);
+
+  EXPECT_TRUE(second_tab_manager.WaitForResponse());
+
+  // Ensure params from the navigation in the first tab are translated to the
+  // navigation in the second tab as expected.
+  auto* first_tab_handle = first_tab_manager.GetNavigationHandle();
+  auto* second_tab_handle = second_tab_manager.GetNavigationHandle();
+  EXPECT_EQ(embedded_test_server()->GetURL("/simple_page.html"),
+            second_tab_handle->GetURL());
+  EXPECT_EQ(first_tab_handle->GetReferrer(), second_tab_handle->GetReferrer());
+  EXPECT_TRUE(
+      ui::PageTransitionCoreTypeIs(first_tab_handle->GetPageTransition(),
+                                   second_tab_handle->GetPageTransition()));
+  EXPECT_EQ(first_tab_handle->IsRendererInitiated(),
+            second_tab_handle->IsRendererInitiated());
+  EXPECT_EQ(first_tab_handle->GetInitiatorOrigin(),
+            second_tab_handle->GetInitiatorOrigin());
+  EXPECT_EQ(first_tab_handle->GetSourceSiteInstance(),
+            second_tab_handle->GetSourceSiteInstance());
+  EXPECT_EQ(first_tab_handle->HasUserGesture(),
+            second_tab_handle->HasUserGesture());
+  EXPECT_EQ(first_tab_handle->WasStartedFromContextMenu(),
+            second_tab_handle->WasStartedFromContextMenu());
+  EXPECT_EQ(first_tab_handle->GetHrefTranslate(),
+            second_tab_handle->GetHrefTranslate());
+  EXPECT_EQ(first_tab_handle->GetReloadType(),
+            second_tab_handle->GetReloadType());
+  EXPECT_EQ(first_tab_handle->GetRedirectChain(),
+            second_tab_handle->GetRedirectChain());
 }
 
 }  // namespace content

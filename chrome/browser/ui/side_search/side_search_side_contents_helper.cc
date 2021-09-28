@@ -56,12 +56,8 @@ class SideSearchContentsThrottle : public content::NavigationThrottle {
     auto* side_contents_helper = SideSearchSideContentsHelper::FromWebContents(
         navigation_handle()->GetWebContents());
     DCHECK(side_contents_helper);
-    content::OpenURLParams params =
-        content::OpenURLParams::FromNavigationHandle(navigation_handle());
-    // TODO(tluk): Remove this when landing on trunk (fix landing at
-    // https://crrev.com/c/3171921).
-    params.redirect_chain.pop_back();
-    side_contents_helper->NavigateInTabContents(params);
+    side_contents_helper->NavigateInTabContents(
+        content::OpenURLParams::FromNavigationHandle(navigation_handle()));
     return content::NavigationThrottle::CANCEL;
   }
 };
