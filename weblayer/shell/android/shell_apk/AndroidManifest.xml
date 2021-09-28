@@ -57,10 +57,6 @@
           </intent-filter>
       </activity>
 
-      <!-- Enable BGF, which is still in development. Don't enable this in production apps. -->
-      <meta-data
-          android:name="org.chromium.weblayer.ENABLE_BACKGROUND_FETCH" android:value="true"/>
-
       <!-- Enable ADB logging of js logs (console.log). This is disabled by default because some
            websites log PII. -->
       <meta-data
