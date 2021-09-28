@@ -1326,9 +1326,11 @@ public class ExternalNavigationHandler {
         }
         if (shouldHandleNonSelfWebIntent(
                     hasSpecializedHandler, isIntentWithSupportedProtocol, targetIntent)) {
-            // We could consider using the fallback URL here, but loading the URL the site was
-            // trying to load in a browser seems like the better choice.
-            return clobberCurrentTab(intentDataUrl, params.getReferrerUrl());
+            // We have to use the fallback URL here or this introduces a fingerprinting vector to
+            // silently detect the set of installed browsers because if the browser was not
+            // installed we would end up using the fallback URL.
+            GURL target = browserFallbackUrl.isEmpty() ? intentDataUrl : browserFallbackUrl;
+            return clobberCurrentTab(target, params.getReferrerUrl());
         }
 
         // From this point on we should only have intents that this app can't handle, or intents for
