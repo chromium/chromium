@@ -1565,7 +1565,7 @@
           "value": "5.1.1"
         }
       },
-      "gl_renderer": "ANGLE (Imagination Technologies, PowerVR .*",
+      "gl_renderer": "ANGLE \\(Imagination Technologies, PowerVR .*",
       "features": [
         "all"
       ]
