@@ -56,7 +56,7 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Called when a session restore has finished.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
 
   // Called when a jank is observed by the JankMonitor. Note that these 2
   // methods don't run on the UI thread.

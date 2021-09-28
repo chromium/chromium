@@ -56,7 +56,8 @@ class SessionRestore {
   };
 
   // Notification callback list.
-  using CallbackList = base::RepeatingCallbackList<void(int)>;
+  using CallbackList = base::RepeatingCallbackList<void(Profile*, int)>;
+  using RestoredCallback = base::RepeatingCallback<void(Profile*, int)>;
 
   // Restores the last session. |behavior| is a bitmask of Behaviors, see it
   // for details. If |browser| is non-null the tabs for the first window are
@@ -104,7 +105,7 @@ class SessionRestore {
   // have not necessarily finished loading. The integer supplied to the callback
   // indicates the number of tabs that were created.
   static base::CallbackListSubscription RegisterOnSessionRestoredCallback(
-      const base::RepeatingCallback<void(int)>& callback);
+      const RestoredCallback& callback);
 
   // Add/remove an observer to/from this session restore.
   static void AddObserver(SessionRestoreObserver* observer);

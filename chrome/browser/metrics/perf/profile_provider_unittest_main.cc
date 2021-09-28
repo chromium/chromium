@@ -277,7 +277,7 @@ TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
 
 TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   // Restored 10 tabs.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
 
   profile_provider_->WaitUntilCollectionDone();
   EXPECT_TRUE(profile_provider_->collection_done());

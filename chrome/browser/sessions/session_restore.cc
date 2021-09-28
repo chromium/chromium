@@ -125,8 +125,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                      bool restore_apps,
                      bool restore_browser,
                      bool log_event,
-                     const std::vector<GURL>& urls_to_open,
-                     SessionRestore::CallbackList* callbacks)
+                     const std::vector<GURL>& urls_to_open)
       : profile_(profile),
         browser_(browser),
         synchronous_(synchronous),
@@ -137,8 +136,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         restore_browser_(restore_browser),
         urls_to_open_(urls_to_open),
         active_window_id_(SessionID::InvalidValue()),
-        restore_started_(base::TimeTicks::Now()),
-        on_session_restored_callbacks_(callbacks) {
+        restore_started_(base::TimeTicks::Now()) {
     DCHECK(restore_browser_ || restore_apps_);
 
     if (active_session_restorers == nullptr)
@@ -244,8 +242,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     // Always create in a new window.
     FinishedTabCreation(true, true, &created_contents);
 
-    on_session_restored_callbacks_->Notify(
-        static_cast<int>(created_contents.size()));
+    SessionRestore::on_session_restored_callbacks()->Notify(
+        profile_, static_cast<int>(created_contents.size()));
 
     return browsers;
   }
@@ -301,7 +299,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     // are not in sychronous mode.
     DCHECK(synchronous_);
 
-    on_session_restored_callbacks_->Notify(1);
+    SessionRestore::on_session_restored_callbacks()->Notify(profile_, 1);
 
     return web_contents;
   }
@@ -490,7 +488,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       LogSessionServiceRestoreEvent(profile_, window_count, tab_count,
                                     read_error_);
     }
-    on_session_restored_callbacks_->Notify(static_cast<int>(contents.size()));
+    SessionRestore::on_session_restored_callbacks()->Notify(
+        profile_, static_cast<int>(contents.size()));
     return result;
   }
 
@@ -977,9 +976,6 @@ class SessionRestoreImpl : public BrowserListObserver {
   // The time we started the restore.
   base::TimeTicks restore_started_;
 
-  // List of callbacks for session restore notification.
-  SessionRestore::CallbackList* on_session_restored_callbacks_;
-
   // Set to true if reading the last commands encountered an error.
   bool read_error_ = false;
 
@@ -1007,8 +1003,7 @@ Browser* SessionRestore::RestoreSession(
       (behavior & CLOBBER_CURRENT_TAB) != 0,
       (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
       (behavior & RESTORE_APPS) != 0, (behavior & RESTORE_BROWSER) != 0,
-      /* log_event */ true, urls_to_open,
-      SessionRestore::on_session_restored_callbacks());
+      /* log_event */ true, urls_to_open);
   return restorer->Restore();
 }
 
@@ -1068,7 +1063,7 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
   SessionRestoreImpl restorer(
       profile, static_cast<Browser*>(nullptr), true, false, true,
       /* restore_apps */ false, /* restore_browser */ true,
-      /* log_event */ false, gurls, on_session_restored_callbacks());
+      /* log_event */ false, gurls);
   return restorer.RestoreForeignSession(begin, end);
 }
 
@@ -1080,10 +1075,10 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
   Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
   Profile* profile = browser->profile();
   std::vector<GURL> gurls;
-  SessionRestoreImpl restorer(
-      profile, browser, true, false, false,
-      /* restore_apps */ false, /* restore_browser */ true,
-      /* log_event */ false, gurls, on_session_restored_callbacks());
+  SessionRestoreImpl restorer(profile, browser, true, false, false,
+                              /* restore_apps */ false,
+                              /* restore_browser */ true,
+                              /* log_event */ false, gurls);
   return restorer.RestoreForeignTab(tab, disposition);
 }
 
@@ -1114,7 +1109,7 @@ bool SessionRestore::IsRestoringSynchronously() {
 // static
 base::CallbackListSubscription
 SessionRestore::RegisterOnSessionRestoredCallback(
-    const base::RepeatingCallback<void(int)>& callback) {
+    const RestoredCallback& callback) {
   return on_session_restored_callbacks()->Add(callback);
 }
 
@@ -1163,8 +1158,8 @@ void SessionRestore::OnGotSession(Profile* profile,
 }
 
 // static
-base::RepeatingCallbackList<void(int)>*
-    SessionRestore::on_session_restored_callbacks_ = nullptr;
+SessionRestore::CallbackList* SessionRestore::on_session_restored_callbacks_ =
+    nullptr;
 
 // static
 base::ObserverList<SessionRestoreObserver>::Unchecked*

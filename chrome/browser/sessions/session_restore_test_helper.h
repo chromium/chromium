@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_HELPER_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_restore.h"
+
+class Profile;
 
 namespace content {
 class MessageLoopRunner;
@@ -30,7 +31,7 @@ class SessionRestoreTestHelper {
 
  private:
   // Callback for session restore notifications.
-  void OnSessionRestoreDone(int /* num_tabs_restored */);
+  void OnSessionRestoreDone(Profile* profile, int /* num_tabs_restored */);
 
   // Indicates whether a session restore notification has been received.
   bool restore_notification_seen_;

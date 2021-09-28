@@ -274,7 +274,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
 
 TEST_F(ProfileProviderTest, OnSessionRestoreDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -294,7 +294,7 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
   }
 
   // Trigger a session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 

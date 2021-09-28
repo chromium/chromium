@@ -260,7 +260,7 @@ class SessionsRestoredWaiter {
 
  private:
   // Callback for session restore notifications.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
 
   // For automatically unsubscribing from callback-based notifications.
   base::CallbackListSubscription callback_subscription_;
@@ -281,11 +281,11 @@ SessionsRestoredWaiter::SessionsRestoredWaiter(
 
 SessionsRestoredWaiter::~SessionsRestoredWaiter() = default;
 
-void SessionsRestoredWaiter::OnSessionRestoreDone(int num_tabs_restored) {
+void SessionsRestoredWaiter::OnSessionRestoreDone(Profile* profile,
+                                                  int num_tabs_restored) {
   if (++num_sessions_restored_ == num_session_restores_expected_)
     std::move(quit_closure_).Run();
 }
-
 
 }  // namespace
 
