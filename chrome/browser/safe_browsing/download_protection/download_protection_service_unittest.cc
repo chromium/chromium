@@ -776,7 +776,9 @@ class DeepScanningDownloadTest : public DownloadProtectionServiceTestBase,
 class EnhancedProtectionDownloadTest
     : public DownloadProtectionServiceTestBase {
  public:
-  EnhancedProtectionDownloadTest() {}
+  EnhancedProtectionDownloadTest() {
+    EnableFeatures({kSafeBrowsingRemoveCookiesInAuthRequests});
+  }
 };
 
 void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(

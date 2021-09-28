@@ -1051,7 +1051,8 @@ TEST_P(PasswordProtectionServiceBaseTest,
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
   SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
   SetFeatures(
-      /*enable_features*/ {kPasswordProtectionWithToken},
+      /*enable_features*/ {kPasswordProtectionWithToken,
+                           kSafeBrowsingRemoveCookiesInAuthRequests},
       /*disable_features*/ {});
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
@@ -1059,7 +1060,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
         std::string out;
         EXPECT_TRUE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
-        EXPECT_EQ(out, kAuthHeaderBearer + access_token);
+        EXPECT_EQ(out, "Bearer " + access_token);
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kOmit);

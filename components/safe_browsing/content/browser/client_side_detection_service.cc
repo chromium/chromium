@@ -254,12 +254,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   base::UmaHistogramBoolean("SBClientPhishing.RequestWithToken",
                             !access_token.empty());
   if (!access_token.empty()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({kAuthHeaderBearer, access_token}));
-    // Remove cookies if access token is attached since we only need one
-    // identifier.
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token);
   }
 
   resource_request->url = GetClientReportUrl(kClientReportPhishingUrl);

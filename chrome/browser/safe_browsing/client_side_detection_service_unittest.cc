@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -24,6 +25,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -56,6 +58,8 @@ class ClientSideDetectionServiceTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
+    feature_list_.InitAndEnableFeature(
+        kSafeBrowsingRemoveCookiesInAuthRequests);
   }
 
  protected:
@@ -191,6 +195,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   void SendRequestDone(base::OnceClosure continuation_callback,
@@ -299,7 +304,7 @@ TEST_F(ClientSideDetectionServiceTest,
         std::string out;
         EXPECT_TRUE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
-        EXPECT_EQ(out, kAuthHeaderBearer + access_token);
+        EXPECT_EQ(out, "Bearer " + access_token);
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kOmit);

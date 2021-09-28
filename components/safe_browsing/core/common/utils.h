@@ -21,6 +21,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 class PrefService;
 
 namespace safe_browsing {
@@ -51,6 +55,13 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name);
 // (5) Its hostname is a dotless domain.
 // (6) Its hostname is less than 4 characters.
 bool CanGetReputationOfUrl(const GURL& url);
+
+// Set |access_token| in |resource_request|. Remove cookies in the request
+// since we only need one identifier.
+void SetAccessTokenAndClearCookieInResourceRequest(
+    network::ResourceRequest* resource_request,
+    const std::string& access_token);
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

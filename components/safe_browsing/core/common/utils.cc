@@ -4,23 +4,36 @@
 
 #include "components/safe_browsing/core/common/utils.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"
 #endif
 
 namespace safe_browsing {
+
+namespace {
+
+// The bearer token prefix in authorization header. Used when various Safe
+// Browsing requests are GAIA-keyed by attaching oauth2 tokens as bearer tokens.
+const char kAuthHeaderBearer[] = "Bearer ";
+
+}  // namespace
 
 std::string ShortURLForReporting(const GURL& url) {
   std::string spec(url.spec());
@@ -102,6 +115,17 @@ bool CanGetReputationOfUrl(const GURL& url) {
   }
 
   return true;
+}
+
+void SetAccessTokenAndClearCookieInResourceRequest(
+    network::ResourceRequest* resource_request,
+    const std::string& access_token) {
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({kAuthHeaderBearer, access_token}));
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookiesInAuthRequests)) {
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
 }
 
 }  // namespace safe_browsing

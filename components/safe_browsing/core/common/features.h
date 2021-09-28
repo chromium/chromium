@@ -119,6 +119,9 @@ extern const base::Feature kSafeBrowsingSeparateNetworkContexts;
 // Browsing.
 extern const base::Feature kSafeBrowsingRemoveCookies;
 
+// Controls whether cookies are removed when the access token is present.
+extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
+
 // Controls the daily quota for the suspicious site trigger.
 extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 

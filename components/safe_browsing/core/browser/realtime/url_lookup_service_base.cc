@@ -371,12 +371,8 @@ void RealTimeUrlLookupServiceBase::SendRequest(
 
   auto resource_request = GetResourceRequest();
   if (access_token_string.has_value()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({kAuthHeaderBearer, access_token_string.value()}));
-    // Remove cookies if access token is attached since we only need one
-    // identifier.
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_string.value());
   }
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
                                     GetMetricSuffix(),

@@ -484,12 +484,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
 
   if (!access_token_.empty()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({kAuthHeaderBearer, access_token_}));
-    // Remove cookies if access token is attached since we only need one
-    // identifier.
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_);
   }
 
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
