@@ -56,6 +56,16 @@ imageset("signin_screen_banner") {
   ]
 }
 
+imageset("forced_signin_screen_banner") {
+  sources = [
+    "forced_signin_screen_banner.imageset/Contents.json",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@3x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@3x.png",
+  ]
+}
+
 imageset("sync_screen_banner") {
   sources = [
     "sync_screen_banner.imageset/Contents.json",

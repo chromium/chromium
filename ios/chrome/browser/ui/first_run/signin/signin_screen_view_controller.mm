@@ -61,7 +61,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSignInScreenAccessibilityIdentifier;
-  self.bannerImage = [UIImage imageNamed:@"signin_screen_banner"];
+  self.bannerImage =
+      [UIImage imageNamed:self.forcedSignin ? @"forced_signin_screen_banner"
+                                            : @"signin_screen_banner"];
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
 
