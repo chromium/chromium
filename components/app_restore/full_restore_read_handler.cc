@@ -85,6 +85,69 @@ void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
   RemoveAppRestoreData(restore_window_id);
 }
 
+std::unique_ptr<app_restore::AppLaunchInfo>
+FullRestoreReadHandler::GetAppLaunchInfo(const base::FilePath& profile_path,
+                                         const std::string& app_id,
+                                         int32_t restore_window_id) {
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
+    return nullptr;
+
+  return restore_data->GetAppLaunchInfo(app_id, restore_window_id);
+}
+
+std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
+    return nullptr;
+
+  return restore_data->GetWindowInfo(app_id, restore_window_id);
+}
+
+void FullRestoreReadHandler::RemoveAppRestoreData(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
+    return;
+
+  restore_data->RemoveAppRestoreData(app_id, restore_window_id);
+}
+
+void FullRestoreReadHandler::ApplyProperties(
+    app_restore::WindowInfo* window_info,
+    ui::PropertyHandler* property_handler) {
+  DCHECK(window_info);
+  DCHECK(property_handler);
+
+  // Create a clone so `property_handler` can have complete ownership of a copy
+  // of WindowInfo.
+  app_restore::WindowInfo* window_info_clone = window_info->Clone();
+  property_handler->SetProperty(app_restore::kWindowInfoKey, window_info_clone);
+
+  if (window_info->activation_index) {
+    const int32_t index = *window_info->activation_index;
+    // kActivationIndexKey is owned, which allows for passing in this raw
+    // pointer.
+    property_handler->SetProperty(app_restore::kActivationIndexKey,
+                                  std::make_unique<int32_t>(index));
+    // Windows opened from full restore should not be activated. Widgets that
+    // are shown are activated by default. Force the widget to not be
+    // activatable; the activation will be restored in ash once the window is
+    // launched.
+    property_handler->SetProperty(app_restore::kLaunchedFromFullRestoreKey,
+                                  true);
+  }
+  if (window_info->pre_minimized_show_state_type) {
+    property_handler->SetProperty(aura::client::kPreMinimizedShowStateKey,
+                                  *window_info->pre_minimized_show_state_type);
+  }
+}
+
 void FullRestoreReadHandler::SetActiveProfilePath(
     const base::FilePath& profile_path) {
   active_profile_path_ = profile_path;
@@ -153,17 +216,6 @@ void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
     return;
 
   restore_data->RemoveApp(app_id);
-}
-
-void FullRestoreReadHandler::RemoveAppRestoreData(
-    const base::FilePath& profile_path,
-    const std::string& app_id,
-    int32_t restore_window_id) {
-  auto* restore_data = GetRestoreData(profile_path);
-  if (!restore_data)
-    return;
-
-  restore_data->RemoveAppRestoreData(app_id, restore_window_id);
 }
 
 bool FullRestoreReadHandler::HasAppTypeBrowser(
@@ -311,36 +363,6 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
   arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
 }
 
-void FullRestoreReadHandler::ApplyProperties(
-    app_restore::WindowInfo* window_info,
-    ui::PropertyHandler* property_handler) {
-  DCHECK(window_info);
-  DCHECK(property_handler);
-
-  // Create a clone so `property_handler` can have complete ownership of a copy
-  // of WindowInfo.
-  app_restore::WindowInfo* window_info_clone = window_info->Clone();
-  property_handler->SetProperty(app_restore::kWindowInfoKey, window_info_clone);
-
-  if (window_info->activation_index) {
-    const int32_t index = *window_info->activation_index;
-    // kActivationIndexKey is owned, which allows for passing in this raw
-    // pointer.
-    property_handler->SetProperty(app_restore::kActivationIndexKey,
-                                  std::make_unique<int32_t>(index));
-    // Windows opened from full restore should not be activated. Widgets that
-    // are shown are activated by default. Force the widget to not be
-    // activatable; the activation will be restored in ash once the window is
-    // launched.
-    property_handler->SetProperty(app_restore::kLaunchedFromFullRestoreKey,
-                                  true);
-  }
-  if (window_info->pre_minimized_show_state_type) {
-    property_handler->SetProperty(aura::client::kPreMinimizedShowStateKey,
-                                  *window_info->pre_minimized_show_state_type);
-  }
-}
-
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
     const base::FilePath& profile_path) {
   auto session_id = SessionID::NewUnique();
@@ -358,28 +380,6 @@ void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
       std::move(app_launch_info));
   window_id_to_app_restore_info_[session_id.id()] =
       std::make_pair(profile_path, extension_misc::kChromeAppId);
-}
-
-std::unique_ptr<app_restore::AppLaunchInfo>
-FullRestoreReadHandler::GetAppLaunchInfo(const base::FilePath& profile_path,
-                                         const std::string& app_id,
-                                         int32_t restore_window_id) {
-  auto* restore_data = GetRestoreData(profile_path);
-  if (!restore_data)
-    return nullptr;
-
-  return restore_data->GetAppLaunchInfo(app_id, restore_window_id);
-}
-
-std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
-    const base::FilePath& profile_path,
-    const std::string& app_id,
-    int32_t restore_window_id) {
-  auto* restore_data = GetRestoreData(profile_path);
-  if (!restore_data)
-    return nullptr;
-
-  return restore_data->GetWindowInfo(app_id, restore_window_id);
 }
 
 std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
@@ -411,8 +411,10 @@ void FullRestoreReadHandler::OnGetRestoreData(
         int32_t window_id = data_it->first;
         // Only ARC app launch parameters have event_flag.
         if (data_it->second->event_flag.has_value()) {
-          if (!arc_read_handler_)
-            arc_read_handler_ = std::make_unique<ArcReadHandler>(profile_path);
+          if (!arc_read_handler_) {
+            arc_read_handler_ =
+                std::make_unique<ArcReadHandler>(profile_path, this);
+          }
           arc_read_handler_->AddRestoreData(app_id, window_id);
         } else {
           window_id_to_app_restore_info_[window_id] =

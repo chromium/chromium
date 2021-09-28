@@ -8,15 +8,17 @@
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_info.h"
-#include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
 
-ArcReadHandler::ArcReadHandler(const base::FilePath& profile_path)
-    : profile_path_(profile_path) {}
+ArcReadHandler::ArcReadHandler(const base::FilePath& profile_path,
+                               Delegate* delegate)
+    : profile_path_(profile_path), delegate_(delegate) {
+  DCHECK(delegate_);
+}
 
 ArcReadHandler::~ArcReadHandler() = default;
 
@@ -98,8 +100,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
   if (restore_window_id == 0)
     return nullptr;
 
-  return FullRestoreReadHandler::GetInstance()->GetAppLaunchInfo(
-      profile_path_, app_id, restore_window_id);
+  return delegate_->GetAppLaunchInfo(profile_path_, app_id, restore_window_id);
 }
 
 std::unique_ptr<app_restore::WindowInfo> ArcReadHandler::GetWindowInfo(
@@ -111,8 +112,10 @@ std::unique_ptr<app_restore::WindowInfo> ArcReadHandler::GetWindowInfo(
   if (it == window_id_to_app_id_.end())
     return nullptr;
 
-  auto window_info = FullRestoreReadHandler::GetInstance()->GetWindowInfo(
-      profile_path_, it->second, restore_window_id);
+  std::unique_ptr<app_restore::WindowInfo> window_info =
+      delegate_->GetWindowInfo(profile_path_, it->second, restore_window_id);
+  if (!window_info)
+    return nullptr;
 
   // For ARC windows, Android can restore window bounds, so remove the window
   // bounds from the window info.
@@ -180,9 +183,7 @@ void ArcReadHandler::RemoveAppRestoreData(int32_t window_id) {
   if (it == window_id_to_app_id_.end())
     return;
 
-  const std::string& app_id = it->second;
-  FullRestoreReadHandler::GetInstance()->RemoveAppRestoreData(
-      profile_path_, app_id, window_id);
+  delegate_->RemoveAppRestoreData(profile_path_, it->second, window_id);
 
   window_id_to_app_id_.erase(it);
 }
@@ -209,10 +210,8 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
     // info.
     std::unique_ptr<app_restore::WindowInfo> window_info =
         GetWindowInfo(restore_window_id);
-    if (window_info) {
-      FullRestoreReadHandler::GetInstance()->ApplyProperties(window_info.get(),
-                                                             *window_it);
-    }
+    if (window_info)
+      delegate_->ApplyProperties(window_info.get(), *window_it);
   }
 
   // Remove the window from the hidden container.

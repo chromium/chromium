@@ -24,11 +24,46 @@ struct WindowInfo;
 
 namespace full_restore {
 
-// ArcReadHandler is a helper class for FullRestoreReadHandler to handle ARC app
-// windows special cases, e.g. ARC task creation, ARC session id, etc.
+// ArcReadHandler is a helper class for a Delegate to read the app and window
+// info of ARC apps, which have special cases, e.g. ARC task creation, ARC
+// session id, etc.
 class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
  public:
-  explicit ArcReadHandler(const base::FilePath& profile_path);
+  // A delegate class which allows an owner of ArcReadHandler to have some
+  // specific behavior.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Gets the app launch information from `profile_path` for `app_id` and
+    // `restore_window_id`.
+    virtual std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchInfo(
+        const base::FilePath& profile_path,
+        const std::string& app_id,
+        int32_t restore_window_id) = 0;
+
+    // Gets the window information from `profile_path` for `app_id` and
+    // `restore_window_id`.
+    virtual std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
+        const base::FilePath& profile_path,
+        const std::string& app_id,
+        int32_t restore_window_id) = 0;
+
+    // Removes AppRestoreData from `profile_path` for `app_id` and
+    // `restore_window_id`.
+    virtual void RemoveAppRestoreData(const base::FilePath& profile_path,
+                                      const std::string& app_id,
+                                      int32_t restore_window_id) = 0;
+
+    // Applies properties from `window_info` to the given `property_handler`.
+    // This is called from `GetWindowInfo()` when a full restore window is
+    // created, or from `arc_read_handler_` when a task is ready for a full
+    // restore window that has already been created.
+    virtual void ApplyProperties(app_restore::WindowInfo* window_info,
+                                 ui::PropertyHandler* property_handler) = 0;
+  };
+
+  ArcReadHandler(const base::FilePath& profile_path, Delegate* delegate);
   ArcReadHandler(const ArcReadHandler&) = delete;
   ArcReadHandler& operator=(const ArcReadHandler&) = delete;
   ~ArcReadHandler();
@@ -115,6 +150,8 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // process. Once the window is created for the task, the window can be removed
   // from the hidden container.
   std::set<int32_t> not_restored_task_ids_;
+
+  Delegate* delegate_;
 };
 
 }  // namespace full_restore
