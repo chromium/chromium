@@ -11,6 +11,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsSceneCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarControlsDelegate.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarCoordinator.java",
   ]
 
   deps = [
