@@ -135,14 +135,6 @@ message Int32Value {
   optional int32 value = 1;
 }
 
-// Wrapper message for `string`.
-//
-// The JSON representation for `StringValue` is JSON string.
-message StringValue {
-  // The string value.
-  optional string value = 1;
-}
-
 // Wrapper message for `double`.
 //
 // The JSON representation for `DoubleValue` is JSON number.

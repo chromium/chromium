@@ -924,7 +924,9 @@ void HintsManager::RegisterOptimizationTypes(
         optimization_guide::proto::OptimizationType_Name(optimization_type));
     if (!value) {
       if (!is_off_the_record_ &&
-          !ShouldIgnoreNewlyRegisteredOptimizationType(optimization_type)) {
+          !ShouldIgnoreNewlyRegisteredOptimizationType(optimization_type) &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kHintsProtoOverride)) {
         should_clear_hints_for_new_type_ = true;
       }
       previously_registered_opt_types->SetBoolKey(

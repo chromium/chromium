@@ -32,6 +32,7 @@ extern const base::Feature kPageContentAnnotations;
 extern const base::Feature kPageTextExtraction;
 extern const base::Feature kLoadModelFileForEachExecution;
 extern const base::Feature kPushNotifications;
+extern const base::Feature kOptimizationGuideMetadataValidation;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.

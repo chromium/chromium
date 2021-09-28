@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
-#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -61,22 +61,6 @@ class NavigationContextAndData {
   std::unique_ptr<web::FakeNavigationContext> navigation_context_;
   std::unique_ptr<OptimizationGuideNavigationData> navigation_data_;
 };
-
-void RetryForHistogramUntilCountReached(
-    const base::HistogramTester* histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^{
-        base::RunLoop().RunUntilIdle();
-        int total = 0;
-        for (const auto& bucket :
-             histogram_tester->GetAllSamples(histogram_name)) {
-          total += bucket.count;
-        }
-        return total >= count;
-      }));
-}
 
 }  // namespace
 

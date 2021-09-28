@@ -4,18 +4,18 @@
 
 #include "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 
-#import "base/base64.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/optimization_guide/core/optimization_guide_test_util.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -34,42 +34,6 @@ namespace {
 constexpr int64_t kNavigationID = 1;
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
 constexpr char kNoHintsURL[] = "https://nohints.com/no_hints.html";
-
-void RetryForHistogramUntilCountReached(
-    const base::HistogramTester* histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^{
-        base::RunLoop().RunUntilIdle();
-        int total = 0;
-        for (const auto& bucket :
-             histogram_tester->GetAllSamples(histogram_name)) {
-          total += bucket.count;
-        }
-        return total >= count;
-      }));
-}
-
-std::string CreateHintsConfig() {
-  optimization_guide::proto::Configuration config;
-  optimization_guide::proto::Hint* hint = config.add_hints();
-  GURL hints_url(kHintsURL);
-  hint->set_key(hints_url.host());
-  hint->set_key_representation(optimization_guide::proto::HOST);
-
-  optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern(hints_url.path().substr(1));
-
-  optimization_guide::proto::Optimization* optimization =
-      page_hint->add_allowlisted_optimizations();
-  optimization->set_optimization_type(optimization_guide::proto::NOSCRIPT);
-
-  std::string encoded_config;
-  config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
-  return encoded_config;
-}
 
 class IOSOptimizationGuideNavigationDataTest : public PlatformTest {
  public:
@@ -134,7 +98,10 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::kPurgeHintsStore);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        optimization_guide::switches::kHintsProtoOverride, CreateHintsConfig());
+        optimization_guide::switches::kHintsProtoOverride,
+        optimization_guide::CreateHintsConfig(
+            GURL(kHintsURL), optimization_guide::proto::NOSCRIPT,
+            /*metadata=*/nullptr));
   }
 
   void SetUp() override {

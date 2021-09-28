@@ -85,3 +85,11 @@ message Any {
   // Must be a valid serialized protocol buffer of the above specified type.
   optional bytes value = 2;
 }
+
+// Wrapper message for `string`.
+//
+// The JSON representation for `StringValue` is JSON string.
+message StringValue {
+  // The string value.
+  optional string value = 1;
+}
