@@ -1161,7 +1161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Fonts.DataAccess.StreamCreation" enum="BooleanSuccess"
     expires_after="2021-10-15">
-  <owner>oyiptong@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -1189,7 +1189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed in M89. Obsolete and unused. This has been replaced with
     Fonts.AccessAPI.EnumerationCache.*
   </obsolete>
-  <owner>oyiptong@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>

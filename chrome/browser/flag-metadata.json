@@ -3115,17 +3115,17 @@
   },
   {
     "name": "font-access",
-    "owners": [ "cmp", "oyiptong" ],
+    "owners": [ "cmp", "pwnall" ],
     "expiry_milestone": 96
   },
   {
     "name": "font-access-chooser",
-    "owners": [ "oyiptong" ],
+    "owners": [ "pwnall" ],
     "expiry_milestone": 96
   },
   {
     "name": "font-access-persistent",
-    "owners": [ "oyiptong" ],
+    "owners": [ "pwnall" ],
     "expiry_milestone": 96
   },
   {
