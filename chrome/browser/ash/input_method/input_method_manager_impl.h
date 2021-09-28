@@ -64,6 +64,12 @@ class InputMethodManagerImpl : public InputMethodManager,
 
     bool IsMenuActivated() const;
 
+    // Override the input view URL used to explicitly display some keyset.
+    void OverrideInputViewUrl(const GURL& url);
+
+    // Reset the input view URL to the default url of the current input method.
+    void ResetInputViewUrl();
+
     // InputMethodManager::State overrides.
     scoped_refptr<InputMethodManager::State> Clone() const override;
     void AddInputMethodExtension(
@@ -107,12 +113,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     const GURL& GetInputViewUrl() const override;
     InputMethodManager::UIStyle GetUIStyle() const override;
     void SetUIStyle(InputMethodManager::UIStyle ui_style) override;
-
-    // Override the input view URL used to explicitly display some keyset.
-    void OverrideInputViewUrl(const GURL& url);
-
-    // Reset the input view URL to the default url of the current input method.
-    void ResetInputViewUrl();
 
    protected:
     friend base::RefCounted<input_method::InputMethodManager::State>;
@@ -201,6 +201,12 @@ class InputMethodManagerImpl : public InputMethodManager,
 
   ~InputMethodManagerImpl() override;
 
+  // Sets |candidate_window_controller_|.
+  void SetCandidateWindowControllerForTesting(
+      CandidateWindowController* candidate_window_controller);
+  // Sets |keyboard_|.
+  void SetImeKeyboardForTesting(ImeKeyboard* keyboard);
+
   // InputMethodManager override:
   void AddObserver(InputMethodManager::Observer* observer) override;
   void AddCandidateWindowObserver(
@@ -242,12 +248,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override;
   void SetState(scoped_refptr<InputMethodManager::State> state) override;
   void ImeMenuActivationChanged(bool is_active) override;
-
-  // Sets |candidate_window_controller_|.
-  void SetCandidateWindowControllerForTesting(
-      CandidateWindowController* candidate_window_controller);
-  // Sets |keyboard_|.
-  void SetImeKeyboardForTesting(ImeKeyboard* keyboard);
 
   // content::NotificationObserver overrides:
   void Observe(int type,
