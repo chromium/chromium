@@ -38,6 +38,12 @@ void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
 void ShowDlpScreenCaptureWarningDialog(base::OnceClosure continue_cb,
                                        base::OnceClosure cancel_cb);
 
+// Shows a warning dialog that video capture is not recommended and allows the
+// user to choose whether to save it or not. Based on the response, only one of
+// |continue_cb| and |cancel_cb| will run.
+void ShowDlpVideoCaptureWarningDialog(base::OnceClosure continue_cb,
+                                      base::OnceClosure cancel_cb);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_NOTIFICATION_HELPER_H_

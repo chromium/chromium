@@ -135,4 +135,10 @@ void ShowDlpScreenCaptureWarningDialog(base::OnceClosure continue_cb,
                     DlpWarnDialog::Restriction::kScreenCapture);
 }
 
+void ShowDlpVideoCaptureWarningDialog(base::OnceClosure continue_cb,
+                                      base::OnceClosure cancel_cb) {
+  ShowDlpWarnDialog(std::move(continue_cb), std::move(cancel_cb),
+                    DlpWarnDialog::Restriction::kVideoCapture);
+}
+
 }  // namespace policy

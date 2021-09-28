@@ -16,7 +16,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
  public:
   METADATA_HEADER(DlpWarnDialog);
 
-  enum Restriction { kScreenCapture, kPrinting };
+  enum class Restriction { kScreenCapture, kVideoCapture, kPrinting };
 
   DlpWarnDialog(base::OnceClosure accept_callback,
                 base::OnceClosure cancel_callback,

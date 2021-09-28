@@ -70,6 +70,9 @@ const std::u16string GetDialogButtonOkLabel(
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON);
+    case DlpWarnDialog::Restriction::kVideoCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CONTINUE_BUTTON);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON);
@@ -82,6 +85,9 @@ const std::u16string GetDialogButtonCancelLabel(
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CANCEL_BUTTON);
+    case DlpWarnDialog::Restriction::kVideoCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CANCEL_BUTTON);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON);
@@ -93,6 +99,8 @@ const std::u16string GetDialogTitle(DlpWarnDialog::Restriction restriction) {
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE);
+    case DlpWarnDialog::Restriction::kVideoCapture:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_TITLE);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_TITLE);
   }
@@ -103,6 +111,9 @@ const std::u16string GetDialogBody(DlpWarnDialog::Restriction restriction) {
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE);
+    case DlpWarnDialog::Restriction::kVideoCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_MESSAGE);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_MESSAGE);
   }
