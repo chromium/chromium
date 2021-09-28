@@ -150,7 +150,8 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       // This doesn't necessarily mean that the browser will store the report,
       // due to the additional logic in DidFinishNavigation(). This records
       // that a page /attempted/ to register an impression for a navigation.
-      initiator_conversion_host->NotifyImpressionNavigationInitiatedByPage();
+      initiator_conversion_host->NotifyImpressionInitiatedByPage(
+          initiator_root_frame_origin, *(navigation_handle->GetImpression()));
     }
   }
 }
@@ -235,15 +236,17 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
                            impression_origin, impression, *conversion_manager);
 }
 
-void ConversionHost::VerifyAndStoreImpression(
+bool ConversionHost::VerifyAndStoreImpression(
     StorableImpression::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     ConversionManager& conversion_manager) {
-  bool allowed = conversion_host_utils::VerifyAndStoreImpression(
-      source_type, impression_origin, impression,
-      web_contents()->GetBrowserContext(), conversion_manager);
-  RecordRegisterImpressionAllowed(allowed);
+  conversion_host_utils::VerifyResult result =
+      conversion_host_utils::VerifyAndStoreImpression(
+          source_type, impression_origin, impression,
+          web_contents()->GetBrowserContext(), conversion_manager);
+  RecordRegisterImpressionAllowed(result.allowed);
+  return result.stored;
 }
 
 void ConversionHost::RegisterConversion(
@@ -324,13 +327,20 @@ void ConversionHost::RegisterConversion(
           : absl::make_optional(conversion->dedup_key->value));
 
   if (conversion_page_metrics_)
-    conversion_page_metrics_->OnConversion();
+    conversion_page_metrics_->OnConversion(conversion->reporting_origin);
   conversion_manager->HandleConversion(std::move(storable_conversion));
 }
 
-void ConversionHost::NotifyImpressionNavigationInitiatedByPage() {
-  if (conversion_page_metrics_)
-    conversion_page_metrics_->OnImpression();
+void ConversionHost::NotifyImpressionInitiatedByPage(
+    const url::Origin& impression_origin,
+    const blink::Impression& impression) {
+  if (!conversion_page_metrics_)
+    return;
+
+  const url::Origin& reporting_origin = !impression.reporting_origin
+                                            ? impression_origin
+                                            : *impression.reporting_origin;
+  conversion_page_metrics_->OnImpression(reporting_origin);
 }
 
 void ConversionHost::RegisterImpression(const blink::Impression& impression) {
@@ -343,8 +353,11 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
   const url::Origin& impression_origin = receivers_.GetCurrentTargetFrame()
                                              ->GetMainFrame()
                                              ->GetLastCommittedOrigin();
-  VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
-                           impression_origin, impression, *conversion_manager);
+  if (VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
+                               impression_origin, impression,
+                               *conversion_manager)) {
+    NotifyImpressionInitiatedByPage(impression_origin, impression);
+  }
 }
 
 void ConversionHost::ReportAttributionForCurrentNavigation(

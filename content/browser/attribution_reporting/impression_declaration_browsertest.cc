@@ -667,7 +667,8 @@ IN_PROC_BROWSER_TEST_F(
     createImpressionTag({id: 'link1',
                         url: 'page_with_impression_creator.html',
                         data: '1',
-                        destination: 'https://a.com'});)"));
+                        destination: 'https://a.com',
+                        reportOrigin: 'https://example1.test'});)"));
 
   // Click the impression on the page.
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link1');"));
@@ -677,7 +678,8 @@ IN_PROC_BROWSER_TEST_F(
     createImpressionTag({id: 'link2',
                         url: 'page_with_impression_creator.html',
                         data: '2',
-                        destination: 'https://a.com'});)"));
+                        destination: 'https://a.com',
+                        reortOrigin: 'https://example2.test'});)"));
 
   // Click the impression on the page.
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link2');"));
@@ -688,6 +690,8 @@ IN_PROC_BROWSER_TEST_F(
 
   histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 1,
                                2);
+  histograms.ExpectBucketCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 1, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -706,6 +710,7 @@ IN_PROC_BROWSER_TEST_F(
                         url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com',
+                        reportOrigin: 'https://example1.test',
                         target: 'target'});)"));
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link1');"));
 
@@ -714,14 +719,26 @@ IN_PROC_BROWSER_TEST_F(
                         url: 'page_with_conversion_redirect.html',
                         data: '2',
                         destination: 'https://a.com',
+                        reportOrigin: 'https://example2.test',
                         target: 'target'});)"));
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link2');"));
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTag({id: 'link3',
+                        url: 'page_with_conversion_redirect.html',
+                        data: '3',
+                        destination: 'https://a.com',
+                        reportOrigin: 'https://example1.test',
+                        target: 'target'});)"));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link3');"));
 
   // Navigate away to have the data captured.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
-  histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 2,
+  histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 3,
                                1);
+  histograms.ExpectBucketCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

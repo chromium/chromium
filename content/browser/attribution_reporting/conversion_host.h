@@ -85,13 +85,15 @@ class CONTENT_EXPORT ConversionHost
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Notifies an impression for a navigation.
-  void NotifyImpressionNavigationInitiatedByPage();
+  // Notifies an impression.
+  void NotifyImpressionInitiatedByPage(const url::Origin& impression_origin,
+                                       const blink::Impression& impression);
 
   // Stores the impression if conversion measurement is allowed for the
   // impression origin and reporting origin and the impressionorigin, reporting
-  // origin, and conversion destination are potentially trustworthy.
-  void VerifyAndStoreImpression(StorableImpression::SourceType source_type,
+  // origin, and conversion destination are potentially trustworthy. Returns
+  // whether the impression was stored.
+  bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
                                 const url::Origin& impression_origin,
                                 const blink::Impression& impression,
                                 ConversionManager& conversion_manager);

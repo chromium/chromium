@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/conversion_host_utils.h"
 
 #include <memory>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
@@ -22,11 +23,12 @@ namespace content {
 
 namespace conversion_host_utils {
 
-bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
-                              const url::Origin& impression_origin,
-                              const blink::Impression& impression,
-                              BrowserContext* browser_context,
-                              ConversionManager& conversion_manager) {
+VerifyResult VerifyAndStoreImpression(
+    StorableImpression::SourceType source_type,
+    const url::Origin& impression_origin,
+    const blink::Impression& impression,
+    BrowserContext* browser_context,
+    ConversionManager& conversion_manager) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -40,7 +42,7 @@ bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
           ContentBrowserClient::ConversionMeasurementOperation::kImpression,
           &impression_origin, /*conversion_origin=*/nullptr, &reporting_origin);
   if (!allowed)
-    return false;
+    return VerifyResult{.allowed = false, .stored = false};
 
   const bool impression_origin_trustworthy =
       network::IsOriginPotentiallyTrustworthy(impression_origin) ||
@@ -50,7 +52,7 @@ bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
       !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
       !network::IsOriginPotentiallyTrustworthy(
           impression.conversion_destination)) {
-    return true;
+    return VerifyResult{.allowed = true, .stored = false};
   }
 
   base::Time impression_time = base::Time::Now();
@@ -67,7 +69,7 @@ bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
       /*impression_id=*/absl::nullopt);
 
   conversion_manager.HandleImpression(std::move(storable_impression));
-  return true;
+  return VerifyResult{.allowed = true, .stored = true};
 }
 
 absl::optional<blink::Impression> ParseImpressionFromApp(

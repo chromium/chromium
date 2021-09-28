@@ -4,9 +4,15 @@
 
 #include "content/browser/attribution_reporting/conversion_page_metrics.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 
 namespace content {
+
+namespace {
+constexpr size_t kMaxStoredOrigins = 100;
+}  // namespace
 
 ConversionPageMetrics::ConversionPageMetrics() = default;
 
@@ -18,14 +24,36 @@ ConversionPageMetrics::~ConversionPageMetrics() {
 
   base::UmaHistogramExactLinear("Conversions.RegisteredImpressionsPerPage",
                                 num_impressions_on_current_page_, 100);
+
+  if (!conversion_reporting_origins_on_current_page_.empty()) {
+    base::UmaHistogramExactLinear(
+        "Conversions.UniqueReportingOriginsPerPage.Conversions",
+        conversion_reporting_origins_on_current_page_.size(), 100);
+  }
+
+  if (!impression_reporting_origins_on_current_page_.empty()) {
+    base::UmaHistogramExactLinear(
+        "Conversions.UniqueReportingOriginsPerPage.Impressions",
+        impression_reporting_origins_on_current_page_.size(), 100);
+  }
 }
 
-void ConversionPageMetrics::OnConversion() {
+void ConversionPageMetrics::OnConversion(url::Origin reporting_origin) {
   num_conversions_on_current_page_++;
+  if (conversion_reporting_origins_on_current_page_.size() <
+      kMaxStoredOrigins) {
+    conversion_reporting_origins_on_current_page_.insert(
+        std::move(reporting_origin));
+  }
 }
 
-void ConversionPageMetrics::OnImpression() {
+void ConversionPageMetrics::OnImpression(url::Origin reporting_origin) {
   num_impressions_on_current_page_++;
+  if (impression_reporting_origins_on_current_page_.size() <
+      kMaxStoredOrigins) {
+    impression_reporting_origins_on_current_page_.insert(
+        std::move(reporting_origin));
+  }
 }
 
 }  // namespace content

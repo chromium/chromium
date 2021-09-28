@@ -449,6 +449,8 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
 
   // Initial document should not log metrics.
   histograms.ExpectTotalCount("Conversions.RegisteredConversionsPerPage", 0);
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Conversions", 0);
 
   SetCurrentTargetFrameForTesting(main_rfh());
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -461,9 +463,17 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
     test_manager_.Reset();
   }
 
+  conversion->reporting_origin =
+      url::Origin::Create(GURL("https://anothersecure.com"));
+  conversion_host_mojom()->RegisterConversion(conversion->Clone());
+  EXPECT_EQ(1u, test_manager_.num_conversions());
+  test_manager_.Reset();
+
   // Same document navs should not reset the counter.
   contents()->NavigateAndCommit(GURL("https://www.example.com#hash"));
   histograms.ExpectTotalCount("Conversions.RegisteredConversionsPerPage", 0);
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Conversions", 0);
 
   // Re-navigating should reset the counter.
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
@@ -473,10 +483,12 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
   // WebContents is still active for this test, and will record a zero sample in
   // this histogram. Consider modifying this test suite so that we do not have
   // metrics being recorded in multiple places.
-  histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 8,
+  histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 9,
                                1);
   histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 1,
                                0);
+  histograms.ExpectBucketCount(
+      "Conversions.UniqueReportingOriginsPerPage.Conversions", 2, 1);
 }
 
 TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
@@ -498,6 +510,96 @@ TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
   histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 1,
                                0);
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Conversions", 0);
+}
+
+TEST_F(ConversionHostTest, PerPageImpressionMetrics) {
+  base::HistogramTester histograms;
+
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Initial document should not log metrics.
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
+
+  SetCurrentTargetFrameForTesting(main_rfh());
+  blink::Impression impression = CreateValidImpression();
+
+  for (size_t i = 0u; i < 8u; i++) {
+    conversion_host_mojom()->RegisterImpression(impression);
+
+    // Run loop to allow the bad message code to run if a bad message was
+    // triggered.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(1u, test_manager_.num_impressions());
+    test_manager_.Reset();
+  }
+
+  impression.reporting_origin =
+      url::Origin::Create(GURL("https://anothersecure.com"));
+  conversion_host_mojom()->RegisterImpression(impression);
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+  test_manager_.Reset();
+
+  // Same document navs should not reset the counter.
+  contents()->NavigateAndCommit(GURL("https://www.example.com#hash"));
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
+
+  // Re-navigating should reset the counter.
+  contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
+
+  histograms.ExpectBucketCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 2, 1);
+}
+
+TEST_F(ConversionHostTest, NoManager_NoPerPageImpressionMetrics) {
+  // Replace the ConversionHost on the WebContents with one that is backed by a
+  // null ConversionManager.
+  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
+      web_contents(), std::make_unique<TestManagerProvider>(nullptr));
+  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+
+  base::HistogramTester histograms;
+  SetCurrentTargetFrameForTesting(main_rfh());
+  blink::Impression impression = CreateValidImpression();
+  conversion_host_mojom()->RegisterImpression(std::move(impression));
+
+  // Navigate again to trigger histogram code.
+  contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
+}
+
+TEST_F(ConversionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
+  base::HistogramTester histograms;
+
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Initial document should not log metrics.
+  histograms.ExpectTotalCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
+
+  blink::Impression impression = CreateValidImpression();
+
+  for (size_t i = 0u; i < 2u; i++) {
+    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(kConversionUrl), main_rfh());
+    navigation->SetInitiatorFrame(main_rfh());
+    navigation->set_impression(impression);
+    navigation->Commit();
+  }
+
+  // Navigate again to trigger histogram code.
+  contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
+
+  histograms.ExpectBucketCount(
+      "Conversions.UniqueReportingOriginsPerPage.Impressions", 1, 2);
 }
 
 TEST_F(ConversionHostTest, NavigationWithNoImpression_Ignored) {

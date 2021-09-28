@@ -21,16 +21,24 @@ class ConversionManager;
 
 namespace conversion_host_utils {
 
+// Contains result for `VerifyAndStoreImpression()`.
+struct VerifyResult {
+  // Indicates whether the measurement operation is allowed by the
+  // ContentClient.
+  bool allowed;
+  // Indicates whether the impression is stored.
+  bool stored;
+};
+
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a StorableImpression and persists
-// it. Returns false if the ContentClient blocked this measurement operation.
-// Note that a return value of true does not guarantee the impression was
-// stored.
-bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
-                              const url::Origin& impression_origin,
-                              const blink::Impression& impression,
-                              BrowserContext* browser_context,
-                              ConversionManager& conversion_manager);
+// it.
+VerifyResult VerifyAndStoreImpression(
+    StorableImpression::SourceType source_type,
+    const url::Origin& impression_origin,
+    const blink::Impression& impression,
+    BrowserContext* browser_context,
+    ConversionManager& conversion_manager);
 
 CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,

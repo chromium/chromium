@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_PAGE_METRICS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_PAGE_METRICS_H_
 
+#include "base/containers/flat_set.h"
+#include "url/origin.h"
+
 namespace content {
 
 // Keeps track of per-page-load metrics for conversion measurement. Lifetime is
@@ -20,10 +23,10 @@ class ConversionPageMetrics {
   ConversionPageMetrics& operator=(ConversionPageMetrics&& other) = delete;
 
   // Called when a conversion is registered.
-  void OnConversion();
+  void OnConversion(url::Origin reporting_origin);
 
   // Called when an impression is registered.
-  void OnImpression();
+  void OnImpression(url::Origin reporting_origin);
 
  private:
   // Keeps track of how many conversion registrations there have been on the
@@ -33,6 +36,15 @@ class ConversionPageMetrics {
   // Keeps track of how many impression registrations there have been on the
   // current page.
   int num_impressions_on_current_page_ = 0;
+
+  // Keeps track of how many unique reporting origins for conversion
+  // registrations there have been on the current page.
+  base::flat_set<url::Origin> conversion_reporting_origins_on_current_page_;
+
+  // Keeps track of how many unique reporting origins for impression
+  // registrations there have been on the current page. Note that Android app
+  // initiated navigation impressions are not included.
+  base::flat_set<url::Origin> impression_reporting_origins_on_current_page_;
 };
 
 }  // namespace content
