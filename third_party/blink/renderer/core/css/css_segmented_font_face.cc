@@ -246,8 +246,15 @@ namespace {
 bool CascadePriorityHigherThan(const FontFace& new_font_face,
                                const FontFace& existing_font_face) {
   // We should reach here only for CSS-connected font faces, which must have an
-  // owner document.
-  DCHECK(new_font_face.GetDocument());
+  // owner document. However, there are cases where we don't have a document
+  // here, possibly caused by ExecutionContext or Document lifecycle issues.
+  // TODO(crbug.com/1250831): Find out the root cause and fix it.
+  if (!new_font_face.GetDocument() || !existing_font_face.GetDocument()) {
+    NOTREACHED();
+    // In the buggy case, to ensure a stable ordering, font faces without a
+    // document are considered higher priority.
+    return !new_font_face.GetDocument();
+  }
   DCHECK_EQ(new_font_face.GetDocument(), existing_font_face.GetDocument());
   DCHECK(new_font_face.GetStyleRule());
   DCHECK(existing_font_face.GetStyleRule());
