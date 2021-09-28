@@ -73,6 +73,7 @@ class OptimizationGuideService : public KeyedService {
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;
+  friend class OptimizationGuideTestAppInterfaceWrapper;
 
   // Notifies |hints_manager_| that the navigation associated with
   // |navigation_data| has started or redirected.

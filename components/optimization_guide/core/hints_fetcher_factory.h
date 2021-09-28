@@ -38,13 +38,17 @@ class HintsFetcherFactory {
   // testing code can override this to provide a mocked instance.
   virtual std::unique_ptr<HintsFetcher> BuildInstance();
 
+  // Override the optimization guide hints server URL. Used for testing.
+  void OverrideOptimizationGuideServiceUrlForTesting(
+      const GURL& optimization_guide_service_url);
+
  protected:
   // The URL Loader Factory that will be used by hints fetchers created by this
   // factory.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The URL for the remote Optimization Guide Service.
-  const GURL optimization_guide_service_url_;
+  GURL optimization_guide_service_url_;
 
   // A reference to the PrefService for this profile. Not owned.
   PrefService* pref_service_ = nullptr;

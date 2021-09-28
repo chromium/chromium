@@ -13,6 +13,13 @@
 
 namespace optimization_guide {
 
+enum class HintsFetcherRemoteResponseType {
+  kSuccessful = 0,
+  kUnsuccessful = 1,
+  kMalformed = 2,
+  kHung = 3,
+};
+
 // File paths that can be used in testing, handling platform differences, namely
 // C:\ in Windows.
 extern const char kTestAbsoluteFilePath[];

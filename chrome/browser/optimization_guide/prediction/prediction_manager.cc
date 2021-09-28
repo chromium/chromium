@@ -166,7 +166,7 @@ BuildPredictionModelFromCommandLineForOptimizationTarget(
   absl::optional<
       std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
       model_file_path_and_metadata =
-          optimization_guide::switches::GetModelOverrideForOptimizationTarget(
+          optimization_guide::GetModelOverrideForOptimizationTarget(
               optimization_target);
   if (!model_file_path_and_metadata)
     return nullptr;

@@ -90,12 +90,8 @@ bool IsModelOverridePresent();
 // Returns whether the model validation should happen.
 bool ShouldValidateModel();
 
-// Returns the file path string and metadata for the model provided via
-// command-line for |optimization_target|, if applicable.
-absl::optional<
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
-GetModelOverrideForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target);
+// Returns the model override command line switch.
+absl::optional<std::string> GetModelOverride();
 
 // Returns true if debug logs are enabled for the optimization guide.
 bool IsDebugLogsEnabled();
