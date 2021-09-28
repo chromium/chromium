@@ -77,7 +77,7 @@ if (use_unverified_rust_toolchain) {
            "Attempt to use standard Rust toolchain on an unsupported platform")
   }
   rust_prefix =
-      rebase_path("//third_party/android_rust_toolchain/toolchain/1.54.0/bin/")
+      rebase_path("//third_party/android_rust_toolchain/toolchain/bin/")
 }
 
 assert(!toolchain_has_rust || defined(rust_prefix))

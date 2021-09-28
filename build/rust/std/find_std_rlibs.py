@@ -8,6 +8,7 @@
 
 import argparse
 import os
+import stat
 import sys
 import shutil
 import subprocess
@@ -86,6 +87,9 @@ def main():
         depfile.write(" %s" % (infile.decode()))
         if (not os.path.exists(outfile)
             or os.stat(infile).st_mtime > os.stat(outfile).st_mtime):
+          if os.path.exists(outfile):
+            st = os.stat(outfile)
+            os.chmod(outfile, st.st_mode | stat.S_IWUSR)
           shutil.copy(infile, outfile)
     depfile.write("\n")
     if rlibs_expected:
