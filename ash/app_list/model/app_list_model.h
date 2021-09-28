@@ -132,6 +132,14 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   AppListModelStatus status() const { return status_; }
 
  private:
+  enum class ReparentItemReason {
+    // Reparent an item when adding the item to the model.
+    kAdd,
+
+    // Reparent an item when updating the item in the model.
+    kUpdate
+  };
+
   // AppListItemListObserver
   void OnListItemMoved(size_t from_index,
                        size_t to_index,
@@ -141,18 +149,17 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
 
   // Adds |item_ptr| to |top_level_item_list_| and notifies observers.
-  AppListItem* AddItemToItemListAndNotify(
-      std::unique_ptr<AppListItem> item_ptr);
-
-  // Adds |item_ptr| to |top_level_item_list_| and notifies observers that an
-  // Update occured (e.g. item moved from a folder).
-  AppListItem* AddItemToItemListAndNotifyUpdate(
-      std::unique_ptr<AppListItem> item_ptr);
+  AppListItem* AddItemToItemListAndNotify(std::unique_ptr<AppListItem> item_ptr,
+                                          ReparentItemReason reason);
 
   // Adds |item_ptr| to |folder| and notifies observers.
   AppListItem* AddItemToFolderItemAndNotify(
       AppListFolderItem* folder,
-      std::unique_ptr<AppListItem> item_ptr);
+      std::unique_ptr<AppListItem> item_ptr,
+      ReparentItemReason reason);
+
+  // Notifies observers of `item` being reparented.
+  void NotifyItemParentChange(AppListItem* item, ReparentItemReason reason);
 
   // Removes |item| from |top_level_item_list_| or calls RemoveItemFromFolder
   // if |item|->folder_id is set.
