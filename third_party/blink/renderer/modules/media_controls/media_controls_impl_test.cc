@@ -179,6 +179,10 @@ class MediaControlsImplTest : public PageTestBase,
     GetFrame().GetSettings()->SetScriptEnabled(true);
   }
 
+  void SetMediaControlsFromElement(HTMLMediaElement& elm) {
+    media_controls_ = static_cast<MediaControlsImpl*>(elm.GetMediaControls());
+  }
+
   void SimulateRouteAvailable() {
     RemotePlayback::From(media_controls_->MediaElement())
         .AvailabilityChangedForTesting(/* screen_is_available */ true);
@@ -1510,6 +1514,28 @@ TEST_F(MediaControlsImplTest, CheckStateOnPlayingForFutureData) {
   SimulateMediaControlPlayingForFutureData();
   EXPECT_EQ(MediaControls().State(),
             MediaControlsImpl::ControlsState::kPlaying);
+}
+
+TEST_F(MediaControlsImplTest, OverflowMenuInPaintContainment) {
+  // crbug.com/1244130
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  page_holder->GetDocument().write("<audio controls style='contain:paint'>");
+  page_holder->GetDocument().Parser()->Finish();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  SetMediaControlsFromElement(
+      To<HTMLMediaElement>(*page_holder->GetDocument().QuerySelector("audio")));
+
+  MediaControls().ToggleOverflowMenu();
+  UpdateAllLifecyclePhasesForTest();
+  Element* overflow_list = GetElementByShadowPseudoId(
+      MediaControls(), "-internal-media-controls-overflow-menu-list");
+  ASSERT_TRUE(overflow_list);
+  EXPECT_TRUE(overflow_list->IsInTopLayer());
+
+  MediaControls().ToggleOverflowMenu();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(overflow_list->IsInTopLayer());
 }
 
 }  // namespace blink

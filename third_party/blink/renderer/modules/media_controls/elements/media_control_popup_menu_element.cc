@@ -114,6 +114,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   MediaControlDivElement::SetIsWanted(wanted);
 
   if (wanted) {
+    GetDocument().AddToTopLayer(this);
     SetPosition();
 
     SelectFirstItem();
@@ -124,6 +125,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   } else {
     if (event_listener_)
       event_listener_->StopListening();
+    GetDocument().RemoveFromTopLayer(this);
   }
 }
 
