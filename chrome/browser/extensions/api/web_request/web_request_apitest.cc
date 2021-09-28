@@ -1064,50 +1064,45 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
 
-  // The extension shouldn't have currently received any webRequest events,
-  // since it doesn't have any permissions.
-  EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
-
-  auto get_main_and_child_frame = [](content::WebContents* web_contents,
-                                     content::RenderFrameHost** main_frame,
-                                     content::RenderFrameHost** child_frame) {
-    *child_frame = nullptr;
-    *main_frame = web_contents->GetMainFrame();
-    std::vector<content::RenderFrameHost*> all_frames =
-        web_contents->GetAllFrames();
-    ASSERT_EQ(3u, all_frames.size());
-    *child_frame = all_frames[0] == *main_frame ? all_frames[1] : all_frames[0];
-    ASSERT_TRUE(*child_frame);
-  };
-
-  content::RenderFrameHost* main_frame = nullptr;
-  content::RenderFrameHost* child_frame = nullptr;
-  get_main_and_child_frame(web_contents, &main_frame, &child_frame);
-  const std::string kMainHost = main_frame->GetLastCommittedURL().host();
-  const std::string kChildHost = child_frame->GetLastCommittedURL().host();
-
   int port = embedded_test_server()->port();
   const std::string kXhrPath = "simple.html";
 
-  // The extension shouldn't be able to intercept the xhr requests since it
-  // doesn't have any permissions.
-  PerformXhrInFrame(main_frame, kHost, port, kXhrPath);
-  PerformXhrInFrame(child_frame, kChildHost, port, kXhrPath);
-  EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
-  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+  // The extension shouldn't have currently received any webRequest events,
+  // since it doesn't have any permissions.
+  {
+    EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
 
-  // Grant activeTab permission.
-  runner->set_default_bubble_close_action_for_testing(
-      base::WrapUnique(new ToolbarActionsBarBubbleDelegate::CloseAction(
-          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE)));
-  runner->RunAction(extension, true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    content::RenderFrameHostWrapper main_frame(web_contents->GetMainFrame());
+    content::RenderFrameHostWrapper child_frame(
+        ChildFrameAt(main_frame.get(), 0));
+    ASSERT_TRUE(child_frame.get());
+    const std::string kChildHost = child_frame->GetLastCommittedURL().host();
+
+    // The extension shouldn't be able to intercept the xhr requests since it
+    // doesn't have any permissions.
+    PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
+    PerformXhrInFrame(child_frame.get(), kChildHost, port, kXhrPath);
+    EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+    EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+
+    // Grant activeTab permission.
+    runner->set_default_bubble_close_action_for_testing(
+        base::WrapUnique(new ToolbarActionsBarBubbleDelegate::CloseAction(
+            ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE)));
+    runner->RunAction(extension, true);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  }
 
   // The runner will have refreshed the page, and the extension will have
   // received access to the main-frame ("a.com"). It should still not be able to
   // intercept the cross-origin sub-frame requests to "b.com" and "c.com".
-  get_main_and_child_frame(web_contents, &main_frame, &child_frame);
+  content::RenderFrameHostWrapper main_frame(web_contents->GetMainFrame());
+  content::RenderFrameHostWrapper child_frame(
+      ChildFrameAt(main_frame.get(), 0));
+  const std::string kChildHost = child_frame->GetLastCommittedURL().host();
+
+  ASSERT_TRUE(child_frame.get());
   EXPECT_TRUE(HasSeenWebRequestInBackgroundPage(extension, profile(), "a.com"));
   EXPECT_FALSE(
       HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
@@ -1121,14 +1116,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       GetWebRequestCountFromBackgroundPage(extension, profile());
 
   // ... and the extension should receive future events.
-  PerformXhrInFrame(main_frame, kHost, port, kXhrPath);
+  PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
   ++request_count;
   EXPECT_EQ(request_count,
             GetWebRequestCountFromBackgroundPage(extension, profile()));
 
   // However, activeTab only grants access to the main frame, not to child
   // frames. As such, trying to XHR in the child frame should still fail.
-  PerformXhrInFrame(child_frame, kChildHost, port, kXhrPath);
+  PerformXhrInFrame(child_frame.get(), kChildHost, port, kXhrPath);
   EXPECT_EQ(request_count,
             GetWebRequestCountFromBackgroundPage(extension, profile()));
   // But since there's no way for the user to currently grant access to child
@@ -1147,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // badge UI.
   TestExtensionActionAPIObserver action_updated_waiter(profile(),
                                                        extension->id());
-  PerformXhrInFrame(main_frame, kHost, port, kXhrPath);
+  PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
   action_updated_waiter.Wait();
   EXPECT_EQ(web_contents, action_updated_waiter.last_web_contents());
 

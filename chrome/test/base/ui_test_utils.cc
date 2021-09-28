@@ -148,12 +148,20 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
     // is someone who doesn't know the requirement to disable the hang monitor,
     // and this will catch that case.
     auto* contents = dialog->web_contents();
-    for (auto* frame : contents->GetAllFrames())
-      if (frame->IsBeforeUnloadHangMonitorDisabledForTesting())
-        return;
+    bool found_disabled_for_testing = false;
+    contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+        [](bool* found_disabled_for_testing, content::RenderFrameHost* frame) {
+          if (frame->IsBeforeUnloadHangMonitorDisabledForTesting()) {
+            *found_disabled_for_testing = true;
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        },
+        &found_disabled_for_testing));
 
-    FAIL() << "If waiting for a beforeunload dialog, the beforeunload timer "
-              "must be disabled on the spawning frame to avoid flakiness.";
+    ASSERT_TRUE(found_disabled_for_testing)
+        << "If waiting for a beforeunload dialog, the beforeunload timer "
+           "must be disabled on the spawning frame to avoid flakiness.";
   }
 
  private:

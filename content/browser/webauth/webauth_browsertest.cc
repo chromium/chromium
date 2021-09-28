@@ -1260,12 +1260,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                           GetHttpsURL(kOuterHost, "/title2.html"));
     }
 
-    std::vector<RenderFrameHost*> frames =
-        shell()->web_contents()->GetAllFrames();
-    // GetAllFrames is documented to return a breadth-first list of frames. Thus
-    // there should be exactly two: the main frame and the contained iframe.
-    ASSERT_EQ(2u, frames.size());
-    RenderFrameHost* const iframe = frames[1];
+    RenderFrameHost* const iframe = ChildFrameAt(shell()->web_contents(), 0);
+    ASSERT_TRUE(iframe);
 
     CreateParameters create_parameters;
     create_parameters.rp_id = test.cross_origin ? "notacme.com" : "acme.com";

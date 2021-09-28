@@ -1271,11 +1271,14 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
                      kHost1, GetPathWithPortReplacement(
                                  "/predictors/two_iframes.html",
                                  preconnecting_test_server()->port()))));
-  std::vector<content::RenderFrameHost*> frames = tab1->GetAllFrames();
-  ASSERT_EQ(3u, frames.size());
-  ASSERT_EQ(kHost1, frames[0]->GetLastCommittedOrigin().host());
-  ASSERT_EQ(kHost1, frames[1]->GetLastCommittedOrigin().host());
-  ASSERT_EQ(kHost2, frames[2]->GetLastCommittedOrigin().host());
+  content::RenderFrameHost* main_frame = tab1->GetMainFrame();
+  ASSERT_EQ(kHost1, main_frame->GetLastCommittedOrigin().host());
+  content::RenderFrameHost* iframe_1 = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(iframe_1);
+  ASSERT_EQ(kHost1, iframe_1->GetLastCommittedOrigin().host());
+  content::RenderFrameHost* iframe_2 = ChildFrameAt(main_frame, 1);
+  ASSERT_TRUE(iframe_2);
+  ASSERT_EQ(kHost2, iframe_2->GetLastCommittedOrigin().host());
 
   // Create another tab without an iframe, at kHost2.
   chrome::NewTab(browser());
@@ -1292,7 +1295,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "link.href = '%s';"
       "document.head.appendChild(link);",
       preconnect_url.spec().c_str());
-  content::ExecuteScriptAsync(frames[2], start_preconnect);
+  content::ExecuteScriptAsync(iframe_2, start_preconnect);
   connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
@@ -1320,7 +1323,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
   // Fetch a resource from the test server from the same-origin iframe, without
   // CORS.
-  EXPECT_EQ(0, EvalJs(frames[1], fetch_resource));
+  EXPECT_EQ(0, EvalJs(iframe_1, fetch_resource));
   if (GetParam() == NetworkIsolationKeyMode::kDisabled) {
     // When not using NetworkIsolationKeys, a new socket is created and used.
     EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
@@ -1332,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
   }
 
   // Now try fetching a resource the cross-site iframe.
-  EXPECT_EQ(0, EvalJs(frames[2], fetch_resource));
+  EXPECT_EQ(0, EvalJs(iframe_2, fetch_resource));
   // If the preconnected socket was not used before, it should now be used. If
   // it was used before, a new socket will be used.
   EXPECT_EQ(3u, connection_tracker()->GetAcceptedSocketCount());

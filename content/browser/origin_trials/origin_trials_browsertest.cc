@@ -75,12 +75,9 @@ class OriginTrialsBrowserTest : public content::ContentBrowserTest {
   }
 
   RenderFrameHost* GetFrameByName(const std::string frame_name) {
-    for (RenderFrameHost* frame : shell()->web_contents()->GetAllFrames()) {
-      if (frame->GetFrameName() == frame_name)
-        return frame;
-    }
-    NOTREACHED();
-    return nullptr;
+    return FrameMatchingPredicate(
+        shell()->web_contents()->GetPrimaryPage(),
+        base::BindRepeating(FrameMatchesName, frame_name));
   }
 
   RenderFrameHost* GetMainFrame() {

@@ -59,7 +59,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     // 2) A frame containing a sub app.
     // 3) A cross site frame, on |cross_site_frame_url|.
     // 4) A sub frame in the app's scope.
-    auto frames = web_contents->GetAllFrames();
+    auto frames = CollectAllRenderFrameHosts(web_contents->GetPrimaryPage());
     ASSERT_EQ(4u, frames.size());
 
     main_frame_ = web_contents->GetMainFrame();

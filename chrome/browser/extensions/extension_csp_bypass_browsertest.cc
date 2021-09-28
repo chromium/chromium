@@ -222,12 +222,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
 
   // The iframe must be blocked because of CSP.
   console_observer.Wait();
-  std::vector<content::RenderFrameHost*> render_frame_hosts =
-      web_contents()->GetAllFrames();
-  ASSERT_EQ(2u, render_frame_hosts.size());
-  EXPECT_EQ(popup_url, render_frame_hosts[0]->GetLastCommittedURL());
-  EXPECT_EQ(iframe_url, render_frame_hosts[1]->GetLastCommittedURL());
-  EXPECT_TRUE(render_frame_hosts[1]->GetLastCommittedOrigin().opaque());
+  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_EQ(popup_url, main_frame->GetLastCommittedURL());
+  EXPECT_EQ(iframe_url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 }  // namespace extensions

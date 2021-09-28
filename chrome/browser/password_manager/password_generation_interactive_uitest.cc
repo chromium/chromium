@@ -278,14 +278,12 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // Execute the script in the context of the iframe so that it kinda receives a
   // user gesture.
-  std::vector<content::RenderFrameHost*> frames = WebContents()->GetAllFrames();
-  ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[0] == RenderFrameHost());
+  content::RenderFrameHost* child_frame = ChildFrameAt(WebContents(), 0);
 
   std::string focus_script =
       "document.getElementById('password_field').focus();";
 
-  ASSERT_TRUE(content::ExecuteScript(frames[1], focus_script));
+  ASSERT_TRUE(content::ExecuteScript(child_frame, focus_script));
   EXPECT_TRUE(GenerationPopupShowing());
 }
 

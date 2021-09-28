@@ -474,15 +474,13 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError) {
   NavigateToURLAndWaitForTitle(
       embedded_test_server()->GetURL("/iframe_dns_error.html"), "Blah");
 
-  auto frames =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetAllFrames();
-  // There should be two frames. The first one is the main frame, and the second
-  // is an iframe with a DNS error.
-  ASSERT_EQ(2u, frames.size());
-  ASSERT_EQ(frames[0], frames[1]->GetMainFrame());
+  // There should be a child iframe with a DNS error.
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
+  ASSERT_TRUE(child_frame);
 
   EXPECT_TRUE(IsDisplayingText(
-      frames[1], net::ErrorToShortString(net::ERR_NAME_NOT_RESOLVED)));
+      child_frame, net::ErrorToShortString(net::ERR_NAME_NOT_RESOLVED)));
 }
 
 // This test fails regularly on win_rel trybots. See crbug.com/121540

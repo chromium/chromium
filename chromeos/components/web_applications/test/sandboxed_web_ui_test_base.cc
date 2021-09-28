@@ -138,12 +138,10 @@ std::string SandboxedWebUiAppTestBase::LoadJsTestLibrary(
 // static
 content::RenderFrameHost* SandboxedWebUiAppTestBase::GetAppFrame(
     content::WebContents* web_ui) {
-  // GetAllFrames does a breadth-first traversal. Assume the first subframe
-  // is the app.
-  std::vector<content::RenderFrameHost*> frames = web_ui->GetAllFrames();
-  EXPECT_EQ(2u, frames.size());
-  EXPECT_TRUE(frames[1]);
-  return frames[1];
+  // Assume the first subframe is the app.
+  content::RenderFrameHost* subframe = ChildFrameAt(web_ui, 0);
+  EXPECT_TRUE(subframe);
+  return subframe;
 }
 
 // static

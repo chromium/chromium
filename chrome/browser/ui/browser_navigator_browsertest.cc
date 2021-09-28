@@ -1905,15 +1905,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Retrieve the iframe.
-  const auto all_frames = tab->GetAllFrames();
-  const content::RenderFrameHost* main_frame = tab->GetMainFrame();
-  DCHECK_EQ(2u, all_frames.size());
-  auto it = std::find_if(all_frames.begin(), all_frames.end(),
-                         [main_frame](content::RenderFrameHost* frame) {
-                           return main_frame != frame;
-                         });
-  DCHECK(it != all_frames.end());
-  content::RenderFrameHost* iframe = *it;
+  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(iframe);
 
   // Navigate the iframe with a disposition.
   NavigateParams params(browser(),

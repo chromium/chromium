@@ -156,20 +156,22 @@ void WaitForInterstitial(content::WebContents* tab) {
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
 }
 
-// Inject a script into every frame in the page. Used by tests that check for
-// visible password fields to wait for notifications about these
-// fields. Notifications about visible password fields are queued at the end of
-// the event loop, so waiting for a dummy script to run ensures that these
+// Inject a script into every frame in the active page. Used by tests that check
+// for visible password fields to wait for notifications about these fields.
+// Notifications about visible password fields are queued at the end of the
+// event loop, so waiting for a dummy script to run ensures that these
 // notifications have been sent.
 void InjectScript(content::WebContents* contents) {
-  // Any frame in the page might have a password field, so inject scripts into
-  // all of them to ensure that notifications from all of them have been sent.
-  for (auto* frame : contents->GetAllFrames()) {
-    bool js_result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "window.domAutomationController.send(true);", &js_result));
-    EXPECT_TRUE(js_result);
-  }
+  // Any frame in the active page might have a password field, so inject scripts
+  // into all of them to ensure that notifications from all of them have been
+  // sent.
+  contents->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating([](content::RenderFrameHost* frame) {
+        bool js_result = false;
+        EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+            frame, "window.domAutomationController.send(true);", &js_result));
+        EXPECT_TRUE(js_result);
+      }));
 }
 
 // A WebContentsObserver useful for testing the DidChangeVisibleSecurityState()

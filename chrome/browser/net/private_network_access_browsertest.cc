@@ -645,10 +645,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   // frame(s) by default.
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), GURL("chrome://new-tab-page")));
-  std::vector<content::RenderFrameHost*> frames =
-      web_contents()->GetAllFrames();
-  ASSERT_GE(frames.size(), 2u);
-  content::RenderFrameHost* iframe = frames[1];
+  content::RenderFrameHost* iframe = ChildFrameAt(web_contents(), 0);
+  ASSERT_TRUE(iframe);
   EXPECT_TRUE(iframe->GetLastCommittedURL().SchemeIs(
       content::kChromeUIUntrustedScheme));
 

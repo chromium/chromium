@@ -410,7 +410,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
         &script_result));
     ASSERT_EQ("Frame injected successfully", script_result);
   }
-  const auto frames = web_contents->GetAllFrames();
+  const auto frames =
+      CollectAllRenderFrameHosts(web_contents->GetPrimaryPage());
   const auto it = base::ranges::find(
       frames, subframe_url, &content::RenderFrameHost::GetLastCommittedURL);
   ASSERT_NE(it, frames.cend());

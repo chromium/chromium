@@ -748,10 +748,12 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, DataIframe) {
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
 
   // All MHTML frames should have an opaque origin.
-  for (RenderFrameHost* frame : shell()->web_contents()->GetAllFrames()) {
-    EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
-        << "frame->GetLastCommittedURL() = " << frame->GetLastCommittedURL();
-  }
+  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHost* frame) {
+        EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
+            << "frame->GetLastCommittedURL() = "
+            << frame->GetLastCommittedURL();
+      }));
 }
 
 // Regression test for https://crbug.com/1168249.
