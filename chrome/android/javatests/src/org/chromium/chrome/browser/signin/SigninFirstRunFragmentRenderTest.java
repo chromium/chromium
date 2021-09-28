@@ -134,10 +134,41 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testFragmentWithAccountOnManagedDevice(boolean nightModeEnabled)
+            throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+
+        launchActivityWithFragment();
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+        });
+        mRenderTestRule.render(
+                mFragment.getView(), "signin_first_run_fragment_with_account_managed");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testFragmentWithoutAccount(boolean nightModeEnabled) throws IOException {
         launchActivityWithFragment();
 
         mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_without_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testFragmentWithoutAccountOnManagedDevice(boolean nightModeEnabled)
+            throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        launchActivityWithFragment();
+
+        mRenderTestRule.render(
+                mFragment.getView(), "signin_first_run_fragment_without_account_managed");
     }
 
     @Test
