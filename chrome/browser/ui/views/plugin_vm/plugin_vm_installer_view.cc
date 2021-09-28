@@ -123,7 +123,6 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;
 
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
   SetCanMinimize(true);
   // Removed margins so dialog insets specify it instead.
   set_margins(gfx::Insets());
