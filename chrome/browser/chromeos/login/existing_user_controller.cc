@@ -1026,8 +1026,8 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   UserSessionManager::StartSessionType start_session_type =
       UserAddingScreen::Get()->IsRunning()
-          ? UserSessionManager::SECONDARY_USER_SESSION
-          : UserSessionManager::PRIMARY_USER_SESSION;
+          ? UserSessionManager::StartSessionType::kSecondary
+          : UserSessionManager::StartSessionType::kPrimary;
   UserSessionManager::GetInstance()->StartSession(
       user_context, start_session_type, has_auth_cookies,
       false,  // Start session for user.

@@ -103,19 +103,19 @@ class UserSessionManager
       public user_manager::UserManager::Observer {
  public:
   // Context of StartSession calls.
-  typedef enum {
+  enum class StartSessionType {
     // Starting primary user session, through login UI.
-    PRIMARY_USER_SESSION,
+    kPrimary,
 
     // Starting secondary user session, through multi-profiles login UI.
-    SECONDARY_USER_SESSION,
+    kSecondary,
 
     // Starting primary user session after browser crash.
-    PRIMARY_USER_SESSION_AFTER_CRASH,
+    kPrimaryAfterCrash,
 
     // Starting secondary user session after browser crash.
-    SECONDARY_USER_SESSION_AFTER_CRASH,
-  } StartSessionType;
+    kSecondaryAfterCrash,
+  };
 
   // Types of command-line switches for a user session. The command-line
   // switches of all types are combined.
