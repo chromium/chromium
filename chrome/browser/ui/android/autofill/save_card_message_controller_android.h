@@ -56,9 +56,9 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
 
   void MaybeShowDialog();
 
-  void ConfirmDate(const int month, const int year);
-  void ConfirmDate();
-  void ConfirmName(const std::u16string& inferred_cardholder_name);
+  void FixName(const std::u16string& inferred_cardholder_name);
+  void FixDate();
+  void ConfirmSaveCard();
 
   // SaveCardMessageConfirmDelegate
   void OnNameConfirmed(
@@ -68,6 +68,7 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) override;
+  void OnSaveCardConfirmed(JNIEnv* env) override;
   void DialogDismissed(JNIEnv* env) override;
   void OnLegalMessageLinkClicked(
       JNIEnv* env,
@@ -122,14 +123,13 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
 
   // Whether we need to request users to fill in more info.
   bool request_more_info_ = false;
-  int expiration_date_year_;
-  int expiration_date_month_;
 
   // Whether we should re-show the dialog to users when users return to the tab.
   bool reprompt_required_ = false;
 
   bool is_name_confirmed_for_testing_ = false;
   bool is_date_confirmed_for_testing_ = false;
+  bool is_save_card_confirmed_for_testing_ = false;
 };
 
 }  // namespace autofill

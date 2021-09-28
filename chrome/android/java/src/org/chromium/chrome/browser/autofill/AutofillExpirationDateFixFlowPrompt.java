@@ -61,18 +61,16 @@ public class AutofillExpirationDateFixFlowPrompt
      *
      * @param context The current context.
      * @param delegate A {@link AutofillExpirationDateFixFlowPromptDelegate} to handle events.
-     * @param month Default value for month field. Empty string for users to fill in.
-     * @param year Default value for year field. Empty string for users to fill in.
      * @param title Title of the dialog prompt.
      * @param cardLabel Label representing a card which will be saved.
      * @param confirmButtonLabel Label for the confirm button.
      * @return The prompt to confirm expiration data.
      */
     public static AutofillExpirationDateFixFlowPrompt createAsMessageFixFlowPrompt(Context context,
-            AutofillExpirationDateFixFlowPromptDelegate delegate, String month, String year,
-            String title, String cardLabel, String confirmButtonLabel) {
+            AutofillExpirationDateFixFlowPromptDelegate delegate, String title, String cardLabel,
+            String confirmButtonLabel) {
         return new AutofillExpirationDateFixFlowPrompt(
-                context, delegate, month, year, title, cardLabel, confirmButtonLabel);
+                context, delegate, title, cardLabel, confirmButtonLabel);
     }
 
     private final AutofillExpirationDateFixFlowPromptDelegate mDelegate;
@@ -113,14 +111,12 @@ public class AutofillExpirationDateFixFlowPrompt
     }
 
     private AutofillExpirationDateFixFlowPrompt(Context context,
-            AutofillExpirationDateFixFlowPromptDelegate delegate, String month, String year,
-            String title, String cardLabel, String confirmButtonLabel) {
+            AutofillExpirationDateFixFlowPromptDelegate delegate, String title, String cardLabel,
+            String confirmButtonLabel) {
         // Set drawable id as 0 to remove the icon on the title.
         this(context, delegate, title, /*drawableId=*/0, cardLabel, confirmButtonLabel, true);
         mDialogView.findViewById(R.id.message_divider).setVisibility(View.VISIBLE);
         mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.VISIBLE);
-        mYearInput.setText(year);
-        mMonthInput.setText(month);
     }
 
     @Override

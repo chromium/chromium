@@ -30,12 +30,10 @@ class SaveCardMessageConfirmController {
   SaveCardMessageConfirmController& operator=(
       const SaveCardMessageConfirmController&) = delete;
 
-  void ConfirmName(const std::u16string& inferred_cardholder_name,
-                   const std::u16string& card_label);
-  void ConfirmDate(const std::string& month,
-                   const std::string& year,
-                   const std::u16string& card_label);
-  void ConfirmDate(const std::u16string& card_label);
+  void ConfirmSaveCard(const std::u16string& card_label);
+  void FixName(const std::u16string& inferred_cardholder_name,
+               const std::u16string& card_label);
+  void FixDate(const std::u16string& card_label);
 
   // Legal Message should be set before confirm* is called.
   void SetLegalMessageLine(const LegalMessageLine& line);

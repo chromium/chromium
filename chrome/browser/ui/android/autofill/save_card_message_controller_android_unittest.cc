@@ -104,6 +104,10 @@ class SaveCardMessageControllerAndroidTest
 
   bool IsNameConfirmed() { return controller_.is_name_confirmed_for_testing_; }
 
+  bool IsSaveCardConfirmed() {
+    return controller_.is_save_card_confirmed_for_testing_;
+  }
+
   bool IsRestoreRequired() { return controller_.reprompt_required_; }
 
  private:
@@ -296,20 +300,6 @@ TEST_F(SaveCardMessageControllerAndroidTest,
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
-       DismissOnPrimaryButtonClickWithoutRequestingExtraInfo) {
-  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
-                              const AutofillClient::UserProvidedCardDetails&)>
-      mock_upload_callback_receiver;
-  AutofillClient::SaveCreditCardOptions options;
-  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE),
-            GetMessageWrapper()->GetPrimaryButtonText());
-  TriggerPrimaryButtonClick();
-  EXPECT_TRUE(IsDateConfirmed());
-  DismissMessage();
-}
-
-TEST_F(SaveCardMessageControllerAndroidTest,
        DismissOnPrimaryButtonClickConfirmNameUpload) {
   base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
                               const AutofillClient::UserProvidedCardDetails&)>
@@ -324,13 +314,15 @@ TEST_F(SaveCardMessageControllerAndroidTest,
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
-       DismissOnPrimaryButtonClickConfirmDateUpload) {
+       DismissOnPrimaryButtonClickConfirmSaveCardUpload) {
   base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
                               const AutofillClient::UserProvidedCardDetails&)>
       mock_upload_callback_receiver;
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
   TriggerPrimaryButtonClick();
-  EXPECT_TRUE(IsDateConfirmed());
+  EXPECT_TRUE(IsSaveCardConfirmed());
   DismissMessage();
 }
 

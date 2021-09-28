@@ -105,7 +105,8 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
      * @param activity The current activity, used for context. When null, the method does nothing.
      * @param modalDialogManager Used to display modal dialogs. When null, the method does nothing.
      */
-    public void show(@Nullable Activity activity, @Nullable ModalDialogManager modalDialogManager) {
+    public final void show(
+            @Nullable Activity activity, @Nullable ModalDialogManager modalDialogManager) {
         if (activity == null || modalDialogManager == null) return;
 
         mContext = activity;
