@@ -42,7 +42,8 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
 
   ~RawDrawBacking() override {
     AutoLock auto_lock(this);
-    DCHECK_EQ(mode_, kNone);
+    DCHECK_EQ(read_count_, 0);
+    DCHECK(!is_write_);
     ResetPaintOpBuffer();
   }
 
@@ -91,12 +92,8 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
   sk_sp<cc::PaintOpBuffer> paint_op_buffer_;
   base::OnceClosure paint_op_release_callback_;
 
-  enum Mode {
-    kNone,
-    kRead,
-    kWrite,
-  };
-  Mode mode_ GUARDED_BY(lock_) = kNone;
+  bool is_write_ GUARDED_BY(lock_) = false;
+  int read_count_ GUARDED_BY(lock_) = 0;
 };
 
 class RawDrawBacking::RepresentationRaster
@@ -111,11 +108,12 @@ class RawDrawBacking::RepresentationRaster
   cc::PaintOpBuffer* BeginReadAccess(
       absl::optional<SkColor>& clear_color) override {
     AutoLock auto_lock(raw_draw_backing());
-    if (raw_draw_backing()->mode_ != kNone) {
+    if (raw_draw_backing()->is_write_) {
+      LOG(ERROR) << "The backing is being written.";
       return nullptr;
     }
 
-    raw_draw_backing()->mode_ = kRead;
+    raw_draw_backing()->read_count_++;
 
     if (!raw_draw_backing()->paint_op_buffer_) {
       raw_draw_backing()->paint_op_buffer_ = sk_make_sp<cc::PaintOpBuffer>();
@@ -127,8 +125,9 @@ class RawDrawBacking::RepresentationRaster
 
   void EndReadAccess() override {
     AutoLock auto_lock(raw_draw_backing());
-    DCHECK_EQ(raw_draw_backing()->mode_, kRead);
-    raw_draw_backing()->mode_ = kNone;
+    DCHECK_GE(raw_draw_backing()->read_count_, 0);
+    DCHECK(!raw_draw_backing()->is_write_);
+    raw_draw_backing()->read_count_--;
   }
 
   cc::PaintOpBuffer* BeginWriteAccess(
@@ -136,11 +135,17 @@ class RawDrawBacking::RepresentationRaster
       const SkSurfaceProps& surface_props,
       const absl::optional<SkColor>& clear_color) override {
     AutoLock auto_lock(raw_draw_backing());
-    if (raw_draw_backing()->mode_ != kNone) {
+    if (raw_draw_backing()->read_count_) {
+      LOG(ERROR) << "The backing is being read.";
       return nullptr;
     }
 
-    raw_draw_backing()->mode_ = kWrite;
+    if (raw_draw_backing()->is_write_) {
+      LOG(ERROR) << "The backing is being written.";
+      return nullptr;
+    }
+
+    raw_draw_backing()->is_write_ = true;
 
     raw_draw_backing()->ResetPaintOpBuffer();
     if (!raw_draw_backing()->paint_op_buffer_) {
@@ -154,8 +159,10 @@ class RawDrawBacking::RepresentationRaster
 
   void EndWriteAccess(base::OnceClosure callback) override {
     AutoLock auto_lock(raw_draw_backing());
-    DCHECK_EQ(raw_draw_backing()->mode_, kWrite);
-    raw_draw_backing()->mode_ = kNone;
+    DCHECK_EQ(raw_draw_backing()->read_count_, 0);
+    DCHECK(raw_draw_backing()->is_write_);
+
+    raw_draw_backing()->is_write_ = false;
 
     if (callback) {
       DCHECK(!raw_draw_backing()->paint_op_release_callback_);

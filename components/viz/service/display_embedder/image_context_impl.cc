@@ -163,6 +163,12 @@ void ImageContextImpl::BeginAccessIfNecessary(
 
 bool ImageContextImpl::BeginRasterAccess(
     gpu::SharedImageRepresentationFactory* representation_factory) {
+  if (paint_op_buffer()) {
+    DCHECK(raster_representation_);
+    DCHECK(representation_raster_scoped_access_);
+    return true;
+  }
+
   auto raster = representation_factory->ProduceRaster(mailbox_holder().mailbox);
   if (!raster)
     return false;
