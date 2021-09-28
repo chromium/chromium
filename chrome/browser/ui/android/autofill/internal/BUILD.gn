@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
@@ -13,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorOptionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialog.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialog.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/data/AuthenticatorOption.java",
   ]
   deps = [
@@ -43,6 +45,7 @@ android_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogTest.java",
   ]
   deps = [
     ":java",
@@ -65,6 +68,9 @@ android_resources("java_resources") {
     "java/res/layout/authenticator_option.xml",
     "java/res/layout/authenticator_selection_dialog.xml",
     "java/res/layout/autofill_error_dialog.xml",
+    "java/res/layout/otp_verification_dialog.xml",
+    "java/res/layout/progress_bar.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/android:chrome_app_java_resources",

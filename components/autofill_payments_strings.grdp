@@ -589,4 +589,22 @@
       See details
     </message>
   </if>
+
+  <!-- Autofill Payments OTP verification dialog -->
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_TITLE" desc="Title of the OTP verification dialog which is shown to the user while unmasking a credit card." formatter_data="android_java">
+    Enter Verification Code
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_CANT_FIND_CODE_MESSAGE" desc="Hint shown to the user in the event they are unable to find the OTP code."  formatter_data="android_java">
+    Can't find your code? <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get new code<ph name="END_LINK">&lt;/link&gt;</ph>
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_OTP_INPUT_HINT" desc="Hint shown in the OTP input field indicating the number of digits expected for the OTP." formatter_data="android_java">
+    Enter <ph name="OTP_LENGTH">%1$s<ex>6</ex></ph>-digit code
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_POSITIVE_BUTTON_LABEL" desc="Positive button label for the OTP verification dialog." formatter_data="android_java">
+    Confirm
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Negative button label for the OTP verification dialog." formatter_data="android_java">
+    Cancel
+  </message>
+
 </grit-part>
