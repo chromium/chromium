@@ -377,6 +377,24 @@ void ChromeShelfController::SetItemStatusOrRemove(const ash::ShelfID& id,
     SetItemStatus(id, status);
 }
 
+bool ChromeShelfController::ShouldSyncItemWithReentrancy(
+    const ash::ShelfItem& item) {
+  return should_sync_pin_changes_ && ShouldSyncItem(item);
+}
+
+bool ChromeShelfController::ShouldSyncItem(const ash::ShelfItem& item) {
+  // Syncing is only enabled for pinned items.
+  if (!ItemTypeIsPinned(item))
+    return false;
+
+  // Syncing is disabled for standalone-browser based chrome apps for now.
+  // See https://crbug.com/1250480.
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  auto app_type = proxy->AppRegistryCache().GetAppType(item.id.app_id);
+  return app_type != apps::mojom::AppType::kStandaloneBrowserExtension;
+}
+
 bool ChromeShelfController::IsPinned(const ash::ShelfID& id) {
   const ash::ShelfItem* item = GetItem(id);
   return item && ItemTypeIsPinned(*item);
@@ -1091,14 +1109,15 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
   std::vector<ash::ShelfID> shelf_ids_after;
 
   for (int i = index - 1; i >= 0; --i) {
-    shelf_id_before = model_->items()[i].id;
-    if (IsPinned(shelf_id_before))
+    if (ShouldSyncItem(model_->items()[i])) {
+      shelf_id_before = model_->items()[i].id;
       break;
+    }
   }
 
   for (int i = index + 1; i < max_index; ++i) {
     const ash::ShelfID& shelf_id_after = model_->items()[i].id;
-    if (IsPinned(shelf_id_after))
+    if (ShouldSyncItem(model_->items()[i]))
       shelf_ids_after.push_back(shelf_id_after);
   }
 
@@ -1459,14 +1478,14 @@ void ChromeShelfController::ShelfItemAdded(int index) {
   }
 
   // Update the pin position preference as needed.
-  if (ItemTypeIsPinned(item) && should_sync_pin_changes_)
+  if (ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
 }
 
 void ChromeShelfController::ShelfItemRemoved(int index,
                                              const ash::ShelfItem& old_item) {
   // Remove the pin position from preferences as needed.
-  if (ItemTypeIsPinned(old_item) && should_sync_pin_changes_)
+  if (ShouldSyncItemWithReentrancy(old_item))
     shelf_prefs_->RemovePinPosition(profile(), old_item.id);
   if (auto* app_icon_loader = GetAppIconLoaderForApp(old_item.id.app_id))
     app_icon_loader->ClearImage(old_item.id.app_id);
@@ -1475,19 +1494,16 @@ void ChromeShelfController::ShelfItemRemoved(int index,
 void ChromeShelfController::ShelfItemMoved(int start_index, int target_index) {
   // Update the pin position preference as needed.
   const ash::ShelfItem& item = model_->items()[target_index];
-  if (ItemTypeIsPinned(item) && should_sync_pin_changes_)
+  if (ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
 }
 
 void ChromeShelfController::ShelfItemChanged(int index,
                                              const ash::ShelfItem& old_item) {
-  if (!should_sync_pin_changes_)
-    return;
-
   // Add or remove the pin position from preferences as needed.
   const ash::ShelfItem& item = model_->items()[index];
-  if (!ItemTypeIsPinned(old_item) && ItemTypeIsPinned(item))
+  if (!ItemTypeIsPinned(old_item) && ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
-  else if (ItemTypeIsPinned(old_item) && !ItemTypeIsPinned(item))
+  else if (ShouldSyncItemWithReentrancy(old_item) && !ItemTypeIsPinned(item))
     shelf_prefs_->RemovePinPosition(profile(), old_item.id);
 }

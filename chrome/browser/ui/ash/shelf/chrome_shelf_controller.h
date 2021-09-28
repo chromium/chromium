@@ -402,6 +402,14 @@ class ChromeShelfController
   void SetItemStatusOrRemove(const ash::ShelfID& id,
                              ash::ShelfItemStatus status);
 
+  // Returns whether the pin position of the item should be synced, taking into
+  // account re-entrancy limitations.
+  bool ShouldSyncItemWithReentrancy(const ash::ShelfItem& item);
+
+  // Returns whether the pin position of the item should be synced, ignoring
+  // re-entrancy limitations.
+  bool ShouldSyncItem(const ash::ShelfItem& item);
+
   // Resolves the app icon image loader for the app.
   AppIconLoader* GetAppIconLoaderForApp(const std::string& app_id);
 
