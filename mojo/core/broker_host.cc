@@ -50,12 +50,15 @@ BrokerHost::~BrokerHost() {
 }
 
 bool BrokerHost::PrepareHandlesForClient(
-    std::vector<PlatformHandleInTransit>* handles) {
+    std::vector<PlatformHandleInTransit>* handles,
+    bool check_on_failure) {
 #if defined(OS_WIN)
   bool handles_ok = true;
   for (auto& handle : *handles) {
-    if (!handle.TransferToProcess(client_process_.Duplicate()))
+    if (!handle.TransferToProcess(client_process_.Duplicate(),
+                                  check_on_failure)) {
       handles_ok = false;
+    }
   }
   return handles_ok;
 #else
@@ -81,7 +84,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
   // This may legitimately fail on Windows if the client process is in another
   // session, e.g., is an elevated process.
-  if (!PrepareHandlesForClient(&handles))
+  if (!PrepareHandlesForClient(&handles, /*check_on_failure=*/false))
     return false;
 
   message->SetHandles(std::move(handles));
@@ -135,7 +138,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
     const base::UnguessableToken& guid = region.GetGUID();
     response->guid_high = guid.GetHighForSerialization();
     response->guid_low = guid.GetLowForSerialization();
-    PrepareHandlesForClient(&handles);
+    PrepareHandlesForClient(&handles, /*check_on_failure=*/true);
     message->SetHandles(std::move(handles));
   }
 
