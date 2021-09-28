@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
@@ -75,6 +76,11 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
     }
   }
   return false;
+}
+
+void OnToastClicked() {
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kDlpLearnMoreUrl), /*from_user_interaction=*/true);
 }
 
 }  // namespace
@@ -244,9 +250,11 @@ void DlpClipboardNotifier::ResetUserWarnSelection() {
 
 void DlpClipboardNotifier::ShowToast(const std::string& id,
                                      const std::u16string& text) const {
-  ash::ToastData toast(id, text, kClipboardDlpBlockDurationMs,
-                       /*dismiss_text=*/absl::nullopt);
+  ash::ToastData toast(
+      id, text, kClipboardDlpBlockDurationMs,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON));
   toast.is_managed = true;
+  toast.dismiss_callback = base::BindRepeating(&OnToastClicked);
   ash::ToastManager::Get()->Show(toast);
 }
 

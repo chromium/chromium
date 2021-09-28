@@ -624,6 +624,9 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
     Sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME">$2<ex>Linux</ex></ph> has been blocked by administrator policy
   </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON" desc="Dismiss toast button label for disabled paste notification.">
+    View details
+  </message>
   <message name="IDS_POLICY_DLP_ANDROID_APPS" desc="Name shown for ARC in data leak prevention toasts.">
     Android apps
   </message>
