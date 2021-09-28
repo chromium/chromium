@@ -122,6 +122,20 @@ config("runtime_library") {
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
+
+  # TODO(crbug.com/1223481): Temporarily use a different
+  # libclang_rt.iossim.a for arm64 simulator builds. This can be
+  # removed when an arm64 slice is added to upstream Clang.
+  if (target_environment == "simulator" && current_cpu == "arm64") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.iossim.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+  }
 }
 
 config("ios_executable_flags") {
