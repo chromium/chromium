@@ -1858,7 +1858,7 @@
   },
   "updater_tests_win_uac": {
     "label": "//chrome/updater:updater_tests_win_uac",
-    "script": "//chrome/updater/chrome/updater/test/service/run_command_as_standard_user.py",
+    "script": "//chrome/updater/test/service/win/run_command_as_standard_user.py",
     "type": "script",
   },
   "upload_trace_processor": {
