@@ -28,6 +28,7 @@ class LabelButton;
 
 namespace ash {
 
+class LoginAuthFactorsView;
 class LoginPasswordView;
 class LoginPinView;
 class LoginPinInputView;
@@ -98,6 +99,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     views::View* disabled_auth_message() const;
     views::Button* challenge_response_button();
     views::Label* challenge_response_label();
+    LoginAuthFactorsView* auth_factors_view() const;
     bool HasAuthMethod(AuthMethods auth_method) const;
     const std::u16string& GetDisabledAuthMessageContent() const;
 
@@ -281,6 +283,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   views::LabelButton* online_sign_in_button_ = nullptr;
   DisabledAuthMessageView* disabled_auth_message_ = nullptr;
   FingerprintView* fingerprint_view_ = nullptr;
+  LoginAuthFactorsView* auth_factors_view_ = nullptr;
   ChallengeResponseView* challenge_response_view_ = nullptr;
   LockedTpmMessageView* locked_tpm_message_view_ = nullptr;
 

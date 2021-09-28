@@ -507,6 +507,15 @@ TEST_P(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
   base::RunLoop().RunUntilIdle();
 }
 
+// The LoginAuthFactorsView is part of the Smart Lock UI Revamp, and should not
+// be shown unless the feature flag is enabled.
+TEST_P(LoginAuthUserViewUnittest,
+       AuthFactorsViewNotSetWithSmartLockFeatureDisabled) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+  EXPECT_FALSE(auth_factors_view);
+}
+
 INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,
                          LoginAuthUserViewUnittest,
                          testing::Bool(),  // PIN autosubmit feature
