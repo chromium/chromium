@@ -552,8 +552,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
   SiteInstance* target_site_instance = target_rfh->GetSiteInstance();
   if (!target_site_instance->IsRelatedSiteInstance(GetSiteInstance()) &&
       !target_rfh->delegate()->ShouldRouteMessageEvent(target_rfh,
-                                                       GetSiteInstance()))
+                                                       GetSiteInstance())) {
     return;
+  }
 
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
