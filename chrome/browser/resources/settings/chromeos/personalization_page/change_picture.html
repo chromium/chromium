@@ -66,11 +66,13 @@
       #pictureList {
         /* TODO(reveman): Find a way to have height align to viewport
            without using fixed position. */
+        --bottom-padding: 48px;
         height: calc(100vh -
             var(--cr-toolbar-height) -
             var(--cr-settings-header-height) -
             var(--title-padding) -
-            var(--title-height));
+            var(--title-height) -
+            var(--bottom-padding));
         margin-inline-end: 16px;
         margin-top: 0;
         min-height: 332px;
