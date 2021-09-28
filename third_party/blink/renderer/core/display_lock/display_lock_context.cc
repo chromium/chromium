@@ -807,7 +807,8 @@ bool DisplayLockContext::IsElementDirtyForStyleRecalc() const {
   // before ever having gone through the style calc that would have been
   // blocked, meaning we never blocked style during a walk. Instead we might
   // have not propagated the dirty bits up the tree.
-  return element_->NeedsStyleRecalc() || element_->ChildNeedsStyleRecalc() ||
+  return element_->IsDirtyForStyleRecalc() ||
+         element_->ChildNeedsStyleRecalc() ||
          element_->ChildNeedsReattachLayoutTree() ||
          blocked_style_traversal_type_ > kStyleUpdateNotRequired;
 }
