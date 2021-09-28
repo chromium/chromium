@@ -6,6 +6,7 @@
 
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -327,7 +329,7 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
 }
 
 void TextFragmentAnchor::DidFindMatch(
-    const EphemeralRangeInFlatTree& range,
+    const RangeInFlatTree& range,
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
   if (search_finished_)
@@ -343,7 +345,8 @@ void TextFragmentAnchor::DidFindMatch(
   if (!frame_->GetDocument()
            ->Markers()
            .MarkersIntersectingRange(
-               range, DocumentMarker::MarkerTypes::TextFragment())
+               range.ToEphemeralRange(),
+               DocumentMarker::MarkerTypes::TextFragment())
            .IsEmpty()) {
     return;
   }
@@ -368,13 +371,19 @@ void TextFragmentAnchor::DidFindMatch(
 
   // Apply :target to the first match
   if (!did_find_match_) {
-    ApplyTargetToCommonAncestor(range);
+    ApplyTargetToCommonAncestor(range.ToEphemeralRange());
     needs_style_and_layout = true;
   }
 
+  // TODO(crbug.com/1252872): Only |first_node| is considered for the below
+  // ancestor expanding code, but we should be considering the entire |range|
+  // for ancestor unlocking as well.
+  Node& first_node = *range.ToEphemeralRange().Nodes().begin();
+
   // Activate any find-in-page activatable display-locks in the ancestor
   // chain.
-  if (DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(range)) {
+  if (DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+          range.ToEphemeralRange())) {
     // Since activating a lock dirties layout, we need to make sure it's clean
     // before computing the text rect below.
     needs_style_and_layout = true;
@@ -383,6 +392,19 @@ void TextFragmentAnchor::DidFindMatch(
     // should really yield until the next frame to give script an opportunity
     // to run.
   }
+
+  // If the active match is hidden inside a <details> element, then we should
+  // expand it so we can scroll to it.
+  needs_style_and_layout |=
+      RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+      HTMLDetailsElement::ExpandDetailsAncestors(first_node);
+
+  // If the active match is hidden inside a hidden=until-found element, then we
+  // should reveal it so we can scroll to it.
+  needs_style_and_layout |=
+      RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+          first_node.GetExecutionContext()) &&
+      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
   if (needs_style_and_layout) {
     frame_->GetDocument()->UpdateStyleAndLayout(
@@ -395,20 +417,19 @@ void TextFragmentAnchor::DidFindMatch(
   if (first_match_needs_scroll_) {
     first_match_needs_scroll_ = false;
 
-    PhysicalRect bounding_box(ComputeTextRect(range));
+    PhysicalRect bounding_box(ComputeTextRect(range.ToEphemeralRange()));
 
     // Set the bounding box height to zero because we want to center the top of
     // the text range.
     bounding_box.SetHeight(LayoutUnit());
 
-    DCHECK(range.Nodes().begin() != range.Nodes().end());
+    DCHECK(range.ToEphemeralRange().Nodes().begin() !=
+           range.ToEphemeralRange().Nodes().end());
 
-    Node& node = *range.Nodes().begin();
-
-    DCHECK(node.GetLayoutObject());
+    DCHECK(first_node.GetLayoutObject());
 
     PhysicalRect scrolled_bounding_box =
-        node.GetLayoutObject()->ScrollRectToVisible(
+        first_node.GetLayoutObject()->ScrollRectToVisible(
             bounding_box, ScrollAlignment::CreateScrollIntoViewParams(
                               ScrollAlignment::CenterAlways(),
                               ScrollAlignment::CenterAlways(),
@@ -416,7 +437,7 @@ void TextFragmentAnchor::DidFindMatch(
     did_scroll_into_view_ = true;
 
     if (AXObjectCache* cache = frame_->GetDocument()->ExistingAXObjectCache())
-      cache->HandleScrolledToAnchor(&node);
+      cache->HandleScrolledToAnchor(&first_node);
 
     metrics_->DidScroll();
 

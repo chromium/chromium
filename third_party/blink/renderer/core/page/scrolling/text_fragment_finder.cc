@@ -452,7 +452,7 @@ void TextFragmentFinder::OnMatchComplete() {
       match_metrics.spans_multiple_blocks = !IsInSameUninterruptedBlock(
           potential_match.StartPosition(), potential_match.EndPosition());
     }
-    client_.DidFindMatch(potential_match, match_metrics, !potential_match_);
+    client_.DidFindMatch(*first_match_, match_metrics, !potential_match_);
   }
 }
 

@@ -92,6 +92,19 @@ Element* LockedAncestorPreventingUpdate(const Node& node,
 }
 
 template <typename Lambda>
+const Element* LockedInclusiveAncestorPreventingUpdate(
+    const Node& node,
+    Lambda update_is_prevented) {
+  if (const Element* element = DynamicTo<Element>(node)) {
+    if (auto* context = element->GetDisplayLockContext()) {
+      if (update_is_prevented(context))
+        return element;
+    }
+  }
+  return LockedAncestorPreventingUpdate(node, update_is_prevented);
+}
+
+template <typename Lambda>
 Element* LockedAncestorPreventingUpdate(const LayoutObject& object,
                                         Lambda update_is_prevented) {
   if (auto* ancestor = NearestLockedExclusiveAncestor(object)) {
@@ -623,6 +636,14 @@ Element* DisplayLockUtilities::LockedAncestorPreventingLayout(
   return LockedAncestorPreventingUpdate(node, [](DisplayLockContext* context) {
     return !context->ShouldLayoutChildren();
   });
+}
+
+const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(
+    const Node& node) {
+  return LockedInclusiveAncestorPreventingUpdate(
+      node, [](DisplayLockContext* context) {
+        return !context->ShouldLayoutChildren();
+      });
 }
 
 Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {

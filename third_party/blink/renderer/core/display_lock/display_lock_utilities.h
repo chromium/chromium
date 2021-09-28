@@ -154,6 +154,8 @@ class CORE_EXPORT DisplayLockUtilities {
   // the layout update can be forced.
   static Element* LockedAncestorPreventingLayout(const LayoutObject& object);
   static Element* LockedAncestorPreventingLayout(const Node& node);
+  static const Element* LockedInclusiveAncestorPreventingLayout(
+      const Node& node);
 
   // Returns the nearest ancestor element which has a lock that prevents
   // style. Note that this is different from a nearest locked ancestor since

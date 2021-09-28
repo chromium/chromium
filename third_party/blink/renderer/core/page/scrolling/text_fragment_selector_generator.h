@@ -102,7 +102,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   };
 
   // TextFragmentFinder::Client interface
-  void DidFindMatch(const EphemeralRangeInFlatTree& match,
+  void DidFindMatch(const RangeInFlatTree& match,
                     const TextFragmentAnchorMetrics::Match match_metrics,
                     bool is_unique) override;
   void NoMatchFound() override;

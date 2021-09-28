@@ -327,7 +327,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
     // lock.
     const bool locked =
         !behavior_.IgnoresDisplayLock() &&
-        DisplayLockUtilities::NearestLockedInclusiveAncestor(*node_);
+        DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(*node_);
 
     LayoutObject* layout_object = node_->GetLayoutObject();
     if (!layout_object || locked) {

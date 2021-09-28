@@ -256,11 +256,11 @@ void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
 }
 
 void TextFragmentSelectorGenerator::DidFindMatch(
-    const EphemeralRangeInFlatTree& match,
+    const RangeInFlatTree& match,
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
   if (is_unique &&
-      PlainText(match).StripWhiteSpace().length() ==
+      PlainText(match.ToEphemeralRange()).StripWhiteSpace().length() ==
           PlainText(range_->ToEphemeralRange()).StripWhiteSpace().length()) {
     state_ = kSuccess;
     ResolveSelectorState();
