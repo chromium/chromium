@@ -47,50 +47,86 @@ function createHistoryClustersBrowserProxy() {
       return flushTasks();
     });
 
-    test('history clusters menu item visibility', function() {
-      const historyClusters =
-          sidebar.shadowRoot.querySelector('#historyClusters');
-      assertEquals(!!historyClusters, isHistoryClustersEnabled);
-    });
-
     test('changing route changes active view', function() {
       assertEquals('history', app.$.content.selected);
+      assertEquals(app.$$('#history'), app.$['tabs-content'].selectedItem);
+
       navigateTo('/syncedTabs');
       return flushTasks().then(function() {
-        assertEquals('syncedTabs', app.$.content.selected);
         assertEquals('chrome://history/syncedTabs', window.location.href);
+
+        assertEquals('syncedTabs', app.$.content.selected);
+        assertEquals(app.$$('#synced-devices'), app.$.content.selectedItem);
       });
     });
 
-    test('changing route to /journeys may change active view', function() {
+    test('routing to /journeys may change active view', function() {
       assertEquals('history', app.$.content.selected);
+      assertEquals(app.$$('#history'), app.$['tabs-content'].selectedItem);
+
       navigateTo('/journeys');
       return flushTasks().then(function() {
-        assertEquals(
-            isHistoryClustersEnabled ? 'journeys' : 'history',
-            app.$.content.selected);
         assertEquals('chrome://history/journeys', window.location.href);
+
+        assertEquals('history', app.$.content.selected);
+        assertEquals(!!app.$$('#history-clusters'), isHistoryClustersEnabled);
+        assertEquals(
+            isHistoryClustersEnabled ? app.$$('#history-clusters') :
+                                       app.$$('#history'),
+            app.$['tabs-content'].selectedItem);
       });
     });
 
-    test('route updates from sidebar', function() {
-      assertEquals('history', app.selectedPage_);
+    test('routing to /journeys may update sidebar menu item', function() {
+      assertEquals('chrome://history/', sidebar.$.history.href);
+      assertEquals('history', sidebar.$.history.path);
+
+      navigateTo('/journeys');
+      return flushTasks().then(function() {
+        // Currently selected history view is preserved in sidebar menu item.
+        assertEquals(
+            isHistoryClustersEnabled ? 'chrome://history/journeys' :
+                                       'chrome://history/',
+            sidebar.$.history.href);
+        assertEquals(
+            isHistoryClustersEnabled ? 'journeys' : 'history',
+            sidebar.$.history.path);
+      });
+    });
+
+    test('route updates from tabs and sidebar menu items', function() {
+      assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
       sidebar.$.syncedTabs.click();
-      assertEquals('syncedTabs', app.selectedPage_);
+      assertEquals('syncedTabs', sidebar.$.menu.selected);
       assertEquals('chrome://history/syncedTabs', window.location.href);
 
-      keyDownOn(sidebar.$.history, 32, '', ' ');
-      assertEquals('history', app.selectedPage_);
+      // Currently selected history view is preserved in sidebar menu item.
+      keyDownOn(sidebar.$.history, 0, '', ' ');
+      assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
+      const historyTabs = app.$$('cr-tabs');
+      assertEquals(!!historyTabs, isHistoryClustersEnabled);
+
       if (isHistoryClustersEnabled) {
-        const historyClusters =
-            sidebar.shadowRoot.querySelector('#historyClusters');
-        keyDownOn(historyClusters, 32, '', ' ');
-        assertEquals('journeys', app.selectedPage_);
+        historyTabs.selected = 1;
+        assertEquals('journeys', sidebar.$.menu.selected);
         assertEquals('chrome://history/journeys', window.location.href);
+
+        keyDownOn(sidebar.$.syncedTabs, 0, '', ' ');
+        assertEquals('syncedTabs', sidebar.$.menu.selected);
+        assertEquals('chrome://history/syncedTabs', window.location.href);
+
+        // Currently selected history view is preserved in sidebar menu item.
+        keyDownOn(sidebar.$.history, 0, '', ' ');
+        assertEquals('journeys', sidebar.$.menu.selected);
+        assertEquals('chrome://history/journeys', window.location.href);
+
+        historyTabs.selected = 0;
+        assertEquals('history', sidebar.$.menu.selected);
+        assertEquals('chrome://history/', window.location.href);
       }
     });
 
@@ -109,26 +145,25 @@ function createHistoryClustersBrowserProxy() {
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
     });
 
-    test('search preserved across menu items', function() {
+    test('search is preserved across tabs and sidebar menu items', function() {
       const searchTerm = 'Soldier76';
-      const menu = sidebar.$.menu;
-      assertEquals('history', app.selectedPage_);
+      assertEquals('history', sidebar.$.menu.selected);
       navigateTo('/?q=' + searchTerm);
 
       sidebar.$.syncedTabs.click();
-      assertEquals('syncedTabs', app.selectedPage_);
+      assertEquals('syncedTabs', sidebar.$.menu.selected);
       assertEquals(searchTerm, toolbar.searchTerm);
       assertEquals(
           'chrome://history/syncedTabs?q=' + searchTerm, window.location.href);
 
       sidebar.$.history.click();
-      assertEquals('history', app.selectedPage_);
+      assertEquals('history', sidebar.$.menu.selected);
       assertEquals(searchTerm, toolbar.searchTerm);
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
 
       if (isHistoryClustersEnabled) {
-        sidebar.shadowRoot.querySelector('#historyClusters').click();
-        assertEquals('journeys', app.selectedPage_);
+        app.$$('cr-tabs').selected = 1;
+        assertEquals('journeys', sidebar.$.menu.selected);
         assertEquals(searchTerm, toolbar.searchTerm);
         assertEquals(
             'chrome://history/journeys?q=' + searchTerm, window.location.href);

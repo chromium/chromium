@@ -19,6 +19,7 @@ import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/p
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
+import {Page, TABBED_PAGES} from './router.js';
 
 export type FooterInfo = {
   managed: boolean,
@@ -42,14 +43,18 @@ export class HistorySideBarElement extends PolymerElement {
 
   static get properties() {
     return {
+      footerInfo: Object,
+
+      /* The id of the currently selected page. */
       selectedPage: {
         type: String,
         notify: true,
       },
 
-      guestSession_: Boolean,
+      /* The index of the currently selected tab. */
+      selectedTab: Number,
 
-      footerInfo: Object,
+      guestSession_: Boolean,
 
       historyClustersEnabled_: {
         type: Boolean,
@@ -67,8 +72,12 @@ export class HistorySideBarElement extends PolymerElement {
     };
   }
 
-  private guestSession_ = loadTimeData.getBoolean('isGuestSession');
   footerInfo: FooterInfo;
+  selectedPage: Page;
+  selectedTab: number;
+  private guestSession_ = loadTimeData.getBoolean('isGuestSession');
+  private historyClustersEnabled_: boolean;
+  private showFooter_: boolean;
 
   /** @override */
   ready() {
@@ -108,6 +117,30 @@ export class HistorySideBarElement extends PolymerElement {
    */
   private onItemClick_(e: Event) {
     e.preventDefault();
+  }
+
+  /**
+   * @returns The url to navigate to when the history menu item is clicked. It
+   *     reflects the currently selected tab.
+   */
+  private getHistoryItemHref_(
+      _selectedHistoryTab: number, _historyClustersEnabled: boolean): string {
+    return this.historyClustersEnabled_ &&
+            TABBED_PAGES[this.selectedTab] === Page.HISTORY_CLUSTERS ?
+        '/' + Page.HISTORY_CLUSTERS :
+        '/';
+  }
+
+  /**
+   * @returns The path that determines if the history menu item is selected. It
+   *     reflects the currently selected tab.
+   */
+  private getHistoryItemPath_(
+      _selectedHistoryTab: number, _historyClustersEnabled: boolean): string {
+    return this.historyClustersEnabled_ &&
+            TABBED_PAGES[this.selectedTab] === Page.HISTORY_CLUSTERS ?
+        Page.HISTORY_CLUSTERS :
+        Page.HISTORY;
   }
 
   private computeShowFooter_(

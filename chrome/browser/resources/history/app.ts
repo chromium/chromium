@@ -5,14 +5,13 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-
 import './history_clusters/clusters.js';
 import './history_list.js';
 import './history_toolbar.js';
 import './query_manager.js';
-import './router.js';
 import './shared_style.js';
 import './side_bar.js';
 import './strings.m.js';
@@ -25,6 +24,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -34,6 +34,7 @@ import {ForeignSession, QueryResult, QueryState} from './externs.js';
 import {HistoryListElement} from './history_list.js';
 import {HistoryToolbarElement} from './history_toolbar.js';
 import {HistoryQueryManagerElement} from './query_manager.js';
+import {Page, TABBED_PAGES} from './router.js';
 import {FooterInfo} from './side_bar.js';
 
 let lazyLoadPromise: Promise<void>|null = null;
@@ -119,6 +120,8 @@ export interface HistoryAppElement {
   $: {
     'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
+    'tabs-container': Element,
+    'tabs-content': IronPagesElement,
     'toolbar': HistoryToolbarElement,
   };
 }
@@ -158,7 +161,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         notify: true,
       },
 
-      /** @type {!QueryState} */
       queryState_: Object,
 
       // True if the window is narrow enough for the page to have a drawer.
@@ -167,7 +169,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         observer: 'hasDrawerChanged_',
       },
 
-      /** @type {FooterInfo} */
       footerInfo: {
         type: Object,
         value() {
@@ -177,16 +178,49 @@ export class HistoryAppElement extends HistoryAppElementBase {
           };
         },
       },
+
+      historyClustersEnabled_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('isHistoryClustersEnabled'),
+      },
+
+      // The index of the currently selected tab.
+      selectedTab_: {
+        type: Number,
+        observer: 'selectedTabChanged_',
+      },
+
+      tabsIcons_: {
+        type: Array,
+        value: () => ['images/list.svg', 'images/journeys.svg'],
+      },
+
+      tabsNames_: {
+        type: Array,
+        value: () => {
+          return [
+            loadTimeData.getString('historyListTabLabel'),
+            loadTimeData.getString('historyClustersTabLabel')
+          ];
+        },
+      },
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
+  footerInfo: FooterInfo;
   private browserService_: BrowserService|null = null;
-  private queryResult_: QueryResult;
+  private eventTracker_: EventTracker = new EventTracker();
+  private hasDrawer_: boolean;
+  private historyClustersEnabled_: boolean;
   private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
   private pendingDelete_: boolean;
-  private hasDrawer_: boolean;
-  private selectedPage_: string;
+  private queryResult_: QueryResult;
+  private queryState_: QueryState;
+  private selectedPage_: Page;
+  private selectedTab_: number;
+  private tabsIcons_: Array<string>;
+  private tabsNames_: Array<string>;
   private toolbarShadow_: boolean;
 
   constructor() {
@@ -246,9 +280,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private historyClustersSelected_(selectedPage: string): boolean {
-    return selectedPage === 'journeys' &&
-        loadTimeData.getBoolean('isHistoryClustersEnabled');
+  private historyClustersSelected_(
+      _selectedPage: Page, _historyClustersEnabled: boolean): boolean {
+    return this.selectedPage_ === Page.HISTORY_CLUSTERS &&
+        this.historyClustersEnabled_;
   }
 
   private onFirstRender_() {
@@ -259,8 +294,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     // Focus the search field on load. Done here to ensure the history page
     // is rendered before we try to take focus.
-    const searchField =
-        /** @type {HistoryToolbarElement} */ (this.$.toolbar).searchField;
+    const searchField = this.$.toolbar.searchField;
     if (!searchField.narrow) {
       searchField.getSearchInput().focus();
     }
@@ -277,7 +311,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
   /** Overridden from IronScrollTargetBehavior */
   _scrollHandler() {
     if (this.scrollTarget) {
-      this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0;
+      // When the tabs are visible, show the toolbar shadow for the synced
+      // devices page only.
+      this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0 &&
+          (!this.historyClustersEnabled_ ||
+           this.syncedTabsSelected_(this.selectedPage_!));
     }
   }
 
@@ -290,16 +328,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * and changes the view of the top toolbar.
    */
   checkboxSelected() {
-    const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
-    toolbar.count = /** @type {HistoryListElement} */ (this.$.history)
-                        .getSelectedItemCount();
+    this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
 
   selectOrUnselectAll() {
-    const list = /** @type {HistoryListElement} */ (this.$.history);
-    const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
-    list.selectOrUnselectAll();
-    toolbar.count = list.getSelectedItemCount();
+    this.$.history.selectOrUnselectAll();
+    this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
 
   /**
@@ -307,10 +341,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * checkbox to be unselected.
    */
   private unselectAll() {
-    const list = /** @type {HistoryListElement} */ (this.$.history);
-    const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
-    list.unselectAllItems();
-    toolbar.count = 0;
+    this.$.history.unselectAllItems();
+    this.$.toolbar.count = 0;
   }
 
   deleteSelected() {
@@ -318,8 +350,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onQueryFinished_() {
-    const list = /** @type {HistoryListElement} */ (this.$['history']);
-    list.historyResult(this.queryResult_.info!, this.queryResult_.results!);
+    this.$.history.historyResult(
+        this.queryResult_.info!, this.queryResult_.results!);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
@@ -364,7 +396,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private onSelectAllCommand_(): boolean {
     if (this.$.toolbar.searchField.isSearchFocused() ||
         this.syncedTabsSelected_(this.selectedPage_!) ||
-        this.historyClustersSelected_(this.selectedPage_!)) {
+        this.historyClustersSelected_(
+            this.selectedPage_!, this.historyClustersEnabled_)) {
       return false;
     }
     this.selectOrUnselectAll();
@@ -393,8 +426,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.set('footerInfo.otherFormsOfHistory', hasOtherForms);
   }
 
-  private syncedTabsSelected_(selectedPage: string): boolean {
-    return selectedPage === 'syncedTabs';
+  private syncedTabsSelected_(_selectedPage: Page): boolean {
+    return this.selectedPage_ === Page.SYNCED_TABS;
   }
 
   /**
@@ -409,6 +442,33 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private selectedPageChanged_() {
     this.unselectAll();
     this.historyViewChanged_();
+    this.maybeUpdateSelectedHistoryTab_();
+  }
+
+  private selectedItemChanged_(e: Event) {
+    // <history-list> and <history-clusters> are inside two nested <iron-pages>.
+    // Adjust the scroll target when the selection on the outer one changes.
+    const selectedItem =
+        ((e.target as IronPagesElement).selectedItem as HTMLElement);
+    if (selectedItem && selectedItem !== this.$['tabs-container']) {
+      this.scrollTarget = selectedItem;
+    } else if (this.$['tabs-content'].selectedItem) {
+      this.scrollTarget = (this.$['tabs-content'].selectedItem as HTMLElement);
+    }
+  }
+
+  private selectedTabChanged_() {
+    // Change in the currently selected tab requires change in the currently
+    // selected page.
+    this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
+  }
+
+  private maybeUpdateSelectedHistoryTab_() {
+    // Change in the currently selected page may require change in the currently
+    // selected tab.
+    if (TABBED_PAGES.includes(this.selectedPage_)) {
+      this.selectedTab_ = TABBED_PAGES.indexOf(this.selectedPage_);
+    }
   }
 
   private historyViewChanged_() {
@@ -429,9 +489,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   /**
    * This computed binding is needed to make the iron-pages selector update
-   * when the synced-device-manager is instantiated for the first time.
-   * Otherwise the fallback selection will continue to be used after the
-   * corresponding item is added as a child of iron-pages.
+   * when <synced-device-manager> or <history-clusters> is instantiated for the
+   * first time. Otherwise the fallback selection will continue to be used after
+   * the corresponding item is added as a child of iron-pages.
    */
   private getSelectedPage_(selectedPage: string, _items: Array<any>): string {
     return selectedPage;
@@ -447,10 +507,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private recordHistoryPageView_() {
     let histogramValue = HistoryPageViewHistogram.END;
     switch (this.selectedPage_) {
-      case 'journeys':
+      case Page.HISTORY_CLUSTERS:
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
-      case 'syncedTabs':
+      case Page.SYNCED_TABS:
         histogramValue = this.isUserSignedIn_ ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;

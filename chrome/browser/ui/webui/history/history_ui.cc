@@ -129,13 +129,11 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("isHistoryClustersDebug",
                      base::FeatureList::IsEnabled(history_clusters::kDebug));
 
-  // TODO(crbug.com/1173908): Change `historyClustersMenuItem` to
-  // `historyClustersTabLabel` once the UI is updated to tab view.
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},
       {"enableHistoryClusters", IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL},
       {"headerText", IDS_HISTORY_CLUSTERS_HEADER_TEXT},
-      {"historyClustersMenuItem", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},
+      {"historyClustersTabLabel", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},
       {"historyListTabLabel", IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL},
       {"relatedSearchesHeader", IDS_HISTORY_CLUSTERS_RELATED_SEARCHES_HEADER},
       {"removeAllFromHistory", IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS},
