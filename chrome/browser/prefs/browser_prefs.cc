@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
@@ -474,7 +475,7 @@ const char kLocalDiscoveryNotificationsEnabled[] =
 const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
 
 // Deprecated 11/2020
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
 #endif
 
@@ -722,7 +723,7 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterBooleanPref(kHistoryMenuPromoShown, true);
 
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   registry->RegisterIntegerPref(kMigrationToLoginDBStep, 0);
 #endif
 
@@ -1498,7 +1499,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kHistoryMenuPromoShown);
 
   // Added 11/2020
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   profile_prefs->ClearPref(kMigrationToLoginDBStep);
 #endif
 
