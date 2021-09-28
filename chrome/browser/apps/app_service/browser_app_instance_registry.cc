@@ -33,7 +33,7 @@ BrowserAppInstanceRegistry::~BrowserAppInstanceRegistry() = default;
 
 std::unique_ptr<BrowserAppInstanceRegistry> BrowserAppInstanceRegistry::Create(
     BrowserAppInstanceTracker* ash_instance_tracker) {
-  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
+  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
     return nullptr;
   }
   return std::make_unique<BrowserAppInstanceRegistry>(*ash_instance_tracker);

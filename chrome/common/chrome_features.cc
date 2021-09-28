@@ -119,7 +119,7 @@ const base::Feature kBorealis{"Borealis", base::FEATURE_DISABLED_BY_DEFAULT};
 #if defined(OS_CHROMEOS)
 const base::Feature kBrowserAppInstanceTracking{
     "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
 // Enables change picture video mode.
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
@@ -1040,13 +1040,13 @@ const base::Feature kWebKioskEnableLacros{"WebKioskEnableLacros",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // When enabled, the Ash browser only manages system web apps, and non-system
 // web apps are managed by the Lacros browser. When disabled, the Ash browser
 // manages all web apps.
 const base::Feature kWebAppsCrosapi{"WebAppsCrosapi",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_ANDROID)
 // Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
@@ -1124,5 +1124,15 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+bool IsBrowserAppInstanceTrackingEnabled() {
+  // kWebAppsCrosapi forces browser app instance tracking to be on because it's
+  // required in order for the shelf to function correctly when Lacros is
+  // enabled.
+  return base::FeatureList::IsEnabled(kBrowserAppInstanceTracking) ||
+         base::FeatureList::IsEnabled(kWebAppsCrosapi);
+}
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace features

@@ -143,7 +143,7 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
 std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
     Profile* profile,
     AppRegistryCache& app_registry_cache) {
-  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
+  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
     return nullptr;
   }
   return std::make_unique<BrowserAppInstanceTracker>(profile,
