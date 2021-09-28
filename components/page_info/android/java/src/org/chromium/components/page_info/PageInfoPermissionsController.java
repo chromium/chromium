@@ -34,6 +34,7 @@ public class PageInfoPermissionsController
         implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
     /**  Parameters to represent a single permission. */
     public static class PermissionObject {
+        public @ContentSettingsType int type;
         public CharSequence name;
         public CharSequence nameMidSentence;
         public boolean allowed;
@@ -45,6 +46,7 @@ public class PageInfoPermissionsController
     private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mPageUrl;
+    private boolean mHasSoundPermission;
     private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
     @ContentSettingsType
@@ -89,6 +91,8 @@ public class PageInfoPermissionsController
         if (fragmentManager.isStateSaved()) return null;
 
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
+        fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
+
         mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
         mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
@@ -125,6 +129,14 @@ public class PageInfoPermissionsController
             rowParams.rowTint = mHighlightColor;
         }
         mRowView.setParams(rowParams);
+
+        mHasSoundPermission = false;
+        for (PermissionObject permission : permissions) {
+            if (permission.type == ContentSettingsType.SOUND) {
+                mHasSoundPermission = true;
+                break;
+            }
+        }
     }
 
     /**
@@ -207,7 +219,7 @@ public class PageInfoPermissionsController
             mMainController.refreshPermissions();
         }
         mDataIsStale = false;
-    };
+    }
 
     // SingleWebsiteSettings.Observer methods
 

@@ -69,6 +69,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     public static final String EXTRA_SITE = "org.chromium.chrome.preferences.site";
     public static final String EXTRA_SITE_ADDRESS = "org.chromium.chrome.preferences.site_address";
 
+    // A boolean to configure whether the sound setting should be shown. Defaults to true.
+    public static final String EXTRA_SHOW_SOUND = "org.chromium.chrome.preferences.show_sound";
+
     // Used to store mPreviousNotificationPermission when the activity is paused.
     private static final String PREVIOUS_NOTIFICATION_PERMISSION_KEY =
             "previous_notification_permission";
@@ -952,6 +955,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void setUpSoundPreference(Preference preference) {
+        if (!getArguments().getBoolean(EXTRA_SHOW_SOUND, true)) {
+            return;
+        }
+
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         @ContentSettingValues

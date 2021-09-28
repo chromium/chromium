@@ -63,6 +63,7 @@ public class PermissionParamsListBuilder {
     private PermissionObject createPermissionParams(
             PermissionParamsListBuilder.PageInfoPermissionEntry permission) {
         PermissionObject permissionParams = new PermissionObject();
+        permissionParams.type = permission.type;
 
         if (permission.setting == ContentSettingValues.ALLOW) {
             LocationUtils locationUtils = LocationUtils.getInstance();

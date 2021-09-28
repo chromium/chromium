@@ -509,6 +509,24 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests the permissions page of the PageInfo UI with sound permissions.
+     */
+    @Test
+    @MediumTest
+    public void testShowPermissionsSubpageWithSound() throws IOException {
+        GURL url = new GURL(mTestServerRule.getServer().getURL("/"));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.SOUND, url, url,
+                    ContentSettingValues.BLOCK);
+        });
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onView(allOf(withText(containsString("Sound")), isDisplayed()));
+    }
+
+    /**
      * Tests the cookies page of the PageInfo UI.
      */
     @Test
