@@ -44,13 +44,12 @@ constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
 class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
                                          Recorder::RecorderImpl {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    Recorder::GetInstance()->AddObserver(this);
+  AshStructuredMetricsRecorderTest() {
     feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
   }
 
-  void SetUpOnMainThread() override {
-    ChromeStructuredMetricsRecorder::Get()->Initialize();
+  void SetUpInProcessBrowserTestFixture() override {
+    Recorder::GetInstance()->AddObserver(this);
   }
 
   void TearDownInProcessBrowserTestFixture() override {

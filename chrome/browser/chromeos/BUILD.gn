@@ -137,6 +137,7 @@ source_set("chromeos") {
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/metrics/structured",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/profiles",

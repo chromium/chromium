@@ -149,6 +149,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -868,6 +869,9 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   browser_manager_->AddObserver(SessionControllerClientImpl::Get());
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+  // Needs to be initialized after crosapi_manager_.
+  metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
   if (immediate_login) {
     const std::string cryptohome_id =
