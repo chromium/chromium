@@ -27,6 +27,7 @@ RequestParams::RequestParams()
       credentials_mode(::network::mojom::CredentialsMode::kInclude) {}
 
 RequestParams::RequestParams(const RequestParams& other) = default;
+RequestParams::~RequestParams() = default;
 
 DownloadParams::DownloadParams() : client(DownloadClient::INVALID) {}
 DownloadParams::~DownloadParams() = default;

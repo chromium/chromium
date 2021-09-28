@@ -175,7 +175,12 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Whether download is initated by the content on the page.
   bool is_content_initiated;
 
+  // The credentials mode for whether to expose the response headers to
+  // javascript, see Access-Control-Allow-Credentials header.
   ::network::mojom::CredentialsMode credentials_mode;
+
+  // Isolation info for the download request, mainly for same site cookies.
+  absl::optional<net::IsolationInfo> isolation_info;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DownloadCreateInfo);

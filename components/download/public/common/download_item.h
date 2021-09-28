@@ -32,6 +32,7 @@
 #include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_source.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
@@ -354,6 +355,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // The credentials mode of the request.
   virtual ::network::mojom::CredentialsMode GetCredentialsMode() const = 0;
+
+  // The isolation mode of the request.
+  virtual const absl::optional<net::IsolationInfo>& GetIsolationInfo()
+      const = 0;
 
   //    Destination State accessors --------------------------------------------
 

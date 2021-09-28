@@ -32,7 +32,8 @@ DownloadCreateInfo::DownloadCreateInfo(
       method("GET"),
       ukm_source_id(ukm::kInvalidSourceId),
       is_content_initiated(false),
-      credentials_mode(::network::mojom::CredentialsMode::kInclude) {}
+      credentials_mode(::network::mojom::CredentialsMode::kInclude),
+      isolation_info(absl::nullopt) {}
 
 DownloadCreateInfo::DownloadCreateInfo()
     : DownloadCreateInfo(base::Time(), std::make_unique<DownloadSaveInfo>()) {}

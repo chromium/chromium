@@ -87,6 +87,9 @@ DownloadResponseHandler::DownloadResponseHandler(
   }
   if (resource_request->request_initiator.has_value())
     request_initiator_ = resource_request->request_initiator;
+
+  if (resource_request->trusted_params)
+    isolation_info_ = resource_request->trusted_params->isolation_info;
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
@@ -154,6 +157,7 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->download_source = download_source_;
   create_info->request_initiator = request_initiator_;
   create_info->credentials_mode = credentials_mode_;
+  create_info->isolation_info = isolation_info_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;

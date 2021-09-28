@@ -8,9 +8,11 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/clients.h"
+#include "net/base/isolation_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace download {
@@ -97,7 +99,7 @@ struct RequestParams {
  public:
   RequestParams();
   RequestParams(const RequestParams& other);
-  ~RequestParams() = default;
+  ~RequestParams();
 
   GURL url;
 
@@ -114,6 +116,10 @@ struct RequestParams {
 
   // The credentials mode of the request.
   ::network::mojom::CredentialsMode credentials_mode;
+
+  // The isolation info of the request, this won't be persisted to db and will
+  // be invalidate during download resumption in new browser session.
+  absl::optional<net::IsolationInfo> isolation_info;
 };
 
 // The parameters that describe a download request made to the DownloadService.

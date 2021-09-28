@@ -190,6 +190,10 @@ void DownloadDriverImpl::Start(
                           weak_ptr_factory_.GetWeakPtr(), guid));
   download_url_params->set_require_safety_checks(
       request_params.require_safety_checks);
+  if (request_params.isolation_info) {
+    download_url_params->set_isolation_info(
+        request_params.isolation_info.value());
+  }
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
 

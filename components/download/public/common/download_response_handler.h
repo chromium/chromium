@@ -106,6 +106,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   bool has_strong_validators_;
   absl::optional<url::Origin> request_initiator_;
   ::network::mojom::CredentialsMode credentials_mode_;
+  absl::optional<net::IsolationInfo> isolation_info_;
   bool is_partial_request_;
   bool completed_;
 

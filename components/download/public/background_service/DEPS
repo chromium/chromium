@@ -2,6 +2,7 @@ include_rules = [
   "-content",
   "+base",
   "+components/keyed_service",
+  "+net/base",
   "+net/http",
   "+net/traffic_annotation",
   "+services/network/public/cpp",

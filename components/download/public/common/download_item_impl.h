@@ -63,7 +63,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 bool has_user_gesture,
                 const std::string& remote_address,
                 base::Time start_time,
-                ::network::mojom::CredentialsMode credentials_mode);
+                ::network::mojom::CredentialsMode credentials_mode,
+                const absl::optional<net::IsolationInfo>& isolation_info);
     RequestInfo();
     explicit RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
@@ -111,6 +112,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // The credentials mode of the request.
     ::network::mojom::CredentialsMode credentials_mode =
         ::network::mojom::CredentialsMode::kInclude;
+
+    // Isolation info for the request.
+    absl::optional<net::IsolationInfo> isolation_info;
   };
 
   // Information about the current state of the download destination.
@@ -314,6 +318,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadCreationType GetDownloadCreationType() const override;
   const absl::optional<DownloadSchedule>& GetDownloadSchedule() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
+  const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;

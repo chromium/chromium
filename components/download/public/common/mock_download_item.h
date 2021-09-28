@@ -133,6 +133,10 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetDownloadSchedule,
                      const absl::optional<DownloadSchedule>&());
   MOCK_CONST_METHOD0(GetCredentialsMode, ::network::mojom::CredentialsMode());
+  MOCK_METHOD((const absl::optional<net::IsolationInfo>&),
+              GetIsolationInfo,
+              (),
+              (const override));
   MOCK_METHOD2(OnContentCheckCompleted,
                void(DownloadDangerType, DownloadInterruptReason));
   MOCK_METHOD1(SetOpenWhenComplete, void(bool));
