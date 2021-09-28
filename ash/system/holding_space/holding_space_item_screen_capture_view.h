@@ -45,6 +45,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
   void UpdateImage();
 
   // Owned by view hierarchy.
+  views::View* border_ = nullptr;
   RoundedImageView* image_ = nullptr;
   views::ImageView* play_icon_ = nullptr;
 
