@@ -4,7 +4,6 @@
 
 #include "content/browser/screen_enumeration/screen_change_monitor.h"
 
-#include "build/build_config.h"
 #include "ui/display/screen.h"
 
 namespace content {
@@ -12,11 +11,8 @@ namespace content {
 ScreenChangeMonitor::ScreenChangeMonitor(
     base::RepeatingCallback<void(bool)> callback)
     : callback_(callback) {
-// TODO(crbug.com/1071233): Investigate test failures (crashes?) on Fuchsia.
-#if !defined(OS_FUCHSIA)
   if (display::Screen* screen = display::Screen::GetScreen())
     cached_displays_ = screen->GetAllDisplays();
-#endif  // !OS_FUCHSIA
 }
 
 ScreenChangeMonitor::~ScreenChangeMonitor() = default;
