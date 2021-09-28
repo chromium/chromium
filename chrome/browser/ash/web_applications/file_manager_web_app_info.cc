@@ -13,14 +13,15 @@
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL(ash::file_manager::kChromeUIFileManagerURL);
   info->scope = GURL(ash::file_manager::kChromeUIFileManagerURL);
-  // TODO(majewski): Fetch from a resource.
-  info->title = u"File Manager";
+  info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_IMAGES_ICON192_PNG}}, *info);
