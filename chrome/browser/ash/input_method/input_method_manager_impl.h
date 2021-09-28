@@ -60,6 +60,10 @@ class InputMethodManagerImpl : public InputMethodManager,
     // TODO(nona): Support dynamical unloading.
     void LoadNecessaryComponentExtensions();
 
+    void SetMenuActivated(bool activated);
+
+    bool IsMenuActivated() const;
+
     // InputMethodManager::State overrides.
     scoped_refptr<InputMethodManager::State> Clone() const override;
     void AddInputMethodExtension(
@@ -109,10 +113,6 @@ class InputMethodManagerImpl : public InputMethodManager,
 
     // Reset the input view URL to the default url of the current input method.
     void ResetInputViewUrl();
-
-    // ------------------------- Data members.
-    // True if the opt-in IME menu is activated.
-    bool menu_activated = false;
 
    protected:
     friend base::RefCounted<input_method::InputMethodManager::State>;
@@ -181,6 +181,9 @@ class InputMethodManagerImpl : public InputMethodManager,
 
     InputMethodManager::UIStyle ui_style_ =
         InputMethodManager::UIStyle::kNormal;
+
+    // True if the opt-in IME menu is activated.
+    bool menu_activated_ = false;
 
     // Do not forget to update StateImpl::Clone() when adding new data members!!
   };

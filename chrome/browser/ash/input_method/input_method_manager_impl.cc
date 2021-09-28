@@ -165,7 +165,7 @@ InputMethodManagerImpl::StateImpl::Clone() const {
 
   new_state->enabled_extension_imes_ = enabled_extension_imes_;
   new_state->available_input_methods_ = available_input_methods_;
-  new_state->menu_activated = menu_activated;
+  new_state->menu_activated_ = menu_activated_;
   new_state->input_view_url_ = input_view_url_;
   new_state->input_view_url_overridden_ = input_view_url_overridden_;
   new_state->ui_style_ = ui_style_;
@@ -917,6 +917,14 @@ Profile* const InputMethodManagerImpl::StateImpl::GetProfile() const {
   return profile_;
 }
 
+void InputMethodManagerImpl::StateImpl::SetMenuActivated(bool activated) {
+  menu_activated_ = activated;
+}
+
+bool InputMethodManagerImpl::StateImpl::IsMenuActivated() const {
+  return menu_activated_;
+}
+
 // ------------------------ InputMethodManagerImpl
 bool InputMethodManagerImpl::IsLoginKeyboard(
     const std::string& layout) const {
@@ -1269,7 +1277,7 @@ void InputMethodManagerImpl::AssistiveWindowButtonClicked(
 void InputMethodManagerImpl::ImeMenuActivationChanged(bool is_active) {
   // Saves the state that whether the expanded IME menu has been activated by
   // users. This method is only called when the preference is changing.
-  state_->menu_activated = is_active;
+  state_->SetMenuActivated(is_active);
   MaybeNotifyImeMenuActivationChanged();
 }
 
@@ -1317,10 +1325,10 @@ void InputMethodManagerImpl::NotifyImeMenuItemsChanged(
 }
 
 void InputMethodManagerImpl::MaybeNotifyImeMenuActivationChanged() {
-  if (is_ime_menu_activated_ == state_->menu_activated)
+  if (is_ime_menu_activated_ == state_->IsMenuActivated())
     return;
 
-  is_ime_menu_activated_ = state_->menu_activated;
+  is_ime_menu_activated_ = state_->IsMenuActivated();
   for (auto& observer : ime_menu_observers_)
     observer.ImeMenuActivationChanged(is_ime_menu_activated_);
   UMA_HISTOGRAM_BOOLEAN("InputMethod.ImeMenu.ActivationChanged",
