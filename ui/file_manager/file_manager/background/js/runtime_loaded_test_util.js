@@ -1016,8 +1016,19 @@ test.util.async.getNotificationIDs = callback => {
  */
 test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
   const volumeManager = await window.background.getVolumeManager();
-  const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
-  const displayRoot = await volumeInfo.resolveDisplayRoot();
+  let volumeInfo = null;
+  let displayRoot = null;
+
+  // Wait for the volume to initialize.
+  while (!(volumeInfo && displayRoot)) {
+    volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+    if (volumeInfo) {
+      displayRoot = await volumeInfo.resolveDisplayRoot();
+    }
+    if (!displayRoot) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
 
   const filesPromise = names.map(name => {
     // TODO(crbug.com/880130): Remove this conditional.

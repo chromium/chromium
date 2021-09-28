@@ -83,12 +83,12 @@ export class VolumeManagerImpl extends EventTarget {
   /**
    * Adds new volume info from the given volumeMetadata. If the corresponding
    * volume info has already been added, the volumeMetadata is ignored.
-   * @param {!chrome.fileManagerPrivate.VolumeMetadata} volumeMetadata
+   * @param {!VolumeInfo} volumeInfo
    * @return {!Promise<!VolumeInfo>}
    * @private
    */
-  async addVolumeMetadata_(volumeMetadata) {
-    const volumeInfo = await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+  async addVolumeInfo_(volumeInfo) {
+    const volumeType = volumeInfo.volumeType;
 
     // We don't show Downloads and Drive on volume list if they have
     // mount error, since users can do nothing in this situation. We
@@ -98,7 +98,7 @@ export class VolumeManagerImpl extends EventTarget {
     // Drive volume so that users can see auth warning banner on the
     // volume. crbug.com/517772.
     let shouldShow = true;
-    switch (volumeInfo.volumeType) {
+    switch (volumeType) {
       case VolumeManagerCommon.VolumeType.DOWNLOADS:
       case VolumeManagerCommon.VolumeType.DRIVE:
         shouldShow = !!volumeInfo.fileSystem;
@@ -116,12 +116,10 @@ export class VolumeManagerImpl extends EventTarget {
       // is initialized, the status is set to not ready.
       // TODO(mtomasz): The connection status should be migrated into
       // chrome.fileManagerPrivate.VolumeMetadata.
-      if (volumeMetadata.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
         this.onDriveConnectionStatusChanged_();
       }
-    } else if (
-        volumeMetadata.volumeType ===
-        VolumeManagerCommon.VolumeType.REMOVABLE) {
+    } else if (volumeType === VolumeManagerCommon.VolumeType.REMOVABLE) {
       // Update for remounted USB external storage, because they were
       // remounted to switch read-only policy.
       this.volumeInfoList.add(volumeInfo);
@@ -135,6 +133,7 @@ export class VolumeManagerImpl extends EventTarget {
    * @return {!Promise<void>}
    */
   async initialize() {
+    // Subscribe to mount event as early as possible.
     chrome.fileManagerPrivate.onMountCompleted.addListener(
         this.onMountCompleted_.bind(this));
 
@@ -147,29 +146,32 @@ export class VolumeManagerImpl extends EventTarget {
     }
     console.debug(`There are ${volumeMetadataList.length} volumes`);
 
-    // We must subscribe to the mount completed event in the callback of
-    // getVolumeMetadataList (crbug.com/330061). But volumes reported by
-    // onMountCompleted events must be added after the volumes in the
-    // volumeMetadataList are mounted (crbug.com/135477).
-    const unlock = await this.mutex_.lock();
-    try {
-      // Create VolumeInfo for each volume.
-      await Promise.all(volumeMetadataList.map(async (volumeMetadata) => {
-        console.debug(`Initializing volume '${volumeMetadata.volumeId}'`);
-        try {
-          // Handle error here otherwise every promise in Promise.all() fails.
-          const volumeInfo = await this.addVolumeMetadata_(volumeMetadata);
-          console.debug(`Initialized volume '${volumeInfo.volumeId}'`);
-        } catch (error) {
-          console.warn(`Error initiliazing ${volumeMetadata.volumeId}`);
-          console.error(error);
-        }
-      }));
+    // Create VolumeInfo for each volume.
+    volumeMetadataList.map(async (volumeMetadata) => {
+      console.debug(`Initializing volume '${volumeMetadata.volumeId}'`);
+      // createVolumeInfo() requests the filesystem and resolve its root, after
+      // that it only created a VolumeInfo.  We want this request and resolve
+      // outside of the lock to resolve all volumes in parallel.
+      const volumeInfo =
+          await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+      const unlock = await this.mutex_.lock();
+      try {
+        // Add addVolumeInfo_() changes the VolumeInfoList which propagates
+        // to the foreground.
+        await this.addVolumeInfo_(volumeInfo);
+        console.debug(`Initialized volume '${volumeInfo.volumeId}'`);
+      } catch (error) {
+        console.warn(`Error initiliazing ${volumeMetadata.volumeId}`);
+        console.error(error);
+      } finally {
+        unlock();
+      }
+    });
 
-      console.warn(`Initialized all ${volumeMetadataList.length} volumes`);
-    } finally {
-      unlock();
-    }
+    // At this point the volumes are still initializing.
+    console.warn(
+        `Queued the initialization of all ` +
+        `${volumeMetadataList.length} volumes`);
   }
 
   /**
@@ -192,7 +194,9 @@ export class VolumeManagerImpl extends EventTarget {
             case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
             case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
               console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
-              const volumeInfo = await this.addVolumeMetadata_(volumeMetadata);
+              const volumeInfo =
+                  await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+              await this.addVolumeInfo_(volumeInfo);
               this.finishRequest_(requestKey, status, volumeInfo);
               return;
             }
