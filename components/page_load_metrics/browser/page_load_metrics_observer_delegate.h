@@ -37,13 +37,17 @@ class PageLoadMetricsObserverDelegate {
  public:
   // States when the page is restored from the back-forward cache.
   struct BackForwardCacheRestore {
-    explicit BackForwardCacheRestore(bool was_in_foreground);
+    explicit BackForwardCacheRestore(bool was_in_foreground,
+                                     base::TimeTicks navigation_start_time);
     BackForwardCacheRestore(const BackForwardCacheRestore&);
 
     // The first time when the page becomes backgrounded after the page is
     // restored. The time is relative to the navigation start of bfcache restore
-    // avigation.
+    // navigation.
     absl::optional<base::TimeDelta> first_background_time;
+
+    // The navigation start time for this back-forward cache restore.
+    base::TimeTicks navigation_start_time;
 
     // True if the page was in foreground when the page is restored.
     bool was_in_foreground = false;

@@ -387,7 +387,8 @@ void PageLoadTracker::PageHidden() {
         !back_forward_cache_restores_.back()
              .first_background_time.has_value()) {
       back_forward_cache_restores_.back().first_background_time =
-          background_time - navigation_start_after_back_forward_cache_restore_;
+          background_time -
+          back_forward_cache_restores_.back().navigation_start_time;
     }
   }
   visibility_tracker_.OnHidden();
@@ -1030,14 +1031,12 @@ void PageLoadTracker::OnEnterBackForwardCache() {
 
 void PageLoadTracker::OnRestoreFromBackForwardCache(
     content::NavigationHandle* navigation_handle) {
-  navigation_start_after_back_forward_cache_restore_ =
-      navigation_handle->NavigationStart();
-
   DCHECK(!visibility_tracker_.currently_in_foreground());
   bool visible =
       GetWebContents()->GetVisibility() == content::Visibility::VISIBLE;
 
-  BackForwardCacheRestore back_forward_cache_restore(visible);
+  BackForwardCacheRestore back_forward_cache_restore(
+      visible, navigation_handle->NavigationStart());
   back_forward_cache_restores_.push_back(back_forward_cache_restore);
 
   if (visible)

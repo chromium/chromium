@@ -429,10 +429,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // The navigation start in TimeTicks, not the wall time reported by Blink.
   const base::TimeTicks navigation_start_;
 
-  // The navigation start after the last time when back-forward cache is
-  // restored.
-  base::TimeTicks navigation_start_after_back_forward_cache_restore_;
-
   // The most recent URL of this page load. Updated at navigation start, upon
   // redirection, and at commit time.
   GURL url_;
