@@ -58,7 +58,6 @@ def AugmentOptionsForV8Metrics(options, enable_runtime_call_stats=True):
       'v8.console',
       'webkit.console',
       # Blink categories.
-      'blink.resource',
       'blink_gc',
       'partition_alloc',
       # Needed for the metric reported by page.
