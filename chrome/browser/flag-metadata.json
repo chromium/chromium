@@ -4183,11 +4183,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "omnibox-rich-entities-in-launcher",
-    "owners": ["jiameng", "thanhdng", "wrong"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "omnibox-spare-renderer",
     "owners": [ "instant-nav@google.com" ],
     "expiry_milestone": 92

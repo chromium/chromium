@@ -1032,9 +1032,6 @@ extern const char kOmniboxRichAutocompletionPreferUrlsOverPrefixesDescription[];
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
-extern const char kOmniboxRichEntitiesInLauncherName[];
-extern const char kOmniboxRichEntitiesInLauncherDescription[];
-
 extern const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[];
 extern const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[];
 

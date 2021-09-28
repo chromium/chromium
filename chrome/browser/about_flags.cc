@@ -2564,13 +2564,6 @@ const FeatureEntry::FeatureVariation kSubresourceRedirectVariations[] = {
      base::size(kSubresourceRedirectLoginRobotsBasedCompression), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::FeatureVariation
-    kOmniboxRichEntitiesInLauncherVariations[] = {
-        {"with linked Suggest experiment", {}, 0, "t4461027"},
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kCategoricalSearch_Unranked[] = {
     {"ranking", "none"}};
 
@@ -6865,16 +6858,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"omnibox-rich-entities-in-launcher",
-     flag_descriptions::kOmniboxRichEntitiesInLauncherName,
-     flag_descriptions::kOmniboxRichEntitiesInLauncherDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         app_list_features::kEnableOmniboxRichEntities,
-         kOmniboxRichEntitiesInLauncherVariations,
-         "OmniboxRichEntitiesInLauncher")},
 #endif
 
     {"enable-browsing-data-lifetime-manager",

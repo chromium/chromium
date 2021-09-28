@@ -1824,11 +1824,6 @@ const char kOmniboxRichAutocompletionPromisingDescription[] =
     "Allow autocompletion for titles and non-prefixes; see Omnibox Rich "
     "Autocompletion.";
 
-const char kOmniboxRichEntitiesInLauncherName[] =
-    "Omnibox rich entities in the launcher";
-const char kOmniboxRichEntitiesInLauncherDescription[] =
-    "Enable rich entity formatting for Omnibox results in the launcher.";
-
 const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[] =
     "Allow Omnibox contextual web on-focus suggestions on the SRP";
 const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[] =

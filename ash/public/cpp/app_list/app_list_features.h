@@ -70,9 +70,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAggregatedMlSearchRanking;
 // apps grid pages are scaled down and shown a background card.
 ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
 
-// Enables rich entity formatting for Omnibox results in the launcher.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
-
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
@@ -97,7 +94,6 @@ bool ASH_PUBLIC_EXPORT IsExactMatchForNonLatinLocaleEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSettingsSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
 bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
-bool ASH_PUBLIC_EXPORT IsOmniboxRichEntitiesEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
 bool ASH_PUBLIC_EXPORT IsCategoricalSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherQueryHighlightingEnabled();
