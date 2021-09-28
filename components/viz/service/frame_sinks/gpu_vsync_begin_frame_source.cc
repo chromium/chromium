@@ -79,6 +79,13 @@ void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
   skip_next_vsync_ = false;
 }
 
+void GpuVSyncBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source) {
+  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
+      dynamic_begin_frame_deadline_offset_source);
+}
+
 void GpuVSyncBeginFrameSource::OnNeedsBeginFrames(bool needs_begin_frames) {
   skip_next_vsync_ = false;
   output_surface_->SetGpuVSyncEnabled(needs_begin_frames);

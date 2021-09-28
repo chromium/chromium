@@ -85,6 +85,12 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     last_begin_frame_ack_ = ack;
   }
 
+  base::TimeDelta GetEstimatedDisplayDrawTime(
+      const base::TimeDelta interval,
+      double percentile) const override {
+    return base::TimeDelta();
+  }
+
   void OnObservingBeginFrameSourceChanged(bool observing) override {}
 
   int draw_and_swap_count() const { return draw_and_swap_count_; }

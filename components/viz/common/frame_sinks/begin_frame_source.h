@@ -121,6 +121,13 @@ class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
   bool wants_animate_only_begin_frames_ = false;
 };
 
+class VIZ_COMMON_EXPORT DynamicBeginFrameDeadlineOffsetSource {
+ public:
+  virtual ~DynamicBeginFrameDeadlineOffsetSource() = default;
+
+  virtual base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const = 0;
+};
+
 // Interface for a class which produces BeginFrame calls to a
 // BeginFrameObserver.
 //
@@ -142,6 +149,13 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
                                           base::TimeTicks next_frame_time,
                                           base::TimeDelta vsync_interval);
 
+    void set_dynamic_begin_frame_deadline_offset_source(
+        DynamicBeginFrameDeadlineOffsetSource*
+            dynamic_begin_frame_deadline_offset_source) {
+      dynamic_begin_frame_deadline_offset_source_ =
+          dynamic_begin_frame_deadline_offset_source;
+    }
+
    private:
     static uint64_t EstimateTickCountsBetween(
         base::TimeTicks frame_time,
@@ -158,6 +172,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     // number assigned relative to this, based on how many intervals the frame
     // time is off.
     uint64_t next_sequence_number_ = BeginFrameArgs::kStartingFrameNumber;
+
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source_ = nullptr;
   };
 
   // This restart_id should be used for BeginFrameSources that don't have to
@@ -197,6 +214,10 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void AsProtozeroInto(
       perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceState* state) const;
+
+  virtual void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source);
 
  protected:
   // Returns whether begin-frames to clients should be withheld (because the gpu
@@ -311,6 +332,9 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override;
+  void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source) override;
 
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,

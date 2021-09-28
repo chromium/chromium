@@ -45,6 +45,8 @@ VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSurfaceLayerForVideoDefault;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kSurfaceSyncThrottling;
+VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForDraw;
+VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForClients;
 
 VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
@@ -76,6 +78,8 @@ VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 #endif
 VIZ_COMMON_EXPORT bool IsSurfaceSyncThrottling();
+VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForDraw();
+VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForClients();
 
 }  // namespace features
 

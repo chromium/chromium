@@ -21,9 +21,9 @@
 
 namespace viz {
 
-class BeginFrameSource;
-
-class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
+class VIZ_SERVICE_EXPORT DisplayScheduler
+    : public DisplaySchedulerBase,
+      public DynamicBeginFrameDeadlineOffsetSource {
  public:
   // `max_pending_swaps_120hz`, if positive, is used as the number of pending
   // swaps while running at 120hz. Otherwise, this will fallback to
@@ -53,6 +53,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void OnDisplayDamaged(SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override;
   void OnPendingSurfacesChanged() override;
+
+  // DynamicBeginFrameDeadlineOffsetSource:
+  base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
 
  protected:
   class BeginFrameObserver;
@@ -133,6 +136,11 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   bool wait_for_all_surfaces_before_draw_;
 
   bool observing_begin_frame_source_;
+
+  // If set, we are dynamically adjusting our frame deadline, by the percentile
+  // of historic draw times to base the adjustment on.
+  const absl::optional<double> dynamic_cc_deadlines_percentile_;
+  const absl::optional<double> dynamic_scheduler_deadlines_percentile_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
