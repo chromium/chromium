@@ -8,6 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -19,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -88,22 +93,64 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-}  // namespace
-
-ShortcutOverrideForTesting::ShortcutOverrideForTesting() = default;
-ShortcutOverrideForTesting::ShortcutOverrideForTesting(
-    const ShortcutOverrideForTesting& other) = default;
-ShortcutOverrideForTesting::~ShortcutOverrideForTesting() = default;
-
-absl::optional<ShortcutOverrideForTesting>& GetShortcutOverrideForTesting() {
-  static base::NoDestructor<absl::optional<ShortcutOverrideForTesting>>
-      g_shortcut_override;
-  return *g_shortcut_override;
+absl::optional<ScopedShortcutOverrideForTesting*>&
+GetMutableShortcutOverrideForTesting() {
+  static absl::optional<ScopedShortcutOverrideForTesting*> g_shortcut_override;
+  return g_shortcut_override;
 }
 
-void SetShortcutOverrideForTesting(
-    absl::optional<ShortcutOverrideForTesting> shortcut_override_for_testing) {
-  GetShortcutOverrideForTesting() = shortcut_override_for_testing;
+}  // namespace
+
+ScopedShortcutOverrideForTesting::ScopedShortcutOverrideForTesting() = default;
+ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
+  DCHECK(GetMutableShortcutOverrideForTesting().has_value());  // IN-TEST
+  std::vector<base::ScopedTempDir*> directories;
+#if defined(OS_WIN)
+  directories = {&desktop, &application_menu, &quick_launch, &startup};
+#elif defined(OS_MAC)
+  directories = {&chrome_apps_folder};
+#elif defined(OS_LINUX)
+  directories = {&desktop};
+#endif
+  for (base::ScopedTempDir* dir : directories) {
+    DCHECK(!dir->IsValid() || base::IsDirectoryEmpty(dir->GetPath()))
+        << "Directory not empty: " << dir->GetPath().AsUTF8Unsafe()
+        << ". Please uninstall all webapps that have been installed while "
+           "shortcuts were overriden.";
+  }
+  GetMutableShortcutOverrideForTesting() = absl::nullopt;  // IN-TEST
+}
+
+ScopedShortcutOverrideForTesting* GetShortcutOverrideForTesting() {
+  return GetMutableShortcutOverrideForTesting().value_or(nullptr);  // IN-TEST
+}
+
+std::unique_ptr<ScopedShortcutOverrideForTesting>
+OverrideShortcutsForTesting() {                                 // IN-TEST
+  DCHECK(!GetMutableShortcutOverrideForTesting().has_value());  // IN-TEST
+  auto scoped_override = std::make_unique<ScopedShortcutOverrideForTesting>();
+
+  // Initialize all directories used. The success & the DCHECK are separated to
+  // ensure that these function calls occur on release builds.
+#if defined(OS_WIN)
+  bool success = scoped_override->desktop.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->application_menu.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->quick_launch.CreateUniqueTempDir();
+  DCHECK(success);
+  success = scoped_override->startup.CreateUniqueTempDir();
+  DCHECK(success);
+#elif defined(OS_MAC)
+  bool success = scoped_override->chrome_apps_folder.CreateUniqueTempDir();
+  DCHECK(success);
+#elif defined(OS_LINUX)
+  bool success = scoped_override->desktop.CreateUniqueTempDir();
+  DCHECK(success);
+#endif
+
+  GetMutableShortcutOverrideForTesting() = scoped_override.get();  // IN-TEST
+  return scoped_override;
 }
 
 ShortcutInfo::ShortcutInfo() = default;

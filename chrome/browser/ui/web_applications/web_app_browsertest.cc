@@ -991,20 +991,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  base::ScopedTempDir temp_dir;
-  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath application_dir =
-      temp_dir.GetPath().AppendASCII("application_menu");
-  base::FilePath desktop_dir = temp_dir.GetPath().AppendASCII("desktop");
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override =
+      OverrideShortcutsForTesting();
 
-  ShortcutOverrideForTesting shortcut_override;
-#if defined(OS_MAC)
-  shortcut_override.chrome_apps_folder = application_dir;
-#elif defined(OS_WIN)
-  shortcut_override.desktop = desktop_dir;
-  shortcut_override.application_menu = application_dir;
-#endif
-  SetShortcutOverrideForTesting(shortcut_override);
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL(
@@ -1026,10 +1015,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   auto* provider = WebAppProvider::GetForTest(profile());
   std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
 #if defined(OS_MAC)
-  shortcut_path = application_dir.Append(
+  shortcut_path = shortcut_override->chrome_apps_folder.GetPath().Append(
       provider->registrar().GetAppShortName(app_id) + ".app");
 #elif defined(OS_WIN)
-  shortcut_path = application_dir.AppendASCII(
+  shortcut_path = shortcut_override->application_menu.GetPath().AppendASCII(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
   expected_pixel_colors.push_back(SkColorSetRGB(91, 91, 91));
   expected_pixel_colors.push_back(SkColorSetRGB(90, 90, 90));
@@ -1040,6 +1029,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
                         icon_pixel_color) != expected_pixel_colors.end())
       << "Actual color (RGB) is: "
       << color_utils::SkColorToRgbString(icon_pixel_color);
+
+  base::RunLoop run_loop_uninstall;
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        DCHECK(uninstalled);
+        run_loop_uninstall.Quit();
+      }));
+  run_loop_uninstall.Run();
 }
 #endif
 
@@ -1062,16 +1060,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  base::ScopedTempDir temp_dir;
-  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath application_dir =
-      temp_dir.GetPath().AppendASCII("application_menu");
-  base::FilePath desktop_dir = temp_dir.GetPath().AppendASCII("desktop");
-
-  ShortcutOverrideForTesting shortcut_override;
-  shortcut_override.desktop = desktop_dir;
-  shortcut_override.application_menu = application_dir;
-  SetShortcutOverrideForTesting(shortcut_override);
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override =
+      OverrideShortcutsForTesting();
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL(
@@ -1128,6 +1118,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
           .command_line
           .GetSwitchValueASCII(switches::kAppLaunchUrlForShortcutsMenuItem)
           .find("/banners/launch_url2"));
+
+  base::RunLoop run_loop_uninstall;
+  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        DCHECK(uninstalled);
+        run_loop_uninstall.Quit();
+      }));
+  run_loop_uninstall.Run();
 }
 #endif
 
@@ -1135,26 +1134,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   os_hooks_suppress_.reset();
 
-  ShortcutOverrideForTesting shortcut_override;
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir desktop_temp_dir;
-  EXPECT_TRUE(desktop_temp_dir.CreateUniqueTempDir());
-  base::FilePath desktop_dir = desktop_temp_dir.GetPath();
 
-  base::ScopedTempDir application_temp_dir;
-  EXPECT_TRUE(application_temp_dir.CreateUniqueTempDir());
-  base::FilePath application_dir = application_temp_dir.GetPath();
-
-#if defined(OS_MAC)
-  shortcut_override.chrome_apps_folder = application_dir;
-#endif
-#if defined(OS_WIN)
-  shortcut_override.application_menu = application_dir;
-#endif
-#if !defined(OS_MAC)
-  shortcut_override.desktop = desktop_dir;
-#endif
-  SetShortcutOverrideForTesting(shortcut_override);
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override =
+      OverrideShortcutsForTesting();
 
   auto* provider = WebAppProvider::GetForTest(profile());
 
@@ -1180,21 +1163,22 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   std::wstring shortcut_filename = converter.from_bytes(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
-  base::FilePath desktop_shortcut_path = desktop_dir.Append(shortcut_filename);
+  base::FilePath desktop_shortcut_path =
+      shortcut_override->desktop.GetPath().Append(shortcut_filename);
   base::FilePath app_menu_shortcut_path =
-      application_dir.Append(shortcut_filename);
+      shortcut_override->application_menu.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
   EXPECT_TRUE(base::PathExists(app_menu_shortcut_path));
 #elif defined(OS_MAC)
   std::string shortcut_filename =
       provider->registrar().GetAppShortName(app_id) + ".app";
-  base::FilePath app_shortcut_path = application_dir.Append(shortcut_filename);
+  base::FilePath app_shortcut_path =
+      shortcut_override->chrome_apps_folder.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(app_shortcut_path));
 #elif defined(OS_LINUX)
   std::string shortcut_filename = "chrome-" + app_id + "-Default.desktop";
-  base::FilePath desktop_shortcut_path = desktop_dir.Append(shortcut_filename);
-  base::FilePath app_menu_shortcut_path =
-      application_dir.Append("applications").Append(shortcut_filename);
+  base::FilePath desktop_shortcut_path =
+      shortcut_override->desktop.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
 #endif
 
