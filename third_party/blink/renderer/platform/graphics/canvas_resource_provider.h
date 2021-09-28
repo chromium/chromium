@@ -162,7 +162,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   cc::PaintCanvas* Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
+  // FlushCanvas and do not preserve recordings.
   sk_sp<cc::PaintRecord> FlushCanvas();
+  // FlushCanvas and preserve recordings.
+  sk_sp<cc::PaintRecord> FlushCanvasAndPreserveRecording();
   const CanvasResourceParams& ColorParams() const { return params_; }
   void SetFilterQuality(cc::PaintFlags::FilterQuality quality) {
     filter_quality_ = quality;
@@ -283,6 +286,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   }
   scoped_refptr<StaticBitmapImage> SnapshotInternal(const ImageOrientation&);
   scoped_refptr<CanvasResource> GetImportedResource() const;
+  sk_sp<cc::PaintRecord> FlushCanvasInternal(bool preserve_recording);
 
   CanvasResourceProvider(const ResourceProviderType&,
                          const IntSize&,
@@ -298,10 +302,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // decodes/uploads in the cache is invalidated only when the canvas contents
   // change.
   cc::PaintImage MakeImageSnapshot();
-  virtual void RasterRecord(sk_sp<cc::PaintRecord>);
+  virtual void RasterRecord(sk_sp<cc::PaintRecord>, bool preserve_recording);
   void RasterRecordOOP(sk_sp<cc::PaintRecord> last_recording,
                        bool needs_clear,
-                       gpu::Mailbox mailbox);
+                       gpu::Mailbox mailbox,
+                       bool preserve_recording);
   void RestoreBackBufferOOP(const cc::PaintImage&);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();

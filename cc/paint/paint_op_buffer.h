@@ -1096,6 +1096,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_effects_preventing_lcd_text_for_save_layer_alpha() const {
     return has_effects_preventing_lcd_text_for_save_layer_alpha_;
   }
+  bool are_ops_destroyed() const { return are_ops_destroyed_; }
+  void MarkOpsDestroyed() { are_ops_destroyed_ = true; }
 
   bool NeedsAdditionalInvalidationForLCDText(
       const PaintOpBuffer& old_buffer) const;
@@ -1217,7 +1219,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
    private:
     Iterator(const PaintOpBuffer* buffer, char* ptr, size_t op_offset)
-        : buffer_(buffer), ptr_(ptr), op_offset_(op_offset) {}
+        : buffer_(buffer), ptr_(ptr), op_offset_(op_offset) {
+      DCHECK(!buffer->are_ops_destroyed());
+    }
 
     const PaintOpBuffer* buffer_ = nullptr;
     char* ptr_ = nullptr;
@@ -1230,6 +1234,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     OffsetIterator(const PaintOpBuffer* buffer,
                    const std::vector<size_t>* offsets)
         : buffer_(buffer), ptr_(buffer_->data_.get()), offsets_(offsets) {
+      DCHECK(!buffer->are_ops_destroyed());
       if (!offsets || offsets->empty()) {
         *this = end();
         return;
@@ -1279,10 +1284,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
                    char* ptr,
                    size_t op_offset,
                    const std::vector<size_t>* offsets)
-        : buffer_(buffer),
-          ptr_(ptr),
-          offsets_(offsets),
-          op_offset_(op_offset) {}
+        : buffer_(buffer), ptr_(ptr), offsets_(offsets), op_offset_(op_offset) {
+      DCHECK(!buffer->are_ops_destroyed());
+    }
 
     const PaintOpBuffer* buffer_ = nullptr;
     char* ptr_ = nullptr;
@@ -1397,6 +1401,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_draw_text_ops_ : 1;
   bool has_save_layer_alpha_ops_ : 1;
   bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1;
+  bool are_ops_destroyed_ : 1;
 };
 
 }  // namespace cc

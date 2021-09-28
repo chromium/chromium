@@ -498,12 +498,14 @@ void Canvas2DLayerBridge::FlushRecording() {
     timer.emplace();
   }
 
-  last_recording_ = ResourceProvider()->FlushCanvas();
-  last_record_tainted_by_write_pixels_ = false;
   if (!clear_frame_ || !resource_host_ || !resource_host_->IsPrinting()) {
-    last_recording_ = nullptr;
+    last_recording_ = ResourceProvider()->FlushCanvas();
     clear_frame_ = false;
+  } else {
+    last_recording_ = ResourceProvider()->FlushCanvasAndPreserveRecording();
   }
+
+  last_record_tainted_by_write_pixels_ = false;
 
   // Finish up the timing operation
   if (measure_raster_metric) {

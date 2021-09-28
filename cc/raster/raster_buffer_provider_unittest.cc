@@ -188,7 +188,8 @@ class RasterImplementationForOOPR
                       const gfx::Vector2dF& post_translate,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
-                      size_t* max_op_size_hint) override {}
+                      size_t* max_op_size_hint,
+                      bool preserve_recording = true) override {}
   void EndRasterCHROMIUM() override {}
 };
 

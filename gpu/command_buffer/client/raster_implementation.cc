@@ -1351,7 +1351,8 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                           const gfx::Vector2dF& post_translate,
                                           const gfx::Vector2dF& post_scale,
                                           bool requires_clear,
-                                          size_t* max_op_size_hint) {
+                                          size_t* max_op_size_hint,
+                                          bool preserve_recording) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
@@ -1403,8 +1404,13 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
           raster_properties_->color_space, raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
           capabilities().max_texture_size));
-  serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
-                       preamble);
+  if (preserve_recording) {
+    serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
+                         preamble);
+  } else {
+    auto* buffer = const_cast<cc::PaintOpBuffer*>(&list->paint_op_buffer_);
+    serializer.SerializeAndDestroy(buffer, &temp_raster_offsets_, preamble);
+  }
   // TODO(piman): raise error if !serializer.valid()?
   op_serializer.SendSerializedData();
 }
