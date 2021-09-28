@@ -480,7 +480,7 @@ def PullDeviceArtifacts(device_path, local_path):
                     'Skipping.')
     return
 
-  devices = adb_wrapper.PersistentShell.Devices()
+  devices = adb_wrapper.AdbWrapper.Devices()
   # Each docker host in chrome-swarming has one device attached, so we'll use
   # the first AdbWrapper instance as the assumed attached device in question
   utils = device_utils.DeviceUtils(devices[0])
