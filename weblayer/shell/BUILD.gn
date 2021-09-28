@@ -66,12 +66,6 @@ static_library("weblayer_shell_lib") {
     ]
   }
 
-  if (use_x11) {
-    # Some tests rely on this tool at runtime. Note: it might be better if
-    # the tests that needed it had this as a dep instead of adding it here.
-    deps += [ "//ui/events/devices/x11" ]
-  }
-
   if (is_android) {
     deps += [ "//ui/android" ]
   }

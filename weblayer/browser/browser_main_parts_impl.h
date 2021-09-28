@@ -38,7 +38,6 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   // BrowserMainParts overrides.
   int PreCreateThreads() override;
   int PreEarlyInitialization() override;
-  void PreCreateMainMessageLoop() override;
   void PostCreateThreads() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(

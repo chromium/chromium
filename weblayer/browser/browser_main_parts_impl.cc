@@ -75,10 +75,6 @@
 #include "weblayer/common/features.h"
 #endif
 
-#if defined(USE_AURA) && defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
-#endif
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -192,13 +188,6 @@ int BrowserMainPartsImpl::PreCreateThreads() {
 #endif
 
   return content::RESULT_CODE_NORMAL_EXIT;
-}
-
-void BrowserMainPartsImpl::PreCreateMainMessageLoop() {
-#if defined(USE_AURA) && defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    ui::TouchFactory::SetTouchDeviceListFromCommandLine();
-#endif
 }
 
 int BrowserMainPartsImpl::PreEarlyInitialization() {
