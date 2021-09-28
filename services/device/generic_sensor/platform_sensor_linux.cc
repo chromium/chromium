@@ -5,23 +5,11 @@
 #include "services/device/generic_sensor/platform_sensor_linux.h"
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 #include "services/device/generic_sensor/platform_sensor_reader_linux.h"
 
 namespace device {
-
-namespace {
-
-// Checks if at least one value has been changed.
-bool HaveValuesChanged(const SensorReading& lhs, const SensorReading& rhs) {
-  for (size_t i = 0; i < SensorReadingRaw::kValuesCount; ++i) {
-    if (lhs.raw.values[i] != rhs.raw.values[i])
-      return true;
-  }
-  return false;
-}
-
-}  // namespace
 
 PlatformSensorLinux::PlatformSensorLinux(
     mojom::SensorType type,
@@ -48,7 +36,7 @@ mojom::ReportingMode PlatformSensorLinux::GetReportingMode() {
 void PlatformSensorLinux::UpdatePlatformSensorReading(SensorReading reading) {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
-      !HaveValuesChanged(reading, old_values_)) {
+      base::ranges::equal(reading.raw.values, old_values_.raw.values)) {
     return;
   }
   old_values_ = reading;
