@@ -25,11 +25,12 @@ namespace chromeos {
 
 namespace {
 
-// Returns a subdirectory under the user data directory (which is not cleared
-// after pre-tests).
+// Returns a subdirectory under the user data directory (which is cleared in
+// between tests, but not after pre-tests).
 base::FilePath GetNssDbTestDir() {
   base::FilePath nss_db_subdir;
   base::PathService::Get(chrome::DIR_USER_DATA, &nss_db_subdir);
+  CHECK(!nss_db_subdir.empty()) << "DIR_USER_DATA is not initialized yet.";
   nss_db_subdir = nss_db_subdir.AppendASCII("nss_db_subdir");
   return nss_db_subdir;
 }
@@ -42,17 +43,25 @@ ScopedTestSystemNSSKeySlotMixin::ScopedTestSystemNSSKeySlotMixin(
 
 ScopedTestSystemNSSKeySlotMixin::~ScopedTestSystemNSSKeySlotMixin() = default;
 
-void ScopedTestSystemNSSKeySlotMixin::SetUpOnMainThread() {
-  bool system_slot_initialized_successfully = false;
-  base::RunLoop loop;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&ScopedTestSystemNSSKeySlotMixin::InitializeOnIo,
-                     base::Unretained(this),
-                     &system_slot_initialized_successfully),
-      loop.QuitClosure());
-  loop.Run();
-  ASSERT_TRUE(system_slot_initialized_successfully);
+void ScopedTestSystemNSSKeySlotMixin::SetUpInProcessBrowserTestFixture() {
+  // NSS is allowed to do IO on the current thread since dispatching
+  // to a dedicated thread would still have the affect of blocking
+  // the current thread, due to NSS's internal locking requirements
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  crypto::EnsureNSSInit();
+
+  base::FilePath nss_db_subdir = GetNssDbTestDir();
+  ASSERT_TRUE(base::CreateDirectory(nss_db_subdir));
+
+  const char kTestDescription[] = "Test DB";
+  slot_ = crypto::OpenSoftwareNSSDB(nss_db_subdir, kTestDescription);
+  ASSERT_TRUE(!!slot_);
+
+  if (slot_) {
+    crypto::PrepareSystemSlotForTesting(
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())));
+  }
 }
 
 void ScopedTestSystemNSSKeySlotMixin::TearDownOnMainThread() {
@@ -65,32 +74,10 @@ void ScopedTestSystemNSSKeySlotMixin::TearDownOnMainThread() {
   loop.Run();
 }
 
-void ScopedTestSystemNSSKeySlotMixin::InitializeOnIo(bool* out_success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  crypto::EnsureNSSInit();
-  // NSS is allowed to do IO on the current thread since dispatching
-  // to a dedicated thread would still have the affect of blocking
-  // the current thread, due to NSS's internal locking requirements
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  base::FilePath nss_db_subdir = GetNssDbTestDir();
-  ASSERT_TRUE(base::CreateDirectory(nss_db_subdir));
-
-  const char kTestDescription[] = "Test DB";
-  slot_ = crypto::OpenSoftwareNSSDB(nss_db_subdir, kTestDescription);
-  *out_success = !!slot_;
-
-  if (slot_) {
-    crypto::SetSystemKeySlotForTesting(
-        crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())));
-  }
-}
-
 void ScopedTestSystemNSSKeySlotMixin::DestroyOnIo() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  crypto::SetSystemKeySlotForTesting(nullptr);
+  crypto::ResetSystemSlotForTesting();
 
   if (slot_) {
     SECStatus status = SECMOD_CloseUserDB(slot_.get());

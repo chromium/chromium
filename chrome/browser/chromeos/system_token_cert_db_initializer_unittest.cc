@@ -17,6 +17,7 @@
 #include "chromeos/network/system_token_cert_db_storage_test_util.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/nss_util.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +54,8 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
 
  protected:
   bool InitializeTestSystemSlot() {
-    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
+    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+        /*simulate_token_loader=*/true);
     return test_system_slot_->ConstructedSuccessfully();
   }
 

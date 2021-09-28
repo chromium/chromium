@@ -288,7 +288,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
 
-  service->OnTPMTokenReady(true /* is ready */);
+  service->OnTPMTokenReady();
   FlushDeviceSettings();
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
@@ -328,7 +328,7 @@ TEST_F(DeviceSettingsServiceTest, OwnerPrivateKeyInTPMToken) {
             device_settings_service_->GetOwnershipStatus());
 
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
-  service->OnTPMTokenReady(true /* is ready */);
+  service->OnTPMTokenReady();
   FlushDeviceSettings();
 
   EXPECT_TRUE(device_settings_service_->HasPrivateOwnerKey());
@@ -366,7 +366,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForOwner) {
   EXPECT_FALSE(is_owner_set_);
 
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
-  service->OnTPMTokenReady(true /* is ready */);
+  service->OnTPMTokenReady();
   FlushDeviceSettings();
 
   EXPECT_TRUE(device_settings_service_->HasPrivateOwnerKey());
@@ -493,7 +493,7 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
 
   // Load the private key and trigger a reload. Load operations should finish.
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
-  service->OnTPMTokenReady(true /* is ready */);
+  service->OnTPMTokenReady();
   FlushDeviceSettings();
 
   // Verify owner key is loaded and ownership status is updated.

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
@@ -110,18 +111,6 @@ TPMTokenLoader::~TPMTokenLoader() {
     LoginState::Get()->RemoveObserver(this);
 }
 
-TPMTokenLoader::TPMTokenStatus TPMTokenLoader::IsTPMTokenEnabled(
-    TPMReadyCallback callback) {
-  if (tpm_token_state_ == TPM_TOKEN_INITIALIZED)
-    return TPM_TOKEN_STATUS_ENABLED;
-  if (!IsTPMLoadingEnabled() || tpm_token_state_ == TPM_DISABLED)
-    return TPM_TOKEN_STATUS_DISABLED;
-  // Status is not known yet.
-  if (callback)
-    tpm_ready_callback_list_.push_back(std::move(callback));
-  return TPM_TOKEN_STATUS_UNDETERMINED;
-}
-
 bool TPMTokenLoader::IsTPMLoadingEnabled() const {
   // TPM loading is enabled on non-ChromeOS environments, e.g. when running
   // tests on Linux.
@@ -161,25 +150,13 @@ void TPMTokenLoader::ContinueTokenInitialization() {
 
   switch (tpm_token_state_) {
     case TPM_STATE_UNKNOWN: {
-      crypto_task_runner_->PostTaskAndReply(
-          FROM_HERE, base::BindOnce(&crypto::EnableTPMTokenForNSS),
-          base::BindOnce(&TPMTokenLoader::OnTPMTokenEnabledForNSS,
-                         weak_factory_.GetWeakPtr()));
       tpm_token_state_ = TPM_INITIALIZATION_STARTED;
-      return;
-    }
-    case TPM_INITIALIZATION_STARTED: {
-      NOTREACHED();
-      return;
-    }
-    case TPM_TOKEN_ENABLED_FOR_NSS: {
       tpm_token_info_getter_->Start(base::BindOnce(
           &TPMTokenLoader::OnGotTpmTokenInfo, weak_factory_.GetWeakPtr()));
       return;
     }
-    case TPM_DISABLED: {
-      // TPM is disabled, so proceed with empty tpm token name.
-      NotifyTPMTokenReady();
+    case TPM_INITIALIZATION_STARTED: {
+      NOTREACHED();
       return;
     }
     case TPM_TOKEN_INFO_RECEIVED: {
@@ -193,17 +170,12 @@ void TPMTokenLoader::ContinueTokenInitialization() {
                                  weak_factory_.GetWeakPtr()))));
       return;
     }
-    case TPM_TOKEN_INITIALIZED: {
+    case TPM_TOKEN_INITIALIZED:
+    case TPM_DISABLED: {
       NotifyTPMTokenReady();
       return;
     }
   }
-}
-
-void TPMTokenLoader::OnTPMTokenEnabledForNSS() {
-  VLOG(1) << "TPMTokenEnabledForNSS";
-  tpm_token_state_ = TPM_TOKEN_ENABLED_FOR_NSS;
-  ContinueTokenInitialization();
 }
 
 void TPMTokenLoader::OnGotTpmTokenInfo(
@@ -229,12 +201,9 @@ void TPMTokenLoader::OnTPMTokenInitialized(bool success) {
 }
 
 void TPMTokenLoader::NotifyTPMTokenReady() {
-  DCHECK(tpm_token_state_ == TPM_DISABLED ||
-         tpm_token_state_ == TPM_TOKEN_INITIALIZED);
-  bool tpm_status = tpm_token_state_ == TPM_TOKEN_INITIALIZED;
-  for (TPMReadyCallback& callback : tpm_ready_callback_list_)
-    std::move(callback).Run(tpm_status);
-  tpm_ready_callback_list_.clear();
+  crypto_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&crypto::FinishInitializingTPMTokenAndSystemSlot));
 }
 
 void TPMTokenLoader::LoggedInStateChanged() {

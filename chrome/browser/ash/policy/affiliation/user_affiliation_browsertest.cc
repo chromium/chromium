@@ -218,7 +218,8 @@ class UserAffiliationBrowserTest
  private:
   void SetUpTestSystemSlotOnIO(bool* out_system_slot_constructed_successfully) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
+    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+        /*simulate_token_loader=*/false);
     *out_system_slot_constructed_successfully =
         test_system_slot_->ConstructedSuccessfully();
   }

@@ -226,6 +226,8 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
         base::UTF8ToUTF16(test_account_id_.GetUserEmail()), 0 /* avatar id */,
         std::string() /* supervized user id */,
         TestingProfile::TestingFactories());
+
+    SetUpTestSystemSlot();
   }
 
   void TearDown() override {
@@ -289,9 +291,10 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
   void ResetTestNssUserOnIOThread() { test_nss_user_.reset(); }
 
   // Creates and sets test system NSS key slot.
-  bool SetUpTestSystemSlot() {
-    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
-    return test_system_slot_->ConstructedSuccessfully();
+  void SetUpTestSystemSlot() {
+    test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+        /*simulate_token_loader=*/true);
+    ASSERT_TRUE(test_system_slot_->ConstructedSuccessfully());
   }
 
   // Imports a private RSA key to the test system slot.
@@ -375,7 +378,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPair) {
                                                  run_loop.QuitClosure()));
   EXPECT_TRUE(user_key_manager()->GetPublicTpmKey(test_account_id_).empty());
 
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
   run_loop.Run();
 
@@ -405,7 +407,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPairMultipleCallbacks) {
   EXPECT_FALSE(user_key_manager()->PrepareTpmKey(/*check_private_key=*/false,
                                                  base::OnceClosure()));
 
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
   EXPECT_EQ(0, callback_count);
 
@@ -449,7 +450,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey) {
   ASSERT_FALSE(user_key_manager()->PrepareTpmKey(true /* check_private_key */,
                                                  run_loop.QuitClosure()));
 
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
   run_loop.Run();
 
@@ -463,7 +463,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey) {
 
 TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey_OK) {
   ASSERT_TRUE(InitTestNssUser());
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
   ASSERT_TRUE(ImportPrivateKey(kTestPrivateKey, base::size(kTestPrivateKey)));
   SetLocalStatePublicKey(
@@ -505,7 +504,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, GetSystemSlotTimeoutTriggers) {
   ASSERT_TRUE(user_key_manager()->StartGetSystemSlotTimeoutMs(0));
   run_loop_get_slot_timeout.RunUntilIdle();
 
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
 
   run_loop.Run();
@@ -521,7 +519,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, GetSystemSlotTimeoutAfterSlotFetched) {
 
   base::RunLoop run_loop_slot;
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
-  ASSERT_TRUE(SetUpTestSystemSlot());
   run_loop_slot.RunUntilIdle();
 
   ASSERT_FALSE(user_key_manager()->StartGetSystemSlotTimeoutMs(0));
@@ -550,7 +547,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, GetSystemSlotRetryAfterFailure) {
   ASSERT_FALSE(user_key_manager()->PrepareTpmKey(false /* check_private_key */,
                                                  run_loop_retry.QuitClosure()));
 
-  ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
 
   run_loop_retry.Run();
@@ -559,7 +555,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, GetSystemSlotRetryAfterFailure) {
 }
 
 TEST_F(EasyUnlockTpmKeyManagerTest, SignData) {
-  ASSERT_TRUE(SetUpTestSystemSlot());
+  ASSERT_TRUE(InitTestNssUser());
+
   ASSERT_TRUE(ImportPrivateKey(kTestPrivateKey, base::size(kTestPrivateKey)));
   SetLocalStatePublicKey(
       test_account_id_,
@@ -590,6 +587,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignNoPublicKeySet) {
 }
 
 TEST_F(EasyUnlockTpmKeyManagerTest, SignDataNoPrivateKeyPresent) {
+  ASSERT_TRUE(InitTestNssUser());
+
   SetLocalStatePublicKey(
       test_account_id_,
       std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -601,8 +600,6 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignDataNoPrivateKeyPresent) {
       test_account_id_, "data",
       base::BindOnce(&RecordStringAndRunClosure, &signed_data,
                      loop.QuitClosure()));
-
-  ASSERT_TRUE(SetUpTestSystemSlot());
 
   loop.Run();
 

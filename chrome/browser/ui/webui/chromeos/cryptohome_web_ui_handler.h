@@ -19,7 +19,7 @@ namespace base {
 
 class Value;
 
-}  // base
+}  // namespace base
 
 namespace chromeos {
 
@@ -40,7 +40,7 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   // This method is called from JavaScript.
   void OnPageLoaded(const base::ListValue* args);
 
-  void DidGetNSSUtilInfoOnUIThread(bool is_tpm_token_ready);
+  void GotIsTPMTokenEnabledOnUIThread(bool is_tpm_token_enabled);
 
   void OnIsMounted(absl::optional<user_data_auth::IsMountedReply> reply);
   void OnPkcs11IsTpmTokenReady(

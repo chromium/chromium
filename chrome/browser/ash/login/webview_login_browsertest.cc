@@ -11,6 +11,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
@@ -98,6 +99,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "crypto/scoped_test_system_nss_key_slot.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -1448,12 +1450,11 @@ class WebviewClientCertsTokenLoadingLoginTest
  private:
   void PrepareSystemSlotOnIO(bool* out_system_slot_prepared_successfully) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    test_system_slot_nss_db_ = std::make_unique<crypto::ScopedTestNSSDB>();
-    crypto::SetSystemKeySlotWithoutInitializingTPMForTesting(
-        crypto::ScopedPK11Slot(
-            PK11_ReferenceSlot(test_system_slot_nss_db_->slot())));
+    test_system_slot_nss_db_ =
+        std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+            /*simulate_token_loader=*/false);
     *out_system_slot_prepared_successfully =
-        test_system_slot_nss_db_->is_open();
+        test_system_slot_nss_db_->ConstructedSuccessfully();
   }
 
   void TearDownTestSystemSlot() {
@@ -1467,32 +1468,79 @@ class WebviewClientCertsTokenLoadingLoginTest
     loop.Run();
   }
 
-  void TearDownTestSystemSlotOnIO() {
-    crypto::SetSystemKeySlotWithoutInitializingTPMForTesting(/*slot=*/nullptr);
-    test_system_slot_nss_db_.reset();
-  }
+  void TearDownTestSystemSlotOnIO() { test_system_slot_nss_db_.reset(); }
 
-  std::unique_ptr<crypto::ScopedTestNSSDB> test_system_slot_nss_db_;
+  std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_nss_db_;
 };
 
 namespace {
 
-bool IsTpmTokenReady() {
+void GotIsTpmTokenEnabledOnUIThread(base::OnceClosure run_loop_quit_closure,
+                                    bool* is_ready,
+                                    bool is_tpm_token_enabled) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  *is_ready = is_tpm_token_enabled;
+  std::move(run_loop_quit_closure).Run();
+}
+
+void GotIsTpmTokenEnabledOnIOThread(base::OnceCallback<void(bool)> ui_callback,
+                                    bool is_tpm_token_enabled) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(ui_callback), is_tpm_token_enabled));
+}
+
+bool IsTpmTokenEnabled() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   base::RunLoop run_loop;
   bool is_ready = false;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&crypto::IsTPMTokenReady,
-                     /*callback=*/base::OnceClosure()),
-      base::BindOnce(
-          [](base::OnceClosure run_loop_quit_closure, bool* is_ready,
-             bool is_tpm_token_ready) {
-            *is_ready = is_tpm_token_ready;
-            std::move(run_loop_quit_closure).Run();
-          },
-          run_loop.QuitClosure(), base::Unretained(&is_ready)));
+
+  auto ui_callback =
+      base::BindOnce(&GotIsTpmTokenEnabledOnUIThread, run_loop.QuitClosure(),
+                     base::Unretained(&is_ready));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&crypto::IsTPMTokenEnabled,
+                                base::BindOnce(&GotIsTpmTokenEnabledOnIOThread,
+                                               std::move(ui_callback))));
   run_loop.Run();
   return is_ready;
+}
+
+void GotIsSystemSlotAvailableOnUIThread(base::OnceClosure run_loop_quit_closure,
+                                        bool* result,
+                                        bool is_system_slot_available) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  *result = is_system_slot_available;
+  std::move(run_loop_quit_closure).Run();
+}
+
+void GotSystemSlotOnIOThread(base::OnceCallback<void(bool)> ui_callback,
+                             crypto::ScopedPK11Slot system_slot) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(ui_callback), !!system_slot));
+}
+
+bool IsSystemSlotAvailable() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::RunLoop run_loop;
+  bool result = false;
+
+  auto ui_callback =
+      base::BindOnce(&GotIsSystemSlotAvailableOnUIThread,
+                     run_loop.QuitClosure(), base::Unretained(&result));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&crypto::GetSystemNSSKeySlot,
+                                base::BindOnce(&GotSystemSlotOnIOThread,
+                                               std::move(ui_callback))));
+
+  run_loop.Run();
+  return result;
 }
 
 }  // namespace
@@ -1501,7 +1549,7 @@ bool IsTpmTokenReady() {
 // authentication works in the sign-in frame after the TPM gets reported as
 // ready.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
-                       SystemSlotInitialization) {
+                       SystemSlotEnabled) {
   ASSERT_NO_FATAL_FAILURE(PrepareSystemSlot());
   net::SSLServerConfig server_config;
   server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
@@ -1512,9 +1560,6 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   SetAutoSelectCertificatePatterns(autoselect_patterns);
 
   WaitForGaiaPageLoadAndPropertyUpdate();
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsTpmTokenReady());
 
   // Report the TPM as ready, triggering the system token initialization by
   // SystemTokenCertDBInitializer.
@@ -1530,7 +1575,24 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   ASSERT_TRUE(ssl_info->cert);
   EXPECT_THAT(*ssl_info->cert, EqualsCert(std::string(kClientCert1Name)));
 
-  EXPECT_TRUE(IsTpmTokenReady());
+  EXPECT_TRUE(IsTpmTokenEnabled());
+  EXPECT_TRUE(IsSystemSlotAvailable());
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
+                       SystemSlotDisabled) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+
+  // Report the TPM as ready, triggering the system token initialization by
+  // SystemTokenCertDBInitializer.
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_owned(false);
+  TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
+
+  EXPECT_FALSE(IsTpmTokenEnabled());
+  EXPECT_FALSE(IsSystemSlotAvailable());
 }
 
 class WebviewProxyAuthLoginTest : public WebviewLoginTest {

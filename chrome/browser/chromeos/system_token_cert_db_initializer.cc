@@ -48,34 +48,21 @@ constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = false;
 #endif
 
-// Called on UI Thread when the system slot has been retrieved.
-void GotSystemSlotOnUIThread(
-    base::OnceCallback<void(crypto::ScopedPK11Slot)> callback_ui_thread,
-    crypto::ScopedPK11Slot system_slot) {
-  std::move(callback_ui_thread).Run(std::move(system_slot));
-}
-
 // Called on IO Thread when the system slot has been retrieved.
 void GotSystemSlotOnIOThread(
-    base::OnceCallback<void(crypto::ScopedPK11Slot)> callback_ui_thread,
+    base::OnceCallback<void(crypto::ScopedPK11Slot)> ui_callback,
     crypto::ScopedPK11Slot system_slot) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&GotSystemSlotOnUIThread, std::move(callback_ui_thread),
-                     std::move(system_slot)));
+      base::BindOnce(std::move(ui_callback), std::move(system_slot)));
 }
 
-// Called on IO Thread, initiates retrieval of system slot. |callback_ui_thread|
+// Called on IO Thread, initiates retrieval of system slot. |ui_callback|
 // will be executed on the UI thread when the system slot has been retrieved.
 void GetSystemSlotOnIOThread(
-    base::RepeatingCallback<void(crypto::ScopedPK11Slot)> callback_ui_thread) {
-  auto callback =
-      base::BindRepeating(&GotSystemSlotOnIOThread, callback_ui_thread);
-  crypto::ScopedPK11Slot system_nss_slot =
-      crypto::GetSystemNSSKeySlot(callback);
-  if (system_nss_slot) {
-    callback.Run(std::move(system_nss_slot));
-  }
+    base::OnceCallback<void(crypto::ScopedPK11Slot)> ui_callback) {
+  crypto::GetSystemNSSKeySlot(
+      base::BindOnce(&GotSystemSlotOnIOThread, std::move(ui_callback)));
 }
 
 // Decides if on start we shall signal to the platform that it can attempt
@@ -223,16 +210,21 @@ void SystemTokenCertDBInitializer::MaybeStartInitializingDatabase() {
       << "SystemTokenCertDBInitializer: TPM is ready, loading system token.";
   NetworkCertLoader::Get()->MarkSystemNSSDBWillBeInitialized();
   TPMTokenLoader::Get()->EnsureStarted();
-  base::RepeatingCallback<void(crypto::ScopedPK11Slot)> callback =
-      base::BindRepeating(&SystemTokenCertDBInitializer::InitializeDatabase,
-                          weak_ptr_factory_.GetWeakPtr());
+  auto ui_callback =
+      base::BindOnce(&SystemTokenCertDBInitializer::InitializeDatabase,
+                     weak_ptr_factory_.GetWeakPtr());
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&GetSystemSlotOnIOThread, callback));
+      FROM_HERE,
+      base::BindOnce(&GetSystemSlotOnIOThread, std::move(ui_callback)));
 }
 
 void SystemTokenCertDBInitializer::InitializeDatabase(
     crypto::ScopedPK11Slot system_slot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!system_slot) {
+    // System slot will never be loaded.
+    return;
+  }
 
   // Currently, NSSCertDatabase requires a public slot to be set, so we use
   // the system slot there. We also want GetSystemSlot() to return the system

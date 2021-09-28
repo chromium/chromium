@@ -93,7 +93,7 @@ class CrosSettingsTest : public testing::Test {
         OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
     DCHECK(service);
 
-    service->OnTPMTokenReady(true);
+    service->OnTPMTokenReady();
     task_environment_.RunUntilIdle();
     DCHECK(service->IsOwner());
     return service;

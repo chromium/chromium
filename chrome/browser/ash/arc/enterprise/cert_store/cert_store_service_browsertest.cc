@@ -356,8 +356,6 @@ class CertStoreServiceTest
   // Initializes |test_system_slot_|.
   void SetUpTestSystemSlot();
 
-  void SetUpTestSystemSlotOnIO(bool* out_system_slot_constructed_successfully);
-
   // Destroys |test_system_slot_|.
   void TearDownTestSystemSlot();
 
@@ -380,6 +378,9 @@ void CertStoreServiceTest::SetUpInProcessBrowserTestFixture() {
   MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
       ->SetTestingMode(true);
+
+  // Set up a system slot so tests can access device certs.
+  ASSERT_NO_FATAL_FAILURE(SetUpTestSystemSlot());
 }
 
 void CertStoreServiceTest::SetUpOnMainThread() {
@@ -405,8 +406,6 @@ void CertStoreServiceTest::SetUpOnMainThread() {
       profile(), base::BindRepeating(&BuildCertStoreService,
                                      base::Passed(std::move(installer))));
 
-  // Set up a system slot so tests can access device certs.
-  ASSERT_NO_FATAL_FAILURE(SetUpTestSystemSlot());
   ASSERT_TRUE(IsSystemSlotAvailable(profile()));
 }
 
@@ -579,24 +578,9 @@ bool CertStoreServiceTest::PlaceholdersContainIdAndSlot(
 }
 
 void CertStoreServiceTest::SetUpTestSystemSlot() {
-  bool system_slot_constructed_successfully = false;
-  base::RunLoop loop;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&CertStoreServiceTest::SetUpTestSystemSlotOnIO,
-                     base::Unretained(this),
-                     &system_slot_constructed_successfully),
-      loop.QuitClosure());
-  loop.Run();
-  ASSERT_TRUE(system_slot_constructed_successfully);
-}
-
-void CertStoreServiceTest::SetUpTestSystemSlotOnIO(
-    bool* out_system_slot_constructed_successfully) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
-  *out_system_slot_constructed_successfully =
-      test_system_slot_->ConstructedSuccessfully();
+  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+      /*simulate_token_loader=*/false);
+  ASSERT_TRUE(test_system_slot_->ConstructedSuccessfully());
 }
 
 void CertStoreServiceTest::TearDownTestSystemSlot() {

@@ -90,8 +90,11 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   bool IsPreTest();
 
  private:
-  void SetUpTestSystemSlotOnIO(base::OnceClosure done_callback);
-  void TearDownTestSystemSlotOnIO(base::OnceClosure done_callback);
+  // Create test system slot and prepare crypto:: methods to use it when the
+  // initialization starts.
+  void CreateTestSystemSlot();
+  // Destroy test system slot.
+  void TearDownTestSystemSlotOnIO();
 
   const SystemTokenStatus system_token_status_;
   const EnrollmentStatus enrollment_status_;

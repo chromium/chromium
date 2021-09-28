@@ -183,6 +183,13 @@ void DoesPrivateKeyExistAsync(
       std::move(callback));
 }
 
+void OnTPMTokenReadyOnIOThread(
+    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+    base::OnceClosure ready_callback,
+    bool /*is_tpm_token_enabled*/) {
+  original_task_runner->PostTask(FROM_HERE, std::move(ready_callback));
+}
+
 }  // namespace
 
 OwnerSettingsServiceAsh::ManagementSettings::ManagementSettings() = default;
@@ -196,16 +203,6 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
     : ownership::OwnerSettingsService(owner_key_util),
       device_settings_service_(device_settings_service),
       profile_(profile) {
-  if (chromeos::TPMTokenLoader::IsInitialized()) {
-    chromeos::TPMTokenLoader::TPMTokenStatus tpm_token_status =
-        chromeos::TPMTokenLoader::Get()->IsTPMTokenEnabled(
-            base::BindOnce(&OwnerSettingsServiceAsh::OnTPMTokenReady,
-                           weak_factory_.GetWeakPtr()));
-    waiting_for_tpm_token_ =
-        tpm_token_status ==
-        chromeos::TPMTokenLoader::TPM_TOKEN_STATUS_UNDETERMINED;
-  }
-
   if (chromeos::SessionManagerClient::Get())
     chromeos::SessionManagerClient::Get()->AddObserver(this);
 
@@ -224,6 +221,16 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
   // The ProfileManager may be null in unit tests.
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->AddObserver(this);
+
+  auto ready_callback = base::BindOnce(
+      &OwnerSettingsServiceAsh::OnTPMTokenReady, weak_factory_.GetWeakPtr());
+  waiting_for_tpm_token_ = true;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&crypto::IsTPMTokenEnabled,
+                     base::BindOnce(OnTPMTokenReadyOnIOThread,
+                                    base::SequencedTaskRunnerHandle::Get(),
+                                    std::move(ready_callback))));
 }
 
 OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
@@ -250,7 +257,7 @@ OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(
   return OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
 }
 
-void OwnerSettingsServiceAsh::OnTPMTokenReady(bool /* tpm_token_enabled */) {
+void OwnerSettingsServiceAsh::OnTPMTokenReady() {
   DCHECK(thread_checker_.CalledOnValidThread());
   waiting_for_tpm_token_ = false;
 

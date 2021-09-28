@@ -58,8 +58,6 @@ using content::BrowserThread;
 //                                               NssCertDatabaseGetter
 //                                                         |
 //                               CertificateManagerModel::DidGetCertDBOnIOThread
-//                                                         |
-//                                       crypto::IsTPMTokenEnabledForNSS
 //                  v--------------------------------------/
 // CertificateManagerModel::DidGetCertDBOnUIThread
 //                  |

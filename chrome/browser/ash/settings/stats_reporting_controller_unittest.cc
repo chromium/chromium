@@ -61,7 +61,7 @@ class StatsReportingControllerTest : public testing::Test {
         keys);
     std::unique_ptr<TestingProfile> user = std::make_unique<TestingProfile>();
     OwnerSettingsServiceAshFactory::GetForBrowserContext(user.get())
-        ->OnTPMTokenReady(true);
+        ->OnTPMTokenReady();
     content::RunAllTasksUntilIdle();
     return user;
   }

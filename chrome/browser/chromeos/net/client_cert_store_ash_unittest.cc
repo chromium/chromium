@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
@@ -69,7 +70,8 @@ class ClientCertStoreAshTest : public ::testing::Test {
  protected:
   crypto::ScopedTestNSSChromeOSUser user1_{"user1"};
   crypto::ScopedTestNSSChromeOSUser user2_{"user2"};
-  crypto::ScopedTestSystemNSSKeySlot system_slot_;
+  crypto::ScopedTestSystemNSSKeySlot system_slot_{
+      /*simulate_token_loader=*/true};
   content::BrowserTaskEnvironment task_environment_;
 };
 

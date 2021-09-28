@@ -27,11 +27,6 @@ class ClientCertFilter::CertFilterIO {
 
     waiting_for_private_slot_ = true;
 
-    if (use_system_slot_) {
-      system_slot_ = crypto::GetSystemNSSKeySlot(base::BindOnce(
-          &CertFilterIO::GotSystemSlot, weak_ptr_factory_.GetWeakPtr()));
-    }
-
     private_slot_ = crypto::GetPrivateSlotForChromeOSUser(
         username_hash_, base::BindOnce(&CertFilterIO::GotPrivateSlot,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -43,6 +38,13 @@ class ClientCertFilter::CertFilterIO {
       waiting_for_private_slot_ = false;
 
     init_callback_ = std::move(callback);
+
+    if (use_system_slot_) {
+      crypto::GetSystemNSSKeySlot(base::BindOnce(
+          &CertFilterIO::GotSystemSlot, weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     InitIfSlotsAvailable();
   }
 

@@ -59,7 +59,7 @@ namespace {
 //                                                           |
 //                                          crypto::InitializeNSSForChromeOSUser
 //                                                           |
-//                                                crypto::IsTPMTokenReady
+//                                                crypto::IsTPMTokenEnabled
 //                                                           |
 //                                          StartTPMSlotInitializationOnIOThread
 //                   v---------------------------------------/
@@ -107,8 +107,14 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
 }
 
 void StartTPMSlotInitializationOnIOThread(const AccountId& account_id,
-                                          const std::string& username_hash) {
+                                          const std::string& username_hash,
+                                          bool is_tpm_token_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!is_tpm_token_enabled) {
+    crypto::InitializePrivateSoftwareSlotForChromeOSUser(username_hash);
+    return;
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -132,18 +138,8 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
     return;
 
   crypto::WillInitializeTPMForChromeOSUser(username_hash);
-
-  if (crypto::IsTPMTokenEnabledForNSS()) {
-    if (crypto::IsTPMTokenReady(
-            base::BindOnce(&StartTPMSlotInitializationOnIOThread, account_id,
-                           username_hash))) {
-      StartTPMSlotInitializationOnIOThread(account_id, username_hash);
-    } else {
-      DVLOG(1) << "Waiting for tpm ready ...";
-    }
-  } else {
-    crypto::InitializePrivateSoftwareSlotForChromeOSUser(username_hash);
-  }
+  crypto::IsTPMTokenEnabled(base::BindOnce(
+      &StartTPMSlotInitializationOnIOThread, account_id, username_hash));
 }
 
 // Used to convert a callback that takes a net::NSSCertDatabase to one that
@@ -226,16 +222,20 @@ class NssServiceChromeOS::NSSCertDatabaseChromeOSManager {
     // This should only be called once.
     DCHECK(!pending_system_slot_);
 
-    crypto::ScopedPK11Slot system_slot = crypto::GetSystemNSSKeySlot(
+    crypto::GetSystemNSSKeySlot(
         base::BindOnce(&NSSCertDatabaseChromeOSManager::SetSystemSlotOfDB,
                        weak_ptr_factory_.GetWeakPtr()));
-    if (system_slot)
-      SetSystemSlotOfDB(std::move(system_slot));
   }
 
   void SetSystemSlotOfDB(crypto::ScopedPK11Slot system_slot) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    DCHECK(system_slot);
+    if (!system_slot) {
+      // It's valid for `system_slot` to be nullptr, such as when there is no
+      // TPM, and it's not been overridden for testing. In this scenario,
+      // initialization is complete, because there's nothing to pass to the
+      // NSSCertDatabaseChromeOS.
+      return;
+    }
 
     pending_system_slot_ = std::move(system_slot);
 

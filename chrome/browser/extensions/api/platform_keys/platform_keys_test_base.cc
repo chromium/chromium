@@ -73,6 +73,10 @@ void PlatformKeysTestBase::SetUp() {
   chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
       ->SetTestingMode(true);
 
+  if (system_token_status() == SystemTokenStatus::EXISTS) {
+    CreateTestSystemSlot();
+  }
+
   extensions::MixinBasedExtensionApiTest::SetUp();
 }
 
@@ -160,10 +164,14 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::GetIOThreadTaskRunner({})->PostTask(
+    // Call specializations of the virtual method that configures the created
+    // system slot.
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&PlatformKeysTestBase::SetUpTestSystemSlotOnIO,
-                       base::Unretained(this), loop.QuitClosure()));
+        base::BindOnce(&PlatformKeysTestBase::PrepareTestSystemSlotOnIO,
+                       base::Unretained(this),
+                       base::Unretained(test_system_slot_.get())),
+        loop.QuitClosure());
     loop.Run();
   }
 
@@ -178,10 +186,11 @@ void PlatformKeysTestBase::TearDownOnMainThread() {
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::GetIOThreadTaskRunner({})->PostTask(
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&PlatformKeysTestBase::TearDownTestSystemSlotOnIO,
-                       base::Unretained(this), loop.QuitClosure()));
+                       base::Unretained(this)),
+        loop.QuitClosure());
     loop.Run();
   }
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -212,21 +221,12 @@ bool PlatformKeysTestBase::IsPreTest() {
   return content::IsPreTest();
 }
 
-void PlatformKeysTestBase::SetUpTestSystemSlotOnIO(
-    base::OnceClosure done_callback) {
-  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
+void PlatformKeysTestBase::CreateTestSystemSlot() {
+  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+      /*simulate_token_loader=*/false);
   ASSERT_TRUE(test_system_slot_->ConstructedSuccessfully());
-
-  PrepareTestSystemSlotOnIO(test_system_slot_.get());
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               std::move(done_callback));
 }
 
-void PlatformKeysTestBase::TearDownTestSystemSlotOnIO(
-    base::OnceClosure done_callback) {
+void PlatformKeysTestBase::TearDownTestSystemSlotOnIO() {
   test_system_slot_.reset();
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               std::move(done_callback));
 }

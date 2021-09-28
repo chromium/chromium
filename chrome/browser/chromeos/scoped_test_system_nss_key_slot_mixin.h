@@ -20,7 +20,7 @@ namespace chromeos {
 // database without losing its state.
 //
 // This mixin performs the blocking initialization/destruction in the
-// {SetUp|TearDown}OnMainThread methods.
+// SetUp*|TearDown* methods.
 class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
  public:
   explicit ScopedTestSystemNSSKeySlotMixin(InProcessBrowserTestMixinHost* host);
@@ -32,11 +32,14 @@ class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
 
   PK11SlotInfo* slot() { return slot_.get(); }
 
-  void SetUpOnMainThread() override;
+  // SetUp and TearDown are not symmetrical. SetUp has to happen very early in a
+  // test life cycle (before ChromeOSTokenManager is created). And TearDown
+  // should happen while the IO thread still exists to properly close the
+  // database.
+  void SetUpInProcessBrowserTestFixture() override;
   void TearDownOnMainThread() override;
 
  private:
-  void InitializeOnIo(bool* out_success);
   void DestroyOnIo();
 
   crypto::ScopedPK11Slot slot_;

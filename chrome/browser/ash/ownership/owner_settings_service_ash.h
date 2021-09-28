@@ -67,7 +67,7 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
 
   static OwnerSettingsServiceAsh* FromWebUI(content::WebUI* web_ui);
 
-  void OnTPMTokenReady(bool tpm_token_enabled);
+  void OnTPMTokenReady();
 
   void OnEasyUnlockKeyOpsFinished();
 
