@@ -554,7 +554,9 @@
   },
   {
     "prefix": "wasm-csp",
-    "bases": ["wasm"],
+    "bases": [
+      "wasm",
+      "external/wpt/content-security-policy/wasm-unsafe-eval"],
     "args": ["--enable-blink-features=WebAssemblyCSP"]
   },
   {
