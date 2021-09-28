@@ -6,12 +6,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -363,6 +365,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   InitializeStandardProfiles();
   InitializeEuicc();
 
@@ -987,6 +991,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
        AllowOnlyPolicyCellularNetworksToConnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   InitializeStandardProfiles();
   InitializeEuicc();
 

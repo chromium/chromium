@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -695,11 +696,13 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     else
       user_policy_applied_ = true;
 
-    // Call UpdateBlockedCellularNetworks when either device policy applied or
-    // user policy applied so that so that unmanaged cellular networks are
-    // blocked correctly if the policy appears in either.
-    network_state_handler_->UpdateBlockedCellularNetworks(
-        AllowOnlyPolicyCellularNetworks());
+    if (features::IsESimPolicyEnabled()) {
+      // Call UpdateBlockedCellularNetworks when either device policy applied or
+      // user policy applied so that so that unmanaged cellular networks are
+      // blocked correctly if the policy appears in either.
+      network_state_handler_->UpdateBlockedCellularNetworks(
+          AllowOnlyPolicyCellularNetworks());
+    }
 
     if (device_policy_applied_ && user_policy_applied_) {
       network_state_handler_->UpdateBlockedWifiNetworks(

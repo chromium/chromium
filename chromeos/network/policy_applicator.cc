@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
@@ -301,11 +302,15 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
   base::Value new_shill_properties = policy_util::CreateShillConfiguration(
       profile_, new_guid, &global_network_config_, new_policy_as_dict,
       user_settings);
-  // Copy over the value of ICCID and EID property from old entry to new shill
-  // properties since Shill requires ICCID and EID to create or update the
-  // existing service.
-  CopyRequiredCellularProperies(entry_properties_as_dict,
-                                &new_shill_properties);
+
+  if (features::IsESimPolicyEnabled()) {
+    // Copy over the value of ICCID and EID property from old entry to new shill
+    // properties since Shill requires ICCID and EID to create or update the
+    // existing service.
+    CopyRequiredCellularProperies(entry_properties_as_dict,
+                                  &new_shill_properties);
+  }
+
   // A new policy has to be applied to this profile entry. In order to keep
   // implicit state of Shill like "connected successfully before", keep the
   // entry if a policy is reapplied (e.g. after reboot) or is updated.
@@ -436,23 +441,25 @@ void PolicyApplicator::ApplyRemainingPolicies() {
     VLOG(1) << "Creating new configuration managed by policy " << *it
             << " in profile " << profile_.ToDebugString() << ".";
 
-    const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
-    if (smdp_address) {
-      NET_LOG(EVENT)
-          << "Found ONC configuration with SMDP: " << *smdp_address
-          << ". Start installing policy eSim profile with ONC config: "
-          << *network_policy;
-      if (cellular_policy_handler_)
-        cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
-      else
-        NET_LOG(ERROR)
-            << "Unable to install eSIM. CellularPolicyHandler not initialized.";
+    if (features::IsESimPolicyEnabled()) {
+      const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
+      if (smdp_address) {
+        NET_LOG(EVENT)
+            << "Found ONC configuration with SMDP: " << *smdp_address
+            << ". Start installing policy eSim profile with ONC config: "
+            << *network_policy;
+        if (cellular_policy_handler_)
+          cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
+        else
+          NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
+                            "initialized.";
 
-      it = remaining_policy_guids_.erase(it);
-      if (remaining_policy_guids_.empty()) {
-        NotifyConfigurationHandlerAndFinish();
+        it = remaining_policy_guids_.erase(it);
+        if (remaining_policy_guids_.empty()) {
+          NotifyConfigurationHandlerAndFinish();
+        }
+        continue;
       }
-      continue;
     }
 
     base::Value shill_dictionary = policy_util::CreateShillConfiguration(
