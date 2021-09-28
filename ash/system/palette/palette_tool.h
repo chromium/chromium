@@ -97,7 +97,11 @@ class ASH_EXPORT PaletteTool {
   virtual void OnViewDestroyed() = 0;
 
   // Returns an icon to use in the tray if this tool is active. Only one tool
-  // (per-group) should ever have an active icon at any given time.
+  // (per-group) should ever have an active icon at any given time. The icon
+  // will be the same as that used in the palette tray on the left-most edge of
+  // the tool i.e. CommonPaletteTool::GetPaletteIcon().
+  // TODO(michelefan): Consider using the same function to return
+  // icon for palette menu and palette tray at the status area.
   virtual const gfx::VectorIcon& GetActiveTrayIcon() const;
 
   void SetExternalDisplayForTest() { external_display_for_test_ = true; }

@@ -207,7 +207,7 @@ void ProjectorBarView::InitLayout() {
   laser_pointer_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnLaserPointerPressed,
                           base::Unretained(this)),
-      kPaletteTrayIconLaserPointerIcon,
+      kPaletteModeLaserPointerIcon,
       l10n_util::GetStringUTF16(IDS_LASER_POINTER_BUTTON)));
 
   // Add marker button.

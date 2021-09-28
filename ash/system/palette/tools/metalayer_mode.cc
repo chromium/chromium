@@ -84,7 +84,7 @@ void MetalayerMode::OnDisable() {
 }
 
 const gfx::VectorIcon& MetalayerMode::GetActiveTrayIcon() const {
-  return kPaletteTrayIconMetalayerIcon;
+  return kPaletteModeMetalayerIcon;
 }
 
 const gfx::VectorIcon& MetalayerMode::GetPaletteIcon() const {
