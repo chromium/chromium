@@ -521,6 +521,9 @@ std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
     case SentReportInfo::Status::kOffline:
       out << "kOffline";
       break;
+    case SentReportInfo::Status::kRemovedFromQueue:
+      out << "kRemovedFromQueue";
+      break;
   }
   return out;
 }

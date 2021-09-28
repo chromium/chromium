@@ -350,7 +350,8 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
               manager->reporter_->AddReportsToQueue({std::move(report)});
             },
             weak_factory_.GetWeakPtr(), info.report));
-  } else if (info.status != SentReportInfo::Status::kOffline) {
+  } else if (info.status != SentReportInfo::Status::kOffline &&
+             info.status != SentReportInfo::Status::kRemovedFromQueue) {
     RecordDeleteEvent(DeleteEvent::kStarted);
     conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
         .WithArgs(*info.report.conversion_id)

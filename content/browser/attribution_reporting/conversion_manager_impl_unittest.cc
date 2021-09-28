@@ -86,7 +86,12 @@ class TestConversionReporter
 
   void ClearDeferredCallbacks() { deferred_callbacks_.clear(); }
 
-  void RemoveAllReportsFromQueue() override {}
+  void RemoveAllReportsFromQueue() override {
+    for (auto& info : deferred_callbacks_) {
+      info.status = SentReportInfo::Status::kRemovedFromQueue;
+    }
+    RunDeferredCallbacks();
+  }
 
   void ShouldRunReportSentCallbacks(bool should_run_report_sent_callbacks) {
     should_run_report_sent_callbacks_ = should_run_report_sent_callbacks;
@@ -831,55 +836,6 @@ TEST_F(ConversionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
       kMetric, ConversionManagerImpl::DeleteEvent::kSucceeded, 1);
 }
 
-TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
-  test_reporter_->ShouldRunReportSentCallbacks(false);
-
-  conversion_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).Build());
-  conversion_manager_->HandleConversion(
-      ConversionBuilder().SetConversionData(5).Build());
-  ExpectNumStoredReports(1);
-
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kConversionManagerQueueReportsInterval);
-  ExpectNumStoredReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-  EXPECT_EQ(0u,
-            conversion_manager_->GetSessionStorage().GetSentReports().size());
-  // The above report with `conversion_data == 5` has been sent, and the manager
-  // is waiting for its callback to be invoked.
-
-  // Delete the report and store a new one to ensure that IDs aren't reused.
-  {
-    base::RunLoop delete_loop;
-    conversion_manager_->ClearData(
-        base::Time::Min(), base::Time::Max(), base::NullCallback(),
-        base::BindLambdaForTesting([&]() { delete_loop.Quit(); }));
-    delete_loop.Run();
-    ExpectNumStoredReports(0);
-
-    conversion_manager_->HandleImpression(
-        ImpressionBuilder(clock().Now()).Build());
-    conversion_manager_->HandleConversion(
-        ConversionBuilder().SetConversionData(6).Build());
-    ExpectNumStoredReports(1);
-    EXPECT_EQ(1u, test_reporter_->num_reports());
-    EXPECT_EQ(0u,
-              conversion_manager_->GetSessionStorage().GetSentReports().size());
-  }
-
-  // The manager's `OnReportSent` callback is invoked, and the new conversion
-  // with `conversion_data == 6` would be erroneously deleted if it had been
-  // given the same ID.
-  test_reporter_->RunDeferredCallbacks();
-  ExpectNumStoredReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-  const auto& sent_reports =
-      conversion_manager_->GetSessionStorage().GetSentReports();
-  EXPECT_EQ(1u, sent_reports.size());
-  EXPECT_EQ(5u, sent_reports[0].report.conversion_data);
-}
-
 TEST_F(ConversionManagerImplTest, ClearData_RequeuesReports) {
   const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
   const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
@@ -914,6 +870,35 @@ TEST_F(ConversionManagerImplTest, ClearData_RequeuesReports) {
 
   test_reporter_->WaitForNumReports(3);
   EXPECT_EQ(3u, test_reporter_->num_reports());
+}
+
+TEST_F(ConversionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+
+  conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+                                            .SetExpiry(kImpressionExpiry)
+                                            .SetReportingOrigin(origin_a)
+                                            .Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetReportingOrigin(origin_a).Build());
+
+  ExpectNumStoredReports(1u);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+
+  test_reporter_->WaitForNumReports(1);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+  ExpectNumStoredReports(1u);
+
+  conversion_manager_->ClearData(
+      base::Time::Min(), base::Time::Max(),
+      base::BindLambdaForTesting(
+          [&](const url::Origin& origin) { return origin == origin_b; }),
+      base::DoNothing::Once());
+
+  ExpectNumStoredReports(1u);
 }
 
 }  // namespace content

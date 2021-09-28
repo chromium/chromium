@@ -158,7 +158,7 @@ TEST_F(ConversionReporterImplTest,
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kDropped, last_sent_report_info()->status);
+  EXPECT_EQ(SentReportInfo::Status::kRemovedFromQueue, last_sent_report_info()->status);
 }
 
 TEST_F(ConversionReporterImplTest,

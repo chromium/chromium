@@ -24,6 +24,8 @@ struct CONTENT_EXPORT SentReportInfo {
     // The report should be retried because the browser is offline. This
     // shouldn't contribute to the number of report failures.
     kOffline,
+    // The report was removed from the queue before being sent.
+    kRemovedFromQueue,
   };
 
   SentReportInfo(ConversionReport report,

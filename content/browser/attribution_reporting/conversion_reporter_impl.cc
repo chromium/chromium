@@ -67,7 +67,7 @@ void ConversionReporterImpl::RemoveAllReportsFromQueue() {
     DCHECK(report.conversion_id.has_value());
     report_queue_.pop();
     OnReportSent(SentReportInfo(std::move(report),
-                                SentReportInfo::Status::kDropped,
+                                SentReportInfo::Status::kRemovedFromQueue,
                                 /*http_response_code=*/0));
   }
   queued_reports_.clear();
