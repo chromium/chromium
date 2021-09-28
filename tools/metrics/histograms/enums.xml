@@ -29362,6 +29362,7 @@ Called by update_extension_histograms.py.-->
   <int value="1589" label="OS_DIAGNOSTICS_GETROUTINEUPDATE"/>
   <int value="1590" label="SPEECHRECOGNITIONPRIVATE_START"/>
   <int value="1591" label="SPEECHRECOGNITIONPRIVATE_STOP"/>
+  <int value="1592" label="FILEMANAGERPRIVATEINTERNAL_STARTIOTASK"/>
 </enum>
 
 <enum name="ExtensionIconState">

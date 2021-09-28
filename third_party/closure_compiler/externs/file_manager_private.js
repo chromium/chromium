@@ -293,6 +293,23 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
   UNKNOWN: 'unknown',
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.IOTaskStatus = {
+  QUEUED: 'queued',
+  IN_PROGRESS: 'in_progress',
+  SUCCESS: 'success',
+  ERROR: 'error',
+  CANCELLED: 'cancelled',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.IOTaskType = {
+  COPY: 'copy',
+  MOVE: 'move',
+  DELETE: 'delete',
+  ZIP: 'zip',
+};
+
 /**
  * @typedef {{
  *   appId: string,
@@ -638,6 +655,13 @@ chrome.fileManagerPrivate.OpenWindowParams;
  * }}
  */
 chrome.fileManagerPrivate.GetVolumeRootOptions;
+
+/**
+ * @typedef {{
+ *   destinationFolder: (DirectoryEntry|undefined),
+ * }}
+ */
+chrome.fileManagerPrivate.IOTaskParams;
 
 /**
  * Logout the current user for navigating to the re-authentication screen for
@@ -1284,6 +1308,15 @@ chrome.fileManagerPrivate.notifyDriveDialogResult = function(result) {};
  *     the invoked function.
  */
 chrome.fileManagerPrivate.openWindow = function(params, callback) {};
+
+/**
+ * Starts an I/O task of type |type| on |entries|. Task type specific parameters
+ * passed via |params|.
+ * @param {!chrome.fileManagerPrivate.IOTaskType} type
+ * @param {!Array<!Entry>} entries
+ * @param {!chrome.fileManagerPrivate.IOTaskParams} params
+ */
+chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;

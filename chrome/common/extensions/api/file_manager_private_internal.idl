@@ -13,6 +13,9 @@ namespace fileManagerPrivateInternal {
     DOMString fileFullPath;
     boolean fileIsDirectory;
   };
+  dictionary IOTaskParams {
+    DOMString? destinationFolderUrl;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -136,5 +139,8 @@ namespace fileManagerPrivateInternal {
         SimpleCallback callback);
     static void toggleAddedToHoldingSpace(DOMString[] urls, boolean add,
                                           optional SimpleCallback callback);
+    static void startIOTask(fileManagerPrivate.IOTaskType type,
+                            DOMString[] urls,
+                            IOTaskParams params);
   };
 };

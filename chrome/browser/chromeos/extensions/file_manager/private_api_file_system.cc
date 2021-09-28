@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -372,6 +373,24 @@ chromeos::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
   }
   NOTREACHED() << "Unknown format filesystem " << filesystem;
   return chromeos::disks::FormatFileSystemType::kUnknown;
+}
+
+absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
+    api::file_manager_private::IOTaskType type) {
+  switch (type) {
+    case api::file_manager_private::IO_TASK_TYPE_COPY:
+      return file_manager::io_task::OperationType::kCopy;
+    case api::file_manager_private::IO_TASK_TYPE_MOVE:
+      return file_manager::io_task::OperationType::kMove;
+    case api::file_manager_private::IO_TASK_TYPE_DELETE:
+      return file_manager::io_task::OperationType::kDelete;
+    case api::file_manager_private::IO_TASK_TYPE_ZIP:
+      return file_manager::io_task::OperationType::kZip;
+    case api::file_manager_private::IO_TASK_TYPE_NONE:
+      return {};
+  }
+  NOTREACHED() << "Unknown I/O task type " << type;
+  return {};
 }
 
 }  // namespace
@@ -1340,6 +1359,56 @@ FileManagerPrivateInternalGetDirectorySizeFunction::Run() {
 void FileManagerPrivateInternalGetDirectorySizeFunction::
     OnDirectorySizeRetrieved(int64_t size) {
   Respond(OneArgument(base::Value(static_cast<double>(size))));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalStartIOTaskFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private_internal::StartIOTask::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  auto* const profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+
+  auto* const volume_manager = file_manager::VolumeManager::Get(
+      Profile::FromBrowserContext(browser_context()));
+  if (!volume_manager || !volume_manager->io_task_controller()) {
+    return RespondNow(Error("Invalid state"));
+  }
+
+  std::vector<storage::FileSystemURL> source_urls;
+  for (const std::string& url : params->urls) {
+    storage::FileSystemURL cracked_url =
+        file_system_context->CrackURLInFirstPartyContext(GURL(url));
+    if (!cracked_url.is_valid()) {
+      return RespondNow(Error("Invalid source url."));
+    }
+    source_urls.push_back(std::move(cracked_url));
+  }
+
+  auto type = IOTaskTypeToChromeEnum(params->type);
+  if (!type) {
+    return RespondNow(Error("Invalid I/O task type given."));
+  }
+
+  storage::FileSystemURL destination_folder_url;
+  if (params->params.destination_folder_url) {
+    destination_folder_url = file_system_context->CrackURLInFirstPartyContext(
+        GURL(*(params->params.destination_folder_url)));
+    if (!destination_folder_url.is_valid()) {
+      return RespondNow(Error("Invalid destination folder url."));
+    }
+  }
+
+  // TODO(b/199804935): Replace with {Copy/Move/etc}IOTask when implemented.
+  volume_manager->io_task_controller()->Add(
+      std::make_unique<file_manager::io_task::DummyIOTask>(
+          std::move(source_urls), std::move(destination_folder_url), *type));
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

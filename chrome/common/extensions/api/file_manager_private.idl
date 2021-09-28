@@ -343,6 +343,21 @@ enum SharesheetLaunchSource {
   unknown
 };
 
+enum IOTaskState {
+  queued,
+  in_progress,
+  success,
+  error,
+  cancelled
+};
+
+enum IOTaskType {
+  copy,
+  move,
+  delete,
+  zip
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -906,6 +921,12 @@ dictionary OpenWindowParams {
   // The URL for a file or directory to be selected once a new window is
   // spawned.
   DOMString? selectionURL;
+};
+
+dictionary IOTaskParams {
+  // Destination folder for tasks that require one. Not required by |delete|
+  // task.
+  [instanceof=DirectoryEntry] object? destinationFolder;
 };
 
 // Callback that does not take arguments.
@@ -1528,6 +1549,14 @@ interface Functions {
 
   // Creates a new Files app window in the directory provided in `params`.
   static void openWindow(OpenWindowParams params, BooleanCallback callback);
+
+  // Starts an I/O task of type |type| on |entries|. Task type specific
+  // parameters are passed via |params|.
+  [nocompile]
+  static void startIOTask(
+      IOTaskType type,
+      [instanceof=Entry] object[] entries,
+      IOTaskParams params);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

@@ -358,6 +358,15 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         fileManagerPrivateInternal.toggleAddedToHoldingSpace(
             urls, added, callback);
       });
+
+  apiFunctions.setHandleRequest('startIOTask', function(type, entries, params) {
+    const urls = entries.map(entry => getEntryURL(entry));
+    let newParams = {};
+    if (params.destinationFolder) {
+      newParams.destinationFolderUrl = getEntryURL(params.destinationFolder);
+    }
+    fileManagerPrivateInternal.startIOTask(type, urls, newParams);
+  });
 });
 
 bindingUtil.registerEventArgumentMassager(
