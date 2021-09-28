@@ -276,36 +276,34 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 - (void)testBadSelectionDisablesGenerateLink {
-  if (@available(iOS 14, *)) {
-    [ChromeEarlGrey loadURL:self.testServer->GetURL(kNoTextTestURL)];
-    [ChromeEarlGrey waitForWebStateContainingText:kNoTextTestPageTextSample];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kNoTextTestURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:kNoTextTestPageTextSample];
 
-    [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:chrome_test_util::LongPressElementForContextMenu(
-                          [ElementSelector
-                              selectorWithElementID:kSimpleTextElementId],
-                          true)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::LongPressElementForContextMenu(
+                        [ElementSelector
+                            selectorWithElementID:kSimpleTextElementId],
+                        true)];
 
-    // TODO(crbug.com/1233056): Xcode 13 gesture recognizers seem to get stuck
-    // when the user longs presses on plain text.  For this test, disable EG
-    // synchronization.
-    ScopedSynchronizationDisabler disabler;
-    id<GREYMatcher> copyButton =
-        chrome_test_util::SystemSelectionCalloutCopyButton();
-    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:copyButton];
+  // TODO(crbug.com/1233056): Xcode 13 gesture recognizers seem to get stuck
+  // when the user longs presses on plain text.  For this test, disable EG
+  // synchronization.
+  ScopedSynchronizationDisabler disabler;
+  id<GREYMatcher> copyButton =
+      chrome_test_util::SystemSelectionCalloutCopyButton();
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:copyButton];
 
-    // Make sure the Link to Text button is not visible.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
-        assertWithMatcher:grey_notVisible()];
+  // Make sure the Link to Text button is not visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
+      assertWithMatcher:grey_notVisible()];
 
-    // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-    // buttons so tearDown doesn't hang when |disabler| goes out of scope.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:grey_tap()];
-  }
+  // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
+  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_tap()];
 }
 
 - (void)testInputDisablesGenerateLink {

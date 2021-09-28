@@ -45,20 +45,6 @@ class DefaultBrowserUtilsTest : public PlatformTest {
 
 // Tests interesting information for each type.
 TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    // On iOS < 14 it should always be false.
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-    EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-    EXPECT_FALSE(
-        IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe));
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-    EXPECT_FALSE(
-        IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS));
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-    EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
-    return;
-  }
 
   // General promo.
   EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
@@ -87,10 +73,6 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
 
 // Tests most recent interest type.
 TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    // iOS < 14 not supported.
-    return;
-  }
   DefaultPromoType type = MostRecentInterestDefaultPromoType(NO);
   EXPECT_EQ(type, DefaultPromoTypeGeneral);
 
@@ -111,10 +93,6 @@ TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
 
 // Tests cool down between promos.
 TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    // iOS < 14 not supported.
-    return;
-  }
   LogUserInteractionWithFullscreenPromo();
   EXPECT_TRUE(UserInPromoCooldown());
 
@@ -125,10 +103,6 @@ TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
 
 // Tests no 2 tailored promos are not shown.
 TEST_F(DefaultBrowserUtilsTest, TailoredPromoDoesNotAppearTwoTimes) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    // iOS < 14 not supported.
-    return;
-  }
   LogUserInteractionWithTailoredFullscreenPromo();
   EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }

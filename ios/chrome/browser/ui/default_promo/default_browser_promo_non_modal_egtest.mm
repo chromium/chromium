@@ -78,11 +78,6 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 #define MAYBE_testNonModalAppears DISABLED_testNonModalAppears
 #endif
 - (void)MAYBE_testNonModalAppears {
-  // Promos only appear on iOS 14 and up.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   [ChromeEarlGreyAppInterface copyURLToPasteBoard];
   [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
       performAction:grey_tap()];

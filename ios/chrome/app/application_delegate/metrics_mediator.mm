@@ -276,9 +276,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   }
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-  if (@available(iOS 14, *)) {
-    [WidgetMetricsUtil logInstalledWidgets];
-  }
+  [WidgetMetricsUtil logInstalledWidgets];
+
 #endif
 
   // Create the first user action recorder and schedule a task to expire it

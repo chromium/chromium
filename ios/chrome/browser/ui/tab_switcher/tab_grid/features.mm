@@ -12,8 +12,5 @@ const base::Feature kTabsBulkActions{"TabsBulkActions",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsTabsBulkActionsEnabled() {
-  if (@available(iOS 14, *)) {
-    return base::FeatureList::IsEnabled(kTabsBulkActions);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kTabsBulkActions);
 }

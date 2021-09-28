@@ -50,7 +50,6 @@ namespace {
 
 NSString* const kEnableMetricKit = @"EnableMetricKit";
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 void ReportExitReason(base::HistogramBase* histogram,
                       MetricKitExitReason bucket,
                       NSUInteger count) {
@@ -59,7 +58,6 @@ void ReportExitReason(base::HistogramBase* histogram,
   }
   histogram->AddCount(bucket, count);
 }
-#endif
 
 void ReportLongDuration(const char* histogram_name,
                         NSMeasurement* measurement) {
@@ -114,7 +112,6 @@ void WriteMetricPayloads(NSArray<MXMetricPayload*>* payloads) {
   }
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 void WriteDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
     API_AVAILABLE(ios(14.0)) {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
@@ -204,7 +201,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
     SendDiagnosticPayloads(payloads);
   }
 }
-#endif
 
 }  // namespace
 
@@ -281,7 +277,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   }
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 - (void)logForegroundExit:(MXForegroundExitData*)exitData
     API_AVAILABLE(ios(14.0)) {
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
@@ -329,7 +324,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   ReportExitReason(histogramUMA, kBackgroundTaskAssertionTimeoutExit,
                    exitData.cumulativeBackgroundTaskAssertionTimeoutExitCount);
 }
-#endif
 
 - (void)processPayload:(MXMetricPayload*)payload {
   // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
@@ -370,15 +364,10 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   [self logStartupDurationMXHistogram:histogrammedApplicationHangTime
                        toUMAHistogram:"IOS.MetricKit.ApplicationHangTime"];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData];
-    [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData];
-  }
-#endif
+  [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData];
+  [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData];
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 - (void)didReceiveDiagnosticPayloads:(NSArray<MXDiagnosticPayload*>*)payloads
     API_AVAILABLE(ios(14.0)) {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
@@ -395,6 +384,5 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
                        sendPayloads));
   }
 }
-#endif
 
 @end

@@ -840,13 +840,11 @@ bool IsSigninForcedByPolicy() {
   policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
   policyWatcherAgent->Initialize(handler);
 
-  if (@available(iOS 14, *)) {
-    if (base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
-      self.screenshotDelegate = [[ScreenshotDelegate alloc]
-          initWithBrowserInterfaceProvider:self.browserViewWrangler];
-      [self.sceneState.scene.screenshotService
-          setDelegate:self.screenshotDelegate];
-    }
+  if (base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
+    self.screenshotDelegate = [[ScreenshotDelegate alloc]
+        initWithBrowserInterfaceProvider:self.browserViewWrangler];
+    [self.sceneState.scene.screenshotService
+        setDelegate:self.screenshotDelegate];
   }
 
   // Only create the restoration helper if the session with the current session

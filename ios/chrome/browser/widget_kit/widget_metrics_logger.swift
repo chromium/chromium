@@ -6,7 +6,6 @@ import Foundation
 import WidgetKit
 
 /// Logs metrics associated with iOS 14 home screen widgets.
-@available(iOS 14.0, *)
 public final class WidgetsMetricLogger: NSObject {
 
   /// The queue onto which time-consuming work is dispatched.

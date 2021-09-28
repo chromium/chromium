@@ -333,13 +333,9 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    UIIndirectScribbleInteraction* scribbleInteraction =
-        [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
-    [self.fakeOmnibox addInteraction:scribbleInteraction];
-  }
-#endif  // defined(__IPHONE_14_0)
+  UIIndirectScribbleInteraction* scribbleInteraction =
+      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
+  [self.fakeOmnibox addInteraction:scribbleInteraction];
 
   [self.headerView.voiceSearchButton addTarget:self
                                         action:@selector(loadVoiceSearch:)
@@ -622,8 +618,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-
 - (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
               requestElementsInRect:(CGRect)rect
                          completion:
@@ -672,8 +666,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return YES;
 }
-
-#endif  // defined(__IPHONE_14_0)
 
 #pragma mark - LogoAnimationControllerOwnerOwner
 

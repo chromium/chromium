@@ -160,9 +160,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
   if (IsScreenTimeIntegrationEnabled()) {
-    if (@available(iOS 14, *)) {
-      ScreenTimeHistoryDeleterFactory::GetInstance();
-    }
+    ScreenTimeHistoryDeleterFactory::GetInstance();
   }
 #endif
 }

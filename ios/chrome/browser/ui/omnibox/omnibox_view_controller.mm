@@ -122,12 +122,8 @@ const CGFloat kClearButtonSize = 28.0f;
   SetA11yLabelAndUiAutomationName(self.textField, IDS_ACCNAME_LOCATION,
                                   @"Address");
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    [self.textField
-        addInteraction:[[UIScribbleInteraction alloc] initWithDelegate:self]];
-  }
-#endif  // defined(__IPHONE_14_0)
+  [self.textField
+      addInteraction:[[UIScribbleInteraction alloc] initWithDelegate:self]];
 }
 
 - (void)viewDidLoad {
@@ -660,8 +656,6 @@ const CGFloat kClearButtonSize = 28.0f;
 
 #pragma mark - UIScribbleInteractionDelegate
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-
 - (void)scribbleInteractionWillBeginWriting:(UIScribbleInteraction*)interaction
     API_AVAILABLE(ios(14.0)) {
   if (self.textField.isPreEditing) {
@@ -680,7 +674,5 @@ const CGFloat kClearButtonSize = 28.0f;
   // Dismiss any inline autocomplete. The user expectation is to not have it.
   [self.textField clearAutocompleteText];
 }
-
-#endif  // defined(__IPHONE_14_0)
 
 @end

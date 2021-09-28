@@ -251,10 +251,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self setupTopToolbar];
   [self setupBottomToolbar];
-  if (@available(iOS 14, *)) {
-    if (IsTabsBulkActionsEnabled())
-      [self setupEditButton];
-  }
+  if (IsTabsBulkActionsEnabled())
+    [self setupEditButton];
 
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
@@ -1315,33 +1313,31 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
 
-  if (@available(iOS 14, *)) {
-    GridViewController* gridViewController =
-        [self gridViewControllerForPage:self.currentPage];
-    NSArray<NSString*>* items =
-        gridViewController.selectedShareableItemIDsForEditing;
-    UIMenu* menu = nil;
-    switch (self.currentPage) {
-      case TabGridPageIncognitoTabs:
-        menu = [UIMenu
-            menuWithChildren:[self.incognitoTabsDelegate
-                                 addToButtonMenuElementsForItems:items]];
-        break;
-      case TabGridPageRegularTabs:
-        menu = [UIMenu
-            menuWithChildren:[self.regularTabsDelegate
-                                 addToButtonMenuElementsForItems:items]];
-        break;
-      case TabGridPageRemoteTabs:
-        // No-op, Add To button inaccessible in remote tabs page.
-        break;
-    }
-    [self.bottomToolbar setAddToButtonMenu:menu];
-    BOOL incognitoTabsNeedsAuth =
-        (self.currentPage == TabGridPageIncognitoTabs &&
-         self.incognitoTabsViewController.contentNeedsAuthentication);
-    [self.bottomToolbar setAddToButtonEnabled:!incognitoTabsNeedsAuth];
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSArray<NSString*>* items =
+      gridViewController.selectedShareableItemIDsForEditing;
+  UIMenu* menu = nil;
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.incognitoTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRegularTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.regularTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRemoteTabs:
+      // No-op, Add To button inaccessible in remote tabs page.
+      break;
   }
+  [self.bottomToolbar setAddToButtonMenu:menu];
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+  [self.bottomToolbar setAddToButtonEnabled:!incognitoTabsNeedsAuth];
 
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {

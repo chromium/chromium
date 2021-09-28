@@ -114,29 +114,25 @@ TEST_F(MetricKitSubscriberTest, Metrics) {
     tester.ExpectBucketCount("IOS.MetricKit.TimeToFirstDraw", 5, 2);
     tester.ExpectBucketCount("IOS.MetricKit.TimeToFirstDraw", 15, 4);
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    if (base::ios::IsRunningOnIOS14OrLater()) {
-      tester.ExpectTotalCount("IOS.MetricKit.BackgroundExitData", 71);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 2, 1);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 4, 2);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 1, 5);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 6, 6);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 8, 7);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 5, 8);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 7, 9);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 3, 10);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 9, 11);
-      tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 0, 12);
+    tester.ExpectTotalCount("IOS.MetricKit.BackgroundExitData", 71);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 2, 1);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 4, 2);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 1, 5);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 6, 6);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 8, 7);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 5, 8);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 7, 9);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 3, 10);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 9, 11);
+    tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 0, 12);
 
-      tester.ExpectTotalCount("IOS.MetricKit.ForegroundExitData", 95);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 7, 13);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 1, 14);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 4, 15);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 0, 16);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 8, 18);
-      tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 2, 19);
-    }
-#endif
+    tester.ExpectTotalCount("IOS.MetricKit.ForegroundExitData", 95);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 7, 13);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 1, 14);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 4, 15);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 0, 16);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 8, 18);
+    tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 2, 19);
   }
 }
 
@@ -172,36 +168,31 @@ TEST_F(MetricKitSubscriberTest, SaveMetricsReport) {
   }
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
-  if (@available(iOS 14, *)) {
-    id mock_report = OCMClassMock([MXDiagnosticPayload class]);
-    NSDate* date = [NSDate date];
-    std::string file_data("report content");
-    NSData* data = [NSData dataWithBytes:file_data.c_str()
-                                  length:file_data.size()];
-    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyyMMdd_HHmmss"];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-    NSString* file_name =
-        [NSString stringWithFormat:@"Diagnostic-%@.json",
-                                   [formatter stringFromDate:date]];
+  id mock_report = OCMClassMock([MXDiagnosticPayload class]);
+  NSDate* date = [NSDate date];
+  std::string file_data("report content");
+  NSData* data = [NSData dataWithBytes:file_data.c_str()
+                                length:file_data.size()];
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  [formatter setDateFormat:@"yyyyMMdd_HHmmss"];
+  [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+  NSString* file_name = [NSString
+      stringWithFormat:@"Diagnostic-%@.json", [formatter stringFromDate:date]];
 
-    base::FilePath file_path =
-        MetricKitReportDirectory().Append(base::SysNSStringToUTF8(file_name));
-    OCMStub([mock_report timeStampEnd]).andReturn(date);
-    OCMStub([mock_report JSONRepresentation]).andReturn(data);
-    NSArray* array = @[ mock_report ];
-    [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
+  base::FilePath file_path =
+      MetricKitReportDirectory().Append(base::SysNSStringToUTF8(file_name));
+  OCMStub([mock_report timeStampEnd]).andReturn(date);
+  OCMStub([mock_report JSONRepresentation]).andReturn(data);
+  NSArray* array = @[ mock_report ];
+  [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
 
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForFileOperationTimeout, ^bool() {
-          base::RunLoop().RunUntilIdle();
-          return base::PathExists(file_path);
-        }));
-    std::string content;
-    base::ReadFileToString(file_path, &content);
-    EXPECT_EQ(content, file_data);
-  }
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return base::PathExists(file_path);
+      }));
+  std::string content;
+  base::ReadFileToString(file_path, &content);
+  EXPECT_EQ(content, file_data);
 }
-#endif

@@ -102,9 +102,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    goodTitle = app.staticTexts[@"Unsupported file format"];
-  }
+  goodTitle = app.staticTexts[@"Unsupported file format"];
+
 #endif
   GREYAssert(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
@@ -123,9 +122,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    goodTitle = app.staticTexts[@"Unsupported file format"];
-  }
+  goodTitle = app.staticTexts[@"Unsupported file format"];
+
 #endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
@@ -144,9 +142,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    goodTitle = app.staticTexts[@"Unsupported file format"];
-  }
+  goodTitle = app.staticTexts[@"Unsupported file format"];
 #endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
@@ -165,9 +161,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    goodTitle = app.staticTexts[@"Unsupported file format"];
-  }
+  goodTitle = app.staticTexts[@"Unsupported file format"];
 #endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
@@ -190,9 +184,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 14, *)) {
-    goodTitle = app.staticTexts[@"Unsupported file format"];
-  }
+  goodTitle = app.staticTexts[@"Unsupported file format"];
 #endif
   GREYAssert(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],

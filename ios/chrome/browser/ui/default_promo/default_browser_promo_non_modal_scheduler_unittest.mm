@@ -126,10 +126,6 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
 
 // Tests that the omnibox paste event triggers the promo to show.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestOmniboxPasteShowsPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -154,10 +150,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestOmniboxPasteShowsPromo) {
 // promo.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestFirstPartySchemeShowsPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserEnteredAppViaFirstPartyScheme];
 
@@ -180,10 +172,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
 // Tests that the completed share event triggers the promo.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestShareCompletedShowsPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserFinishedActivityFlow];
 
@@ -202,10 +190,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestShareCompletedShowsPromo) {
 // Tests that the promo dismisses automatically after the dismissal time and
 // the event is stored.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -233,10 +217,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
 
 // Tests that if the user takes the promo action, that is handled correctly.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -267,10 +247,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
 // finishes, the promo does not show.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestTabSwitchPreventsPromoShown) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -292,10 +268,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // Tests that if a message is triggered on page load, the promo is not shown.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestMessagePreventsPromoShown) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -332,10 +304,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // does not update the shown promo count.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestBackgroundingDismissesPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -364,10 +332,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // Tests that entering the tab grid with the promo showing hides the promo but
 // does not update the shown promo count.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 
@@ -394,10 +358,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
 
 // Tests background cancel metric logs correctly.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestBackgroundCancelMetric) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
@@ -420,10 +380,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestBackgroundCancelMetric) {
 // Tests background cancel metric is not logged after a promo is shown.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestBackgroundCancelMetricNotLogAfterPromoShown) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
@@ -456,10 +412,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // Tests background cancel metric is not logged after a promo is dismissed.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestBackgroundCancelMetricNotLogAfterPromoDismiss) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
@@ -498,10 +450,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // Prevents crbug.com/1221379 regression.
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
        TestBackgroundCancelMetricDoesNotLogWhenPromoNotShown) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
@@ -541,10 +489,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 // Tests that if the user currently has Chrome as default, the promo does not
 // show. Prevents regression of crbug.com/1224875
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   // Mark Chrome as currently default
   [[NSUserDefaults standardUserDefaults]
@@ -566,10 +510,6 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
 // DCHECK is not fired on the next page load. Prevents regression of
 // crbug.com/1224427
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoDCHECKIfPromoNotShown) {
-  // Default promo is not supported on iOS < 14
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [scheduler_ logUserPastedInOmnibox];
 

@@ -11,12 +11,7 @@
 @implementation TextViewSelectionDisabled
 
 - (BOOL)canBecomeFirstResponder {
-  if (@available(iOS 14.0, *))
-    return NO;
-
-  // On iOS 13, the whole string responds to a tap if
-  // canBecomeFirstResponder returns NO.
-  return YES;
+  return NO;
 }
 
 @end

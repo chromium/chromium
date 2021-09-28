@@ -432,29 +432,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   // Defaults section.
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  if (@available(iOS 14, *)) {
-    [model addSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-    [model addItem:[self defaultBrowserCellItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-  }
+  [model addSectionWithIdentifier:SettingsSectionIdentifierDefaults];
+  [model addItem:[self defaultBrowserCellItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
 
   // Show managed UI if default search engine is managed by policy.
   if ([self isDefaultSearchEngineManagedByPolicy]) {
-    if (@available(iOS 14, *)) {
-      [model addItem:[self managedSearchEngineItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-    } else {
-      [model addItem:[self managedSearchEngineItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierBasics];
-    }
+    [model addItem:[self managedSearchEngineItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   } else {
-    if (@available(iOS 14, *)) {
-      [model addItem:[self searchEngineDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-    } else {
-      [model addItem:[self searchEngineDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierBasics];
-    }
+    [model addItem:[self searchEngineDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
 
   // Basics section

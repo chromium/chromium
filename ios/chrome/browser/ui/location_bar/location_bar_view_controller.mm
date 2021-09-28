@@ -54,13 +54,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 }  // namespace
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-@interface LocationBarViewController (Scribble) <
-    UIIndirectScribbleInteractionDelegate>
-@end
-#endif  // defined(__IPHONE14_0)
-
-@interface LocationBarViewController ()
+@interface LocationBarViewController () <UIIndirectScribbleInteractionDelegate>
 // The injected edit view.
 @property(nonatomic, strong) UIView* editView;
 
@@ -204,13 +198,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                   action:@selector(showLongPressMenu:)];
   [_locationBarSteadyView.locationButton addGestureRecognizer:recognizer];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    UIIndirectScribbleInteraction* scribbleInteraction =
-        [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
-    [_locationBarSteadyView addInteraction:scribbleInteraction];
-  }
-#endif  // #if defined(__IPHONE_14_0)
+  UIIndirectScribbleInteraction* scribbleInteraction =
+      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
+  [_locationBarSteadyView addInteraction:scribbleInteraction];
 
   DCHECK(self.editView) << "The edit view must be set at this point";
 
@@ -388,8 +378,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-
 - (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
               requestElementsInRect:(CGRect)rect
                          completion:
@@ -430,8 +418,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
   completion(self.delegate.omniboxScribbleForwardingTarget);
 }
-
-#endif  // defined(__IPHONE_14_0)
 
 #pragma mark - private
 

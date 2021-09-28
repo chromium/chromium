@@ -423,10 +423,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 // Tests that Add to Bookmarks action is greyed out when editBookmarksEnabled
 // pref is set to false.
 - (void)testTabGridItemContextMenuAddToBookmarkGreyed {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Context menu item traits are only set correctly after iOS 14.");
-  }
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(
@@ -936,11 +932,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 // Tests closing a tab in the tab grid edit mode and that edit mode is exited
 // after closing all tabs.
 - (void)testTabGridBulkActionCloseTabs {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -988,11 +979,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 // Tests selecting all items in the tab grid edit mode using the "Select all"
 // button.
 - (void)testTabGridBulkActionSelectAll {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -1040,11 +1026,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 // Tests deselecting all items in the tab grid edit mode using the "Deselect
 // all" button.
 - (void)testTabGridBulkActionDeselectAll {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -1103,11 +1084,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 
 // Tests adding items to Bookmarks from the tab grid edit mode.
 - (void)testTabGridBulkActionAddToBookmarks {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -1163,11 +1139,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 
 // Tests adding items to the readinglist from the tab grid edit mode.
 - (void)testTabGridBulkActionAddToReadingList {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -1207,10 +1178,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 - (void)testTabGridBulkActionShare {
   // TODO(crbug.com/1238501): The pasteboard is "not available at this time"
   // when running on device.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Bulk actions are only supported on iOS 14 and later.");
-  }
 
 #if !TARGET_OS_SIMULATOR
   EARL_GREY_TEST_SKIPPED(

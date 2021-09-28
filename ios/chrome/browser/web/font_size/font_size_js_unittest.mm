@@ -66,13 +66,6 @@ class FontSizeJsTest : public web::WebTestWithWebState {
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -187,13 +180,6 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -260,13 +246,6 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size_1 = 0;
   float original_size_2 = 0;
   float current_size_1 = 0;

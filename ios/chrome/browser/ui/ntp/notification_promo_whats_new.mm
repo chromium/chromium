@@ -168,12 +168,6 @@ bool NotificationPromoWhatsNew::CanShow() const {
     return false;
   }
 
-  // Current NTP default browser promo should only be shown for users on iOS14.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      command_ == kSetDefaultBrowserCommand) {
-    return false;
-  }
-
   // Check optional restrictions.
 
   if (seconds_since_install_ > 0) {
