@@ -563,6 +563,7 @@ void UiControllerAndroid::Shutdown(Metrics::DropOutReason reason) {
 
 void UiControllerAndroid::ShowSnackbar(base::TimeDelta delay,
                                        const std::string& message,
+                                       const std::string& undo_string,
                                        base::OnceCallback<void()> action) {
   if (delay.is_zero()) {
     std::move(action).Run();
@@ -580,7 +581,8 @@ void UiControllerAndroid::ShowSnackbar(base::TimeDelta delay,
   snackbar_action_ = std::move(action);
   Java_AutofillAssistantUiController_showSnackbar(
       env, java_object_, static_cast<jint>(delay.InMilliseconds()),
-      ConvertUTF8ToJavaString(env, message));
+      ConvertUTF8ToJavaString(env, message),
+      ConvertUTF8ToJavaString(env, undo_string));
 }
 
 void UiControllerAndroid::SnackbarResult(
@@ -974,6 +976,8 @@ void UiControllerAndroid::CloseOrCancel(
   ShowSnackbar(ui_delegate_->GetClientSettings().cancel_delay,
                GetDisplayStringUTF8(ClientSettingsProto::STOPPED,
                                     ui_delegate_->GetClientSettings()),
+               GetDisplayStringUTF8(ClientSettingsProto::UNDO,
+                                    ui_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::OnCancel,
                               weak_ptr_factory_.GetWeakPtr(), action_index,
                               std::move(trigger_context), dropout_reason));
@@ -1098,6 +1102,8 @@ void UiControllerAndroid::OnUnexpectedTaps() {
 
   ShowSnackbar(ui_delegate_->GetClientSettings().tap_shutdown_delay,
                GetDisplayStringUTF8(ClientSettingsProto::MAYBE_GIVE_UP,
+                                    ui_delegate_->GetClientSettings()),
+               GetDisplayStringUTF8(ClientSettingsProto::UNDO,
                                     ui_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::Shutdown,
                               weak_ptr_factory_.GetWeakPtr(),

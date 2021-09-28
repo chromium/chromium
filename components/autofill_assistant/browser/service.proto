@@ -349,6 +349,9 @@ message ClientSettingsProto {
 
     // Title for Chrome's Settings.
     SETTINGS = 9;
+
+    // Undo message for snackbar.
+    UNDO = 10;
   }
 
   // A Chrome display string along with its ID. This is used to create a map of
