@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
@@ -19,6 +20,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -83,6 +85,16 @@ class OzonePlatformWayland : public OzonePlatform,
       : old_synthesize_key_repeat_enabled_(
             KeyEvent::IsSynthesizeKeyRepeatEnabled()) {
     CHECK(features::IsUsingOzonePlatform());
+
+    // Forcing the device scale factor on Wayland is not fully/well supported
+    // and is provided for test purposes only.
+    // See https://crbug.com/1241546
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kForceDeviceScaleFactor)) {
+      LOG(WARNING) << "--" << switches::kForceDeviceScaleFactor
+                   << " on Wayland is TEST ONLY.  Use it at your own risk.";
+    }
+
     // Disable key-repeat flag synthesizing. On Wayland, key repeat events are
     // generated inside Chrome, and the flag is properly set.
     // See also WaylandEventSource.
