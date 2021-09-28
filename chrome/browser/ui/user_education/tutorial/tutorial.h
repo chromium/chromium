@@ -66,10 +66,10 @@ class Tutorial {
 
    private:
     absl::optional<std::pair<int, int>> progress;
-    ui::InteractionSequence::StepCallback BuildShowBubbleCallback(
+    ui::InteractionSequence::StepStartCallback BuildShowBubbleCallback(
         TutorialService* tutorial_service,
         TutorialBubbleFactoryRegistry* bubble_factory_registry);
-    ui::InteractionSequence::StepCallback BuildHideBubbleCallback(
+    ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
 
     std::unique_ptr<ui::InteractionSequence::StepBuilder> step_builder_;

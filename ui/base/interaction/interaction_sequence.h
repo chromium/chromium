@@ -82,11 +82,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kElementHiddenDuringStep
   };
 
-  // Callback when a step happens in the sequence, or when a step ends. If
-  // |element| is no longer available, it will be null.
-  using StepCallback = base::OnceCallback<void(TrackedElement* element,
-                                               ElementIdentifier element_id,
-                                               StepType step_type)>;
+  // Callback when a step in the sequence starts. If |element| is no longer
+  // available, it will be null.
+  using StepStartCallback =
+      base::OnceCallback<void(InteractionSequence* sequence,
+                              TrackedElement* element)>;
+
+  // Callback when a step in the sequence ends. If |element| is no longer
+  // available, it will be null.
+  using StepEndCallback = base::OnceCallback<void(TrackedElement* element)>;
 
   // Callback for when the user aborts the sequence by failing to follow the
   // sequence of steps, or if this object is deleted after the sequence starts.
@@ -120,8 +124,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     absl::optional<bool> must_remain_visible;
     bool transition_only_on_event = false;
 
-    StepCallback start_callback;
-    StepCallback end_callback;
+    StepStartCallback start_callback;
+    StepEndCallback end_callback;
     ElementTracker::Subscription subscription;
 
     // Tracks the element associated with the step, if known. We could use a
@@ -216,13 +220,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event);
 
     // Sets the callback called at the start of the step.
-    StepBuilder& SetStartCallback(StepCallback start_callback);
+    StepBuilder& SetStartCallback(StepStartCallback start_callback);
 
     // Sets the callback called at the end of the step. Guaranteed to be called
     // if the start callback is called, before the start callback of the next
     // step or the sequence aborted or completed callback. Also called if this
     // object is destroyed while the step is still in-process.
-    StepBuilder& SetEndCallback(StepCallback end_callback);
+    StepBuilder& SetEndCallback(StepEndCallback end_callback);
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();
@@ -244,8 +248,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // elements (e.g. a views::View) to the target element.
   static std::unique_ptr<Step> WithInitialElement(
       TrackedElement* element,
-      StepCallback start_callback = StepCallback(),
-      StepCallback end_callback = StepCallback());
+      StepStartCallback start_callback = StepStartCallback(),
+      StepEndCallback end_callback = StepEndCallback());
 
   ~InteractionSequence();
 

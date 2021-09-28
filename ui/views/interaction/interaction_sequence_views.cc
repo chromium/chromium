@@ -17,8 +17,8 @@ namespace views {
 std::unique_ptr<ui::InteractionSequence::Step>
 InteractionSequenceViews::WithInitialView(
     View* view,
-    ui::InteractionSequence::StepCallback start_callback,
-    ui::InteractionSequence::StepCallback end_callback) {
+    ui::InteractionSequence::StepStartCallback start_callback,
+    ui::InteractionSequence::StepEndCallback end_callback) {
   // If there's already an element associated with this view, then explicitly
   // key off of that element.
   auto* const element =

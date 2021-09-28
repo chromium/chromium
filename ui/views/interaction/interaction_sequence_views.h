@@ -22,10 +22,10 @@ class VIEWS_EXPORT InteractionSequenceViews {
 
   static std::unique_ptr<ui::InteractionSequence::Step> WithInitialView(
       View* view,
-      ui::InteractionSequence::StepCallback start_callback =
-          ui::InteractionSequence::StepCallback(),
-      ui::InteractionSequence::StepCallback end_callback =
-          ui::InteractionSequence::StepCallback());
+      ui::InteractionSequence::StepStartCallback start_callback =
+          ui::InteractionSequence::StepStartCallback(),
+      ui::InteractionSequence::StepEndCallback end_callback =
+          ui::InteractionSequence::StepEndCallback());
 };
 
 }  // namespace views

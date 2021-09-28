@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/interaction_sequence.h"
 
 Tutorial::StepBuilder::StepBuilder()
     : step_builder_(std::make_unique<ui::InteractionSequence::StepBuilder>()) {}
@@ -83,7 +84,7 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
   return step_builder_->Build();
 }
 
-ui::InteractionSequence::StepCallback
+ui::InteractionSequence::StepStartCallback
 Tutorial::StepBuilder::BuildShowBubbleCallback(
     TutorialService* tutorial_service,
     TutorialBubbleFactoryRegistry* bubble_factory_registry) {
@@ -94,8 +95,7 @@ Tutorial::StepBuilder::BuildShowBubbleCallback(
          absl::optional<std::u16string> body_text_,
          TutorialDescription::Step::Arrow arrow_,
          absl::optional<std::pair<int, int>> progress_,
-         ui::TrackedElement* element, ui::ElementIdentifier element_id,
-         ui::InteractionSequence::StepType step_type) {
+         ui::InteractionSequence* sequence, ui::TrackedElement* element) {
         DCHECK(tutorial_service);
         DCHECK(bubble_factory_registry);
 
@@ -109,13 +109,11 @@ Tutorial::StepBuilder::BuildShowBubbleCallback(
       progress);
 }
 
-ui::InteractionSequence::StepCallback
+ui::InteractionSequence::StepEndCallback
 Tutorial::StepBuilder::BuildHideBubbleCallback(
     TutorialService* tutorial_service) {
   return base::BindOnce(
-      [](TutorialService* tutorial_service, ui::TrackedElement* element,
-         ui::ElementIdentifier element_id,
-         ui::InteractionSequence::StepType step_type) {
+      [](TutorialService* tutorial_service, ui::TrackedElement* element) {
         tutorial_service->HideCurrentBubbleIfShowing();
       },
       base::Unretained(tutorial_service));

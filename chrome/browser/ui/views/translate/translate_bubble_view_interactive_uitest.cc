@@ -74,9 +74,8 @@ views::View* ElementToView(ui::TrackedElement* element) {
   return element->AsA<views::TrackedElementViews>()->view();
 }
 
-void ElementClickCallback(ui::TrackedElement* element,
-                          ui::ElementIdentifier element_id,
-                          ui::InteractionSequence::StepType step_type) {
+void ElementClickCallback(ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kDoDefault;
   views::View* view = ElementToView(element);
@@ -199,10 +198,9 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
       // tab is selected and highlighted.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
-                   .SetStartCallback(base::BindOnce(
-                       [](ui::TrackedElement* element,
-                          ui::ElementIdentifier element_id,
-                          ui::InteractionSequence::StepType step_type) {
+                   .SetStartCallback(
+                       base::BindOnce([](ui::InteractionSequence*,
+                                         ui::TrackedElement* element) {
                          auto* source_tab =
                              static_cast<views::Tab*>(ElementToView(element));
                          EXPECT_TRUE(source_tab->selected());
@@ -218,9 +216,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageTab)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [this](ui::TrackedElement* element,
-                              ui::ElementIdentifier element_id,
-                              ui::InteractionSequence::StepType step_type) {
+                       [this](ui::InteractionSequence*,
+                              ui::TrackedElement* element) {
                          WaitForPageTranslated(true);
                          auto* target_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -239,9 +236,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
                    .SetMustRemainVisible(false)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [this](ui::TrackedElement* element,
-                              ui::ElementIdentifier element_id,
-                              ui::InteractionSequence::StepType step_type) {
+                       [this](ui::InteractionSequence*,
+                              ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
                          auto* source_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -295,10 +291,9 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageCombobox)
                    .SetType(ui::InteractionSequence::StepType::kShown)
-                   .SetStartCallback(base::BindOnce(
-                       [](ui::TrackedElement* element,
-                          ui::ElementIdentifier element_id,
-                          ui::InteractionSequence::StepType step_type) {
+                   .SetStartCallback(
+                       base::BindOnce([](ui::InteractionSequence*,
+                                         ui::TrackedElement* element) {
                          EXPECT_FALSE(
                              ui::ElementTracker::GetElementTracker()
                                  ->IsElementVisible(
@@ -307,18 +302,16 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
                        }))
                    .Build())
       // P4. Select a language from the list and select translate.
-      .AddStep(ui::InteractionSequence::StepBuilder()
-                   .SetElementID(TranslateBubbleView::kTargetLanguageCombobox)
-                   .SetStartCallback(base::BindLambdaForTesting(
-                       [&](ui::TrackedElement* element,
-                           ui::ElementIdentifier element_id,
-                           ui::InteractionSequence::StepType step_type) {
-                         auto* advanced_view_target =
-                             static_cast<views::Combobox*>(
-                                 ElementToView(element));
-                         advanced_view_target->SetSelectedRow(0);
-                       }))
-                   .Build())
+      .AddStep(
+          ui::InteractionSequence::StepBuilder()
+              .SetElementID(TranslateBubbleView::kTargetLanguageCombobox)
+              .SetStartCallback(base::BindLambdaForTesting(
+                  [&](ui::InteractionSequence*, ui::TrackedElement* element) {
+                    auto* advanced_view_target =
+                        static_cast<views::Combobox*>(ElementToView(element));
+                    advanced_view_target->SetSelectedRow(0);
+                  }))
+              .Build())
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageDoneButton)
                    .SetStartCallback(base::BindOnce(ElementClickCallback))
@@ -335,9 +328,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageTab)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [&](ui::TrackedElement* element,
-                           ui::ElementIdentifier element_id,
-                           ui::InteractionSequence::StepType step_type) {
+                       [&](ui::InteractionSequence*,
+                           ui::TrackedElement* element) {
                          WaitForPageTranslated(true);
                          auto* target_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -358,9 +350,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [this](ui::TrackedElement* element,
-                              ui::ElementIdentifier element_id,
-                              ui::InteractionSequence::StepType step_type) {
+                       [this](ui::InteractionSequence*,
+                              ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
                          auto* source_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -401,10 +392,9 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageCombobox)
                    .SetType(ui::InteractionSequence::StepType::kShown)
-                   .SetStartCallback(base::BindOnce(
-                       [](ui::TrackedElement* element,
-                          ui::ElementIdentifier element_id,
-                          ui::InteractionSequence::StepType step_type) {
+                   .SetStartCallback(
+                       base::BindOnce([](ui::InteractionSequence*,
+                                         ui::TrackedElement* element) {
                          EXPECT_FALSE(
                              ui::ElementTracker::GetElementTracker()
                                  ->IsElementVisible(
@@ -416,9 +406,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageCombobox)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [&](ui::TrackedElement* element,
-                           ui::ElementIdentifier element_id,
-                           ui::InteractionSequence::StepType step_type) {
+                       [&](ui::InteractionSequence*,
+                           ui::TrackedElement* element) {
                          auto* advanced_view_source =
                              static_cast<views::Combobox*>(
                                  ElementToView(element));
@@ -444,9 +433,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
               .SetElementID(TranslateBubbleView::kSourceLanguageTab)
               .SetType(ui::InteractionSequence::StepType::kShown)
               .SetStartCallback(base::BindLambdaForTesting(
-                  [&](ui::TrackedElement* element,
-                      ui::ElementIdentifier element_id,
-                      ui::InteractionSequence::StepType step_type) {
+                  [&](ui::InteractionSequence*, ui::TrackedElement* element) {
                     WaitForPageTranslated(true);
                     auto* source_tab =
                         static_cast<views::Tab*>(ElementToView(element));
@@ -477,9 +464,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [this](ui::TrackedElement* element,
-                              ui::ElementIdentifier element_id,
-                              ui::InteractionSequence::StepType step_type) {
+                       [this](ui::InteractionSequence*,
+                              ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
                          auto* source_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -530,9 +516,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageTab)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [&](ui::TrackedElement* element,
-                           ui::ElementIdentifier element_id,
-                           ui::InteractionSequence::StepType step_type) {
+                       [&](ui::InteractionSequence*,
+                           ui::TrackedElement* element) {
                          WaitForPageTranslated(true);
                          auto* target_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -555,9 +540,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
                    .SetMustRemainVisible(false)
                    .SetStartCallback(base::BindLambdaForTesting(
-                       [this](ui::TrackedElement* element,
-                              ui::ElementIdentifier element_id,
-                              ui::InteractionSequence::StepType step_type) {
+                       [this](ui::InteractionSequence*,
+                              ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
                          auto* source_tab =
                              static_cast<views::Tab*>(ElementToView(element));
@@ -577,9 +561,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
               .SetElementID(TranslateBubbleView::kErrorMessage)
               .SetType(ui::InteractionSequence::StepType::kShown)
               .SetStartCallback(base::BindOnce(
-                  [](ui::TrackedElement* element,
-                     ui::ElementIdentifier element_id,
-                     ui::InteractionSequence::StepType step_type) {
+                  [](ui::InteractionSequence*, ui::TrackedElement* element) {
                     EXPECT_FALSE(
                         ui::ElementTracker::GetElementTracker()
                             ->IsElementVisible(

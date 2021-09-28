@@ -227,13 +227,13 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetType(
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetStartCallback(
-    StepCallback start_callback) {
+    StepStartCallback start_callback) {
   step_->start_callback = std::move(start_callback);
   return *this;
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetEndCallback(StepCallback end_callback) {
+InteractionSequence::StepBuilder::SetEndCallback(StepEndCallback end_callback) {
   step_->end_callback = std::move(end_callback);
   return *this;
 }
@@ -261,8 +261,8 @@ InteractionSequence::InteractionSequence(
 // static
 std::unique_ptr<InteractionSequence::Step>
 InteractionSequence::WithInitialElement(TrackedElement* element,
-                                        StepCallback start_callback,
-                                        StepCallback end_callback) {
+                                        StepStartCallback start_callback,
+                                        StepEndCallback end_callback) {
   StepBuilder step;
   step.step_->element = element;
   step.SetType(StepType::kShown)
@@ -386,8 +386,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
       // Unsubscribe from any events during the step-end process. Since the step
       // has ended, conditions like "must remain visible" no longer apply.
       current_step_->subscription = ElementTracker::Subscription();
-      RunIfValid(std::move(current_step_->end_callback), current_step_->element,
-                 current_step_->id, current_step_->type);
+      RunIfValid(std::move(current_step_->end_callback),
+                 current_step_->element);
       if (!delete_guard || AbortedDuringCallback())
         return;
     }
@@ -428,8 +428,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // cause `element` to become invalid. Because of this we use the element
     // field of the current step from here forward, because we've installed a
     // callback above that will null it out if it becomes invalid.
-    RunIfValid(std::move(current_step_->start_callback), current_step_->element,
-               current_step_->id, current_step_->type);
+    RunIfValid(std::move(current_step_->start_callback), this,
+               current_step_->element);
     if (!delete_guard || AbortedDuringCallback())
       return;
   }
@@ -448,8 +448,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     CompletedCallback completed_callback =
         std::move(configuration_->completed_callback);
     std::unique_ptr<Step> last_step = std::move(current_step_);
-    RunIfValid(std::move(last_step->end_callback), last_step->element,
-               last_step->id, last_step->type);
+    RunIfValid(std::move(last_step->end_callback), last_step->element);
     RunIfValid(std::move(completed_callback));
     RunIfValid(std::move(quit_closure));
     return;
@@ -476,8 +475,8 @@ void InteractionSequence::StageNextStep() {
       !next_element) {
     // We're going to abort, but we have to finish the current step first.
     if (current_step_) {
-      RunIfValid(std::move(current_step_->end_callback), current_step_->element,
-                 current_step_->id, current_step_->type);
+      RunIfValid(std::move(current_step_->end_callback),
+                 current_step_->element);
     }
     // Fast forward to the next step before aborting so we get the correct
     // information on the failed step in the abort callback.
@@ -485,7 +484,7 @@ void InteractionSequence::StageNextStep() {
     configuration_->steps.pop_front();
     // We don't want to call the step-end callback during Abort() since we
     // didn't technically start the step.
-    current_step_->end_callback = StepCallback();
+    current_step_->end_callback = StepEndCallback();
     Abort(AbortedReason::kElementNotVisibleAtStartOfStep);
     return;
   }
@@ -545,8 +544,7 @@ void InteractionSequence::Abort(AbortedReason reason) {
     std::unique_ptr<Step> last_step = std::move(current_step_);
     AbortedCallback aborted_callback =
         std::move(configuration_->aborted_callback);
-    RunIfValid(std::move(last_step->end_callback), element.get(), last_step->id,
-               last_step->type);
+    RunIfValid(std::move(last_step->end_callback), element.get());
     RunIfValid(std::move(aborted_callback), element.get(), last_step->id,
                last_step->type, reason);
   } else {
