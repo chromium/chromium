@@ -1322,10 +1322,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   if (!established_gpu_channel && always_uses_gpu) {
     TRACE_EVENT_INSTANT0("gpu", "Post task to launch GPU process",
                          TRACE_EVENT_SCOPE_THREAD);
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&GpuProcessHost::Get),
-                       GPU_PROCESS_KIND_SANDBOXED, true /* force_create */));
+    GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, true /* force_create */);
   }
 
 #if defined(OS_WIN)
