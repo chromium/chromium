@@ -2,8 +2,8 @@
 <body style="margin:0">
 <script>
 if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
 }
 </script>
 
@@ -15,22 +15,31 @@ if (window.testRunner) {
 <div id="console"></div>
 
 <script>
+
+const scroller = document.getElementById('overflow');
+function scrollTop() {
+  return scroller.scrollTop;
+}
+
 if (window.eventSender) {
-    waitForCompositorCommit().then(() => {
-        eventSender.mouseMoveTo(390, 300);
-        eventSender.mouseDown();
-        eventSender.mouseUp();
-        eventSender.mouseDown();
-        eventSender.mouseUp();
+  waitForCompositorCommit().then(() => {
+    const scrollPromise = waitForScrollEvent(scroller);
 
-        // TODO(crbug.com/1253956): Don't use setTimeout here.
-        setTimeout(finished, 1000);
+    eventSender.mouseMoveTo(390, 300);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    scrollPromise.then(() => {
+      waitForAnimationEndTimeBased(scrollTop).then(finished);
     });
+  });
 }
 
-function finished()
-{
-    document.getElementById('console').innerHTML = "Scroll offset is " + document.getElementById('overflow').scrollTop;
-    testRunner.notifyDone();
+function finished() {
+  document.getElementById('console').innerHTML = "Scroll offset is " + scroller.scrollTop;
+  testRunner.notifyDone();
 }
+
 </script>

@@ -27,69 +27,77 @@
  POSSIBILITY OF SUCH DAMAGE.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>CSS Test: Scrolling when ‘background-attachment: local’</title>
-        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-attachment" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="If 'background-attachment: local' the background scrolls along with the element's contents (the UA may treat 'background-clip: border-box' as the same as 'background-clip: padding-box')." />
-        <script src="../../../resources/gesture-util.js"></script>
-        <style type="text/css">
-            #test
-            {
-                width: 2in;
-                height: 2in;
-                border: 50px double black;
-                background-image: url("../support/cat.png");
-                background-attachment: local;
-                overflow: scroll;
-            }
-        </style>
-    </head>
-    <body>
-        <script>
-            if (window.testRunner) {
-                // Unfortunately, this needs to be a pixel test
-                testRunner.waitUntilDone();
-            }
-        </script>
+<head>
+<title>CSS Test: Scrolling when ‘background-attachment: local’</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+<link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-attachment" />
+<meta name="flags" content="" />
+<meta name="assert" content="If 'background-attachment: local' the background scrolls along with the element's contents (the UA may treat 'background-clip: border-box' as the same as 'background-clip: padding-box')." />
+<script src="../../../resources/gesture-util.js"></script>
+<style type="text/css">
 
-        <p>Test passes if the images of all the cats scroll when the box is scrolled. (Presence of cats behind the double border is UA dependent). </p>
-        <div id="test">Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text Filler Text
-        Filler Text Filler Text </div>
-    </body>
+#test {
+  width: 2in;
+  height: 2in;
+  border: 50px double black;
+  background-image: url("../support/cat.png");
+  background-attachment: local;
+  overflow: scroll;
+}
 
-    <div id="console"></div>
+</style>
+</head>
+<body>
+<script>
 
-    <script>
-        if (window.eventSender) {
-            waitForCompositorCommit().then(() => {
-                eventSender.mouseMoveTo(240, 250);
-                eventSender.mouseDown();
-                eventSender.mouseUp();
+if (window.testRunner) {
+  // Unfortunately, this needs to be a pixel test
+  testRunner.waitUntilDone();
+}
 
-                // TODO(crbug.com/1253956): Don't use setTimeout here.
-                setTimeout(finished, 1000);
-            });
-        }
+</script>
+<p>Test passes if the images of all the cats scroll when the box is scrolled. (Presence of cats behind the double border is UA dependent). </p>
+<div id="test">Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text
+Filler Text Filler Text </div>
 
-        function finished()
-        {
-            testRunner.notifyDone();
-        }
+<div id="console"></div>
+<script>
 
-    </script>
+const scroller = document.getElementById('test');
+function scrollTop() {
+  return scroller.scrollTop;
+}
 
+if (window.eventSender) {
+  waitForCompositorCommit().then(() => {
+    const scrollPromise = waitForScrollEvent(scroller);
+
+    eventSender.mouseMoveTo(240, 250);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    scrollPromise.then(() => {
+      waitForAnimationEndTimeBased(scrollTop).then(finished);
+    });
+  });
+}
+
+function finished() {
+  testRunner.notifyDone();
+}
+
+</script>
+</body>
 </html>
