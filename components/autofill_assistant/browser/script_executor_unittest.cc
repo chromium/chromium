@@ -68,7 +68,7 @@ class ScriptExecutorTest : public testing::Test,
             options),
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
-        /* listener= */ this, &scripts_state_, &ordered_interrupts_,
+        /* listener= */ this, &ordered_interrupts_,
         /* delegate= */ &delegate_);
 
     test_util::MockFindAnyElement(mock_web_controller_);
@@ -159,7 +159,6 @@ class ScriptExecutorTest : public testing::Test,
   Script script_;
   StrictMock<MockService> mock_service_;
   NiceMock<MockWebController> mock_web_controller_;
-  std::map<std::string, ScriptExecutor::ScriptStatus> scripts_state_;
 
   std::vector<std::unique_ptr<Script>> ordered_interrupts_;
   std::string last_global_payload_;
@@ -885,47 +884,6 @@ TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
   EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
 }
 
-TEST_F(ScriptExecutorTest, UpdateScriptStateWhileRunning) {
-  // OnGetNextActions never calls the callback, so Run() returns immediately
-  // without doing anything.
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _));
-
-  EXPECT_THAT(scripts_state_, IsEmpty());
-  executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::RUNNING)));
-}
-
-TEST_F(ScriptExecutorTest, UpdateScriptStateOnError) {
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_UNAUTHORIZED, ""));
-  EXPECT_CALL(executor_callback_,
-              Run(Field(&ScriptExecutor::Result::success, false)));
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::FAILURE)));
-}
-
-TEST_F(ScriptExecutorTest, UpdateScriptStateOnSuccess) {
-  ActionsResponseProto initial_actions_response;
-  initial_actions_response.add_actions()->mutable_tell()->set_message("ok");
-  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK,
-                                   Serialize(initial_actions_response)));
-  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
-  EXPECT_CALL(executor_callback_,
-              Run(Field(&ScriptExecutor::Result::success, true)));
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-}
-
 TEST_F(ScriptExecutorTest, ForwardLastPayloadOnSuccess) {
   ActionsResponseProto actions_response;
   actions_response.set_global_payload("actions global payload");
@@ -1010,7 +968,7 @@ TEST_F(ScriptExecutorTest, RunInterrupt) {
   SetupInterruptibleScript(kScriptPath, "element");
   SetupInterrupt("interrupt", "interrupt_trigger");
 
-  // Both scripts ends after the first set of actions. Capture the results.
+  // Both scripts end after the first set of actions. Capture the results.
   std::vector<ProcessedActionProto> processed_actions1_capture;
   std::vector<ProcessedActionProto> processed_actions2_capture;
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
@@ -1022,13 +980,6 @@ TEST_F(ScriptExecutorTest, RunInterrupt) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   // The first script to call OnGetNextActions is the interrupt, which starts
   // with a tell.
@@ -1068,16 +1019,6 @@ TEST_F(ScriptExecutorTest, RunMultipleInterruptInOrder) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt1", ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt2", ScriptExecutor::ScriptStatus::SUCCESS)));
 }
 
 TEST_F(ScriptExecutorTest, RunSameInterruptMultipleTimes) {
@@ -1178,17 +1119,21 @@ TEST_F(ScriptExecutorTest, DoNotRunInterruptIfPreconditionsDontMatch) {
       .WillRepeatedly(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
+  // The script ends after the first set of actions. There is only one call
+  // from the main script, running a WaitForDom - none from the interrupt.
+  std::vector<ProcessedActionProto> processed_actions_capture;
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
+      .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
+                      RunOnceCallback<5>(net::HTTP_OK, "")));
 
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(scripts_state_, Not(Contains(Pair(StrEq("interrupt"), _))));
+  ASSERT_THAT(processed_actions_capture, Not(IsEmpty()));
+  EXPECT_EQ(ActionProto::ActionInfoCase::kWaitForDom,
+            processed_actions_capture[0].action().action_info_case());
+  EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
 }
 
 TEST_F(ScriptExecutorTest, DoNotRunInterruptIfNotInterruptible) {
@@ -1205,17 +1150,21 @@ TEST_F(ScriptExecutorTest, DoNotRunInterruptIfNotInterruptible) {
   // given an opportunity to.
   SetupInterrupt("interrupt", "interrupt_trigger");
 
+  // The script ends after the first set of actions. There is only one call
+  // from the main script, running a WaitForDom - none from the interrupt.
+  std::vector<ProcessedActionProto> processed_actions_capture;
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
+      .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
+                      RunOnceCallback<5>(net::HTTP_OK, "")));
 
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(scripts_state_, Not(Contains(Pair(StrEq("interrupt"), _))));
+  ASSERT_THAT(processed_actions_capture, Not(IsEmpty()));
+  EXPECT_EQ(ActionProto::ActionInfoCase::kWaitForDom,
+            processed_actions_capture[0].action().action_info_case());
+  EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
 }
 
 TEST_F(ScriptExecutorTest, InterruptFailsMainScript) {
@@ -1242,13 +1191,6 @@ TEST_F(ScriptExecutorTest, InterruptFailsMainScript) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, false)));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::FAILURE)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::FAILURE)));
 }
 
 TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
@@ -1276,13 +1218,6 @@ TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
                         Field(&ScriptExecutor::Result::at_end,
                               ScriptExecutor::SHUTDOWN))));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 }
 
 TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
@@ -1322,13 +1257,6 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   // Expected scenario:
   // - show prompt (enter PROMPT state)
@@ -1425,18 +1353,9 @@ TEST_F(ScriptExecutorTest, RunInterruptMultipleTimesDuringPrompt) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  for (int try_count = 0;
-       try_count < 10 &&
-       scripts_state_[kScriptPath] == ScriptExecutor::ScriptStatus::RUNNING;
-       try_count++) {
+  for (int try_count = 0; try_count < 10; try_count++) {
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
   }
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   EXPECT_THAT(
       delegate_.GetStateHistory(),
@@ -1544,13 +1463,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListFromInterrupt) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
-  EXPECT_THAT(
-      scripts_state_,
-      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   EXPECT_TRUE(should_update_scripts_);
   EXPECT_THAT(scripts_update_, SizeIs(1));

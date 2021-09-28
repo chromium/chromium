@@ -42,23 +42,6 @@ class ScriptExecutor : public ActionDelegate,
                        public ScriptExecutorDelegate::NavigationListener,
                        public ScriptExecutorDelegate::Listener {
  public:
-  // States a script can end up in.
-  enum class ScriptStatus {
-    // Never explicitly set. Reading this value means the enum field is either
-    // not set or set to a value not listed here.
-    UNKNOWN,
-    // The script finished successfully.
-    SUCCESS,
-    // The script failed.
-    FAILURE,
-    // The user cancelled the script.
-    CANCELLED,
-    // The script is currently running.
-    RUNNING,
-    // The script was not run.
-    NOT_RUN,
-  };
-
   // Listens to events on ScriptExecutor.
   // TODO(b/806868): Make global_payload a part of callback instead of the
   // listener.
@@ -85,7 +68,6 @@ class ScriptExecutor : public ActionDelegate,
                  const std::string& global_payload,
                  const std::string& script_payload,
                  ScriptExecutor::Listener* listener,
-                 std::map<std::string, ScriptStatus>* scripts_state,
                  const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
                  ScriptExecutorDelegate* delegate);
 
@@ -477,7 +459,6 @@ class ScriptExecutor : public ActionDelegate,
   // change while the script is running, as a result of OnScriptListChanged
   // being called.
   const std::vector<std::unique_ptr<Script>>* const ordered_interrupts_;
-  std::map<std::string, ScriptStatus>* const scripts_state_;
   std::unique_ptr<ElementStore> element_store_;
   RunScriptCallback callback_;
   std::vector<std::unique_ptr<Action>> actions_;

@@ -70,7 +70,6 @@ ScriptExecutor::ScriptExecutor(
     const std::string& global_payload,
     const std::string& script_payload,
     ScriptExecutor::Listener* listener,
-    std::map<std::string, ScriptStatus>* scripts_state,
     const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
     ScriptExecutorDelegate* delegate)
     : script_path_(script_path),
@@ -81,7 +80,6 @@ ScriptExecutor::ScriptExecutor(
       listener_(listener),
       delegate_(delegate),
       ordered_interrupts_(ordered_interrupts),
-      scripts_state_(scripts_state),
       element_store_(
           std::make_unique<ElementStore>(delegate->GetWebContents())) {
   DCHECK(delegate_);
@@ -103,7 +101,6 @@ void ScriptExecutor::Run(const UserData* user_data,
 #else
   DVLOG(2) << "Starting script " << script_path_;
 #endif
-  (*scripts_state_)[script_path_] = ScriptStatus::RUNNING;
 
   DCHECK(user_data);
   user_data_ = user_data;
@@ -917,8 +914,6 @@ void ScriptExecutor::RunCallback(bool success) {
 
 void ScriptExecutor::RunCallbackWithResult(const Result& result) {
   DCHECK(callback_);
-  (*scripts_state_)[script_path_] =
-      result.success ? ScriptStatus::SUCCESS : ScriptStatus::FAILURE;
   std::move(callback_).Run(result);
 }
 
@@ -1266,8 +1261,7 @@ void ScriptExecutor::WaitForDomOperation::RunInterrupt(
       std::make_unique<TriggerContext>(std::vector<const TriggerContext*>{
           main_script_->additional_context_.get()}),
       main_script_->last_global_payload_, main_script_->initial_script_payload_,
-      /* listener= */ this, main_script_->scripts_state_, &no_interrupts_,
-      delegate_);
+      /* listener= */ this, &no_interrupts_, delegate_);
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   delegate_->SetUserActions(nullptr);
   interrupt_executor_->Run(
