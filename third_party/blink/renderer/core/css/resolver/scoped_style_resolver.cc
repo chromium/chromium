@@ -292,8 +292,10 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
   // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
-  for (auto sheet : style_sheets_)
-    collector.MatchPageRules(&sheet->Contents()->GetRuleSet());
+  for (auto sheet : style_sheets_) {
+    collector.MatchPageRules(&sheet->Contents()->GetRuleSet(),
+                             GetCascadeLayerMap());
+  }
 }
 
 void ScopedStyleResolver::RebuildCascadeLayerMap(

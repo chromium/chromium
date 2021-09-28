@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -1502,6 +1504,32 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   EXPECT_EQ(1u, properties[2].types_.layer_order);
   EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[2].types_.tree_order),
             &GetDocument());
+}
+
+// TODO(crbug.com/1095765): We should have a WPT for this test case, but
+// currently Blink web test runner can't test @page rules in WPT.
+TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+    @layer {
+      @page { margin-top: 100px; }
+    }
+    @page { margin-top: 50px; }
+    </style>
+  )HTML");
+
+  constexpr FloatSize initial_page_size(800, 600);
+
+  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
+
+  WebPrintPageDescription description;
+  GetDocument().GetPageDescription(0, &description);
+
+  // The layered declaraion should win the cascading.
+  EXPECT_EQ(100, description.margin_top);
 }
 
 }  // namespace blink
