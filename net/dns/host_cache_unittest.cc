@@ -821,7 +821,7 @@ TEST(HostCacheTest, NoEvictPinned) {
   HostCache::Key key3 = Key("foobar3.com");
   HostCache::Entry entry =
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
-  entry.set_pinned(true);
+  entry.set_pinning(true);
 
   cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(5));
   now += base::TimeDelta::FromSeconds(10);
@@ -848,7 +848,7 @@ TEST(HostCacheTest, EvictObsoletePinned) {
   HostCache::Key key4 = Key("foobar4.com");
   HostCache::Entry entry =
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
-  entry.set_pinned(true);
+  entry.set_pinning(true);
 
   // |key2| should be preserved, since it expires later.
   cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(5));
@@ -887,18 +887,18 @@ TEST(HostCacheTest, PreserveActivePin) {
                                              HostCache::Entry::SOURCE_UNKNOWN);
   HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
                                              HostCache::Entry::SOURCE_UNKNOWN);
-  entry1.set_pinned(true);
+  entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
 
   // Insert entry1, and verify that it can be retrieved with the
-  // correct IP and |pinned()| == true.
+  // correct IP and |pinning()| == true.
   cache.Set(key, entry1, now, base::TimeDelta::FromSeconds(10));
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
   EXPECT_EQ(endpoint1, result1.addresses()->front());
-  EXPECT_TRUE(result1.pinned());
+  EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
   // has the new IP, and the "pinned" flag copied from |entry1|.
@@ -907,7 +907,7 @@ TEST(HostCacheTest, PreserveActivePin) {
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
   EXPECT_EQ(endpoint2, result2.addresses()->front());
-  EXPECT_TRUE(result2.pinned());
+  EXPECT_THAT(result2.pinning(), Optional(true));
 }
 
 // An obsolete cache pin is not preserved if the record is replaced.
@@ -925,18 +925,18 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
                                              HostCache::Entry::SOURCE_UNKNOWN);
   HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
                                              HostCache::Entry::SOURCE_UNKNOWN);
-  entry1.set_pinned(true);
+  entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
 
   // Insert entry1, and verify that it can be retrieved with the
-  // correct IP and |pinned()| == true.
+  // correct IP and |pinning()| == true.
   cache.Set(key, entry1, now, base::TimeDelta::FromSeconds(10));
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
   EXPECT_EQ(endpoint1, result1.addresses()->front());
-  EXPECT_TRUE(result1.pinned());
+  EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Make entry1 obsolete.
   cache.Invalidate();
@@ -948,7 +948,47 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
   EXPECT_EQ(endpoint2, result2.addresses()->front());
-  EXPECT_FALSE(result2.pinned());
+  EXPECT_THAT(result2.pinning(), Optional(false));
+}
+
+// An active pin is removed if the record is replaced by a Set() call
+// with the pin flag set to false.
+TEST(HostCacheTest, Unpin) {
+  HostCache cache(2);
+
+  base::TimeTicks now;
+
+  // Make entry1 and entry2, identical except for IP and pinned flag.
+  IPAddress address1(192, 0, 2, 1);
+  IPAddress address2(192, 0, 2, 2);
+  IPEndPoint endpoint1(address1, 0);
+  IPEndPoint endpoint2(address2, 0);
+  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint1),
+                                             HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
+                                             HostCache::Entry::SOURCE_UNKNOWN);
+  entry1.set_pinning(true);
+  entry2.set_pinning(false);
+
+  HostCache::Key key = Key("foobar.com");
+
+  // Insert entry1, and verify that it can be retrieved with the
+  // correct IP and |pinning()| == true.
+  cache.Set(key, entry1, now, base::TimeDelta::FromSeconds(10));
+  const auto* pair1 = cache.Lookup(key, now);
+  ASSERT_TRUE(pair1);
+  const HostCache::Entry& result1 = pair1->second;
+  EXPECT_EQ(endpoint1, result1.addresses()->front());
+  EXPECT_THAT(result1.pinning(), Optional(true));
+
+  // Insert |entry2|, and verify that it when it is retrieved, it
+  // has the new IP, and the "pinned" flag is now false.
+  cache.Set(key, entry2, now, base::TimeDelta::FromSeconds(10));
+  const auto* pair2 = cache.Lookup(key, now);
+  ASSERT_TRUE(pair2);
+  const HostCache::Entry& result2 = pair2->second;
+  EXPECT_EQ(endpoint2, result2.addresses()->front());
+  EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
 // Tests the less than and equal operators for HostCache::Key work.
