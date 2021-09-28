@@ -26,11 +26,12 @@ base::LazyInstance<MessageViewCustomFactoryMap>::Leaky g_custom_view_factories =
     LAZY_INSTANCE_INITIALIZER;
 
 std::unique_ptr<message_center::MessageView> GetCustomNotificationView(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup) {
   MessageViewCustomFactoryMap* factories = g_custom_view_factories.Pointer();
   auto iter = factories->find(notification.custom_view_type());
   DCHECK(iter != factories->end());
-  return iter->second.Run(notification);
+  return iter->second.Run(notification, shown_in_popup);
 }
 
 }  // namespace
@@ -48,7 +49,7 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
       // Rely on default construction after the switch.
       break;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
-      return GetCustomNotificationView(notification);
+      return GetCustomNotificationView(notification, shown_in_popup);
     default:
       // If the caller asks for an unrecognized kind of view (entirely possible
       // if an application is running on an older version of this code that
@@ -62,6 +63,7 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
   }
   if (ash::features::IsNotificationsRefreshEnabled())
     return std::make_unique<AshNotificationView>(notification, shown_in_popup);
+
   return std::make_unique<message_center::NotificationView>(notification);
 }
 

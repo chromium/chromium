@@ -27,7 +27,8 @@ class ASH_EXPORT MessageViewFactory {
   // notification.
   using CustomMessageViewFactoryFunction =
       base::RepeatingCallback<std::unique_ptr<message_center::MessageView>(
-          const message_center::Notification&)>;
+          const message_center::Notification&,
+          bool shown_in_popup)>;
 
   // Create appropriate MessageViews based on the given notification.
   static std::unique_ptr<message_center::MessageView> Create(

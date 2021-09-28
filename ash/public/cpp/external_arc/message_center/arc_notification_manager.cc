@@ -48,7 +48,8 @@ constexpr char kManagedProvisioningPackageName[] =
     "com.android.managedprovisioning";
 
 std::unique_ptr<message_center::MessageView> CreateCustomMessageView(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup) {
   DCHECK_EQ(notification.notifier_id().type,
             message_center::NotifierType::ARC_APPLICATION);
   DCHECK_EQ(kArcNotificationCustomViewType, notification.custom_view_type());

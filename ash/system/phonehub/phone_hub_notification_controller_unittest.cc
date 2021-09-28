@@ -269,7 +269,8 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
 
   auto phonehub_notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
-          controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
+          controller_->weak_ptr_factory_.GetWeakPtr(), *notification,
+          /*shown_in_popup=*/true);
   auto* notification_view = static_cast<message_center::NotificationView*>(
       phonehub_notification_view.get());
   views::Label* summary_text_label =
@@ -286,7 +287,8 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
 
   auto phonehub_notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
-          controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
+          controller_->weak_ptr_factory_.GetWeakPtr(), *notification,
+          /*shown_in_popup=*/true);
   auto* notification_view = static_cast<message_center::NotificationView*>(
       phonehub_notification_view.get());
   views::View* action_buttons_row = notification_view->GetViewByID(

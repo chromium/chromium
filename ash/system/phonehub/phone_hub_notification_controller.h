@@ -107,7 +107,8 @@ class ASH_EXPORT PhoneHubNotificationController
   static std::unique_ptr<message_center::MessageView>
   CreateCustomNotificationView(
       base::WeakPtr<PhoneHubNotificationController> notification_controller,
-      const message_center::Notification& notification);
+      const message_center::Notification& notification,
+      bool shown_in_popup);
 
   chromeos::phonehub::NotificationInteractionHandler*
       notification_interaction_handler_ = nullptr;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_notification_view.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -357,12 +358,22 @@ CaptureModeController::CaptureModeController(
       kScreenShotNotificationType));
   DCHECK(!MessageViewFactory::HasCustomNotificationViewFactory(
       kScreenRecordingNotificationType));
-  MessageViewFactory::SetCustomNotificationViewFactory(
-      kScreenShotNotificationType,
-      base::BindRepeating(&CaptureModeNotificationView::CreateForImage));
-  MessageViewFactory::SetCustomNotificationViewFactory(
-      kScreenRecordingNotificationType,
-      base::BindRepeating(&CaptureModeNotificationView::CreateForVideo));
+
+  if (features::IsNotificationsRefreshEnabled()) {
+    MessageViewFactory::SetCustomNotificationViewFactory(
+        kScreenShotNotificationType,
+        base::BindRepeating(&CaptureModeAshNotificationView::CreateForImage));
+    MessageViewFactory::SetCustomNotificationViewFactory(
+        kScreenRecordingNotificationType,
+        base::BindRepeating(&CaptureModeAshNotificationView::CreateForVideo));
+  } else {
+    MessageViewFactory::SetCustomNotificationViewFactory(
+        kScreenShotNotificationType,
+        base::BindRepeating(&CaptureModeNotificationView::CreateForImage));
+    MessageViewFactory::SetCustomNotificationViewFactory(
+        kScreenRecordingNotificationType,
+        base::BindRepeating(&CaptureModeNotificationView::CreateForVideo));
+  }
 
   Shell::Get()->session_controller()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);

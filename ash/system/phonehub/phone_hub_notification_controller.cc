@@ -513,7 +513,8 @@ int PhoneHubNotificationController::GetSystemPriorityForNotification(
 std::unique_ptr<message_center::MessageView>
 PhoneHubNotificationController::CreateCustomNotificationView(
     base::WeakPtr<PhoneHubNotificationController> notification_controller,
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup) {
   DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
 
   std::u16string phone_name = std::u16string();

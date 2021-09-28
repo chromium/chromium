@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/capture_mode/capture_mode_notification_view.h"
+#include "ash/capture_mode/capture_mode_ash_notification_view.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -14,10 +14,11 @@
 
 namespace ash {
 
-CaptureModeNotificationView::CaptureModeNotificationView(
+CaptureModeAshNotificationView::CaptureModeAshNotificationView(
     const message_center::Notification& notification,
-    CaptureModeType capture_type)
-    : message_center::NotificationView(notification),
+    CaptureModeType capture_type,
+    bool shown_in_popup)
+    : AshNotificationView(notification, shown_in_popup),
       capture_type_(capture_type) {
   // Creates the extra view which will depend on the type of the notification.
   if (!notification.image().IsEmpty())
@@ -27,28 +28,28 @@ CaptureModeNotificationView::CaptureModeNotificationView(
   image_container_view()->AddObserver(this);
 }
 
-CaptureModeNotificationView::~CaptureModeNotificationView() = default;
+CaptureModeAshNotificationView::~CaptureModeAshNotificationView() = default;
 
 // static
 std::unique_ptr<message_center::MessageView>
-CaptureModeNotificationView::CreateForImage(
+CaptureModeAshNotificationView::CreateForImage(
     const message_center::Notification& notification,
     bool shown_in_popup) {
-  return std::make_unique<CaptureModeNotificationView>(notification,
-                                                       CaptureModeType::kImage);
+  return std::make_unique<CaptureModeAshNotificationView>(
+      notification, CaptureModeType::kImage, shown_in_popup);
 }
 
 // static
 std::unique_ptr<message_center::MessageView>
-CaptureModeNotificationView::CreateForVideo(
+CaptureModeAshNotificationView::CreateForVideo(
     const message_center::Notification& notification,
     bool shown_in_popup) {
-  return std::make_unique<CaptureModeNotificationView>(notification,
-                                                       CaptureModeType::kVideo);
+  return std::make_unique<CaptureModeAshNotificationView>(
+      notification, CaptureModeType::kVideo, shown_in_popup);
 }
 
-void CaptureModeNotificationView::Layout() {
-  message_center::NotificationView::Layout();
+void CaptureModeAshNotificationView::Layout() {
+  AshNotificationView::Layout();
   if (!extra_view_)
     return;
 
@@ -69,7 +70,7 @@ void CaptureModeNotificationView::Layout() {
   extra_view_->SetBoundsRect(extra_view_bounds);
 }
 
-void CaptureModeNotificationView::OnViewVisibilityChanged(
+void CaptureModeAshNotificationView::OnViewVisibilityChanged(
     views::View* observed_view,
     views::View* starting_view) {
   if (observed_view == image_container_view() &&
@@ -81,12 +82,12 @@ void CaptureModeNotificationView::OnViewVisibilityChanged(
   }
 }
 
-void CaptureModeNotificationView::OnViewIsDeleting(View* observed_view) {
+void CaptureModeAshNotificationView::OnViewIsDeleting(View* observed_view) {
   DCHECK_EQ(observed_view, image_container_view());
   views::View::RemoveObserver(this);
 }
 
-void CaptureModeNotificationView::CreateExtraView() {
+void CaptureModeAshNotificationView::CreateExtraView() {
   DCHECK(image_container_view());
   DCHECK(!image_container_view()->children().empty());
   DCHECK(!extra_view_);

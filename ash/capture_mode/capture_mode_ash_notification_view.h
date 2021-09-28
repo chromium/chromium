@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_NOTIFICATION_VIEW_H_
-#define ASH_CAPTURE_MODE_CAPTURE_MODE_NOTIFICATION_VIEW_H_
+#ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_ASH_NOTIFICATION_VIEW_H_
+#define ASH_CAPTURE_MODE_CAPTURE_MODE_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ui/message_center/views/notification_view.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -15,16 +15,18 @@ namespace ash {
 // A customized notification view for capture mode that adjusts the capture
 // notification by either showing a banner on top of the notification image for
 // image captures, or a play icon on top of the video thumbnail.
-class ASH_EXPORT CaptureModeNotificationView
-    : public message_center::NotificationView,
-      public views::ViewObserver {
+class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView,
+                                                  public views::ViewObserver {
  public:
-  CaptureModeNotificationView(const message_center::Notification& notification,
-                              CaptureModeType capture_type);
-  CaptureModeNotificationView(const CaptureModeNotificationView&) = delete;
-  CaptureModeNotificationView& operator=(const CaptureModeNotificationView&) =
+  CaptureModeAshNotificationView(
+      const message_center::Notification& notification,
+      CaptureModeType capture_type,
+      bool shown_in_popup);
+  CaptureModeAshNotificationView(const CaptureModeAshNotificationView&) =
       delete;
-  ~CaptureModeNotificationView() override;
+  CaptureModeAshNotificationView& operator=(
+      const CaptureModeAshNotificationView&) = delete;
+  ~CaptureModeAshNotificationView() override;
 
   // Creates the custom capture mode notification for image capture
   // notifications. There is a banner on top of the image area of the
@@ -64,4 +66,4 @@ class ASH_EXPORT CaptureModeNotificationView
 
 }  // namespace ash
 
-#endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_NOTIFICATION_VIEW_H_
+#endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_ASH_NOTIFICATION_VIEW_H_

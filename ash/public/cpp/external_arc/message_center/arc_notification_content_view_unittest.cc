@@ -360,7 +360,8 @@ TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   MessageViewFactory::SetCustomNotificationViewFactory(
       kArcNotificationCustomViewType,
       base::BindLambdaForTesting(
-          [&notification_view](const message_center::Notification& notification)
+          [&notification_view](const message_center::Notification& notification,
+                               bool shown_in_popup)
               -> std::unique_ptr<message_center::MessageView> {
             auto* arc_delegate =
                 static_cast<ArcNotificationDelegate*>(notification.delegate());
