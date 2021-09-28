@@ -33,8 +33,11 @@ TEST(WebAppHelpers, GenerateAppId) {
 }
 
 TEST(WebAppHelpers, GenerateRecommendedId) {
-  EXPECT_EQ("/start?a=b", GenerateRecommendedId(
-                              GURL("https://www.chromestatus.com/start?a=b")));
+  EXPECT_EQ("", GenerateRecommendedId(GURL()));
+  EXPECT_EQ("/", GenerateRecommendedId(GURL("https://example.com/")));
+  EXPECT_EQ("/", GenerateRecommendedId(GURL("https://example.com")));
+  EXPECT_EQ("/start?a=b",
+            GenerateRecommendedId(GURL("https://example.com/start?a=b")));
 }
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {

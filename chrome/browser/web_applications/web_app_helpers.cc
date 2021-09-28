@@ -83,11 +83,18 @@ AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
 }
 
 std::string GenerateRecommendedId(const GURL& start_url) {
+  if (!start_url.is_valid()) {
+    return base::EmptyString();
+  }
+
   std::string full_url = start_url.spec();
+  std::string origin = start_url.GetOrigin().spec();
+  DCHECK(!full_url.empty() && !origin.empty() &&
+         origin.size() <= full_url.size());
   // Make recommended id starts with a leading slash so it's clear to developers
   // that it's a root-relative url path. In reality it's always root-relative
   // because the base_url is the origin.
-  return full_url.substr(start_url.GetOrigin().spec().size() - 1);
+  return full_url.substr(origin.size() - 1);
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {
