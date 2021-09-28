@@ -132,10 +132,10 @@ void BaseRenderingContext2D::restore() {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kRestore);
   }
   ValidateStateStack();
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
   if (state_stack_.size() <= 1)
     return;
+
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
 
   // Verify that the top of the stack was pushed with Save.
   if (RuntimeEnabledFeatures::Canvas2dLayersEnabled() &&
@@ -219,10 +219,10 @@ void BaseRenderingContext2D::endLayer() {
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   ValidateStateStack();
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
   if (state_stack_.size() <= 1 || layer_count_ <= 0)
     return;
+
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
 
   // Verify that the current state's transform is invertible.
   if (IsTransformInvertible())
