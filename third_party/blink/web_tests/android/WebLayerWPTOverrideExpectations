@@ -819,6 +819,7 @@ crbug.com/1050754 external/wpt/external/wpt/html/semantics/scripting-1/the-scrip
 crbug.com/1050754 external/wpt/external/wpt/payment-request/rejects_if_not_active.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/resize-observer/observe.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/resize-observer/svg.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/streams/piping/pipe-through.any.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/streams/piping/pipe-through.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-rollback.html [ Timeout ]
