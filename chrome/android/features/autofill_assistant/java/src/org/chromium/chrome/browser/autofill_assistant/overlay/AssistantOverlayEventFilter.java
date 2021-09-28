@@ -240,9 +240,6 @@ class AssistantOverlayEventFilter
                 resetCurrentGesture();
 
                 if (shouldLetEventThrough(event)) {
-                    if (mDelegate != null) {
-                        mDelegate.onUserInteractionInsideTouchableArea();
-                    }
                     // This is the last we'll hear of this gesture unless it turns multi-touch. No
                     // need to track or forward it.
                     return false;

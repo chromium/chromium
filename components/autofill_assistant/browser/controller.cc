@@ -1397,10 +1397,6 @@ void Controller::OnScriptSelected(const ScriptHandle& handle,
                     : AutofillAssistantState::PROMPT);
 }
 
-void Controller::OnUserInteractionInsideTouchableArea() {
-  GetOrCheckScripts();
-}
-
 std::string Controller::GetDebugContext() {
   base::Value dict(base::Value::Type::DICTIONARY);
 

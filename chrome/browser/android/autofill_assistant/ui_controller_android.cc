@@ -1110,11 +1110,6 @@ void UiControllerAndroid::OnUnexpectedTaps() {
                               Metrics::DropOutReason::OVERLAY_STOP));
 }
 
-void UiControllerAndroid::OnUserInteractionInsideTouchableArea() {
-  if (ui_delegate_)
-    ui_delegate_->OnUserInteractionInsideTouchableArea();
-}
-
 // Other methods.
 void UiControllerAndroid::CloseCustomTab() {
   Java_AutofillAssistantUiController_scheduleCloseCustomTab(

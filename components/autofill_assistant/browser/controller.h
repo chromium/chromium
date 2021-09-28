@@ -206,7 +206,6 @@ class Controller : public ScriptExecutorDelegate,
 
   // Overrides autofill_assistant::UiDelegate:
   AutofillAssistantState GetState() const override;
-  void OnUserInteractionInsideTouchableArea() override;
   std::vector<Details> GetDetails() const override;
   const InfoBox* GetInfoBox() const override;
   int GetProgress() const override;

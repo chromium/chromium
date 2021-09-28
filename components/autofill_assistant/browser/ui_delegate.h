@@ -44,10 +44,6 @@ class UiDelegate {
   // Returns the current state of the controller.
   virtual AutofillAssistantState GetState() const = 0;
 
-  // Called when user interaction within the allowed touchable area was
-  // detected. This should cause rerun of preconditions check.
-  virtual void OnUserInteractionInsideTouchableArea() = 0;
-
   // Returns a string describing the current execution context. This is useful
   // when analyzing feedback forms and for debugging in general.
   virtual std::string GetDebugContext() = 0;
