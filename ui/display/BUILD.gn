@@ -208,7 +208,6 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
-    "mojom/display_list_mojom_traits_unittest.cc",
     "mojom/display_mojom_traits_unittest.cc",
     "mojom/screen_infos_mojom_traits_unittest.cc",
     "screen_unittest.cc",
