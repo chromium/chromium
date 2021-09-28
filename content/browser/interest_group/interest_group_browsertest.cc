@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -127,10 +128,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
     feature_list_.InitWithFeatures(
+        /*`enabled_features`=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
          blink::features::kFledge},
-        {});
+        /*disabled_features=*/
+        {blink::features::kFencedFrames});
   }
 
   ~InterestGroupBrowserTest() override {
@@ -423,6 +426,84 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> request_run_loop_;
   GURL wait_for_url_ GUARDED_BY(requests_lock_);
   std::unique_ptr<UpdateResponder> update_responder_;
+};
+
+// At the moment, InterestGroups use URN urls when fenced frames are enabled,
+// and normal URLs when not. This means they require ads be loaded in fenced
+// frames when Chrome is running with the option enabled.
+class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupFencedFrameBrowserTest() {
+    // Enable "Multi-Page Architecture" fenced frames implementation. This is
+    // intended to be the final shipped implementation of fenced frames, so it's
+    // best to test with this one. Waiting for navigations and checking URLs is
+    // different for each implementation.
+    //
+    // Since these are intended only to test if ad auctions work with fenced
+    // frames, rather than if fenced frames themselves work, no need to test
+    // with both implementations.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  ~InterestGroupFencedFrameBrowserTest() override = default;
+
+  // Runs the specified auction using RunAuctionAndWait(), expecting a success
+  // resulting in a URN URL. Then navigates a pre-existing fenced frame to that
+  // URL, expecting `expected_ad_url` to be loaded in the fenced frame.
+  //
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  //
+  // The target must already contain a single fenced frame.
+  void RunAuctionAndNavigateFencedFrame(
+      const GURL& expected_ad_url,
+      const std::string& auction_config_json,
+      absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
+    if (!execution_target)
+      execution_target = shell();
+    content::EvalJsResult urn_url_string =
+        RunAuctionAndWait(auction_config_json, execution_target);
+    ASSERT_TRUE(urn_url_string.value.is_string())
+        << "Expected string, but got " << urn_url_string.value;
+
+    GURL urn_url(urn_url_string.ExtractString());
+    ASSERT_TRUE(urn_url.is_valid())
+        << "URL is not valid: " << urn_url_string.ExtractString();
+
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+    EXPECT_TRUE(
+        ExecJs(*execution_target,
+               JsReplace("document.querySelector('fencedframe').src = $1;",
+                         urn_url.spec())));
+
+    // Wait for the URL to be requested, to make sure the fenced frame has
+    // started loading. On regression, this is likely to hang.
+    GURL::Replacements replacements;
+    replacements.SetHostStr("127.0.0.1");
+    WaitForURL(expected_ad_url.ReplaceComponents(replacements));
+
+    // Wait for the load to complete.
+    FencedFrame* fenced_frame = GetFencedFrame(*execution_target);
+    fenced_frame->WaitForDidStopLoadingForTesting();
+
+    EXPECT_EQ(expected_ad_url,
+              fenced_frame->GetInnerRoot()->GetLastCommittedURL());
+  }
+
+  // Returns FencedFrame in `execution_target` frame. Requires that
+  // `execution_target` have one and only one FencedFrame.
+  FencedFrame* GetFencedFrame(const ToRenderFrameHost& execution_target) {
+    std::vector<FencedFrame*> fenced_frames =
+        static_cast<RenderFrameHostImpl*>(execution_target.render_frame_host())
+            ->GetFencedFrames();
+    CHECK_EQ(1u, fenced_frames.size());
+    return fenced_frames[0];
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
@@ -1204,14 +1285,155 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     bool expect_trusted_params;
   } kExpectedRequests[] = {
       {https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-       "application/javascript", true /* expect_trusted_params */},
+       "application/javascript", /*expect_trusted_params=*/true},
       {https_server_->GetURL(
            "a.test",
            "/interest_group/"
            "trusted_bidding_signals.json?hostname=a.test&keys=key1"),
-       "application/json", true /* expect_trusted_params */},
+       "application/json", /*expect_trusted_params=*/true},
       {https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
-       "application/javascript", false /* expect_trusted_params */},
+       "application/javascript", /*expect_trusted_params=*/false},
+  };
+  for (const auto& expected_request : kExpectedRequests) {
+    SCOPED_TRACE(expected_request.url);
+
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_request.url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+              request->credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+    EXPECT_EQ(url::Origin::Create(test_url), request->request_initiator);
+
+    EXPECT_EQ(1u, request->headers.GetHeaderVector().size());
+    std::string accept_value;
+    ASSERT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kAccept,
+                                           &accept_value));
+    EXPECT_EQ(expected_request.accept_header, accept_value);
+
+    EXPECT_EQ(expected_request.expect_trusted_params,
+              request->trusted_params.has_value());
+    if (!request->trusted_params) {
+      // Requests for render-provided URLs use an empty trusted params value and
+      // enable CORS (and should use the RenderFrameHosts's URLLoaderFactory,
+      // which is validated in the next test).
+      EXPECT_EQ(network::mojom::RequestMode::kCors, request->mode);
+    } else {
+      // Requests for interest-group provided URLs are cross-origin, and set
+      // trusted params to use the right cache shard, since they use a trusted
+      // URLLoaderFactory.
+      EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+      const net::IsolationInfo& isolation_info =
+          request->trusted_params->isolation_info;
+      EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+                isolation_info.request_type());
+      url::Origin expected_origin = url::Origin::Create(expected_request.url);
+      EXPECT_EQ(expected_origin, isolation_info.top_frame_origin());
+      EXPECT_EQ(expected_origin, isolation_info.frame_origin());
+      EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+    }
+  }
+
+  // Check ResourceRequest structs of report requests.
+  const GURL kExpectedReportUrls[] = {
+      https_server_->GetURL("a.test", "/echoall?report_seller"),
+      https_server_->GetURL("a.test", "/echoall?report_bidder"),
+  };
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+              request->credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+    EXPECT_EQ(url::Origin::Create(test_url), request->request_initiator);
+
+    EXPECT_TRUE(request->headers.IsEmpty());
+
+    ASSERT_TRUE(request->trusted_params);
+    const net::IsolationInfo& isolation_info =
+        request->trusted_params->isolation_info;
+    EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+              isolation_info.request_type());
+    EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  }
+
+  // The two reporting requests should use different NIKs to prevent the
+  // requests from being correlated.
+  EXPECT_NE(url_loader_monitor.GetRequestInfo(kExpectedReportUrls[0])
+                ->trusted_params->isolation_info.network_isolation_key(),
+            url_loader_monitor.GetRequestInfo(kExpectedReportUrls[1])
+                ->trusted_params->isolation_info.network_isolation_key());
+}
+
+// Runs auction just like the above test, but runs with fenced frames enabled
+// and expects to receive a URN URL to be used. After the auction, loads the URL
+// in a fenced frame, and expects the correct URL is loaded.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithWinner) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL ad_url = https_server_->GetURL("c.test", "/echo");
+  std::string ads = base::StringPrintf(
+      "[{renderUrl : '%s',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]",
+      ad_url.spec().c_str());
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt),
+      ads, "['key1']"));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url,
+      JsReplace(
+          R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1],
+auctionSignals: {x: 1},
+sellerSignals: {yet: 'more', info: 1},
+perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+          })",
+          test_url.GetOrigin().spec(),
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
+              .spec())));
+  // Reporting urls should be fetched after an auction succeeded.
+  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
+  WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
+
+  // Check ResourceRequest structs of requests issued by the worklet process.
+  const struct ExpectedRequest {
+    GURL url;
+    const char* accept_header;
+    bool expect_trusted_params;
+  } kExpectedRequests[] = {
+      {https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+       "application/javascript", /*expect_trusted_params=*/true},
+      {https_server_->GetURL(
+           "a.test",
+           "/interest_group/"
+           "trusted_bidding_signals.json?hostname=a.test&keys=key1"),
+       "application/json", /*expect_trusted_params=*/true},
+      {https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+       "application/javascript", /*expect_trusted_params=*/false},
   };
   for (const auto& expected_request : kExpectedRequests) {
     SCOPED_TRACE(expected_request.url);
@@ -1447,6 +1669,109 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
                                     url::Origin::Create(seller_logic_url),
                                     seller_logic_url.spec(), other_origin),
                                 frame));
+
+    // Reporting urls should be fetched after an auction succeeded.
+    WaitForURL(https_server_->GetURL("/echoall?report_seller"));
+    WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
+    ClearReceivedRequests();
+  }
+}
+
+// Make sure correct topFrameHostname is passed in. Check auctions from top
+// frames, and iframes of various depth. Also test running auctions in
+// cross-site iframes, and loading them into those iframes' fenced frames.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
+  // Buyer, seller, and iframe all use the same host.
+  const char kOtherHost[] = "b.test";
+  // Top frame host is unique.
+  const char kTopFrameHost[] = "a.test";
+
+  // Navigate to bidder site, and add an interest group.
+  GURL other_url = https_server_->GetURL(kOtherHost, "/echo");
+  url::Origin other_origin = url::Origin::Create(other_url);
+  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+
+  GURL ad_url = https_server_->GetURL("c.test", "/echo");
+  std::string ads = base::StringPrintf(
+      "[{renderUrl : '%s',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]",
+      ad_url.spec().c_str());
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/other_origin,
+          /*name=*/"cars",
+          /*bidding_url=*/
+          https_server_->GetURL(
+              kOtherHost,
+              "/interest_group/bidding_logic_expect_top_frame_a_test.js"),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt),
+      ads));
+
+  const struct {
+    int depth;
+    std::string top_frame_path;
+    const char* seller_path;
+  } kTestCases[] = {
+      {0, "/fenced_frames/basic.html",
+       "/interest_group/decision_logic_expect_top_frame_a_test_cross_site.js"},
+      {1,
+       base::StringPrintf(
+           "/cross_site_iframe_factory.html?a.test(%s)",
+           https_server_->GetURL(kOtherHost, "/fenced_frames/basic.html")
+               .spec()
+               .c_str()),
+       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
+      {2,
+       base::StringPrintf(
+           "/cross_site_iframe_factory.html?a.test(%s(%s))", kOtherHost,
+           https_server_->GetURL(kOtherHost, "/fenced_frames/basic.html")
+               .spec()
+               .c_str()),
+       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.depth);
+
+    // Navigate to publisher, with the cross-site iframe..
+    ASSERT_TRUE(NavigateToURL(
+        shell(),
+        https_server_->GetURL(kTopFrameHost, test_case.top_frame_path)));
+
+    RenderFrameHost* frame = shell()->web_contents()->GetMainFrame();
+    EXPECT_EQ(https_server_->GetOrigin(kTopFrameHost),
+              frame->GetLastCommittedOrigin());
+    for (int i = 0; i < test_case.depth; ++i) {
+      frame = ChildFrameAt(frame, 0);
+      ASSERT_TRUE(frame);
+      EXPECT_EQ(other_origin, frame->GetLastCommittedOrigin());
+    }
+
+    // Run auction with a seller script with an "Access-Control-Allow-Origin"
+    // header, if needed. The auction should succeed.
+    GURL seller_logic_url =
+        https_server_->GetURL(kOtherHost, test_case.seller_path);
+    ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+        ad_url,
+        JsReplace(
+            R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1],
+  auctionSignals: {x: 1},
+  sellerSignals: {yet: 'more', info: 1},
+  perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+}
+            )",
+            other_origin.Serialize(), seller_logic_url.spec()),
+        frame));
 
     // Reporting urls should be fetched after an auction succeeded.
     WaitForURL(https_server_->GetURL("/echoall?report_seller"));

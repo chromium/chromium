@@ -12,8 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -31,6 +33,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -325,13 +328,26 @@ void AdAuctionServiceImpl::OnAuctionComplete(
         static_cast<RenderFrameHostImpl*>(render_frame_host()), error);
   }
 
-  std::move(callback).Run(render_url);
-
   if (!render_url) {
     DCHECK(!bidder_report_url);
     DCHECK(!seller_report_url);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
+
+  // If fenced frames are enabled, create and return a URN URL instead of the
+  // real URL.
+  //
+  // TODO(https://crbug.com/1253118): Consider removing the non-fenced frame
+  // path, and just disabling FLEDGE when fenced frames are disabled.
+  if (blink::features::IsFencedFramesEnabled()) {
+    render_url =
+        GetFrame()->GetPage().fenced_frame_urls_map().AddFencedFrameURL(
+            *render_url);
+    DCHECK(render_url->is_valid());
+  }
+
+  std::move(callback).Run(render_url);
 
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
   if (bidder_report_url)

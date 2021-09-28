@@ -25,9 +25,11 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
  public:
   InterestGroupPermissionsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge},
-        {});
+        /*disabled_features=*/
+        {blink::features::kFencedFrames});
   }
 
   void SetUpOnMainThread() override {

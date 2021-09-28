@@ -181,8 +181,10 @@ class DeclarativeNetRequestBrowserTest
  public:
   DeclarativeNetRequestBrowserTest() {
     feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+        /*disabled_features=*/
         {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
@@ -6282,13 +6284,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
       url::Origin::Create(decision_logic_url).Serialize(),
       decision_logic_url.spec());
 
-  // Unfortunately, there's a race between adding an interest group and running
-  // an auction, with no API in Javascript currently available to wait until an
-  // interest group has been added, so can only run the auction until there's a
-  // result, which means the interest group has been added.
-  while ("https://example.com/render" !=
-         content::EvalJs(web_contents(), run_auction_command)) {
-  }
+  // The auction should return a unique URN URL.
+  GURL ad_url(
+      content::EvalJs(web_contents(), run_auction_command).ExtractString());
+  EXPECT_TRUE(ad_url.SchemeIs(url::kUrnScheme));
 
   // Wait to see both the report request of both worklets.
   WaitForRequest(bidder_report_url);
@@ -6316,9 +6315,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       {block_report_rule}, "test_extension2", {URLPattern::kAllUrlsPattern}));
 
-  // Running the auction again should result in the same URL winning.
-  EXPECT_EQ("https://example.com/render",
-            content::EvalJs(web_contents(), run_auction_command));
+  // Run the auction again.
+  ad_url = GURL(
+      content::EvalJs(web_contents(), run_auction_command).ExtractString());
+  EXPECT_TRUE(ad_url.SchemeIs(url::kUrnScheme));
+
   // Wait for the decision script's report URL to be requested.
   WaitForRequest(decision_report_url);
   // The bidder script should be blocked. Unfortunately, there's no way to wait
