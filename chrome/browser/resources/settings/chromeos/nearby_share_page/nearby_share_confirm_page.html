@@ -107,9 +107,12 @@
           </div>
         </div>
 
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
         <template is="dom-if" if="[[!errorTitle_]]">
-          <cr-lottie animation-url="nearby_share_progress_bar.json"
-            autoplay="true">
+          <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+              autoplay="true">
           </cr-lottie>
         </template>
 

@@ -165,8 +165,10 @@ generate_grd("build_grd") {
     "images/switch_access_setup_guide_choose_three_switches.svg",
     "images/switch_access_setup_guide_auto_scan_enabled.svg",
     "images/switch_access_setup_guide_closing.svg",
-    "../../nearby_share/shared/nearby_share_progress_bar.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_dark.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_light.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_light.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -182,8 +184,10 @@ generate_grd("build_grd") {
     "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js|app-management/app_management.mojom-lite.js",
     "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom-lite.js|os_apps_page/app_notification_handler.mojom-lite.js",
     "components/services/app_service/public/mojom/types.mojom-lite.js|app-management/types.mojom-lite.js",
-    "../../nearby_share/shared/nearby_share_progress_bar.json|nearby_share_progress_bar.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation.json|nearby_share_pulse_animation.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_dark.json|nearby_share_progress_bar_dark.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_light.json|nearby_share_progress_bar_light.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json|nearby_share_pulse_animation_dark.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_light.json|nearby_share_pulse_animation_light.json",
   ]
 
   if (optimize_webui) {

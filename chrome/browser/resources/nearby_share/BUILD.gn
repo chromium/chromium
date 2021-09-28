@@ -46,8 +46,10 @@ generate_grd("build_grd") {
     "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
   ]
   input_files = [
-    "nearby_share_progress_bar.json",
-    "nearby_share_pulse_animation.json",
+    "nearby_share_progress_bar_dark.json",
+    "nearby_share_progress_bar_light.json",
+    "nearby_share_pulse_animation_dark.json",
+    "nearby_share_pulse_animation_light.json",
   ]
   input_files_base_dir = rebase_path("shared", "//")
   manifest_files = [
