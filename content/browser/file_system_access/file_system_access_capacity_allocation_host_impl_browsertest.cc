@@ -158,4 +158,56 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+                       QuotaUsageOverallocation) {
+  // TODO(https://crbug.com/1240056): Implement a more sophisticated test suite
+  // for this feature.
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  Shell* browser = CreateBrowser();
+  scoped_refptr<storage::QuotaManager> quota_manager =
+      browser->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetQuotaManager();
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(test_url.spec());
+
+  NavigateToURLBlockUntilNavigationsComplete(browser, test_url,
+                                             /*number_of_navigations=*/1);
+  EXPECT_EQ(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_file_small', {create: true});
+      let ah =  await fh.createSyncAccessHandle();
+      let storage_manager = await navigator.storage.estimate();
+      let usage_before_operation = storage_manager.usageDetails.fileSystem;
+      await ah.truncate(100);
+      storage_manager = await navigator.storage.estimate();
+      let usage_after_operation = storage_manager.usageDetails.fileSystem;
+      await ah.close();
+      return usage_after_operation-usage_before_operation;
+    `);
+  )")
+                .ExtractInt(),
+            1024 * 1024);
+  EXPECT_EQ(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_file_medium', {create: true});
+      let ah =  await fh.createSyncAccessHandle();
+      let storage_manager = await navigator.storage.estimate();
+      let usage_before_operation = storage_manager.usageDetails.fileSystem;
+      let new_file_size = 3*1024*1024;
+      await ah.truncate(new_file_size);
+      storage_manager = await navigator.storage.estimate();
+      let usage_after_operation = storage_manager.usageDetails.fileSystem;
+      await ah.close();
+      return usage_after_operation-usage_before_operation;
+    `);
+  )")
+                .ExtractInt(),
+            4 * 1024 * 1024);
+}
+
 }  // namespace content
