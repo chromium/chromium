@@ -139,9 +139,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   void Activate();
 
-  void AddBackgroundAnimation(const ui::Event& event);
-  void RemoveBackgroundAnimation();
-
   // MessageView:
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
@@ -161,7 +158,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   bool IsManuallyExpandedOrCollapsed() const override;
   void SetManuallyExpandedOrCollapsed(bool value) override;
   void OnSettingsButtonPressed(const ui::Event& event) override;
-  void OnThemeChanged() override;
 
   // views::InkDropObserver:
   void InkDropAnimationStarted() override;
@@ -219,6 +215,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   virtual void CreateOrUpdateTitleView(const Notification& notification) = 0;
 
+  virtual void CreateOrUpdateSmallIconView(
+      const Notification& notification) = 0;
+
   // Add view to `left_content_` in its appropriate position according to
   // `left_content_count_`. Return a pointer to added view.
   template <typename T>
@@ -230,10 +229,22 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Reorder the view in `left_content_` according to `left_content_count_`.
   void ReorderViewInLeftContent(views::View* view);
 
+  // Thic function is called when the UI changes from notification view to
+  // inline settings or vice versa.
+  virtual void ToggleInlineSettings(const ui::Event& event);
+
+  NotificationControlButtonsView* control_buttons_view() {
+    return control_buttons_view_;
+  }
   NotificationHeaderView* header_row() { return header_row_; }
   views::View* left_content() { return left_content_; }
   views::Label* message_view() { return message_view_; }
+  views::View* inline_settings_row() const { return settings_row_; }
   views::View* image_container_view() { return image_container_view_; }
+  views::View* action_buttons_row() { return action_buttons_row_; }
+  views::RadioButton* block_all_button() { return block_all_button_; }
+  bool inline_settings_enabled() const { return inline_settings_enabled_; }
+
   bool IsExpandable() const;
 
   virtual void SetExpandButtonEnabled(bool enabled);
@@ -248,14 +259,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameWebAppNotification);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, CreateOrUpdateTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ExpandLongMessage);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, InkDropClipRect);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, InlineSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
                            InlineSettingsInkDropAnimation);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, NotificationWithoutIcon);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowProgress);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowTimestamp);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestAccentColor);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestActionButtonClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClickExpanded);
@@ -277,6 +286,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UseImageAsIcon);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestIconSizing);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, LeftContentResizeForIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InlineSettingsNotBlock);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InlineSettingsBlockAll);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestAccentColor);
 
   friend class NotificationViewBaseTest;
 
@@ -289,7 +301,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void CreateOrUpdateProgressStatusView(const Notification& notification);
   void CreateOrUpdateListItemViews(const Notification& notification);
   void CreateOrUpdateIconView(const Notification& notification);
-  void CreateOrUpdateSmallIconView(const Notification& notification);
   void CreateOrUpdateImageView(const Notification& notification);
   void CreateOrUpdateActionButtonViews(const Notification& notification);
   void CreateOrUpdateInlineSettingsViews(const Notification& notification);
@@ -298,12 +309,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void ActionButtonPressed(size_t index, const ui::Event& event);
 
   void ToggleExpanded();
-  void ToggleInlineSettings(const ui::Event& event);
-  void UpdateHeaderViewBackgroundColor();
-  SkColor GetNotificationHeaderViewBackgroundColor() const;
-
-  // Update the background that shows behind the `actions_row_`.
-  virtual void UpdateActionButtonsRowBackground();
 
   // Returns the list of children which need to have their layers created or
   // destroyed when the ink drop is visible.

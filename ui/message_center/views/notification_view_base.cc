@@ -27,7 +27,6 @@
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -40,11 +39,9 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/vector_icons.h"
-#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
-#include "ui/message_center/views/notification_view_util.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -923,35 +920,6 @@ void NotificationViewBase::CreateOrUpdateIconView(
   hide_icon_on_expanded_ = use_image_for_icon;
 }
 
-void NotificationViewBase::CreateOrUpdateSmallIconView(
-    const Notification& notification) {
-  // This is called when the notification view is inserted into a Widget
-  // hierarchy and when the Widget's theme has changed. If not currently in a
-  // Widget hierarchy defer updating the small icon view.
-  if (!GetWidget())
-    return;
-  const auto* color_provider = GetColorProvider();
-  SkColor accent_color = notification.accent_color().value_or(
-      color_provider->GetColor(ui::kColorNotificationHeaderForeground));
-  SkColor icon_color =
-      color_utils::BlendForMinContrast(
-          accent_color, GetNotificationHeaderViewBackgroundColor())
-          .color;
-
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
-  // cache images if so.
-  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
-      kSmallImageSizeMD, icon_color,
-      color_provider->GetColor(ui::kColorNotificationIconBackground),
-      color_provider->GetColor(ui::kColorNotificationIconForeground));
-
-  if (masked_small_icon.IsEmpty()) {
-    header_row_->ClearAppIcon();
-  } else {
-    header_row_->SetAppIcon(masked_small_icon.AsImageSkia());
-  }
-}
-
 void NotificationViewBase::CreateOrUpdateImageView(
     const Notification& notification) {
   if (notification.image().IsEmpty()) {
@@ -1214,12 +1182,7 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
 }
 
 void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
-  if (!inline_settings_enabled_)
-    return;
-
   bool inline_settings_visible = !settings_row_->GetVisible();
-  bool disable_notification =
-      settings_row_->GetVisible() && block_all_button_->GetChecked();
 
   settings_row_->SetVisible(inline_settings_visible);
   content_row_->SetVisible(!inline_settings_visible);
@@ -1242,55 +1205,11 @@ void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
   }
 
   PreferredSizeChanged();
-
-  if (inline_settings_visible)
-    AddBackgroundAnimation(event);
-  else
-    RemoveBackgroundAnimation();
-
-  UpdateHeaderViewBackgroundColor();
-  Layout();
-  SchedulePaint();
-
-  // Call DisableNotification() at the end, because |this| can be deleted at any
-  // point after it's called.
-  if (disable_notification)
-    MessageCenter::Get()->DisableNotification(notification_id());
-}
-
-void NotificationViewBase::UpdateHeaderViewBackgroundColor() {
-  SkColor header_background_color = GetNotificationHeaderViewBackgroundColor();
-  header_row_->SetBackgroundColor(header_background_color);
-  control_buttons_view_->SetBackgroundColor(header_background_color);
-
-  auto* notification =
-      MessageCenter::Get()->FindVisibleNotificationById(notification_id());
-  if (notification)
-    CreateOrUpdateSmallIconView(*notification);
-}
-
-SkColor NotificationViewBase::GetNotificationHeaderViewBackgroundColor() const {
-  bool inline_settings_visible = settings_row_->GetVisible();
-  return GetColorProvider()->GetColor(
-      inline_settings_visible ? ui::kColorNotificationBackgroundActive
-                              : ui::kColorNotificationBackgroundInactive);
-}
-
-void NotificationViewBase::UpdateActionButtonsRowBackground() {
-  if (!GetWidget())
-    return;
-
-  action_buttons_row_->SetBackground(views::CreateBackgroundFromPainter(
-      std::make_unique<NotificationBackgroundPainter>(
-          /*top_radius=*/0, bottom_radius(),
-          GetColorProvider()->GetColor(
-              ui::kColorNotificationActionsBackground))));
 }
 
 void NotificationViewBase::UpdateCornerRadius(int top_radius,
                                               int bottom_radius) {
   MessageView::UpdateCornerRadius(top_radius, bottom_radius);
-  UpdateActionButtonsRowBackground();
   highlight_path_generator_->set_top_radius(top_radius);
   highlight_path_generator_->set_bottom_radius(bottom_radius);
 }
@@ -1331,31 +1250,9 @@ void NotificationViewBase::OnSettingsButtonPressed(const ui::Event& event) {
     MessageView::OnSettingsButtonPressed(event);
 }
 
-void NotificationViewBase::OnThemeChanged() {
-  MessageView::OnThemeChanged();
-  UpdateHeaderViewBackgroundColor();
-  UpdateActionButtonsRowBackground();
-}
-
 void NotificationViewBase::Activate() {
   GetWidget()->widget_delegate()->SetCanActivate(true);
   GetWidget()->Activate();
-}
-
-void NotificationViewBase::AddBackgroundAnimation(const ui::Event& event) {
-  views::InkDrop::Get(this)->SetMode(
-      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  std::unique_ptr<ui::Event> located_event =
-      notification_view_util::ConvertToBoundedLocatedEvent(event, this);
-  views::InkDrop::Get(this)->AnimateToState(
-      views::InkDropState::ACTION_PENDING,
-      ui::LocatedEvent::FromIfValid(located_event.get()));
-}
-
-void NotificationViewBase::RemoveBackgroundAnimation() {
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
-                                            nullptr);
 }
 
 std::vector<views::View*> NotificationViewBase::GetChildrenForLayerAdjustment()

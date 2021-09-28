@@ -42,8 +42,8 @@ class TestNotificationView : public message_center::NotificationView {
   void UpdateCornerRadius(int top_radius, int bottom_radius) override {
     top_radius_ = top_radius;
     bottom_radius_ = bottom_radius;
-    message_center::NotificationView::UpdateCornerRadius(top_radius,
-                                                         bottom_radius);
+    message_center::NotificationViewBase::UpdateCornerRadius(top_radius,
+                                                             bottom_radius);
   }
 
   int top_radius() const { return top_radius_; }

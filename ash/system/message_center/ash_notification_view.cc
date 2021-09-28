@@ -312,31 +312,6 @@ AshNotificationView::AshNotificationView(
 
 AshNotificationView::~AshNotificationView() = default;
 
-void AshNotificationView::CreateOrUpdateTitleView(
-    const message_center::Notification& notification) {
-  if (notification.title().empty()) {
-    if (title_row_) {
-      DCHECK(left_content()->Contains(title_row_));
-      left_content()->RemoveChildViewT(title_row_);
-      title_row_ = nullptr;
-    }
-    return;
-  }
-
-  const std::u16string& title = gfx::TruncateString(
-      notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
-
-  if (!title_row_) {
-    title_row_ =
-        AddViewToLeftContent(std::make_unique<NotificationTitleRow>(title));
-  } else {
-    title_row_->UpdateTitle(title);
-    ReorderViewInLeftContent(title_row_);
-  }
-
-  title_row_->UpdateTimestamp(notification.timestamp());
-}
-
 void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
 }
@@ -500,6 +475,36 @@ void AshNotificationView::UpdateWithNotification(
   NotificationViewBase::UpdateWithNotification(notification);
 }
 
+void AshNotificationView::CreateOrUpdateTitleView(
+    const message_center::Notification& notification) {
+  if (notification.title().empty()) {
+    if (title_row_) {
+      DCHECK(left_content()->Contains(title_row_));
+      left_content()->RemoveChildViewT(title_row_);
+      title_row_ = nullptr;
+    }
+    return;
+  }
+
+  const std::u16string& title = gfx::TruncateString(
+      notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
+
+  if (!title_row_) {
+    title_row_ =
+        AddViewToLeftContent(std::make_unique<NotificationTitleRow>(title));
+  } else {
+    title_row_->UpdateTitle(title);
+    ReorderViewInLeftContent(title_row_);
+  }
+
+  title_row_->UpdateTimestamp(notification.timestamp());
+}
+
+void AshNotificationView::CreateOrUpdateSmallIconView(
+    const message_center::Notification& notification) {
+  // TODO(crbug/1241990): Finish icon view here.
+}
+
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
   expand_button_->SetVisible(enabled);
 }
@@ -527,6 +532,13 @@ gfx::Size AshNotificationView::GetIconViewSize() const {
   return gfx::Size(kIconViewSize, kIconViewSize);
 }
 
+void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
+  if (!inline_settings_enabled())
+    return;
+  // TODO(crbug/1233670): Finish the inline settings/blocking UI here.
+  NotificationViewBase::ToggleInlineSettings(event);
+}
+
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SkColor background_color;
   if (shown_in_popup_) {
@@ -550,9 +562,6 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color_)));
-}
-void AshNotificationView::UpdateActionButtonsRowBackground() {
-  // No background.
 }
 
 }  // namespace ash

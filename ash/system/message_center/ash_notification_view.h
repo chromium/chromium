@@ -47,19 +47,21 @@ class ASH_EXPORT AshNotificationView
   // Toggle the expand state of the notification.
   void ToggleExpand();
 
-  // message_center::NotificationView:
+  // message_center::MessageView:
   void AddGroupNotification(const message_center::Notification& notification,
                             bool newest_first) override;
   void PopulateGroupNotifications(
       const std::vector<const message_center::Notification*>& notifications)
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
-  void CreateOrUpdateTitleView(
-      const message_center::Notification& notification) override;
 
   // message_center::NotificationViewBase:
   void UpdateViewForExpandedState(bool expanded) override;
   void UpdateWithNotification(
+      const message_center::Notification& notification) override;
+  void CreateOrUpdateTitleView(
+      const message_center::Notification& notification) override;
+  void CreateOrUpdateSmallIconView(
       const message_center::Notification& notification) override;
   void SetExpandButtonEnabled(bool enabled) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
@@ -68,6 +70,7 @@ class ASH_EXPORT AshNotificationView
   std::unique_ptr<message_center::NotificationInputContainer>
   GenerateNotificationInputContainer() override;
   gfx::Size GetIconViewSize() const override;
+  void ToggleInlineSettings(const ui::Event& event) override;
 
  private:
   friend class AshNotificationViewTest;
@@ -134,9 +137,6 @@ class ASH_EXPORT AshNotificationView
 
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
-
-  // message_center::NotificationViewBase:
-  void UpdateActionButtonsRowBackground() override;
 
   // Owned by views hierarchy.
   ExpandButton* expand_button_ = nullptr;

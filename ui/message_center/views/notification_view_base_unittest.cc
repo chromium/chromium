@@ -21,7 +21,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -30,10 +29,6 @@
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_observer.h"
-#include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -59,15 +54,6 @@ SkBitmap CreateSolidColorBitmap(int width, int height, SkColor solid_color) {
   bitmap.eraseColor(solid_color);
   return bitmap;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the same value as AshColorProvider::Get()->
-// GetContentLayerColor(ContentLayerType::kIconColorPrimary).
-SkColor GetAshIconColorPrimary(bool is_dark_mode) {
-  return is_dark_mode ? SkColorSetRGB(0xE8, 0xEA, 0xED)
-                      : SkColorSetRGB(0x5F, 0x63, 0x68);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestNotificationView : public NotificationViewBase {
  public:
@@ -95,6 +81,7 @@ class TestNotificationView : public NotificationViewBase {
 
   void CreateOrUpdateTitleView(const Notification& notification) override {}
   gfx::Size GetIconViewSize() const override { return gfx::Size(); }
+  void CreateOrUpdateSmallIconView(const Notification& notification) override {}
 };
 
 class NotificationTestDelegate : public NotificationDelegate {
@@ -125,14 +112,11 @@ class NotificationTestDelegate : public NotificationDelegate {
     submitted_reply_string_.clear();
   }
 
-  void DisableNotification() override { disable_notification_called_ = true; }
-
   bool clicked() const { return clicked_; }
   int clicked_button_index() const { return clicked_button_index_; }
   const std::u16string& submitted_reply_string() const {
     return submitted_reply_string_;
   }
-  bool disable_notification_called() { return disable_notification_called_; }
   void set_expecting_click(bool expecting) { expecting_click_ = expecting; }
   void set_expecting_button_click(bool expecting) {
     expecting_button_click_ = expecting;
@@ -150,7 +134,6 @@ class NotificationTestDelegate : public NotificationDelegate {
   bool expecting_click_ = false;
   bool expecting_button_click_ = false;
   bool expecting_reply_submission_ = false;
-  bool disable_notification_called_ = false;
 };
 
 class DummyEvent : public ui::Event {
@@ -158,15 +141,6 @@ class DummyEvent : public ui::Event {
   DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
   ~DummyEvent() override = default;
 };
-
-SkColor DeriveMinContrastColor(SkColor foreground, SkColor background) {
-  SkColor contrast_color =
-      color_utils::BlendForMinContrast(foreground, background).color;
-  float contrast_ratio =
-      color_utils::GetContrastRatio(background, contrast_color);
-  EXPECT_GE(contrast_ratio, color_utils::kMinimumReadableContrastRatio);
-  return contrast_color;
-}
 
 }  // namespace
 
@@ -933,100 +907,6 @@ TEST_F(NotificationViewBaseTest, ExpandLongMessage) {
   EXPECT_TRUE(notification_view()->IsManuallyExpandedOrCollapsed());
 }
 
-TEST_F(NotificationViewBaseTest, TestAccentColor) {
-  // TODO(pkasting): These hardcoded colors are fragile and should be obtained
-  // dynamically.
-  const SkColor kNotificationBackgroundColor = SK_ColorWHITE;
-  const SkColor kActionButtonBackgroundColor = SkColorSetRGB(0xF2, 0xF2, 0xF2);
-  const SkColor kActionButtonTextColor =
-      DeriveMinContrastColor(gfx::kGoogleBlue600, kActionButtonBackgroundColor);
-
-  const SkColor kDarkCustomAccentColor = SkColorSetRGB(0x0D, 0x65, 0x2D);
-  const SkColor kBrightCustomAccentColor = SkColorSetRGB(0x34, 0xA8, 0x53);
-
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_buttons(CreateButtons(2));
-
-  // The code below is not prepared to deal with dark mode.
-  notification_view()->GetWidget()->GetNativeTheme()->set_use_dark_colors(
-      false);
-  UpdateNotificationViews(*notification);
-
-  notification_view()->GetWidget()->Show();
-
-  // Action buttons are hidden by collapsed state.
-  if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
-  EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
-
-  const auto* color_provider = notification_view()->GetColorProvider();
-  auto app_icon_color_matches = [&](SkColor color) {
-    SkBitmap expected =
-        notification
-            ->GenerateMaskedSmallIcon(
-                kSmallImageSizeMD, color,
-                color_provider->GetColor(ui::kColorNotificationIconBackground),
-                color_provider->GetColor(ui::kColorNotificationIconForeground))
-            .AsBitmap();
-    SkBitmap actual = *notification_view()
-                           ->header_row_->app_icon_view_for_testing()
-                           ->GetImage()
-                           .bitmap();
-    return gfx::test::AreBitmapsEqual(expected, actual);
-  };
-
-  // By default, header does not have accent color (default grey), and
-  // buttons have default accent color.
-  EXPECT_FALSE(
-      notification_view()->header_row_->accent_color_for_testing().has_value());
-  EXPECT_EQ(
-      kActionButtonTextColor,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      kActionButtonTextColor,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
-  EXPECT_TRUE(
-      app_icon_color_matches(notification_view()->GetColorProvider()->GetColor(
-          ui::kColorNotificationHeaderForeground)));
-
-  // If custom accent color is set, the header and the buttons should have the
-  // same accent color.
-  notification->set_accent_color(kDarkCustomAccentColor);
-  UpdateNotificationViews(*notification);
-  auto accent_color =
-      notification_view()->header_row_->accent_color_for_testing();
-  ASSERT_TRUE(accent_color.has_value());
-  EXPECT_EQ(kDarkCustomAccentColor, accent_color.value());
-  EXPECT_EQ(
-      kDarkCustomAccentColor,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      kDarkCustomAccentColor,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
-  EXPECT_TRUE(app_icon_color_matches(kDarkCustomAccentColor));
-
-  // If the custom accent color is too bright, we expect it to be darkened so
-  // text and icons are still readable.
-  SkColor expected_color_title = DeriveMinContrastColor(
-      kBrightCustomAccentColor, kNotificationBackgroundColor);
-  // Action buttons have a darker background.
-  SkColor expected_color_actions = DeriveMinContrastColor(
-      kBrightCustomAccentColor, kActionButtonBackgroundColor);
-
-  notification->set_accent_color(kBrightCustomAccentColor);
-  UpdateNotificationViews(*notification);
-  accent_color = notification_view()->header_row_->accent_color_for_testing();
-  ASSERT_TRUE(accent_color.has_value());
-  EXPECT_EQ(kBrightCustomAccentColor, accent_color.value());
-  EXPECT_EQ(
-      expected_color_actions,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      expected_color_actions,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
-  EXPECT_TRUE(app_icon_color_matches(expected_color_title));
-}
-
 TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   // TODO(tetsui): Remove duplicated integer literal in CreateOrUpdateIconView.
   const int kIconSize = 30;
@@ -1155,34 +1035,6 @@ TEST_F(NotificationViewBaseTest, InlineSettings) {
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 #endif
-
-  // Construct a mouse click event over the done button.
-  gfx::Point done_cursor_location =
-      notification_view()
-          ->settings_done_button_->GetBoundsInScreen()
-          .CenterPoint();
-  generator.MoveMouseTo(done_cursor_location);
-
-  generator.ClickLeftButton();
-
-  // Just clicking Done button should not change the setting.
-  EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
-  EXPECT_FALSE(delegate_->disable_notification_called());
-
-  generator.MoveMouseTo(settings_cursor_location);
-  generator.ClickLeftButton();
-  EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
-
-  // Construct a mouse click event inside the block all button.
-  gfx::Point block_cursor_location =
-      notification_view()->block_all_button_->GetBoundsInScreen().CenterPoint();
-  generator.MoveMouseTo(block_cursor_location);
-  generator.ClickLeftButton();
-  generator.MoveMouseTo(done_cursor_location);
-  generator.ClickLeftButton();
-
-  EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
-  EXPECT_TRUE(delegate_->disable_notification_called());
 }
 
 TEST_F(NotificationViewBaseTest, InlineSettingsInkDropAnimation) {
@@ -1233,26 +1085,6 @@ TEST_F(NotificationViewBaseTest, PreferredSize) {
   notification_view()->SetExpanded(true);
   EXPECT_EQ(kNotificationWidth,
             notification_view()->GetPreferredSize().width());
-}
-
-TEST_F(NotificationViewBaseTest, InkDropClipRect) {
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
-  UpdateNotificationViews(*notification);
-
-  // Toggle inline settings to show ink drop background.
-  notification_view()->ToggleInlineSettings(DummyEvent());
-
-  auto* ink_drop = static_cast<views::InkDropImpl*>(
-      views::InkDrop::Get(notification_view())->GetInkDrop());
-  views::test::InkDropImplTestApi ink_drop_test_api(ink_drop);
-  gfx::Rect clip_rect = ink_drop_test_api.GetRootLayer()->clip_rect();
-
-  // Expect clip rect to honor the insets to draw the shadow.
-  gfx::Insets insets = notification_view()->GetInsets();
-  EXPECT_EQ(notification_view()->GetPreferredSize() - insets.size(),
-            clip_rect.size());
-  EXPECT_EQ(gfx::Point(insets.left(), insets.top()), clip_rect.origin());
 }
 
 TEST_F(NotificationViewBaseTest, TestClick) {
@@ -1419,23 +1251,6 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
 
   EXPECT_EQ(u"web app title",
             notification_view()->header_row_->app_name_for_testing());
-
-  const SkBitmap* app_icon_view = notification_view()
-                                      ->header_row_->app_icon_view_for_testing()
-                                      ->GetImage()
-                                      .bitmap();
-
-  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorTRANSPARENT),
-            color_utils::SkColorToRgbaString(app_icon_view->getColor(8, 8)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(color_utils::SkColorToRgbaString(
-                GetAshIconColorPrimary(/*is_dark_mode=*/false)),
-            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#else
-  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorYELLOW),
-            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#endif
 }
 
 TEST_F(NotificationViewBaseTest, ShowProgress) {

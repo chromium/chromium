@@ -4,9 +4,17 @@
 
 #include "ui/message_center/views/notification_view.h"
 
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view_util.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace message_center {
@@ -94,6 +102,35 @@ void NotificationView::CreateOrUpdateTitleView(
   }
 }
 
+void NotificationView::CreateOrUpdateSmallIconView(
+    const Notification& notification) {
+  // This is called when the notification view is inserted into a Widget
+  // hierarchy and when the Widget's theme has changed. If not currently in a
+  // Widget hierarchy defer updating the small icon view.
+  if (!GetWidget())
+    return;
+  const auto* color_provider = GetColorProvider();
+  SkColor accent_color = notification.accent_color().value_or(
+      color_provider->GetColor(ui::kColorNotificationHeaderForeground));
+  SkColor icon_color =
+      color_utils::BlendForMinContrast(
+          accent_color, GetNotificationHeaderViewBackgroundColor())
+          .color;
+
+  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // cache images if so.
+  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
+      kSmallImageSizeMD, icon_color,
+      color_provider->GetColor(ui::kColorNotificationIconBackground),
+      color_provider->GetColor(ui::kColorNotificationIconForeground));
+
+  if (masked_small_icon.IsEmpty()) {
+    header_row()->ClearAppIcon();
+  } else {
+    header_row()->SetAppIcon(masked_small_icon.AsImageSkia());
+  }
+}
+
 void NotificationView::UpdateViewForExpandedState(bool expanded) {
   left_content()->SetBorder(views::CreateEmptyBorder(
       IsIconViewShown() ? kLeftContentPaddingWithIcon : kLeftContentPadding));
@@ -115,6 +152,91 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
 
 gfx::Size NotificationView::GetIconViewSize() const {
   return kIconViewSize;
+}
+
+void NotificationView::OnThemeChanged() {
+  MessageView::OnThemeChanged();
+  UpdateHeaderViewBackgroundColor();
+  UpdateActionButtonsRowBackground();
+}
+
+void NotificationView::UpdateCornerRadius(int top_radius, int bottom_radius) {
+  UpdateActionButtonsRowBackground();
+  NotificationViewBase::UpdateCornerRadius(top_radius, bottom_radius);
+}
+
+void NotificationView::ToggleInlineSettings(const ui::Event& event) {
+  if (!inline_settings_enabled())
+    return;
+
+  // TODO(crbug/1233670): In later refactor, `block_all_button_` and
+  // `dont_block_button_` should be moved from NotificationViewBase to this
+  // class, since AshNotificationView will use a different UI for inline
+  // settings.
+  bool disable_notification =
+      inline_settings_row()->GetVisible() && block_all_button()->GetChecked();
+
+  NotificationViewBase::ToggleInlineSettings(event);
+
+  if (inline_settings_row()->GetVisible())
+    AddBackgroundAnimation(event);
+  else
+    RemoveBackgroundAnimation();
+
+  UpdateHeaderViewBackgroundColor();
+  Layout();
+  SchedulePaint();
+
+  // Call DisableNotification() at the end, because |this| can be deleted at any
+  // point after it's called.
+  if (disable_notification)
+    MessageCenter::Get()->DisableNotification(notification_id());
+}
+
+void NotificationView::UpdateHeaderViewBackgroundColor() {
+  SkColor header_background_color = GetNotificationHeaderViewBackgroundColor();
+  header_row()->SetBackgroundColor(header_background_color);
+  control_buttons_view()->SetBackgroundColor(header_background_color);
+
+  auto* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(notification_id());
+  if (notification)
+    CreateOrUpdateSmallIconView(*notification);
+}
+
+SkColor NotificationView::GetNotificationHeaderViewBackgroundColor() const {
+  bool inline_settings_visible = inline_settings_row()->GetVisible();
+  return GetNativeTheme()->GetSystemColor(
+      inline_settings_visible
+          ? ui::NativeTheme::kColorId_NotificationBackgroundActive
+          : ui::NativeTheme::kColorId_NotificationBackground);
+}
+
+void NotificationView::UpdateActionButtonsRowBackground() {
+  if (!GetWidget())
+    return;
+
+  action_buttons_row()->SetBackground(views::CreateBackgroundFromPainter(
+      std::make_unique<NotificationBackgroundPainter>(
+          /*top_radius=*/0, bottom_radius(),
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_NotificationActionsRowBackground))));
+}
+
+void NotificationView::AddBackgroundAnimation(const ui::Event& event) {
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  std::unique_ptr<ui::Event> located_event =
+      notification_view_util::ConvertToBoundedLocatedEvent(event, this);
+  views::InkDrop::Get(this)->AnimateToState(
+      views::InkDropState::ACTION_PENDING,
+      ui::LocatedEvent::FromIfValid(located_event.get()));
+}
+
+void NotificationView::RemoveBackgroundAnimation() {
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                            nullptr);
 }
 
 }  // namespace message_center

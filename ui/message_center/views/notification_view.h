@@ -26,8 +26,22 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
 
   // NotificationViewBase:
   void CreateOrUpdateTitleView(const Notification& notification) override;
+  void CreateOrUpdateSmallIconView(const Notification& notification) override;
   void UpdateViewForExpandedState(bool expanded) override;
   gfx::Size GetIconViewSize() const override;
+  void OnThemeChanged() override;
+  void UpdateCornerRadius(int top_radius, int bottom_radius) override;
+  void ToggleInlineSettings(const ui::Event& event) override;
+
+  void UpdateHeaderViewBackgroundColor();
+  SkColor GetNotificationHeaderViewBackgroundColor() const;
+
+  // Update the background that shows behind the `actions_row_`.
+  void UpdateActionButtonsRowBackground();
+
+  // Background animations for toggling inline settings.
+  void AddBackgroundAnimation(const ui::Event& event);
+  void RemoveBackgroundAnimation();
 
   // Notification title, which is dynamically created inside view hierarchy.
   views::Label* title_view_ = nullptr;
