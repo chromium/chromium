@@ -36,7 +36,6 @@ namespace {
 mojom::URLVisitPtr VisitToMojom(Profile* profile, const Visit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
   visit_mojom->normalized_url = visit.normalized_url;
-  visit_mojom->score = visit.score;
 
   auto& annotated_visit = visit.annotated_visit;
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
@@ -79,7 +78,7 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile, const Visit& visit) {
   }
 
   if (base::FeatureList::IsEnabled(kDebug)) {
-    visit_mojom->debug_info["score"] = base::NumberToString(visit_mojom->score);
+    visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
     visit_mojom->debug_info["visit_duration"] = base::NumberToString(
         annotated_visit.visit_row.visit_duration.InSecondsF());
   }
@@ -130,21 +129,17 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
         // First visit is always the top visit.
         cluster_mojom->visits.push_back(std::move(visit_mojom));
       } else {
-        auto& top_visit = cluster_mojom->visits.front();
-        DCHECK(visit.score <= top_visit->score);
+        auto& top_visit = cluster.visits.front();
+        DCHECK(visit.score <= top_visit.score);
+        auto& top_visit_mojom = cluster_mojom->visits.front();
 
         // After 3 related visits are attached, any subsequent visits scored
-        // below 0.5 are considered below the fold. 0-scored "ghost" visits are
-        // always considered below the fold. They are always hidden in
-        // production, but shown when the kDebug flag is enabled for debugging.
-        visit_mojom->below_the_fold = (top_visit->related_visits.size() > 3 &&
-                                       visit_mojom->score < 0.5) ||
-                                      visit_mojom->score == 0.0;
-
-        // We leave any 0-scored visits (most likely duplicates) still in the
-        // cluster, so that deleting the whole cluster deletes these related
-        // duplicates too.
-        top_visit->related_visits.push_back(std::move(visit_mojom));
+        // below 0.5 are considered below the fold. 0-scored (duplicate) visits
+        // are always considered below the fold.
+        visit_mojom->below_the_fold =
+            (top_visit_mojom->related_visits.size() > 3 && visit.score < 0.5) ||
+            visit.score == 0.0;
+        top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
 
       // Coalesce the related searches of this visit into the top visit, but

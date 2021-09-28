@@ -68,12 +68,8 @@ struct URLVisit {
   // applicable. Only prominently featured visits have related visits.
   array<URLVisit> related_visits;
 
-  // Whether a related visit is initially hidden. Calculated based on `score`.
+  // Whether a related visit is initially hidden.
   bool below_the_fold;
-
-  // A calculated score (i.e., calculated based on how long the tab was in
-  // foreground etc).
-  double score;
 
   // A key-value dictionary of additional debug info to show. This is not
   // visible in production, and used for development only.

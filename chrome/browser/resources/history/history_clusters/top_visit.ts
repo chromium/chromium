@@ -55,7 +55,7 @@ class TopVisitElement extends PolymerElement {
        */
       hasRelatedVisits_: {
         type: Boolean,
-        computed: 'computeHasRelatedVisits_(relatedVisits_)',
+        computed: 'computeHasRelatedVisits_(visit.relatedVisits.*)',
       },
 
       /**
@@ -63,15 +63,7 @@ class TopVisitElement extends PolymerElement {
        */
       hiddenRelatedVisits_: {
         type: Object,
-        computed: `computeHiddenRelatedVisits_(relatedVisits_)`,
-      },
-
-      /**
-       * The related visits that can be shown.
-       */
-      relatedVisits_: {
-        type: Object,
-        computed: `computeRelatedVisits_(visit.*)`,
+        computed: `computeHiddenRelatedVisits_(visit.relatedVisits.*)`,
       },
 
       /**
@@ -79,7 +71,7 @@ class TopVisitElement extends PolymerElement {
        */
       visibleRelatedVisits_: {
         type: Object,
-        computed: `computeVisibleRelatedVisits_(relatedVisits_)`,
+        computed: `computeVisibleRelatedVisits_(visit.relatedVisits.*)`,
       },
     };
   }
@@ -130,28 +122,17 @@ class TopVisitElement extends PolymerElement {
   //============================================================================
 
   private computeHasRelatedVisits_(): boolean {
-    return this.relatedVisits_.length > 0;
+    return this.visit.relatedVisits.length > 0;
   }
 
   private computeHiddenRelatedVisits_(): Array<URLVisit> {
-    return this.relatedVisits_.filter((visit: URLVisit) => {
+    return this.visit.relatedVisits.filter((visit: URLVisit) => {
       return visit.belowTheFold;
     });
   }
 
-  private computeRelatedVisits_(): Array<URLVisit> {
-    return this.visit.relatedVisits ?
-        this.visit.relatedVisits.filter((visit: URLVisit) => {
-          // 'Ghost' visits with scores of 0 (or below) are never to be shown,
-          // unless the debug flag is switched on.
-          return visit.score > 0 ||
-              loadTimeData.getBoolean('isHistoryClustersDebug');
-        }) :
-        [];
-  }
-
   private computeVisibleRelatedVisits_(): Array<URLVisit> {
-    return this.relatedVisits_.filter((visit: URLVisit) => {
+    return this.visit.relatedVisits.filter((visit: URLVisit) => {
       return !visit.belowTheFold;
     });
   }
@@ -160,17 +141,17 @@ class TopVisitElement extends PolymerElement {
    * Returns the label of the toggle button based on whether the default-hidden
    * related visits are visible.
    */
-  private getToggleButtonLabel_(expanded: boolean): string {
+  private getToggleButtonLabel_(_expanded: boolean): string {
     return loadTimeData.getString(
-        expanded ? 'toggleButtonLabelLess' : 'toggleButtonLabelMore');
+        this.expanded_ ? 'toggleButtonLabelLess' : 'toggleButtonLabelMore');
   }
 
   /**
-   * Returns the index of `visit` among the visits in the cluster.
+   * Returns the index of `relatedVisit` among the visits in the cluster.
    */
-  private getVisitIndex_(relatedVisits: Array<URLVisit>, visit: URLVisit):
-      number {
-    return relatedVisits.indexOf(visit) + 1;  // Index 0 is the top visit.
+  private getVisitIndex_(relatedVisit: URLVisit): number {
+    // Index 0 represents the top visit.
+    return this.visit.relatedVisits.indexOf(relatedVisit) + 1;
   }
 }
 

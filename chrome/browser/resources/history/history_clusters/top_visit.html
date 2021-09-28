@@ -99,7 +99,7 @@
   <div id="related-visits">
     <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
       <url-visit visit="[[item]]"
-          index="[[getVisitIndex_(relatedVisits_, item)]]">
+          index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
       </url-visit>
     </template>
     <!-- Disable animation on iron-collapse, as the parent iron-list can't
@@ -107,7 +107,7 @@
     <iron-collapse opened="[[expanded_]]" no-animation>
       <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
         <url-visit visit="[[item]]"
-            index="[[getVisitIndex_(relatedVisits_, item)]]">
+            index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
         </url-visit>
       </template>
     </iron-collapse>
