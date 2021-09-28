@@ -8371,7 +8371,8 @@
                         "enable_share": "true",
                         "experiment_tag": "",
                         "fetch_frequency": "15",
-                        "use_animated_gif_url": "true"
+                        "use_animated_gif_url": "true",
+                        "use_animated_gif_url_for_summary_card": "false"
                     },
                     "enable_features": [
                         "VideoTutorials"
