@@ -230,6 +230,14 @@ chrome.app.runtime.onLaunched.addListener(function() {
   });
 });
 
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  // If the new SWA picker is enabled, this extension should not be syncing and
+  // running daily updates in the background.
+  if (swaEnabled)
+    return;
+
+// TODO(qasid): run git cl format --js to indent this appropriately. Didn't do
+// so the first time to make the diff easier to review.
 chrome.syncFileSystem.onFileStatusChanged.addListener(function(detail) {
   WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
     if (!syncEnabled)
@@ -495,4 +503,5 @@ chrome.wallpaperPrivate.onClosePreviewWallpaper.addListener(function() {
     var event = new CustomEvent(Constants.ClosePreviewWallpaper);
     wallpaperPickerWindow.contentWindow.dispatchEvent(event);
   }
+});
 });

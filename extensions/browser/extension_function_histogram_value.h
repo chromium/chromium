@@ -1653,6 +1653,7 @@ enum HistogramValue {
   SPEECHRECOGNITIONPRIVATE_START = 1590,
   SPEECHRECOGNITIONPRIVATE_STOP = 1591,
   FILEMANAGERPRIVATEINTERNAL_STARTIOTASK = 1592,
+  WALLPAPERPRIVATE_ISSWAENABLED = 1593,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
