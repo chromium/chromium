@@ -17,6 +17,8 @@ class Profile;
 
 namespace apps {
 
+class BrowserAppInstanceRegistry;
+
 // An app publisher (in the App Service sense) for the "LaCrOS" app icon,
 // which launches the lacros-chrome binary.
 //
@@ -25,7 +27,8 @@ class StandaloneBrowserApps : public apps::PublisherBase {
  public:
   StandaloneBrowserApps(
       const mojo::Remote<apps::mojom::AppService>& app_service,
-      Profile* profile);
+      Profile* profile,
+      BrowserAppInstanceRegistry* registry);
   ~StandaloneBrowserApps() override;
 
   StandaloneBrowserApps(const StandaloneBrowserApps&) = delete;
@@ -59,9 +62,11 @@ class StandaloneBrowserApps : public apps::PublisherBase {
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void StopApp(const std::string& app_id) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
+  BrowserAppInstanceRegistry* browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
   base::WeakPtrFactory<StandaloneBrowserApps> weak_factory_{this};
 };

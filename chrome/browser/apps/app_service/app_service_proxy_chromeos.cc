@@ -127,8 +127,8 @@ void AppServiceProxyChromeOs::Initialize() {
   // profile and ensures there is only one instance of StandaloneBrowserApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
       chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
-    standalone_browser_apps_ =
-        std::make_unique<StandaloneBrowserApps>(app_service_, profile_);
+    standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(
+        app_service_, profile_, browser_app_instance_registry_.get());
   }
   web_apps_ = std::make_unique<web_app::WebApps>(app_service_,
                                                  &instance_registry_, profile_);

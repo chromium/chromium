@@ -71,6 +71,15 @@ BrowserAppInstanceRegistry::GetBrowserWindowInstanceById(
   return ash_instance_tracker_.GetBrowserWindowInstanceById(id);
 }
 
+std::set<const BrowserWindowInstance*>
+BrowserAppInstanceRegistry::GetLacrosBrowserWindowInstances() const {
+  std::set<const BrowserWindowInstance*> result;
+  for (const auto& pair : lacros_window_instances_) {
+    result.insert(pair.second.get());
+  }
+  return result;
+}
+
 const BrowserAppInstance*
 BrowserAppInstanceRegistry::GetActiveAppInstanceForWindow(
     aura::Window* window) {

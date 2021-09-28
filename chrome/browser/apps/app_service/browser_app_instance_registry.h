@@ -68,6 +68,10 @@ class BrowserAppInstanceRegistry
   const BrowserWindowInstance* GetBrowserWindowInstanceById(
       base::UnguessableToken id) const;
 
+  // Get all instances of lacros browser window instances.
+  std::set<const BrowserWindowInstance*> GetLacrosBrowserWindowInstances()
+      const;
+
   // Get the currently active app instance for a window (Ash or Lacros).
   const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
 

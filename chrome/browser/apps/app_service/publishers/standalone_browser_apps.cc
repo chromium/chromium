@@ -10,20 +10,24 @@
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
+#include "ui/views/widget/widget.h"
 
 namespace apps {
 
 StandaloneBrowserApps::StandaloneBrowserApps(
     const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
-    : profile_(profile) {
+    Profile* profile,
+    BrowserAppInstanceRegistry* registry)
+    : profile_(profile), browser_app_instance_registry_(registry) {
   DCHECK(crosapi::browser_util::IsLacrosEnabled());
   PublisherBase::Initialize(app_service,
                             apps::mojom::AppType::kStandaloneBrowser);
@@ -120,6 +124,25 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
                                          int64_t display_id,
                                          GetMenuModelCallback callback) {
   std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile_));
+}
+
+void StandaloneBrowserApps::StopApp(const std::string& app_id) {
+  DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
+  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
+    return;
+  }
+  DCHECK(browser_app_instance_registry_);
+  for (const BrowserWindowInstance* instance :
+       browser_app_instance_registry_->GetLacrosBrowserWindowInstances()) {
+    views::Widget* widget =
+        views::Widget::GetWidgetForNativeView(instance->window);
+    DCHECK(widget);
+    // TODO(crbug.com/1252688): kUnspecified is only supposed to be used for
+    // backwards compatibility with (deprecated) Close(), but there is no enum
+    // for other cases where StopApp may be invoked, for example, closing the
+    // app from a menu.
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
 }
 
 void StandaloneBrowserApps::OnLoadComplete(bool success) {
