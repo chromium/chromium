@@ -6897,7 +6897,7 @@ others/histograms.xml -->
   <int value="0" label="Unknown"/>
   <int value="1" label="User closed bubble via corner X"/>
   <int value="2" label="User did not interact with the bubble"/>
-  <int value="3" label="Bubble lost focus and was deactivated"/>
+  <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
 <enum name="AutofillWalletAddressConversionType">

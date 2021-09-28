@@ -44,6 +44,12 @@ VirtualCardManualFallbackBubbleViews::VirtualCardManualFallbackBubbleViews(
   SetShowIcon(true);
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  // Since this bubble provides full card information for filling the credit
+  // card form, users may interact with this bubble multiple times. This is to
+  // make sure the bubble does not dismiss itself after one interaction. The
+  // bubble will instead be dismissed when page navigates or the close button is
+  // clicked.
+  set_close_on_deactivate(false);
 }
 
 VirtualCardManualFallbackBubbleViews::~VirtualCardManualFallbackBubbleViews() {

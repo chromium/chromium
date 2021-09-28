@@ -350,9 +350,8 @@ class AutofillMetrics {
     VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED = 1,
     // The user did not interact with the bubble.
     VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED = 2,
-    // The bubble lost focus and was deactivated.
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS = 3,
-    kMaxValue = VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS,
+    // Deprecated: VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS = 3,
+    kMaxValue = VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED,
   };
 
   // Metric to measure which field in the virtual card manual fallback bubble

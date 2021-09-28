@@ -175,10 +175,6 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
       metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED;
       break;
-    case PaymentsBubbleClosedReason::kLostFocus:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS;
-      break;
     default:
       metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN;
