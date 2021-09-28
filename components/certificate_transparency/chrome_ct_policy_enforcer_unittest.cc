@@ -46,7 +46,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto enforcer = std::make_unique<ChromeCTPolicyEnforcer>(
-        base::GetBuildTime(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
+        base::Time::Now(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
     enforcer->SetClockForTesting(&clock_);
     policy_enforcer_ = std::move(enforcer);
 
