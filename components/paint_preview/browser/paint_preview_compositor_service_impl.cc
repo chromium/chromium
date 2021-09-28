@@ -85,6 +85,19 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
   return compositor;
 }
 
+void PaintPreviewCompositorServiceImpl::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::Remote<mojom::PaintPreviewCompositorCollection>* remote,
+             base::MemoryPressureListener::MemoryPressureLevel
+                 memory_pressure_level) {
+            remote->get()->OnMemoryPressure(memory_pressure_level);
+          },
+          compositor_service_.get(), memory_pressure_level));
+}
+
 bool PaintPreviewCompositorServiceImpl::HasActiveClients() const {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   return !active_clients_.empty();

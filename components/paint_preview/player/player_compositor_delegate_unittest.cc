@@ -150,6 +150,11 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
         base::OnTaskRunnerDeleter(task_runner_));
   }
 
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override {
+    // no-op.
+  }
+
   void SetTimeout() { timeout_ = true; }
 
   bool HasActiveClients() const override {

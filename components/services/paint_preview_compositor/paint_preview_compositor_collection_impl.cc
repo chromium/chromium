@@ -32,11 +32,6 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   if (receiver)
     receiver_.Bind(std::move(receiver));
 
-  listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(
-                     &PaintPreviewCompositorCollectionImpl::OnMemoryPressure,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // Adapted from content::InitializeSkia().
   // TODO(crbug/1199857): Tune these limits.
   constexpr int kMB = 1024 * 1024;
@@ -92,22 +87,6 @@ PaintPreviewCompositorCollectionImpl::~PaintPreviewCompositorCollectionImpl() {
 #endif
 }
 
-void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level >=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    receiver_.reset();
-    return;
-  }
-  if (memory_pressure_level >=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    SkGraphics::PurgeAllCaches();
-    if (discardable_shared_memory_manager_) {
-      discardable_shared_memory_manager_->ReleaseFreeMemory();
-    }
-  }
-}
-
 void PaintPreviewCompositorCollectionImpl::SetDiscardableSharedMemoryManager(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager> manager) {
@@ -132,6 +111,22 @@ void PaintPreviewCompositorCollectionImpl::CreateCompositor(
            base::BindOnce(&PaintPreviewCompositorCollectionImpl::OnDisconnect,
                           weak_ptr_factory_.GetWeakPtr(), token))});
   std::move(callback).Run(token);
+}
+
+void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level >=
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    receiver_.reset();
+    return;
+  }
+  if (memory_pressure_level >=
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    SkGraphics::PurgeAllCaches();
+    if (discardable_shared_memory_manager_) {
+      discardable_shared_memory_manager_->ReleaseFreeMemory();
+    }
+  }
 }
 
 void PaintPreviewCompositorCollectionImpl::ListCompositors(

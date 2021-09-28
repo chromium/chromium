@@ -58,11 +58,11 @@ class PaintPreviewCompositorCollectionImpl
   void CreateCompositor(
       mojo::PendingReceiver<mojom::PaintPreviewCompositor> compositor,
       CreateCompositorCallback callback) override;
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override;
   void ListCompositors(ListCompositorsCallback callback) override;
 
  private:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
   // Invoked by a |compositor| when it is disconnected from its remote. Used to
   // delete the corresponding instance from |compositors_|.
   void OnDisconnect(const base::UnguessableToken& id);
@@ -83,7 +83,6 @@ class PaintPreviewCompositorCollectionImpl
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-  std::unique_ptr<base::MemoryPressureListener> listener_;
 
   base::WeakPtrFactory<PaintPreviewCompositorCollectionImpl> weak_ptr_factory_{
       this};

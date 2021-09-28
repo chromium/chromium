@@ -6,6 +6,7 @@ module paint_preview.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "components/paint_preview/common/mojom/paint_preview_types.mojom";
+import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -148,6 +149,9 @@ interface PaintPreviewCompositorCollection {
   // the compositor.
   CreateCompositor(pending_receiver<PaintPreviewCompositor> compositor)
     => (mojo_base.mojom.UnguessableToken compositor_id);
+
+  // Called when the system is low on memory.
+  OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
 
   // Returns a list of active compositor IDs.
   ListCompositors() => (array<mojo_base.mojom.UnguessableToken> compositor_ids);
