@@ -93,9 +93,14 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   // Now the module script is downloaded, initialize the worklet environment.
   InitV8();
 
+  // TODO(yaoxia): we may need a new IsolateType here. For now, set it to
+  // `kBlinkWorkerThread` even though it's not technically for blink worker:
+  // this is the best approximate type and is the only type that allows multiple
+  // isolates in one process (see CanHaveMultipleIsolates(isolate_type) in
+  // gin/v8_isolate_memory_dump_provider.cc).
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
-      gin::IsolateHolder::IsolateType::kUtility);
+      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
+      gin::IsolateHolder::IsolateType::kBlinkWorkerThread);
 
   WorkletV8Helper::HandleScope scope(Isolate());
   global_context_.Reset(Isolate(), v8::Context::New(Isolate()));

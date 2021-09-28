@@ -25,7 +25,6 @@ class WorkletV8Helper {
     ~HandleScope();
 
    private:
-    const v8::Locker locker_;
     const v8::Isolate::Scope isolate_scope_;
     const v8::HandleScope handle_scope_;
   };
