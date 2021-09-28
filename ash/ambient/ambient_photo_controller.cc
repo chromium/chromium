@@ -38,6 +38,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -102,13 +103,21 @@ base::FilePath GetCacheRootPath() {
 
 }  // namespace
 
-AmbientPhotoController::AmbientPhotoController()
+AmbientPhotoController::AmbientPhotoController(
+    AmbientClient& ambient_client,
+    AmbientAccessTokenController& access_token_controller)
     : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      photo_cache_(AmbientPhotoCache::Create(GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)))),
-      backup_photo_cache_(AmbientPhotoCache::Create(GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)))),
+      photo_cache_(AmbientPhotoCache::Create(
+          GetCacheRootPath().Append(
+              FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)),
+          ambient_client,
+          access_token_controller)),
+      backup_photo_cache_(AmbientPhotoCache::Create(
+          GetCacheRootPath().Append(
+              FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)),
+          ambient_client,
+          access_token_controller)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
   ambient_backend_model_observation_.Observe(&ambient_backend_model_);

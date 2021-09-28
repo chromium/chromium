@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace ash {
 
@@ -20,11 +21,57 @@ const char* kTestGaiaId = "0123456789";
 constexpr base::TimeDelta kDefaultTokenExpirationDelay =
     base::TimeDelta::FromSeconds(60);
 
+// A simple SharedURLLoaderFactory implementation for tests.
+class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
+ public:
+  FakeSharedURLLoaderFactory() = default;
+  FakeSharedURLLoaderFactory(const FakeSharedURLLoaderFactory&) = delete;
+  FakeSharedURLLoaderFactory& operator=(const FakeSharedURLLoaderFactory&) =
+      delete;
+
+  // network::mojom::URLLoaderFactory implementation:
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override {
+    test_url_loader_factory_.Clone(std::move(receiver));
+  }
+
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    test_url_loader_factory_.CreateLoaderAndStart(
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
+  }
+
+  // network::SharedURLLoaderFactory implementation:
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
+
+ private:
+  friend class base::RefCounted<FakeSharedURLLoaderFactory>;
+
+  ~FakeSharedURLLoaderFactory() override = default;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
 }  // namespace
 
 TestAmbientClient::TestAmbientClient(
     device::TestWakeLockProvider* wake_lock_provider)
-    : wake_lock_provider_(wake_lock_provider) {}
+    : url_loader_factory_(new FakeSharedURLLoaderFactory()),
+      wake_lock_provider_(wake_lock_provider) {}
 
 TestAmbientClient::~TestAmbientClient() = default;
 
@@ -39,8 +86,7 @@ void TestAmbientClient::RequestAccessToken(GetAccessTokenCallback callback) {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 TestAmbientClient::GetURLLoaderFactory() {
-  // TODO: return fake URL loader facotry.
-  return nullptr;
+  return url_loader_factory_;
 }
 
 void TestAmbientClient::RequestWakeLockProvider(
@@ -71,6 +117,11 @@ bool TestAmbientClient::ShouldUseProdServer() {
 
 bool TestAmbientClient::IsAccessTokenRequestPending() const {
   return !!pending_callback_;
+}
+
+network::TestURLLoaderFactory& TestAmbientClient::test_url_loader_factory() {
+  return static_cast<FakeSharedURLLoaderFactory*>(url_loader_factory_.get())
+      ->test_url_loader_factory();
 }
 
 }  // namespace ash

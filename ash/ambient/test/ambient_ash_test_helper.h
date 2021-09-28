@@ -7,11 +7,10 @@
 
 #include <memory>
 
+#include "ash/ambient/test/test_ambient_client.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 
 namespace ash {
-
-class TestAmbientClient;
 
 // The helper class to test the Ambient Mode in Ash.
 class AmbientAshTestHelper {
@@ -29,9 +28,11 @@ class AmbientAshTestHelper {
     return &wake_lock_provider_;
   }
 
+  TestAmbientClient& ambient_client() { return ambient_client_; }
+
  private:
   device::TestWakeLockProvider wake_lock_provider_;
-  std::unique_ptr<TestAmbientClient> ambient_client_;
+  TestAmbientClient ambient_client_{&wake_lock_provider_};
 };
 
 }  // namespace ash

@@ -2987,6 +2987,7 @@ static_library("test_support") {
     "//device/bluetooth",
     "//services/device/public/cpp:test_support",
     "//services/device/public/mojom",
+    "//services/network:test_support",
     "//skia",
     "//testing/gtest",
     "//ui/accessibility",

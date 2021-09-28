@@ -41,7 +41,7 @@ constexpr char kUser2[] = "user2@gmail.com";
 
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
-  AmbientControllerTest() : AmbientAshTestBase() {}
+  AmbientControllerTest() = default;
   ~AmbientControllerTest() override = default;
 
   // AmbientAshTestBase:

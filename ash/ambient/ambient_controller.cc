@@ -566,7 +566,9 @@ void AmbientController::OnEnabledPrefChanged() {
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
 
-    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>();
+    DCHECK(AmbientClient::Get());
+    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
+        *AmbientClient::Get(), access_token_controller_);
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 

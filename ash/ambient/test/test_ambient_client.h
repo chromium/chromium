@@ -12,6 +12,10 @@
 #include "base/callback.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 
+namespace network {
+class TestURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 
 // An implementation for test support.
@@ -35,9 +39,11 @@ class ASH_PUBLIC_EXPORT TestAmbientClient : public AmbientClient {
 
   bool IsAccessTokenRequestPending() const;
 
+  network::TestURLLoaderFactory& test_url_loader_factory();
+
  private:
   GetAccessTokenCallback pending_callback_;
-
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   device::TestWakeLockProvider* const wake_lock_provider_;
 };
 
