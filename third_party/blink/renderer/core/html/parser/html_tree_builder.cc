@@ -908,10 +908,6 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
-  if (!RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-          document.GetExecutionContext())) {
-    return DeclarativeShadowRootType::kNone;
-  }
   Attribute* type_attribute =
       token->GetAttributeItem(html_names::kShadowrootAttr);
   if (!type_attribute)
@@ -973,9 +969,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
   ResetInsertionModeAppropriately();
-  if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-          shadow_host_stack_item->GetNode()->GetExecutionContext()) &&
-      template_stack_item) {
+  if (template_stack_item) {
     DCHECK(template_stack_item->IsElementNode());
     HTMLTemplateElement* template_element =
         DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());

@@ -1,7 +1,6 @@
 /*
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2012 Apple Inc. All rights
- * reserved.
- * Copyright (C) 2009, 2010 Google Inc. All rights reserved.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2012 Apple Inc. All
+ * rights reserved. Copyright (C) 2009, 2010 Google Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +23,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include "third_party/blink/renderer/core/editing/serializers/markup_accumulator.h"
 
 #include "third_party/blink/renderer/core/dom/attr.h"
@@ -549,8 +547,6 @@ std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
   ShadowRoot* shadow_root = element.GetShadowRoot();
   if (!shadow_root || include_shadow_roots_ != kIncludeShadowRoots)
     return std::pair<Node*, Element*>();
-  DCHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-      element.GetExecutionContext()));
   AtomicString shadowroot_type;
   switch (shadow_root->GetType()) {
     case ShadowRootType::kUserAgent:

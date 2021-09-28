@@ -809,10 +809,6 @@
       status: "stable",
     },
     {
-      name: "DeclarativeShadowDOM",
-      status: "stable",
-    },
-    {
       name: "DecodeJpeg420ImagesToYUV",
       status: "stable",
     },
