@@ -37,6 +37,12 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
       v8_template = v8::FunctionTemplate::New(
           isolate, V8ObjectConstructor::IsValidConstructorMode);
       break;
+    case kIdlBufferSourceType:
+      NOTREACHED();
+      break;
+    case kIdlObservableArray:
+      v8_template = v8::FunctionTemplate::New(isolate);
+      break;
     case kCustomWrappableKind:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;

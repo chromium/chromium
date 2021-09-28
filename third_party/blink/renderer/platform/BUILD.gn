@@ -437,6 +437,8 @@ component("platform") {
     "bindings/no_alloc_direct_call_exception_state.h",
     "bindings/no_alloc_direct_call_host.cc",
     "bindings/no_alloc_direct_call_host.h",
+    "bindings/observable_array_base.cc",
+    "bindings/observable_array_base.h",
     "bindings/origin_trial_features.cc",
     "bindings/origin_trial_features.h",
     "bindings/parkable_string.cc",

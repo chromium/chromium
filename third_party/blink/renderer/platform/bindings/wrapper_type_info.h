@@ -67,7 +67,11 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   };
 
   enum WrapperClassId {
-    kNodeClassId = 1,  // NodeClassId must be smaller than ObjectClassId.
+    // kNoInternalFieldClassId is used for the pseudo wrapper objects which do
+    // not have any internal field pointing to a Blink object.
+    kNoInternalFieldClassId = 0,
+    // NodeClassId must be smaller than ObjectClassId, also must be non-zero.
+    kNodeClassId = 1,
     kObjectClassId,
     kCustomWrappableId,
   };
@@ -82,6 +86,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     kIdlNamespace,
     kIdlCallbackInterface,
     kIdlBufferSourceType,
+    kIdlObservableArray,
     kCustomWrappableKind,
   };
 
@@ -103,7 +108,8 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   }
 
   void ConfigureWrapper(v8::TracedReference<v8::Object>* wrapper) const {
-    wrapper->SetWrapperClassId(wrapper_class_id);
+    if (wrapper_class_id != kNoInternalFieldClassId)
+      wrapper->SetWrapperClassId(wrapper_class_id);
   }
 
   // Returns a v8::Template of interface object, namespace object, or the
