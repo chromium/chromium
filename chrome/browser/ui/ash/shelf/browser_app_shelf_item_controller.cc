@@ -25,6 +25,7 @@ BrowserAppShelfItemController::BrowserAppShelfItemController(
       registry_(*apps::AppServiceProxyFactory::GetForProfile(profile_)
                      ->BrowserAppInstanceRegistry()) {
   registry_observation_.Observe(&registry_);
+  LoadAppMenuIcon();
 }
 
 BrowserAppShelfItemController::~BrowserAppShelfItemController() = default;
@@ -70,14 +71,13 @@ BrowserAppShelfItemController::GetAppMenuItems(
       const apps::BrowserWindowInstance* instance =
           registry_.GetBrowserWindowInstanceById(id);
       DCHECK(instance);
-      items.push_back(
-          {command_id, instance->window->GetTitle(), gfx::ImageSkia{}});
+      items.push_back({command_id, instance->window->GetTitle(), menu_icon_});
     } else {
       const apps::BrowserAppInstance* instance =
           registry_.GetAppInstanceById(id);
       DCHECK(instance);
       items.push_back(
-          {command_id, base::UTF8ToUTF16(instance->title), gfx::ImageSkia{}});
+          {command_id, base::UTF8ToUTF16(instance->title), menu_icon_});
     }
   }
   return items;
@@ -180,4 +180,22 @@ int BrowserAppShelfItemController::GetInstanceCommand(
       [&id](const auto& pair) { return pair.second == id; });
   DCHECK(it != command_to_instance_map_.end());
   return it->first;
+}
+
+void BrowserAppShelfItemController::LoadAppMenuIcon() {
+  const std::string& app_id = shelf_id().app_id;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  icon_loader_releaser_ = proxy->LoadIcon(
+      proxy->AppRegistryCache().GetAppType(app_id), app_id,
+      apps::mojom::IconType::kStandard,
+      // matches favicon size
+      /* size_hint_in_dip= */ extension_misc::EXTENSION_ICON_BITTY,
+      /* allow_placeholder_icon= */ false,
+      base::BindOnce(&BrowserAppShelfItemController::DidLoadAppMenuIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserAppShelfItemController::DidLoadAppMenuIcon(
+    apps::mojom::IconValuePtr icon_value) {
+  menu_icon_ = icon_value->uncompressed;
 }
