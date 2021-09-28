@@ -43,6 +43,9 @@ class VideoDecoder;
 // the media components.
 class MEDIA_MOJO_EXPORT MojoMediaClient {
  public:
+  using SupportedVideoDecoderConfigsCallback =
+      base::OnceCallback<void(SupportedVideoDecoderConfigs)>;
+
   // Called before the host application is scheduled to quit.
   // The application message loop is still valid at this point, so all clean
   // up tasks requiring the message loop must be completed before returning.
@@ -54,8 +57,8 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual std::unique_ptr<AudioDecoder> CreateAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual std::vector<SupportedVideoDecoderConfig>
-  GetSupportedVideoDecoderConfigs();
+  virtual void GetSupportedVideoDecoderConfigs(
+      SupportedVideoDecoderConfigsCallback callback);
 
   virtual VideoDecoderType GetDecoderImplementationType();
 

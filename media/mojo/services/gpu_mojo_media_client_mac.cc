@@ -7,40 +7,43 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 namespace media {
+namespace {
 
-std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits& traits) {
-  return VdaVideoDecoder::Create(
-      traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-      *traits.target_color_space, traits.gpu_preferences,
-      *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
-}
+class MacPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
+ public:
+  explicit MacPlatformDelegate(GpuMojoMediaClient* client) : client_(client) {}
+  ~MacPlatformDelegate() override = default;
 
-absl::optional<SupportedVideoDecoderConfigs>
-GetPlatformSupportedVideoDecoderConfigs(
-    gpu::GpuDriverBugWorkarounds gpu_workarounds,
-    gpu::GpuPreferences gpu_preferences,
-    base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
-  return std::move(get_vda_configs).Run();
-}
+  MacPlatformDelegate(const MacPlatformDelegate&) = delete;
+  void operator=(const MacPlatformDelegate&) = delete;
 
-std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return nullptr;
-}
+  // GpuMojoMediaClient::PlatformDelegate implementation.
+  std::unique_ptr<VideoDecoder> CreateVideoDecoder(
+      const VideoDecoderTraits& traits) override {
+    return VdaVideoDecoder::Create(
+        traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
+        *traits.target_color_space, client_->gpu_preferences(),
+        client_->gpu_workarounds(), traits.get_command_buffer_stub_cb);
+  }
 
-// This class doesn't exist on mac, so we need a stub for unique_ptr.
-class CdmFactory {};
+  void GetSupportedVideoDecoderConfigs(
+      MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) override {
+    std::move(callback).Run(client_->GetVDAVideoDecoderConfigs());
+  }
 
-std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
-    mojom::FrameInterfaceFactory* frame_interfaces) {
-  return nullptr;
-}
+  VideoDecoderType GetDecoderImplementationType() override {
+    return VideoDecoderType::kVda;
+  }
 
-VideoDecoderType GetPlatformDecoderImplementationType(
-    gpu::GpuDriverBugWorkarounds gpu_workarounds,
-    gpu::GpuPreferences gpu_preferences) {
-  return VideoDecoderType::kVda;
+ private:
+  GpuMojoMediaClient* client_;
+};
+
+}  // namespace
+
+std::unique_ptr<GpuMojoMediaClient::PlatformDelegate>
+GpuMojoMediaClient::PlatformDelegate::Create(GpuMojoMediaClient* client) {
+  return std::make_unique<MacPlatformDelegate>(client);
 }
 
 }  // namespace media

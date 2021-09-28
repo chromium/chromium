@@ -114,7 +114,7 @@ component("services") {
           [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
     }
   } else {
-    sources += [ "gpu_mojo_media_client_stubs.cc" ]
+    sources += [ "gpu_mojo_media_client_default.cc" ]
   }
 
   if (is_android) {

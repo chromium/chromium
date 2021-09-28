@@ -63,11 +63,7 @@ VideoDecoderTraits::VideoDecoderTraits(
     std::unique_ptr<MediaLog> media_log,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace* target_color_space,
-    gpu::GpuPreferences gpu_preferences,
-    gpu::GpuFeatureInfo gpu_feature_info,
-    const gpu::GpuDriverBugWorkarounds* gpu_workarounds,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb)
     : task_runner(std::move(task_runner)),
@@ -75,11 +71,7 @@ VideoDecoderTraits::VideoDecoderTraits(
       media_log(std::move(media_log)),
       request_overlay_info_cb(request_overlay_info_cb),
       target_color_space(target_color_space),
-      gpu_preferences(gpu_preferences),
-      gpu_feature_info(gpu_feature_info),
-      gpu_workarounds(gpu_workarounds),
       gpu_memory_buffer_factory(gpu_memory_buffer_factory),
-      get_cached_configs_cb(std::move(get_cached_configs_cb)),
       get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
       android_overlay_factory_cb(std::move(android_overlay_factory_cb)) {}
 
@@ -97,35 +89,79 @@ GpuMojoMediaClient::GpuMojoMediaClient(
       gpu_task_runner_(std::move(gpu_task_runner)),
       media_gpu_channel_manager_(std::move(media_gpu_channel_manager)),
       android_overlay_factory_cb_(std::move(android_overlay_factory_cb)),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {}
+      gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
+      platform_(PlatformDelegate::Create(this)) {}
 
 GpuMojoMediaClient::~GpuMojoMediaClient() = default;
 
+GpuMojoMediaClient::PlatformDelegate::~PlatformDelegate() = default;
+
+std::unique_ptr<VideoDecoder>
+GpuMojoMediaClient::PlatformDelegate::CreateVideoDecoder(
+    const VideoDecoderTraits&) {
+  return nullptr;
+}
+
+void GpuMojoMediaClient::PlatformDelegate::GetSupportedVideoDecoderConfigs(
+    MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) {
+  std::move(callback).Run({});
+}
+
+std::unique_ptr<AudioDecoder>
+GpuMojoMediaClient::PlatformDelegate::CreateAudioDecoder(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return nullptr;
+}
+
+std::unique_ptr<CdmFactory>
+GpuMojoMediaClient::PlatformDelegate::CreateCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+  return nullptr;
+}
+
+VideoDecoderType
+GpuMojoMediaClient::PlatformDelegate::GetDecoderImplementationType() {
+  return VideoDecoderType::kUnknown;
+}
+
 std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreateAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return CreatePlatformAudioDecoder(task_runner);
+  return platform_->CreateAudioDecoder(task_runner);
 }
 
 VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
-  return GetPlatformDecoderImplementationType(gpu_workarounds_,
-                                              gpu_preferences_);
+  return platform_->GetDecoderImplementationType();
 }
 
-SupportedVideoDecoderConfigs
-GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
-  if (!supported_config_cache_)
-    supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs(
-        gpu_workarounds_, gpu_preferences_,
-        // GetPlatformSupportedVideoDecoderConfigs runs this callback either
-        // never or immediately, and will not store it, so |this| will outlive
-        // the bound function.
-        base::BindOnce(&GpuMojoMediaClient::GetVDAVideoDecoderConfigs,
+void GpuMojoMediaClient::GetSupportedVideoDecoderConfigs(
+    MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) {
+  if (supported_config_cache_) {
+    DCHECK(pending_supported_config_callbacks_.empty());
+
+    std::move(callback).Run(*supported_config_cache_);
+    return;
+  }
+
+  const bool should_query = pending_supported_config_callbacks_.empty();
+  pending_supported_config_callbacks_.push_back(std::move(callback));
+  if (should_query) {
+    // Only get configurations if there is no query already in flight.
+    platform_->GetSupportedVideoDecoderConfigs(
+        base::BindOnce(&GpuMojoMediaClient::OnSupportedVideoDecoderConfigs,
                        base::Unretained(this)));
+  }
+}
 
-  if (!supported_config_cache_)
-    return {};
+void GpuMojoMediaClient::OnSupportedVideoDecoderConfigs(
+    SupportedVideoDecoderConfigs configs) {
+  DCHECK(!pending_supported_config_callbacks_.empty());
 
-  return *supported_config_cache_;
+  // Return the result to all pending queries.
+  supported_config_cache_ = std::move(configs);
+  for (auto& callback : pending_supported_config_callbacks_) {
+    std::move(callback).Run(*supported_config_cache_);
+  }
+  pending_supported_config_callbacks_.clear();
 }
 
 SupportedVideoDecoderConfigs GpuMojoMediaClient::GetVDAVideoDecoderConfigs() {
@@ -152,23 +188,19 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       media_log ? media_log->Clone() : std::make_unique<media::NullMediaLog>();
   VideoDecoderTraits traits(
       task_runner, gpu_task_runner_, std::move(log),
-      std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
-      gpu_feature_info_, &gpu_workarounds_, gpu_memory_buffer_factory_,
-      // CreatePlatformVideoDecoder does not keep a reference to |traits|
-      // so this bound method will not outlive |this|
-      base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
-                          base::Unretained(this)),
+      std::move(request_overlay_info_cb), &target_color_space,
+      gpu_memory_buffer_factory_,
       base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
           command_buffer_id->channel_token, command_buffer_id->route_id),
       std::move(android_overlay_factory_cb_));
 
-  return CreatePlatformVideoDecoder(traits);
+  return platform_->CreateVideoDecoder(traits);
 }
 
 std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
-  return CreatePlatformCdmFactory(frame_interfaces);
+  return platform_->CreateCdmFactory(frame_interfaces);
 }
 
 }  // namespace media
