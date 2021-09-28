@@ -1118,6 +1118,9 @@ extern const char kOverrideSimilarLanguagesForHrefTranslateDescription[];
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
 
+extern const char kPageContentAnnotationsName[];
+extern const char kPageContentAnnotationsDescription[];
+
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 

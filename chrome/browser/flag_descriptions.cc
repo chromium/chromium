@@ -1982,6 +1982,10 @@ const char kOverviewButtonName[] = "Overview button at the status area";
 const char kOverviewButtonDescription[] =
     "If enabled, always show the overview button at the status area.";
 
+const char kPageContentAnnotationsName[] = "Page content annotations";
+const char kPageContentAnnotationsDescription[] =
+    "Enables page content to be annotated on-device.";
+
 const char kPageInfoAboutThisSiteName[] =
     "'About this site' section in page info";
 const char kPageInfoAboutThisSiteDescription[] =

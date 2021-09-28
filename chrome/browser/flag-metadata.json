@@ -4262,6 +4262,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "page-content-annotations",
+    "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "page-info-about-this-site",
     "owners": [ "eokoyomon", "dullweber", "olesiamarukhno" ],
     "expiry_milestone": 99

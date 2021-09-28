@@ -970,6 +970,18 @@ const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
      base::size(kMemoryVariationRemote), nullptr},
 };
 
+const FeatureEntry::FeatureParam kPageContentAnnotationsParams[] = {
+    {"extract_related_searches", "true"},
+    {"max_size_for_text_dump_in_bytes", "5120"},
+    {"models_to_execute",
+     "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"},
+    {"write_to_history_service", "true"},
+};
+const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
+    {"All Annotations and Persistence", kPageContentAnnotationsParams,
+     base::size(kPageContentAnnotationsParams), nullptr},
+};
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
 const FeatureEntry::FeatureParam kOmniboxDocumentProviderServerScoring[] = {
@@ -4660,6 +4672,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"memories-debug", flag_descriptions::kMemoriesDebugName,
      flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(history_clusters::kDebug)},
+
+    {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
+     flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         optimization_guide::features::kPageContentAnnotations,
+         kPageContentAnnotationsVariations,
+         "PageContentAnnotations")},
 
     {"search-prefetch", flag_descriptions::kEnableSearchPrefetchName,
      flag_descriptions::kEnableSearchPrefetchDescription, kOsAll,
