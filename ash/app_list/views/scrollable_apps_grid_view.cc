@@ -46,12 +46,14 @@ ScrollableAppsGridView::ScrollableAppsGridView(
     AppListViewDelegate* view_delegate,
     AppsGridViewFolderDelegate* folder_delegate,
     views::ScrollView* parent_scroll_view,
-    AppListFolderController* folder_controller)
+    AppListFolderController* folder_controller,
+    AppsGridViewFocusDelegate* focus_delegate)
     : AppsGridView(/*contents_view=*/nullptr,
                    a11y_announcer,
                    view_delegate,
                    folder_delegate,
-                   folder_controller),
+                   folder_controller,
+                   focus_delegate),
       scroll_view_(parent_scroll_view) {
   DCHECK(scroll_view_);
   view_structure_.Init(PagedViewStructure::Mode::kSinglePage);

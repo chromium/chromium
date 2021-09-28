@@ -51,6 +51,7 @@ class AppListItemList;
 class AppListItemView;
 class AppListModel;
 class AppListViewDelegate;
+class AppsGridViewFocusDelegate;
 class AppsGridViewFolderDelegate;
 class ContentsView;
 class PulsingBlockView;
@@ -99,7 +100,8 @@ class ASH_EXPORT AppsGridView : public views::View,
                AppListA11yAnnouncer* a11y_announcer,
                AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate,
-               AppListFolderController* folder_controller);
+               AppListFolderController* folder_controller,
+               AppsGridViewFocusDelegate* focus_delegate);
   AppsGridView(const AppsGridView&) = delete;
   AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
@@ -787,6 +789,9 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListA11yAnnouncer* const a11y_announcer_;
   AppListViewDelegate* const app_list_view_delegate_;
+
+  // May be nullptr if this apps grid doesn't have custom focus handling.
+  AppsGridViewFocusDelegate* const focus_delegate_;
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
   views::View* items_container_ = nullptr;

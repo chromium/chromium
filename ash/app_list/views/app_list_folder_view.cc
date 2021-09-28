@@ -619,7 +619,7 @@ void AppListFolderView::InitWithScrollableAppsGrid() {
   items_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_, view_delegate_, this, scroll_view_,
-          /*folder_controller=*/nullptr));
+          /*folder_controller=*/nullptr, /*focus_delegate=*/nullptr));
   items_grid_view_->SetMaxColumns(kMaxFolderColumns);
   items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                         kTileSpacingInFolder / 2);

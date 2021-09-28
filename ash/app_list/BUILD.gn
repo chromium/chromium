@@ -57,6 +57,7 @@ source_set("app_list") {
     "views/apps_container_view.h",
     "views/apps_grid_view.cc",
     "views/apps_grid_view.h",
+    "views/apps_grid_view_focus_delegate.h",
     "views/apps_grid_view_folder_delegate.h",
     "views/assistant/app_list_bubble_assistant_page.cc",
     "views/assistant/app_list_bubble_assistant_page.h",

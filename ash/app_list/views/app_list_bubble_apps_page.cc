@@ -28,7 +28,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view_utils.h"
 
 using views::BoxLayout;
 
@@ -107,7 +106,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer, view_delegate,
-          /*folder_delegate=*/nullptr, scroll_view_, folder_controller));
+          /*folder_delegate=*/nullptr, scroll_view_, folder_controller,
+          /*focus_delegate=*/this));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   scrollable_apps_grid_view_->SetMaxColumns(5);
@@ -130,9 +130,8 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
 }
 
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
-  DCHECK(!recent_apps_->children().empty());
-  views::View* first_recent = recent_apps_->children()[0];
-  DCHECK(views::IsViewClass<AppListItemView>(first_recent));
+  DCHECK_GT(recent_apps_->GetItemViewCount(), 0);
+  AppListItemView* first_recent = recent_apps_->GetItemViewAt(0);
   // Find the view one step in reverse from the first recent app.
   views::View* previous_view = GetFocusManager()->GetNextFocusableView(
       first_recent, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
@@ -152,6 +151,22 @@ void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
   AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
   DCHECK(item);
   item->RequestFocus();
+}
+
+bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
+  DVLOG(1) << __FUNCTION__;
+  const int recent_app_count = recent_apps_->GetItemViewCount();
+  // If there aren't any recent apps, don't change focus here. Fall back to the
+  // app grid's default behavior.
+  if (!recent_apps_->GetVisible() || recent_app_count <= 0)
+    return false;
+  // Attempt to focus the item at `column`, or the last item if there aren't
+  // enough items.
+  int index = std::min(column, recent_app_count - 1);
+  AppListItemView* item = recent_apps_->GetItemViewAt(index);
+  DCHECK(item);
+  item->RequestFocus();
+  return true;
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

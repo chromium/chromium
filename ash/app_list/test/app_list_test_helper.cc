@@ -21,7 +21,6 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -182,15 +181,6 @@ AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->assistant_page_;
-}
-
-std::vector<AppListItemView*> GetAppListItemViews(views::View* parent) {
-  std::vector<AppListItemView*> app_list_item_views;
-  for (auto* child : parent->children()) {
-    if (views::IsViewClass<AppListItemView>(child))
-      app_list_item_views.push_back(static_cast<AppListItemView*>(child));
-  }
-  return app_list_item_views;
 }
 
 }  // namespace ash

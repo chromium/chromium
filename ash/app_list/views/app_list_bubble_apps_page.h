@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
 
+#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +27,8 @@ class ScrollableAppsGridView;
 // - Grid of all apps
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsPage : public views::View,
-                                         public RecentAppsView::Delegate {
+                                         public RecentAppsView::Delegate,
+                                         public AppsGridViewFocusDelegate {
  public:
   METADATA_HEADER(AppListBubbleAppsPage);
 
@@ -45,6 +47,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
+
+  // AppsGridViewFocusDelegate:
+  bool MoveFocusUpFromAppsGrid(int column) override;
 
   views::ScrollView* scroll_view() { return scroll_view_; }
   ScrollableAppsGridView* scrollable_apps_grid_view() {

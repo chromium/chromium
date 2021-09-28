@@ -475,13 +475,12 @@ TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsSameColumnInAppsGrid) {
   AddAppItems(5);
   ShowAppList();
 
-  std::vector<AppListItemView*> recent_apps =
-      GetAppListItemViews(GetRecentAppsView());
   for (int column = 0; column < 5; column++) {
     // Pressing down arrow from an item in recent apps selects the app in the
     // same column in the apps grid.
-    recent_apps[column]->RequestFocus();
-    ASSERT_TRUE(recent_apps[column]->HasFocus());
+    AppListItemView* recent_app = GetRecentAppsView()->GetItemViewAt(column);
+    recent_app->RequestFocus();
+    ASSERT_TRUE(recent_app->HasFocus());
 
     PressAndReleaseKey(ui::VKEY_DOWN);
 
@@ -501,10 +500,9 @@ TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsLastColumnInAppsGrid) {
   ASSERT_EQ(2, apps_grid_view->view_model()->view_size());
 
   // Focus the 5th recent app.
-  std::vector<AppListItemView*> recent_apps =
-      GetAppListItemViews(GetRecentAppsView());
-  ASSERT_EQ(5u, recent_apps.size());
-  recent_apps[4]->RequestFocus();
+  auto* recent_apps_view = GetRecentAppsView();
+  ASSERT_EQ(5, recent_apps_view->GetItemViewCount());
+  recent_apps_view->GetItemViewAt(4)->RequestFocus();
 
   PressAndReleaseKey(ui::VKEY_DOWN);
 
@@ -522,14 +520,12 @@ TEST_F(AppListBubbleViewTest, UpArrowFromRecentsSelectsContinueTasks) {
   ContinueTaskView* last_continue_task =
       GetAppListTestHelper()->GetContinueSectionView()->GetTaskViewAtForTesting(
           3);
-  std::vector<AppListItemView*> recent_apps =
-      GetAppListItemViews(GetRecentAppsView());
-  ASSERT_EQ(5u, recent_apps.size());
+  auto* recent_apps_view = GetRecentAppsView();
 
   // Pressing 'up' from any column in recent apps moves to the last continue
   // task.
   for (int column = 0; column < 5; ++column) {
-    recent_apps[column]->RequestFocus();
+    recent_apps_view->GetItemViewAt(column)->RequestFocus();
 
     PressAndReleaseKey(ui::VKEY_UP);
 
@@ -537,6 +533,56 @@ TEST_F(AppListBubbleViewTest, UpArrowFromRecentsSelectsContinueTasks) {
         << GetFocusedViewName();
     EXPECT_TRUE(last_continue_task->HasFocus());
   }
+}
+
+TEST_F(AppListBubbleViewTest, UpArrowFromAppsGridSelectsSameColumnInRecents) {
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  for (int column = 0; column < 5; column++) {
+    // Pressing up arrow from an item in the apps grid selects the app in the
+    // same column in the recents list.
+    AppListItemView* app = GetAppsGridView()->GetItemViewAt(column);
+    app->RequestFocus();
+    ASSERT_TRUE(app->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_UP);
+
+    EXPECT_TRUE(GetRecentAppsView()->GetItemViewAt(column)->HasFocus())
+        << "Focus mismatch for column " << column;
+  }
+}
+
+TEST_F(AppListBubbleViewTest, UpArrowFromAppsGridSelectsLastColumnInRecents) {
+  // Add 4 columns of recents, but 5 columns of apps.
+  AddRecentApps(4);
+  AddAppItems(5);
+  ShowAppList();
+
+  // Select the app in the last column of the apps grid.
+  GetAppsGridView()->GetItemViewAt(4)->RequestFocus();
+
+  PressAndReleaseKey(ui::VKEY_UP);
+
+  // The last app in recents is selected.
+  EXPECT_TRUE(GetRecentAppsView()->GetItemViewAt(3)->HasFocus());
+}
+
+TEST_F(AppListBubbleViewTest,
+       UpArrowFromAppsGridWithNoRecentsSelectsContinueTasks) {
+  AddContinueSuggestionResult(4);
+  // Don't add recents.
+  AddAppItems(5);
+  ShowAppList();
+  GetAppsGridView()->GetItemViewAt(0)->RequestFocus();
+
+  PressAndReleaseKey(ui::VKEY_UP);
+
+  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
+  auto* focus_manager = GetAppsPage()->GetFocusManager();
+  EXPECT_TRUE(continue_section->Contains(focus_manager->GetFocusedView()))
+      << GetFocusedViewName();
 }
 
 TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToContinueTasks) {

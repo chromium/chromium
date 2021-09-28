@@ -6,14 +6,9 @@
 #define ASH_APP_LIST_TEST_APP_LIST_TEST_HELPER_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/test_app_list_client.h"
-
-namespace views {
-class View;
-}  // namespace views
 
 namespace ash {
 
@@ -23,7 +18,6 @@ class AppListBubbleSearchPage;
 class AppListBubbleView;
 class AppListControllerImpl;
 class AppListFolderView;
-class AppListItemView;
 class AppListView;
 class ContinueSectionView;
 class PagedAppsGridView;
@@ -115,9 +109,6 @@ class AppListTestHelper {
   AppListControllerImpl* app_list_controller_ = nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
 };
-
-// Returns all children of `parent` that are of type AppListItemView.
-std::vector<AppListItemView*> GetAppListItemViews(views::View* parent);
 
 }  // namespace ash
 

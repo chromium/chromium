@@ -42,6 +42,12 @@ class ASH_EXPORT RecentAppsView : public views::View {
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
 
+  // Returns the number of AppListItemView children.
+  int GetItemViewCount() const;
+
+  // Returns an AppListItemView child. `index` must be valid.
+  AppListItemView* GetItemViewAt(int index) const;
+
   // See AppsGridView::DisableFocusForShowingActiveFolder().
   void DisableFocusForShowingActiveFolder(bool disabled);
 
@@ -64,6 +70,10 @@ class ASH_EXPORT RecentAppsView : public views::View {
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;
   std::unique_ptr<GridDelegateImpl> grid_delegate_;
+
+  // The recent app items. Stored here because this view has child views for
+  // spacing that are not AppListItemViews.
+  std::vector<AppListItemView*> item_views_;
 };
 
 }  // namespace ash

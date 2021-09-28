@@ -177,6 +177,7 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
+      item_views_.push_back(item_view);
 
       // Add a empty-space view used to evenly distribute app list item views
       // within the available space.
@@ -195,6 +196,16 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
 }
 
 RecentAppsView::~RecentAppsView() = default;
+
+int RecentAppsView::GetItemViewCount() const {
+  return item_views_.size();
+}
+
+AppListItemView* RecentAppsView::GetItemViewAt(int index) const {
+  if (static_cast<int>(item_views_.size()) <= index)
+    return nullptr;
+  return item_views_[index];
+}
 
 void RecentAppsView::DisableFocusForShowingActiveFolder(bool disabled) {
   for (views::View* child : children())

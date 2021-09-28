@@ -25,6 +25,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/pulsing_block_view.h"
@@ -275,12 +276,14 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppListA11yAnnouncer* a11y_announcer,
                            AppListViewDelegate* app_list_view_delegate,
                            AppsGridViewFolderDelegate* folder_delegate,
-                           AppListFolderController* folder_controller)
+                           AppListFolderController* folder_controller,
+                           AppsGridViewFocusDelegate* focus_delegate)
     : folder_delegate_(folder_delegate),
       folder_controller_(folder_controller),
       contents_view_(contents_view),
       a11y_announcer_(a11y_announcer),
-      app_list_view_delegate_(app_list_view_delegate) {
+      app_list_view_delegate_(app_list_view_delegate),
+      focus_delegate_(focus_delegate) {
   DCHECK(a11y_announcer_);
   DCHECK(app_list_view_delegate_);
   // Top-level grids must have a folder controller.
@@ -1502,6 +1505,12 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
 
   if (target_page < 0) {
     // Move focus up outside the apps grid if target page is negative.
+    if (focus_delegate_ &&
+        focus_delegate_->MoveFocusUpFromAppsGrid(target_col)) {
+      // The delegate handled the focus move.
+      return true;
+    }
+    // Move focus backwards from the first item in the grid.
     views::View* v = GetFocusManager()->GetNextFocusableView(
         view_model_.view_at(0), /*starting_widget=*/nullptr, /*reverse=*/true,
         /*dont_loop=*/false);
