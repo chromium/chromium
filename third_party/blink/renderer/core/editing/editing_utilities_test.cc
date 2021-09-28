@@ -267,7 +267,7 @@ TEST_F(EditingUtilitiesTest,
       << "No adjustment because both position are in same enclosing element";
 }
 
-// http://crbug.com/1249655
+// http://crbug.com/1249655 and http://crbug.com/1252377
 TEST_F(EditingUtilitiesTest,
        PositionRespectingEditingBoundaryWithPointerEventNone) {
   LoadAhem();
@@ -286,14 +286,18 @@ TEST_F(EditingUtilitiesTest,
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     ASSERT_EQ(PositionWithAffinity(Position(text_abc, 1)),
               hit_result.GetPosition());
+    // Simulates drag from "abc"@2 to "abc@1"
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_abc, 1)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
   } else {
     ASSERT_EQ(PositionWithAffinity(Position::BeforeNode(target)),
               hit_result.GetPosition());
-  }
-
   // Simulates drag from "abc"@2 to "abc@1"
-  EXPECT_EQ(PositionWithAffinity(), PositionRespectingEditingBoundary(
-                                        Position(text_abc, 2), hit_result));
+    EXPECT_EQ(
+        PositionWithAffinity(Position::BeforeNode(target)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
+  }
 }
 
 TEST_F(EditingUtilitiesTest, RepeatString) {

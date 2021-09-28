@@ -1340,6 +1340,14 @@ HTMLSpanElement* CreateTabSpanElement(Document& document) {
   return CreateTabSpanElement(document, nullptr);
 }
 
+static bool IsInPlaceholder(const TextControlElement& text_control,
+                            const Position& position) {
+  const auto* const placeholder_element = text_control.PlaceholderElement();
+  if (!placeholder_element)
+    return false;
+  return placeholder_element->contains(position.ComputeContainerNode());
+}
+
 // Returns user-select:contain boundary element of specified position.
 // Because of we've not yet implemented "user-select:contain", we consider
 // following elements having "user-select:contain"
@@ -1350,6 +1358,8 @@ HTMLSpanElement* CreateTabSpanElement(Document& document) {
 // See http:/crbug.com/658129
 static Element* UserSelectContainBoundaryOf(const Position& position) {
   if (auto* text_control = EnclosingTextControl(position)) {
+    if (IsInPlaceholder(*text_control, position))
+      return nullptr;
     // for <input readonly>. See http://crbug.com/185089
     return text_control->InnerEditorElement();
   }
