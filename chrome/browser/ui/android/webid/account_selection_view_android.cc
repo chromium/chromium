@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/android/webid/jni_headers/AccountSelectionBridge_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/Account_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/ClientIdMetadata_jni.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -40,6 +41,14 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
       url::GURLAndroid::FromNativeGURL(env, account.picture),
       url::GURLAndroid::FromNativeGURL(env, idp_url),
       account.login_state == Account::LoginState::kSignIn);
+}
+
+ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
+    JNIEnv* env,
+    const content::ClientIdData& data) {
+  return Java_ClientIdMetadata_Constructor(
+      env, url::GURLAndroid::FromNativeGURL(env, data.terms_of_service_url),
+      url::GURLAndroid::FromNativeGURL(env, data.privacy_policy_url));
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
@@ -97,6 +106,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 void AccountSelectionViewAndroid::Show(const GURL& rp_url,
                                        const GURL& idp_url,
                                        base::span<const Account> accounts,
+                                       const content::ClientIdData& client_data,
                                        Account::SignInMode sign_in_mode) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
@@ -111,9 +121,12 @@ void AccountSelectionViewAndroid::Show(const GURL& rp_url,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
       ConvertToJavaAccounts(env, accounts, idp_url);
+  ScopedJavaLocalRef<jobject> client_id_metadata_obj =
+      ConvertToJavaClientIdMetadata(env, client_data);
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_url.spec()),
-      accounts_obj, sign_in_mode == Account::SignInMode::kAuto);
+      accounts_obj, client_id_metadata_obj,
+      sign_in_mode == Account::SignInMode::kAuto);
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(

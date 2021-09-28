@@ -146,6 +146,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   FederatedIdentitySharingPermissionContextDelegate*
       sharing_permission_delegate_ = nullptr;
 
+  IdpNetworkRequestManager::ClientIdMetadata client_id_metadata_;
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
   std::string account_id_;

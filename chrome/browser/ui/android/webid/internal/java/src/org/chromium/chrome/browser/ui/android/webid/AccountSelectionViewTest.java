@@ -14,6 +14,8 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import static java.util.Arrays.asList;
 
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -236,10 +238,17 @@ public class AccountSelectionViewTest {
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         assertNotNull(getAccounts().getChildAt(0));
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
-        assertEquals("Incorrect data sharing consent text",
-                mActivity.getString(
-                        R.string.account_selection_data_sharing_consent, "www.example.org"),
-                consent.getText());
+        String sharing_consent_text = mActivity.getString(
+                R.string.account_selection_data_sharing_consent, "www.example.org");
+        sharing_consent_text = sharing_consent_text.replaceAll("<[^>]*>", "");
+        // We use toString() here because otherwise getText() returns a
+        // Spanned, which is not equal to the string we get from the resources.
+        assertEquals("Incorrect data sharing consent text", sharing_consent_text,
+                consent.getText().toString());
+        Spanned spannedString = (Spanned) consent.getText();
+        ClickableSpan[] spans =
+                spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+        assertEquals("Expected two clickable links", 2, spans.length);
     }
 
     private RecyclerView getAccounts() {
@@ -288,6 +297,8 @@ public class AccountSelectionViewTest {
         return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
                 new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                         .with(DataSharingConsentProperties.PROVIDER_URL, provider)
+                        .with(DataSharingConsentProperties.TERMS_OF_SERVICE_URL, "")
+                        .with(DataSharingConsentProperties.PRIVACY_POLICY_URL, "")
                         .build());
     }
 }

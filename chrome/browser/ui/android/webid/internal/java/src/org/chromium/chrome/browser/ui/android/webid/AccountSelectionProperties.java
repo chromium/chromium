@@ -93,8 +93,13 @@ class AccountSelectionProperties {
     static class DataSharingConsentProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> PROVIDER_URL =
                 new PropertyModel.ReadableObjectPropertyKey<>("provider_url");
+        static final PropertyModel.ReadableObjectPropertyKey<String> TERMS_OF_SERVICE_URL =
+                new PropertyModel.ReadableObjectPropertyKey<>("terms_of_service_url");
+        static final PropertyModel.ReadableObjectPropertyKey<String> PRIVACY_POLICY_URL =
+                new PropertyModel.ReadableObjectPropertyKey<>("privacy_policy_url");
 
-        static final PropertyKey[] ALL_KEYS = {PROVIDER_URL};
+        static final PropertyKey[] ALL_KEYS = {
+                PROVIDER_URL, TERMS_OF_SERVICE_URL, PRIVACY_POLICY_URL};
 
         private DataSharingConsentProperties() {}
     }

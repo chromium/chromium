@@ -53,6 +53,7 @@ class IdentityDialogController
       content::WebContents* idp_web_contents,
       const GURL& idp_url,
       AccountList accounts,
+      const content::ClientIdData& client_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected) override;
 

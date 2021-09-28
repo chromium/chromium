@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -120,7 +121,7 @@ class AccountSelectionMediator {
         }
     }
 
-    void addButtons(List<Account> accounts, boolean isAutoSignIn) {
+    void addButtons(List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
         if (accounts.size() != 1) return;
 
         Account account = accounts.get(0);
@@ -138,19 +139,20 @@ class AccountSelectionMediator {
         if (!account.isSignIn()) {
             String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
                     account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-            mSheetItems.add(new ListItem(
-                    ItemType.DATA_SHARING_CONSENT, createDataSharingConsentItem(provider_url)));
+            mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
+                    createDataSharingConsentItem(provider_url, metadata)));
         }
         // Shows the continue button for both sign-up and non auto-sign-in.
         final PropertyModel continueBtnModel = createContinueBtnItem(account);
         mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
     }
 
-    void showAccounts(String url, List<Account> accounts, boolean isAutoSignIn) {
+    void showAccounts(
+            String url, List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
         mSheetItems.clear();
         addHeader(url, accounts);
         addAccounts(accounts);
-        addButtons(accounts, isAutoSignIn);
+        addButtons(accounts, metadata, isAutoSignIn);
 
         showContent();
     }
@@ -250,9 +252,13 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createDataSharingConsentItem(String provider) {
+    private PropertyModel createDataSharingConsentItem(String provider, ClientIdMetadata metadata) {
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROVIDER_URL, provider)
+                .with(DataSharingConsentProperties.TERMS_OF_SERVICE_URL,
+                        metadata.getTermsOfServiceUrl().getValidSpecOrEmpty())
+                .with(DataSharingConsentProperties.PRIVACY_POLICY_URL,
+                        metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty())
                 .build();
     }
 }

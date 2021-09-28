@@ -239,6 +239,9 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
 void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientIdMetadata data) {
+  // TODO(cbiesinger): check status argument to make sure fetching/parsing
+  // succeeded?
+  client_id_metadata_ = data;
   network_manager_->SendAccountsRequest(
       endpoints_.accounts,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
@@ -418,8 +421,12 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // https://crbug.com/1236678.
       bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
                              accounts[0].login_state == LoginState::kSignIn;
+      ClientIdData data{endpoints_.client_id_metadata.Resolve(
+                            client_id_metadata_.terms_of_service_url),
+                        endpoints_.client_id_metadata.Resolve(
+                            client_id_metadata_.privacy_policy_url)};
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, idp_web_contents_.get(), provider_, accounts,
+          rp_web_contents, idp_web_contents_.get(), provider_, accounts, data,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()));

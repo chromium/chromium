@@ -16,6 +16,7 @@ android_library("public_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionComponent.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
   ]
 }
 
@@ -23,5 +24,6 @@ generate_jni("jni_headers") {
   sources = [
     "internal/java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
   ]
 }

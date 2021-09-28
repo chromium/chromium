@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,9 +54,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param isAutoSignIn represents whether this is an auto sign in flow.
      */
     @CalledByNative
-    private void showAccounts(String url, Account[] accounts, boolean isAutoSignIn) {
+    private void showAccounts(
+            String url, Account[] accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(url, Arrays.asList(accounts), isAutoSignIn);
+        mAccountSelectionComponent.showAccounts(
+                url, Arrays.asList(accounts), metadata, isAutoSignIn);
     }
 
     @Override

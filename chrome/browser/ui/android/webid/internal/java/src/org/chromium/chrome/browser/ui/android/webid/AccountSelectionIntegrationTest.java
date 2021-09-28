@@ -8,6 +8,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -17,11 +20,14 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.annotation.SuppressLint;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -36,9 +42,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -56,16 +66,39 @@ import java.util.Arrays;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest {
+    private static class FakeTabCreator extends MockTabCreator {
+        FakeTabCreator() {
+            super(false, null);
+        }
+
+        @Override
+        public Tab launchUrl(String url, @TabLaunchType int type) {
+            mLastLaunchedUrl = url;
+            return null;
+        }
+
+        String mLastLaunchedUrl;
+    };
+
+    private static final FakeTabCreator sTabCreator = new FakeTabCreator();
+
     private static final String EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL TEST_URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL TEST_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
+    private static final GURL TEST_URL_TERMS_OF_SERVICE =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    private static final GURL TEST_URL_PRIVACY_POLICY =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1, true);
     private static final Account BOB =
             new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2, false);
+
+    private static final ClientIdMetadata CLIENT_ID_METADATA =
+            new ClientIdMetadata(TEST_URL_TERMS_OF_SERVICE, TEST_URL_PRIVACY_POLICY);
 
     private AccountSelectionComponent mAccountSelection;
 
@@ -88,13 +121,15 @@ public class AccountSelectionIntegrationTest {
             mAccountSelection.initialize(
                     mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
         });
+        AccountSelectionViewBinder.setTabCreator(sTabCreator);
     }
 
     @Test
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB), false);
+            mAccountSelection.showAccounts(
+                    EXAMPLE_URL, Arrays.asList(ANA, BOB), CLIENT_ID_METADATA, false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -102,6 +137,37 @@ public class AccountSelectionIntegrationTest {
 
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onAccountSelected(any());
+    }
+
+    @Test
+    @MediumTest
+    public void testClickConsentLinks() {
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showAccounts(
+                    EXAMPLE_URL, Arrays.asList(BOB), CLIENT_ID_METADATA, false);
+        });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+        TextView consent = contentView.findViewById(R.id.user_data_sharing_consent);
+        if (consent == null) {
+            throw new NoMatchingViewException.Builder()
+                    .includeViewHierarchy(true)
+                    .withRootView(contentView)
+                    .build();
+        }
+        assertTrue(consent.getText() instanceof Spanned);
+        Spanned spannedString = (Spanned) consent.getText();
+        ClickableSpan[] spans =
+                spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+        assertEquals("Expected two clickable links", 2, spans.length);
+        spans[0].onClick(null);
+        assertEquals("Should have called launchUrl", sTabCreator.mLastLaunchedUrl,
+                TEST_URL_PRIVACY_POLICY.getSpec());
+        spans[1].onClick(null);
+        assertEquals("Should have called launchUrl", sTabCreator.mLastLaunchedUrl,
+                TEST_URL_TERMS_OF_SERVICE.getSpec());
     }
 
     @Test
@@ -121,7 +187,8 @@ public class AccountSelectionIntegrationTest {
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB), false);
+            mAccountSelection.showAccounts(
+                    EXAMPLE_URL, Arrays.asList(ANA, BOB), CLIENT_ID_METADATA, false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onAccountSelected(any());

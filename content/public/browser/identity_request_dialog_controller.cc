@@ -38,6 +38,11 @@ IdentityRequestAccount::IdentityRequestAccount(const IdentityRequestAccount&) =
     default;
 IdentityRequestAccount::~IdentityRequestAccount() = default;
 
+ClientIdData::ClientIdData(const GURL& terms_of_service_url,
+                           const GURL& privacy_policy_url)
+    : terms_of_service_url{terms_of_service_url},
+      privacy_policy_url(privacy_policy_url) {}
+
 void IdentityRequestDialogController::ShowInitialPermissionDialog(
     WebContents* rp_web_contents,
     const GURL& idp_url,

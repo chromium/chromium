@@ -64,6 +64,13 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   LoginState login_state;
 };
 
+struct ClientIdData {
+  ClientIdData(const GURL& tos_url, const GURL& privacy_policy_url);
+
+  GURL terms_of_service_url;
+  GURL privacy_policy_url;
+};
+
 // IdentityRequestDialogController is in interface for control of the UI
 // surfaces that are displayed to intermediate the exchange of ID tokens.
 class CONTENT_EXPORT IdentityRequestDialogController {
@@ -121,6 +128,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       content::WebContents* idp_web_contents,
       const GURL& idp_signin_url,
       AccountList accounts,
+      const ClientIdData& client_id_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected) {}
 
