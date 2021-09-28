@@ -3362,6 +3362,7 @@ enum WebFeature {
   kConditionalFocus = 4052,
   kV8Navigator_CreateAdRequest_Method = 4053,
   kV8Navigator_FinalizeAd_Method = 4054,
+  kRegionCapture = 4055,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

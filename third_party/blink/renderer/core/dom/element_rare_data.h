@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_H_
 
 #include <memory>
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
@@ -162,6 +163,15 @@ class ElementRareData final : public NodeRareData {
   bool HasUndoStack() const { return has_undo_stack_; }
   void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
 
+  base::UnguessableToken RegionCaptureCropId() const {
+    return region_capture_token_;
+  }
+  void SetRegionCaptureCropId(base::UnguessableToken value) {
+    DCHECK(!value.is_empty());
+    DCHECK(region_capture_token_.is_empty());
+    region_capture_token_ = value;
+  }
+
   AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
     if (!accessible_node_) {
@@ -265,6 +275,7 @@ class ElementRareData final : public NodeRareData {
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;
   bool has_undo_stack_ = false;
+  base::UnguessableToken region_capture_token_;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

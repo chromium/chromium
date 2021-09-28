@@ -34692,6 +34692,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4052" label="ConditionalFocus"/>
   <int value="4053" label="V8Navigator_CreateAdRequest_Method"/>
   <int value="4054" label="V8Navigator_FinalizeAd_Method"/>
+  <int value="4055" label="RegionCapture"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

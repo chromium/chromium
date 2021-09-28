@@ -27,6 +27,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -146,6 +147,8 @@ enum class NamedItemType {
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
+
+typedef base::UnguessableToken RegionCaptureCropId;
 
 class CORE_EXPORT Element : public ContainerNode, public Animatable {
   DEFINE_WRAPPERTYPEINFO();
@@ -552,6 +555,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetNeedsAnimationStyleRecalc();
 
   void SetNeedsCompositingUpdate();
+
+  // Generates a unique crop ID and returns the new value. Not all element
+  // types have a region capture crop id, however using it here allows access
+  // to the element rare data struct. Currently, once an element is marked for
+  // region capture it cannot be unmarked, and repeated calls to this API will
+  // return the same token.
+  RegionCaptureCropId MarkWithRegionCaptureCropId();
+
+  // Returns a null token if not marked for capture.
+  RegionCaptureCropId RegionCaptureCropId() const;
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 

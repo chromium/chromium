@@ -1082,6 +1082,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   bool HasRareData() const { return GetFlag(kHasRareDataFlag); }
 
+  // |RareData| cannot be replaced or removed once assigned.
   NodeRareData* RareData() const {
     SECURITY_DCHECK(HasRareData());
     return DataAsNodeRareData();
@@ -1131,6 +1132,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   void TrackForDebugging();
 
+  // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();
 
   const HeapVector<Member<MutationObserverRegistration>>*

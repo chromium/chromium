@@ -1854,6 +1854,10 @@
       status: "experimental",
     },
     {
+      name: "RegionCapture",
+      status: "experimental",
+    },
+    {
       name: "RemotePlayback",
       status: "stable",
     },

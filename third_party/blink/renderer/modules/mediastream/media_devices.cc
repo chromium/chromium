@@ -30,6 +30,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -328,6 +331,32 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
 
   GetDispatcherHost(window->GetFrame())
       ->SetCaptureHandleConfig(std::move(config_ptr));
+}
+
+ScriptPromise MediaDevices::produceCropId(
+    ScriptState* script_state,
+    V8UnionHTMLDivElementOrHTMLIFrameElement* element_union,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current frame is detached.");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  auto* element =
+      element_union->IsHTMLDivElement()
+          ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
+          : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
+  const base::UnguessableToken token = element->MarkWithRegionCaptureCropId();
+  DCHECK(!token.is_empty());
+
+  // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
+  const std::string stringified_token = token.ToString();
+  resolver->Resolve(
+      WTF::String(stringified_token.c_str(), stringified_token.length()));
+  return promise;
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
