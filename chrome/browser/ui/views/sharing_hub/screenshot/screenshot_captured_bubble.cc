@@ -30,6 +30,11 @@
 
 namespace {
 
+// The Select->Copy/Save flow can be experimented with, but the edit piece will
+// be in development for some time. This flag can be used to enable the edit
+// button during development, and may later turn into a feature flag.
+constexpr bool kShowEditButton = false;
+
 // Rendered image size, pixels.
 constexpr int kImageWidthPx = 336;
 constexpr int kImageHeightPx = 252;
@@ -147,21 +152,23 @@ void ScreenshotCapturedBubble::Init() {
   // Padding
   AddSmallPaddingRow(layout);
 
-  // Controls row: edit, share, and download button.
+  // Controls row: optional edit button and download button.
   views::ColumnSet* control_columns =
       layout->AddColumnSet(kDownloadRowColumnSetId);
   // Column for edit button.
-  control_columns->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
+  if (kShowEditButton) {
+    control_columns->AddColumn(
+        views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
+        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
 
-  int kPaddingEditShareButtonPx =
-      kImageWidthPx - edit_button->CalculatePreferredSize().width() -
-      download_button->CalculatePreferredSize().width();
-  // Spacing between the edit and share buttons.
-  control_columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                    kPaddingEditShareButtonPx);
+    int kPaddingEditDownloadButtonPx =
+        kImageWidthPx - edit_button->CalculatePreferredSize().width() -
+        download_button->CalculatePreferredSize().width();
+    // Spacing between the edit and download buttons.
+    control_columns->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                      kPaddingEditDownloadButtonPx);
+  }
 
   // Column for download button
   control_columns->AddColumn(
@@ -169,7 +176,9 @@ void ScreenshotCapturedBubble::Init() {
       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
 
-  edit_button_ = layout->AddView(std::move(edit_button));
+  if (kShowEditButton) {
+    edit_button_ = layout->AddView(std::move(edit_button));
+  }
   download_button_ = layout->AddView(std::move(download_button));
   // End controls row
 }
