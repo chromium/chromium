@@ -12,9 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
@@ -32,36 +32,26 @@ class ImageSkia;
 
 namespace web_app {
 
-struct ScopedShortcutOverrideForTesting {
- public:
-  ScopedShortcutOverrideForTesting();
-  ~ScopedShortcutOverrideForTesting();
-
+struct ShortcutOverrideForTesting {
+  ShortcutOverrideForTesting(const ShortcutOverrideForTesting& other);
+  ShortcutOverrideForTesting();
+  ~ShortcutOverrideForTesting();
 #if defined(OS_WIN)
-  base::ScopedTempDir desktop;
-  base::ScopedTempDir application_menu;
-  base::ScopedTempDir quick_launch;
-  base::ScopedTempDir startup;
+  base::FilePath desktop;
+  base::FilePath application_menu;
+  base::FilePath quick_launch;
+  base::FilePath startup;
 #elif defined(OS_MAC)
-  base::ScopedTempDir chrome_apps_folder;
+  base::FilePath chrome_apps_folder;
 #elif defined(OS_LINUX)
-  base::ScopedTempDir desktop;
+  base::FilePath desktop;
+#else
 #endif
 };
 
-// Returns an active shortcut override for testing, if there is one.
-ScopedShortcutOverrideForTesting* GetShortcutOverrideForTesting();
-
-// Overrides applicable directories for shortcut integration and returns an
-// object that:
-// 1) Contains the directories.
-// 2) Keeps the override active until the object is destroyed.
-// 3) DCHECK-fails on destruction if any of the shortcut directories / os hooks
-//    are NOT cleanup by the test. This ensures that trybots don't have old test
-//    artifacts on them that can make future tests flaky.
-// All installs that occur during the lifetime of the
-// ScopedShortcutOverrideForTesting MUST be uninstalled before it is destroyed.
-std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting();
+absl::optional<ShortcutOverrideForTesting>& GetShortcutOverrideForTesting();
+void SetShortcutOverrideForTesting(
+    absl::optional<ShortcutOverrideForTesting> shortcut_override_for_testing);
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {

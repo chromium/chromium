@@ -130,10 +130,9 @@ class WebAppShortcutCreatorTest : public testing::Test {
   void SetUp() override {
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    shortcut_override_ = OverrideShortcutsForTesting();
-    destination_dir_ = shortcut_override_->chrome_apps_folder.GetPath();
-
+    EXPECT_TRUE(temp_destination_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
+    destination_dir_ = temp_destination_dir_.GetPath();
     user_data_dir_ = temp_user_data_dir_.GetPath();
     // Recreate the directory structure as it would be created for the
     // ShortcutInfo created in the above GetShortcutInfo.
@@ -150,6 +149,10 @@ class WebAppShortcutCreatorTest : public testing::Test {
     user_data_dir_ = base::MakeAbsoluteFilePath(user_data_dir_);
     app_data_dir_ = base::MakeAbsoluteFilePath(app_data_dir_);
 
+    ShortcutOverrideForTesting shortcut_override;
+    shortcut_override.chrome_apps_folder = destination_dir_;
+    web_app::SetShortcutOverrideForTesting(shortcut_override);
+
     info_ = GetShortcutInfo();
     fallback_shim_base_name_ =
         base::FilePath(info_->profile_path.BaseName().value() + " " +
@@ -164,19 +167,14 @@ class WebAppShortcutCreatorTest : public testing::Test {
 
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
-    // To prevent OS hooks from sticking around on bots, destroying the shortcut
-    // override DCHECK fails if the directories are not empty. To bypass this in
-    // this unittest, we manually delete it.
-    // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    if (shortcut_override_->chrome_apps_folder.IsValid())
-      EXPECT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
-    shortcut_override_.reset();
+    web_app::SetShortcutOverrideForTesting(absl::nullopt);
     testing::Test::TearDown();
   }
 
   // Needed by DCHECK_CURRENTLY_ON in ShortcutInfo destructor.
   content::BrowserTaskEnvironment task_environment_;
 
+  base::ScopedTempDir temp_destination_dir_;
   base::ScopedTempDir temp_user_data_dir_;
   base::FilePath app_data_dir_;
   base::FilePath destination_dir_;
@@ -187,8 +185,6 @@ class WebAppShortcutCreatorTest : public testing::Test {
   base::FilePath fallback_shim_base_name_;
   base::FilePath shim_base_name_;
   base::FilePath shim_path_;
-
-  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 };
 
 }  // namespace
@@ -648,7 +644,11 @@ TEST_F(WebAppShortcutCreatorTest, RunShortcut) {
 }
 
 TEST_F(WebAppShortcutCreatorTest, CreateFailure) {
-  ASSERT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
+  base::FilePath non_existent_path =
+      destination_dir_.Append("not-existent").Append("name.app");
+  ShortcutOverrideForTesting shortcut_override;
+  shortcut_override.chrome_apps_folder = non_existent_path;
+  web_app::SetShortcutOverrideForTesting(shortcut_override);
 
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());
