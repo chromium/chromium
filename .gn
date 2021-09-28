@@ -68,7 +68,16 @@ no_check_targets = [
   "//extensions:chrome_extensions_browsertests",  # 26 errors
   "//extensions:chrome_extensions_interactive_uitests",  # 2 errors
 
-  "//headless:*",  # 107 errors
+  "//headless:headless_browsertests",  # 47 errors
+  "//headless:headless_browsertests__exec",
+  "//headless:headless_example",  # 3 errors
+  "//headless:headless_non_renderer",  # 9 errors
+  "//headless:headless_renderer",  # 13 errors
+  "//headless:headless_shared_sources",  # 4 errors
+  "//headless:headless_shell_browser_lib",  # 10 errors
+  "//headless:headless_shell_lib",  # 10 errors
+  "//headless:headless_unittests",  # 6 errors
+  "//headless:headless_unittests__exec",
 
   "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
 
