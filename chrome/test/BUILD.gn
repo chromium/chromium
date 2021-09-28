@@ -4978,6 +4978,8 @@ test("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "../browser/apps/app_discovery_service/remote_url_search/remote_url_client_unittest.cc",
+      "../browser/apps/app_discovery_service/remote_url_search/remote_url_index_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
