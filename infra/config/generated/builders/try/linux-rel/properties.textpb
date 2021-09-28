@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "linux-rel-compilator",
+    "compilator_watcher_git_revision": "ecaab12e4a31e76701a25668cb71ae964189a341"
+  },
   "$build/code_coverage": {
     "coverage_test_types": [
       "unit",
@@ -8,7 +12,6 @@
   },
   "$build/goma": {
     "enable_ats": true,
-    "jobs": 150,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
@@ -27,5 +30,5 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium_trybot"
+  "recipe": "chromium/orchestrator"
 }
