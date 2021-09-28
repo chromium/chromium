@@ -23,6 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -44,7 +45,7 @@ public class ChipView extends LinearLayout {
     private static final int MAX_LINES = 2;
 
     private final RippleBackgroundHelper mRippleBackgroundHelper;
-    private final TextView mPrimaryText;
+    private final AppCompatTextView mPrimaryText;
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
@@ -56,7 +57,7 @@ public class ChipView extends LinearLayout {
     private final int mCornerRadius;
 
     private ViewGroup mEndIconWrapper;
-    private TextView mSecondaryText;
+    private AppCompatTextView mSecondaryText;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -160,7 +161,8 @@ public class ChipView extends LinearLayout {
         // remaining 8dp.
         ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, endPadding, 0);
 
-        mPrimaryText = new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+        mPrimaryText =
+                new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
 
         // If false fall back to single line defined in XML styles.
@@ -320,8 +322,8 @@ public class ChipView extends LinearLayout {
      */
     public TextView getSecondaryTextView() {
         if (mSecondaryText == null) {
-            mSecondaryText =
-                    new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+            mSecondaryText = new AppCompatTextView(
+                    new ContextThemeWrapper(getContext(), R.style.ChipTextView));
             ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.
