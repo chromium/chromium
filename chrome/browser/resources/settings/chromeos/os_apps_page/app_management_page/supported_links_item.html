@@ -40,3 +40,11 @@
       on-close="onDialogClose_">
   </app-management-supported-links-dialog>
 </template>
+<template is="dom-if" if="[[showOverlappingAppsDialog_]]" restamp>
+  <app-management-supported-links-overlapping-apps-dialog
+      id="overlap-dialog"
+      app="[[app]]"
+      on-close="onOverlappingDialogClosed_"
+      overlapping-app-ids="[[overlappingAppIds_]]">
+  </app-management-supported-links-overlapping-apps-dialog>
+</template>

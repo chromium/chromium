@@ -71,6 +71,22 @@ absl::optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
   return FindPreferredAppForIntent(intent);
 }
 
+base::flat_set<std::string> PreferredAppsList::FindPreferredAppsForFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& intent_filters) {
+  base::flat_set<std::string> app_ids;
+
+  for (auto& intent_filter : intent_filters) {
+    for (auto& entry : preferred_apps_) {
+      if (apps_util::FiltersHaveOverlap(intent_filter, entry->intent_filter)) {
+        app_ids.insert(entry->app_id);
+        break;
+      }
+    }
+  }
+
+  return app_ids;
+}
+
 apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentFilterPtr& intent_filter) {

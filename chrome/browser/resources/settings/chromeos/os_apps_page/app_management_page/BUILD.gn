@@ -35,6 +35,7 @@ js_type_check("closure_compile_module") {
     ":store_client",
     ":supported_links_dialog",
     ":supported_links_item",
+    ":supported_links_overlapping_apps_dialog",
     ":toggle_row",
     ":types",
     ":uninstall_button",
@@ -136,7 +137,10 @@ js_library("dom_switch") {
 }
 
 js_library("fake_page_handler") {
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
+  deps = [
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:promise_resolver.m",
+  ]
 }
 
 js_library("icons") {
@@ -241,6 +245,15 @@ js_library("store_client") {
   ]
 }
 
+js_library("supported_links_overlapping_apps_dialog") {
+  deps = [
+    ":store_client",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("supported_links_dialog") {
   deps = [
     ":browser_proxy",
@@ -256,6 +269,7 @@ js_library("supported_links_item") {
     ":constants",
     ":store_client",
     ":supported_links_dialog",
+    ":supported_links_overlapping_apps_dialog",
     ":types",
     ":util",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
@@ -314,6 +328,7 @@ html_to_js("web_components") {
     "resize_lock_item.js",
     "shared_style.js",
     "shared_vars.js",
+    "supported_links_overlapping_apps_dialog.js",
     "supported_links_dialog.js",
     "supported_links_item.js",
     "toggle_row.js",

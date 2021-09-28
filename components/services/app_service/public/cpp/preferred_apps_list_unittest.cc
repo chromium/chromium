@@ -704,3 +704,104 @@ TEST_F(PreferredAppListTest, ApplyBulkUpdateRemoveMatchesExactly) {
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_ext));
 }
+
+// Test that FindPreferredAppsForFilters() returns an empty flat_set if there
+// are no matches.
+TEST_F(PreferredAppListTest, FindNoPreferredApps) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+
+  GURL filter_url_2 = GURL("https://www.google.com.au/");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  preferred_apps_.AddPreferredApp(kAppId2, intent_filter_2);
+
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+
+  GURL test_url = GURL("https://www.example.com/google");
+  auto test_intent_filter = apps_util::CreateIntentFilterForUrlScope(test_url);
+
+  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+  intent_filters.push_back(std::move(test_intent_filter));
+
+  auto preferred_apps =
+      preferred_apps_.FindPreferredAppsForFilters(intent_filters);
+
+  EXPECT_TRUE(preferred_apps.empty());
+}
+
+// Tests that FindPreferredAppsForFilters() returns an app id if a match is
+// found.
+TEST_F(PreferredAppListTest, FindOnePreferredApps) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+
+  GURL filter_url_2 = GURL("https://www.google.com.au/");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  preferred_apps_.AddPreferredApp(kAppId2, intent_filter_2);
+
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+
+  GURL test_url = GURL("https://www.example.com/google");
+  auto test_intent_filter = apps_util::CreateIntentFilterForUrlScope(test_url);
+
+  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+  intent_filters.push_back(std::move(intent_filter_2));
+  intent_filters.push_back(std::move(test_intent_filter));
+
+  auto preferred_apps =
+      preferred_apps_.FindPreferredAppsForFilters(intent_filters);
+
+  EXPECT_EQ(preferred_apps.size(), 1u);
+  EXPECT_TRUE(preferred_apps.contains(kAppId2));
+}
+
+// Tests that FindPreferredAppsForFilters() returns multiple app ids if matches
+// are made.
+TEST_F(PreferredAppListTest, FindMultiplePreferredApps) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+
+  GURL filter_url_2 = GURL("https://www.abc.com/google");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_2);
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+
+  GURL filter_url_3 = GURL("tel://12345678/");
+  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  preferred_apps_.AddPreferredApp(kAppId2, intent_filter_3);
+
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+
+  GURL filter_url_4 = GURL("https://www.google.com.au/");
+  auto intent_filter_4 = apps_util::CreateIntentFilterForUrlScope(filter_url_4);
+  preferred_apps_.AddPreferredApp(kAppId2, intent_filter_4);
+
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_4));
+
+  GURL filter_url_5 = GURL("https://www.example.com/google");
+  auto intent_filter_5 = apps_util::CreateIntentFilterForUrlScope(filter_url_5);
+  preferred_apps_.AddPreferredApp(kAppId3, intent_filter_5);
+
+  EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_5));
+
+  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+  intent_filters.push_back(std::move(intent_filter_1));
+  intent_filters.push_back(std::move(intent_filter_2));
+  intent_filters.push_back(std::move(intent_filter_3));
+
+  auto preferred_apps =
+      preferred_apps_.FindPreferredAppsForFilters(intent_filters);
+
+  EXPECT_EQ(preferred_apps.size(), 2u);
+  EXPECT_TRUE(preferred_apps.contains(kAppId1));
+  EXPECT_TRUE(preferred_apps.contains(kAppId2));
+  EXPECT_FALSE(preferred_apps.contains(kAppId3));
+}
