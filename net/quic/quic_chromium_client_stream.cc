@@ -735,7 +735,10 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
   if (!trailers_decompressed())
     return;
 
-  DCHECK(headers_delivered_);
+  // Notify only after the handle reads initial headers.
+  if (!headers_delivered_)
+    return;
+
   // Post an async task to notify handle of the FIN flag.
   NotifyHandleOfDataAvailableLater();
   handle_->OnTrailingHeadersAvailable();
