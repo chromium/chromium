@@ -137,7 +137,7 @@ InputMethodManagerImpl::StateImpl::StateImpl(
     InputMethodManagerImpl* manager,
     Profile* profile,
     const InputMethodDescriptor* initial_input_method)
-    : profile(profile), manager_(manager) {
+    : profile_(profile), manager_(manager) {
   if (initial_input_method) {
     enabled_input_method_ids_.push_back(initial_input_method->id());
     current_input_method_ = *initial_input_method;
@@ -152,7 +152,7 @@ bool InputMethodManagerImpl::StateImpl::IsActive() const {
 
 scoped_refptr<InputMethodManager::State>
 InputMethodManagerImpl::StateImpl::Clone() const {
-  scoped_refptr<StateImpl> new_state(new StateImpl(this->manager_, profile));
+  scoped_refptr<StateImpl> new_state(new StateImpl(manager_, profile_));
 
   new_state->last_used_input_method_id_ = last_used_input_method_id_;
   new_state->current_input_method_ = current_input_method_;
@@ -555,7 +555,7 @@ void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
 
   DCHECK(engine);
 
-  manager_->engine_map_[profile][extension_id] = engine;
+  manager_->engine_map_[profile_][extension_id] = engine;
   VLOG(1) << "Add an engine for \"" << extension_id << "\"";
 
   bool contain = false;
@@ -612,10 +612,10 @@ void InputMethodManagerImpl::StateImpl::RemoveInputMethodExtension(
 
   if (IsActive()) {
     if (ui::IMEBridge::Get()->GetCurrentEngineHandler() ==
-        manager_->engine_map_[profile][extension_id]) {
+        manager_->engine_map_[profile_][extension_id]) {
       ui::IMEBridge::Get()->SetCurrentEngineHandler(NULL);
     }
-    manager_->engine_map_[profile].erase(extension_id);
+    manager_->engine_map_[profile_].erase(extension_id);
   }
 
   // If |current_input_method_| is no longer in |enabled_input_method_ids_|,
@@ -871,7 +871,7 @@ void InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions() {
                    unfiltered_input_method_id)) {
       if (manager_->enable_extension_loading_) {
         manager_->component_extension_ime_manager_->LoadComponentExtensionIME(
-            profile, unfiltered_input_method_id, &ext_loaded);
+            profile_, unfiltered_input_method_id, &ext_loaded);
       }
 
       enabled_input_method_ids_.push_back(unfiltered_input_method_id);
@@ -911,6 +911,10 @@ InputMethodManagerImpl::StateImpl::LookupInputMethod(
   }
   DCHECK(descriptor);
   return descriptor;
+}
+
+Profile* const InputMethodManagerImpl::StateImpl::GetProfile() const {
+  return profile_;
 }
 
 // ------------------------ InputMethodManagerImpl
@@ -1093,12 +1097,12 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
   const std::string& component_id =
       extension_ime_util::GetComponentIDByInputMethodID(
           state_->GetCurrentInputMethod().id());
-  if (!engine_map_.count(state_->profile) ||
-      !engine_map_[state_->profile].count(extension_id)) {
+  if (!engine_map_.count(state_->GetProfile()) ||
+      !engine_map_[state_->GetProfile()].count(extension_id)) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "IMEEngine for \"" << extension_id << "\" is not registered";
   }
-  engine = engine_map_[state_->profile][extension_id];
+  engine = engine_map_[state_->GetProfile()][extension_id];
 
   ui::IMEBridge::Get()->SetCurrentEngineHandler(engine);
 
@@ -1120,7 +1124,7 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
 
   // Update input method indicators (e.g. "US", "DV") in Chrome windows.
   for (auto& observer : observers_)
-    observer.InputMethodChanged(this, state_->profile, show_message);
+    observer.InputMethodChanged(this, state_->GetProfile(), show_message);
   // Update the current input method in IME menu.
   NotifyImeMenuListChanged();
 }
@@ -1145,12 +1149,14 @@ void InputMethodManagerImpl::ConnectInputEngineManager(
     mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
   DCHECK(state_);
   ImeServiceConnectorMap::iterator iter =
-      ime_service_connectors_.find(state_->profile);
+      ime_service_connectors_.find(state_->GetProfile());
   if (iter == ime_service_connectors_.end()) {
-    auto connector_ = std::make_unique<ImeServiceConnector>(state_->profile);
-    iter = ime_service_connectors_
-               .insert(std::make_pair(state_->profile, std::move(connector_)))
-               .first;
+    auto connector_ =
+        std::make_unique<ImeServiceConnector>(state_->GetProfile());
+    iter =
+        ime_service_connectors_
+            .insert(std::make_pair(state_->GetProfile(), std::move(connector_)))
+            .first;
   }
   iter->second->SetupImeService(std::move(receiver));
 }
@@ -1298,7 +1304,7 @@ void InputMethodManagerImpl::MaybeInitializeAssistiveWindowController() {
     return;
 
   assistive_window_controller_ =
-      std::make_unique<AssistiveWindowController>(this, state_->profile);
+      std::make_unique<AssistiveWindowController>(this, state_->GetProfile());
   ui::IMEBridge::Get()->SetAssistiveWindowHandler(
       assistive_window_controller_.get());
 }

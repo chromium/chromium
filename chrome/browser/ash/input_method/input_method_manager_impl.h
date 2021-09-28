@@ -52,6 +52,8 @@ class InputMethodManagerImpl : public InputMethodManager,
               Profile* profile,
               const InputMethodDescriptor* initial_input_method = nullptr);
 
+    Profile* const GetProfile() const;
+
     // Returns true if |input_method_id| is in |enabled_input_method_ids_|.
     bool InputMethodIsEnabled(const std::string& input_method_id) const;
 
@@ -109,8 +111,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     void ResetInputViewUrl();
 
     // ------------------------- Data members.
-    Profile* const profile;
-
     // True if the opt-in IME menu is activated.
     bool menu_activated = false;
 
@@ -148,6 +148,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns Input Method that best matches given id.
     const InputMethodDescriptor* LookupInputMethod(
         const std::string& input_method_id);
+
+    Profile* const profile_;
 
     InputMethodManagerImpl* const manager_;
 
