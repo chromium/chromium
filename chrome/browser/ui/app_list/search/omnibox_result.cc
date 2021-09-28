@@ -193,7 +193,6 @@ OmniboxResult::OmniboxResult(Profile* profile,
   }
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
-  SetMetricsType(GetSearchResultType());
 
   // If the result is a rich entity, set its rich entity subtype.
   if (match_.answer.has_value()) {
@@ -211,6 +210,9 @@ OmniboxResult::OmniboxResult(Profile* profile,
                         match_.stripped_destination_url.spec()},
                        "-");
   set_id(id);
+
+  // MetricsType needs to be set after OmniboxType.
+  SetMetricsType(GetSearchResultType());
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   // The magic number 1500 is the highest score of an omnibox result.
@@ -273,13 +275,12 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {
-  // Rich entity types take precedence.
-  if (omnibox_type() == OmniboxType::kAnswer ||
-      omnibox_type() == OmniboxType::kCalculatorAnswer) {
-    return ash::OMNIBOX_RICH_ENTITY_ANSWER;
+  // Answer results can have match types of SEARCH_WHAT_YOU_TYPED or
+  // SEARCH_SUGGEST, which can also be used for non-answer results. The answer
+  // type will take precedence for metrics.
+  if (omnibox_type() == OmniboxType::kAnswer) {
+    return ash::OMNIBOX_ANSWER;
   }
-  if (omnibox_type() == OmniboxType::kRichImage)
-    return ash::OMNIBOX_RICH_ENTITY_IMAGE_ENTITY;
 
   switch (match_.type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
@@ -305,10 +306,14 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_SUGGEST_PERSONALIZED;
     case AutocompleteMatchType::BOOKMARK_TITLE:
       return ash::OMNIBOX_BOOKMARK;
+    // SEARCH_SUGGEST_ENTITY corresponds with OmniboxType::kRichImage.
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
       return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
     case AutocompleteMatchType::NAVSUGGEST:
       return ash::OMNIBOX_NAVSUGGEST;
+    // CALCULATOR corresponds with OmniboxType::kCalculator.
+    case AutocompleteMatchType::CALCULATOR:
+      return ash::OMNIBOX_CALCULATOR;
 
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
@@ -316,7 +321,6 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
-    case AutocompleteMatchType::CALCULATOR:
     case AutocompleteMatchType::CLIPBOARD_URL:
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
