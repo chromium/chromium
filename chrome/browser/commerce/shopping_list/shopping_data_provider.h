@@ -18,6 +18,7 @@ class Value;
 
 namespace content {
 class NavigationHandle;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -59,6 +60,9 @@ class ShoppingDataProvider
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
  private:
   friend class content::WebContentsUserData<ShoppingDataProvider>;
 
@@ -72,6 +76,10 @@ class ShoppingDataProvider
 
   // Handle the result of javascript on-page heuristics.
   void OnJavascriptExecutionCompleted(base::Value result);
+
+  // Whether the javascript heuristics should be run when the page has finished
+  // loading.
+  bool run_javascript_on_load_;
 
   // The metadata for the last navigation in the associated web contents.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta_for_navigation_;

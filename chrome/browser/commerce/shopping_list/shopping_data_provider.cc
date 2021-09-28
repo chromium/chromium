@@ -17,8 +17,10 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -34,6 +36,7 @@ ShoppingDataProvider::ShoppingDataProvider(
     content::WebContents* content,
     optimization_guide::OptimizationGuideDecider* optimization_guide)
     : content::WebContentsObserver(content),
+      run_javascript_on_load_(false),
       optimization_guide_(optimization_guide),
       weak_ptr_factory_(this) {
   std::vector<optimization_guide::proto::OptimizationType> types;
@@ -50,6 +53,7 @@ void ShoppingDataProvider::DidFinishNavigation(
     return;
   }
 
+  run_javascript_on_load_ = false;
   meta_for_navigation_.reset();
   // This will cancel the callbacks holding a reference to this object so that
   // they do not conflict with the new ones for this navigation.
@@ -62,41 +66,13 @@ void ShoppingDataProvider::DidFinishNavigation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ShoppingDataProvider::OnOptimizationGuideDecision(
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  base::UmaHistogramBoolean(
-      "Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage",
-      decision == optimization_guide::OptimizationGuideDecision::kTrue);
-
-  // If the page was determined to be shopping related, run the on-page
-  // extractor.
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
+void ShoppingDataProvider::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!run_javascript_on_load_)
     return;
 
-  // We should only be creating one bookmark meta object per navigation.
-  DCHECK(!meta_for_navigation_);
-
-  meta_for_navigation_ = std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-  meta_for_navigation_->set_type(power_bookmarks::PowerBookmarkType::SHOPPING);
-
-  if (metadata.any_metadata().has_value()) {
-    commerce::PriceTrackingData price_data;
-    // Optimization Guide's metadata provides an absl::optional which holds a
-    // proto::Any value -- each having a .value() function. Consequently, the
-    // parse logic below looks a bit strange.
-    price_data.ParseFromString(metadata.any_metadata().value().value());
-    if (price_data.IsInitialized()) {
-      commerce::BuyableProduct buyable_product = price_data.buyable_product();
-
-      if (buyable_product.has_image_url()) {
-        meta_for_navigation_->mutable_lead_image()->set_url(
-            buyable_product.image_url());
-      }
-      meta_for_navigation_->mutable_shopping_specifics()->CopyFrom(
-          buyable_product);
-    }
-  }
+  run_javascript_on_load_ = false;
 
   std::string script =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -111,6 +87,44 @@ void ShoppingDataProvider::OnOptimizationGuideDecision(
   web_contents()->GetMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script), std::move(callback),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
+}
+
+void ShoppingDataProvider::OnOptimizationGuideDecision(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  base::UmaHistogramBoolean(
+      "Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage",
+      decision == optimization_guide::OptimizationGuideDecision::kTrue);
+
+  // If the page was determined to be shopping related, run the on-page
+  // extractor.
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
+    return;
+
+  run_javascript_on_load_ = true;
+
+  // We should only be creating one bookmark meta object per navigation.
+  DCHECK(!meta_for_navigation_);
+
+  meta_for_navigation_ = std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+  meta_for_navigation_->set_type(power_bookmarks::PowerBookmarkType::SHOPPING);
+
+  if (metadata.any_metadata().has_value()) {
+    absl::optional<commerce::PriceTrackingData> parsed_any =
+        optimization_guide::ParsedAnyMetadata<commerce::PriceTrackingData>(
+            metadata.any_metadata().value());
+    commerce::PriceTrackingData price_data = parsed_any.value();
+    if (parsed_any.has_value() && price_data.IsInitialized()) {
+      commerce::BuyableProduct buyable_product = price_data.buyable_product();
+
+      if (buyable_product.has_image_url()) {
+        meta_for_navigation_->mutable_lead_image()->set_url(
+            buyable_product.image_url());
+      }
+      meta_for_navigation_->mutable_shopping_specifics()->CopyFrom(
+          buyable_product);
+    }
+  }
 }
 
 void ShoppingDataProvider::OnJavascriptExecutionCompleted(base::Value result) {
