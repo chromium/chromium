@@ -2967,12 +2967,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
         visual_viewport_or_overlay_needs_repaint_) {
       GraphicsContext graphics_context(*paint_controller_);
 
-      if (Settings* settings = frame_->GetSettings()) {
-        graphics_context.SetDarkModeEnabled(
-            settings->GetForceDarkModeEnabled() &&
-            !GetLayoutView()->StyleRef().DarkColorScheme());
-      }
-
       bool painted_full_screen_overlay = false;
       if (frame_->IsMainFrame()) {
         PaintLayer* full_screen_layer = GetFullScreenOverlayLayer();

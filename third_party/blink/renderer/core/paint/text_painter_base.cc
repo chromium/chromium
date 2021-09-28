@@ -370,7 +370,8 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
 
 void TextPainterBase::PaintEmphasisMarkForCombinedText(
     const TextPaintStyle& text_style,
-    const Font& emphasis_mark_font) {
+    const Font& emphasis_mark_font,
+    const AutoDarkMode& auto_dark_mode) {
   DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
   DCHECK(emphasis_mark_);
   const SimpleFontData* const font_data = font_.PrimaryFont();
@@ -390,8 +391,8 @@ void TextPainterBase::PaintEmphasisMarkForCombinedText(
       text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
   graphics_context_.DrawEmphasisMarks(emphasis_mark_font, text_run_paint_info,
-                                      emphasis_mark_,
-                                      emphasis_mark_text_origin);
+                                      emphasis_mark_, emphasis_mark_text_origin,
+                                      auto_dark_mode);
 }
 
 }  // namespace blink

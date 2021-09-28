@@ -19,6 +19,7 @@
 namespace blink {
 
 class ComputedStyle;
+struct AutoDarkMode;
 class FrameSelection;
 class LayoutObject;
 class NGFragmentItem;
@@ -82,7 +83,8 @@ class CORE_EXPORT NGHighlightPainter {
     void PaintSelectedText(NGTextPainter& text_painter,
                            unsigned length,
                            const TextPaintStyle& text_style,
-                           DOMNodeId node_id);
+                           DOMNodeId node_id,
+                           const AutoDarkMode& auto_dark_mode);
 
     void PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
@@ -90,7 +92,8 @@ class CORE_EXPORT NGHighlightPainter {
         unsigned end_offset,
         unsigned length,
         const TextPaintStyle& text_style,
-        DOMNodeId node_id);
+        DOMNodeId node_id,
+        const AutoDarkMode& auto_dark_mode);
 
    private:
     struct SelectionRect {

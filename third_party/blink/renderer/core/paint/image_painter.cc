@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -174,7 +175,10 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(paint_rect);
+    context.DrawRect(
+        paint_rect,
+        PaintAutoDarkMode(layout_image_.StyleRef(), layout_image_.GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
     return;
   }
 
@@ -260,10 +264,12 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     }
   }
 
-  context.DrawImage(image.get(), decode_mode,
-                    FloatRect(pixel_snapped_dest_rect), &src_rect,
-                    layout_image_.StyleRef().DisableForceDark(),
-                    SkBlendMode::kSrcOver, respect_orientation);
+  context.DrawImage(
+      image.get(), decode_mode,
+      PaintAutoDarkMode(layout_image_.StyleRef(), layout_image_.GetDocument(),
+                        DarkModeFilter::ElementRole::kBackground),
+      FloatRect(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
+      respect_orientation);
 
   if (ImageResourceContent* image_content = image_resource.CachedImage()) {
     if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&

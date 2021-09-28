@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
@@ -447,7 +448,9 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   // Reset filter quality.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
 
-  context.DrawRect(dst_rect, flags);
+  context.DrawRect(dst_rect, flags,
+                   PaintAutoDarkMode(DarkModeFilter::ElementRole::kSVG,
+                                     draw_info.IsDarkModeEnabled()));
 
   StartAnimation();
 }
@@ -543,8 +546,9 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   // avoid setting timers from the latter.
   FlushPendingTimelineRewind();
 
+  page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
+
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
     view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
     return view->GetPaintRecord();
   }
@@ -557,8 +561,8 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
   PaintController::CycleScope cycle_scope(*paint_controller_,
                                           view->PaintDebugInfoEnabled());
+
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>(*paint_controller_);
-  builder->Context().SetDarkModeEnabled(draw_info.IsDarkModeEnabled());
   view->PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase);
   return builder->EndRecording();
 }

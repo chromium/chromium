@@ -118,7 +118,7 @@ void ScrollbarTheme::PaintScrollCorner(
   DrawingRecorder recorder(context, display_item_client,
                            DisplayItem::kScrollCorner, corner_rect);
 #if defined(OS_MAC)
-  context.FillRect(corner_rect, Color::kWhite);
+  context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
@@ -160,11 +160,13 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
     const int y_pos = rect.Y() + (rect.Height() * percent);
 
     FloatRect tick_rect(rect.X(), y_pos, rect.Width(), 3);
-    context.FillRect(tick_rect, Color(0xB0, 0x60, 0x00, 0xFF));
+    context.FillRect(tick_rect, Color(0xB0, 0x60, 0x00, 0xFF),
+                     AutoDarkMode::Disabled());
 
     FloatRect tick_stroke(rect.X() + TickmarkBorderWidth(), y_pos + 1,
                           rect.Width() - 2 * TickmarkBorderWidth(), 1);
-    context.FillRect(tick_stroke, Color(0xFF, 0xDD, 0x00, 0xFF));
+    context.FillRect(tick_stroke, Color(0xFF, 0xDD, 0x00, 0xFF),
+                     AutoDarkMode::Disabled());
   }
 #endif
 }

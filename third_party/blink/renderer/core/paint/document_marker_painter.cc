@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -116,7 +117,7 @@ void DrawDocumentMarker(GraphicsContext& context,
   // cached tile for all markers at a given zoom level.
   GraphicsContextStateSaver saver(context);
   context.Translate(origin_x, origin_y);
-  context.DrawRect(rect, flags);
+  context.DrawRect(rect, flags, AutoDarkMode::Disabled());
 }
 
 }  // namespace
@@ -137,6 +138,7 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     const PhysicalOffset& box_origin,
     const StyleableMarker& marker,
     const ComputedStyle& style,
+    const Document& document,
     const FloatRect& marker_rect,
     LayoutUnit logical_height,
     bool in_dark_mode) {
@@ -198,7 +200,8 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
         FloatPoint(box_origin.left + start,
                    (box_origin.top + logical_height.ToInt() - line_thickness)
                        .ToFloat()),
-        width);
+        width,
+        PaintAutoDarkMode(style, document, DarkModeFilter::ElementRole::kText));
   } else {
     // For wavy underline format we use this logic that is very similar to
     // spelling/grammar squiggles format. Only applicable for composition

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
@@ -87,9 +88,12 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       layout_svg_image_.StyleRef().GetInterpolationQuality());
   Image::ImageDecodingMode decode_mode =
       image_element->GetDecodingModeForPainting(image->paint_image_id());
-  paint_info.context.DrawImage(image.get(), decode_mode, dest_rect, &src_rect,
-                               layout_svg_image_.StyleRef().DisableForceDark(),
-                               SkBlendMode::kSrcOver, respect_orientation);
+  paint_info.context.DrawImage(
+      image.get(), decode_mode,
+      PaintAutoDarkMode(layout_svg_image_.StyleRef(),
+                        layout_svg_image_.GetDocument(),
+                        DarkModeFilter::ElementRole::kSVG),
+      dest_rect, &src_rect, SkBlendMode::kSrcOver, respect_orientation);
 
   ImageResourceContent* image_content = image_resource.CachedImage();
   if (image_content->IsLoaded()) {

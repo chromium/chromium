@@ -13,6 +13,7 @@
 
 namespace blink {
 
+struct AutoDarkMode;
 class LayoutObject;
 class LayoutSVGInlineText;
 class NGFragmentItem;
@@ -86,6 +87,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
              unsigned length,
              const TextPaintStyle&,
              DOMNodeId,
+             const AutoDarkMode& auto_dark_mode,
              ShadowMode = kBothShadowsAndTextProper);
 
   void PaintSelectedText(unsigned start_offset,
@@ -94,7 +96,8 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                          const TextPaintStyle& text_style,
                          const TextPaintStyle& selection_style,
                          const PhysicalRect& selection_rect,
-                         DOMNodeId node_id);
+                         DOMNodeId node_id,
+                         const AutoDarkMode& auto_dark_mode);
 
   void PaintDecorationsExceptLineThrough(const NGFragmentItem& text_item,
                                          const PaintInfo& paint_info,
@@ -122,15 +125,20 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
  private:
   template <PaintInternalStep step>
-  void PaintInternalFragment(unsigned from, unsigned to, DOMNodeId node_id);
+  void PaintInternalFragment(unsigned from,
+                             unsigned to,
+                             DOMNodeId node_id,
+                             const AutoDarkMode& auto_dark_mode);
 
   template <PaintInternalStep step>
   void PaintInternal(unsigned start_offset,
                      unsigned end_offset,
                      unsigned truncation_point,
-                     DOMNodeId node_id);
+                     DOMNodeId node_id,
+                     const AutoDarkMode& auto_dark_mode);
 
-  void PaintSvgTextFragment(DOMNodeId node_id);
+  void PaintSvgTextFragment(DOMNodeId node_id,
+                            const AutoDarkMode& auto_dark_mode);
   void PaintSvgDecorationsExceptLineThrough(
       const TextDecorationOffsetBase& decoration_offset,
       TextDecorationInfo& decoration_info,

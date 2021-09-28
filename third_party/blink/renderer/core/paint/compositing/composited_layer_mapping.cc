@@ -1515,10 +1515,6 @@ void CompositedLayerMapping::DoPaintTask(
   float device_scale_factor = blink::DeviceScaleFactorDeprecated(
       paint_info.paint_layer->GetLayoutObject().GetFrame());
   context.SetDeviceScaleFactor(device_scale_factor);
-  Settings* settings = GetLayoutObject().GetFrame()->GetSettings();
-  context.SetDarkModeEnabled(
-      settings->GetForceDarkModeEnabled() &&
-      !GetLayoutObject().View()->StyleRef().DarkColorScheme());
 
   // As a composited layer may be painted directly, we need to traverse the
   // effect tree starting from the current node all the way up through the

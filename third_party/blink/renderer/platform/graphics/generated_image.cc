@@ -60,7 +60,7 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
 
-  dest_context.DrawRect(dest_rect, fill_flags);
+  dest_context.DrawRect(dest_rect, fill_flags, AutoDarkMode(draw_options));
 }
 
 sk_sp<PaintShader> GeneratedImage::CreateShader(

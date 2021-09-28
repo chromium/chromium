@@ -346,7 +346,7 @@ class ChromePrintContext : public PrintContext {
     context.BeginRecording(all_pages_rect);
 
     // Fill the whole background by white.
-    context.FillRect(all_pages_rect, Color::kWhite);
+    context.FillRect(all_pages_rect, Color::kWhite, AutoDarkMode::Disabled());
 
     wtf_size_t num_pages = PageRects().size();
     int current_height = 0;
@@ -358,7 +358,8 @@ class ChromePrintContext : public PrintContext {
         context.SetStrokeColor(Color(0, 0, 255));
         context.DrawLine(
             IntPoint(0, current_height - 1),
-            IntPoint(spool_size_in_pixels.Width(), current_height - 1));
+            IntPoint(spool_size_in_pixels.Width(), current_height - 1),
+            AutoDarkMode::Disabled());
         context.Restore();
       }
 

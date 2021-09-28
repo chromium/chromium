@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
@@ -166,9 +167,13 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
       FloatRoundedRect rounded_fill_rect = border;
       rounded_fill_rect.Inflate(shadow_spread);
       ApplySpreadToShadowShape(rounded_fill_rect, shadow_spread);
-      context.FillRoundedRect(rounded_fill_rect, Color::kBlack);
+      context.FillRoundedRect(
+          rounded_fill_rect, Color::kBlack,
+          PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     } else {
-      context.FillRect(fill_rect, Color::kBlack);
+      context.FillRect(
+          fill_rect, Color::kBlack,
+          PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     }
   }
 }
@@ -254,10 +259,13 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme());
 
+    AutoDarkMode auto_dark_mode(
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+
     FloatRect inner_rect(bounds.Rect());
     inner_rect.Inflate(-shadow.Spread());
     if (inner_rect.IsEmpty()) {
-      context.FillRoundedRect(bounds, shadow_color);
+      context.FillRoundedRect(bounds, shadow_color, auto_dark_mode);
       continue;
     }
     AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
@@ -281,7 +289,8 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     Color fill_color(shadow_color.Red(), shadow_color.Green(),
                      shadow_color.Blue());
     FloatRect outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
-    context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color);
+    context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color,
+                                    auto_dark_mode);
   }
 }
 
@@ -501,7 +510,7 @@ void DrawTiledBackground(GraphicsContext& context,
                          Image* image,
                          const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
-                         bool has_filter_property,
+                         const AutoDarkMode& auto_dark_mode,
                          RespectImageOrientationEnum respect_orientation) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
@@ -514,9 +523,9 @@ void DrawTiledBackground(GraphicsContext& context,
                                           geometry.UnsnappedDestRect().size);
   if (absl::optional<FloatRect> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect_for_subset, image, respect_orientation)) {
-    context.DrawImage(image, Image::kSyncDecode,
+    context.DrawImage(image, Image::kSyncDecode, auto_dark_mode,
                       FloatRect(geometry.SnappedDestRect()), &*single_tile_src,
-                      has_filter_property, op, respect_orientation);
+                      op, respect_orientation);
     return;
   }
 
@@ -560,8 +569,7 @@ void DrawTiledBackground(GraphicsContext& context,
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
   context.DrawImageTiled(image, FloatRect(geometry.SnappedDestRect()),
-                         tiling_info, has_filter_property, op,
-                         respect_orientation);
+                         tiling_info, auto_dark_mode, op, respect_orientation);
 }
 
 scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
@@ -589,6 +597,7 @@ scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
 bool PaintBGColorWithPaintWorklet(const Document* document,
                                   const BoxPainterBase::FillLayerInfo& info,
                                   Node* node,
+                                  const ComputedStyle& style,
                                   const FloatRoundedRect& dest_rect,
                                   GraphicsContext& context) {
   if (!info.should_paint_color_with_paint_worklet_image)
@@ -598,9 +607,11 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   if (!paint_worklet_image)
     return false;
   FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
-  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
-                         dest_rect, src_rect,
-                         node && node->ComputedStyleRef().DisableForceDark());
+  context.DrawImageRRect(
+      paint_worklet_image.get(), Image::kSyncDecode,
+      PaintAutoDarkMode(style, *document,
+                        DarkModeFilter::ElementRole::kBackground),
+      dest_rect, src_rect);
   return true;
 }
 
@@ -626,6 +637,7 @@ void DidDrawImage(
 
 inline bool PaintFastBottomLayer(const Document* document,
                                  Node* node,
+                                 const ComputedStyle& style,
                                  GraphicsContext& context,
                                  const BoxPainterBase::FillLayerInfo& info,
                                  const PhysicalRect& rect,
@@ -706,9 +718,12 @@ inline bool PaintFastBottomLayer(const Document* document,
   if (info.should_paint_color) {
     // Try to paint the background with a paint worklet first in case it will be
     // animated. Otherwise, paint it directly into the context.
-    if (!PaintBGColorWithPaintWorklet(document, info, node, color_border,
+    if (!PaintBGColorWithPaintWorklet(document, info, node, style, color_border,
                                       context)) {
-      context.FillRoundedRect(color_border, info.color);
+      context.FillRoundedRect(
+          color_border, info.color,
+          PaintAutoDarkMode(style, *document,
+                            DarkModeFilter::ElementRole::kBackground));
     }
   }
 
@@ -723,9 +738,11 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
-  context.DrawImageRRect(image, Image::kSyncDecode, image_border, src_rect,
-                         node && node->ComputedStyleRef().DisableForceDark(),
-                         composite_op, info.respect_image_orientation);
+  context.DrawImageRRect(
+      image, Image::kSyncDecode,
+      PaintAutoDarkMode(style, *document,
+                        DarkModeFilter::ElementRole::kBackground),
+      image_border, src_rect, composite_op, info.respect_image_orientation);
 
   DidDrawImage(node, *image, *info.image,
                context.GetPaintController().CurrentPaintChunkProperties(),
@@ -822,6 +839,7 @@ void PaintFillLayerBackground(const Document* document,
                               GraphicsContext& context,
                               const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
+                              const ComputedStyle& style,
                               Image* image,
                               SkBlendMode composite_op,
                               const BackgroundImageGeometry& geometry,
@@ -835,9 +853,13 @@ void PaintFillLayerBackground(const Document* document,
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
     // Try to paint the background with a paint worklet first in case it will be
     // animated. Otherwise, paint it directly into the context.
-    if (!PaintBGColorWithPaintWorklet(
-            document, info, node, FloatRoundedRect(background_rect), context)) {
-      context.FillRect(background_rect, info.color);
+    if (!PaintBGColorWithPaintWorklet(document, info, node, style,
+                                      FloatRoundedRect(background_rect),
+                                      context)) {
+      context.FillRect(
+          background_rect, info.color,
+          PaintAutoDarkMode(style, *document,
+                            DarkModeFilter::ElementRole::kBackground));
     }
   }
 
@@ -850,9 +872,11 @@ void PaintFillLayerBackground(const Document* document,
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
         inspector_paint_image_event::Data, node, *info.image,
         FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
-    DrawTiledBackground(context, image, geometry, composite_op,
-                        node && node->ComputedStyleRef().DisableForceDark(),
-                        info.respect_image_orientation);
+    DrawTiledBackground(
+        context, image, geometry, composite_op,
+        PaintAutoDarkMode(style, *document,
+                          DarkModeFilter::ElementRole::kBackground),
+        info.respect_image_orientation);
     DidDrawImage(node, *image, *info.image,
                  context.GetPaintController().CurrentPaintChunkProperties(),
                  FloatRect(geometry.SnappedDestRect()));
@@ -956,8 +980,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       (bleed_avoidance == kBackgroundBleedShrinkBackground ||
        did_adjust_paint_rect);
   if (!disable_fast_path &&
-      PaintFastBottomLayer(document_, node_, context, fill_layer_info, rect,
-                           border_rect, geometry, image.get(), composite_op)) {
+      PaintFastBottomLayer(document_, node_, style_, context, fill_layer_info,
+                           rect, border_rect, geometry, image.get(),
+                           composite_op)) {
     return;
   }
 
@@ -999,7 +1024,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       break;
   }
 
-  PaintFillLayerBackground(document_, context, fill_layer_info, node_,
+  PaintFillLayerBackground(document_, context, fill_layer_info, node_, style_,
                            image.get(), composite_op, geometry,
                            scrolled_paint_rect);
 }
@@ -1027,7 +1052,7 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   context.Clip(mask_rect);
   context.BeginLayer(1, composite_op);
 
-  PaintFillLayerBackground(document_, context, info, node_, image,
+  PaintFillLayerBackground(document_, context, info, node_, style_, image,
                            SkBlendMode::kSrcOver, geometry,
                            scrolled_paint_rect);
 
@@ -1057,8 +1082,8 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
     return;
   }
 
-  BoxBorderPainter::PaintBorder(info.context, rect, style, bleed_avoidance,
-                                sides_to_include);
+  BoxBorderPainter::PaintBorder(info.context, rect, style, document,
+                                bleed_avoidance, sides_to_include);
 }
 
 void BoxPainterBase::PaintMaskImages(const PaintInfo& paint_info,

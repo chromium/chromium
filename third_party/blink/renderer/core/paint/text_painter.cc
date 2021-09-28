@@ -30,31 +30,34 @@ void TextPainter::Paint(unsigned start_offset,
                         unsigned end_offset,
                         unsigned length,
                         const TextPaintStyle& text_style,
-                        DOMNodeId node_id) {
+                        DOMNodeId node_id,
+                        const AutoDarkMode& auto_dark_mode) {
   GraphicsContextStateSaver state_saver(graphics_context_, false);
   UpdateGraphicsContext(text_style, state_saver);
   if (combined_text_) {
     graphics_context_.Save();
     combined_text_->TransformToInlineCoordinates(graphics_context_,
                                                  text_frame_rect_);
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
+    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id,
+                              auto_dark_mode);
     graphics_context_.Restore();
   } else {
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
+    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id,
+                              auto_dark_mode);
   }
 
   if (!emphasis_mark_.IsEmpty()) {
     if (combined_text_) {
       graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
-      PaintEmphasisMarkForCombinedText(text_style,
-                                       combined_text_->OriginalFont());
+      PaintEmphasisMarkForCombinedText(
+          text_style, combined_text_->OriginalFont(), auto_dark_mode);
       graphics_context_.ConcatCTM(
           Rotation(text_frame_rect_, kCounterclockwise));
     } else {
       if (text_style.emphasis_mark_color != text_style.fill_color)
         graphics_context_.SetFillColor(text_style.emphasis_mark_color);
       PaintInternal<kPaintEmphasisMark>(start_offset, end_offset, length,
-                                        node_id);
+                                        node_id, auto_dark_mode);
     }
   }
 }
@@ -200,7 +203,8 @@ template <TextPainter::PaintInternalStep step>
 void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
                                    unsigned from,
                                    unsigned to,
-                                   DOMNodeId node_id) {
+                                   DOMNodeId node_id,
+                                   const AutoDarkMode& auto_dark_mode) {
   DCHECK(from <= text_run_paint_info.run.length());
   DCHECK(to <= text_run_paint_info.run.length());
 
@@ -210,11 +214,13 @@ void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
   if (step == kPaintEmphasisMark) {
     graphics_context_.DrawEmphasisMarks(
         font_, text_run_paint_info, emphasis_mark_,
-        FloatPoint(text_origin_) + IntSize(0, emphasis_mark_offset_));
+        FloatPoint(text_origin_) + IntSize(0, emphasis_mark_offset_),
+        auto_dark_mode);
   } else {
     DCHECK(step == kPaintText);
     graphics_context_.DrawText(font_, text_run_paint_info,
-                               FloatPoint(text_origin_), node_id);
+                               FloatPoint(text_origin_), node_id,
+                               auto_dark_mode);
   }
 }
 
@@ -222,19 +228,20 @@ template <TextPainter::PaintInternalStep Step>
 void TextPainter::PaintInternal(unsigned start_offset,
                                 unsigned end_offset,
                                 unsigned truncation_point,
-                                DOMNodeId node_id) {
+                                DOMNodeId node_id,
+                                const AutoDarkMode& auto_dark_mode) {
   TextRunPaintInfo text_run_paint_info(run_);
   if (start_offset <= end_offset) {
     PaintInternalRun<Step>(text_run_paint_info, start_offset, end_offset,
-                           node_id);
+                           node_id, auto_dark_mode);
   } else {
     if (end_offset > 0) {
       PaintInternalRun<Step>(text_run_paint_info, ellipsis_offset_, end_offset,
-                             node_id);
+                             node_id, auto_dark_mode);
     }
     if (start_offset < truncation_point) {
       PaintInternalRun<Step>(text_run_paint_info, start_offset,
-                             truncation_point, node_id);
+                             truncation_point, node_id, auto_dark_mode);
     }
   }
 }

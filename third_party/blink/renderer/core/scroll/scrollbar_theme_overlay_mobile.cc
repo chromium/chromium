@@ -6,6 +6,9 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -68,7 +71,12 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
                            rect);
-  context.FillRect(rect, color_);
+
+  const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(box->StyleRef(), box->GetDocument(),
+                        DarkModeFilter::ElementRole::kBackground));
+  context.FillRect(rect, color_, auto_dark_mode);
 }
 
 }  // namespace blink

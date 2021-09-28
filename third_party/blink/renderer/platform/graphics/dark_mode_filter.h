@@ -18,11 +18,9 @@ class SkPixmap;
 
 namespace blink {
 
-class GraphicsContext;
 class DarkModeColorClassifier;
 class DarkModeImageClassifier;
 class DarkModeColorFilter;
-class ScopedDarkModeElementRoleOverride;
 class DarkModeInvertedColorCache;
 
 class PLATFORM_EXPORT DarkModeFilter {
@@ -71,8 +69,6 @@ class PLATFORM_EXPORT DarkModeFilter {
   sk_sp<SkColorFilter> GetImageFilter() const;
 
  private:
-  friend class ScopedDarkModeElementRoleOverride;
-
   struct ImmutableData {
     explicit ImmutableData(const DarkModeSettings& settings);
 
@@ -89,24 +85,9 @@ class PLATFORM_EXPORT DarkModeFilter {
   // This is read-only data and is thread-safe.
   const ImmutableData immutable_;
 
-  // Following two members used for color classifications are not thread-safe.
-  // TODO(prashant.n): Remove element override concept.
-  absl::optional<ElementRole> role_override_;
+  // Following member is used for color classifications and is not thread-safe.
   // TODO(prashant.n): Move cache out of dark mode filter.
   std::unique_ptr<DarkModeInvertedColorCache> inverted_color_cache_;
-};
-
-// Temporarily override the element role for the scope of this object's
-// lifetime - for example when drawing symbols that play the role of text.
-class PLATFORM_EXPORT ScopedDarkModeElementRoleOverride {
- public:
-  ScopedDarkModeElementRoleOverride(GraphicsContext* graphics_context,
-                                    DarkModeFilter::ElementRole role);
-  ~ScopedDarkModeElementRoleOverride();
-
- private:
-  GraphicsContext* graphics_context_;
-  absl::optional<DarkModeFilter::ElementRole> previous_role_override_;
 };
 
 }  // namespace blink

@@ -10,11 +10,12 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
 
 class ComputedStyle;
-class GraphicsContext;
+class Document;
 class Path;
 struct PhysicalRect;
 
@@ -27,21 +28,23 @@ class BoxBorderPainter {
   static void PaintBorder(GraphicsContext& context,
                           const PhysicalRect& border_rect,
                           const ComputedStyle& style,
+                          const Document& document,
                           BackgroundBleedAvoidance bleed_avoidance,
                           PhysicalBoxSides sides_to_include) {
-    BoxBorderPainter(context, border_rect, style, bleed_avoidance,
+    BoxBorderPainter(context, border_rect, style, document, bleed_avoidance,
                      sides_to_include)
         .Paint();
   }
 
   static void PaintSingleRectOutline(GraphicsContext& context,
                                      const ComputedStyle& style,
+                                     const Document& document,
                                      const PhysicalRect& border_rect,
                                      int width,
                                      int inner_outset_x,
                                      int inner_outset_y) {
-    BoxBorderPainter(context, style, border_rect, width, inner_outset_x,
-                     inner_outset_y)
+    BoxBorderPainter(context, style, document, border_rect, width,
+                     inner_outset_x, inner_outset_y)
         .Paint();
   }
 
@@ -49,10 +52,11 @@ class BoxBorderPainter {
                           const IntRect& snapped_edge_rect,
                           BoxSide side,
                           Color color,
-                          EBorderStyle style) {
+                          EBorderStyle style,
+                          const AutoDarkMode& auto_dark_mode) {
     DrawLineForBoxSide(context, snapped_edge_rect.X(), snapped_edge_rect.Y(),
                        snapped_edge_rect.MaxX(), snapped_edge_rect.MaxY(), side,
-                       color, style, 0, 0, true);
+                       color, style, 0, 0, true, auto_dark_mode);
   }
 
   // TODO(crbug.com/1201762): The float parameters are truncated to int in the
@@ -69,18 +73,21 @@ class BoxBorderPainter {
                                  EBorderStyle,
                                  int adjacent_edge_width1,
                                  int adjacent_edge_width2,
-                                 bool antialias);
+                                 bool antialias,
+                                 const AutoDarkMode& auto_dark_mode);
 
  private:
   // For PaintBorder().
   BoxBorderPainter(GraphicsContext&,
                    const PhysicalRect& border_rect,
                    const ComputedStyle&,
+                   const Document&,
                    BackgroundBleedAvoidance,
                    PhysicalBoxSides sides_to_include);
   // For PaintSingleRectOutline().
   BoxBorderPainter(GraphicsContext&,
                    const ComputedStyle&,
+                   const Document&,
                    const PhysicalRect& border_rect,
                    int width,
                    int inner_outset_x,
@@ -168,6 +175,9 @@ class BoxBorderPainter {
   const LayoutUnit outer_outset_x_;
   const LayoutUnit outer_outset_y_;
   const ComputedStyle& style_;
+  // TODO(crbug.com/1224806): Remove this once ComputedStyle fully controls
+  // auto dark mode.
+  const Document& document_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;
 

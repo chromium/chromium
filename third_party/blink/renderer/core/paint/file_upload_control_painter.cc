@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
@@ -78,7 +79,10 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
         layout_file_upload_control_.ResolveColor(GetCSSPropertyColor()));
     paint_info.context.DrawBidiText(
         font, text_run_paint_info,
-        FloatPoint(RoundToInt(text_x), RoundToInt(text_y)));
+        FloatPoint(RoundToInt(text_x), RoundToInt(text_y)),
+        PaintAutoDarkMode(layout_file_upload_control_.StyleRef(),
+                          layout_file_upload_control_.GetDocument(),
+                          DarkModeFilter::ElementRole::kText));
     if (!font.ShouldSkipDrawing()) {
       ScopedPaintTimingDetectorBlockPaintHook
           scoped_paint_timing_detector_block_paint_hook;

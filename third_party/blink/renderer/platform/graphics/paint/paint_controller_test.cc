@@ -1728,7 +1728,7 @@ void DrawPath(GraphicsContext& context,
   PaintFlags flags;
   flags.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)
-    context.DrawPath(path, flags);
+    context.DrawPath(path, flags, AutoDarkMode::Disabled());
 }
 
 TEST_P(PaintControllerTest, BeginAndEndFrame) {

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -64,6 +65,8 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
                              pixel_snapped_background_rect);
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
+        PaintAutoDarkMode(layout_view_.StyleRef(), document,
+                          DarkModeFilter::ElementRole::kBackground),
         should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
   }
 }
@@ -265,10 +268,14 @@ void ViewPainter::PaintRootElementGroup(
     if (paints_base_background || root_element_background_color.Alpha() ||
         layout_view_.StyleRef().BackgroundLayers().AnyLayerHasImage()) {
       context.FillRect(pixel_snapped_background_rect, Color::kWhite,
-                       SkBlendMode::kSrc);
+                       AutoDarkMode::Disabled(), SkBlendMode::kSrc);
     }
     return;
   }
+
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(layout_view_.StyleRef(), document,
+                        DarkModeFilter::ElementRole::kBackground));
 
   // Compute the enclosing rect of the view, in root element space.
   //
@@ -312,9 +319,10 @@ void ViewPainter::PaintRootElementGroup(
       if (base_background_color.Alpha()) {
         context.FillRect(
             pixel_snapped_background_rect, base_background_color,
+            auto_dark_mode,
             should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
       } else if (should_clear_canvas) {
-        context.FillRect(pixel_snapped_background_rect, Color(),
+        context.FillRect(pixel_snapped_background_rect, Color(), auto_dark_mode,
                          SkBlendMode::kClear);
       }
     }
@@ -353,7 +361,7 @@ void ViewPainter::PaintRootElementGroup(
   if (should_draw_background_in_separate_buffer && !painted_separate_effect) {
     if (base_background_color.Alpha()) {
       context.FillRect(
-          paint_rect, base_background_color,
+          paint_rect, base_background_color, auto_dark_mode,
           should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
     }
     context.BeginLayer();
@@ -369,13 +377,13 @@ void ViewPainter::PaintRootElementGroup(
 
   if (combined_background_color.Alpha()) {
     context.FillRect(
-        paint_rect, combined_background_color,
+        paint_rect, combined_background_color, auto_dark_mode,
         (should_draw_background_in_separate_buffer || should_clear_canvas)
             ? SkBlendMode::kSrc
             : SkBlendMode::kSrcOver);
   } else if (should_clear_canvas &&
              !should_draw_background_in_separate_buffer) {
-    context.FillRect(paint_rect, Color(), SkBlendMode::kClear);
+    context.FillRect(paint_rect, Color(), auto_dark_mode, SkBlendMode::kClear);
   }
 
   BackgroundImageGeometry geometry(layout_view_, background_image_offset);

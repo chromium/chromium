@@ -166,6 +166,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -2359,7 +2360,11 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
                              DisplayItem::kFrameOverlay,
                              IntRect(IntPoint(), view->Size()));
     FloatRect rect(0, 0, view->Width(), view->Height());
-    graphics_context.FillRect(rect, color_);
+    graphics_context.FillRect(
+        rect, color_,
+        PaintAutoDarkMode(view->GetLayoutView()->StyleRef(),
+                          view->GetLayoutView()->GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
   }
 
   SkColor color_;

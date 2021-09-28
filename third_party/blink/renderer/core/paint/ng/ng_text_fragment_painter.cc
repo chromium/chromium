@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
@@ -390,6 +391,9 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       node_id = layout_text->EnsureNodeId();
   }
 
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, document, DarkModeFilter::ElementRole::kText));
+
   const unsigned length = fragment_paint_info.to - fragment_paint_info.from;
   const unsigned start_offset = fragment_paint_info.from;
   const unsigned end_offset = fragment_paint_info.to;
@@ -397,13 +401,15 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (LIKELY(!highlight_painter.Selection())) {
     decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
     decoration_painter.PaintExceptLineThrough();
-    text_painter.Paint(start_offset, end_offset, length, text_style, node_id);
+    text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
+                       auto_dark_mode);
     decoration_painter.PaintOnlyLineThrough();
   } else if (!highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
     decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
     decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-        text_painter, start_offset, end_offset, length, text_style, node_id);
+        text_painter, start_offset, end_offset, length, text_style, node_id,
+        auto_dark_mode);
     decoration_painter.PaintOnlyLineThrough();
   }
 
@@ -429,8 +435,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     // Paint only the text that is selected.
     decoration_painter.Begin(NGTextDecorationPainter::kSelection);
     decoration_painter.PaintExceptLineThrough();
-    highlight_painter.Selection()->PaintSelectedText(text_painter, length,
-                                                     text_style, node_id);
+    highlight_painter.Selection()->PaintSelectedText(
+        text_painter, length, text_style, node_id, auto_dark_mode);
     decoration_painter.PaintOnlyLineThrough();
   }
 }

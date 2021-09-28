@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -25,7 +26,11 @@ void NGMathMLPainter::PaintBar(const PaintInfo& info, const IntRect& bar) {
   info.context.SetStrokeColor(
       box_fragment_.Style().VisitedDependentColor(GetCSSPropertyColor()));
   IntPoint line_end_point = {bar.Width(), 0};
-  info.context.DrawLine(bar.Location(), bar.Location() + line_end_point);
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(box_fragment_.Style(), box_fragment_.GetDocument(),
+                        DarkModeFilter::ElementRole::kText));
+  info.context.DrawLine(bar.Location(), bar.Location() + line_end_point,
+                        auto_dark_mode);
 }
 
 void NGMathMLPainter::PaintStretchyOrLargeOperator(
@@ -39,8 +44,11 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
       parameters.operator_shape_result_view.get()};
   GraphicsContextStateSaver state_saver(info.context);
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      style, box_fragment_.GetDocument(), DarkModeFilter::ElementRole::kText));
   info.context.DrawText(style.GetFont(), text_fragment_paint_info,
-                        FloatPoint(paint_offset), kInvalidDOMNodeId);
+                        FloatPoint(paint_offset), kInvalidDOMNodeId,
+                        auto_dark_mode);
 }
 
 void NGMathMLPainter::PaintFractionBar(

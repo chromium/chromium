@@ -21,6 +21,7 @@
 
 namespace blink {
 
+struct AutoDarkMode;
 class ComputedStyle;
 class Document;
 class GraphicsContext;
@@ -120,7 +121,8 @@ class CORE_EXPORT TextPainterBase {
   // TODO(yosin): Once legacy inline layout gone, we should move this function
   // to |NGTextCombinePainter|.
   void PaintEmphasisMarkForCombinedText(const TextPaintStyle& text_style,
-                                        const Font& emphasis_mark_font);
+                                        const Font& emphasis_mark_font,
+                                        const AutoDarkMode& auto_dark_mode);
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 

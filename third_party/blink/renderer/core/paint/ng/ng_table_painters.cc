@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -441,6 +442,10 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   WritingModeConverter grid_converter(fragment_.Style().GetWritingDirection(),
                                       grid_paint_rect.size);
 
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(fragment_.Style(), fragment_.GetDocument(),
+                        DarkModeFilter::ElementRole::kBackground));
+
   for (NGTableCollapsedEdge edge = NGTableCollapsedEdge(*collapsed_borders, 0);
        edge.Exists(); ++edge) {
     if (!edge.CanPaint())
@@ -526,7 +531,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     }
     BoxBorderPainter::DrawBoxSide(
         paint_info.context, PixelSnappedIntRect(physical_border_rect), box_side,
-        edge.BorderColor(), edge.BorderStyle());
+        edge.BorderColor(), edge.BorderStyle(), auto_dark_mode);
   }
 }
 

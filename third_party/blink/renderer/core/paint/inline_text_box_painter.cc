@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
@@ -401,6 +402,9 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   DOMNodeId node_id = GetNodeHolder(
       LineLayoutAPIShim::LayoutObjectFrom(inline_text_box_.GetLineLayoutItem())
           ->GetNode());
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      style_to_use, inline_text_box_.GetLineLayoutItem().GetDocument(),
+      DarkModeFilter::ElementRole::kText));
 
   if (!paint_selected_text_only) {
     // Paint text decorations except line-through.
@@ -446,7 +450,8 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       start_offset = selection_end;
       end_offset = selection_start;
     }
-    text_painter.Paint(start_offset, end_offset, length, text_style, node_id);
+    text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
+                       auto_dark_mode);
 
     // Paint line-through decoration if needed.
     if (has_line_through_decoration) {
@@ -471,7 +476,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       GraphicsContextStateSaver inner_state_saver(context);
       context.ClipOut(FloatRect(selection_rect));
       text_painter.Paint(selection_start, selection_end, length, text_style,
-                         node_id);
+                         node_id, auto_dark_mode);
     }
     // the second time, we draw the glyphs inside the selection area, with
     // the selection style.
@@ -479,7 +484,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       GraphicsContextStateSaver inner_state_saver(context);
       context.Clip(FloatRect(selection_rect));
       text_painter.Paint(selection_start, selection_end, length,
-                         selection_style, node_id);
+                         selection_style, node_id, auto_dark_mode);
     }
   }
 
@@ -579,9 +584,13 @@ void InlineTextBoxPainter::PaintSingleMarkerBackgroundRun(
   int sel_height = inline_text_box_.Root().SelectionHeight().ToInt();
   FloatPoint local_origin(box_origin.left.ToFloat(),
                           box_origin.top.ToFloat() - delta_y);
-  context.DrawHighlightForText(font, inline_text_box_.ConstructTextRun(style),
-                               local_origin, sel_height, background_color,
-                               start_pos, end_pos);
+  context.DrawHighlightForText(
+      font, inline_text_box_.ConstructTextRun(style), local_origin, sel_height,
+      background_color,
+      PaintAutoDarkMode(style,
+                        inline_text_box_.GetLineLayoutItem().GetDocument(),
+                        DarkModeFilter::ElementRole::kText),
+      start_pos, end_pos);
 }
 
 DocumentMarkerVector InlineTextBoxPainter::ComputeMarkersToPaint() const {
@@ -855,7 +864,9 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
 
   GraphicsContextStateSaver state_saver(context);
 
-  context.FillRect(FloatRect(selection_rect), c);
+  context.FillRect(FloatRect(selection_rect), c,
+                   PaintAutoDarkMode(style, layout_item.GetDocument(),
+                                     DarkModeFilter::ElementRole::kText));
   return selection_rect;
 }
 
@@ -885,7 +896,8 @@ void InlineTextBoxPainter::PaintStyleableMarkerUnderline(
   const FloatRect& marker_rect = font.SelectionRectForText(
       run, FloatPoint(), 0, marker_offsets.start, marker_offsets.end);
   DocumentMarkerPainter::PaintStyleableMarkerUnderline(
-      context, box_origin, marker, style, marker_rect,
+      context, box_origin, marker, style,
+      inline_text_box_.GetLineLayoutItem().GetDocument(), marker_rect,
       inline_text_box_.LogicalHeight(),
       inline_text_box_.GetLineLayoutItem().GetDocument().InDarkMode());
 }
@@ -930,8 +942,13 @@ void InlineTextBoxPainter::PaintTextMarkerForeground(
   TextPainter text_painter(paint_info.context, font, run, text_origin, box_rect,
                            inline_text_box_.IsHorizontal());
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      style, inline_text_box_.GetLineLayoutItem().GetDocument(),
+      DarkModeFilter::ElementRole::kText));
+
   text_painter.Paint(paint_offsets.first, paint_offsets.second,
-                     inline_text_box_.Len(), text_style, kInvalidDOMNodeId);
+                     inline_text_box_.Len(), text_style, kInvalidDOMNodeId,
+                     auto_dark_mode);
 }
 
 void InlineTextBoxPainter::PaintTextMarkerBackground(
@@ -962,9 +979,12 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
                         PhysicalSize(inline_text_box_.LogicalWidth(),
                                      inline_text_box_.LogicalHeight()));
   context.Clip(FloatRect(box_rect));
-  context.DrawHighlightForText(font, run, FloatPoint(box_origin),
-                               box_rect.Height().ToInt(), color,
-                               paint_offsets.first, paint_offsets.second);
+  context.DrawHighlightForText(
+      font, run, FloatPoint(box_origin), box_rect.Height().ToInt(), color,
+      PaintAutoDarkMode(style,
+                        inline_text_box_.GetLineLayoutItem().GetDocument(),
+                        DarkModeFilter::ElementRole::kText),
+      paint_offsets.first, paint_offsets.second);
 }
 
 }  // namespace blink

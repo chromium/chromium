@@ -290,7 +290,7 @@ void Image::DrawPattern(GraphicsContext& context,
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
 
-  context.DrawRect(dest_rect, flags);
+  context.DrawRect(dest_rect, flags, AutoDarkMode(draw_options));
 
   StartAnimation();
 

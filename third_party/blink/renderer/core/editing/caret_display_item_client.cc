@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -264,8 +265,10 @@ void CaretDisplayItemClient::PaintCaret(
   }
 
   IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
-  context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
-                   DarkModeFilter::ElementRole::kText);
+  context.FillRect(
+      paint_rect, is_visible_if_active_ ? color_ : Color(),
+      PaintAutoDarkMode(layout_block_->StyleRef(), layout_block_->GetDocument(),
+                        DarkModeFilter::ElementRole::kText));
 }
 
 void CaretDisplayItemClient::RecordSelection(

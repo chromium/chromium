@@ -49,7 +49,7 @@ class SolidColorOverlay : public FrameOverlay::Delegate {
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
                              IntRect(IntPoint(), size));
-    graphics_context.FillRect(rect, color_);
+    graphics_context.FillRect(rect, color_, AutoDarkMode::Disabled());
   }
 
  private:

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
@@ -88,8 +89,6 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   DCHECK(style.ListStyleType());
   DCHECK(style.ListStyleType()->IsCounterStyle());
   GraphicsContext& context = paint_info.context;
-  ScopedDarkModeElementRoleOverride list_symbol(
-      &context, DarkModeFilter::ElementRole::kListSymbol);
   Color color(object->ResolveColor(GetCSSPropertyColor()));
   if (BoxModelObjectPainter::ShouldForceWhiteBackgroundForPrintEconomy(
           object->GetDocument(), style))
@@ -101,17 +100,19 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeThickness(1.0f);
   IntRect snapped_rect = PixelSnappedIntRect(marker);
   const AtomicString& type = style.ListStyleType()->GetCounterStyleName();
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      style, object->GetDocument(), DarkModeFilter::ElementRole::kListSymbol));
   if (type == "disc") {
-    context.FillEllipse(FloatRect(snapped_rect));
+    context.FillEllipse(FloatRect(snapped_rect), auto_dark_mode);
   } else if (type == "circle") {
-    context.StrokeEllipse(FloatRect(snapped_rect));
+    context.StrokeEllipse(FloatRect(snapped_rect), auto_dark_mode);
   } else if (type == "square") {
-    context.FillRect(snapped_rect);
+    context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == "disclosure-open" || type == "disclosure-closed") {
     Path path = GetCanonicalDisclosurePath(style, type == "disclosure-open");
     path.Transform(AffineTransform().Scale(marker.Width(), marker.Height()));
     path.Translate(FloatSize(marker.X(), marker.Y()));
-    context.FillPath(path);
+    context.FillPath(path, auto_dark_mode);
   } else {
     NOTREACHED();
   }
@@ -147,6 +148,10 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   GraphicsContext& context = local_paint_info.context;
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_list_marker_.StyleRef(), layout_list_marker_.GetDocument(),
+      DarkModeFilter::ElementRole::kListSymbol));
+
   if (layout_list_marker_.IsImage()) {
     // Since there is no way for the developer to specify decode behavior, use
     // kSync by default.
@@ -155,7 +160,7 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
             ->GetImage(layout_list_marker_, layout_list_marker_.GetDocument(),
                        layout_list_marker_.StyleRef(), FloatSize(marker.Size()))
             .get(),
-        Image::kSyncDecode, FloatRect(marker));
+        Image::kSyncDecode, auto_dark_mode, FloatRect(marker));
     return;
   }
 
@@ -224,7 +229,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   if (style_category == ListMarker::ListStyleCategory::kStaticString) {
     // Don't add a suffix.
-    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
     context.GetPaintController().SetTextPainted();
     return;
   }
@@ -244,18 +250,24 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   TextRunPaintInfo suffix_run_info(suffix_run);
 
   if (layout_list_marker_.StyleRef().IsLeftToRightDirection()) {
-    context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
     text_origin += FloatSize(IntSize(font.Width(prefix_run), 0));
-    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
     text_origin += FloatSize(IntSize(font.Width(text_run), 0));
-    context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
   } else {
     // Is the truncation to IntSize below meaningful or a bug?
-    context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
     text_origin += FloatSize(IntSize(font.Width(suffix_run), 0));
-    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
     text_origin += FloatSize(IntSize(font.Width(text_run), 0));
-    context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId);
+    context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
+                     auto_dark_mode);
   }
   // TODO(npm): Check that there are non-whitespace characters. See
   // crbug.com/788444.

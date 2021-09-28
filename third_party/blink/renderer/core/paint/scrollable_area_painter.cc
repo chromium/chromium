@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -65,7 +66,10 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
     context.SetStrokeColor(Color(217, 217, 217));
     context.SetStrokeThickness(1.0f);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(larger_corner);
+    AutoDarkMode auto_dark_mode(
+        PaintAutoDarkMode(box->StyleRef(), box->GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
+    context.DrawRect(larger_corner, auto_dark_mode);
   }
 }
 
@@ -118,13 +122,18 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
   SkPathBuilder line_path;
 
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(GetScrollableArea().GetLayoutBox()->StyleRef(),
+                        GetScrollableArea().GetLayoutBox()->GetDocument(),
+                        DarkModeFilter::ElementRole::kBackground));
+
   // Draw a dark line, to ensure contrast against a light background
   line_path.moveTo(points[0].X(), points[0].Y());
   line_path.lineTo(points[1].X(), points[1].Y());
   line_path.moveTo(points[2].X(), points[2].Y());
   line_path.lineTo(points[3].X(), points[3].Y());
   paint_flags.setColor(SkColorSetARGB(153, 0, 0, 0));
-  context.DrawPath(line_path.detach(), paint_flags);
+  context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
@@ -133,7 +142,7 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   line_path.moveTo(points[2].X(), points[2].Y() + 1);
   line_path.lineTo(points[3].X() + (on_left ? -1 : 1), points[3].Y());
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
-  context.DrawPath(line_path.detach(), paint_flags);
+  context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 }
 
 void ScrollableAreaPainter::PaintOverflowControls(

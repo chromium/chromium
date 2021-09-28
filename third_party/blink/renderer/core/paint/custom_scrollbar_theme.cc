@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -143,7 +144,7 @@ void CustomScrollbarTheme::PaintScrollCorner(
   DrawingRecorder recorder(context, display_item_client,
                            DisplayItem::kScrollCorner, corner_rect);
   // FIXME: Implement.
-  context.FillRect(corner_rect, Color::kWhite);
+  context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 }
 
 void CustomScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
@@ -102,9 +103,12 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
   FloatRect src_rect(bounding_box.value());
-  context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode, src_rect,
-                    &src_rect, clip_path_owner.StyleRef().DisableForceDark(),
-                    SkBlendMode::kSrcOver, kRespectImageOrientation);
+  context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
+                    PaintAutoDarkMode(clip_path_owner.StyleRef(),
+                                      clip_path_owner.GetDocument(),
+                                      DarkModeFilter::ElementRole::kBackground),
+                    src_rect, &src_rect, SkBlendMode::kSrcOver,
+                    kRespectImageOrientation);
 }
 
 FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {

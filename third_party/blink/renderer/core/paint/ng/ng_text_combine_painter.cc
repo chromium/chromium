@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -69,7 +70,8 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
 
   if (has_emphasis_mark) {
     text_painter.PaintEmphasisMark(text_style,
-                                   text_combine.Parent()->StyleRef().GetFont());
+                                   text_combine.Parent()->StyleRef().GetFont(),
+                                   text_combine.GetDocument());
   }
 
   if (has_text_decoration)
@@ -117,11 +119,14 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
 }
 
 void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
-                                             const Font& emphasis_mark_font) {
+                                             const Font& emphasis_mark_font,
+                                             const Document& document) {
   DCHECK_NE(style_.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   SetEmphasisMark(style_.TextEmphasisMarkString(),
                   style_.GetTextEmphasisPosition());
-  PaintEmphasisMarkForCombinedText(text_style, emphasis_mark_font);
+  PaintEmphasisMarkForCombinedText(
+      text_style, emphasis_mark_font,
+      PaintAutoDarkMode(style_, document, DarkModeFilter::ElementRole::kText));
 }
 
 }  // namespace blink

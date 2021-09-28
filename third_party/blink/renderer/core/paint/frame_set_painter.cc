@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -34,22 +35,28 @@ void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
   // FIXME: We should do something clever when borders from distinct framesets
   // meet at a join.
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_frame_set_.StyleRef(), layout_frame_set_.GetDocument(),
+      DarkModeFilter::ElementRole::kBackground));
+
   // Fill first.
   GraphicsContext& context = paint_info.context;
-  context.FillRect(border_rect, layout_frame_set_.FrameSet()->HasBorderColor()
-                                    ? layout_frame_set_.ResolveColor(
-                                          GetCSSPropertyBorderLeftColor())
-                                    : BorderFillColor());
+  context.FillRect(
+      border_rect,
+      layout_frame_set_.FrameSet()->HasBorderColor()
+          ? layout_frame_set_.ResolveColor(GetCSSPropertyBorderLeftColor())
+          : BorderFillColor(),
+      auto_dark_mode);
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
   if (border_rect.Width() >= 3) {
     context.FillRect(
         IntRect(border_rect.Location(), IntSize(1, border_rect.Height())),
-        BorderStartEdgeColor());
+        BorderStartEdgeColor(), auto_dark_mode);
     context.FillRect(IntRect(IntPoint(border_rect.MaxX() - 1, border_rect.Y()),
                              IntSize(1, border_rect.Height())),
-                     BorderEndEdgeColor());
+                     BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 
@@ -58,22 +65,28 @@ void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
   // FIXME: We should do something clever when borders from distinct framesets
   // meet at a join.
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_frame_set_.StyleRef(), layout_frame_set_.GetDocument(),
+      DarkModeFilter::ElementRole::kBackground));
+
   // Fill first.
   GraphicsContext& context = paint_info.context;
-  context.FillRect(border_rect, layout_frame_set_.FrameSet()->HasBorderColor()
-                                    ? layout_frame_set_.ResolveColor(
-                                          GetCSSPropertyBorderLeftColor())
-                                    : BorderFillColor());
+  context.FillRect(
+      border_rect,
+      layout_frame_set_.FrameSet()->HasBorderColor()
+          ? layout_frame_set_.ResolveColor(GetCSSPropertyBorderLeftColor())
+          : BorderFillColor(),
+      auto_dark_mode);
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
   if (border_rect.Height() >= 3) {
     context.FillRect(
         IntRect(border_rect.Location(), IntSize(border_rect.Width(), 1)),
-        BorderStartEdgeColor());
+        BorderStartEdgeColor(), auto_dark_mode);
     context.FillRect(IntRect(IntPoint(border_rect.X(), border_rect.MaxY() - 1),
                              IntSize(border_rect.Width(), 1)),
-                     BorderEndEdgeColor());
+                     BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 

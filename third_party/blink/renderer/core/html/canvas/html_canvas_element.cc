@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -756,14 +757,21 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         BrokenCanvas(device_scale_factor);
     Image* broken_canvas = broken_canvas_and_image_scale_factor.first;
     context.Save();
-    context.FillRect(FloatRect(r), Color(), SkBlendMode::kClear);
+    context.FillRect(
+        FloatRect(r), Color(),
+        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground),
+        SkBlendMode::kClear);
     // Place the icon near the upper left, like the missing image icon
     // for image elements. Offset it a bit from the upper corner.
     FloatSize icon_size(broken_canvas->Size());
     FloatPoint upper_left =
         FloatPoint(r.PixelSnappedOffset()) + icon_size.ScaledBy(0.5f);
-    context.DrawImage(broken_canvas, Image::kSyncDecode,
-                      FloatRect(upper_left, icon_size));
+    context.DrawImage(
+        broken_canvas, Image::kSyncDecode,
+        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground),
+        FloatRect(upper_left, icon_size));
     context.Restore();
     return;
   }
@@ -784,8 +792,11 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     DCHECK(GetDocument().Printing());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
-    context.DrawImage(image_for_printing.get(), Image::kSyncDecode,
-                      FloatRect(PixelSnappedIntRect(r)));
+    context.DrawImage(
+        image_for_printing.get(), Image::kSyncDecode,
+        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground),
+        FloatRect(PixelSnappedIntRect(r)));
     return;
   }
 
@@ -836,15 +847,20 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
       DCHECK(!snapshot->IsTextureBacked());
-      const ComputedStyle* style = GetComputedStyle();
-      context.DrawImage(snapshot.get(), Image::kSyncDecode,
-                        FloatRect(PixelSnappedIntRect(r)), &src_rect,
-                        style && style->DisableForceDark(), composite_operator);
+      context.DrawImage(
+          snapshot.get(), Image::kSyncDecode,
+          PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+                            DarkModeFilter::ElementRole::kBackground),
+          FloatRect(PixelSnappedIntRect(r)), &src_rect, composite_operator);
     }
   } else {
     // When alpha is false, we should draw to opaque black.
-    if (!context_->CreationAttributes().alpha)
-      context.FillRect(FloatRect(r), Color(0, 0, 0));
+    if (!context_->CreationAttributes().alpha) {
+      context.FillRect(
+          FloatRect(r), Color(0, 0, 0),
+          PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+                            DarkModeFilter::ElementRole::kBackground));
+    }
   }
 
   if (IsWebGL() && PaintsIntoCanvasBuffer())

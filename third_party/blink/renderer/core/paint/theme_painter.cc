@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -364,8 +365,10 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
       tick_rect.SetX(tick_position);
     else
       tick_rect.SetY(tick_position);
-    paint_info.context.FillRect(tick_rect,
-                                o.ResolveColor(GetCSSPropertyColor()));
+    paint_info.context.FillRect(
+        tick_rect, o.ResolveColor(GetCSSPropertyColor()),
+        PaintAutoDarkMode(o.StyleRef(), o.GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
   }
 }
 

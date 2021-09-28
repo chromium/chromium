@@ -43,7 +43,7 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, layout_object_, outline_rects,
-                                    style_to_use);
+                                    style_to_use, layout_object_.GetDocument());
 }
 
 void ObjectPainter::PaintInlineChildrenOutlines(const PaintInfo& paint_info) {

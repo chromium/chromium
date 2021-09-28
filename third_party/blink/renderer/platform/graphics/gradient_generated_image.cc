@@ -58,7 +58,7 @@ void GradientGeneratedImage::DrawTile(GraphicsContext& context,
   PaintFlags gradient_flags(context.FillFlags());
   gradient_->ApplyToFlags(gradient_flags, SkMatrix::I());
 
-  context.DrawRect(src_rect, gradient_flags);
+  context.DrawRect(src_rect, gradient_flags, AutoDarkMode::Disabled());
 }
 
 bool GradientGeneratedImage::ApplyShader(PaintFlags& flags,

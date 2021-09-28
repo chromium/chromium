@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_text_combine_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1284,6 +1285,9 @@ void NGBoxFragmentPainter::PaintColumnRules(
   LayoutUnit rule_thickness(style.ColumnRuleWidth());
   PhysicalRect previous_column;
   bool past_first_column_in_row = false;
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, box_fragment_.GetDocument(),
+                        DarkModeFilter::ElementRole::kBackground));
   for (const NGLink& child : box_fragment_.Children()) {
     if (!child->IsColumnBox()) {
       // Column spanner. Continue in the next row, if there are 2 columns or
@@ -1352,7 +1356,7 @@ void NGBoxFragmentPainter::PaintColumnRules(
     rule.Move(paint_offset);
     IntRect snapped_rule = PixelSnappedIntRect(rule);
     BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
-                                  rule_color, rule_style);
+                                  rule_color, rule_style, auto_dark_mode);
     recorder.UniteVisualRect(snapped_rule);
 
     previous_column = current_column;
@@ -1625,8 +1629,12 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
                            DisplayItem::kForcedColorsModeBackplate,
                            EnclosingIntRect(UnionRect(backplates)));
-  for (const auto backplate : backplates)
-    paint_info.context.FillRect(FloatRect(backplate), backplate_color);
+  for (const auto backplate : backplates) {
+    paint_info.context.FillRect(
+        FloatRect(backplate), backplate_color,
+        PaintAutoDarkMode(style, box_fragment_.GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
+  }
 }
 
 void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,

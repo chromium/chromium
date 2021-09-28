@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -208,8 +209,11 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     Color selection_bg = HighlightPaintingUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
         layout_replaced_.GetNode(), kPseudoIdSelection);
-    local_paint_info.context.FillRect(selection_painting_int_rect,
-                                      selection_bg);
+    local_paint_info.context.FillRect(
+        selection_painting_int_rect, selection_bg,
+        PaintAutoDarkMode(layout_replaced_.StyleRef(),
+                          layout_replaced_.GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
   }
 }
 

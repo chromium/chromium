@@ -95,9 +95,6 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   if (!immutable_.color_filter)
     return color;
 
-  if (role_override_.has_value())
-    role = role_override_.value();
-
   if (ShouldApplyToColor(color, role)) {
     return inverted_color_cache_->GetInvertedColor(
         immutable_.color_filter.get(), color);
@@ -152,9 +149,6 @@ absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
   if (!immutable_.color_filter)
     return absl::nullopt;
 
-  if (role_override_.has_value())
-    role = role_override_.value();
-
   cc::PaintFlags dark_mode_flags = flags;
   if (flags.HasShader()) {
     PaintShader::Type shader_type = flags.getShader()->shader_type();
@@ -197,24 +191,6 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
 
 size_t DarkModeFilter::GetInvertedColorCacheSizeForTesting() {
   return inverted_color_cache_->size();
-}
-
-ScopedDarkModeElementRoleOverride::ScopedDarkModeElementRoleOverride(
-    GraphicsContext* graphics_context,
-    DarkModeFilter::ElementRole role)
-    : graphics_context_(graphics_context) {
-  if (!graphics_context_->IsDarkModeEnabled())
-    return;
-  DarkModeFilter* filter = graphics_context_->GetDarkModeFilter();
-  previous_role_override_ = filter->role_override_;
-  filter->role_override_ = role;
-}
-
-ScopedDarkModeElementRoleOverride::~ScopedDarkModeElementRoleOverride() {
-  if (!graphics_context_->IsDarkModeEnabled())
-    return;
-  graphics_context_->GetDarkModeFilter()->role_override_ =
-      previous_role_override_;
 }
 
 }  // namespace blink

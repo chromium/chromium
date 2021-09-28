@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/line/line_box_list.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
@@ -170,8 +171,12 @@ void LineBoxListPainter::PaintBackplate(
                            visual_rect);
   Color backplate_color =
       layout_object.GetDocument().GetStyleEngine().ForcedBackgroundColor();
-  for (const auto backplate : backplates)
-    paint_info.context.FillRect(FloatRect(backplate), backplate_color);
+  for (const auto backplate : backplates) {
+    paint_info.context.FillRect(
+        FloatRect(backplate), backplate_color,
+        PaintAutoDarkMode(style, layout_object.GetDocument(),
+                          DarkModeFilter::ElementRole::kBackground));
+  }
 }
 
 Vector<PhysicalRect> LineBoxListPainter::GetBackplates(
