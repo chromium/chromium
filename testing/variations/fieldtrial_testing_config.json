@@ -4802,6 +4802,43 @@
             ]
         }
     ],
+    "MyChromeEverywhere": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillCreditCardUploadFeedback",
+                        "AutofillEnableToolbarStatusChip"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NavigationPredictor": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Logistic_Precision_15_M79_20191029",
+                    "params": {
+                        "random_anchor_sampling_period": "100"
+                    },
+                    "enable_features": [
+                        "NavigationPredictor"
+                    ]
+                }
+            ]
+        }
+    ],
     "NavigationThreadingOptimizations": [
         {
             "platforms": [
