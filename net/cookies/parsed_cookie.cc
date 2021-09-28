@@ -596,6 +596,26 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
   // Then we can log any unexpected terminators.
   std::string::const_iterator end = FindFirstTerminator(cookie_line);
 
+  // For metrics on truncating character presence in the cookie line.
+  if (end < cookie_line.end()) {
+    switch (*end) {
+      case '\0':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharNull;
+        break;
+      case '\r':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharNewline;
+        break;
+      case '\n':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   // Exit early for an empty cookie string.
   if (it == end) {
     // TODO(crbug.com/1228815): Apply more specific exclusion reasons.

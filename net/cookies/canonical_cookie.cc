@@ -566,6 +566,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   UMA_HISTOGRAM_BOOLEAN("Cookie.ControlCharacterTruncation",
                         parsed_cookie.HasTruncatedNameOrValue());
 
+  UMA_HISTOGRAM_ENUMERATION(
+      "Cookie.TruncatingCharacterInCookieString",
+      parsed_cookie.GetTruncatingCharacterInCookieStringType());
+
   return cc;
 }
 

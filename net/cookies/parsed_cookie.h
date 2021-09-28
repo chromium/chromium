@@ -87,7 +87,10 @@ class NET_EXPORT ParsedCookie {
   bool IsSameParty() const { return same_party_index_ != 0; }
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasTruncatedNameOrValue() const { return truncated_name_or_value_; }
-
+  TruncatingCharacterInCookieStringType
+  GetTruncatingCharacterInCookieStringType() const {
+    return truncating_char_in_cookie_string_type_;
+  }
   // Returns the number of attributes, for example, returning 2 for:
   //   "BLAH=hah; path=/; domain=.google.com"
   size_t NumberOfAttributes() const { return pairs_.size() - 1; }
@@ -223,6 +226,8 @@ class NET_EXPORT ParsedCookie {
   // For metrics on cookie name/value truncation. See usage at the bottom of
   // `ParseTokenValuePairs()` for more details.
   bool truncated_name_or_value_ = false;
+  TruncatingCharacterInCookieStringType truncating_char_in_cookie_string_type_ =
+      TruncatingCharacterInCookieStringType::kTruncatingCharNone;
 };
 
 }  // namespace net

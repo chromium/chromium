@@ -1357,4 +1357,52 @@ TEST(ParsedCookieTest, TruncatedNameOrValue) {
   }
 }
 
+TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
+  using std::string_literals::operator""s;
+
+  // Test scenarios where a control char may appear at start, middle and end of
+  // a cookie line. Control char array with NULL (\x0), CR (\xD), LF (xA),
+  // HT (\x9) and BS (\x1B).
+  const struct {
+    const char ctlChar;
+    const TruncatingCharacterInCookieStringType
+        expectedTruncatingCharInCookieStringType;
+  } kTests[] = {
+      {'\x0', TruncatingCharacterInCookieStringType::kTruncatingCharNull},
+      {'\xD', TruncatingCharacterInCookieStringType::kTruncatingCharNewline},
+      {'\xA', TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed},
+      {'\x9', TruncatingCharacterInCookieStringType::kTruncatingCharNone},
+      {'\x1B', TruncatingCharacterInCookieStringType::kTruncatingCharNone}};
+
+  for (const auto& test : kTests) {
+    std::string ctl_string(1, test.ctlChar);
+    std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
+    ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_start_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+
+    std::string ctl_at_middle_cookie_string =
+        "foo=bar;"s + ctl_string + "secure"s;
+    ParsedCookie ctl_at_middle_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_middle_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+
+    std::string ctl_at_end_cookie_string =
+        "foo=bar;"s + "secure;"s + ctl_string;
+    ParsedCookie ctl_at_end_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_end_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+  }
+  // Test if there are multiple control characters that terminate.
+  std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
+  ParsedCookie ctls_cookie(ctls_cookie_string);
+  EXPECT_EQ(ctls_cookie.GetTruncatingCharacterInCookieStringType(),
+            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed);
+  // Test with no control characters.
+  std::string cookie_string = "foo=bar;"s;
+  ParsedCookie cookie(cookie_string);
+  EXPECT_EQ(cookie.GetTruncatingCharacterInCookieStringType(),
+            TruncatingCharacterInCookieStringType::kTruncatingCharNone);
+}
+
 }  // namespace net
