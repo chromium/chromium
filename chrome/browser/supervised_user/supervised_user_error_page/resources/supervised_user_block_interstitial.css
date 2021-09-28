@@ -44,6 +44,16 @@ button:active {
   float: left;
 }
 
+.local-web-approvals-enabled .secondary-button {
+  background: var(--background-color);
+  border: 1px solid var(--google-gray-300);
+  color: var(--google-blue-600);
+}
+
+.local-web-approvals-enabled .secondary-button:active {
+  background: var(--secondary-button-hover-fill-color);
+}
+
 #details {
   margin-top: 32px;
 }
@@ -143,16 +153,6 @@ p {
   float: right;
 }
 
-.local-web-approvals-enabled .remote-approvals-button {
-  background: var(--background-color);
-  border: 1px solid var(--google-gray-300);
-  color: var(--google-blue-600);
-}
-
-.local-web-approvals-enabled .remote-approvals-button:active {
-  background: var(--secondary-button-hover-fill-color);
-}
-
 .local-approvals-button {
   float: right;
   margin-left: 24px;
@@ -164,6 +164,11 @@ p {
 
 .go-back-button {
   float: left;
+}
+
+.local-web-approvals-enabled .go-back-button {
+  float: right;
+  margin-left: 24px;
 }
 
 #custodians-information {

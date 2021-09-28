@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -10,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/supervised_user/navigation_finished_waiter.h"
 #include "chrome/browser/supervised_user/permission_request_creator_mock.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -330,9 +333,16 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 }
 
 class SupervisedUserIframeFilterTest
-    : public SupervisedUserNavigationThrottleTest {
+    : public SupervisedUserNavigationThrottleTest,
+      public testing::WithParamInterface<bool> {
  protected:
-  SupervisedUserIframeFilterTest() = default;
+  SupervisedUserIframeFilterTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          supervised_users::kLocalWebApprovals);
+    }
+  }
+
   ~SupervisedUserIframeFilterTest() override = default;
 
   void SetUpOnMainThread() override;
@@ -341,9 +351,11 @@ class SupervisedUserIframeFilterTest
   std::vector<int> GetBlockedFrames();
   const GURL& GetBlockedFrameURL(int frame_id);
   bool IsInterstitialBeingShownInFrame(int frame_id);
-  bool IsAskPermissionButtonBeingShown(int frame_id);
+  bool IsRemoteApprovalsButtonBeingShown(int frame_id);
+  bool IsLocalApprovalsButtonBeingShown(int frame_id);
   void RequestPermissionFromFrame(int frame_id);
   void WaitForNavigationFinished(int frame_id, const GURL& url);
+  bool IsLocalWebApprovalsEnabled() const;
 
   PermissionRequestCreatorMock* permission_creator() {
     return permission_creator_;
@@ -357,6 +369,7 @@ class SupervisedUserIframeFilterTest
 
   std::unique_ptr<RenderFrameTracker> tracker_;
   PermissionRequestCreatorMock* permission_creator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
@@ -413,11 +426,20 @@ bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
-bool SupervisedUserIframeFilterTest::IsAskPermissionButtonBeingShown(
+bool SupervisedUserIframeFilterTest::IsRemoteApprovalsButtonBeingShown(
     int frame_id) {
   std::string command =
       "domAutomationController.send("
       "(document.getElementById('remote-approvals-button').hidden"
+      "? (false) : (true)));";
+  return RunCommandAndGetBooleanFromFrame(frame_id, command);
+}
+
+bool SupervisedUserIframeFilterTest::IsLocalApprovalsButtonBeingShown(
+    int frame_id) {
+  std::string command =
+      "domAutomationController.send("
+      "(document.getElementById('local-approvals-button').hidden"
       "? (false) : (true)));";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
@@ -462,7 +484,15 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
   return value;
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockSubFrame) {
+bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
+  return GetParam();
+}
+
+INSTANTIATE_TEST_SUITE_P(LocalWebApprovalsEnabled,
+                         SupervisedUserIframeFilterTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
   BlockHost(kIframeHost2);
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
@@ -492,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockSubFrame) {
   EXPECT_FALSE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   BlockHost(kIframeHost1);
   BlockHost(kIframeHost2);
 
@@ -538,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   DCHECK_EQ(GetBlockedFrames().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, TestBackButton) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
   BlockHost(kIframeHost1);
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
@@ -570,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, TestBackButton) {
   EXPECT_TRUE(value);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        TestBackButtonMainFrame) {
   BlockHost(kExampleHost);
 
@@ -603,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(value);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        AllowlistedMainFrameDenylistedIframe) {
   AllowlistHost(kExampleHost);
   BlockHost(kIframeHost1);
@@ -618,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_EQ(kIframeHost1, GetBlockedFrameURL(blocked[0]).host());
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        RememberAlreadyRequestedHosts) {
   BlockHost(kExampleHost);
 
@@ -630,8 +660,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   auto blocked_frames = GetBlockedFrames();
   EXPECT_EQ(blocked_frames.size(), 1u);
 
-  // Expect that request permission button is shown.
-  EXPECT_TRUE(IsAskPermissionButtonBeingShown(blocked_frames[0]));
+  // Expect that remote approvals button is shown.
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the local approvals button is shown if the flag is enabled.
+  if (IsLocalWebApprovalsEnabled()) {
+    EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  } else {
+    EXPECT_FALSE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  }
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -653,7 +689,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
   // Error page is being shown, but "Ask Permission" button is not being shown.
-  EXPECT_FALSE(IsAskPermissionButtonBeingShown(blocked_frames[0]));
+  EXPECT_FALSE(IsRemoteApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the local approvals button is still shown on the page if the
+  // flag is enabled.
+  if (IsLocalWebApprovalsEnabled()) {
+    EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  } else {
+    EXPECT_FALSE(IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  }
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -676,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        IframesWithSameDomainAsMainFrameAllowed) {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());

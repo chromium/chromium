@@ -126,6 +126,8 @@ std::string BuildHtml(bool allow_access_requests,
   bool local_web_approvals_enabled =
       supervised_users::IsLocalWebApprovalsEnabled();
   strings.SetBoolean("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
+  bool is_automatically_blocked = ReasonIsAutomatic(reason);
+  DCHECK(is_child_account || !is_automatically_blocked);
 
   std::u16string custodian16 = base::UTF8ToUTF16(custodian);
   std::u16string block_header;
@@ -137,8 +139,10 @@ std::string BuildHtml(bool allow_access_requests,
     if (is_child_account) {
       block_header =
           l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-      block_message =
-          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
+      block_message = l10n_util::GetStringUTF16(
+          local_web_approvals_enabled && is_automatically_blocked
+              ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
+              : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
     } else {
       block_header = l10n_util::GetStringFUTF16(IDS_BLOCK_INTERSTITIAL_HEADER,
                                                 custodian16);
@@ -161,23 +165,23 @@ std::string BuildHtml(bool allow_access_requests,
                         reason, is_child_account, second_custodian.empty())));
   strings.SetString("blockReasonHeader", l10n_util::GetStringUTF16(
                                              IDS_SUPERVISED_USER_BLOCK_HEADER));
-  bool show_feedback = ReasonIsAutomatic(reason);
-  DCHECK(is_child_account || !show_feedback);
 
-  strings.SetBoolean("showFeedbackLink", show_feedback);
+  strings.SetBoolean("showFeedbackLink", is_automatically_blocked);
   strings.SetString("feedbackLink", l10n_util::GetStringUTF16(
                                         IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
-  strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
-
   if (local_web_approvals_enabled) {
     strings.SetString(
         "remoteApprovalsButton",
         l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
+    strings.SetString("backButton",
+                      l10n_util::GetStringUTF16(IDS_REQUEST_SENT_OK));
   } else {
     strings.SetString("remoteApprovalsButton",
                       l10n_util::GetStringUTF16(
                           IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+    strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
   }
+
   strings.SetString(
       "localApprovalsButton",
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
@@ -189,8 +193,20 @@ std::string BuildHtml(bool allow_access_requests,
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
   std::u16string request_sent_message;
   std::u16string request_failed_message;
+  std::u16string request_sent_description;
   if (is_child_account) {
-    if (second_custodian.empty()) {
+    if (local_web_approvals_enabled) {
+      request_sent_message = l10n_util::GetStringUTF16(
+          IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
+      request_sent_description = l10n_util::GetStringUTF16(
+          second_custodian.empty()
+              ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
+              : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
+      request_failed_message = l10n_util::GetStringUTF16(
+          second_custodian.empty()
+              ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
+              : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
+    } else if (second_custodian.empty()) {
       request_sent_message = l10n_util::GetStringUTF16(
           IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT);
       request_failed_message = l10n_util::GetStringUTF16(
@@ -208,6 +224,7 @@ std::string BuildHtml(bool allow_access_requests,
         IDS_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE, custodian16);
   }
   strings.SetString("requestSentMessage", request_sent_message);
+  strings.SetString("requestSentDescription", request_sent_description);
   strings.SetString("requestFailedMessage", request_failed_message);
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =

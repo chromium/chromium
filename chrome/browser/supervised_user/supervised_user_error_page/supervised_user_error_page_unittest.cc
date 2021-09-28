@@ -109,8 +109,16 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     if (param.is_child_account) {
       EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                               IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
-      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
+      if (param.is_local_web_approvals_enabled &&
+          (param.reason == ASYNC_CHECKER || param.reason == DENYLIST)) {
+        EXPECT_THAT(
+            result,
+            testing::HasSubstr(l10n_util::GetStringUTF8(
+                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED)));
+      } else {
+        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
+      }
       EXPECT_THAT(
           result,
           testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
@@ -122,9 +130,13 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
       if (param.is_local_web_approvals_enabled) {
         EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                                 IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON)));
+        EXPECT_THAT(result, testing::HasSubstr(
+                                l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK)));
       } else {
         EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                                 IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON)));
+        EXPECT_THAT(result, testing::HasSubstr(
+                                l10n_util::GetStringUTF8(IDS_BACK_BUTTON)));
       }
     } else {
       EXPECT_THAT(result,
@@ -150,7 +162,22 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                     IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED)));
   }
   if (param.is_child_account) {
-    if (param.has_two_parents) {
+    if (param.is_local_web_approvals_enabled) {
+      EXPECT_THAT(result,
+                  testing::HasSubstr(l10n_util::GetStringUTF8(
+                      IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE)));
+      if (param.has_two_parents) {
+        EXPECT_THAT(
+            result,
+            testing::HasSubstr(l10n_util::GetStringUTF8(
+                IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT)));
+      } else {
+        EXPECT_THAT(
+            result,
+            testing::HasSubstr(l10n_util::GetStringUTF8(
+                IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT)));
+      }
+    } else if (param.has_two_parents) {
       EXPECT_THAT(
           result,
           testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(

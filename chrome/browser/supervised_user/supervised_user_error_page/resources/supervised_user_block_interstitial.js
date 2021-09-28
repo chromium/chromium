@@ -4,6 +4,7 @@
 
 let showDetails = false;
 
+let localWebApprovalsEnabled = false;
 
 function updateDetails() {
   $('details').hidden = !showDetails;
@@ -39,7 +40,7 @@ function initialize() {
   const avatarURL1x = loadTimeData.getString('avatarURL1x');
   const avatarURL2x = loadTimeData.getString('avatarURL2x');
   const custodianName = loadTimeData.getString('custodianName');
-  const localWebApprovalsEnabled =
+  localWebApprovalsEnabled =
       loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
   document.body.classList.toggle(
       'local-web-approvals-enabled', localWebApprovalsEnabled);
@@ -79,9 +80,9 @@ function initialize() {
     $('remote-approvals-button').hidden = false;
     if (localWebApprovalsEnabled) {
       $('local-approvals-button').hidden = false;
+      $('remote-approvals-button').classList.add('secondary-button');
     }
     $('remote-approvals-button').onclick = function(event) {
-      $('remote-approvals-button').hidden = true;
       sendCommand('request');
     };
     // TODO(b/195319994): Add handler for clicks on local approvals button.
@@ -89,10 +90,8 @@ function initialize() {
     $('remote-approvals-button').hidden = true;
   }
 
-  $('back-button').onclick = function(event) {
-    sendCommand('back');
-  };
-  if (loadTimeData.getBoolean('showFeedbackLink')) {
+  if (loadTimeData.getBoolean('showFeedbackLink') &&
+      !localWebApprovalsEnabled) {
     $('show-details-link').hidden = false;
     $('show-details-link').onclick = function(event) {
       showDetails = true;
@@ -139,15 +138,25 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-header').hidden = true;
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
+  if (localWebApprovalsEnabled) {
+    $('custodians-information').hidden = true;
+    $('local-approvals-button').hidden = false;
+  }
   showDetails = false;
   updateDetails();
-
+  $('back-button').onclick = function(event) {
+    sendCommand('back');
+  };
   if (isSuccessful) {
     $('request-failed-message').hidden = true;
     $('request-sent-message').hidden = false;
     $('back-button').hidden = !isMainFrame;
     $('remote-approvals-button').hidden = true;
     $('show-details-link').hidden = true;
+    if (localWebApprovalsEnabled) {
+      $('request-sent-description').hidden = false;
+      $('local-approvals-button').classList.add('secondary-button');
+    }
   } else {
     $('request-failed-message').hidden = false;
     $('remote-approvals-button').hidden = false;
