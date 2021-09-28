@@ -74,7 +74,8 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
   return heap;
 }
 
-TEST(WinDnsSystemSettings, GetAllNameServersEmpty) {
+// TODO(crbug/1253805): Fix and reenable the test.
+TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersEmpty) {
   AdapterInfo infos[2] = {
       {
           .if_type = IF_TYPE_USB,
@@ -98,7 +99,9 @@ TEST(WinDnsSystemSettings, GetAllNameServersEmpty) {
   EXPECT_TRUE(nameservers.value().empty());
 }
 
-TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
+// TODO(crbug/1253805): Fix and reenable the test.
+TEST(WinDnsSystemSettings,
+     DISABLED_GetAllNameServersStatelessDiscoveryAdresses) {
   AdapterInfo infos[2] = {
       {
           .if_type = IF_TYPE_USB,
@@ -121,7 +124,8 @@ TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
   EXPECT_TRUE(nameservers.value().empty());
 }
 
-TEST(WinDnsSystemSettings, GetAllNameServersValid) {
+// TODO(crbug/1253805): Fix and reenable the test.
+TEST(WinDnsSystemSettings, DISABLED_GetAllNameServersValid) {
   AdapterInfo infos[2] = {
       {.if_type = IF_TYPE_USB,
        .oper_status = IfOperStatusUp,
