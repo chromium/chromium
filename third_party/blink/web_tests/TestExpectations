@@ -5303,7 +5303,6 @@ crbug.com/476553 virtual/scroll-unification/fast/forms/suggestion-picker/datetim
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/subpixel-overflow-mouse-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/destroy-middle-click-locked-target-crash.html [ Crash Failure Pass Skip Timeout ]
-crbug.com/476553 virtual/scroll-unification/http/tests/misc/lock-renderer-for-middle-click-autoscroll.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/scroll-cross-origin-iframes.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Crash Failure Pass Timeout ]
