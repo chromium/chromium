@@ -870,20 +870,6 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-const ui::ColorProvider* Widget::GetColorProvider() const {
-  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
-  return ui::ColorProviderManager::Get().GetColorProviderFor(
-      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
-           ? ui::ColorProviderManager::ColorMode::kDark
-           : ui::ColorProviderManager::ColorMode::kLight,
-       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-           ? ui::ColorProviderManager::ContrastMode::kHigh
-           : ui::ColorProviderManager::ContrastMode::kNormal,
-       GetNativeTheme()->is_custom_system_theme()
-           ? ui::ColorProviderManager::SystemTheme::kCustom
-           : ui::ColorProviderManager::SystemTheme::kDefault});
-}
-
 FocusManager* Widget::GetFocusManager() {
   Widget* toplevel_widget = GetTopLevelWidget();
   return toplevel_widget ? toplevel_widget->focus_manager_.get() : nullptr;
@@ -1024,6 +1010,8 @@ void Widget::ThemeChanged() {
 
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetThemeChanged(this);
+
+  NotifyColorProviderChanged();
 }
 
 void Widget::DeviceScaleFactorChanged(float old_device_scale_factor,
@@ -1748,6 +1736,23 @@ View* Widget::GetFocusTraversableParentView() {
 void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   TRACE_EVENT0("ui", "Widget::OnNativeThemeUpdated");
   ThemeChanged();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Widget, ui::ColorProviderSource:
+
+const ui::ColorProvider* Widget::GetColorProvider() const {
+  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+           ? ui::ColorProviderManager::ColorMode::kDark
+           : ui::ColorProviderManager::ColorMode::kLight,
+       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+           ? ui::ColorProviderManager::ContrastMode::kHigh
+           : ui::ColorProviderManager::ContrastMode::kNormal,
+       GetNativeTheme()->is_custom_system_theme()
+           ? ui::ColorProviderManager::SystemTheme::kCustom
+           : ui::ColorProviderManager::SystemTheme::kDefault});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

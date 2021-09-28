@@ -226,7 +226,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                             const ui::ImageModel& icon) {
     auto* widget =
         views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
-    ui::ColorProvider* color_provider =
+    const ui::ColorProvider* color_provider =
         widget ? widget->GetColorProvider() : nullptr;
     gfx::ImageSkia drag_image(
         std::make_unique<BookmarkDragImageSource>(

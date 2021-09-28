@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -102,6 +103,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::EventSource,
                             public FocusTraversable,
                             public ui::NativeThemeObserver,
+                            public ui::ColorProviderSource,
                             public ui::metadata::MetaDataProvider {
  public:
   METADATA_HEADER_BASE(Widget);
@@ -745,13 +747,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   }
   virtual const ui::NativeTheme* GetNativeTheme() const;
 
-  // Returns the ui::ColorProvider associated with this Widget.
-  ui::ColorProvider* GetColorProvider() {
-    return const_cast<ui::ColorProvider*>(
-        static_cast<const Widget*>(this)->GetColorProvider());
-  }
-  const ui::ColorProvider* GetColorProvider() const;
-
   // Returns the FocusManager for this widget.
   // Note that all widgets in a widget hierarchy share the same focus manager.
   FocusManager* GetFocusManager();
@@ -1042,6 +1037,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override;
 
   // Set the native theme from which this widget gets color from.
   void SetNativeThemeForTest(ui::NativeTheme* native_theme) {

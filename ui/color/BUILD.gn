@@ -28,6 +28,10 @@ component("color") {
   sources = [
     "color_mixer.cc",
     "color_provider.cc",
+    "color_provider_source.cc",
+    "color_provider_source.h",
+    "color_provider_source_observer.cc",
+    "color_provider_source_observer.h",
     "color_provider_utils.cc",
     "color_provider_utils.h",
     "color_recipe.cc",

@@ -311,7 +311,7 @@ void TooltipAura::Update(aura::Window* window,
   widget_->SetTooltipView(std::move(new_tooltip_view));
   widget_->AddObserver(this);
 
-  ui::ColorProvider* color_provider = widget_->GetColorProvider();
+  const ui::ColorProvider* color_provider = widget_->GetColorProvider();
   auto background_color = color_provider->GetColor(ui::kColorTooltipBackground);
   if (!CanUseTranslucentTooltipWidget()) {
     background_color = color_utils::GetResultingPaintColor(
