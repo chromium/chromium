@@ -112,20 +112,21 @@ std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT);
 
-  if (DoesFirstConnectedDeviceHaveBatteryInfo())
-    return l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
-        base::NumberToString16(
-            first_connected_device_.value()
-                .battery_info->default_properties->battery_percentage));
+  if (connected_device_count_ == 1) {
+    if (DoesFirstConnectedDeviceHaveBatteryInfo()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
+          base::NumberToString16(
+              first_connected_device_.value()
+                  .battery_info->default_properties->battery_percentage));
+    }
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL);
+  }
 
-  if (connected_device_count_ > 1)
-    return l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL,
-        base::FormatNumber(connected_device_count_));
-
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL,
+      base::FormatNumber(connected_device_count_));
 }
 
 std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
@@ -133,22 +134,23 @@ std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP);
 
-  if (DoesFirstConnectedDeviceHaveBatteryInfo())
+  if (connected_device_count_ == 1) {
+    if (DoesFirstConnectedDeviceHaveBatteryInfo()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP,
+          first_connected_device_.value().device_name,
+          base::NumberToString16(
+              first_connected_device_.value()
+                  .battery_info->default_properties->battery_percentage));
+    }
     return l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP,
-        first_connected_device_.value().device_name,
-        base::NumberToString16(
-            first_connected_device_.value()
-                .battery_info->default_properties->battery_percentage));
-
-  if (connected_device_count_ > 1)
-    return l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
-        base::FormatNumber(connected_device_count_));
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP,
+        first_connected_device_.value().device_name);
+  }
 
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP,
-      first_connected_device_.value().device_name);
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
+      base::FormatNumber(connected_device_count_));
 }
 
 void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
