@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,18 +22,37 @@ import org.chromium.chrome.browser.content_creation.reactions.internal.R;
  * Dialog for the reactions creation.
  */
 public class LightweightReactionsDialog extends DialogFragment {
+    private Bitmap mScreenshot;
     private LightweightReactionsSceneCoordinator mSceneCoordinator;
     private View mContentView;
+
+    /**
+     * Initialize the dialog outside of the constructor as fragments require default constructor.
+     *
+     * @param screenshot A {@link Bitmap} of the screenshot of the page to set as the background.
+     */
+    void init(Bitmap screenshot) {
+        mScreenshot = screenshot;
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_Fullscreen);
-        mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         mSceneCoordinator = new LightweightReactionsSceneCoordinator();
+
+        mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
+        setBackgroundImage();
         builder.setView(mContentView);
 
         return builder.create();
+    }
+
+    private void setBackgroundImage() {
+        ImageView sceneBackground =
+                mContentView.findViewById(R.id.lightweight_reactions_background);
+        Drawable background = new BitmapDrawable(getResources(), mScreenshot);
+        sceneBackground.setImageDrawable(background);
     }
 }

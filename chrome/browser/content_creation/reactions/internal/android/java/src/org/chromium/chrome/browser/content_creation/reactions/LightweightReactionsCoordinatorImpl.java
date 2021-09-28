@@ -44,6 +44,7 @@ public class LightweightReactionsCoordinatorImpl
 
     @Override
     protected void handleScreenshot() {
+        mDialog.init(mScreenshot);
         showDialog();
     }
 }
