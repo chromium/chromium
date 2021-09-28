@@ -217,16 +217,6 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
          font_description.GenericFamily() == FontDescription::kStandardFamily);
   name = family.Utf8();
 
-#if defined(OS_ANDROID)
-  // If this is a locale-specific family, try looking up locale-specific
-  // typeface first.
-  if (const char* locale_family = GetLocaleSpecificFamilyName(family)) {
-    if (sk_sp<SkTypeface> typeface =
-            CreateLocaleSpecificTypeface(font_description, locale_family))
-      return typeface;
-  }
-#endif  // defined(OS_ANDROID)
-
 #if defined(OS_WIN)
   // TODO(vmpstr): Deal with paint typeface here.
   if (sideloaded_fonts_) {

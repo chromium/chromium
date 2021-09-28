@@ -82,41 +82,6 @@ const AtomicString& FontCache::SystemFontFamily() {
 // static
 void FontCache::SetSystemFontFamily(const AtomicString&) {}
 
-sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
-    const FontDescription& font_description,
-    const char* locale_family_name) {
-  const char* bcp47 = font_description.LocaleOrDefault().LocaleForSkFontMgr();
-  DCHECK(bcp47);
-  SkFontMgr* font_manager =
-      font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
-  sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
-      locale_family_name, font_description.SkiaFontStyle(), &bcp47,
-      /* bcp47Count */ 1,
-      // |matchFamilyStyleCharacter| is the only API that accepts |bcp47|, but
-      // it also checks if a character has a glyph. To look up the first
-      // match, use the space character, because all fonts are likely to have
-      // a glyph for it.
-      kSpaceCharacter));
-  if (!typeface)
-    return nullptr;
-
-  // When the specified family of the specified language does not exist, we want
-  // to fall back to the specified family of the default language, but
-  // |matchFamilyStyleCharacter| falls back to the default family of the
-  // specified language. Get the default family of the language and compare
-  // with what we get.
-  SkString skia_family_name;
-  typeface->getFamilyName(&skia_family_name);
-  sk_sp<SkTypeface> fallback(font_manager->matchFamilyStyleCharacter(
-      nullptr, font_description.SkiaFontStyle(), &bcp47,
-      /* bcp47Count */ 1, kSpaceCharacter));
-  SkString skia_fallback_name;
-  fallback->getFamilyName(&skia_fallback_name);
-  if (typeface != fallback)
-    return typeface;
-  return nullptr;
-}
-
 scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
@@ -195,11 +160,6 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 AtomicString FontCache::GetGenericFamilyNameForScript(
     const AtomicString& family_name,
     const FontDescription& font_description) {
-  // If this is a locale-specifc family name, |FontCache| can handle different
-  // typefaces per locale. Let it handle.
-  if (GetLocaleSpecificFamilyName(family_name))
-    return family_name;
-
   // If monospace, do not apply CJK hack to find i18n fonts, because
   // i18n fonts are likely not monospace. Monospace is mostly used
   // for code, but when i18n characters appear in monospace, system
