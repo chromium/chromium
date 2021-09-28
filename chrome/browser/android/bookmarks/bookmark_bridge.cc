@@ -601,7 +601,7 @@ ScopedJavaLocalRef<jstring> BookmarkBridge::GetPowerBookmarkMeta(
     jint type) {
   const BookmarkNode* node = GetNodeByID(id, type);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(node);
+      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
 
   std::string proto_bytes;
   if (meta)

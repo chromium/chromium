@@ -41,7 +41,7 @@ TEST_F(PowerBookmarkUtilsTest, TestAddAndAccess) {
   SetNodePowerBookmarkMeta(model, node, std::move(meta));
 
   const std::unique_ptr<PowerBookmarkMeta> fetched_meta =
-      GetNodePowerBookmarkMeta(node);
+      GetNodePowerBookmarkMeta(model, node);
 
   EXPECT_EQ(kLeadImageUrl, fetched_meta->lead_image().url());
 }
@@ -60,7 +60,7 @@ TEST_F(PowerBookmarkUtilsTest, TestAddAndDelete) {
   DeleteNodePowerBookmarkMeta(model, node);
 
   const std::unique_ptr<PowerBookmarkMeta> fetched_meta =
-      GetNodePowerBookmarkMeta(node);
+      GetNodePowerBookmarkMeta(model, node);
 
   EXPECT_EQ(nullptr, fetched_meta.get());
 }
@@ -318,6 +318,22 @@ TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesFolderSearch) {
   ASSERT_EQ(1U, nodes.size());
   EXPECT_TRUE(node == nodes[0]);
   nodes.clear();
+}
+
+TEST_F(PowerBookmarkUtilsTest, EncodeAndDecodeForPersistence) {
+  PowerBookmarkMeta meta;
+  meta.set_type(PowerBookmarkType::SHOPPING);
+  meta.mutable_shopping_specifics()->set_title("Example Title");
+
+  std::string encoded_data;
+  EncodeMetaForStorage(meta, &encoded_data);
+
+  PowerBookmarkMeta out_meta;
+  EXPECT_TRUE(DecodeMetaFromStorage(encoded_data, &out_meta));
+
+  ASSERT_EQ(meta.type(), out_meta.type());
+  ASSERT_EQ(meta.shopping_specifics().title(),
+            out_meta.shopping_specifics().title());
 }
 
 }  // namespace

@@ -62,6 +62,7 @@ const bookmarks::BookmarkNode* AddURL(
 // is transferred to the caller and a new instance is created each time this is
 // called. If the node has no meta, nullprt is returned.
 std::unique_ptr<PowerBookmarkMeta> GetNodePowerBookmarkMeta(
+    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node);
 
 // Set or overwrite the PowerBookmarkMeta for a node.
@@ -84,6 +85,13 @@ void GetBookmarksMatchingProperties(
     const PowerBookmarkQueryFields& query,
     size_t max_count,
     std::vector<const bookmarks::BookmarkNode*>* nodes);
+
+// Encode the provided metadata into |out| so it can be safely stored as JSON
+// in the persistence layer.
+void EncodeMetaForStorage(const PowerBookmarkMeta& meta, std::string* out);
+
+// Decode metadata into |out| and return whether the operation was successful.
+bool DecodeMetaFromStorage(const std::string& data, PowerBookmarkMeta* out);
 
 }  // namespace power_bookmarks
 
