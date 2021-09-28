@@ -546,7 +546,7 @@ template("apple_toolchain") {
           # order.
           "{{target_gen_dir}}/{{module_name}}.swiftmodule",
 
-          "{{target_gen_dir}}/{{module_name}}.h",
+          "{{target_gen_dir}}/{{target_output_name}}.h",
           "{{target_gen_dir}}/{{module_name}}.swiftdoc",
           "{{target_gen_dir}}/{{module_name}}.swiftsourceinfo",
         ]
@@ -572,7 +572,7 @@ template("apple_toolchain") {
             "$_env_vars $python_path $_tool -module-name {{module_name}} " +
             "-object-dir $_objects_dir " +
             "-module-path {{target_gen_dir}}/{{module_name}}.swiftmodule " +
-            "-header-path {{target_gen_dir}}/{{module_name}}.h " +
+            "-header-path {{target_gen_dir}}/{{target_output_name}}.h " +
             "-depfile {{target_out_dir}}/{{module_name}}.d " +
             "-depfile-filter {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-bridge-header {{bridge_header}} $_extra_flags " +
