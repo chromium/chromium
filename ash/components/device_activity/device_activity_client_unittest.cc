@@ -33,7 +33,7 @@ class DeviceActivityClientTest : public testing::Test {
   void SetUp() override {
     CreateWifiNetworkConfig();
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
-        Trigger::kNetwork, network_state_test_helper_.network_state_handler());
+        network_state_test_helper_.network_state_handler());
   }
 
   void TearDown() override {}
@@ -65,6 +65,11 @@ class DeviceActivityClientTest : public testing::Test {
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
 };
+
+TEST_F(DeviceActivityClientTest, DefaultStateIsIdle) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
 
 }  // namespace device_activity
 }  // namespace ash

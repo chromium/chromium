@@ -48,7 +48,7 @@ DeviceActivityController::~DeviceActivityController() {
 void DeviceActivityController::Start(Trigger t) {
   if (t == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
-        t, chromeos::NetworkHandler::Get()->network_state_handler());
+        chromeos::NetworkHandler::Get()->network_state_handler());
   }
 }
 
