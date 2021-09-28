@@ -3706,3 +3706,22 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectWithOptGroup', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'GroupNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p><span>hello</span><a href="a.com">hi</a><a href="a.com">hey</a></p>
+    <p><span>goodbye</span><a href="a.com">bye</a><a href="a.com">chow</a></p>
+  `;
+  this.runWithLoadedTree(site, function() {
+    mockFeedback.call(doCmd('nextGroup'))
+        .expectSpeech('goodbye', 'bye', 'Link', 'chow', 'Link')
+        .call(doCmd('nextObject'))
+        .expectSpeech('goodbye')
+        .call(doCmd('nextObject'))
+        .expectSpeech('bye', 'Link')
+        .call(doCmd('previousGroup'))
+        .expectSpeech('hello', 'hi', 'Link', 'hey', 'Link')
+        .replay();
+  });
+});

@@ -653,6 +653,25 @@ AutomationPredicate = class {
   }
 
   /**
+   * Matches against nodes visited during group navigation.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static group(node) {
+    if (AutomationPredicate.text(node) || node.display === 'inline') {
+      return false;
+    }
+
+    return AutomationPredicate.match({
+      anyRole: [Role.HEADING, Role.LIST, Role.PARAGRAPH],
+      anyPredicate: [
+        AutomationPredicate.editText, AutomationPredicate.formField,
+        AutomationPredicate.object, AutomationPredicate.table
+      ]
+    })(node);
+  }
+
+  /**
    * Matches against editable nodes, that should not be treated in the usual
    * fashion.
    * Instead, only output the contents around the selection in braille.
@@ -772,21 +791,6 @@ AutomationPredicate.landmark = AutomationPredicate.roles([
   Role.APPLICATION, Role.BANNER, Role.COMPLEMENTARY, Role.CONTENT_INFO,
   Role.FORM, Role.MAIN, Role.NAVIGATION, Role.REGION, Role.SEARCH
 ]);
-
-
-/**
- * Matches against nodes visited during group navigation. An object as
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.group = AutomationPredicate.match({
-  anyRole: [Role.HEADING, Role.LIST, Role.PARAGRAPH],
-  anyPredicate: [
-    AutomationPredicate.editText, AutomationPredicate.formField,
-    AutomationPredicate.object, AutomationPredicate.table
-  ]
-});
-
 
 /**
  * Matches against nodes that contain interesting nodes, but should never be
