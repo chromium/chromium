@@ -1478,6 +1478,10 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
                                        &scaled_d3d11_texture);
   RETURN_ON_HR_FAILURE(hr, "Failed to create texture", hr);
 
+  hr = media::SetDebugName(scaled_d3d11_texture.Get(),
+                           "MFVideoEncodeAccelerator_ScaledTexture");
+  RETURN_ON_HR_FAILURE(hr, "Failed to set debug name", hr);
+
   D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_desc = {};
   output_desc.ViewDimension = D3D11_VPOV_DIMENSION_TEXTURE2D;
   output_desc.Texture2D.MipSlice = 0;
