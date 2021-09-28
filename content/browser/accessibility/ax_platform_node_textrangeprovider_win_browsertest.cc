@@ -2102,7 +2102,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <head></head>
       <body>
         <span>start</span>
-        <svg></svg>
+        <svg aria-label="middle"></svg>
         <span>end</span>
       </body>
       </html>)HTML");

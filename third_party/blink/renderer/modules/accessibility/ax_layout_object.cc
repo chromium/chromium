@@ -496,6 +496,13 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     }
   }
 
+  // The SVG-AAM says the foreignObject element is normally presentational.
+  if (layout_object_->IsSVGForeignObject()) {
+    if (ignored_reasons)
+      ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+    return true;
+  }
+
   // Make sure renderers with layers stay in the tree.
   if (GetLayoutObject() && GetLayoutObject()->HasLayer() && node &&
       node->hasChildren()) {

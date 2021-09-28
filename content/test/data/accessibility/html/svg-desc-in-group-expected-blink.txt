@@ -1,0 +1,8 @@
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body'
+++++++svgRoot htmlTag='svg'
+++++++++genericContainer htmlTag='g'
+++++++++++genericContainer htmlTag='text'
+++++++++++++staticText name='hello world'
+++++++++++++++inlineTextBox name='hello world'

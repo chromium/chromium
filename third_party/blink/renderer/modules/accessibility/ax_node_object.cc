@@ -109,7 +109,9 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
+#include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
@@ -546,6 +548,33 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty())
     return kIncludeObject;
 
+  if (IsA<SVGElement>(node)) {
+    // The symbol element is used to define graphical templates which can be
+    // instantiated by a use element but which are not rendered directly. We
+    // don't want to include these template objects, or their subtrees, where
+    // they appear in the DOM. Any associated semantic information (e.g. the
+    // title child of a symbol) may participate in the text alternative
+    // computation where it is instantiated by the use element.
+    // https://svgwg.org/svg2-draft/struct.html#SymbolElement
+    if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
+      return kIgnoreObject;
+
+    // The SVG-AAM states that user agents MUST provide an accessible object
+    // for rendered SVG elements that have at least one direct child title or
+    // desc element that is not empty after trimming whitespace. But it also
+    // says, "User agents MAY include elements with these child elements without
+    // checking for valid text content." So just check for their existence in
+    // order to be performant. https://w3c.github.io/svg-aam/#include_elements
+    if (ElementTraversal::FirstChild(
+            *To<ContainerNode>(node), [](auto& element) {
+              return element.HasTagName(svg_names::kTitleTag) ||
+                     element.HasTagName(svg_names::kDescTag);
+            })) {
+      return kIncludeObject;
+    }
+
+    return kDefaultBehavior;
+  }
   if (IsImage()) {
     String alt = GetAttribute(kAltAttr);
     // A null alt attribute means the attribute is not present. We assume this
@@ -4962,6 +4991,12 @@ String AXNodeObject::NativeTextAlternative(
         *container_node, HasTagName(svg_names::kTitleTag));
 
     if (title) {
+      // TODO(accessibility): In the case of a use element, creation will fail
+      // because |AXObject::ComputeNonARIAParent| returns null because the use
+      // element's subtree isn't visited by LayoutTreeBuilderTraversal. We can
+      // solve this by including the parent when calling |GetOrCreate|. But we
+      // need to be sure that |ClearChildren| will clear title_ax_object if the
+      // use element is removed.
       AXObject* title_ax_object = AXObjectCache().GetOrCreate(title);
       if (title_ax_object && !visited.Contains(title_ax_object)) {
         text_alternative =
@@ -4981,6 +5016,31 @@ String AXNodeObject::NativeTextAlternative(
         *found_text_alternative = true;
       } else {
         return text_alternative;
+      }
+    }
+    // The SVG-AAM says that the xlink:title participates as a name source
+    // for links.
+    if (IsA<SVGAElement>(GetNode())) {
+      name_from = ax::mojom::blink::NameFrom::kAttribute;
+      if (name_sources) {
+        name_sources->push_back(
+            NameSource(*found_text_alternative, xlink_names::kTitleAttr));
+        name_sources->back().type = name_from;
+      }
+
+      const AtomicString& title_attr =
+          DynamicTo<Element>(GetNode())->FastGetAttribute(
+              xlink_names::kTitleAttr);
+      if (!title_attr.IsEmpty()) {
+        text_alternative = title_attr;
+        if (name_sources) {
+          NameSource& source = name_sources->back();
+          source.text = text_alternative;
+          source.attribute_value = title_attr;
+          *found_text_alternative = true;
+        } else {
+          return text_alternative;
+        }
       }
     }
   }

@@ -1,9 +1,13 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++svgRoot
-++++++genericContainer
-++++++++math
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer ignored htmlTag='body'
+++++++genericContainer className='svg-container' htmlTag='div'
+++++++++svgRoot htmlTag='svg' name='original'
+++++++++genericContainer className='html-namespace' htmlTag='svg' name='created'
+++++++++genericContainer className='custom-namespace' htmlTag='svg' name='created'
+++++++genericContainer className='math-container' htmlTag='div'
+++++++++math htmlTag='math' name='original'
+++++++++genericContainer className='html-namespace' htmlTag='math' name='created'
+++++++++genericContainer className='custom-namespace' htmlTag='math' name='created'
 ++++++staticText name='Done'
 ++++++++inlineTextBox name='Done'

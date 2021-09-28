@@ -2709,8 +2709,37 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgChildOfButton) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-child-of-button.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgDescInGroup) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-desc-in-group.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgTextAlternativeComputation) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgTitleInGroup) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-title-in-group.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgWithClickableRect) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-with-clickable-rect.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgWithForeignObject) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-with-foreign-object.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgWithLinkToDocument) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-with-link-to-document.html"));
 }
 
 // On ChromeOS, SVG <g> elements are included.
