@@ -361,6 +361,13 @@
         {}
        ]
       ],
+      "slot-content-visibility-13-crash.html": [
+       "3bbe97ce1df97ba717f8d3f5aefd94f9e7efc355",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-2-crash.html": [
        "47b7962ae0ba76f4387a1d8c35b782b64dc86a6b",
        [
@@ -643,6 +650,13 @@
      ],
      "list-item-multicol-with-custom-layout-child-crash.https.html": [
       "be91346c54eb3eae5f9a0b307465e1be04803df3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multicol-break-before-crash.https.html": [
+      "c2a33802e563eebd04027cf1e469c2f8d45a0339",
       [
        null,
        {}
@@ -172281,6 +172295,45 @@
        {}
       ]
      ],
+     "input-security-auto-sensitive-text-input.html": [
+      "3031094055aecf7d3306037d0d40cff1c1cb48a2",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/input-security-auto-sensitive-text-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "input-security-non-sensitive-elements.html": [
+      "a3e1499bb29ead4cda75a14a3ca2f165e0b2efba",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/input-security-non-sensitive-elements-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "input-security-none-sensitive-text-input.html": [
+      "46af8fdc981d3c261c0d9a1c3dccc8c117f3b93b",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/input-security-none-sensitive-text-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "outline-001.html": [
       "e24b68c42e8a314e99317eb86331c621c29c36ea",
       [
@@ -215167,10 +215220,6 @@
      "0d7a2cc743f2b4843586adee3a3e97829398ca07",
      []
     ],
-    "battery-discharging-manual.https-expected.txt": [
-     "6057a79e9994ac6fa910a29bc66f035fc5f5e676",
-     []
-    ],
     "battery-insecure-context-expected.txt": [
      "6594edf423b5a0753f30718ab4d9801cbb0723a4",
      []
@@ -241379,7 +241428,7 @@
       ]
      },
      "grid-layout-properties-expected.txt": [
-      "780654b7a963afab749d8b3ffbb3c577aeb073f7",
+      "9194f236593bf293e4f8b090da8555ddf9dbfa83",
       []
      ],
      "grid-model": {
@@ -241657,14 +241706,6 @@
       ],
       "grid-area-valid-expected.txt": [
        "6ce291eda1f849be626f770f43cf874b3ce0da49",
-       []
-      ],
-      "grid-auto-flow-computed-expected.txt": [
-       "4d03b54fd7d4d0b1fe7222722a3463c852af2363",
-       []
-      ],
-      "grid-auto-flow-valid-expected.txt": [
-       "d2139ff1d2d99747d7bbd0fc6ceb09f9c7c07549",
        []
       ],
       "grid-columns-rows-get-set-multiple-expected.txt": [
@@ -254842,6 +254883,26 @@
       "548a76a3407ac8a48f9f108559957cf061f20a19",
       []
      ],
+     "input-security-auto-sensitive-text-input-ref.html": [
+      "7eb15e32c22ac50f79ed7cfad86c9fbd99ecb1c5",
+      []
+     ],
+     "input-security-computed-expected.txt": [
+      "07e58fe1e87f3583a6214ffa14dde2345a833496",
+      []
+     ],
+     "input-security-non-sensitive-elements-ref.html": [
+      "307257de10fb6efed67b6862e49c7d75ce398082",
+      []
+     ],
+     "input-security-none-sensitive-text-input-ref.html": [
+      "d02c20cb3e7c75ca0a1e3be94405d276a73360f3",
+      []
+     ],
+     "input-security-parsing-expected.txt": [
+      "f7c46df828dbf185e011d7382c3daed8141ef24b",
+      []
+     ],
      "nothing-below-ref.html": [
       "c8d6508ace4e4bd0343f67f2e12e35ea6e098df9",
       []
@@ -265141,10 +265202,6 @@
     ],
     "OWNERS": [
      "9e3a2546556a896943d73233cb647edca73d9dd4",
-     []
-    ],
-    "idlharness.any-expected.txt": [
-     "6bde346095624fbae10b0a8c34cb69c09e2a4620",
      []
     ],
     "resources": {
@@ -285847,6 +285904,10 @@
      "052b74ef6c26dee833ac0980c79efc198a3f4d98",
      []
     ],
+    "parakeet.tentative.idl": [
+     "9823d22e62a7a8cdc1a63b11205071b461172ace",
+     []
+    ],
     "payment-handler.idl": [
      "5360a837aab57924b4719dd47daa64a60472754f",
      []
@@ -289329,6 +289390,24 @@
       []
      ]
     }
+   },
+   "parakeet": {
+    "META.yml": [
+     "cb059fe6bb103af62e83abe2e1518011975102e2",
+     []
+    ],
+    "createAdRequest.tentative.https.window-expected.txt": [
+     "29889d96fa80495327422b54679562d5bdf316fe",
+     []
+    ],
+    "finalizeAd.tentative.https.window-expected.txt": [
+     "0207dcd94d6c732bb7b48f4792f251d3e1f48aa0",
+     []
+    ],
+    "idlharness.tentative.https.window-expected.txt": [
+     "389816b719533a48696f032c944a49bba8f155ba",
+     []
+    ]
    },
    "payment-handler": {
     "DIR_METADATA": [
@@ -358634,7 +358713,7 @@
         ]
        ],
        "grid-auto-flow.html": [
-        "4447afe11a57cf43248a8134a4cb2db30ed80708",
+        "d01d0257b3cb476065fc659ab39bc4eff9713c61",
         [
          null,
          {}
@@ -359705,6 +359784,20 @@
      ],
      "inheritance.html": [
       "c2aab07a23b9502353c7c3bbe798963442c651fe",
+      [
+       null,
+       {}
+      ]
+     ],
+     "input-security-computed.html": [
+      "60a58f94188a33603b631b464fbb402a0c04ae34",
+      [
+       null,
+       {}
+      ]
+     ],
+     "input-security-parsing.html": [
+      "4de9619f82d754199067728518369203aca964fc",
       [
        null,
        {}
@@ -453789,6 +453882,66 @@
      ]
     }
    },
+   "parakeet": {
+    "createAdRequest.tentative.https.window.js": [
+     "37117efc95abbd578369ea330b726e4ab77ea681",
+     [
+      "parakeet/createAdRequest.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "finalizeAd.tentative.https.window.js": [
+     "1d2fc3d083457f82272c271b21c4118c782c98e7",
+     [
+      "parakeet/finalizeAd.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idlharness.tentative.https.window.js": [
+     "ac6862f06e6d8638bb6061169b28f2c888c4cd30",
+     [
+      "parakeet/idlharness.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
    "payment-handler": {
     "can-make-payment-event-constructor.https.html": [
      "6892f01aa95c805b04446e1eb0a867bb060761be",
@@ -494471,6 +494624,13 @@
         {}
        ]
       ],
+      "cross-origin-module-sharing-fails.html": [
+       "cd3e99b9eca131316965262f84b22002e66b62cd",
+       [
+        null,
+        {}
+       ]
+      ],
       "identity-not-preserved.html": [
        "24bb3b16d8c50600a634d62d4c48c49dfb3b120e",
        [
@@ -497404,6 +497564,13 @@
       }
      ]
     ],
+    "NDEFMessage_recursion-limit.https.window.js": [
+     "49a69524d95e6e734096cfa29970be1596285e46",
+     [
+      "web-nfc/NDEFMessage_recursion-limit.https.window.html",
+      {}
+     ]
+    ],
     "NDEFReader_scan.https.html": [
      "281f3db5b7bd56a48ac6eb2cccea814912e07006",
      [
@@ -497426,7 +497593,7 @@
      ]
     ],
     "NDEFReadingEvent_constructor.https.window.js": [
-     "418a8a60da55ab8f556744fa2b297b90aa0907a0",
+     "d812dbaf186024acce66f3403ccf2fcf0378d739",
      [
       "web-nfc/NDEFReadingEvent_constructor.https.window.html",
       {
