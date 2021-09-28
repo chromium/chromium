@@ -78,9 +78,10 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     WebAppTest::SetUp();
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    EXPECT_TRUE(temp_destination_dir_.CreateUniqueTempDir());
+    shortcut_override_ = OverrideShortcutsForTesting();
+    destination_dir_ = shortcut_override_->chrome_apps_folder.GetPath();
+
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
-    destination_dir_ = temp_destination_dir_.GetPath();
     user_data_dir_ = temp_user_data_dir_.GetPath();
     // Recreate the directory structure as it would be created for the
     // ShortcutInfo created in the above GetShortcutInfo.
@@ -97,10 +98,6 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     user_data_dir_ = base::MakeAbsoluteFilePath(user_data_dir_);
     app_data_dir_ = base::MakeAbsoluteFilePath(app_data_dir_);
 
-    ShortcutOverrideForTesting shortcut_override;
-    shortcut_override.chrome_apps_folder = destination_dir_;
-    web_app::SetShortcutOverrideForTesting(shortcut_override);
-
     info_ = GetShortcutInfo();
     base::FilePath shim_base_name =
         base::FilePath(base::UTF16ToUTF8(info_->title) + ".app");
@@ -112,7 +109,12 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
-    web_app::SetShortcutOverrideForTesting(absl::nullopt);
+    // To prevent OS hooks from sticking around on bots, destroying the shortcut
+    // override DCHECK fails if the directories are not empty. To bypass this in
+    // this unittest, we manually delete it.
+    // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
+    EXPECT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
+    shortcut_override_.reset();
     WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();
   }
@@ -130,7 +132,6 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   }
 
  protected:
-  base::ScopedTempDir temp_destination_dir_;
   base::ScopedTempDir temp_user_data_dir_;
   base::FilePath app_data_dir_;
   base::FilePath destination_dir_;
@@ -139,6 +140,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   std::unique_ptr<WebAppAutoLoginUtilMock> auto_login_util_mock_;
   std::unique_ptr<ShortcutInfo> info_;
   base::FilePath shim_path_;
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 };
 
 TEST_F(WebAppRunOnOsLoginMacTest, Register) {

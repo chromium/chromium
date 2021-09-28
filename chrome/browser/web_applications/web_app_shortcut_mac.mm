@@ -754,8 +754,12 @@ bool AppShimLaunchDisabled() {
 }
 
 base::FilePath GetChromeAppsFolder() {
-  if (web_app::GetShortcutOverrideForTesting())
-    return web_app::GetShortcutOverrideForTesting()->chrome_apps_folder;
+  auto* override = web_app::GetShortcutOverrideForTesting();
+  if (override) {
+    if (override->chrome_apps_folder.IsValid())
+      return override->chrome_apps_folder.GetPath();
+    return base::FilePath();
+  }
 
   base::FilePath path = GetWritableApplicationsDirectory();
   if (path.empty())

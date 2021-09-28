@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/i18n/file_util_icu.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcuts_menu_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
@@ -639,9 +641,8 @@ std::vector<base::FilePath> GetShortcutPaths(
   // Shortcut paths under which to create shortcuts.
   std::vector<base::FilePath> shortcut_paths;
   // if there is no ShortcutOverrirdeForTesting, set it to empty.
-  ShortcutOverrideForTesting testing_shortcuts =
-      web_app::GetShortcutOverrideForTesting().value_or(
-          ShortcutOverrideForTesting({}));
+  ScopedShortcutOverrideForTesting* testing_shortcuts =
+      web_app::GetShortcutOverrideForTesting();
   // Locations to add to shortcut_paths.
   struct {
     bool use_this_location;
@@ -649,19 +650,23 @@ std::vector<base::FilePath> GetShortcutPaths(
     base::FilePath test_path;
   } locations[] = {
       {creation_locations.on_desktop, ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-       testing_shortcuts.desktop},
+       testing_shortcuts ? testing_shortcuts->desktop.GetPath()
+                         : base::FilePath()},
       {creation_locations.applications_menu_location ==
            APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-       testing_shortcuts.application_menu},
+       testing_shortcuts ? testing_shortcuts->application_menu.GetPath()
+                         : base::FilePath()},
       {// For Windows 7 and 8, |in_quick_launch_bar| indicates that we are
        // pinning to taskbar. This needs to be handled by callers.
        creation_locations.in_quick_launch_bar &&
            base::win::CanPinShortcutToTaskbar(),
        ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
-       testing_shortcuts.quick_launch},
+       testing_shortcuts ? testing_shortcuts->quick_launch.GetPath()
+                         : base::FilePath()},
       {creation_locations.in_startup, ShellUtil::SHORTCUT_LOCATION_STARTUP,
-       testing_shortcuts.startup}};
+       testing_shortcuts ? testing_shortcuts->startup.GetPath()
+                         : base::FilePath()}};
 
   // Populate shortcut_paths.
   for (auto location : locations) {

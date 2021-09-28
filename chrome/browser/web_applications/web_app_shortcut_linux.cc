@@ -58,7 +58,7 @@ web_app::LaunchXdgUtilityForTesting& GetInstalledLaunchXdgUtilityForTesting() {
 base::FilePath GetDesktopPath() {
   base::FilePath desktop_path;
   if (web_app::GetShortcutOverrideForTesting())
-    return web_app::GetShortcutOverrideForTesting()->desktop;
+    return web_app::GetShortcutOverrideForTesting()->desktop.GetPath();
   base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
   return desktop_path;
 }
