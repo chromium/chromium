@@ -15,7 +15,7 @@ Document
 ++++++Edit Name='Email:'
 ++++Text
 ++++++Text Name='File: '
-++++++Button Name='File:'
+++++++Button Name='File:' Value.Value='No file chosen'
 ++++++++Button Name='Choose File'
 ++++Text
 ++++++Text Name='Image: '

@@ -6007,12 +6007,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID grid_with_header_column_header_id = 18;
   constexpr AXNodeID grid_with_header_row_2_id = 19;
   constexpr AXNodeID grid_with_header_cell_id = 20;
+  constexpr AXNodeID button_with_value = 21;
+  constexpr AXNodeID button_without_value = 22;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
-  update.nodes.resize(20);
+  update.nodes.resize(22);
   update.nodes[0].id = root_id;
   update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {text_field_with_combo_box_id,
@@ -6023,7 +6025,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                table_without_header_id,
                                table_with_header_id,
                                grid_without_header_id,
-                               grid_with_header_id};
+                               grid_with_header_id,
+                               button_with_value,
+                               button_without_value};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
@@ -6079,6 +6083,13 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[19].id = grid_with_header_cell_id;
   update.nodes[19].role = ax::mojom::Role::kCell;
   update.nodes[19].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  update.nodes[20].id = button_with_value;
+  update.nodes[20].role = ax::mojom::Role::kButton;
+  update.nodes[20].AddStringAttribute(ax::mojom::StringAttribute::kValue,
+                                      "test");
+  update.nodes[21].id = button_without_value;
+  update.nodes[21].role = ax::mojom::Role::kButton;
+  update.nodes[21].SetName("button");
 
   Init(update);
 
@@ -6151,6 +6162,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_GridItemPatternId, UIA_TableItemPatternId,
                         UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_cell_id));
+
+  EXPECT_EQ(PatternSet({UIA_ValuePatternId, UIA_ScrollItemPatternId,
+                        UIA_InvokePatternId, UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(button_with_value));
+
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_InvokePatternId,
+                        UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(button_without_value));
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
@@ -7155,6 +7174,12 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_GetValue) {
                          static_cast<int>(ax::mojom::Restriction::kReadOnly));
   root.child_ids.push_back(child3.id);
 
+  AXNodeData child4;
+  child4.id = 5;
+  child4.role = ax::mojom::Role::kButton;
+  child4.AddStringAttribute(ax::mojom::StringAttribute::kValue, "test");
+  root.child_ids.push_back(child4.id);
+
   const char url[] = "https://localhost";
   AXTreeUpdate update;
   update.has_tree_data = true;
@@ -7164,6 +7189,7 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_GetValue) {
   update.nodes.push_back(child1);
   update.nodes.push_back(child2);
   update.nodes.push_back(child3);
+  update.nodes.push_back(child4);
   Init(update);
 
   ScopedBstr bstr_value;
@@ -7189,6 +7215,12 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_GetValue) {
 
   EXPECT_HRESULT_SUCCEEDED(
       QueryInterfaceFromNode<IValueProvider>(GetRootAsAXNode()->children()[2])
+          ->get_Value(bstr_value.Receive()));
+  EXPECT_STREQ(L"test", bstr_value.Get());
+  bstr_value.Reset();
+
+  EXPECT_HRESULT_SUCCEEDED(
+      QueryInterfaceFromNode<IValueProvider>(GetRootAsAXNode()->children()[3])
           ->get_Value(bstr_value.Receive()));
   EXPECT_STREQ(L"test", bstr_value.Get());
   bstr_value.Reset();

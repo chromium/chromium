@@ -33,6 +33,8 @@ bool IsValuePatternSupported(AXPlatformNodeDelegate* delegate) {
          IsLink(delegate->GetRole()) ||
          delegate->GetRole() == ax::mojom::Role::kColorWell ||
          delegate->IsCellOrHeaderOfARIAGrid() ||
+         (delegate->GetRole() == ax::mojom::Role::kButton &&
+          delegate->HasStringAttribute(ax::mojom::StringAttribute::kValue)) ||
          (IsPlatformDocument(delegate->GetRole()) &&
           delegate->GetRole() != ax::mojom::Role::kPdfRoot);
 }
