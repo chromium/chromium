@@ -110,6 +110,10 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument('--child-arg',
                          action='append',
                          help='Arguments for the test process.')
+  test_args.add_argument('--gtest_also_run_disabled_tests',
+                         default=False,
+                         action='store_true',
+                         help='Run tests prefixed with DISABLED_')
   test_args.add_argument('child_args',
                          nargs='*',
                          help='Arguments for the test process.')
@@ -180,6 +184,8 @@ def main():
   if args.isolated_script_test_perf_output:
     child_args.append('--isolated-script-test-perf-output=' +
                       TEST_PERF_RESULT_PATH)
+  if args.gtest_also_run_disabled_tests:
+    child_args.append('--gtest_also_run_disabled_tests')
 
   if args.child_arg:
     child_args.extend(args.child_arg)
