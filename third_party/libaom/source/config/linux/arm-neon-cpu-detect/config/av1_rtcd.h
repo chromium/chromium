@@ -82,6 +82,60 @@ typedef void (*cfl_predict_lbd_fn)(const int16_t* src,
 extern "C" {
 #endif
 
+void aom_comp_avg_upsampled_pred_c(MACROBLOCKD* xd,
+                                   const struct AV1Common* const cm,
+                                   int mi_row,
+                                   int mi_col,
+                                   const MV* const mv,
+                                   uint8_t* comp_pred,
+                                   const uint8_t* pred,
+                                   int width,
+                                   int height,
+                                   int subpel_x_q3,
+                                   int subpel_y_q3,
+                                   const uint8_t* ref,
+                                   int ref_stride,
+                                   int subpel_search);
+#define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_c
+
+void aom_comp_mask_upsampled_pred_c(MACROBLOCKD* xd,
+                                    const struct AV1Common* const cm,
+                                    int mi_row,
+                                    int mi_col,
+                                    const MV* const mv,
+                                    uint8_t* comp_pred,
+                                    const uint8_t* pred,
+                                    int width,
+                                    int height,
+                                    int subpel_x_q3,
+                                    int subpel_y_q3,
+                                    const uint8_t* ref,
+                                    int ref_stride,
+                                    const uint8_t* mask,
+                                    int mask_stride,
+                                    int invert_mask,
+                                    int subpel_search);
+#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_c
+
+void aom_dist_wtd_comp_avg_upsampled_pred_c(
+    MACROBLOCKD* xd,
+    const struct AV1Common* const cm,
+    int mi_row,
+    int mi_col,
+    const MV* const mv,
+    uint8_t* comp_pred,
+    const uint8_t* pred,
+    int width,
+    int height,
+    int subpel_x_q3,
+    int subpel_y_q3,
+    const uint8_t* ref,
+    int ref_stride,
+    const DIST_WTD_COMP_PARAMS* jcp_param,
+    int subpel_search);
+#define aom_dist_wtd_comp_avg_upsampled_pred \
+  aom_dist_wtd_comp_avg_upsampled_pred_c
+
 void aom_quantize_b_helper_c(const tran_low_t* coeff_ptr,
                              intptr_t n_coeffs,
                              const int16_t* zbin_ptr,
@@ -127,6 +181,21 @@ RTCD_EXTERN void (*aom_quantize_b_helper)(const tran_low_t* coeff_ptr,
                                           const qm_val_t* qm_ptr,
                                           const qm_val_t* iqm_ptr,
                                           const int log_scale);
+
+void aom_upsampled_pred_c(MACROBLOCKD* xd,
+                          const struct AV1Common* const cm,
+                          int mi_row,
+                          int mi_col,
+                          const MV* const mv,
+                          uint8_t* comp_pred,
+                          int width,
+                          int height,
+                          int subpel_x_q3,
+                          int subpel_y_q3,
+                          const uint8_t* ref,
+                          int ref_stride,
+                          int subpel_search);
+#define aom_upsampled_pred aom_upsampled_pred_c
 
 int64_t av1_block_error_c(const tran_low_t* coeff,
                           const tran_low_t* dqcoeff,

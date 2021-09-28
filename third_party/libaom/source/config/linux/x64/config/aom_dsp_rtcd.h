@@ -142,36 +142,6 @@ void aom_comp_avg_pred_c(uint8_t* comp_pred,
                          int ref_stride);
 #define aom_comp_avg_pred aom_comp_avg_pred_c
 
-void aom_comp_avg_upsampled_pred_c(MACROBLOCKD* xd,
-                                   const struct AV1Common* const cm,
-                                   int mi_row,
-                                   int mi_col,
-                                   const MV* const mv,
-                                   uint8_t* comp_pred,
-                                   const uint8_t* pred,
-                                   int width,
-                                   int height,
-                                   int subpel_x_q3,
-                                   int subpel_y_q3,
-                                   const uint8_t* ref,
-                                   int ref_stride,
-                                   int subpel_search);
-void aom_comp_avg_upsampled_pred_sse2(MACROBLOCKD* xd,
-                                      const struct AV1Common* const cm,
-                                      int mi_row,
-                                      int mi_col,
-                                      const MV* const mv,
-                                      uint8_t* comp_pred,
-                                      const uint8_t* pred,
-                                      int width,
-                                      int height,
-                                      int subpel_x_q3,
-                                      int subpel_y_q3,
-                                      const uint8_t* ref,
-                                      int ref_stride,
-                                      int subpel_search);
-#define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_sse2
-
 void aom_comp_mask_pred_c(uint8_t* comp_pred,
                           const uint8_t* pred,
                           int width,
@@ -208,42 +178,6 @@ RTCD_EXTERN void (*aom_comp_mask_pred)(uint8_t* comp_pred,
                                        const uint8_t* mask,
                                        int mask_stride,
                                        int invert_mask);
-
-void aom_comp_mask_upsampled_pred_c(MACROBLOCKD* xd,
-                                    const struct AV1Common* const cm,
-                                    int mi_row,
-                                    int mi_col,
-                                    const MV* const mv,
-                                    uint8_t* comp_pred,
-                                    const uint8_t* pred,
-                                    int width,
-                                    int height,
-                                    int subpel_x_q3,
-                                    int subpel_y_q3,
-                                    const uint8_t* ref,
-                                    int ref_stride,
-                                    const uint8_t* mask,
-                                    int mask_stride,
-                                    int invert_mask,
-                                    int subpel_search);
-void aom_comp_mask_upsampled_pred_sse2(MACROBLOCKD* xd,
-                                       const struct AV1Common* const cm,
-                                       int mi_row,
-                                       int mi_col,
-                                       const MV* const mv,
-                                       uint8_t* comp_pred,
-                                       const uint8_t* pred,
-                                       int width,
-                                       int height,
-                                       int subpel_x_q3,
-                                       int subpel_y_q3,
-                                       const uint8_t* ref,
-                                       int ref_stride,
-                                       const uint8_t* mask,
-                                       int mask_stride,
-                                       int invert_mask,
-                                       int subpel_search);
-#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_sse2
 
 void aom_convolve8_c(const uint8_t* src,
                      ptrdiff_t src_stride,
@@ -1091,55 +1025,6 @@ RTCD_EXTERN void (*aom_dist_wtd_comp_avg_pred)(
     const uint8_t* ref,
     int ref_stride,
     const DIST_WTD_COMP_PARAMS* jcp_param);
-
-void aom_dist_wtd_comp_avg_upsampled_pred_c(
-    MACROBLOCKD* xd,
-    const struct AV1Common* const cm,
-    int mi_row,
-    int mi_col,
-    const MV* const mv,
-    uint8_t* comp_pred,
-    const uint8_t* pred,
-    int width,
-    int height,
-    int subpel_x_q3,
-    int subpel_y_q3,
-    const uint8_t* ref,
-    int ref_stride,
-    const DIST_WTD_COMP_PARAMS* jcp_param,
-    int subpel_search);
-void aom_dist_wtd_comp_avg_upsampled_pred_ssse3(
-    MACROBLOCKD* xd,
-    const struct AV1Common* const cm,
-    int mi_row,
-    int mi_col,
-    const MV* const mv,
-    uint8_t* comp_pred,
-    const uint8_t* pred,
-    int width,
-    int height,
-    int subpel_x_q3,
-    int subpel_y_q3,
-    const uint8_t* ref,
-    int ref_stride,
-    const DIST_WTD_COMP_PARAMS* jcp_param,
-    int subpel_search);
-RTCD_EXTERN void (*aom_dist_wtd_comp_avg_upsampled_pred)(
-    MACROBLOCKD* xd,
-    const struct AV1Common* const cm,
-    int mi_row,
-    int mi_col,
-    const MV* const mv,
-    uint8_t* comp_pred,
-    const uint8_t* pred,
-    int width,
-    int height,
-    int subpel_x_q3,
-    int subpel_y_q3,
-    const uint8_t* ref,
-    int ref_stride,
-    const DIST_WTD_COMP_PARAMS* jcp_param,
-    int subpel_search);
 
 unsigned int aom_dist_wtd_sad128x128_avg_c(
     const uint8_t* src_ptr,
@@ -8058,34 +7943,6 @@ RTCD_EXTERN uint64_t (*aom_sum_sse_2d_i16)(const int16_t* src,
                                            int height,
                                            int* sum);
 
-void aom_upsampled_pred_c(MACROBLOCKD* xd,
-                          const struct AV1Common* const cm,
-                          int mi_row,
-                          int mi_col,
-                          const MV* const mv,
-                          uint8_t* comp_pred,
-                          int width,
-                          int height,
-                          int subpel_x_q3,
-                          int subpel_y_q3,
-                          const uint8_t* ref,
-                          int ref_stride,
-                          int subpel_search);
-void aom_upsampled_pred_sse2(MACROBLOCKD* xd,
-                             const struct AV1Common* const cm,
-                             int mi_row,
-                             int mi_col,
-                             const MV* const mv,
-                             uint8_t* comp_pred,
-                             int width,
-                             int height,
-                             int subpel_x_q3,
-                             int subpel_y_q3,
-                             const uint8_t* ref,
-                             int ref_stride,
-                             int subpel_search);
-#define aom_upsampled_pred aom_upsampled_pred_sse2
-
 void aom_v_predictor_16x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,
                              const uint8_t* above,
@@ -8701,10 +8558,6 @@ static void setup_rtcd_internal(void) {
   aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_c;
   if (flags & HAS_SSSE3)
     aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_ssse3;
-  aom_dist_wtd_comp_avg_upsampled_pred = aom_dist_wtd_comp_avg_upsampled_pred_c;
-  if (flags & HAS_SSSE3)
-    aom_dist_wtd_comp_avg_upsampled_pred =
-        aom_dist_wtd_comp_avg_upsampled_pred_ssse3;
   aom_dist_wtd_sad128x128_avg = aom_dist_wtd_sad128x128_avg_c;
   if (flags & HAS_SSSE3)
     aom_dist_wtd_sad128x128_avg = aom_dist_wtd_sad128x128_avg_ssse3;

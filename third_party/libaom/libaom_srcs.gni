@@ -209,6 +209,7 @@ aom_av1_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_k_means_sse2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/reconinter_enc_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/wedge_utils_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_temporal_denoiser_sse2.c",
 ]
@@ -228,6 +229,10 @@ aom_av1_encoder_intrin_sse4_1 = [
 
 aom_av1_encoder_intrin_sse4_2 =
     [ "//third_party/libaom/source/libaom/av1/encoder/x86/hash_sse42.c" ]
+
+aom_av1_encoder_intrin_ssse3 = [
+  "//third_party/libaom/source/libaom/av1/encoder/x86/reconinter_enc_ssse3.c",
+]
 
 aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/av1_cx_iface.c",
@@ -347,6 +352,8 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/superres_scale.h",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.c",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.h",
+  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.c",
+  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.h",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.c",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.h",
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.c",
