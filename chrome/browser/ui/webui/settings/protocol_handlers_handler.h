@@ -112,16 +112,24 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
       base::Value::ConstListView args) const;
 
   // Returns a DictionaryValue describing the set of app protocol handlers for
-  // the given |protocol|.
+  // the given |protocol| in the given |handlers| list.
   std::unique_ptr<base::DictionaryValue> GetAppHandlersForProtocol(
-      const std::string& protocol);
+      const std::string& protocol,
+      ProtocolHandlerRegistry::ProtocolHandlerList handlers);
 
   // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
   void UpdateAllApprovedLaunchProtocols();
 
-  // Remove a handler.
+  // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
+  void UpdateAllDisallowedLaunchProtocols();
+
+  // Remove an approved app handler.
   // |args| is a list of [protocol, url, app_id].
   void HandleRemoveApprovedAppHandler(base::Value::ConstListView args);
+
+  // Remove a disallowed app handler.
+  // |args| is a list of [protocol, url, app_id].
+  void HandleRemoveDisallowedAppHandler(base::Value::ConstListView args);
 
   web_app::WebAppProvider* GetWebAppProvider();
 

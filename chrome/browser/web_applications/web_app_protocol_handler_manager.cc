@@ -117,6 +117,30 @@ WebAppProtocolHandlerManager::GetApprovedHandlersForProtocol(
   return protocol_handlers;
 }
 
+std::vector<ProtocolHandler>
+WebAppProtocolHandlerManager::GetDisallowedHandlersForProtocol(
+    const std::string& protocol) const {
+  std::vector<ProtocolHandler> protocol_handlers;
+
+  for (const WebApp& web_app : app_registrar_->GetApps()) {
+    web_app::AppId app_id = web_app.app_id();
+
+    if (!app_registrar_->IsDisallowedLaunchProtocol(app_id, protocol))
+      continue;
+
+    for (const auto& info : web_app.protocol_handlers()) {
+      if (info.protocol != protocol)
+        continue;
+
+      ProtocolHandler handler = ProtocolHandler::CreateWebAppProtocolHandler(
+          info.protocol, GURL(info.url), app_id);
+      protocol_handlers.push_back(handler);
+    }
+  }
+
+  return protocol_handlers;
+}
+
 void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool)> callback) {

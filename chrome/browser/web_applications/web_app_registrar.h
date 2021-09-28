@@ -117,6 +117,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Gets all approved launch protocols from all installed apps.
   base::flat_set<std::string> GetAllApprovedLaunchProtocols() const;
 
+  // Gets all disallowed launch protocols from all installed apps.
+  base::flat_set<std::string> GetAllDisallowedLaunchProtocols() const;
+
   // Count a number of all apps which are installed by user (non-default).
   // Requires app registry to be in a ready state.
   int CountUserInstalledApps() const;

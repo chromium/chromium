@@ -38,6 +38,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
       'observeProtocolHandlers',
       'observeProtocolHandlersEnabledState',
       'removeAppApprovedHandler',
+      'removeAppDisallowedHandler',
       'removeIgnoredHandler',
       'removeProtocolHandler',
       'removeZoomLevel',
@@ -99,6 +100,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
 
     /** @private {!Array<!AppProtocolEntry>} */
     this.appApprovedProtocolHandlers_ = [];
+
+    /** @private {!Array<!AppProtocolEntry>} */
+    this.appDisallowedProtocolHandlers_ = [];
 
     /** @private {!Array<!ProtocolEntry>} */
     this.protocolHandlers_ = [];
@@ -211,9 +215,19 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
    * @param {!Array<AppProtocolEntry>} list The web app protocol handlers
    *    list to set.
    */
-   setAppApprovedProtocolHandlers(list) {
+  setAppApprovedProtocolHandlers(list) {
     // Shallow copy of the passed-in array so mutation won't impact the source
     this.appApprovedProtocolHandlers_ = list.slice();
+  }
+
+  /**
+   * Sets the prefs to use when testing.
+   * @param {!Array<AppProtocolEntry>} list The web app protocol handlers
+   *    list to set.
+   */
+  setAppDisallowedProtocolHandlers(list) {
+    // Shallow copy of the passed-in array so mutation won't impact the source
+    this.appDisallowedProtocolHandlers_ = list.slice();
   }
 
   /**
@@ -506,6 +520,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
     webUIListenerCallback(
         'setAppApprovedProtocolHandlers',
         this.appApprovedProtocolHandlers_);
+    webUIListenerCallback(
+        'setAppDisallowedProtocolHandlers',
+        this.appDisallowedProtocolHandlers_);
     this.methodCalled('observeAppProtocolHandlers');
   }
 
@@ -524,9 +541,15 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   removeProtocolHandler() {
     this.methodCalled('removeProtocolHandler', arguments);
   }
+
   /** @override */
   removeAppApprovedHandler() {
     this.methodCalled('removeAppApprovedHandler', arguments);
+  }
+
+  /** @override */
+  removeAppDisallowedHandler() {
+    this.methodCalled('removeAppDisallowedHandler', arguments);
   }
 
   /** @override */

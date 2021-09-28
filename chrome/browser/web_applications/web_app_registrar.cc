@@ -483,6 +483,16 @@ base::flat_set<std::string> WebAppRegistrar::GetAllApprovedLaunchProtocols()
   return protocols;
 }
 
+base::flat_set<std::string> WebAppRegistrar::GetAllDisallowedLaunchProtocols()
+    const {
+  base::flat_set<std::string> protocols;
+  for (const WebApp& web_app : GetApps()) {
+    protocols.insert(web_app.disallowed_launch_protocols().begin(),
+                     web_app.disallowed_launch_protocols().end());
+  }
+  return protocols;
+}
+
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
   for (const WebApp& app : GetAppsIncludingStubs()) {

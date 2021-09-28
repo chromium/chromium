@@ -96,6 +96,11 @@ void ProtocolHandlersHandler::RegisterMessages() {
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleRemoveApprovedAppHandler,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "removeAppDisallowedHandler",
+      base::BindRepeating(
+          &ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler,
+          base::Unretained(this)));
 }
 
 void ProtocolHandlersHandler::OnProtocolHandlerRegistryChanged() {
@@ -105,6 +110,7 @@ void ProtocolHandlersHandler::OnProtocolHandlerRegistryChanged() {
 
 void ProtocolHandlersHandler::OnWebAppProtocolSettingsChanged() {
   UpdateAllApprovedLaunchProtocols();
+  UpdateAllDisallowedLaunchProtocols();
 }
 
 void ProtocolHandlersHandler::OnWebAppUninstalled(
@@ -217,13 +223,9 @@ ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
 
 std::unique_ptr<base::DictionaryValue>
 ProtocolHandlersHandler::GetAppHandlersForProtocol(
-    const std::string& protocol) {
+    const std::string& protocol,
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers) {
   auto handlers_value = std::make_unique<base::DictionaryValue>();
-  web_app::OsIntegrationManager& os_integration_manager =
-      GetWebAppProvider()->os_integration_manager();
-
-  ProtocolHandlerRegistry::ProtocolHandlerList handlers =
-      os_integration_manager.GetApprovedHandlersForProtocol(protocol);
 
   if (!handlers.empty()) {
     handlers_value->SetStringPath(
@@ -241,20 +243,43 @@ ProtocolHandlersHandler::GetAppHandlersForProtocol(
 void ProtocolHandlersHandler::UpdateAllApprovedLaunchProtocols() {
   base::flat_set<std::string> protocols(
       GetWebAppProvider()->registrar().GetAllApprovedLaunchProtocols());
+  web_app::OsIntegrationManager& os_integration_manager =
+      GetWebAppProvider()->os_integration_manager();
 
   base::Value handlers(base::Value::Type::LIST);
   for (auto& protocol : protocols) {
-    auto handler_value(GetAppHandlersForProtocol(protocol));
+    ProtocolHandlerRegistry::ProtocolHandlerList protocol_handlers =
+        os_integration_manager.GetApprovedHandlersForProtocol(protocol);
+
+    auto handler_value(GetAppHandlersForProtocol(protocol, protocol_handlers));
     handlers.Append(std::move(*handler_value));
   }
 
   FireWebUIListener("setAppApprovedProtocolHandlers", handlers);
 }
 
+void ProtocolHandlersHandler::UpdateAllDisallowedLaunchProtocols() {
+  base::flat_set<std::string> protocols(
+      GetWebAppProvider()->registrar().GetAllDisallowedLaunchProtocols());
+  web_app::OsIntegrationManager& os_integration_manager =
+      GetWebAppProvider()->os_integration_manager();
+
+  base::Value handlers(base::Value::Type::LIST);
+  for (auto& protocol : protocols) {
+    ProtocolHandlerRegistry::ProtocolHandlerList protocol_handlers =
+        os_integration_manager.GetDisallowedHandlersForProtocol(protocol);
+    auto handler_value(GetAppHandlersForProtocol(protocol, protocol_handlers));
+    handlers.Append(std::move(*handler_value));
+  }
+
+  FireWebUIListener("setAppDisallowedProtocolHandlers", handlers);
+}
+
 void ProtocolHandlersHandler::HandleObserveAppProtocolHandlers(
     base::Value::ConstListView args) {
   AllowJavascript();
   UpdateAllApprovedLaunchProtocols();
+  UpdateAllDisallowedLaunchProtocols();
 }
 
 void ProtocolHandlersHandler::HandleRemoveApprovedAppHandler(
@@ -266,6 +291,24 @@ void ProtocolHandlersHandler::HandleRemoveApprovedAppHandler(
       handler.web_app_id().value(), handler.protocol());
 
   // No need to call UpdateAllApprovedLaunchProtocols() - we should receive a
+  // notification that the Web App Protocol Settings has changed and we will
+  // update the view then.
+}
+
+void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
+    base::Value::ConstListView args) {
+  content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
+  CHECK(!handler.IsEmpty());
+
+  GetWebAppProvider()->sync_bridge().RemoveDisallowedLaunchProtocol(
+      handler.web_app_id().value(), handler.protocol());
+
+  // Update registration with the OS.
+  GetWebAppProvider()->os_integration_manager().UpdateProtocolHandlers(
+      handler.web_app_id().value(), /*force_shortcut_updates_if_needed=*/true,
+      base::DoNothing());
+
+  // No need to call HandleRemoveDisallowedAppHandler() - we should receive a
   // notification that the Web App Protocol Settings has changed and we will
   // update the view then.
 }

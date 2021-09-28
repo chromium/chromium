@@ -107,6 +107,11 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
       appApprovedProtocols: Array,
 
       /**
+       * Array of disallowed app protocols and their handlers.
+       */
+      appDisallowedProtocols: Array,
+
+      /**
        * Used to determine if the apps title should be shown.
        */
       showAppsProtocolHandlersTitle_: {
@@ -143,6 +148,7 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
 
   protocols: Array<ProtocolEntry>;
   appApprovedProtocols: Array<AppProtocolEntry>;
+  appDisallowedProtocols: Array<AppProtocolEntry>;
   private showAppsProtocolHandlersTitle_: boolean;
   private actionMenuModel_: HandlerEntry|null;
   toggleOffLabel: string;
@@ -170,6 +176,9 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     this.addWebUIListener(
         'setAppApprovedProtocolHandlers',
         this.setAppApprovedProtocolHandlers_.bind(this));
+    this.addWebUIListener(
+        'setAppDisallowedProtocolHandlers',
+        this.setAppDisallowedProtocolHandlers_.bind(this));
     this.browserProxy.observeAppProtocolHandlers();
   }
 
@@ -213,8 +222,27 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   private setAppApprovedProtocolHandlers_(appApprovedProtocols:
                                               Array<AppProtocolEntry>) {
     this.appApprovedProtocols = appApprovedProtocols;
+    this.updateShowAppsProtocolHandlersTitle_();
+  }
+
+  /**
+   * Updates the list of disallowed app protocol handlers.
+   * @param appDisallowedProtocols The new disallowed app protocol
+   *     handler list.
+   */
+  private setAppDisallowedProtocolHandlers_(appDisallowedProtocols:
+                                                Array<AppProtocolEntry>) {
+    this.appDisallowedProtocols = appDisallowedProtocols;
+    this.updateShowAppsProtocolHandlersTitle_();
+  }
+
+  /**
+   * Determines if the app header should be shown.
+   */
+  private updateShowAppsProtocolHandlersTitle_() {
     this.showAppsProtocolHandlersTitle_ =
-        (this.appApprovedProtocols && this.appApprovedProtocols.length > 0);
+        (this.appApprovedProtocols && this.appApprovedProtocols.length > 0) ||
+        (this.appDisallowedProtocols && this.appDisallowedProtocols.length > 0);
   }
 
   /**
@@ -257,6 +285,16 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   private onRemoveAppApprovedHandlerButtonClick_(event: AppRepeaterEvent) {
     const item = event.model.item;
     this.browserProxy.removeAppApprovedHandler(
+        item.protocol, item.spec, item.app_id);
+  }
+
+  /**
+   * Handler for removing web app protocol handlers that were disallowed.
+   * @private
+   */
+  private onRemoveAppDisallowedHandlerButtonClick_(event: AppRepeaterEvent) {
+    const item = event.model.item;
+    this.browserProxy.removeAppDisallowedHandler(
         item.protocol, item.spec, item.app_id);
   }
 

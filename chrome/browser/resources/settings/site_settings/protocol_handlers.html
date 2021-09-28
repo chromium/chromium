@@ -146,3 +146,28 @@
         </template>
       </div>
     </template>
+
+    <div class="column-header" hidden$="[[!appDisallowedProtocols.length]]">
+      <div id="appHandlerSubHeading" class="secondary">
+        $i18n{siteSettingsAppDisallowedProtocolHandlersDescription}
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="[[appDisallowedProtocols]]"
+        as="appProtocol">
+      <div class="column-header">[[appProtocol.protocol_display_name]]</div>
+      <div class="list-frame menu-content vertical-list">
+        <template is="dom-repeat" items="[[appProtocol.handlers]]">
+          <div class="list-item">
+            <site-favicon url="[[item.host]]"></site-favicon>
+            <div class="middle protocol-host">
+              <span class="url-directionality">[[item.host]]</span>
+            </div>
+            <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
+                on-click="onRemoveAppDisallowedHandlerButtonClick_"
+                title="$i18n{handlerRemove}">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+    </template>

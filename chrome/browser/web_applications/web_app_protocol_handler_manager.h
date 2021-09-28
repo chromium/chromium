@@ -48,6 +48,10 @@ class WebAppProtocolHandlerManager {
   std::vector<ProtocolHandler> GetApprovedHandlersForProtocol(
       const std::string& protocol) const;
 
+  // Gets the list of disallowed handlers for a given protocol.
+  std::vector<ProtocolHandler> GetDisallowedHandlersForProtocol(
+      const std::string& protocol) const;
+
   // Gets the protocol handlers for `app_id`. Any protocols that the user
   // has explicitly disallowed, will be excluded.
   // `virtual` for testing.
