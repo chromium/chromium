@@ -11,6 +11,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -119,7 +120,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     }
 
     private View createCannotRenderViewItem() {
-        TextView viewItem = new TextView(mContext);
+        TextView viewItem = new AppCompatTextView(mContext);
         String message = "Unable to render external view";
         viewItem.setText(message);
 

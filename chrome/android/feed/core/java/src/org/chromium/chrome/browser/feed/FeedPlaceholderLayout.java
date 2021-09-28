@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -108,7 +110,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     private ImageView getImagePlaceholder(boolean isSmallCard) {
         LinearLayout.LayoutParams imagePlaceholderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ImageView imagePlaceholder = new ImageView(mContext);
+        ImageView imagePlaceholder = new AppCompatImageView(mContext);
         imagePlaceholder.setImageDrawable(
                 isSmallCard ? getSmallImageDrawable() : getLargeImageDrawable());
         imagePlaceholder.setLayoutParams(imagePlaceholderLp);
@@ -149,7 +151,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
                 ? getSmallTextDrawable(top, width, height, contentHeight)
                 : getLargeTextDrawable(top, left, width, height, contentHeight + 2 * top);
 
-        ImageView textPlaceholder = new ImageView(mContext);
+        ImageView textPlaceholder = new AppCompatImageView(mContext);
         textPlaceholder.setImageDrawable(layerDrawable);
         textPlaceholder.setLayoutParams(textPlaceholderLp);
         textPlaceholder.setScaleType(ImageView.ScaleType.FIT_XY);

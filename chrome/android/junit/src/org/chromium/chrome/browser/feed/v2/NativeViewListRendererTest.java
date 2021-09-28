@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -170,7 +171,7 @@ public class NativeViewListRendererTest {
     }
 
     private NtpListContentManager.FeedContent createContent(String text) {
-        TextView v = new TextView(mContext);
+        TextView v = new AppCompatTextView(mContext);
         v.setText(text);
         return new NtpListContentManager.NativeViewContent(v.toString(), v);
     }

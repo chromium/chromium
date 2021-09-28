@@ -26,8 +26,8 @@ import android.app.Activity;
 import android.util.ArrayMap;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -619,7 +619,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
 
-        handler.showBottomSheet(new TextView(mActivity), null);
+        handler.showBottomSheet(new AppCompatTextView(mActivity), null);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 
@@ -631,7 +631,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
 
-        handler.showBottomSheet(new TextView(mActivity), null);
+        handler.showBottomSheet(new AppCompatTextView(mActivity), null);
         mFeedStream.dismissBottomSheet();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
     }
@@ -830,7 +830,7 @@ public class FeedStreamTest {
         List<NtpListContentManager.FeedContent> contentList = new ArrayList<>();
         for (int i = 0; i < number; i++) {
             contentList.add(new NtpListContentManager.NativeViewContent(
-                    HEADER_PREFIX + i, new TextView(mActivity)));
+                    HEADER_PREFIX + i, new AppCompatTextView(mActivity)));
         }
         mContentManager.addContents(0, contentList);
     }
