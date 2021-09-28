@@ -86,6 +86,8 @@ class TestConversionReporter
 
   void ClearDeferredCallbacks() { deferred_callbacks_.clear(); }
 
+  void RemoveAllReportsFromQueue() override {}
+
   void ShouldRunReportSentCallbacks(bool should_run_report_sent_callbacks) {
     should_run_report_sent_callbacks_ = should_run_report_sent_callbacks;
   }
@@ -876,6 +878,42 @@ TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
       conversion_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(1u, sent_reports.size());
   EXPECT_EQ(5u, sent_reports[0].report.conversion_data);
+}
+
+TEST_F(ConversionManagerImplTest, ClearData_RequeuesReports) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+
+  conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+                                            .SetExpiry(kImpressionExpiry)
+                                            .SetReportingOrigin(origin_a)
+                                            .Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetReportingOrigin(origin_a).Build());
+
+  conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+                                            .SetExpiry(kImpressionExpiry)
+                                            .SetReportingOrigin(origin_b)
+                                            .Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetReportingOrigin(origin_b).Build());
+
+  EXPECT_EQ(0u, test_reporter_->num_reports());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+
+  test_reporter_->WaitForNumReports(2);
+  EXPECT_EQ(2u, test_reporter_->num_reports());
+
+  conversion_manager_->ClearData(
+      base::Time::Min(), base::Time::Max(),
+      base::BindLambdaForTesting(
+          [&](const url::Origin& origin) { return origin == origin_a; }),
+      base::DoNothing::Once());
+
+  test_reporter_->WaitForNumReports(3);
+  EXPECT_EQ(3u, test_reporter_->num_reports());
 }
 
 }  // namespace content

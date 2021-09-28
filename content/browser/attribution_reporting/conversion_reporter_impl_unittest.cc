@@ -147,6 +147,21 @@ TEST_F(ConversionReporterImplTest,
 }
 
 TEST_F(ConversionReporterImplTest,
+       ReportWithReportTimeBeforeCurrentTime_DeletedReportNotSent) {
+  reporter_->AddReportsToQueue(
+      {GetReport(clock().Now(), clock().Now() - base::TimeDelta::FromHours(10),
+                 ConversionReport::Id(1))});
+
+  reporter_->RemoveAllReportsFromQueue();
+
+  // Fast forward by 0, as we yield the thread when a report is scheduled to be
+  // sent.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, sender_->num_reports_sent());
+  EXPECT_EQ(SentReportInfo::Status::kDropped, last_sent_report_info()->status);
+}
+
+TEST_F(ConversionReporterImplTest,
        ReportWithDelayedReportTime_NotSentUntilDelay) {
   const base::TimeDelta delay = base::TimeDelta::FromMinutes(30);
 

@@ -52,11 +52,25 @@ void ConversionReporterImpl::AddReportsToQueue(
   for (ConversionReport& report : reports) {
     DCHECK(report.conversion_id.has_value());
     // If the given report is already being processed, ignore it.
-    bool inserted = pending_reports_.emplace(*report.conversion_id).second;
+    if (reports_being_sent_.contains(*report.conversion_id))
+      continue;
+    bool inserted = queued_reports_.emplace(*report.conversion_id).second;
     if (inserted)
       report_queue_.push(std::move(report));
   }
   MaybeScheduleNextReport();
+}
+
+void ConversionReporterImpl::RemoveAllReportsFromQueue() {
+  while (!report_queue_.empty()) {
+    ConversionReport report = report_queue_.top();
+    DCHECK(report.conversion_id.has_value());
+    report_queue_.pop();
+    OnReportSent(SentReportInfo(std::move(report),
+                                SentReportInfo::Status::kDropped,
+                                /*http_response_code=*/0));
+  }
+  queued_reports_.clear();
 }
 
 void ConversionReporterImpl::SetNetworkSenderForTesting(
@@ -79,12 +93,15 @@ void ConversionReporterImpl::OnConnectionChanged(
 }
 
 void ConversionReporterImpl::SendNextReport() {
-  DCHECK(!report_queue_.empty());
+  if (report_queue_.empty())
+    return;
 
   // Send the next report and remove it from the queue.
   ConversionReport report = report_queue_.top();
   DCHECK(report.conversion_id.has_value());
   report_queue_.pop();
+  size_t num_removed = queued_reports_.erase(*report.conversion_id);
+  DCHECK_EQ(num_removed, 1u);
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
@@ -101,6 +118,8 @@ void ConversionReporterImpl::SendNextReport() {
                                   SentReportInfo::Status::kOffline,
                                   /*http_response_code=*/0));
     } else {
+      bool inserted = reports_being_sent_.emplace(*report.conversion_id).second;
+      DCHECK(inserted);
       network_sender_->SendReport(
           std::move(report),
           base::BindOnce(&ConversionReporterImpl::OnReportSent,
@@ -140,8 +159,7 @@ void ConversionReporterImpl::MaybeScheduleNextReport() {
 
 void ConversionReporterImpl::OnReportSent(SentReportInfo info) {
   DCHECK(info.report.conversion_id.has_value());
-  size_t num_removed = pending_reports_.erase(*info.report.conversion_id);
-  DCHECK_GT(num_removed, 0u);
+  reports_being_sent_.erase(*info.report.conversion_id);
   callback_.Run(std::move(info));
 }
 

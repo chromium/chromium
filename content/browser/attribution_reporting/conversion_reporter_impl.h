@@ -65,6 +65,7 @@ class CONTENT_EXPORT ConversionReporterImpl
 
   // ConversionManagerImpl::ConversionReporter:
   void AddReportsToQueue(std::vector<ConversionReport> reports) override;
+  void RemoveAllReportsFromQueue() override;
 
   void SetNetworkSenderForTesting(
       std::unique_ptr<NetworkSender> network_sender);
@@ -99,11 +100,17 @@ class CONTENT_EXPORT ConversionReporterImpl
                       ReportComparator>
       report_queue_;
 
-  // Set of all conversion IDs that are currently in |report_queue_| or are
+  // Set of all conversion IDs that are currently in |report_queue_| but not yet
   // being sent by |network_sender_|. The number of concurrent conversion
   // reports being sent at any time is expected to be small, so a `flat_set` is
   // used.
-  base::flat_set<ConversionReport::Id> pending_reports_;
+  base::flat_set<ConversionReport::Id> queued_reports_;
+
+  // Set of all conversion IDs that are currently being sent by
+  // |network_sender_|. The number of concurrent conversion
+  // reports being sent at any time is expected to be small, so a `flat_set` is
+  // used.
+  base::flat_set<ConversionReport::Id> reports_being_sent_;
 
   const base::Clock* clock_;
 

@@ -77,6 +77,11 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
     // Adds |reports| to a shared queue of reports that need to be sent.
     virtual void AddReportsToQueue(std::vector<ConversionReport> reports) = 0;
+
+    // Called by `ConversionManagerImpl::ClearData()` to prevent outstanding
+    // reports from being sent. This is best-effort, as a network request may
+    // already have been triggered.
+    virtual void RemoveAllReportsFromQueue() = 0;
   };
 
   // Configures underlying storage to be setup in memory, rather than on

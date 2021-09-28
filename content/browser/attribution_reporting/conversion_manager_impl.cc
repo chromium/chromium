@@ -237,9 +237,17 @@ void ConversionManagerImpl::ClearData(
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
   session_storage_.Reset();
+  reporter_->RemoveAllReportsFromQueue();
   conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter))
-      .Then(std::move(done));
+      .Then(base::BindOnce(
+          [](base::OnceClosure done,
+             base::WeakPtr<ConversionManagerImpl> manager) {
+            std::move(done).Run();
+            if (manager)
+              manager->GetAndQueueReportsForNextInterval();
+          },
+          std::move(done), weak_factory_.GetWeakPtr()));
 }
 
 void ConversionManagerImpl::GetAndHandleReports(
