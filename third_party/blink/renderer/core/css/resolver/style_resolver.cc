@@ -1770,7 +1770,18 @@ StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
     const ComputedStyle& layout_parent_style) {
   if (parent_style.InheritedEqual(layout_parent_style))
     return nullptr;
-  return CreateAnonymousStyleWithDisplay(parent_style, EDisplay::kInline);
+  scoped_refptr<ComputedStyle> text_style =
+      CreateAnonymousStyleWithDisplay(parent_style, EDisplay::kInline);
+  // If the parent with display:contents has its own text-decoration,
+  // remove it from AppliedTextDecorations.
+  wtf_size_t parent_decorations = parent_style.AppliedTextDecorations().size();
+  if (parent_decorations >
+      layout_parent_style.AppliedTextDecorations().size()) {
+    text_style->ClearAppliedTextDecorations();
+    if (parent_decorations > 1u)
+      text_style->RestoreParentTextDecorations(layout_parent_style);
+  }
+  return text_style;
 }
 
 #define PROPAGATE_FROM(source, getter, setter, initial) \

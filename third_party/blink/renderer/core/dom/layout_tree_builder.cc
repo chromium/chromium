@@ -140,20 +140,21 @@ LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
 }
 
 void LayoutTreeBuilderForText::CreateLayoutObject() {
-  const ComputedStyle& style = *style_;
+  const ComputedStyle* style = style_.get();
   LayoutObject* layout_object_parent = context_.parent;
   LayoutObject* next_layout_object = NextLayoutObject();
   if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded()) {
     layout_object_parent = wrapper;
     next_layout_object = nullptr;
+    style = wrapper->Style();
   }
 
   LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()
                                    ? LegacyLayout::kForce
                                    : LegacyLayout::kAuto;
   LayoutText* new_layout_object =
-      node_->CreateTextLayoutObject(style, legacy_layout);
-  if (!layout_object_parent->IsChildAllowed(new_layout_object, style)) {
+      node_->CreateTextLayoutObject(*style, legacy_layout);
+  if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {
     new_layout_object->Destroy();
     return;
   }
@@ -167,7 +168,7 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
 
   node_->SetLayoutObject(new_layout_object);
   DCHECK(!new_layout_object->Style());
-  new_layout_object->SetStyle(&style);
+  new_layout_object->SetStyle(style);
 
   layout_object_parent->AddChild(new_layout_object, next_layout_object);
 }

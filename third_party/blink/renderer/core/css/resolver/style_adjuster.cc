@@ -801,7 +801,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   if (StopPropagateTextDecorations(style, element))
     style.ClearAppliedTextDecorations();
   else
-    style.RestoreParentTextDecorations(parent_style);
+    style.RestoreParentTextDecorations(layout_parent_style);
   if (svg_element) {
     style.ApplySvgTextDecorations();
   } else {
