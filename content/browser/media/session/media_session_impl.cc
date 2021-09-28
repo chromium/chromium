@@ -385,6 +385,47 @@ void MediaSessionImpl::MediaPictureInPictureChanged(
   RebuildAndNotifyMediaSessionInfoChanged();
 }
 
+void MediaSessionImpl::RenderFrameHostStateChanged(
+    RenderFrameHost* host,
+    RenderFrameHost::LifecycleState old_state,
+    RenderFrameHost::LifecycleState new_state) {
+  bool was_in_bfcache =
+      old_state == RenderFrameHost::LifecycleState::kInBackForwardCache;
+  bool is_in_bfcache =
+      new_state == RenderFrameHost::LifecycleState::kInBackForwardCache;
+
+  // If the page goes to back-forward cache, hide the players.
+  if (!was_in_bfcache && is_in_bfcache) {
+    // Checking the normal players is enough. One shot players and pepper
+    // players are not related to media control UIs.
+    auto players = normal_players_;
+    for (auto player : players) {
+      if (player.first.observer->render_frame_host() != host) {
+        continue;
+      }
+      hidden_players_.insert(player.first);
+      RemovePlayer(player.first.observer, player.first.player_id);
+    }
+    return;
+  }
+
+  // If the page is restored from back-forward cache, show the players.
+  if (was_in_bfcache && !is_in_bfcache) {
+    auto players = hidden_players_;
+    for (auto player : players) {
+      if (player.observer->render_frame_host() != host)
+        continue;
+      hidden_players_.erase(player);
+      AddPlayer(player.observer, player.player_id);
+    }
+
+    // Just after adding a player, the state might be 'play'. Make sure that the
+    // state is 'pause'.
+    OnSuspendInternal(SuspendType::kSystem, State::SUSPENDED);
+    return;
+  }
+}
+
 bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
                                  int player_id) {
   media::MediaContentType media_content_type = observer->GetMediaContentType();
