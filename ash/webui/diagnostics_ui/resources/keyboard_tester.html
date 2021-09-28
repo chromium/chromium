@@ -1,0 +1,11 @@
+<cr-dialog id="dialog" show-close-button>
+  <div slot="title">Keyboard tester</div>
+  <div slot="body">
+    <p>Physical layout: [[keyboard.physicalLayout]]</p>
+    <p>Mechanical layout: [[keyboard.mechanicalLayout]]</p>
+    <p>Number pad presence: [[keyboard.numberPadPresent]]</p>
+    <template is="dom-if" if="[[keyboard.hasAssistantKey]]">
+      <p>Has Assistant key</p>
+    </template>
+  </div>
+</cr-dialog>

@@ -34,9 +34,10 @@ export function inputListTestSuite() {
     provider.reset();
   });
 
-  function initializeInputList() {
+  function initializeInputList(
+      keyboards = fakeKeyboards, touchDevices = fakeTouchDevices) {
     assertFalse(!!inputListElement);
-    provider.setFakeConnectedDevices(fakeKeyboards, fakeTouchDevices);
+    provider.setFakeConnectedDevices(keyboards, touchDevices);
 
     // Add the input list to the DOM.
     inputListElement =
@@ -96,6 +97,20 @@ export function inputListTestSuite() {
         .then(() => {
           assertEquals(1, keyboardCard.devices.length);
           assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
+        });
+  });
+
+  test('KeyboardTesterShow', () => {
+    return initializeInputList([fakeKeyboards[0]], [])
+        .then(() => {
+          const testButton = getCardByDeviceType('keyboard').$$('cr-button');
+          assertTrue(!!testButton);
+          testButton.click();
+          return flushTasks();
+        })
+        .then(() => {
+          const keyboardTester = inputListElement.$$('keyboard-tester');
+          assertTrue(keyboardTester.isOpen());
         });
   });
 

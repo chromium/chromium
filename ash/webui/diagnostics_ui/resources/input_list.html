@@ -9,7 +9,8 @@
 <div id="inputListContainer">
   <div class="diagnostics-cards-container">
     <div class="card-width">
-      <input-card device-type="keyboard" devices="[[keyboards_]]">
+      <input-card device-type="keyboard" devices="[[keyboards_]]"
+          on-test-button-click="handleKeyboardTestButtonClick_">
         <div slot="title">[[i18n('inputCategoryKeyboard')]]</div>
       </input-card>
       <input-card device-type="touchpad" devices="[[touchpads_]]">
