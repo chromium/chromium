@@ -6,10 +6,11 @@
 #include <fuchsia/feedback/cpp/fidl_test_base.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl_test_base.h>
+#include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/recovery/cpp/fidl.h>
 #include <fuchsia/recovery/cpp/fidl_test_base.h>
-#include <fuchsia/io/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
+#include <lib/fpromise/result.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <memory>
@@ -103,10 +104,7 @@ class FakeAdmin
  private:
   void Reboot(StateControlRebootReason reason, RebootCallback callback) final {
     last_reboot_reason_ = reason;
-    fuchsia::hardware::power::statecontrol::Admin_Reboot_Response response;
-    fuchsia::hardware::power::statecontrol::Admin_Reboot_Result result;
-    result.set_response(response);
-    callback(std::move(result));
+    callback(fpromise::ok());
   }
 
   void NotImplemented_(const std::string& name) final {

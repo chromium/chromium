@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/context_impl.h"
 
+#include <lib/fpromise/result.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/handle.h>
 #include <memory>
@@ -175,16 +176,12 @@ void ContextImpl::GetRemoteDebuggingPort(
     GetRemoteDebuggingPortCallback callback) {
   devtools_controller_->GetDevToolsPort(base::BindOnce(
       [](GetRemoteDebuggingPortCallback callback, uint16_t port) {
-        fuchsia::web::Context_GetRemoteDebuggingPort_Result result;
         if (port == 0) {
-          result.set_err(
-              fuchsia::web::ContextError::REMOTE_DEBUGGING_PORT_NOT_OPENED);
+          callback(fpromise::error(
+              fuchsia::web::ContextError::REMOTE_DEBUGGING_PORT_NOT_OPENED));
         } else {
-          fuchsia::web::Context_GetRemoteDebuggingPort_Response response;
-          response.port = port;
-          result.set_response(std::move(response));
+          callback(fpromise::ok(port));
         }
-        callback(std::move(result));
       },
       std::move(callback)));
 }

@@ -4,6 +4,8 @@
 
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
+#include <lib/fpromise/result.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -185,9 +187,7 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
       return;
     }
 
-    fuchsia::web::MessagePort_PostMessage_Result result;
-    result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
-    callback(std::move(result));
+    callback(fpromise::ok());
   }
 
   void ReceiveMessage(ReceiveMessageCallback callback) final {

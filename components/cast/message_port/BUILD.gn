@@ -79,7 +79,10 @@ if (is_fuchsia) {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     ]
 
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
+    ]
   }
 }
 

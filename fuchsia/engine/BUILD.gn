@@ -153,6 +153,7 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.sessions2",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
+    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",

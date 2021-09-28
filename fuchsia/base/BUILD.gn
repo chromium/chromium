@@ -67,6 +67,7 @@ source_set("message_port") {
     "//third_party/blink/public/common",
     "//third_party/blink/public/common:headers",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
   ]
 }
 

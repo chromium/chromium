@@ -8,6 +8,7 @@
 
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fit/function.h>
+#include <lib/fpromise/result.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -272,9 +273,7 @@ class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
     }
 
     SendBlinkMessage(std::move(blink_message));
-    fuchsia::web::MessagePort_PostMessage_Result result;
-    result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
-    callback(std::move(result));
+    callback(fpromise::ok());
   }
 
   void ReceiveMessage(ReceiveMessageCallback callback) override {

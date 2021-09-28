@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/frame_impl.h"
 
 #include <fuchsia/ui/gfx/cpp/fidl.h>
+#include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <limits>
@@ -329,10 +330,8 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
                                           fuchsia::mem::Buffer script,
                                           ExecuteJavaScriptCallback callback,
                                           bool need_result) {
-  fuchsia::web::Frame_ExecuteJavaScript_Result result;
   if (!context_->IsJavaScriptInjectionAllowed()) {
-    result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
     return;
   }
 
@@ -340,15 +339,13 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
   // navigated to a different origin.
   if (!IsUrlMatchedByOriginList(web_contents_->GetLastCommittedURL(),
                                 origins)) {
-    result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::INVALID_ORIGIN));
     return;
   }
 
   std::u16string script_utf16;
   if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(script, &script_utf16)) {
-    result.set_err(fuchsia::web::FrameError::BUFFER_NOT_UTF8);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
     return;
   }
 
@@ -356,20 +353,14 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
   if (need_result) {
     result_callback = base::BindOnce(
         [](ExecuteJavaScriptCallback callback, base::Value result_value) {
-          fuchsia::web::Frame_ExecuteJavaScript_Result result;
-
           std::string result_json;
           if (!base::JSONWriter::Write(result_value, &result_json)) {
-            result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-            callback(std::move(result));
+            callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
             return;
           }
 
-          fuchsia::web::Frame_ExecuteJavaScript_Response response;
-          response.result = cr_fuchsia::MemBufferFromString(
-              std::move(result_json), "cr-execute-js-response");
-          result.set_response(std::move(response));
-          callback(std::move(result));
+          callback(fpromise::ok(cr_fuchsia::MemBufferFromString(
+              std::move(result_json), "cr-execute-js-response")));
         },
         std::move(callback));
   }
@@ -379,9 +370,7 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
 
   if (!need_result) {
     // If no result is required then invoke callback() immediately.
-    fuchsia::web::Frame_ExecuteJavaScript_Result result;
-    result.set_response(fuchsia::web::Frame_ExecuteJavaScript_Response());
-    callback(std::move(result));
+    callback(fpromise::ok(fuchsia::mem::Buffer()));
   }
 }
 
@@ -557,20 +546,17 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
     return false;
   }
 
-  fuchsia::web::Frame_PostMessage_Result result;
   if (receiver_session_client_ || !IsValidCastStreamingMessage(*message)) {
     // The Cast Streaming MessagePort should only be set once and |message|
     // should be a valid Cast Streaming Message.
-    result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);
-    (*callback)(std::move(result));
+    (*callback)(fpromise::error(fuchsia::web::FrameError::INVALID_ORIGIN));
     return true;
   }
 
   receiver_session_client_ = std::make_unique<ReceiverSessionClient>(
       std::move((*message->mutable_outgoing_transfer())[0].message_port()),
       IsCastStreamingVideoOnlyAppOrigin(*origin));
-  result.set_response(fuchsia::web::Frame_PostMessage_Response());
-  (*callback)(std::move(result));
+  (*callback)(fpromise::ok());
   return true;
 }
 
@@ -667,14 +653,11 @@ void FrameImpl::ExecuteJavaScriptNoResult(
       std::move(origins), std::move(script),
       [callback = std::move(callback)](
           fuchsia::web::Frame_ExecuteJavaScript_Result result_with_value) {
-        fuchsia::web::Frame_ExecuteJavaScriptNoResult_Result result;
         if (result_with_value.is_err()) {
-          result.set_err(result_with_value.err());
+          callback(fpromise::error(result_with_value.err()));
         } else {
-          result.set_response(
-              fuchsia::web::Frame_ExecuteJavaScriptNoResult_Response());
+          callback(fpromise::ok());
         }
-        callback(std::move(result));
       },
       false);
 }
@@ -686,18 +669,15 @@ void FrameImpl::AddBeforeLoadJavaScript(
     AddBeforeLoadJavaScriptCallback callback) {
   constexpr char kWildcardOrigin[] = "*";
 
-  fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result;
   if (!context_->IsJavaScriptInjectionAllowed()) {
-    result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
     return;
   }
 
   std::string script_as_string;
   if (!cr_fuchsia::StringFromMemBuffer(script, &script_as_string)) {
     LOG(ERROR) << "Couldn't read script from buffer.";
-    result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
     return;
   }
 
@@ -712,8 +692,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     for (const std::string& origin : origins) {
       url::Origin origin_parsed = url::Origin::Create(GURL(origin));
       if (origin_parsed.opaque()) {
-        result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);
-        callback(std::move(result));
+        callback(fpromise::error(fuchsia::web::FrameError::INVALID_ORIGIN));
         return;
       }
       origins_converted.push_back(origin_parsed);
@@ -722,8 +701,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     script_injector_.AddScript(id, origins_converted, script_as_string);
   }
 
-  result.set_response(fuchsia::web::Frame_AddBeforeLoadJavaScript_Response());
-  callback(std::move(result));
+  callback(fpromise::ok());
 }
 
 void FrameImpl::RemoveBeforeLoadJavaScript(uint64_t id) {
@@ -738,14 +716,12 @@ void FrameImpl::PostMessage(std::string origin,
 
   fuchsia::web::Frame_PostMessage_Result result;
   if (origin.empty()) {
-    result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::INVALID_ORIGIN));
     return;
   }
 
   if (!message.has_data()) {
-    result.set_err(fuchsia::web::FrameError::NO_DATA_IN_MESSAGE);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::NO_DATA_IN_MESSAGE));
     return;
   }
 
@@ -755,8 +731,7 @@ void FrameImpl::PostMessage(std::string origin,
 
   std::u16string data_utf16;
   if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(message.data(), &data_utf16)) {
-    result.set_err(fuchsia::web::FrameError::BUFFER_NOT_UTF8);
-    callback(std::move(result));
+    callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
     return;
   }
 
@@ -766,8 +741,7 @@ void FrameImpl::PostMessage(std::string origin,
     for (const fuchsia::web::OutgoingTransferable& outgoing :
          message.outgoing_transfer()) {
       if (!outgoing.is_message_port()) {
-        result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-        callback(std::move(result));
+        callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
         return;
       }
     }
@@ -777,8 +751,7 @@ void FrameImpl::PostMessage(std::string origin,
       blink::WebMessagePort blink_port = cr_fuchsia::BlinkMessagePortFromFidl(
           std::move(outgoing.message_port()));
       if (!blink_port.IsValid()) {
-        result.set_err(fuchsia::web::FrameError::INTERNAL_ERROR);
-        callback(std::move(result));
+        callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
         return;
       }
       message_ports.push_back(std::move(blink_port));
@@ -788,8 +761,7 @@ void FrameImpl::PostMessage(std::string origin,
   content::MessagePortProvider::PostMessageToFrame(
       web_contents_->GetPrimaryPage(), std::u16string(), origin_utf16,
       std::move(data_utf16), std::move(message_ports));
-  result.set_response(fuchsia::web::Frame_PostMessage_Response());
-  callback(std::move(result));
+  callback(fpromise::ok());
 }
 
 void FrameImpl::SetNavigationEventListener(
