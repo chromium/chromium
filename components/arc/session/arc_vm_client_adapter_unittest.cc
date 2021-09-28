@@ -109,10 +109,15 @@ std::string GenerateAbstractAddress() {
 }
 
 // TODO(yusukes): Remove this once crosvm becomes 64 bit binary on ARM.
-int GetVmMemorySize(int vm_ram_mib) {
-  const int vm_ram_max_mib =
-      (sizeof(uintptr_t) == 4) ? 3500 : std::numeric_limits<int>::max();
-  return std::min(vm_ram_max_mib, vm_ram_mib);
+void VerifyVmMemorySize(const vm_tools::concierge::StartArcVmRequest& request,
+                        uint32_t vm_ram_mib) {
+  if (sizeof(uintptr_t) == 4) {
+    // We don't set memory_mib on 32 bit devices, so that we fall back to the
+    // original sizing logic in concierge.
+    EXPECT_EQ(request.memory_mib(), 0u);
+  } else {
+    EXPECT_EQ(request.memory_mib(), vm_ram_mib);
+  }
 }
 
 // A debugd client that can fail to start Concierge.
@@ -1945,7 +1950,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeDisabled) {
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 0u);
+  VerifyVmMemorySize(request, 0u);
 }
 
 // Test that StartArcVmRequest has `memory_mib == system memory` when
@@ -1957,12 +1962,12 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledBig) {
   feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
   base::SystemMemoryInfoKB info;
   ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
-  const uint32_t total_mib = GetVmMemorySize(info.total / 1024);
+  const uint32_t total_mib = info.total / 1024;
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), total_mib);
+  VerifyVmMemorySize(request, total_mib);
 }
 
 // Test that StartArcVmRequest has `memory_mib == system memory - 1024` when
@@ -1974,12 +1979,12 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledSmall) {
   feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
   base::SystemMemoryInfoKB info;
   ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
-  const uint32_t total_mib = GetVmMemorySize(info.total / 1024);
+  const uint32_t total_mib = info.total / 1024;
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), total_mib - 1024);
+  VerifyVmMemorySize(request, total_mib - 1024);
 }
 
 // Test that StartArcVmRequest has memory_mib unset when kVmMemorySize is
@@ -1997,7 +2002,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledLow) {
   auto request = GetTestConciergeClient()->start_arc_vm_request();
   // The 1024 max_mib is below the 2048 MiB safety cut-off, so we expect
   // memory_mib to be unset.
-  EXPECT_EQ(request.memory_mib(), 0u);
+  VerifyVmMemorySize(request, 0u);
 }
 
 // Test that StartArcVmRequest has `memory_mib == 2049` when kVmMemorySize is
@@ -2013,7 +2018,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledMax) {
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 2049u);
+  VerifyVmMemorySize(request, 2049u);
 }
 
 // Test that StartArcVmRequest has no memory_mib field when getting system
@@ -2036,7 +2041,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledNoSystemMemoryInfo) {
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 0u);
+  VerifyVmMemorySize(request, 0u);
 }
 
 // Test that the correct BalloonPolicyOptions are set on StartArcVmRequest when

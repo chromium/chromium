@@ -399,15 +399,15 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       const int vm_ram_mib = std::min(max_mib, ram_mib + shift_mib);
       constexpr int kVmRamMinMib = 2048;
 
-      // This is a workaround for ARM Chromebooks where userland including
-      // crosvm is compiled in 32 bit. crosvm binary in 32 bit doesn't have
-      // enough virtual address space to map >4GB of VM memory obviously.
-      // TODO(yusukes): Remove this once crosvm becomes 64 bit binary on ARM.
-      const int vm_ram_max_mib =
-          (sizeof(uintptr_t) == 4) ? 3500 : std::numeric_limits<int>::max();
-
-      if (vm_ram_mib > kVmRamMinMib) {
-        request.set_memory_mib(std::min(vm_ram_max_mib, vm_ram_mib));
+      if (sizeof(uintptr_t) == 4) {
+        // This is a workaround for ARM Chromebooks where userland including
+        // crosvm is compiled in 32 bit. crosvm binary in 32 bit doesn't have
+        // enough virtual address space to map >4GB of VM memory obviously.
+        // TODO(yusukes): Remove this once crosvm becomes 64 bit binary on ARM.
+        VLOG(1) << "VmMemorySize is enabled, but we are on a 32-bit device, so "
+                << "fall back to the old VM memory size policy.";
+      } else if (vm_ram_mib > kVmRamMinMib) {
+        request.set_memory_mib(vm_ram_mib);
       } else {
         VLOG(1) << "VmMemorySize is enabled, but computed size is "
                 << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
