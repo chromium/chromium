@@ -1114,6 +1114,7 @@ component("base") {
       "win/win_util.h",
       "win/wincrypt_shim.h",
       "win/windows_defines.inc",
+      "win/windows_h_disallowed.h",
       "win/windows_types.h",
       "win/windows_undefines.inc",
       "win/windows_version.cc",
