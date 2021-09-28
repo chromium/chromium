@@ -140,6 +140,4 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       kColorNativeHighlightText};
 }
 
-void AddNativePostprocessingMixer(ColorProvider* provider) {}
-
 }  // namespace ui

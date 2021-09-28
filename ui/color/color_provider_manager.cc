@@ -54,20 +54,8 @@ ColorProviderManager& ColorProviderManager::Get() {
   if (!manager.has_value()) {
     manager.emplace();
 #if !defined(OS_ANDROID)
-    manager.value().AppendColorProviderInitializer(base::BindRepeating(
-        [](ColorProvider* provider, ColorProviderManager::ColorMode color_mode,
-           ColorProviderManager::ContrastMode contrast_mode,
-           ColorProviderManager::SystemTheme system_theme) {
-          const bool dark_mode =
-              color_mode == ColorProviderManager::ColorMode::kDark;
-          const bool high_contrast =
-              contrast_mode == ColorProviderManager::ContrastMode::kHigh;
-          ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
-          ui::AddUiColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativePostprocessingMixer(provider);
-        }));
+    manager.value().AppendColorProviderInitializer(
+        base::BindRepeating(AddColorMixers));
 #endif  // !defined(OS_ANDROID)
   }
 

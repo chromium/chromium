@@ -1,9 +1,10 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "build/build_config.h"
-#include "ui/color/color_mixers.h"
 
+#include "ui/color/ui_color_mixer.h"
+
+#include "build/build_config.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"

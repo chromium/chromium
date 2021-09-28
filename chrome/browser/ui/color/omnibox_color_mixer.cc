@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/color/omnibox_color_mixers.h"
+#include "chrome/browser/ui/color/omnibox_color_mixer.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/color/color_mixer.h"
@@ -12,7 +12,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
-void AddOmniboxColorMixers(ui::ColorProvider* provider, bool high_contrast) {
+void AddOmniboxColorMixer(ui::ColorProvider* provider, bool high_contrast) {
   ui::ColorMixer& mixer = provider->AddMixer();
   const float minimum_contrast =
       high_contrast ? 6.0f : color_utils::kMinimumReadableContrastRatio;
