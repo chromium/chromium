@@ -37,6 +37,8 @@
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -495,7 +497,9 @@ content::WebContents* WebAppPublisherHelper::Launch(
 
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       web_app->app_id(), event_flags, apps::GetAppLaunchSource(launch_source),
-      window_info ? window_info->display_id : display::kInvalidDisplayId,
+      window_info
+          ? window_info->display_id
+          : display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
 
@@ -511,7 +515,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id, event_flags, apps::GetAppLaunchSource(launch_source),
-      display::kDefaultDisplayId,
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
   if (file_paths) {
