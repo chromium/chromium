@@ -264,7 +264,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // Remove `access_handle_host` from `access_handle_host_receivers_`. It is an
   // error to try to remove an access handle that doesn't exist.
   void RemoveAccessHandleHost(
-      FileSystemAccessAccessHandleHostImpl* access_handle_host);
+      FileSystemAccessAccessHandleHostImpl* access_handle_host,
+      base::OnceCallback<void()> callback);
 
   // Remove `token` from `transfer_tokens_`. It is an error to try to remove
   // a token that doesn't exist.
@@ -366,18 +367,25 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // FileSystemAccessCapacityAllocationHosts may reserve too much capacity from
   // the quota system. This function determines the file's actual size and
   // corrects its capacity usage in the quota system.
-  //
-  // This function performs an asynchronous call.
-  void CleanupAccessHandleCapacityAllocation(const storage::FileSystemURL& url,
-                                             int64_t allocated_file_size);
+  void CleanupAccessHandleCapacityAllocation(
+      const storage::FileSystemURL& url,
+      int64_t allocated_file_size,
+      base::OnceCallback<void()> callback);
 
   // Performs the actual work of `CleanupAccessHandleCapacityAllocation()` after
   // the file's size has been determined.
   void CleanupAccessHandleCapacityAllocationImpl(
       const storage::FileSystemURL& url,
       int64_t allocated_file_size,
+      base::OnceCallback<void()> callback,
       base::File::Error result,
       const base::File::Info& file_info);
+
+  // Called after `CleanupAccessHandleCapacityAllocationImpl()` has completed.
+  // Removes `access_handle_host` from the set of active hosts.
+  void DidCleanupAccessHandleCapacityAllocation(
+      FileSystemAccessAccessHandleHostImpl* access_handle_host,
+      base::OnceCallback<void()> callback);
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry object
   // that's at the file path of the FileSystemAccessDataTransferToken with token

@@ -62,16 +62,17 @@ FileSystemAccessAccessHandleHostImpl::~FileSystemAccessAccessHandleHostImpl() =
 void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run();
-  receiver_.reset();
-  manager_->RemoveAccessHandleHost(this);
+  // `receiver_` is not reset, since `callback` is yet to be called.
+  // Removes `this`.
+  manager_->RemoveAccessHandleHost(this, std::move(callback));
 }
 
 void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receiver_.reset();
-  manager_->RemoveAccessHandleHost(this);
+  // No need to reset `receiver_` after it disconnected.
+  // Removes `this`.
+  manager_->RemoveAccessHandleHost(this, base::DoNothing());
 }
 
 }  // namespace content

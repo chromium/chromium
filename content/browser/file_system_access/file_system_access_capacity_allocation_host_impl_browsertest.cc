@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let fh = await root.getFileHandle('test_existing', {create: true});
       let ah =  await fh.createSyncAccessHandle();
       await ah.truncate(100);
-      ah.close();
+      await ah.close();
       return true;
     `);
   )")
