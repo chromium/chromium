@@ -299,7 +299,6 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   CHECK(!account_info.IsEmpty());
-  CHECK(!account_info.hosted_domain.empty());
 
   // |PrimaryAccountManager::SetAuthenticatedAccountId| simply ignores the call
   // if there is already a signed in user. Check that there is no signed in
@@ -327,6 +326,11 @@ void AuthenticationService::GrantSyncConsent(ChromeIdentity* identity) {
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  CHECK(!account_info.IsEmpty());
+  CHECK(!account_info.hosted_domain.empty());
+
   const bool success =
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_id, signin::ConsentLevel::kSync);
