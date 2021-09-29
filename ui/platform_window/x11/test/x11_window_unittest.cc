@@ -155,7 +155,9 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
 
 class TestScreen : public display::ScreenBase {
  public:
-  TestScreen() { ProcessDisplayChanged({}, true); }
+  TestScreen() {
+    ProcessDisplayChanged(display::Display(display::kDefaultDisplayId), true);
+  }
   ~TestScreen() override = default;
   TestScreen(const TestScreen& screen) = delete;
   TestScreen& operator=(const TestScreen& screen) = delete;
