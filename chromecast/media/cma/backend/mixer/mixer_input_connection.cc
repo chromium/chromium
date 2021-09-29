@@ -1134,7 +1134,8 @@ int MixerInputConnection::FillAudio(int num_frames,
   }
 
   if (in_underrun_ &&
-      (queued_frames_ < num_frames + mixer_read_size_ + fill_size_)) {
+      (queued_frames_ < std::min(start_threshold_frames_,
+                                 num_frames + mixer_read_size_ + fill_size_))) {
     // Allow buffer to refill a bit to prevent continuous underrun.
     return 0;
   }
