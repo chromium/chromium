@@ -81,7 +81,7 @@ def MultiFileFindReplace(original, replacement, file_globs):
       raise Exception('No change in file %s although matched in grep' %
                       referee)
     with open(referee, 'wb') as f:
-      f.write(contents)
+      f.write(contents.encode())
 
   return referees
 

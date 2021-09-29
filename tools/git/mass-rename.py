@@ -27,6 +27,7 @@ def main():
   popen = subprocess.Popen('git diff --cached --raw -M',
                            shell=True, stdout=subprocess.PIPE)
   out, _ = popen.communicate()
+  out = out.decode('utf-8')
   if popen.returncode != 0:
     return 1
   lines = out.splitlines()
