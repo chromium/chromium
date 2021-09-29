@@ -52,6 +52,7 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
                                      gfx::Rect rect,
                                      tab_groups::TabGroupId group_id) override {
   }
+  void HideEditDialogForGroup() override {}
   TabStripUILayout GetLayout() override { return TabStripUILayout(); }
   SkColor GetColor(int id) const override { return SK_ColorWHITE; }
 };

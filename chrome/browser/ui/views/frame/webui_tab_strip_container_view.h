@@ -23,6 +23,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #error
@@ -47,7 +48,8 @@ class ImmersiveRevealedLock;
 class WebUITabStripContainerView : public TabStripUIEmbedder,
                                    public gfx::AnimationDelegate,
                                    public views::AccessiblePaneView,
-                                   public views::ViewObserver {
+                                   public views::ViewObserver,
+                                   public views::WidgetObserver {
  public:
   WebUITabStripContainerView(BrowserView* browser_view,
                              views::View* tab_contents_container,
@@ -114,6 +116,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                      gfx::Rect rect,
                                      tab_groups::TabGroupId group) override;
+  void HideEditDialogForGroup() override;
   TabStripUILayout GetLayout() override;
   SkColor GetColor(int id) const override;
 
@@ -130,6 +133,9 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
   void OnViewIsDeleting(View* observed_view) override;
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // views::AccessiblePaneView
   bool SetPaneFocusAndFocusDefault() override;
@@ -170,6 +176,10 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_widget_observation_{this};
+
+  views::Widget* editor_bubble_widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_CONTAINER_VIEW_H_
