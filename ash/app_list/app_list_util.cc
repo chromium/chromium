@@ -152,7 +152,7 @@ void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
   auto& view_accessibility = view->GetViewAccessibility();
   view_accessibility.OverrideIsLeaf(ignored);
   view_accessibility.OverrideIsIgnored(ignored);
-  view_accessibility.NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged);
+  view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
 }  // namespace ash

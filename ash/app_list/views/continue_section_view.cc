@@ -87,8 +87,6 @@ void ContinueSectionView::DisableFocusForShowingActiveFolder(bool disabled) {
   suggestions_container_->DisableFocusForShowingActiveFolder(disabled);
 
   // Prevent items from being accessed by ChromeVox.
-  // TODO(crbug.com/1254015): This does not ignore the "Continue" label itself.
-  // Explicitly ignoring that view doesn't work either.
   SetViewIgnoredForAccessibility(this, disabled);
 }
 
