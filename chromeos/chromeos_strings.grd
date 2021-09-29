@@ -741,6 +741,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="The text read aloud by the screen reader describing the checkbox to start a multi-page scan session.">
         Multi-page scan
       </message>
+      <message name="IDS_SCANNING_APP_MULTI_PAGE_IMAGE_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="The text read aloud by the screen reader describing what position the image is in in the list of scanned images.">
+        Image <ph name="CURRENT_PAGE">$1<ex>2</ex></ph> of <ph name="TOTAL_PAGES">$2<ex>4</ex></ph>
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

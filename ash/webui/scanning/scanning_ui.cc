@@ -79,6 +79,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"multiPageCheckboxAriaLabel",
        IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_ARIA_LABEL},
       {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
+      {"multiPageImageAriaLabel", IDS_SCANNING_APP_MULTI_PAGE_IMAGE_ARIA_LABEL},
       {"multiPageScanInstructionsText",
        IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT},
       {"multiPageScanProgressText",

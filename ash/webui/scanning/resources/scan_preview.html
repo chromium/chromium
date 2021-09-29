@@ -154,7 +154,8 @@
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]"
           on-load="onScannedImageLoaded_" on-click="onScannedImageClick_"
-          on-focus="onScannedImageInFocus_" tabindex="-1">
+          on-focus="onScannedImageInFocus_" tabindex="-1"
+          aria-label="[[getScannedImageAriaLabel_(index, objectUrls.length)]]">
       <action-toolbar hidden$="[[!showActionToolbarByIndex_(index,
           currentPageIndexInView_, showActionToolbar_)]]"
           num-total-pages="[[objectUrls.length]]" page-index="[[index]]"

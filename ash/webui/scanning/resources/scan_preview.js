@@ -666,4 +666,14 @@ Polymer({
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
     this.setFocusedScannedImage_(scannedImages, e.model.index);
   },
+
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getScannedImageAriaLabel_(index) {
+    return this.i18n(
+        'multiPageImageAriaLabel', index + 1, this.objectUrls.length);
+  },
 });
