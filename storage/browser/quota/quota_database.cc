@@ -117,10 +117,7 @@ QuotaDatabase::BucketTableEntry::BucketTableEntry(
       last_modified(last_modified) {}
 
 // QuotaDatabase ------------------------------------------------------------
-QuotaDatabase::QuotaDatabase(const base::FilePath& path)
-    : db_file_path_(path),
-      is_recreating_(false),
-      is_disabled_(false) {
+QuotaDatabase::QuotaDatabase(const base::FilePath& path) : db_file_path_(path) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
