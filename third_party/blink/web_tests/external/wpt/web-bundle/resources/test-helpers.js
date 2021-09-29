@@ -112,8 +112,15 @@ function createWebBundleElement(url, resources, options) {
     const link = document.createElement("link");
     link.rel = "webbundle";
     link.href = url;
-    if (options && options.crossOrigin) {
-      link.crossOrigin = crossOrigin;
+    if (options) {
+      if (options.crossOrigin) {
+        link.crossOrigin = crossOrigin;
+      }
+      if (options.scopes) {
+        for (const scope of options.scopes) {
+          link.scopes.add(scope);
+        }
+      }
     }
     for (const resource of resources) {
       link.resources.add(resource);
