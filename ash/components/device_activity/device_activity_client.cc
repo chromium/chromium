@@ -46,6 +46,18 @@ void DeviceActivityClient::OnNetworkOnline() {
   TransitionToCheckMembershipOprf();
 }
 
+void DeviceActivityClient::TransitionToHealthCheck() {
+  DCHECK_EQ(state_, State::kIdle);
+  state_ = State::kHealthCheck;
+
+  // TODO(hirthanan): Add Health Check network request with callback to
+  // OnHealthCheckDone with response.
+}
+
+void DeviceActivityClient::OnHealthCheckDone() {
+  TransitionToIdle();
+}
+
 void DeviceActivityClient::TransitionToCheckMembershipOprf() {
   DCHECK_EQ(state_, State::kIdle);
   state_ = State::kCheckingMembershipOprf;

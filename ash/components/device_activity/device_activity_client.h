@@ -30,7 +30,8 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     kIdle,  // Wait on network connection OR |once_a_day_ timer| to trigger.
     kCheckingMembershipOprf,   // Phase 1 of the |CheckMembership| request.
     kCheckingMembershipQuery,  // Phase 2 of the |CheckMembership| request.
-    kCheckingIn                // |CheckIn| PSM device active request.
+    kCheckingIn,               // |CheckIn| PSM device active request.
+    kHealthCheck,              // Query to perform server health check.
   };
 
   // Constructor fires device active pings while the device network is
@@ -48,6 +49,14 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
  private:
   // Handles device network connecting successfully.
   void OnNetworkOnline();
+
+  // Send Health Check network request and update |state_|.
+  // Before method: |state_| set to |kIdle|.
+  // After method: |state_| set to |kHealthCheck|.
+  void TransitionToHealthCheck();
+
+  // Callback from asynchronous method |TransitionToHealthCheck|.
+  void OnHealthCheckDone();
 
   // Send Oprf network request and update |state_|.
   // Before method: |state_| set to |kIdle|.
