@@ -57,6 +57,11 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   static constexpr base::TimeDelta kStuckLoadingTimeout =
       base::TimeDelta::FromSeconds(60);
 
+  // This timeout is applied before resetting script execution votes to avoid
+  // frequent vote reversals.
+  static constexpr base::TimeDelta kScriptExecutionTimeout =
+      base::TimeDelta::FromMilliseconds(50);
+
   ~PowerModeVoter();
 
   PowerModeVoter(const PowerModeVoter&) = delete;

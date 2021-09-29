@@ -127,6 +127,8 @@ PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
       return PowerModeForUma::kVideoPlayback;
     case power_scheduler::PowerMode::kMainThreadAnimation:
       return PowerModeForUma::kMainThreadAnimation;
+    case power_scheduler::PowerMode::kScriptExecution:
+      return PowerModeForUma::kScriptExecution;
     case power_scheduler::PowerMode::kLoading:
       return PowerModeForUma::kLoading;
     case power_scheduler::PowerMode::kAnimation:

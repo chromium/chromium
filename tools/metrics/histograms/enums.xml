@@ -67114,6 +67114,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="13" label="kMediumAnimation"/>
   <int value="14" label="kSmallMainThreadAnimation"/>
   <int value="15" label="kMediumMainThreadAnimation"/>
+  <int value="16" label="kScriptExecution"/>
 </enum>
 
 <enum name="PowerSupplyType">

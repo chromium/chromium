@@ -88,6 +88,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kMainThreadAnimation,
                   PowerMode::kCharging);
+  vote_and_expect(PowerMode::kCharging, PowerMode::kScriptExecution,
+                  PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kLoading,
                   PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kAnimation,
@@ -119,6 +121,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kBackground, PowerMode::kVideoPlayback,
                   PowerMode::kBackground);
   vote_and_expect(PowerMode::kBackground, PowerMode::kMainThreadAnimation,
+                  PowerMode::kBackground);
+  vote_and_expect(PowerMode::kBackground, PowerMode::kScriptExecution,
                   PowerMode::kBackground);
   vote_and_expect(PowerMode::kBackground, PowerMode::kLoading,
                   PowerMode::kBackground);
@@ -152,6 +156,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kMainThreadAnimation,
                   PowerMode::kNonWebActivity);
+  vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kScriptExecution,
+                  PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kLoading,
                   PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kAnimation,
@@ -178,6 +184,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kResponse, PowerMode::kVideoPlayback,
                   PowerMode::kResponse);
   vote_and_expect(PowerMode::kResponse, PowerMode::kMainThreadAnimation,
+                  PowerMode::kResponse);
+  vote_and_expect(PowerMode::kResponse, PowerMode::kScriptExecution,
                   PowerMode::kResponse);
   vote_and_expect(PowerMode::kResponse, PowerMode::kLoading,
                   PowerMode::kResponse);
@@ -207,6 +215,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kMainThreadAnimation,
                   PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kScriptExecution,
+                  PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kLoading,
                   PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kAnimation,
@@ -231,6 +241,8 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kAnimation);
   vote_and_expect(PowerMode::kAnimation, PowerMode::kMainThreadAnimation,
                   PowerMode::kAnimation);
+  vote_and_expect(PowerMode::kAnimation, PowerMode::kScriptExecution,
+                  PowerMode::kAnimation);
   // Animation while loading breaks out into a separate mode.
   vote_and_expect(PowerMode::kAnimation, PowerMode::kLoading,
                   PowerMode::kLoadingAnimation);
@@ -254,6 +266,30 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kLoading);
   vote_and_expect(PowerMode::kLoading, PowerMode::kMainThreadAnimation,
                   PowerMode::kLoading);
+  vote_and_expect(PowerMode::kLoading, PowerMode::kScriptExecution,
+                  PowerMode::kLoading);
+
+  // Script execution trumps remaining modes.
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kIdle,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kNopAnimation,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kSmallAnimation,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kMediumAnimation,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kAudible,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kVideoPlayback,
+                  PowerMode::kScriptExecution);
+  vote_and_expect(PowerMode::kScriptExecution, PowerMode::kMainThreadAnimation,
+                  PowerMode::kScriptExecution);
 
   // MainThreadAnimation trumps remaining modes, except for other animation
   // modes (NopAnimation, SmallAnimation, MediumAnimation), which affect it.
