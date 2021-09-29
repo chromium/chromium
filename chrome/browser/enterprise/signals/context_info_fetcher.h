@@ -92,19 +92,6 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetOnSecurityEventProviders();
 
-  safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
-
-  bool GetBuiltInDnsClientEnabled();
-
-  absl::optional<safe_browsing::PasswordProtectionTrigger>
-  GetPasswordProtectionWarningTrigger();
-
-  absl::optional<bool> GetThirdPartyBLockingEnabled();
-
-  absl::optional<bool> GetChromeCleanupEnabled();
-
-  bool GetChromeRemoteDesktopAppBlocked();
-
   SettingValue GetOSFirewall();
 
   ContextInfo FetchAsyncSignals(ContextInfo info);

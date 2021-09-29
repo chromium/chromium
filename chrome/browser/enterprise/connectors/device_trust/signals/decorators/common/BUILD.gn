@@ -14,7 +14,13 @@ source_set("common") {
 
   public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types" ]
 
-  deps = [ "//components/policy/core/common" ]
+  deps = [
+    "//chrome/browser/enterprise/signals:utils",
+    "//components/policy/content",
+    "//components/policy/core/common",
+    "//components/version_info",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 source_set("test_support") {
@@ -37,9 +43,19 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+    "//chrome/common:constants",
+    "//components/component_updater",
+    "//components/policy/content",
+    "//components/policy/core/browser",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync_preferences:test_support",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_chromeos_ash) {

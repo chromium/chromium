@@ -4,11 +4,26 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 
+#include "chrome/browser/enterprise/signals/signals_utils.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
-CommonSignalsDecorator::CommonSignalsDecorator() = default;
+CommonSignalsDecorator::CommonSignalsDecorator(
+    PrefService* local_state,
+    PrefService* profile_prefs,
+    PolicyBlocklistService* policy_blocklist_service)
+    : local_state_(local_state),
+      profile_prefs_(profile_prefs),
+      policy_blocklist_service_(policy_blocklist_service) {
+  DCHECK(profile_prefs_);
+  DCHECK(local_state_);
+  DCHECK(policy_blocklist_service_);
+}
+
 CommonSignalsDecorator::~CommonSignalsDecorator() = default;
 
 void CommonSignalsDecorator::Decorate(SignalsType& signals) {
@@ -17,6 +32,39 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals) {
   signals.set_device_model(policy::GetDeviceModel());
   signals.set_device_manufacturer(policy::GetDeviceManufacturer());
   signals.set_display_name(policy::GetDeviceName());
+  signals.set_browser_version(version_info::GetVersionNumber());
+
+  // Get signals from policy values.
+  signals.set_built_in_dns_client_enabled(
+      enterprise_signals::utils::GetBuiltInDnsClientEnabled(local_state_));
+  signals.set_safe_browsing_protection_level(static_cast<int32_t>(
+      enterprise_signals::utils::GetSafeBrowsingProtectionLevel(
+          profile_prefs_)));
+  signals.set_remote_desktop_available(
+      enterprise_signals::utils::GetChromeRemoteDesktopAppBlocked(
+          policy_blocklist_service_));
+
+  absl::optional<bool> third_party_blocking_enabled =
+      enterprise_signals::utils::GetThirdPartyBlockingEnabled(local_state_);
+  if (third_party_blocking_enabled.has_value()) {
+    signals.set_third_party_blocking_enabled(
+        third_party_blocking_enabled.value());
+  }
+
+  absl::optional<bool> chrome_cleanup_enabled =
+      enterprise_signals::utils::GetChromeCleanupEnabled(local_state_);
+  if (chrome_cleanup_enabled.has_value()) {
+    signals.set_chrome_cleanup_enabled(chrome_cleanup_enabled.value());
+  }
+
+  absl::optional<safe_browsing::PasswordProtectionTrigger>
+      password_protection_warning_trigger =
+          enterprise_signals::utils::GetPasswordProtectionWarningTrigger(
+              profile_prefs_);
+  if (password_protection_warning_trigger.has_value()) {
+    signals.set_password_protection_warning_trigger(
+        static_cast<int32_t>(password_protection_warning_trigger.value()));
+  }
 }
 
 }  // namespace enterprise_connectors
