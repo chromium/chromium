@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -23,6 +24,7 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
       frame_delegate_(FencedFrameDelegate::Create(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
+  DocumentFencedFrames::From(document).RegisterFencedFrame(this);
 }
 
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
@@ -30,6 +32,11 @@ HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
 void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
+}
+
+void HTMLFencedFrameElement::DisconnectContentFrame() {
+  HTMLFrameOwnerElement::DisconnectContentFrame();
+  DocumentFencedFrames::From(GetDocument()).DeregisterFencedFrame(this);
 }
 
 // START HTMLFencedFrameElement::FencedFrameDelegate.

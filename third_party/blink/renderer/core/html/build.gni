@@ -73,6 +73,8 @@ blink_core_sources_html = [
   "document_all_name_collection.h",
   "document_name_collection.cc",
   "document_name_collection.h",
+  "fenced_frame/document_fenced_frames.cc",
+  "fenced_frame/document_fenced_frames.h",
   "fenced_frame/fenced_frame_mparch_delegate.cc",
   "fenced_frame/fenced_frame_mparch_delegate.h",
   "fenced_frame/fenced_frame_shadow_dom_delegate.cc",

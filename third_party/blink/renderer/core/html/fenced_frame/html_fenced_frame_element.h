@@ -59,6 +59,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Trace(Visitor* visitor) const override;
 
   // HTMLFrameOwnerElement overrides.
+  void DisconnectContentFrame() override;
   mojom::blink::FrameOwnerElementType OwnerType() const override {
     return mojom::blink::FrameOwnerElementType::kFencedframe;
   }
