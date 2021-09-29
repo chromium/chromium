@@ -5,6 +5,8 @@
 source_set("field_trial") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "default_browser_promo_field_trial.cc",
+    "default_browser_promo_field_trial.h",
     "fre_field_trial.cc",
     "fre_field_trial.h",
     "ios_first_run_field_trials.cc",
@@ -107,6 +109,7 @@ source_set("first_run_provider") {
     "first_run_screen_provider.mm",
   ]
   deps = [
+    ":field_trial",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",

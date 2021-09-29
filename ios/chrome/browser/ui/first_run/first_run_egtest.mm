@@ -115,6 +115,11 @@ GREYLayoutConstraint* BelowConstraint() {
 
 #pragma mark - Helpers
 
+// Remove when default browser screen will be fully enabled
+- (BOOL)isDefaultBrowserTestDisabled {
+  return YES;
+}
+
 // Checks that the welcome screen is displayed.
 - (void)verifyWelcomeScreenIsDisplayed {
   [[EarlGrey selectElementWithMatcher:
@@ -237,6 +242,10 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the default browser screen is displayed correctly.
 - (void)testDefaultBrowserScreenUI {
+  if ([self isDefaultBrowserTestDisabled]) {
+    return;
+  }
+
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.features_enabled.push_back(kEnableFREDefaultBrowserScreen);
   // Relaunch the app to take the configuration into account.
