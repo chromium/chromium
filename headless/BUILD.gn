@@ -137,7 +137,6 @@ grit("resources") {
 devtools_domains = [
   "accessibility",
   "animation",
-  "application_cache",
   "browser",
   "cache_storage",
   "console",
