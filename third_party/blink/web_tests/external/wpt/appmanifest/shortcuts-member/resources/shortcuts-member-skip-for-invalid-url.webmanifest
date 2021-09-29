@@ -1,6 +1,14 @@
 {
     "name": "Shortcut test",
-    "scope": "/",
+    "icons": [
+        {
+            "src": "pass.png",
+            "sizes": "256x256"
+        }
+    ],
+    "start_url": "../shortcuts-member-skip-for-invalid-url-manual.html",
+    "display": "fullscreen",
+    "scope": "../",
     "shortcuts": [{
         "name": "fail",
         "short_name": "",
@@ -11,7 +19,7 @@
         "name": "pass",
         "short_name": "",
         "description": "",
-        "url": "shortcut_pass.html",
+        "url": "../shortcut_pass.html",
         "icons": [{
             "src": "pass.png"
         }]
