@@ -7,8 +7,6 @@
 
 #include <stdio.h>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

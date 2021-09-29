@@ -33,6 +33,10 @@ class AutofillTableEncryptorFactory {
 
   static AutofillTableEncryptorFactory* GetInstance();
 
+  AutofillTableEncryptorFactory(const AutofillTableEncryptorFactory&) = delete;
+  AutofillTableEncryptorFactory& operator=(
+      const AutofillTableEncryptorFactory&) = delete;
+
   std::unique_ptr<AutofillTableEncryptor> Create();
 
   void SetDelegate(std::unique_ptr<Delegate> delegate);
@@ -45,7 +49,6 @@ class AutofillTableEncryptorFactory {
   base::SequenceChecker sequence_checker_;
 
   friend struct base::DefaultSingletonTraits<AutofillTableEncryptorFactory>;
-  DISALLOW_COPY_AND_ASSIGN(AutofillTableEncryptorFactory);
 };
 
 }  // namespace autofill

@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"

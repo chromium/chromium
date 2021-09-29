@@ -46,7 +46,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/post_task_and_reply_with_result_internal.h"

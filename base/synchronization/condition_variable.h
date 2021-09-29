@@ -62,16 +62,15 @@
 #ifndef BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 
+#include "build/build_config.h"
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"

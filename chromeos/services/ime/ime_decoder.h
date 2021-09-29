@@ -46,6 +46,9 @@ class ImeDecoder {
   // Gets the singleton ImeDecoder.
   static ImeDecoder* GetInstance();
 
+  ImeDecoder(const ImeDecoder&) = delete;
+  ImeDecoder& operator=(const ImeDecoder&) = delete;
+
   // Get status of the IME decoder library initialization.
   // Return `Status::kSuccess` if the lib is successfully initialized.
   Status GetStatus() const;
@@ -66,8 +69,6 @@ class ImeDecoder {
   absl::optional<base::ScopedNativeLibrary> library_;
 
   EntryPoints entry_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeDecoder);
 };
 
 // Only used in tests to set a fake `ImeDecoder::EntryPoints`.

@@ -8,8 +8,6 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 
