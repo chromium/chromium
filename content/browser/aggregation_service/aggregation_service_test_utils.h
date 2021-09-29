@@ -7,13 +7,16 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/threading/sequence_bound.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace base {
 class Clock;
@@ -23,8 +26,25 @@ namespace content {
 
 namespace aggregation_service {
 
+struct TestHpkeKey {
+  // Public-private key pair.
+  EVP_HPKE_KEY full_hpke_key;
+
+  // Contains a copy of the public key of `full_hpke_key`.
+  PublicKey public_key;
+};
+
 testing::AssertionResult PublicKeysEqual(const std::vector<PublicKey>& expected,
                                          const std::vector<PublicKey>& actual);
+testing::AssertionResult SharedInfoEqual(
+    const AggregatableReportSharedInfo& expected,
+    const AggregatableReportSharedInfo& actual);
+
+AggregatableReportRequest CreateExampleRequest();
+
+// Generates a public-private key pair for HPKE and also constructs a PublicKey
+// object for use in assembler methods.
+TestHpkeKey GenerateKey(std::string key_id = "example_id");
 
 }  // namespace aggregation_service
 
