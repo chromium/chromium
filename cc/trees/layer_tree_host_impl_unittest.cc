@@ -4935,11 +4935,16 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   LayerImpl* inner_scroll = InnerViewportScrollLayer();
   DCHECK(inner_scroll);
+  EXPECT_EQ(gfx::SizeF(50, 50),
+            host_impl_->active_tree()->ScrollableViewportSize());
   EXPECT_EQ(gfx::ScrollOffset(50, 50), MaxScrollOffset(inner_scroll));
 
   PropertyTrees* property_trees = host_impl_->active_tree()->property_trees();
   property_trees->SetInnerViewportContainerBoundsDelta(gfx::Vector2dF(15, 15));
   property_trees->SetOuterViewportContainerBoundsDelta(gfx::Vector2dF(7, 7));
+  // Container grows in response to the inner viewport bounds delta.
+  EXPECT_EQ(gfx::SizeF(65, 65),
+            host_impl_->active_tree()->ScrollableViewportSize());
   EXPECT_EQ(gfx::ScrollOffset(42, 42), MaxScrollOffset(inner_scroll));
 
   property_trees->SetInnerViewportContainerBoundsDelta(gfx::Vector2dF());

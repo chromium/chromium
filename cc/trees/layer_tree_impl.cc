@@ -1249,11 +1249,12 @@ const SyncedProperty<ScaleGroup>* LayerTreeImpl::page_scale_factor() const {
 }
 
 gfx::SizeF LayerTreeImpl::ScrollableViewportSize() const {
-  auto* inner_node = InnerViewportScrollNode();
-  if (!inner_node)
+  if (!InnerViewportScrollNode())
     return gfx::SizeF();
 
-  return gfx::ScaleSize(gfx::SizeF(inner_node->container_bounds),
+  gfx::Size container_bounds = property_trees()->scroll_tree.container_bounds(
+      viewport_property_ids_.inner_scroll);
+  return gfx::ScaleSize(gfx::SizeF(container_bounds),
                         1.0f / page_scale_factor_for_scroll());
 }
 
