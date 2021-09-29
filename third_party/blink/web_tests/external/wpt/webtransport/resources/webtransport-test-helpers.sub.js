@@ -5,6 +5,9 @@ const HOST = get_host_info().ORIGINAL_HOST;
 const PORT = '{{ports[webtransport-h3][0]}}';
 const BASE = `https://${HOST}:${PORT}`;
 
+// Wait for the given number of milliseconds (ms).
+function wait(ms) { return new Promise(res => step_timeout(res, ms)); }
+
 // Create URL for WebTransport session.
 function webtransport_url(handler) {
   return `${BASE}/webtransport/handlers/${handler}`;
