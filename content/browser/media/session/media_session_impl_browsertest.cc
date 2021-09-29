@@ -24,7 +24,6 @@
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/media_session.h"
@@ -3230,77 +3229,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
   player_1 = player_observer->StartNewPlayer();
   AddPlayer(player_observer.get(), player_1);
   EXPECT_NE(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
-}
-
-class MediaSessionImplWithBackForwardCacheBrowserTest
-    : public MediaSessionImplBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
-    enabled_features.emplace_back(features::kBackForwardCache,
-                                  std::map<std::string, std::string>{});
-    enabled_features.emplace_back(kBackForwardCacheMediaPlay,
-                                  std::map<std::string, std::string>{});
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
-
-  RenderFrameHost* GetMainFrame() {
-    return shell()->web_contents()->GetMainFrame();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
-                       PlayAndCache) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
-
-  // Add a player.
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      GetMainFrame(), media::MediaContentType::Persistent);
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  EXPECT_TRUE(player_observer->IsPlaying(0));
-
-  // Navigate to another page and go back. The page is once cached in back-
-  // forward cache and restored from it.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
-  shell()->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  // After the page is restored from back-forward cache, the player observer
-  // must be paused.
-  EXPECT_FALSE(player_observer->IsPlaying(0));
-}
-
-IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
-                       PauseAndCache) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
-
-  // Add a player and pause this.
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      GetMainFrame(), media::MediaContentType::Persistent);
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  UISuspend();
-  EXPECT_FALSE(player_observer->IsPlaying(0));
-
-  // Navigate to another page and go back. The page is once cached in back-
-  // forward cache and restored from it.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
-  shell()->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  // After the page is restored from back-forward cache, the player observer
-  // must be still paused.
-  EXPECT_FALSE(player_observer->IsPlaying(0));
 }
 
 }  // namespace content
