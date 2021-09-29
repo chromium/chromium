@@ -863,6 +863,16 @@ ci.android_builder(
     notifies = ["cronet"],
 )
 
+ci.android_fyi_builder(
+    name = "android-cronet-x86-dbg-pie-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "p",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["android-cronet-x86-dbg"],
+)
+
 ci.android_builder(
     name = "android-cronet-x86-dbg-10-tests",
     console_view_entry = consoles.console_view_entry(
