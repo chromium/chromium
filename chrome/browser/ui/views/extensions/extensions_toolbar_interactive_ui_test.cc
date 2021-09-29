@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarInteractiveUiTest,
   extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
   EXPECT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
-  host_helper.WaitForExtensionHostDestroyed();
+  host_helper.WaitForHostDestroyed();
 
   EXPECT_FALSE(view_controller->IsShowingPopup());
   EXPECT_EQ(nullptr, container->popup_owner_for_testing());

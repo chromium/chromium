@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
   ASSERT_TRUE(extension_prefs->IsExtensionRunning(extension->id()));
 
   // Wait for the extension to get suspended.
-  host_helper.WaitForExtensionHostDestroyed();
+  host_helper.WaitForHostDestroyed();
 
   // App isn't running because it got suspended.
   ASSERT_FALSE(extension_prefs->IsExtensionRunning(extension->id()));
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
   // One for the read-only file entry and one for the writable file entry.
   ASSERT_EQ(2u, file_entries.size());
 
-  host_helper.WaitForExtensionHostDestroyed();
+  host_helper.WaitForHostDestroyed();
   file_entries = saved_files_service->GetAllFileEntries(extension->id());
   // File entries should be cleared when the extension is suspended.
   ASSERT_TRUE(file_entries.empty());
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
   SavedFilesService* saved_files_service = SavedFilesService::Get(profile());
   std::vector<SavedFileEntry> file_entries =
       saved_files_service->GetAllFileEntries(extension->id());
-  host_helper.WaitForExtensionHostDestroyed();
+  host_helper.WaitForHostDestroyed();
 
   // Simulate a restart by populating the preferences as if the browser didn't
   // get time to clean itself up.

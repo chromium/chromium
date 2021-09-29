@@ -30,7 +30,7 @@ void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
                                                   extension_id);
   std::move(load_cb).Run();
   extensions::ExtensionHost* extension_host =
-      host_helper.WaitForExtensionHostCompletedFirstLoad();
+      host_helper.WaitForHostCompletedFirstLoad();
   ASSERT_TRUE(extension_host);
   extension_host_browser_context_ = extension_host->browser_context();
 }

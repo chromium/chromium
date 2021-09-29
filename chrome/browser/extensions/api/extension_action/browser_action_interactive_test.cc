@@ -234,7 +234,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
-    host_helper.WaitForExtensionHostDestroyed();
+    host_helper.WaitForHostDestroyed();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
   // Change active tabs, the extension popup should close.
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  host_helper.WaitForExtensionHostDestroyed();
+  host_helper.WaitForHostDestroyed();
 
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
 }

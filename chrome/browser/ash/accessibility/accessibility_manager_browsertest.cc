@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
       AccessibilityManager::Get()->profile(),
       extension_misc::kChromeVoxExtensionId);
   SetSpokenFeedbackEnabled(true);
-  host_helper.WaitForExtensionHostCompletedFirstLoad();
+  host_helper.WaitForHostCompletedFirstLoad();
 
   ASSERT_TRUE(IsSpokenFeedbackEnabled());
   ASSERT_TRUE(IsChromeVoxPanelActive());

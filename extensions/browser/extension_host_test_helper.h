@@ -60,12 +60,12 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   ExtensionHost* WaitForDocumentElementAvailable() {
     return WaitFor(HostEvent::kDocumentElementAvailable);
   }
-  ExtensionHost* WaitForExtensionHostCompletedFirstLoad() {
+  ExtensionHost* WaitForHostCompletedFirstLoad() {
     return WaitFor(HostEvent::kCompletedFirstLoad);
   }
   // NOTE: No return because the ExtensionHost is *always* (obviously)
   // destroyed by the time this returns.
-  void WaitForExtensionHostDestroyed() { WaitFor(HostEvent::kDestroyed); }
+  void WaitForHostDestroyed() { WaitFor(HostEvent::kDestroyed); }
 
  private:
   // The different types of events this class can wait for.

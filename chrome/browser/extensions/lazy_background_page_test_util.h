@@ -28,9 +28,7 @@ class LazyBackgroundObserver {
   }
 
   void WaitUntilLoaded() { host_helper_.WaitForDocumentElementAvailable(); }
-  void WaitUntilClosed() {
-    host_helper_.WaitForExtensionHostDestroyed();
-  }
+  void WaitUntilClosed() { host_helper_.WaitForHostDestroyed(); }
 
  private:
   extensions::ExtensionHostTestHelper host_helper_;

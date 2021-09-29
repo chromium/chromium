@@ -78,7 +78,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     extensions::ExtensionHostTestHelper host_helper(
         browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-    host_helper.WaitForExtensionHostCompletedFirstLoad();
+    host_helper.WaitForHostCompletedFirstLoad();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);

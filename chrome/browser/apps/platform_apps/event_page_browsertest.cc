@@ -27,7 +27,7 @@ class AppEventPageTest : public PlatformAppBrowserTest {
     CloseAppWindow(app_window);
 
     // Verify that the event page is destroyed.
-    host_helper.WaitForExtensionHostDestroyed();
+    host_helper.WaitForHostDestroyed();
   }
 };
 

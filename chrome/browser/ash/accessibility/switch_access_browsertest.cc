@@ -47,7 +47,7 @@ class SwitchAccessTest : public InProcessBrowserTest {
     extensions::ExtensionHostTestHelper host_helper(
         manager->profile(), extension_misc::kSwitchAccessExtensionId);
     manager->SetSwitchAccessEnabled(true);
-    host_helper.WaitForExtensionHostCompletedFirstLoad();
+    host_helper.WaitForHostCompletedFirstLoad();
 
     manager->SetSwitchAccessKeysForTest(
         select_key_codes,

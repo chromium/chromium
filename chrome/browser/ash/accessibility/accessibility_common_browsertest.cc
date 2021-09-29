@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
     extensions::ExtensionHostTestHelper host_helper(
         manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
     pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
-    host_helper.WaitForExtensionHostCompletedFirstLoad();
+    host_helper.WaitForHostCompletedFirstLoad();
   }
 
   EXPECT_EQ(1U, enabled_features.size());
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
         manager->profile(), extension_misc::kChromeVoxExtensionId);
     // Not an accessibility common feature.
     pref_service->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
-    host_helper.WaitForExtensionHostCompletedFirstLoad();
+    host_helper.WaitForHostCompletedFirstLoad();
   }
 
   EXPECT_TRUE(enabled_features.empty());
