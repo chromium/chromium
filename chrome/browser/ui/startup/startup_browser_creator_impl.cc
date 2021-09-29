@@ -524,6 +524,19 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         onboarding_tabs = provider.GetOnboardingTabs(profile_);
         AppendTabs(onboarding_tabs, &tabs);
       }
+
+      // Potentially add the What's New Page. Note that the What's New page
+      // should never be shown in the same session as any first-run onboarding
+      // tabs.
+      if (onboarding_tabs.empty()) {
+        StartupTabs new_features_tabs;
+        new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
+        AppendTabs(new_features_tabs, &tabs);
+      } else {
+        // Record the current version so that What's New will not be shown until
+        // after the next major version update.
+        whats_new::SetLastVersion(g_browser_process->local_state());
+      }
     }
 
     // If the user has set the preference indicating URLs to show on opening,
@@ -532,25 +545,11 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         provider.GetPreferencesTabs(command_line_, profile_);
     AppendTabs(prefs_tabs, &tabs);
 
-    // Potentially add the What's New or New Tab Page. Onboarding content is
-    // designed to replace (and eventually funnel the user to) the NTP. Note
-    // that the What's New page should never be shown in the same session as any
-    // first-run onboarding tabs.
-    if (onboarding_tabs.empty()) {
-      StartupTabs new_features_tabs;
-      new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
-      AppendTabs(new_features_tabs, &tabs);
-
-      // URLs from preferences are explicitly meant to override showing the NTP.
-      // The What's New page also overrides showing the NTP.
-      if (prefs_tabs.empty() && new_features_tabs.empty()) {
-        AppendTabs(provider.GetNewTabPageTabs(command_line_, profile_), &tabs);
-      }
-    } else {
-      // Record the current version so that What's New will not be shown until
-      // after the next major version update.
-      whats_new::SetLastVersion(g_browser_process->local_state());
-    }
+    // Potentially add the New Tab Page. Onboarding content is designed to
+    // replace (and eventually funnel the user to) the NTP. Note
+    // URLs from preferences are explicitly meant to override showing the NTP.
+    if (onboarding_tabs.empty() && prefs_tabs.empty())
+      AppendTabs(provider.GetNewTabPageTabs(command_line_, profile_), &tabs);
   }
 
   // Maybe add any tabs which the user has previously pinned.

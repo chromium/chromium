@@ -362,8 +362,9 @@ TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
   auto output = impl.DetermineStartupTabs(provider, true, false, false, false,
                                           true, true, true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
-  ASSERT_EQ(1U, output.tabs.size());
+  ASSERT_EQ(2U, output.tabs.size());
   EXPECT_EQ("whats-new", output.tabs[0].url.host());
+  EXPECT_EQ("new-tab", output.tabs[1].url.host());
 
   // New features can appear with prefs/pinned.
   FakeStartupTabProvider provider_with_pinned(
@@ -372,8 +373,8 @@ TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
                                      false, true, true, true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("prefs", output.tabs[0].url.host());
-  EXPECT_EQ("whats-new", output.tabs[1].url.host());
+  EXPECT_EQ("whats-new", output.tabs[0].url.host());
+  EXPECT_EQ("prefs", output.tabs[1].url.host());
   EXPECT_EQ("pinned", output.tabs[2].url.host());
 
   // Onboarding overrides What's New.

@@ -1497,6 +1497,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   // Write out the pinned tabs.
   PinnedTabCodec::WritePinnedTabs(browser()->profile());
 
+  // Set last What's New version to the current version so there is no What's
+  // New tab shown on launch (for the non-first-run case).
+  g_browser_process->local_state()->SetInteger(prefs::kLastWhatsNewVersion,
+                                               CHROME_VERSION_MAJOR);
+
   // Close the browser window.
   browser()->window()->Close();
 
