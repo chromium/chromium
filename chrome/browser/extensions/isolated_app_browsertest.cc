@@ -439,14 +439,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
   EXPECT_FALSE(HasCookie(tab2, "app1Image=1"));
 }
 
-// Test is flaky on Windows.
-// http://crbug.com/247667
-#if defined(OS_WIN)
-#define MAYBE_IsolatedAppProcessModel DISABLED_IsolatedAppProcessModel
-#else
-#define MAYBE_IsolatedAppProcessModel IsolatedAppProcessModel
-#endif  // defined(OS_WIN)
-
 // This test used to check that isolated apps processes do not render top-level
 // non-app pages, and that this is true even in the case of the OAuth
 // workaround for hosted apps, where non-app popups may be kept in the hosted
@@ -455,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
 // isolated apps.  Therefore, this test is now checking that when an isolated
 // app window.opens a non-app same-site URL, the popup does stay in the
 // isolated app process.
-IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_IsolatedAppProcessModel) {
+IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("isolated_apps/app1")));
