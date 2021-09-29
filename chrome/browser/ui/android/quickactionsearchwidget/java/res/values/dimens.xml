@@ -15,7 +15,7 @@
 
     <!-- Medium Widget Dimensions -->
     <dimen name="quick_action_search_widget_medium_margin">16dp</dimen>
-    <dimen name="quick_action_search_widget_medium_height">110dp</dimen>
+    <dimen name="quick_action_search_widget_medium_height">160dp</dimen>
 
     <!-- Small Button Dimensions -->
     <dimen name="quick_action_search_widget_small_button_radius">24dp</dimen>

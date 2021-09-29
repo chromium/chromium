@@ -10,8 +10,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -56,13 +58,24 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         }
 
         @Override
-        protected @NonNull QuickActionSearchWidgetProviderDelegate getDelegate(
+        @NonNull
+        QuickActionSearchWidgetProviderDelegate getDelegate(
                 Context context, AppWidgetManager manager, int widgetId) {
             Bundle options = manager.getAppWidgetOptions(widgetId);
-            int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            boolean isLandscapeMode = context.getResources().getConfiguration().orientation
+                    == Configuration.ORIENTATION_LANDSCAPE;
 
-            if (minHeight >= context.getResources().getDimension(
-                        R.dimen.quick_action_search_widget_medium_height)) {
+            // MIN_HEIGHT is reported for landscape mode, whereas MAX_HEIGHT is used with portrait.
+            int newWidgetHeightDp =
+                    options.getInt(isLandscapeMode ? AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT
+                                                   : AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+            float mediumWidgetMinHeightDp =
+                    context.getResources().getDimension(
+                            R.dimen.quick_action_search_widget_medium_height)
+                    / displayMetrics.density;
+
+            if (newWidgetHeightDp >= mediumWidgetMinHeightDp) {
                 return getMediumWidgetDelegate();
             }
 
@@ -210,7 +223,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * @param manager The AppWidgetManager instance to query widget info.
      * @param widgetId The widget to get the delegate for.
      */
-    protected abstract QuickActionSearchWidgetProviderDelegate getDelegate(
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract QuickActionSearchWidgetProviderDelegate getDelegate(
             Context context, AppWidgetManager manager, int widgetId);
 
     /**
