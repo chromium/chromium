@@ -1563,6 +1563,13 @@ const char kJavascriptHarmonyShippingDescription[] =
     "conflict with the latest JavaScript features. This flag allows disabling "
     "support of those features for compatibility with such pages.";
 
+const char kJourneysName[] = "History Journeys";
+const char kJourneysDescription[] = "Enables the History Journeys UI.";
+
+const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
+const char kJourneysOmniboxActionDescription[] =
+    "Enables the History Journeys Omnibox Action.";
+
 const char kLegacyTLSEnforcedName[] =
     "Enforce deprecation of legacy TLS versions";
 const char kLegacyTLSEnforcedDescription[] =
@@ -1610,9 +1617,6 @@ const char kMediaRouterCastAllowAllIPsDescription[] =
 const char kMediaSessionWebRTCName[] = "Enable WebRTC actions in Media Session";
 const char kMediaSessionWebRTCDescription[] =
     "Adds new actions into Media Session for video conferencing.";
-
-const char kMemoriesName[] = "Memories";
-const char kMemoriesDescription[] = "Enables the history clusters UI.";
 
 const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =

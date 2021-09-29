@@ -462,7 +462,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
     // If the main kMemories feature is enabled, we want to persist visits.
     // And if the persist-only switch is enabled, we also want to persist them.
-    if (base::FeatureList::IsEnabled(kMemories) ||
+    if (base::FeatureList::IsEnabled(kJourneys) ||
         base::FeatureList::IsEnabled(kPersistContextAnnotationsInHistoryDb)) {
       history_service_->AddContextAnnotationsForVisit(
           visit_context_annotations.visit_row.visit_id,
@@ -530,7 +530,7 @@ void HistoryClustersService::RemoveVisits(
 
 bool HistoryClustersService::DoesQueryMatchAnyCluster(
     const std::string& query) {
-  if (!base::FeatureList::IsEnabled(kMemories))
+  if (!base::FeatureList::IsEnabled(kJourneys))
     return false;
 
   // 2 hour threshold chosen arbitrarily for cache refresh time.

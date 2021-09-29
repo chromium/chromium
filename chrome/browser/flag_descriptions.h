@@ -895,6 +895,12 @@ extern const char kJavascriptHarmonyDescription[];
 extern const char kJavascriptHarmonyShippingName[];
 extern const char kJavascriptHarmonyShippingDescription[];
 
+extern const char kJourneysName[];
+extern const char kJourneysDescription[];
+
+extern const char kJourneysOmniboxActionName[];
+extern const char kJourneysOmniboxActionDescription[];
+
 extern const char kLegacyTLSEnforcedName[];
 extern const char kLegacyTLSEnforcedDescription[];
 
@@ -921,9 +927,6 @@ extern const char kMediaRouterCastAllowAllIPsDescription[];
 
 extern const char kMediaSessionWebRTCName[];
 extern const char kMediaSessionWebRTCDescription[];
-
-extern const char kMemoriesName[];
-extern const char kMemoriesDescription[];
 
 extern const char kMetricsSettingsAndroidName[];
 extern const char kMetricsSettingsAndroidDescription[];

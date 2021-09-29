@@ -48,15 +48,15 @@ class RemoteClusteringBackendTest : public testing::Test {
     scoped_feature_list_->InitWithFeaturesAndParameters(
         {
             {
-                kMemories,
+                kJourneys,
                 {
-                    {"MemoriesExperimentName", kFakeExperimentName},
+                    {"JourneysExperimentName", kFakeExperimentName},
                 },
             },
             {
                 kRemoteModelForDebugging,
                 {
-                    {"MemoriesRemoteModelEndpoint", kFakeEndpoint},
+                    {"JourneysRemoteModelEndpoint", kFakeEndpoint},
                 },
             },
         },

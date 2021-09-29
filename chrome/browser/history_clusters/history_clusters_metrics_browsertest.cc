@@ -66,7 +66,7 @@ void ValidateHistoryClustersUKMEntry(const ukm::mojom::UkmEntry* entry,
 class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
  public:
   HistoryClustersMetricsBrowserTest() {
-    feature_list_.InitWithFeatures({history_clusters::kMemories}, {});
+    feature_list_.InitWithFeatures({history_clusters::kJourneys}, {});
   }
 
  private:

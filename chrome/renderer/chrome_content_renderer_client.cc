@@ -588,7 +588,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       features::kContinuousSearch;
 #else
   const base::Feature& kSearchResultExtractorFeature =
-      history_clusters::kMemories;
+      history_clusters::kJourneys;
 #endif
   if (render_frame->IsMainFrame() &&
       base::FeatureList::IsEnabled(kSearchResultExtractorFeature)) {

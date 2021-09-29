@@ -72,8 +72,8 @@ void AttachHistoryClustersActions(
     return;
 
   // Both features must be enabled to ever attach the action chip.
-  if (!base::FeatureList::IsEnabled(history_clusters::kMemories) ||
-      !base::FeatureList::IsEnabled(history_clusters::kMemoriesOmniboxAction)) {
+  if (!base::FeatureList::IsEnabled(history_clusters::kJourneys) ||
+      !base::FeatureList::IsEnabled(history_clusters::kOmniboxAction)) {
     return;
   }
 

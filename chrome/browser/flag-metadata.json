@@ -3336,6 +3336,16 @@
     "expiry_milestone": 94
   },
   {
+    "name": "history-journeys",
+    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "history-journeys-omnibox-action",
+    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "homepage-promo-card",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],
     "expiry_milestone": 90
@@ -3693,11 +3703,6 @@
     // capture a memlog without disturbing the situation under test by
     // restarting to apply a switch. It should not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "memories",
-    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-ads-blocked",

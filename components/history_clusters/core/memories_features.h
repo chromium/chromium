@@ -55,12 +55,12 @@ extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
 
 // Features
 
-// Enables the Chrome Memories history clustering feature.
-extern const base::Feature kMemories;
+// Enables Journeys in the Chrome History WebUI.
+extern const base::Feature kJourneys;
 
-// Enables the Chrome Memories Omnibox Action chip. `kMemories` must also be
-// enabled for this to take effect.
-extern const base::Feature kMemoriesOmniboxAction;
+// Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
+// for this to take effect.
+extern const base::Feature kOmniboxAction;
 
 // Enables debug info; e.g. shows visit metadata on chrome://history entries.
 extern const base::Feature kDebug;

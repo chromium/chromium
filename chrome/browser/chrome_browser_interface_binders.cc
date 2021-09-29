@@ -714,7 +714,7 @@ void PopulateChromeWebUIFrameBinders(
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
       NewTabPageThirdPartyUI>(map);
 
-  if (base::FeatureList::IsEnabled(history_clusters::kMemories)) {
+  if (base::FeatureList::IsEnabled(history_clusters::kJourneys)) {
     RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
                                            HistoryUI>(map);
   }

@@ -125,7 +125,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 
   // History clusters
   source->AddBoolean("isHistoryClustersEnabled",
-                     base::FeatureList::IsEnabled(history_clusters::kMemories));
+                     base::FeatureList::IsEnabled(history_clusters::kJourneys));
   source->AddBoolean("isHistoryClustersDebug",
                      base::FeatureList::IsEnabled(history_clusters::kDebug));
 

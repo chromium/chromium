@@ -54,7 +54,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitAndEnableFeature(history_clusters::kMemories);
+    feature_list_.InitAndEnableFeature(history_clusters::kJourneys);
 
     HistoryClustersTabHelper::CreateForWebContents(web_contents());
     helper_ = HistoryClustersTabHelper::FromWebContents(web_contents());

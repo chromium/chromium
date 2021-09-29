@@ -938,37 +938,6 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
-const FeatureEntry::FeatureParam kMemoryVariationOnDevice[] = {
-    {"MemoriesMaxVisitsToCluster", "1000"}};
-const FeatureEntry::FeatureParam kMemoryVariationExperimentA[] = {
-    {"MemoriesExperimentName", "A"},
-    {"MemoriesMaxVisitsToCluster", "200"},
-    {"MemoriesOnDeviceClusteringBackend", "false"}};
-const FeatureEntry::FeatureParam kMemoryVariationExperimentB[] = {
-    {"MemoriesExperimentName", "B"},
-    {"MemoriesMaxVisitsToCluster", "200"},
-    {"MemoriesOnDeviceClusteringBackend", "false"}};
-const FeatureEntry::FeatureParam kMemoryVariationExperimentC[] = {
-    {"MemoriesExperimentName", "C"},
-    {"MemoriesMaxVisitsToCluster", "200"},
-    {"MemoriesOnDeviceClusteringBackend", "false"}};
-const FeatureEntry::FeatureParam kMemoryVariationRemote[] = {
-    {"MemoriesMaxVisitsToCluster", "10000"},
-    {"MemoriesOnDeviceClusteringBackend", "false"}};
-
-const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
-    {"Limit 1000, On-Device", kMemoryVariationOnDevice,
-     base::size(kMemoryVariationOnDevice), nullptr},
-    {"Limit 200, Remote Exp. A", kMemoryVariationExperimentA,
-     base::size(kMemoryVariationExperimentA), nullptr},
-    {"Limit 200, Remote Exp. B", kMemoryVariationExperimentB,
-     base::size(kMemoryVariationExperimentB), nullptr},
-    {"Limit 200, Remote Exp. C", kMemoryVariationExperimentC,
-     base::size(kMemoryVariationExperimentC), nullptr},
-    {"Limit 10k, Remote", kMemoryVariationRemote,
-     base::size(kMemoryVariationRemote), nullptr},
-};
-
 const FeatureEntry::FeatureParam kPageContentAnnotationsParams[] = {
     {"extract_related_searches", "true"},
     {"max_size_for_text_dump_in_bytes", "5120"},
@@ -4661,11 +4630,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
 
-    {"memories", flag_descriptions::kMemoriesName,
-     flag_descriptions::kMemoriesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::kMemories,
-                                    kMemoriesVariations,
-                                    "Memories")},
+    {"history-journeys", flag_descriptions::kJourneysName,
+     flag_descriptions::kJourneysDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(history_clusters::kJourneys)},
+
+    {"history-journeys-omnibox-action",
+     flag_descriptions::kJourneysOmniboxActionName,
+     flag_descriptions::kJourneysOmniboxActionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(history_clusters::kOmniboxAction)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,

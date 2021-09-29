@@ -35,7 +35,7 @@ class SearchResultExtractorClientBrowserTest : public PlatformBrowserTest {
     feature_list_.InitWithFeatures({features::kContinuousSearch}, {});
 #else
     feature_list_.InitWithFeatures(
-        {base::Feature{"Memories",
+        {base::Feature{"Journeys",
                        base::FeatureState::FEATURE_DISABLED_BY_DEFAULT}},
         {});
 #endif
