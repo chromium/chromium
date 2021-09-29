@@ -62,6 +62,8 @@ extern const base::Feature kApplyNativeOcclusionToCompositor;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCalculateNativeWinOcclusion;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kEvictRootSurfaceWhenHidden;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputPaneOnScreenKeyboard;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kPointerEventsForTouch;
@@ -188,11 +190,6 @@ extern const base::Feature kSwipeToMoveCursor;
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kUIDebugTools;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
-
-// Returns true if the occlusion state of the native window (AcceleratedWidget)
-// should be applied to the compositor.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-bool ShouldApplyNativeOcclusionToCompositor();
 
 }  // namespace features
 

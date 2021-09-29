@@ -26,6 +26,11 @@ const base::Feature kApplyNativeOcclusionToCompositor{
 const base::Feature kCalculateNativeWinOcclusion{
     "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, when the AcceleratedWidget is hidden the root frame's surface
+// is evicted. This results in freeing up all resources used for drawing.
+const base::Feature kEvictRootSurfaceWhenHidden{
+    "EvictRootSurfaceWhenHidden", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, listen for screen power state change and factor into the native
 // window occlusion detection - Windows-only.
 const base::Feature kScreenPowerListenerForNativeWinOcclusion{
@@ -297,19 +302,6 @@ bool IsSwipeToMoveCursorEnabled() {
       base::FeatureList::IsEnabled(kSwipeToMoveCursor);
 #endif
   return enabled;
-}
-
-bool ShouldApplyNativeOcclusionToCompositor() {
-#if defined(OS_WIN)
-  // chromedriver uses the environment variable CHROME_HEADLESS. In this case
-  // it expected that native occlusion is not applied.
-  static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
-  return !is_headless &&
-         base::FeatureList::IsEnabled(kCalculateNativeWinOcclusion) &&
-         base::FeatureList::IsEnabled(kApplyNativeOcclusionToCompositor);
-#else
-  return false;
-#endif
 }
 
 }  // namespace features

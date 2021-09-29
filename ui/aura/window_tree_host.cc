@@ -49,6 +49,14 @@ namespace {
 const char kWindowTreeHostForAcceleratedWidget[] =
     "__AURA_WINDOW_TREE_HOST_ACCELERATED_WIDGET__";
 
+bool ShouldEvictRootSurfaceWhenHidden() {
+#if defined(OS_WIN)
+  return base::FeatureList::IsEnabled(features::kEvictRootSurfaceWhenHidden);
+#else
+  return false;
+#endif
+}
+
 #if DCHECK_IS_ON()
 class ScopedLocalSurfaceIdValidator {
  public:
@@ -358,7 +366,7 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
     const bool visible =
         ShouldOcclusionStateBeConsideredVisible(occlusion_state_);
     if (visible != compositor()->IsVisible())
-      compositor()->SetVisible(visible);
+      UpdateCompositorVisibility(visible);
   }
 
   for (WindowTreeHostObserver& observer : observers_)
@@ -427,6 +435,20 @@ void WindowTreeHost::IntializeDeviceScaleFactor(float device_scale_factor) {
   device_scale_factor_ = device_scale_factor;
 }
 
+void WindowTreeHost::UpdateCompositorVisibility(bool visible) {
+  if (!compositor())
+    return;
+
+  compositor()->SetVisible(visible);
+  if (!visible && ShouldEvictRootSurfaceWhenHidden() &&
+      !compositor()->size().IsEmpty()) {
+    // Viz requires creating a new SurfaceId when evicting the current surface.
+    window_->AllocateLocalSurfaceId();
+    ScopedLocalSurfaceIdValidator lsi_validator(window());
+    compositor()->EvictRootSurface(window_->GetLocalSurfaceId());
+  }
+}
+
 void WindowTreeHost::DestroyCompositor() {
   if (!compositor_)
     return;
@@ -462,8 +484,7 @@ void WindowTreeHost::OnAcceleratedWidgetMadeVisible(bool value) {
   // Always update the compositor (ignoring occlusion-state) as it is entirely
   // possible the occlusion-state is out of date at this point. It is expected
   // that the proper occlusion state is provided soon after this.
-  if (compositor())
-    compositor()->SetVisible(value);
+  UpdateCompositorVisibility(value);
 }
 
 void WindowTreeHost::CreateCompositor(

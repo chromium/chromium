@@ -13,6 +13,13 @@
 #endif  // OS_WIN
 
 namespace aura {
+namespace {
+#if defined(OS_WIN)
+// Whether IsNativeWindowOcclusionTrackingAlwaysEnabled() should check for
+// CHROME_HEADLESS.
+bool g_headless_check_enabled = true;
+#endif
+}  // namespace
 
 // static
 void NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(
@@ -40,8 +47,25 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
 // static
 bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
     WindowTreeHost* host) {
-  return features::ShouldApplyNativeOcclusionToCompositor() &&
+#if defined(OS_WIN)
+  // chromedriver uses the environment variable CHROME_HEADLESS. In this case
+  // it expected that native occlusion is not applied.
+  static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
+  return (!is_headless || !g_headless_check_enabled) &&
+         base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion) &&
+         base::FeatureList::IsEnabled(
+             features::kApplyNativeOcclusionToCompositor) &&
          host->IsNativeWindowOcclusionEnabled();
+#else
+  return false;
+#endif
 }
+
+#if defined(OS_WIN)
+// static
+void NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(bool enabled) {
+  g_headless_check_enabled = enabled;
+}
+#endif
 
 }  // namespace aura

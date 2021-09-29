@@ -488,6 +488,16 @@ void Compositor::SetBackgroundColor(SkColor color) {
   ScheduleDraw();
 }
 
+void Compositor::EvictRootSurface(const viz::LocalSurfaceId& surface_id) {
+  DCHECK_NE(surface_id, host_->local_surface_id_from_parent());
+  DCHECK(host_->local_surface_id_from_parent().is_valid());
+  const viz::SurfaceId old_surface_id(frame_sink_id_,
+                                      host_->local_surface_id_from_parent());
+  host_->SetViewportRectAndScale(gfx::Rect(size_), device_scale_factor_,
+                                 surface_id);
+  context_factory_->GetHostFrameSinkManager()->EvictSurfaces({old_surface_id});
+}
+
 void Compositor::SetVisible(bool visible) {
   host_->SetVisible(visible);
   // Visibility is reset when the output surface is lost, so this must also be

@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/test/window_event_dispatcher_test_api.h"
@@ -193,5 +194,40 @@ TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
 #endif
   TestWindowTreeHost host;
 }
+
+#if defined(OS_WIN)
+class WindowTreeHostWithOcclusionTest : public test::AuraTestBase {
+ public:
+  // AuraTestBase:
+  void SetUp() override {
+    // Disable the headless check as the bots run with CHROME_HEADLESS set.
+    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kApplyNativeOcclusionToCompositor,
+         features::kEvictRootSurfaceWhenHidden,
+         features::kCalculateNativeWinOcclusion},
+        {});
+    AuraTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    test::AuraTestBase::TearDown();
+    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WindowTreeHostWithOcclusionTest, ToggleOccluded) {
+  ASSERT_TRUE(NativeWindowOcclusionTracker::
+                  IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
+  host()->Show();
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED);
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE);
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+}
+#endif
 
 }  // namespace aura

@@ -241,6 +241,10 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // the |root_layer|.
   void SetBackgroundColor(SkColor color);
 
+  // Evicts the root surface and sets the LocalSurfaceId of the root to
+  // `surface_id`.
+  void EvictRootSurface(const viz::LocalSurfaceId& surface_id);
+
   // Inform the display corresponding to this compositor if it is visible. When
   // false it does not need to produce any frames. Visibility is reset for each
   // call to CreateLayerTreeFrameSink.

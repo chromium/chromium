@@ -273,6 +273,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // during subclass initialization, when the value is needed before InitHost().
   void IntializeDeviceScaleFactor(float device_scale_factor);
 
+  // All calls to changing the visibility of the Compositor funnel into this.
+  // In addition to changing the visibility this may also evict the root frame.
+  void UpdateCompositorVisibility(bool visible);
+
   void DestroyCompositor();
   void DestroyDispatcher();
 

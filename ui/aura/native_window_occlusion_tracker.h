@@ -5,6 +5,9 @@
 #ifndef UI_AURA_NATIVE_WINDOW_OCCLUSION_TRACKER_H_
 #define UI_AURA_NATIVE_WINDOW_OCCLUSION_TRACKER_H_
 
+#include "build/build_config.h"
+#include "ui/aura/aura_export.h"
+
 namespace aura {
 
 class WindowTreeHost;
@@ -12,7 +15,7 @@ class WindowTreeHost;
 // This class is a shim between WindowOcclusionTracker and os-specific
 // window occlusion tracking classes (currently just
 // NativeWindowOcclusionTrackerWin).
-class NativeWindowOcclusionTracker {
+class AURA_EXPORT NativeWindowOcclusionTracker {
  public:
   NativeWindowOcclusionTracker() = delete;
   NativeWindowOcclusionTracker(const NativeWindowOcclusionTracker&) = delete;
@@ -31,6 +34,13 @@ class NativeWindowOcclusionTracker {
   // Returns whether native window occlusion tracking is always enabled.
   static bool IsNativeWindowOcclusionTrackingAlwaysEnabled(
       WindowTreeHost* host);
+
+ private:
+  friend class WindowTreeHostWithOcclusionTest;
+
+#if defined(OS_WIN)
+  static void SetHeadlessCheckEnabled(bool enabled);
+#endif
 };
 
 }  // namespace aura
