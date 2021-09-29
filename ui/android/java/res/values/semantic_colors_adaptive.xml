@@ -19,6 +19,10 @@
     <color name="default_text_color_error">@color/default_text_color_error_dark</color>
     <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_light</color>
     <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_dark</color>
+    <!-- TODO(https://crbug.com/1248157): This is the same as light mode's
+         ?attr/colorOnSecondaryContainer, but it would break in dark mode.
+         Figure out a solution for dynamic colors. -->
+    <color name="default_text_color_on_accent2_container">@color/baseline_secondary_900</color>
 
     <!-- Common icon colors for drawables. -->
     <color name="default_icon_color">@color/default_icon_color_dark</color>
@@ -71,7 +75,7 @@
 
     <!-- Chip colors -->
     <color name="default_chip_assistive_text_color">@color/default_text_color</color>
-    <color name="chip_text_color_selected">@color/default_text_color</color>
+    <color name="chip_text_color_selected">@color/default_text_color_on_accent2_container</color>
     <color name="default_chip_assistive_text_color_secondary">@color/default_text_color_secondary</color>
     <color name="chip_bg_color">@color/default_bg_color</color>
     <color name="chip_background_color_disabled">@android:color/transparent</color>
