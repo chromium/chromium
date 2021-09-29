@@ -4172,7 +4172,6 @@ ci.fyi_mac_builder(
 
 ci.fyi_mac_builder(
     name = "mac-arm64-on-arm64-rel-reclient",
-    builderless = True,
 
     # same with mac-arm64-on-arm64-rel
     cores = None,  # crbug.com/1245114
