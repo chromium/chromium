@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -51,6 +52,8 @@ class CORE_EXPORT DisplayLockUtilities {
     friend void Document::EnsurePaintLocationDataValidForNode(
         const Node* node,
         DocumentUpdateReason reason);
+    friend VisibleSelection
+    FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
 
     friend class DisplayLockContext;
 
