@@ -448,11 +448,6 @@ void FrameSequenceTracker::ReportFramePresented(
   if (ignored_frame_tokens_.contains(frame_token))
     return;
 
-  uint32_t impl_frames_produced = 0;
-  uint32_t main_frames_produced = 0;
-  uint32_t impl_frames_ontime = 0;
-  uint32_t main_frames_ontime = 0;
-
   const auto vsync_interval =
       (feedback.interval.is_zero() ? viz::BeginFrameArgs::DefaultInterval()
                                    : feedback.interval);
@@ -468,14 +463,12 @@ void FrameSequenceTracker::ReportFramePresented(
                 impl_throughput().frames_produced)
           << TRACKER_DCHECK_MSG;
       ++impl_throughput().frames_ontime;
-      ++impl_frames_ontime;
     }
 
     DCHECK_LT(impl_throughput().frames_produced,
               impl_throughput().frames_expected)
         << TRACKER_DCHECK_MSG;
     ++impl_throughput().frames_produced;
-    ++impl_frames_produced;
     if (metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
       metrics()->AdvanceTrace(feedback.timestamp);
     }
@@ -497,7 +490,6 @@ void FrameSequenceTracker::ReportFramePresented(
                 main_throughput().frames_expected)
           << TRACKER_DCHECK_MSG;
       ++main_throughput().frames_produced;
-      ++main_frames_produced;
       if (metrics()->GetEffectiveThread() == ThreadType::kMain) {
         metrics()->AdvanceTrace(feedback.timestamp);
       }
@@ -512,7 +504,6 @@ void FrameSequenceTracker::ReportFramePresented(
                   main_throughput().frames_produced)
             << TRACKER_DCHECK_MSG;
         ++main_throughput().frames_ontime;
-        ++main_frames_ontime;
       }
     }
     last_frame_presentation_timestamp_ = feedback.timestamp;
