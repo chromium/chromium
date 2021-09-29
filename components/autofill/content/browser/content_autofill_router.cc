@@ -136,7 +136,14 @@ void ContentAutofillRouter::SetKeyPressHandler(
 
   some_rfh_for_debugging_ = source->render_frame_host();
 
-  AFCHECK(last_queried_source_, return );
+  // The asynchronous AutocompleteHistoryManager::OnAutofillValuesReturned()
+  // calls SetKeyPressHandler() through AutofillPopupControllerImpl::Show().
+  // Before this call, UnregisterDriver() may have reset |last_queried_source_|
+  // already to nullptr due to a race condition with AutocompleteHistoryManager
+  // (https://crbug.com/1254173).
+  if (!last_queried_source_)
+    return;
+
   last_queried_source_->SetKeyPressHandlerImpl(handler);
 }
 
