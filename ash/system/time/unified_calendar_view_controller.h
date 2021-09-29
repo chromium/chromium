@@ -12,6 +12,8 @@ namespace ash {
 
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
+class CalendarView;
+class CalendarViewController;
 
 // Controller of `CalendarView` in UnifiedSystemTray.
 class UnifiedCalendarViewController : public DetailedViewController {
@@ -30,6 +32,13 @@ class UnifiedCalendarViewController : public DetailedViewController {
 
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
+  std::unique_ptr<CalendarViewController> const calendar_view_controller_;
+
+  // Unowned, the object that instantiated us.
+  UnifiedSystemTrayController* const tray_controller_;
+
+  // Owned by UnifiedSystemTrayView's detailed_view_container_.
+  CalendarView* view_ = nullptr;
 };
 
 }  // namespace ash
