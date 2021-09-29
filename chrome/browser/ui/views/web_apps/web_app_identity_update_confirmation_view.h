@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,7 +48,7 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   void OnDialogAccepted();
   void OnWebAppUninstallDialogClosed(bool uninstalled);
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
   // The id of the app whose identity is changing.
   const std::string app_id_;

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +51,7 @@ class LinkTest : public test::BaseControlTestWidget {
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
  public:
-  raw_ptr<Link> link_ = nullptr;
+  Link* link_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

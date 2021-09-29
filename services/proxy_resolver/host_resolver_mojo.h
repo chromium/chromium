@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
@@ -55,7 +54,7 @@ class HostResolverMojo : public ProxyHostResolver {
   class Job;
   class RequestImpl;
 
-  const raw_ptr<Impl> impl_;
+  Impl* const impl_;
 
   ProxyHostResolverCache host_cache_;
   base::WeakPtrFactory<ProxyHostResolverCache> host_cache_weak_factory_{

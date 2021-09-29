@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 
@@ -78,7 +77,7 @@ class TestStatsDictionary {
 
   // The reference keeps the report alive which indirectly owns |stats_|.
   scoped_refptr<TestStatsReportDictionary> report_;
-  raw_ptr<const base::DictionaryValue> stats_;
+  const base::DictionaryValue* stats_;
 };
 
 }  // namespace content

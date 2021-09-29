@@ -5,7 +5,6 @@
 #ifndef GIN_ARGUMENTS_H_
 #define GIN_ARGUMENTS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -110,7 +109,7 @@ class GIN_EXPORT Arguments {
   bool IsConstructCall() const;
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   union {
     const v8::FunctionCallbackInfo<v8::Value>* info_for_function_;
     const v8::PropertyCallbackInfo<v8::Value>* info_for_property_;

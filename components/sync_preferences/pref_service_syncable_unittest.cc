@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -106,7 +105,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
   void FailNextProcessSyncChanges() { fail_next_ = true; }
 
  private:
-  raw_ptr<syncer::SyncChangeList> output_;
+  syncer::SyncChangeList* output_;
   bool fail_next_;
 };
 
@@ -150,7 +149,7 @@ class TestPrefServiceSyncableObserver : public PrefServiceSyncableObserver {
 
  private:
   bool is_syncing_changed_ = false;
-  raw_ptr<const TestSyncedPrefObserver> sync_pref_observer_ = nullptr;
+  const TestSyncedPrefObserver* sync_pref_observer_ = nullptr;
 };
 
 syncer::SyncChange MakeRemoteChange(const std::string& name,
@@ -264,7 +263,7 @@ class PrefServiceSyncableTest : public testing::Test {
  protected:
   TestingPrefServiceSyncable prefs_;
 
-  raw_ptr<PrefModelAssociator> pref_sync_service_ = nullptr;
+  PrefModelAssociator* pref_sync_service_ = nullptr;
 };
 
 TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
@@ -496,14 +495,14 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
       base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
   // Owned by prefs_;
-  const raw_ptr<PrefNotifierImpl> pref_notifier_ = new PrefNotifierImpl;
+  PrefNotifierImpl* const pref_notifier_ = new PrefNotifierImpl;
   scoped_refptr<TestingPrefStore> managed_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   scoped_refptr<TestingPrefStore> user_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   TestPrefModelAssociatorClient client_;
   PrefServiceSyncable prefs_;
-  raw_ptr<PrefModelAssociator> pref_sync_service_ = nullptr;
+  PrefModelAssociator* pref_sync_service_ = nullptr;
 };
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {

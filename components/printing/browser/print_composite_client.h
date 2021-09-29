@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom.h"
@@ -164,7 +163,7 @@ class PrintCompositeClient
 
   // Stores the the frame that initiated the composite request;
   // Holds nullptr if no document is being composited.
-  raw_ptr<content::RenderFrameHost> initiator_frame_ = nullptr;
+  content::RenderFrameHost* initiator_frame_ = nullptr;
 
   // Stores the pending subframes for the composited document.
   base::flat_set<content::RenderFrameHost*> pending_subframes_;

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
@@ -88,9 +87,8 @@ class PlatformSensorFusion::Factory : public base::RefCounted<Factory> {
 
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm_;
   PlatformSensorProviderBase::CreateSensorCallback result_callback_;
-  raw_ptr<SensorReadingSharedBuffer>
-      reading_buffer_;  // NOTE: Owned by |provider_|.
-  raw_ptr<PlatformSensorProvider> provider_;
+  SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
+  PlatformSensorProvider* provider_;
   PlatformSensorFusion::SourcesMap sources_map_;
 };
 

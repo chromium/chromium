@@ -11,7 +11,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon_base/favicon_types.h"
 
@@ -120,10 +119,10 @@ class PartnerBookmarksReader {
   void OnFaviconFetched(const base::android::JavaRef<jobject>& j_callback,
                         FaviconFetchResult result);
 
-  raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
-  raw_ptr<Profile> profile_;
+  PartnerBookmarksShim* partner_bookmarks_shim_;
+  Profile* profile_;
 
-  raw_ptr<favicon::LargeIconService> large_icon_service_;
+  favicon::LargeIconService* large_icon_service_;
   base::CancelableTaskTracker favicon_task_tracker_;
 
   // JNI

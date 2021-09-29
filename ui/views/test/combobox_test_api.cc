@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/test/combobox_test_api.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
@@ -36,7 +35,7 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
   }
 
  private:
-  raw_ptr<int> show_counter_;
+  int* show_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(TestMenuRunnerHandler);
 };

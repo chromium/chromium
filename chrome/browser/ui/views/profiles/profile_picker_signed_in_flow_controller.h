@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -122,9 +121,9 @@ class ProfilePickerSignedInFlowController
   content::WebContents* contents() const { return contents_.get(); }
 
   // The host object, must outlive this object.
-  raw_ptr<ProfilePickerWebContentsHost> host_;
+  ProfilePickerWebContentsHost* host_;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

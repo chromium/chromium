@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -269,7 +268,7 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
 
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
-  const raw_ptr<QuicStreamFactory> quic_stream_factory_;
+  QuicStreamFactory* const quic_stream_factory_;
 };
 
 // Class that owns a reference to a QuicCryptoClientConfigOwner. Handles
@@ -455,9 +454,9 @@ class QuicStreamFactory::Job {
   }
 
   IoState io_state_;
-  raw_ptr<QuicStreamFactory> factory_;
+  QuicStreamFactory* factory_;
   quic::ParsedQuicVersion quic_version_;
-  raw_ptr<HostResolver> host_resolver_;
+  HostResolver* host_resolver_;
   const QuicSessionAliasKey key_;
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;

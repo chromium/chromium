@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,7 +47,7 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
   }
 
  private:
-  raw_ptr<const Extension> extension_;
+  const Extension* extension_;
   bool may_load_;
 };
 

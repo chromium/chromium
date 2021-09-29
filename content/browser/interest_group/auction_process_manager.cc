@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -57,7 +56,7 @@ class AuctionProcessManager::WorkletProcess
 
   const WorkletType worklet_type_;
   const url::Origin origin_;
-  const raw_ptr<AuctionProcessManager> auction_process_manager_;
+  AuctionProcessManager* const auction_process_manager_;
 
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service_;
 };

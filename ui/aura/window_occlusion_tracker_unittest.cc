@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -74,7 +73,7 @@ class MockWindowDelegate : public test::ColorTestWindowDelegate {
   Window::OcclusionState expected_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion expected_occluded_region_ = SkRegion();
-  raw_ptr<Window> window_ = nullptr;
+  Window* window_ = nullptr;
 };
 
 class WindowOcclusionTrackerTest : public test::AuraTestBase {
@@ -1114,7 +1113,7 @@ class ResizeWindowObserver : public WindowObserver {
   }
 
  private:
-  const raw_ptr<Window> window_to_resize_;
+  Window* const window_to_resize_;
 
   DISALLOW_COPY_AND_ASSIGN(ResizeWindowObserver);
 };
@@ -1432,7 +1431,7 @@ class ObserverDestroyingWindowOnAnimationEnded
       ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<Window> window_;
+  Window* window_;
 };
 
 }  // namespace
@@ -1581,7 +1580,7 @@ class WindowDelegateHidingWindowIfOccluded : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> other_window_;
+  Window* other_window_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowDelegateHidingWindowIfOccluded);
 };
@@ -1672,7 +1671,7 @@ class WindowDelegateDeletingWindow : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> other_window_ = nullptr;
+  Window* other_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WindowDelegateDeletingWindow);
 };
@@ -1751,7 +1750,7 @@ class WindowDelegateChangingWindowVisibility : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> window_to_update_ = nullptr;
+  Window* window_to_update_ = nullptr;
   int num_occlusion_change_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(WindowDelegateChangingWindowVisibility);
@@ -1933,7 +1932,7 @@ class WindowDelegateHidingWindow : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> window_to_update_ = nullptr;
+  Window* window_to_update_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WindowDelegateHidingWindow);
 };
@@ -1974,8 +1973,8 @@ class WindowDelegateAddingAndHidingChild : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<WindowOcclusionTrackerTest> test_;
-  raw_ptr<Window> window_to_update_ = nullptr;
+  WindowOcclusionTrackerTest* test_;
+  Window* window_to_update_ = nullptr;
   Window::OcclusionState queued_expected_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion queued_expected_occluded_region_ = SkRegion();

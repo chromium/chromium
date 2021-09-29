@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -196,7 +195,7 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
 
   // See documentation in SetUp()
   std::unique_ptr<FakeDB<DecodeStatsProto>::EntryMap> fake_db_map_;
-  raw_ptr<FakeDB<DecodeStatsProto>> fake_db_;
+  FakeDB<DecodeStatsProto>* fake_db_;
   std::unique_ptr<VideoDecodeStatsDBImpl> stats_db_;
 };
 

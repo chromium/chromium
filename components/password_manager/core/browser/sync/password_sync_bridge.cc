@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -212,7 +211,7 @@ class ScopedStoreTransaction {
   }
 
  private:
-  raw_ptr<PasswordStoreSync> store_;
+  PasswordStoreSync* store_;
   bool committed_;
 };
 

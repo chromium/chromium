@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -221,26 +220,26 @@ class BookmarkEditorView : public BookmarkEditor,
           non_empty_folder_confirmation_cb);
 
   // Profile the entry is from.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // Model driving the TreeView.
   std::unique_ptr<EditorTreeModel> tree_model_;
 
   // Displays star folder.
-  raw_ptr<views::TreeView> tree_view_ = nullptr;
+  views::TreeView* tree_view_ = nullptr;
 
   // Used to create a new folder.
-  raw_ptr<views::LabelButton> new_folder_button_ = nullptr;
+  views::LabelButton* new_folder_button_ = nullptr;
 
   // The text field used for editing the URL.
-  raw_ptr<views::Textfield> url_tf_ = nullptr;
+  views::Textfield* url_tf_ = nullptr;
 
   // The text field used for editing the title.
-  raw_ptr<views::Textfield> title_tf_ = nullptr;
+  views::Textfield* title_tf_ = nullptr;
 
   // Initial parent to select. Is only used if |details_.existing_node| is
   // NULL.
-  raw_ptr<const bookmarks::BookmarkNode> parent_;
+  const bookmarks::BookmarkNode* parent_;
 
   const EditDetails details_;
 
@@ -249,7 +248,7 @@ class BookmarkEditorView : public BookmarkEditor,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // Mode used to create nodes from.
-  raw_ptr<bookmarks::BookmarkModel> bb_model_;
+  bookmarks::BookmarkModel* bb_model_;
 
   // If true, we're running the menu for the bookmark bar or other bookmarks
   // nodes.

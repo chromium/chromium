@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 
 namespace web_app {
@@ -55,7 +54,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   // to the native widget implementation. This will be NULL if there is no
   // glass frame. Note, this can change from NULL to non-NULL and back again
   // throughout the life of a window, e.g. if DWM is enabled and disabled.
-  raw_ptr<GlassAppWindowFrameViewWin> glass_frame_view_;
+  GlassAppWindowFrameViewWin* glass_frame_view_;
 
   // The Windows Application User Model ID identifying the app.
   std::wstring app_model_id_;

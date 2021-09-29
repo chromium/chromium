@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -108,7 +107,7 @@ class MEDIA_EXPORT BitReaderCore {
   // Refill the current bit register from the next bit register.
   void RefillCurrentRegister();
 
-  const raw_ptr<ByteStreamProvider> byte_stream_provider_;
+  ByteStreamProvider* const byte_stream_provider_;
 
   // Number of bits read so far.
   int bits_read_;

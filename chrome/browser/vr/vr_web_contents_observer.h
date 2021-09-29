@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -50,8 +49,8 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
                              content::RenderViewHost* new_host) override;
 
   // This class does not own these pointers.
-  raw_ptr<BrowserUiInterface> ui_interface_;
-  raw_ptr<LocationBarHelper> toolbar_;
+  BrowserUiInterface* ui_interface_;
+  LocationBarHelper* toolbar_;
 
   base::OnceClosure on_destroy_;
 };

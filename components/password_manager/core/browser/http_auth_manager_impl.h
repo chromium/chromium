@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
@@ -61,10 +60,10 @@ class HttpAuthManagerImpl : public HttpAuthManager {
   void OnLoginSuccesfull();
 
   // The embedder-level client. Must outlive this class.
-  const raw_ptr<PasswordManagerClient> client_;
+  PasswordManagerClient* const client_;
 
   // Observer to be notified about values to be filled in.
-  raw_ptr<HttpAuthObserver> observer_;
+  HttpAuthObserver* observer_;
 
   // Single password form manager to handle the http-auth request form.
   std::unique_ptr<PasswordFormManager> form_manager_;

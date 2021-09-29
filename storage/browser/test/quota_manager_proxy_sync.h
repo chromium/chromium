@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -35,7 +34,7 @@ class QuotaManagerProxySync {
                                      blink::mojom::StorageType storage_type);
 
  private:
-  const raw_ptr<QuotaManagerProxy> proxy_;
+  QuotaManagerProxy* const proxy_;
 };
 
 }  // namespace storage

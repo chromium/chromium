@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 
@@ -38,10 +37,10 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
   void EnsureBrowser();
 
   // The browser in which the sign in page must be loaded.
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 
   // The profile associated with |browser_|.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BUBBLE_SIGN_IN_DELEGATE_H_

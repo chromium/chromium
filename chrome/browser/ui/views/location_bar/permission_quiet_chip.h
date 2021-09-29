@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_QUIET_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_QUIET_CHIP_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 
 class Browser;
@@ -32,7 +31,7 @@ class PermissionQuietChip : public PermissionChip {
   void RecordChipButtonPressed();
   LocationBarView* GetLocationBarView();
 
-  raw_ptr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;

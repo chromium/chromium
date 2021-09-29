@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/ui_test_utils.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 #include <stddef.h>
@@ -158,7 +157,7 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
   }
 
  private:
-  raw_ptr<javascript_dialogs::AppModalDialogController> dialog_ = nullptr;
+  javascript_dialogs::AppModalDialogController* dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -546,7 +545,7 @@ class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
 
  private:
   // weak
-  raw_ptr<content::MessageLoopRunner> runner_;
+  content::MessageLoopRunner* runner_;
 };
 
 WaitHistoryLoadedObserver::WaitHistoryLoadedObserver(

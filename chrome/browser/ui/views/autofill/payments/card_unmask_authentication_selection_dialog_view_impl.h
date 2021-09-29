@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "ui/views/controls/image_view.h"
@@ -49,8 +48,7 @@ class CardUnmaskAuthenticationSelectionDialogViewImpl
 
   void AddFooterText();
 
-  raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_ =
-      nullptr;
+  CardUnmaskAuthenticationSelectionDialogController* controller_ = nullptr;
 };
 
 }  // namespace autofill

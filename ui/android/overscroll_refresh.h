@@ -6,7 +6,6 @@
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -110,7 +109,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float scroll_begin_y_;
   const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
-  const raw_ptr<OverscrollRefreshHandler> handler_;
+  OverscrollRefreshHandler* const handler_;
 };
 
 }  // namespace ui

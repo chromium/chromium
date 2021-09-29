@@ -9,7 +9,6 @@
 #include <queue>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
@@ -66,7 +65,7 @@ class ReportingClient : public ReportQueueProvider {
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
     scoped_refptr<StorageModuleInterface> storage_;
-    const raw_ptr<ReportingClient> client_;
+    ReportingClient* const client_;
   };
 
   ReportQueueProvider::InitializingContext* InstantiateInitializingContext(
@@ -168,7 +167,7 @@ class ReportingClient : public ReportQueueProvider {
   // uploaders_queue_task_runner_.
   // TODO(chromium:1078512) Passing around a raw pointer is unsafe. Wrap
   // CloudPolicyClient and guard access.
-  raw_ptr<policy::CloudPolicyClient> cloud_policy_client_ = nullptr;
+  policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
   std::unique_ptr<UploadClient> upload_client_;
   scoped_refptr<StorageModuleInterface> storage_;
 

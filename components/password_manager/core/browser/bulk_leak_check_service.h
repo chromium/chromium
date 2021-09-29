@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -78,7 +77,7 @@ class BulkLeakCheckService : public BulkLeakCheckDelegateInterface,
   // Notify the observers.
   void NotifyStateChanged();
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Factory to create |bulk_leak_check_|.

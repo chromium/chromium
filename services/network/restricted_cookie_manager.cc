@@ -13,7 +13,6 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
@@ -220,14 +219,14 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
   }
 
   // Expected to outlive |restricted_cookie_manager_| which outlives this.
-  raw_ptr<const net::CookieStore> cookie_store_;
+  const net::CookieStore* cookie_store_;
 
   // The CookieChangeDispatcher subscription used by this listener.
   std::unique_ptr<net::CookieChangeSubscription> cookie_store_subscription_;
 
   // Raw pointer usage is safe because RestrictedCookieManager owns this
   // instance and is guaranteed to outlive it.
-  const raw_ptr<const RestrictedCookieManager> restricted_cookie_manager_;
+  const RestrictedCookieManager* const restricted_cookie_manager_;
 
   // The URL whose cookies this listener is interested in.
   const GURL url_;

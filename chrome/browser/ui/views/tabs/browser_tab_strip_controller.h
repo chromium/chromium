@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -162,13 +161,13 @@ class BrowserTabStripController : public TabStripController,
   // Resets the tabstrips stacked layout (true or false) from prefs.
   void UpdateStackedLayout();
 
-  raw_ptr<TabStripModel> model_;
+  TabStripModel* model_;
 
-  raw_ptr<TabStrip> tabstrip_;
+  TabStrip* tabstrip_;
 
-  raw_ptr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
-  const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
+  feature_engagement::Tracker* const feature_engagement_tracker_;
 
   // If non-NULL it means we're showing a menu for the tab.
   std::unique_ptr<TabContextMenuContents> context_menu_contents_;

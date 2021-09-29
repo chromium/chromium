@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/bio/enrollment.h"
@@ -65,8 +64,8 @@ class BioEnroller {
                          absl::optional<BioEnrollmentResponse> response);
 
   State state_ = State::kInProgress;
-  raw_ptr<Delegate> delegate_;
-  raw_ptr<FidoAuthenticator> authenticator_;
+  Delegate* delegate_;
+  FidoAuthenticator* authenticator_;
   pin::TokenResponse token_;
   absl::optional<std::vector<uint8_t>> template_id_;
 

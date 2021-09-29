@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -50,7 +49,7 @@ class VectorIterator {
   const BookmarkNode* Next();
 
  private:
-  raw_ptr<std::vector<const BookmarkNode*>> nodes_;
+  std::vector<const BookmarkNode*>* nodes_;
   std::vector<const BookmarkNode*>::iterator current_;
 };
 

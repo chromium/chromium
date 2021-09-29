@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -116,10 +115,10 @@ class ChromeTestExtensionLoader {
   bool WaitForExtensionReady(const Extension& extension);
 
   // The associated context and services.
-  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
-  raw_ptr<ExtensionSystem> extension_system_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
-  raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
+  ExtensionSystem* extension_system_ = nullptr;
+  ExtensionService* extension_service_ = nullptr;
+  ExtensionRegistry* extension_registry_ = nullptr;
 
   // A temporary directory for packing extensions.
   base::ScopedTempDir temp_dir_;

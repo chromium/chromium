@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -716,7 +715,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // is relative to the parent Window.
   gfx::Rect bounds_;
 
-  raw_ptr<WindowTreeHost> host_ = nullptr;
+  WindowTreeHost* host_ = nullptr;
 
   client::WindowType type_;
 
@@ -727,10 +726,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // parent during its parents destruction.
   bool owned_by_parent_ = true;
 
-  raw_ptr<WindowDelegate> delegate_;
+  WindowDelegate* delegate_;
 
   // The Window's parent.
-  raw_ptr<Window> parent_ = nullptr;
+  Window* parent_ = nullptr;
 
   // Child windows. Topmost is last.
   Windows children_;

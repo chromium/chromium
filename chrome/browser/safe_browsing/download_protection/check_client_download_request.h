@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -93,7 +92,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.
-  raw_ptr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   CheckDownloadRepeatingCallback callback_;
 
   // Upload start time used for UMA duration histograms.

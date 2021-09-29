@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -241,7 +240,7 @@ class DownloadItemView : public views::View,
   DownloadCommands commands_{model()->GetWeakPtr()};
 
   // The download shelf that owns us.
-  const raw_ptr<DownloadShelfView> shelf_;
+  DownloadShelfView* const shelf_;
 
   // Mode of the download item view.
   download::DownloadItemMode mode_;
@@ -252,7 +251,7 @@ class DownloadItemView : public views::View,
   // be a button. This is necessary because buttons are not allowed to have
   // children in macOS Accessibility, and to avoid reimplementing much of the
   // button logic in DownloadItemView.
-  raw_ptr<views::Button> open_button_;
+  views::Button* open_button_;
 
   // Whether we are dragging the download button.
   bool dragging_ = false;
@@ -269,17 +268,17 @@ class DownloadItemView : public views::View,
   // used, so that we can detect a change in the path and reload the icon.
   base::FilePath file_path_;
 
-  raw_ptr<views::Label> file_name_label_;
-  raw_ptr<views::Label> status_label_;
-  raw_ptr<views::StyledLabel> warning_label_;
-  raw_ptr<views::StyledLabel> deep_scanning_label_;
+  views::Label* file_name_label_;
+  views::Label* status_label_;
+  views::StyledLabel* warning_label_;
+  views::StyledLabel* deep_scanning_label_;
 
   views::MdTextButton* open_now_button_;
   views::MdTextButton* save_button_;
   views::MdTextButton* discard_button_;
   views::MdTextButton* scan_button_;
   views::MdTextButton* review_button_;
-  raw_ptr<views::ImageButton> dropdown_button_;
+  views::ImageButton* dropdown_button_;
 
   // Whether the dropdown is currently pressed.
   bool dropdown_pressed_ = false;
@@ -306,7 +305,7 @@ class DownloadItemView : public views::View,
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.
-  const raw_ptr<views::View> accessible_alert_;
+  views::View* const accessible_alert_;
 
   // A timer for accessible alerts that helps reduce the number of similar
   // messages spoken in a short period of time.

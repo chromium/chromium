@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_ENTRY_UI_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_ENTRY_UI_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -40,7 +39,7 @@ class DeviceEntryUI {
   const std::string raw_device_id_;
   const std::string device_name_;
   bool is_highlighted_ = false;
-  const raw_ptr<const gfx::VectorIcon> icon_;
+  const gfx::VectorIcon* const icon_;
 };
 
 class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {

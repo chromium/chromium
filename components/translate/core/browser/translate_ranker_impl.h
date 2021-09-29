@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -140,7 +139,7 @@ class TranslateRankerImpl : public TranslateRanker {
                          ukm::SourceId ukm_source_id);
 
   // Used to log URL-keyed metrics. This pointer will outlive |this|.
-  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  ukm::UkmRecorder* ukm_recorder_;
 
   // Used to sanity check the threading of this ranker.
   base::SequenceChecker sequence_checker_;

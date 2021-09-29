@@ -16,7 +16,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -397,7 +396,7 @@ class MetadataDatabase {
   bool CanClearDirty(const FileTracker& tracker);
 
   base::FilePath database_path_;
-  raw_ptr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
   std::unique_ptr<LevelDBWrapper> db_;
 
   bool enable_on_disk_index_;

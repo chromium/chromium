@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -344,9 +343,9 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
 
   // Owned by icon_manager_:
-  raw_ptr<TestFileUtils> file_utils_ = nullptr;
+  TestFileUtils* file_utils_ = nullptr;
   // Owned by install_task_:
-  raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
+  FakeDataRetriever* data_retriever_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest arc_test_;
@@ -357,7 +356,7 @@ class WebAppInstallTaskTest : public WebAppTest {
  private:
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<FakeInstallFinalizer> fake_install_finalizer_ = nullptr;
+  FakeInstallFinalizer* fake_install_finalizer_ = nullptr;
 };
 
 class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {

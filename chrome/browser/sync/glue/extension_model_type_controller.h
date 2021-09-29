@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -37,7 +36,7 @@ class ExtensionModelTypeController
                   const ModelLoadCallback& model_load_callback) override;
 
  private:
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 };
 
 }  // namespace browser_sync

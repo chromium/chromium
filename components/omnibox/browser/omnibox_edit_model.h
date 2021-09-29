@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -603,9 +602,9 @@ class OmniboxEditModel {
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
 
-  raw_ptr<OmniboxView> view_;
+  OmniboxView* view_;
 
-  raw_ptr<OmniboxEditController> controller_;
+  OmniboxEditController* controller_;
 
   OmniboxFocusState focus_state_;
 

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 
 namespace autofill {
@@ -62,7 +61,7 @@ class AutofillDriverFactory {
   void DeleteAllAutofillDrivers();
 
  private:
-  const raw_ptr<AutofillClient> client_;
+  AutofillClient* const client_;
 
   std::unordered_map<void*, std::unique_ptr<AutofillDriver>> driver_map_;
 };

@@ -13,7 +13,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -155,7 +154,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   std::unique_ptr<AllocatedSurface> GetNextSurface(
       gpu::SyncToken* creation_sync_token);
 
-  const raw_ptr<gpu::SharedImageInterface> sii_;
+  gpu::SharedImageInterface* const sii_;
   gfx::Size size_;
   gfx::ColorSpace color_space_;
 
@@ -175,7 +174,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // may be nullptr, if they represent frames that have been destroyed.
   base::circular_deque<std::unique_ptr<AllocatedSurface>> in_flight_surfaces_;
   gpu::SurfaceHandle surface_handle_;
-  raw_ptr<SyncTokenProvider> sync_token_provider_ = nullptr;
+  SyncTokenProvider* sync_token_provider_ = nullptr;
 };
 
 }  // namespace viz

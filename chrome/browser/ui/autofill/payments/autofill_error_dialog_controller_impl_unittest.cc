@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
@@ -26,7 +25,7 @@ class AutofillErrorDialogControllerImplTest
   }
 
  private:
-  raw_ptr<AutofillErrorDialogControllerImpl> controller_ = nullptr;
+  AutofillErrorDialogControllerImpl* controller_ = nullptr;
 };
 
 TEST_F(AutofillErrorDialogControllerImplTest, MetricsTest) {

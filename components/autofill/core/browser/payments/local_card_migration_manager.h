@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -173,11 +172,11 @@ class LocalCardMigrationManager {
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 
-  const raw_ptr<AutofillClient> client_;
+  AutofillClient* const client_;
 
   // Handles Payments service requests.
   // Owned by BrowserAutofillManager.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  payments::PaymentsClient* payments_client_;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -227,7 +226,7 @@ class LocalCardMigrationManager {
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   // The imported credit card number from the form submission.
   absl::optional<std::u16string> imported_credit_card_number_;
@@ -252,7 +251,7 @@ class LocalCardMigrationManager {
   AutofillMetrics::LocalCardMigrationOrigin local_card_migration_origin_;
 
   // Initialized only during tests.
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   std::unique_ptr<LocalCardMigrationStrikeDatabase>
       local_card_migration_strike_database_;

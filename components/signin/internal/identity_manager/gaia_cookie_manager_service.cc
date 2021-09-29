@@ -883,8 +883,7 @@ void GaiaCookieManagerService::OnMergeSessionFailure(
     fetcher_timer_.Start(
         FROM_HERE, fetcher_backoff_.GetTimeUntilRelease(),
         base::BindOnce(
-            &SigninClient::DelayNetworkCall,
-            base::Unretained(signin_client_.get()),
+            &SigninClient::DelayNetworkCall, base::Unretained(signin_client_),
             base::BindOnce(&GaiaCookieManagerService::StartFetchingMergeSession,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -957,8 +956,7 @@ void GaiaCookieManagerService::OnListAccountsFailure(
     fetcher_timer_.Start(
         FROM_HERE, fetcher_backoff_.GetTimeUntilRelease(),
         base::BindOnce(
-            &SigninClient::DelayNetworkCall,
-            base::Unretained(signin_client_.get()),
+            &SigninClient::DelayNetworkCall, base::Unretained(signin_client_),
             base::BindOnce(&GaiaCookieManagerService::StartFetchingListAccounts,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -996,8 +994,7 @@ void GaiaCookieManagerService::OnLogOutFailure(
     fetcher_timer_.Start(
         FROM_HERE, fetcher_backoff_.GetTimeUntilRelease(),
         base::BindOnce(
-            &SigninClient::DelayNetworkCall,
-            base::Unretained(signin_client_.get()),
+            &SigninClient::DelayNetworkCall, base::Unretained(signin_client_),
             base::BindOnce(&GaiaCookieManagerService::StartGaiaLogOut,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -1041,7 +1038,7 @@ void GaiaCookieManagerService::StartFetchingUbertoken() {
             return client->CreateGaiaAuthFetcher(consumer,
                                                  gaia::GaiaSource::kChrome);
           },
-          base::Unretained(signin_client_.get())));
+          base::Unretained(signin_client_)));
 }
 
 void GaiaCookieManagerService::StartFetchingMergeSession() {

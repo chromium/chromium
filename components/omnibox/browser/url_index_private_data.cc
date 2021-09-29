@@ -20,7 +20,6 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
@@ -107,7 +106,7 @@ class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
 
   // The URLIndexPrivateData that gets updated after the historyDB
   // task returns.
-  raw_ptr<URLIndexPrivateData> private_data_;
+  URLIndexPrivateData* private_data_;
   // The ID of the URL to get visits for and then update.
   history::URLID url_id_;
   // Whether fetching the recent visits for the URL succeeded.

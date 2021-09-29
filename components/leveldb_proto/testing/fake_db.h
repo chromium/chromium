@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
@@ -132,7 +131,7 @@ class FakeDB : public ProtoDatabaseImpl<P, T> {
       bool success);
 
   base::FilePath dir_;
-  raw_ptr<EntryMap> db_;
+  EntryMap* db_;
 
   Callback init_callback_;
   Callbacks::InitStatusCallback init_status_callback_;

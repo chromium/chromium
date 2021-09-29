@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -65,7 +64,7 @@ class ExecutionContextRegistryImplTest : public GraphTestHarness {
   }
 
  protected:
-  raw_ptr<ExecutionContextRegistryImpl> registry_ = nullptr;
+  ExecutionContextRegistryImpl* registry_ = nullptr;
 };
 
 using ExecutionContextRegistryImplDeathTest = ExecutionContextRegistryImplTest;

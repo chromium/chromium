@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_NATIVE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_NATIVE_VIEWS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -32,7 +31,7 @@ class AutofillErrorDialogViewNativeViews : public AutofillErrorDialogView,
   std::u16string GetWindowTitle() const override;
 
  private:
-  raw_ptr<AutofillErrorDialogController> controller_;
+  AutofillErrorDialogController* controller_;
 };
 
 }  // namespace autofill

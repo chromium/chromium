@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/page_info/page_info.h"
@@ -67,7 +66,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
  private:
   content::BrowserContext* GetBrowserContext() const;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  //  namespace weblayer

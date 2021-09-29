@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/proportional_image_view.h"
@@ -153,7 +152,7 @@ class NotificationViewTest : public views::ViewObserver,
         notification_view()->GetPreferredSize());
   }
 
-  raw_ptr<NotificationView> notification_view_ = nullptr;
+  NotificationView* notification_view_ = nullptr;
 };
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {

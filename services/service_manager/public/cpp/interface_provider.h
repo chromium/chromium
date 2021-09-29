@@ -6,7 +6,6 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_H_
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,7 +54,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
     }
 
    private:
-    raw_ptr<InterfaceProvider> provider_;
+    InterfaceProvider* provider_;
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not

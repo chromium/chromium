@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,7 +39,7 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
   }
 
  private:
-  raw_ptr<AccessiblePaneView> accessible_pane_view_;
+  AccessiblePaneView* accessible_pane_view_;
   DISALLOW_COPY_AND_ASSIGN(AccessiblePaneViewFocusSearch);
 };
 

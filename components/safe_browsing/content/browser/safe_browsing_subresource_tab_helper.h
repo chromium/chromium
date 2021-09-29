@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -38,7 +37,7 @@ class SafeBrowsingSubresourceTabHelper
   SafeBrowsingSubresourceTabHelper(content::WebContents* web_contents,
                                    SafeBrowsingUIManager* manager);
 
-  raw_ptr<SafeBrowsingUIManager> manager_;
+  SafeBrowsingUIManager* manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

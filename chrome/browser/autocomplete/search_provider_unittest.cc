@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -311,10 +310,10 @@ class BaseSearchProviderTest : public testing::Test,
   void ClearAllResults();
 
   // See description above class for details of these fields.
-  raw_ptr<TemplateURL> default_t_url_ = nullptr;
+  TemplateURL* default_t_url_ = nullptr;
   const std::u16string term1_ = u"term1";
   GURL term1_url_;
-  raw_ptr<TemplateURL> keyword_t_url_ = nullptr;
+  TemplateURL* keyword_t_url_ = nullptr;
   const std::u16string keyword_term_ = u"keyword";
   GURL keyword_url_;
 
@@ -331,7 +330,7 @@ class BaseSearchProviderTest : public testing::Test,
   scoped_refptr<SearchProviderForTest> provider_;
 
   // If not nullptr, OnProviderUpdate quits the current |run_loop_|.
-  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
 };
 
 // SearchProviderTest ---------------------------------------------------------

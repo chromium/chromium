@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -69,12 +68,12 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // The tree view to be tested.
-  raw_ptr<TreeView> tree_view_ = nullptr;
+  TreeView* tree_view_ = nullptr;
 
   // Control buttons to modify the model.
-  raw_ptr<LabelButton> add_ = nullptr;
-  raw_ptr<LabelButton> remove_ = nullptr;
-  raw_ptr<LabelButton> change_title_ = nullptr;
+  LabelButton* add_ = nullptr;
+  LabelButton* remove_ = nullptr;
+  LabelButton* change_title_ = nullptr;
 
   using NodeType = ui::TreeNodeWithValue<int>;
 

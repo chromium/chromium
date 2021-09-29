@@ -18,7 +18,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/accessibility/ax_common.h"
@@ -202,13 +201,13 @@ class AXTreeSerializer {
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
   // The tree source.
-  raw_ptr<AXTreeSource<AXSourceNode>> tree_;
+  AXTreeSource<AXSourceNode>* tree_;
 
   // The tree data most recently sent to the client.
   AXTreeData client_tree_data_;
 
   // Our representation of the client tree.
-  raw_ptr<ClientTreeNode> client_root_ = nullptr;
+  ClientTreeNode* client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
   std::map<AXNodeID, ClientTreeNode*> client_id_map_;
@@ -245,7 +244,7 @@ struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
   AXNodeID id;
-  raw_ptr<ClientTreeNode> parent;
+  ClientTreeNode* parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
   bool invalid;

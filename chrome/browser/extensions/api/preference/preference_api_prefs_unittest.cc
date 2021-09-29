@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
@@ -66,8 +65,8 @@ class TestPreferenceAPI : public PreferenceAPIBase {
     return content_settings_->content_settings_store();
   }
 
-  raw_ptr<TestExtensionPrefs> test_extension_prefs_;
-  raw_ptr<ContentSettingsService> content_settings_;
+  TestExtensionPrefs* test_extension_prefs_;
+  ContentSettingsService* content_settings_;
 };
 
 class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
@@ -98,7 +97,7 @@ class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
   void EnsureExtensionUninstalled(const std::string& extension_id);
 
   TestingProfile profile_;
-  raw_ptr<ContentSettingsService> content_settings_;
+  ContentSettingsService* content_settings_;
   TestPreferenceAPI test_preference_api_;
 };
 

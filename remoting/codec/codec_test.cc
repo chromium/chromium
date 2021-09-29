@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/base/util.h"
 #include "remoting/codec/video_decoder.h"
 #include "remoting/codec/video_encoder.h"
@@ -165,9 +164,9 @@ class VideoDecoderTester {
  private:
   bool strict_;
   DesktopRegion expected_region_;
-  raw_ptr<VideoDecoder> decoder_;
+  VideoDecoder* decoder_;
   std::unique_ptr<DesktopFrame> frame_;
-  raw_ptr<DesktopFrame> expected_frame_;
+  DesktopFrame* expected_frame_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoDecoderTester);
 };
@@ -198,7 +197,7 @@ class VideoEncoderTester {
   }
 
  private:
-  raw_ptr<VideoDecoderTester> decoder_tester_;
+  VideoDecoderTester* decoder_tester_;
   int data_available_;
 };
 

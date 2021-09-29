@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -301,7 +300,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
  private:
   bool fullscreen_;
   bool toolbar_showing_;
-  raw_ptr<BrowserCommandControllerFullscreenTest> test_browser_;
+  BrowserCommandControllerFullscreenTest* test_browser_;
 };
 
 // Test that uses FullscreenTestBrowserWindow for its window.

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "net/base/network_interfaces.h"
@@ -46,7 +45,7 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
 
   ppapi::host::ReplyMessageContext reply_context_;
 
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_{this};
 };

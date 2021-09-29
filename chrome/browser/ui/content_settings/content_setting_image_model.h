@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
@@ -151,8 +150,8 @@ class ContentSettingImageModel {
  private:
   bool is_visible_ = false;
 
-  raw_ptr<const gfx::VectorIcon> icon_;
-  raw_ptr<const gfx::VectorIcon> icon_badge_;
+  const gfx::VectorIcon* icon_;
+  const gfx::VectorIcon* icon_badge_;
   int explanatory_string_id_ = 0;
   std::u16string tooltip_;
   const ImageType image_type_;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEDERATED_LEARNING_FLOC_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_FEDERATED_LEARNING_FLOC_INTERNALS_PAGE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +30,7 @@ class FlocInternalsPageHandler : public federated_learning::mojom::PageHandler {
       override;
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   mojo::Receiver<federated_learning::mojom::PageHandler> receiver_;
 };

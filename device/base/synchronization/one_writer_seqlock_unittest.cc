@@ -8,7 +8,6 @@
 #include <atomic>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -55,9 +54,9 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
   }
 
  private:
-  raw_ptr<OneWriterSeqLock> seqlock_;
-  raw_ptr<TestData> data_;
-  raw_ptr<std::atomic<int>> ready_;
+  OneWriterSeqLock* seqlock_;
+  TestData* data_;
+  std::atomic<int>* ready_;
 
   DISALLOW_COPY_AND_ASSIGN(BasicSeqLockTestThread);
 };
@@ -86,8 +85,8 @@ class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
   }
 
  private:
-  raw_ptr<OneWriterSeqLock> seqlock_;
-  raw_ptr<std::atomic<int>> ready_;
+  OneWriterSeqLock* seqlock_;
+  std::atomic<int>* ready_;
 
   DISALLOW_COPY_AND_ASSIGN(MaxRetriesSeqLockTestThread);
 };

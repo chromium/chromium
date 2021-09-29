@@ -15,7 +15,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -134,7 +133,7 @@ class MediaInternals::MediaInternalLogRecordsImpl
   void Log(const std::vector<::media::MediaLogRecord>& arr) override;
 
  private:
-  const raw_ptr<content::MediaInternals> media_internals_;
+  content::MediaInternals* const media_internals_;
   const int render_process_id_;
 };
 
@@ -193,7 +192,7 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
 
   const int owner_id_;
   const media::AudioLogFactory::AudioComponent component_;
-  const raw_ptr<content::MediaInternals> media_internals_;
+  content::MediaInternals* const media_internals_;
   const int component_id_;
   const int render_process_id_;
   const int render_frame_id_;

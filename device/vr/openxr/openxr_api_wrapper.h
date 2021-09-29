@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -189,7 +188,7 @@ class OpenXrApiWrapper {
     ~SwapChainInfo();
     SwapChainInfo(SwapChainInfo&&);
 
-    raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
+    ID3D11Texture2D* d3d11_texture = nullptr;
     gpu::MailboxHolder mailbox_holder;
     Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
   };

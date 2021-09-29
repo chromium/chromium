@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/root_view.h"
@@ -96,7 +95,7 @@ class BrowserRootView : public views::internal::RootView {
     DropInfo();
     ~DropInfo();
 
-    raw_ptr<DropTarget> target = nullptr;
+    DropTarget* target = nullptr;
 
     // Where to drop the url.
     absl::optional<DropIndex> index;
@@ -137,7 +136,7 @@ class BrowserRootView : public views::internal::RootView {
                          ui::mojom::DragOperation& output_drag_op);
 
   // The BrowserView.
-  raw_ptr<BrowserView> browser_view_ = nullptr;
+  BrowserView* browser_view_ = nullptr;
 
   // Used to calculate partial offsets in scrolls that occur for a smooth
   // scroll device.

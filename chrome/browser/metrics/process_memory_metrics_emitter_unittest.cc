@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -94,7 +93,7 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  private:
   ~ProcessMemoryMetricsEmitterFake() override {}
 
-  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  ukm::UkmRecorder* ukm_recorder_;
   DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 

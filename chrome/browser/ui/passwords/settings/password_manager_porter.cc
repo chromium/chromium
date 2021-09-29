@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,7 +77,7 @@ class PasswordImportConsumer {
                        password_manager::CSVPasswordSequence seq);
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

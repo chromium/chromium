@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -98,7 +97,7 @@ class ExecutionContextImpl : public ExecutionContext,
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<const NodeImplType> node_ = nullptr;
+  const NodeImplType* node_ = nullptr;
 };
 
 // An ExecutionContext implementation that wraps a FrameNodeImpl.

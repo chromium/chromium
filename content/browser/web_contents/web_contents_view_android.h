@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -154,7 +153,7 @@ class WebContentsViewAndroid : public WebContentsView,
   SelectPopup* GetSelectPopup();
 
   // The WebContents whose contents we display.
-  raw_ptr<WebContentsImpl> web_contents_;
+  WebContentsImpl* web_contents_;
 
   // Handles UI events in Java layer when necessary.
   std::unique_ptr<ContentUiEventHandler> content_ui_event_handler_;
@@ -169,9 +168,9 @@ class WebContentsViewAndroid : public WebContentsView,
   ui::ViewAndroid view_;
 
   // Interface used to get notified of events from the synchronous compositor.
-  raw_ptr<SynchronousCompositorClient> synchronous_compositor_client_;
+  SynchronousCompositorClient* synchronous_compositor_client_;
 
-  raw_ptr<SelectionPopupController> selection_popup_controller_ = nullptr;
+  SelectionPopupController* selection_popup_controller_ = nullptr;
 
   int device_orientation_ = 0;
 

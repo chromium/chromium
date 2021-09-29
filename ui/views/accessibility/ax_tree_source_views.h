@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/views_export.h"
@@ -65,12 +64,12 @@ class VIEWS_EXPORT AXTreeSourceViews
 
  private:
   // The top-level object to use for the AX tree. See class comment.
-  const raw_ptr<AXAuraObjWrapper> root_ = nullptr;
+  AXAuraObjWrapper* const root_ = nullptr;
 
   // ID to use for the AX tree.
   const ui::AXTreeID tree_id_;
 
-  raw_ptr<views::AXAuraObjCache> cache_;
+  views::AXAuraObjCache* cache_;
 };
 
 }  // namespace views

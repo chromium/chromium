@@ -10,7 +10,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"
@@ -61,8 +60,7 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
   void* buffer_;  // Address of the memory mapped buffer.
   size_t view_size_;  // Size of the memory pointed by buffer_.
 #if BUILDFLAG(POSIX_AVOID_MMAP)
-  raw_ptr<void>
-      snapshot_;  // Copy of the buffer taken when it was last flushed.
+  void* snapshot_;  // Copy of the buffer taken when it was last flushed.
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(MappedFile);
@@ -76,7 +74,7 @@ class ScopedFlush {
     file_->Flush();
   }
  private:
-  raw_ptr<MappedFile> file_;
+  MappedFile* file_;
 };
 
 }  // namespace disk_cache

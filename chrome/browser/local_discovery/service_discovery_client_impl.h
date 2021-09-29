@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "net/dns/mdns_client.h"
@@ -48,7 +47,7 @@ class ServiceDiscoveryClientImpl : public ServiceDiscoveryClient {
       LocalDomainResolver::IPAddressCallback callback) override;
 
  private:
-  raw_ptr<net::MDnsClient> mdns_client_;
+  net::MDnsClient* mdns_client_;
 };
 
 class ServiceWatcherImpl : public ServiceWatcher,
@@ -120,7 +119,7 @@ class ServiceWatcherImpl : public ServiceWatcher,
     std::unique_ptr<net::MDnsTransaction> srv_transaction_;
 
     std::string service_name_;
-    raw_ptr<net::MDnsClient> mdns_client_;
+    net::MDnsClient* mdns_client_;
     bool update_pending_;
 
     bool has_ptr_;
@@ -158,7 +157,7 @@ class ServiceWatcherImpl : public ServiceWatcher,
   bool started_;
   bool actively_refresh_services_;
 
-  const raw_ptr<net::MDnsClient> mdns_client_;
+  net::MDnsClient* const mdns_client_;
 };
 
 class ServiceResolverImpl
@@ -226,7 +225,7 @@ class ServiceResolverImpl
 
   ServiceDescription service_staging_;
 
-  const raw_ptr<net::MDnsClient> mdns_client_;
+  net::MDnsClient* const mdns_client_;
 };
 
 class LocalDomainResolverImpl : public LocalDomainResolver {
@@ -265,7 +264,7 @@ class LocalDomainResolverImpl : public LocalDomainResolver {
 
   int transactions_finished_;
 
-  const raw_ptr<net::MDnsClient> mdns_client_;
+  net::MDnsClient* const mdns_client_;
 
   net::IPAddress address_ipv4_;
   net::IPAddress address_ipv6_;

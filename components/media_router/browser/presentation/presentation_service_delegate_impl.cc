@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/small_map.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -137,8 +136,8 @@ class PresentationFrame {
   content::GlobalRenderFrameHostId render_frame_host_id_;
 
   // References to the owning WebContents, and the corresponding MediaRouter.
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<MediaRouter> router_;
+  content::WebContents* web_contents_;
+  MediaRouter* router_;
 };
 
 PresentationFrame::PresentationFrame(

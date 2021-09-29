@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/media_engagement_score.h"
@@ -132,11 +131,11 @@ class MediaEngagementScoreDetailsProviderImpl
 #endif
   }
 
-  raw_ptr<content::WebUI> web_ui_;
+  content::WebUI* web_ui_;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
-  raw_ptr<MediaEngagementService> service_;
+  MediaEngagementService* service_;
 
   mojo::Receiver<media::mojom::MediaEngagementScoreDetailsProvider> receiver_;
 };

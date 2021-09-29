@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
@@ -242,7 +241,7 @@ class IdentifiabilityStudyState {
       std::vector<OffsetType> offsets);
 
   // `pref_service_` pointee must outlive `this`. Used for persistent state.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // Offset of selected block. Only used when using assigned block sampling.
   //

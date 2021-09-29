@@ -18,7 +18,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -164,7 +163,7 @@ class ScopedThreadStopper {
   bool is_valid() const { return thread_; }
 
  private:
-  raw_ptr<base::Thread> thread_;
+  base::Thread* thread_;
   DISALLOW_COPY_AND_ASSIGN(ScopedThreadStopper);
 };
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_URLS_SQL_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace history {
@@ -30,7 +29,7 @@ class UrlsSQLHandler : public SQLHandler {
   bool Delete(const TableIDRows& ids_set) override;
 
  private:
-  raw_ptr<URLDatabase> url_db_;
+  URLDatabase* url_db_;
 };
 
 }  // namespace history.

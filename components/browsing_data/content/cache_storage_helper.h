@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "url/origin.h"
 
@@ -49,7 +48,7 @@ class CacheStorageHelper
   virtual ~CacheStorageHelper();
 
   // Owned by the profile.
-  raw_ptr<content::StoragePartition> partition_;
+  content::StoragePartition* partition_;
 
  private:
   friend class base::RefCountedThreadSafe<CacheStorageHelper>;

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/input_router.h"
 
 #include "cc/input/touch_action.h"
@@ -66,7 +65,7 @@ class MockInputRouter : public InputRouter {
   bool has_handlers_;
 
  private:
-  raw_ptr<InputRouterClient> client_;
+  InputRouterClient* client_;
 };
 
 }  // namespace content

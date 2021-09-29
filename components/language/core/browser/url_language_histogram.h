@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -72,7 +71,7 @@ class UrlLanguageHistogram : public KeyedService {
   void ClearHistory(base::Time begin, base::Time end);
 
  private:
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 };
 
 }  // namespace language

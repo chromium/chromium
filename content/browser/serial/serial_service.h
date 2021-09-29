@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/serial_delegate.h"
@@ -67,7 +66,7 @@ class SerialService
 
   // This raw pointer is safe because instances of this class are owned by
   // RenderFrameHostImpl.
-  const raw_ptr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* const render_frame_host_;
   mojo::ReceiverSet<blink::mojom::SerialService> receivers_;
   mojo::RemoteSet<blink::mojom::SerialServiceClient> clients_;
 

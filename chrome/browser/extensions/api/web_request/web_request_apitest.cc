@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -206,7 +205,7 @@ class NavigateTabMessageHandler {
     navigate_listener_.Reset();
   }
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   ExtensionTestMessageListener navigate_listener_;
 };
 

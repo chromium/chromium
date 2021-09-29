@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_ROUTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_ROUTER_TEST_API_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 
 namespace autofill {
@@ -28,7 +27,7 @@ class ContentAutofillRouterTestApi {
 
  private:
   // Non-null pointer to wrapped ContentAutofillRouter.
-  raw_ptr<ContentAutofillRouter> router_;
+  ContentAutofillRouter* router_;
 };
 
 }  // namespace autofill

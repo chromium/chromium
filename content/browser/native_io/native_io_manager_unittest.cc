@@ -8,7 +8,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -107,7 +106,7 @@ class NativeIOManagerSync {
   }
 
  private:
-  const raw_ptr<NativeIOManager> io_manager_;
+  NativeIOManager* const io_manager_;
 };
 
 struct OpenFileResult {
@@ -199,7 +198,7 @@ class NativeIOHostSync {
   }
 
  private:
-  const raw_ptr<blink::mojom::NativeIOHost> io_host_;
+  blink::mojom::NativeIOHost* const io_host_;
 };
 
 // Synchronous proxies to a wrapped NativeIOFileHost's methods.
@@ -241,7 +240,7 @@ class NativeIOFileHostSync {
 #endif  // defined(OS_MAC)
 
  private:
-  const raw_ptr<blink::mojom::NativeIOFileHost> file_host_;
+  blink::mojom::NativeIOFileHost* const file_host_;
 };
 
 const char kExampleStorageKey[] = "https://example.com";

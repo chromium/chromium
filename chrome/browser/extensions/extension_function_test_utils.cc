@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_function_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
@@ -45,7 +44,7 @@ class TestFunctionDispatcherDelegate
 
   WebContents* GetAssociatedWebContents() const override { return NULL; }
 
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 };
 
 }  // namespace

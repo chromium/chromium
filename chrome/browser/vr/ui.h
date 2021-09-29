@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "chrome/browser/vr/assets_load_status.h"
@@ -211,7 +210,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnMenuButtonClicked();
   void OnSpeechRecognitionEnded();
   void InitializeModel(const UiInitialState& ui_initial_state);
-  raw_ptr<UiBrowserInterface> browser_;
+  UiBrowserInterface* browser_;
   ContentElement* GetContentElement();
   FovRectangle GetMinimalFov(const gfx::Transform& view_matrix,
                              const std::vector<const UiElement*>& elements,
@@ -230,7 +229,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
 
   // Cache the content element so we don't have to get it multiple times per
   // frame.
-  raw_ptr<ContentElement> content_element_ = nullptr;
+  ContentElement* content_element_ = nullptr;
 
   std::unique_ptr<KeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<KeyboardDelegate> keyboard_delegate_for_testing_;

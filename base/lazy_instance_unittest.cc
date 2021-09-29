@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -75,7 +74,7 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  raw_ptr<base::LazyInstance<SlowConstructor>::DestructorAtExit> lazy_;
+  base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy_;
 };
 
 }  // namespace
@@ -140,7 +139,7 @@ class DeleteLogger {
   }
 
  private:
-  raw_ptr<bool> deleted_;
+  bool* deleted_;
 };
 
 }  // anonymous namespace
@@ -263,7 +262,7 @@ class BlockingConstructorThread : public base::SimpleThread {
   }
 
  private:
-  raw_ptr<base::LazyInstance<BlockingConstructor>::DestructorAtExit> lazy_;
+  base::LazyInstance<BlockingConstructor>::DestructorAtExit* lazy_;
   base::OnceClosure before_get_;
 };
 

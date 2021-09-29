@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/test/layer_animation_observer_test_api.h"
@@ -122,12 +121,12 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
 
  private:
   // The observer to delete, if non-NULL, in AnimationsStarted().
-  raw_ptr<CallbackLayerAnimationObserver>
-      observer_to_delete_in_animation_started_ = nullptr;
+  CallbackLayerAnimationObserver* observer_to_delete_in_animation_started_ =
+      nullptr;
 
   // The observer to delete, if non-NULL, in AnimationsEnded().
-  raw_ptr<CallbackLayerAnimationObserver>
-      observer_to_delete_in_animation_ended_ = nullptr;
+  CallbackLayerAnimationObserver* observer_to_delete_in_animation_ended_ =
+      nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestCallbacksThatExplicitlyDeletesObserver);
 };
@@ -176,7 +175,7 @@ class TestCallbackLayerAnimationObserver
   ~TestCallbackLayerAnimationObserver() override;
 
  private:
-  raw_ptr<bool> destroyed_;
+  bool* destroyed_;
 };
 
 TestCallbackLayerAnimationObserver::TestCallbackLayerAnimationObserver(

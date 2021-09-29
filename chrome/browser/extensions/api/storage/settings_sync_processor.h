@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/value_store/value_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,7 +58,7 @@ class SettingsSyncProcessor {
   const syncer::ModelType type_;
 
   // The sync processor used to send changes to sync.
-  const raw_ptr<syncer::SyncChangeProcessor> sync_processor_;
+  syncer::SyncChangeProcessor* const sync_processor_;
 
   // Whether Init() has been called.
   bool initialized_;

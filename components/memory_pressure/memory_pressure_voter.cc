@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/base_tracing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,7 +36,7 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
 
  private:
   // This is the aggregator to which this voter's votes will be cast.
-  const raw_ptr<MemoryPressureVoteAggregator> aggregator_;
+  MemoryPressureVoteAggregator* const aggregator_;
 
   // optional<> is used here as the vote will be null until the voter's
   // first vote calculation.

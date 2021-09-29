@@ -4,7 +4,6 @@
 
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -93,7 +92,7 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
     return std::move(service);
   }
 
-  raw_ptr<MockFileSystemAccessPermissionContext> mock_service_;
+  MockFileSystemAccessPermissionContext* mock_service_;
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 

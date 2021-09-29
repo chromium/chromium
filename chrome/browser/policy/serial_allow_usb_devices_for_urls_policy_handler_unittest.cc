@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -56,7 +55,7 @@ class SerialAllowUsbDevicesForUrlsPolicyHandlerTest
     handler_list_.AddHandler(std::move(handler));
   }
 
-  raw_ptr<ConfigurationPolicyHandler> handler_;
+  ConfigurationPolicyHandler* handler_;
 };
 
 TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {

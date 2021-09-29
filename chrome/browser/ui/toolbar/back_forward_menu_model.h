@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
 #include "ui/base/models/menu_model.h"
@@ -182,10 +181,10 @@ class BackForwardMenuModel : public ui::MenuModel {
   // only in outside incognito mode.
   bool ShouldShowFullHistoryBeVisible() const;
 
-  const raw_ptr<Browser> browser_;
+  Browser* const browser_;
 
   // The unit tests will provide their own WebContents to use.
-  raw_ptr<content::WebContents> test_web_contents_ = nullptr;
+  content::WebContents* test_web_contents_ = nullptr;
 
   // Represents whether this is the delegate for the forward button or the
   // back button.

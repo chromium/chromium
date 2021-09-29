@@ -25,7 +25,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
@@ -123,8 +122,7 @@ class NET_EXPORT URLRequestContextBuilder {
 #if defined(OS_ANDROID)
     // If this is set, will override the default ApplicationStatusListener. This
     // is useful if the cache will not be in the main process.
-    raw_ptr<base::android::ApplicationStatusListener> app_status_listener =
-        nullptr;
+    base::android::ApplicationStatusListener* app_status_listener = nullptr;
 #endif
   };
 
@@ -335,7 +333,7 @@ class NET_EXPORT URLRequestContextBuilder {
 
  private:
   bool enable_brotli_ = false;
-  raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
+  NetworkQualityEstimator* network_quality_estimator_ = nullptr;
 
   std::string accept_language_;
   std::string user_agent_;
@@ -350,11 +348,11 @@ class NET_EXPORT URLRequestContextBuilder {
   CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
   base::FilePath transport_security_persister_file_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
-  raw_ptr<NetLog> net_log_ = nullptr;
+  NetLog* net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
   std::string host_mapping_rules_;
-  raw_ptr<HostResolverManager> host_resolver_manager_ = nullptr;
-  raw_ptr<HostResolver::Factory> host_resolver_factory_ = nullptr;
+  HostResolverManager* host_resolver_manager_ = nullptr;
+  HostResolver::Factory* host_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyConfigService> proxy_config_service_;
   bool pac_quick_check_enabled_ = true;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
@@ -377,7 +375,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  raw_ptr<ClientSocketFactory> client_socket_factory_for_testing_ = nullptr;
+  ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
 };
 
 }  // namespace net

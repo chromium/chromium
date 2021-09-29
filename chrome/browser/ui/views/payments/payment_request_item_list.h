@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 
 namespace views {
@@ -115,7 +114,7 @@ class PaymentRequestItemList {
 
     base::WeakPtr<PaymentRequestSpec> spec_;
     base::WeakPtr<PaymentRequestState> state_;
-    raw_ptr<PaymentRequestItemList> list_;
+    PaymentRequestItemList* list_;
     std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
@@ -152,7 +151,7 @@ class PaymentRequestItemList {
   void UnselectSelectedItem();
 
   std::vector<std::unique_ptr<Item>> items_;
-  raw_ptr<Item> selected_item_;
+  Item* selected_item_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
 };
 

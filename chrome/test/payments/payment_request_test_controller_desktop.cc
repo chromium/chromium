@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 
 #include "base/check.h"
@@ -93,7 +92,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   content::GlobalRenderFrameHostId frame_routing_id_;
   const bool is_off_the_record_;
   const bool valid_ssl_;
-  const raw_ptr<PrefService> prefs_;
+  PrefService* const prefs_;
   const std::string twa_package_name_;
   const bool has_authenticator_;
   base::WeakPtr<PaymentUIObserver> ui_observer_for_test_;
@@ -154,7 +153,7 @@ class PaymentRequestTestController::ObserverConverter
   }
 
  private:
-  const raw_ptr<PaymentRequestTestController> controller_;
+  PaymentRequestTestController* const controller_;
 
   base::WeakPtrFactory<ObserverConverter> weak_ptr_factory_{this};
 };

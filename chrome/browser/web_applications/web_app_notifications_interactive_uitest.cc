@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,7 +97,7 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Can be different from browser();
-  raw_ptr<Browser> app_browser_ = nullptr;
+  Browser* app_browser_ = nullptr;
 };
 
 class WebAppNotificationsBrowserTest_IconAndTitleEnabled

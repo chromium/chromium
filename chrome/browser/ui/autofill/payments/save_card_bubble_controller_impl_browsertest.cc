@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
@@ -115,7 +114,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
   SaveCardBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  raw_ptr<SaveCardBubbleControllerImpl> controller_ = nullptr;
+  SaveCardBubbleControllerImpl* controller_ = nullptr;
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.

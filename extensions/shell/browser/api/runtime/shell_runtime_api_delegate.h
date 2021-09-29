@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_API_RUNTIME_SHELL_RUNTIME_API_DELEGATE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 
 namespace content {
@@ -35,7 +34,7 @@ class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
   bool RestartDevice(std::string* error_message) override;
 
  private:
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace extensions

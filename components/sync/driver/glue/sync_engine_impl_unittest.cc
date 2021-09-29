@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -119,7 +118,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
-  raw_ptr<FakeSyncManager*> fake_manager_;
+  FakeSyncManager** fake_manager_;
 };
 
 class MockInvalidationService : public invalidation::InvalidationService {

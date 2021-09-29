@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -99,7 +98,7 @@ class ProcessMetricsDecorator
   base::RetainingOneShotTimer refresh_timer_;
 
   // The Graph instance owning this decorator.
-  raw_ptr<Graph> graph_;
+  Graph* graph_;
 
   // The number of clients currently interested by the metrics tracked by this
   // class.

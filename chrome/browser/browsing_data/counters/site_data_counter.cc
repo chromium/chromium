@@ -28,7 +28,7 @@ SiteDataCounter::~SiteDataCounter() {}
 
 void SiteDataCounter::OnInitialized() {
   sync_tracker_.OnInitialized(
-      base::BindRepeating(&CheckSyncState, base::Unretained(profile_.get())));
+      base::BindRepeating(&CheckSyncState, base::Unretained(profile_)));
 }
 
 const char* SiteDataCounter::GetPrefName() const {

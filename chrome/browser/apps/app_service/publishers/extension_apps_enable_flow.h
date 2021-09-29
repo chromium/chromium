@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 
 class ExtensionEnableFlow;
@@ -44,7 +43,7 @@ class ExtensionAppsEnableFlow : public ExtensionEnableFlowDelegate {
   void ExtensionEnableFlowFinished() override;
   void ExtensionEnableFlowAborted(bool user_initiated) override;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   const std::string app_id_;
   FinishedCallback callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;

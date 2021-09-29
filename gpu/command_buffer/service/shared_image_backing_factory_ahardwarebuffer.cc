@@ -17,7 +17,6 @@
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -185,7 +184,7 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
 
   // Not guarded by |lock_| as we do not use legacy_texture_ in threadsafe
   // mode.
-  raw_ptr<gles2::Texture> legacy_texture_ = nullptr;
+  gles2::Texture* legacy_texture_ = nullptr;
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
 };
 
@@ -250,7 +249,7 @@ class SharedImageRepresentationOverlayAHB
 
   gl::GLImage* GetGLImage() override { return gl_image_; }
 
-  raw_ptr<gl::GLImage> gl_image_ = nullptr;
+  gl::GLImage* gl_image_ = nullptr;
 };
 
 SharedImageBackingAHB::SharedImageBackingAHB(

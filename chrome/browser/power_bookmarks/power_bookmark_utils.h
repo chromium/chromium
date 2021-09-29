@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 class GURL;
@@ -38,7 +37,7 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
   std::vector<std::u16string> tags;
 
   // If his field is left null, the root of the bookmark model will be searched.
-  raw_ptr<const bookmarks::BookmarkNode> folder{nullptr};
+  const bookmarks::BookmarkNode* folder{nullptr};
 };
 
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -94,7 +93,7 @@ class ResizeAreaTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  views::Widget* widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by

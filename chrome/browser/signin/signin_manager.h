@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -56,7 +55,7 @@ class SigninManager : public KeyedService,
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 };

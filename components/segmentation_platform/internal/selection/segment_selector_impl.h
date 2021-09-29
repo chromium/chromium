@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 
 #include "base/callback_helpers.h"
@@ -92,19 +91,19 @@ class SegmentSelectorImpl : public SegmentSelector {
                              const proto::SegmentationModelMetadata& metadata);
 
   // The database storing metadata and results.
-  raw_ptr<SegmentInfoDatabase> segment_database_;
+  SegmentInfoDatabase* segment_database_;
 
   // The database to determine whether the signal storage requirements are met.
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  SignalStorageConfig* signal_storage_config_;
 
   // Helper class to read/write results to the prefs.
-  raw_ptr<SegmentationResultPrefs> result_prefs_;
+  SegmentationResultPrefs* result_prefs_;
 
   // The config for providing configuration params.
-  raw_ptr<Config> config_;
+  Config* config_;
 
   // The time provider.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // These values are read from prefs or db on init and used for serving the
   // clients in the current session.

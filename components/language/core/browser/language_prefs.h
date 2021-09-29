@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -72,7 +71,7 @@ class LanguagePrefs {
   // Used for deduplication and reordering of languages.
   std::set<std::string> forced_languages_set_;
 
-  raw_ptr<PrefService> prefs_;  // Weak.
+  PrefService* prefs_;  // Weak.
   PrefChangeRegistrar pref_change_registrar_;
 };
 

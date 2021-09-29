@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "url/gurl.h"
@@ -54,7 +53,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
  private:
   Profile* GetProfile() const;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   GURL site_url_;
 };
 

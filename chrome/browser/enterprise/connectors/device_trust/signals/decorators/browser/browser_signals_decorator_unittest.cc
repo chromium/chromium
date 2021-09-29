@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -46,7 +45,7 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   policy::MockCloudPolicyStore mock_cloud_policy_store_;
-  raw_ptr<enterprise_signals::DeviceInfoFetcher> stub_device_info_fetcher_;
+  enterprise_signals::DeviceInfoFetcher* stub_device_info_fetcher_;
   absl::optional<BrowserSignalsDecorator> decorator_;
 };
 

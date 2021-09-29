@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -111,7 +110,7 @@ class TabLoader::ReentrancyHelper {
 
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
-  raw_ptr<TabLoader> tab_loader_;
+  TabLoader* tab_loader_;
 };
 
 // static

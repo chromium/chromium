@@ -9,7 +9,6 @@
 #include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "services/device/usb/usb_error.h"
@@ -37,7 +36,7 @@ class UsbContext::UsbEventHandler : public base::SimpleThread {
 
  private:
   base::subtle::Atomic32 running_;
-  raw_ptr<libusb_context> context_;
+  libusb_context* context_;
 };
 
 UsbContext::UsbEventHandler::UsbEventHandler(libusb_context* context)

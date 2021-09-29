@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -111,7 +110,7 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
             std::abs(rect.height() - initial_bounds_.height()) >= resize_by_);
   }
 
-  const raw_ptr<views::Widget> widget_;
+  views::Widget* const widget_;
   const int move_by_, resize_by_;
   const gfx::Rect initial_bounds_;
   base::RunLoop run_loop_;

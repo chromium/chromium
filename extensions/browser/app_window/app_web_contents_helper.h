@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_APP_WINDOW_APP_WEB_CONTENTS_HELPER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -65,13 +64,13 @@ class AppWebContentsHelper {
 
   // The browser context with which this window is associated.
   // AppWindowWebContentsDelegate does not own this object.
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   const std::string extension_id_;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
-  raw_ptr<AppDelegate> app_delegate_;
+  AppDelegate* app_delegate_;
 };
 
 }  // namespace extensions

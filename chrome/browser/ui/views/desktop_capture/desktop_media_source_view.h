@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/text_constants.h"
@@ -91,12 +90,12 @@ class DesktopMediaSourceView : public views::View {
   // (if any).
   void SetSelected(bool selected);
 
-  raw_ptr<DesktopMediaListView> parent_;
+  DesktopMediaListView* parent_;
   content::DesktopMediaID source_id_;
 
-  raw_ptr<views::ImageView> icon_view_ = new views::ImageView;
-  raw_ptr<views::ImageView> image_view_ = new views::ImageView;
-  raw_ptr<views::Label> label_ = new views::Label;
+  views::ImageView* icon_view_ = new views::ImageView;
+  views::ImageView* image_view_ = new views::ImageView;
+  views::Label* label_ = new views::Label;
 
   bool selected_;
 };

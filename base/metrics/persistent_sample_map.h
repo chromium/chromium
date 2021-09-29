@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -97,13 +96,13 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
 
   // The allocator that manages histograms inside persistent memory. This is
   // owned externally and is expected to live beyond the life of this object.
-  raw_ptr<PersistentHistogramAllocator> allocator_;
+  PersistentHistogramAllocator* allocator_;
 
   // The object that manages sample records inside persistent memory. This is
   // owned by the |allocator_| object (above) and so, like it, is expected to
   // live beyond the life of this object. This value is lazily-initialized on
   // first use via the GetRecords() accessor method.
-  raw_ptr<PersistentSampleMapRecords> records_ = nullptr;
+  PersistentSampleMapRecords* records_ = nullptr;
 };
 
 }  // namespace base

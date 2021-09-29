@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
@@ -56,10 +55,10 @@ class AppServiceTest {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AppServiceProxyLacros* app_service_proxy_ = nullptr;
 #else
-  raw_ptr<AppServiceProxyBase> app_service_proxy_ = nullptr;
+  AppServiceProxyBase* app_service_proxy_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 };
 
 }  // namespace apps

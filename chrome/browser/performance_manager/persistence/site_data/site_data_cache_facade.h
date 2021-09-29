@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -46,7 +45,7 @@ class SiteDataCacheFacade : public KeyedService,
 
  private:
   // The browser context associated with this cache.
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

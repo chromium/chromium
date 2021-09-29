@@ -5,7 +5,6 @@
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
@@ -61,7 +60,7 @@ class MockMediaKeysListener : public ui::MediaKeysListener {
   }
 
  private:
-  raw_ptr<ui::MediaKeysListener::Delegate> delegate_;
+  ui::MediaKeysListener::Delegate* delegate_;
   base::flat_set<ui::KeyboardCode> key_codes_;
 };
 
@@ -154,8 +153,8 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
-  raw_ptr<MockMediaKeysListener> media_keys_listener_;
+  MediaKeysListenerManagerImpl* media_keys_listener_manager_;
+  MockMediaKeysListener* media_keys_listener_;
   std::unique_ptr<TestMediaController> media_controller_;
 };
 

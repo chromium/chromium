@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 
 // The following declarations of functions and types are from Firefox
@@ -73,7 +72,7 @@ enum SECItemType {
 
 struct SECItem {
   SECItemType type;
-  raw_ptr<unsigned char> data;
+  unsigned char *data;
   unsigned int len;
 };
 

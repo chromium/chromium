@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -61,7 +60,7 @@ class FrameCaptionButton::HighlightPathGenerator
   }
 
  private:
-  const raw_ptr<FrameCaptionButton> frame_caption_button_;
+  FrameCaptionButton* const frame_caption_button_;
 };
 
 FrameCaptionButton::FrameCaptionButton(PressedCallback callback,

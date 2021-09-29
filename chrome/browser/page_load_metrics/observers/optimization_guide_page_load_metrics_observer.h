@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OPTIMIZATION_GUIDE_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
@@ -38,7 +37,7 @@ class OptimizationGuidePageLoadMetricsObserver
  private:
   // OptimizationGuideWebContentsObserver to pass any captured page load metrics
   // needed for the Optimization Guide. Not owned.
-  raw_ptr<OptimizationGuideWebContentsObserver>
+  OptimizationGuideWebContentsObserver*
       optimization_guide_web_contents_observer_ = nullptr;
 };
 

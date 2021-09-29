@@ -18,7 +18,6 @@
 #include "base/format_macros.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -187,7 +186,7 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  raw_ptr<MockHttpCache> cache_;
+  MockHttpCache* cache_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteCacheCompletionCallback);
 };

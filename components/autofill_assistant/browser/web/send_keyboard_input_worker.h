@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -60,7 +59,7 @@ class SendKeyboardInputWorker : public WebControllerWorker {
   void OnKeyEventDone(const MessageDispatcher::ReplyStatus& reply_status,
                       std::unique_ptr<input::DispatchKeyEventResult> result);
 
-  const raw_ptr<DevtoolsClient> devtools_client_;
+  DevtoolsClient* const devtools_client_;
   Callback callback_;
   base::TimeDelta key_press_delay_;
   std::string frame_id_;

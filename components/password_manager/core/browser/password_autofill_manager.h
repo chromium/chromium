@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -211,11 +210,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  raw_ptr<PasswordManagerDriver> password_manager_driver_;
+  PasswordManagerDriver* password_manager_driver_;
 
-  raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
+  autofill::AutofillClient* autofill_client_;  // weak
 
-  raw_ptr<PasswordManagerClient> password_client_;
+  PasswordManagerClient* password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

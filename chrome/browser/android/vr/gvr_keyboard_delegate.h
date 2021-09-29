@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/keyboard_ui_interface.h"
 #include "third_party/gvr-android-keyboard/src/libraries/headers/vr/gvr/capi/include/gvr_keyboard.h"
@@ -64,7 +63,7 @@ class GvrKeyboardDelegate : public KeyboardDelegate {
   bool pause_keyboard_update_ = false;
   TextInputInfo cached_text_input_info_;
 
-  raw_ptr<KeyboardUiInterface> ui_;
+  KeyboardUiInterface* ui_;
   gvr_keyboard_context* gvr_keyboard_ = nullptr;
   OnEventCallback keyboard_event_callback_;
 };

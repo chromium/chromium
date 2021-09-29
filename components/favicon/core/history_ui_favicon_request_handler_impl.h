@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_HISTORY_UI_FAVICON_REQUEST_HANDLER_IMPL_H_
 #define COMPONENTS_FAVICON_CORE_HISTORY_UI_FAVICON_REQUEST_HANDLER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -99,9 +98,9 @@ class HistoryUiFaviconRequestHandlerImpl
       HistoryUiFaviconRequestOrigin origin_for_uma,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
-  const raw_ptr<FaviconService> favicon_service_;
+  FaviconService* const favicon_service_;
 
-  const raw_ptr<LargeIconService> large_icon_service_;
+  LargeIconService* const large_icon_service_;
 
   CanSendHistoryDataGetter const can_send_history_data_getter_;
 

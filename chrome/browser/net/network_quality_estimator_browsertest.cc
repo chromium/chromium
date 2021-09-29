@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -78,7 +77,7 @@ class TestNetworkQualityObserver
  private:
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<network::NetworkQualityTracker> tracker_;
+  network::NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
 };
 

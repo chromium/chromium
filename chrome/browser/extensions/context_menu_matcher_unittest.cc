@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/context_menu_matcher.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
@@ -65,7 +64,7 @@ class ContextMenuMatcherTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
-  raw_ptr<MenuManager> manager_;
+  MenuManager* manager_;
   ExtensionList extensions_;
   TestExtensionPrefs prefs_;
 };

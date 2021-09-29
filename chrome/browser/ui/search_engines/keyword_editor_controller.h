@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 class Profile;
 class TemplateURL;
@@ -82,7 +81,7 @@ class KeywordEditorController {
   }
 
  private:
-  raw_ptr<TemplateURLService> url_model_;
+  TemplateURLService* url_model_;
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;

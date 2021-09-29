@@ -7,7 +7,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
@@ -69,7 +68,7 @@ class EVENTS_EXPORT EventDispatcherDelegate {
   EventDispatchDetails DispatchEventToTarget(EventTarget* target,
                                              Event* event) WARN_UNUSED_RESULT;
 
-  raw_ptr<EventDispatcher> dispatcher_;
+  EventDispatcher* dispatcher_;
 };
 
 // Dispatches events to appropriate targets.
@@ -100,7 +99,7 @@ class EVENTS_EXPORT EventDispatcher {
   // dispatching the event to the event handler.
   void DispatchEvent(EventHandler* handler, Event* event);
 
-  raw_ptr<EventDispatcherDelegate> delegate_;
+  EventDispatcherDelegate* delegate_;
 
   Event* current_event_ = nullptr;
 

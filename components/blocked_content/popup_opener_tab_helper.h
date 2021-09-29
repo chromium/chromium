@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -80,7 +79,7 @@ class PopupOpenerTabHelper
   absl::optional<base::TimeDelta> visible_time_before_tab_under_;
 
   // The clock which is used by the visibility trackers.
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Keeps track of the total foreground time for this tab.
   std::unique_ptr<ui::ScopedVisibilityTracker> visibility_tracker_;
@@ -94,7 +93,7 @@ class PopupOpenerTabHelper
   ukm::SourceId last_opener_source_id_ = ukm::kInvalidSourceId;
 
   // The settings map for the web contents this object is associated with.
-  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
+  HostContentSettingsMap* settings_map_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

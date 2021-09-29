@@ -49,7 +49,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->layer()->GetAnimator()->AddObserver(this);
   label_->layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  AddChildView(label_.get());
+  AddChildView(label_);
 
   // Clip child views to this view.
   SetPaintToLayer();

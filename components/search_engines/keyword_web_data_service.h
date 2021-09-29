@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "components/search_engines/keyword_table.h"
@@ -62,7 +61,7 @@ class KeywordWebDataService : public WebDataServiceBase {
     ~BatchModeScoper();
 
    private:
-    raw_ptr<KeywordWebDataService> service_;
+    KeywordWebDataService* service_;
   };
 
   KeywordWebDataService(

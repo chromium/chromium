@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -33,7 +32,7 @@ class TestDialog : public DialogDelegateView {
  public:
   TestDialog() : input_(new views::Textfield()) {
     DialogDelegate::set_draggable(true);
-    AddChildView(input_.get());
+    AddChildView(input_);
   }
 
   TestDialog(const TestDialog&) = delete;
@@ -78,7 +77,7 @@ class TestDialog : public DialogDelegateView {
   views::Textfield* input() { return input_; }
 
  private:
-  raw_ptr<views::Textfield> input_;
+  views::Textfield* input_;
   std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
@@ -151,7 +150,7 @@ class DialogTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<TestDialog> dialog_ = nullptr;
+  TestDialog* dialog_ = nullptr;
 };
 
 }  // namespace
@@ -523,8 +522,8 @@ class TestDialogDelegateView : public DialogDelegateView {
     return true;
   }
 
-  raw_ptr<bool> accepted_;
-  raw_ptr<bool> cancelled_;
+  bool* accepted_;
+  bool* cancelled_;
 };
 
 TEST_F(DialogDelegateCloseTest, OldClosePathDoesNotDoubleClose) {

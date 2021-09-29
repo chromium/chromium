@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace google {
@@ -64,7 +63,7 @@ class FakeMessagePipe final : public MessagePipe {
 
   const bool asynchronous_;
   bool pipe_opened_ = false;
-  raw_ptr<EventHandler> event_handler_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
   base::queue<std::string> sent_messages_;
 };
 

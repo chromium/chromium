@@ -5,7 +5,6 @@
 #include "ui/wm/core/default_activation_client.h"
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
@@ -32,8 +31,8 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
     delete this;
   }
 
-  raw_ptr<DefaultActivationClient> client_;
-  raw_ptr<aura::Window> root_window_;
+  DefaultActivationClient* client_;
+  aura::Window* root_window_;
 
   DISALLOW_COPY_AND_ASSIGN(Deleter);
 };

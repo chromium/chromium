@@ -11,7 +11,6 @@
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -214,7 +213,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
 
   // Layer tree instance that owns this swap chain presenter.
-  raw_ptr<DCLayerTree> layer_tree_ = nullptr;
+  DCLayerTree* layer_tree_ = nullptr;
 
   const HWND window_;
 

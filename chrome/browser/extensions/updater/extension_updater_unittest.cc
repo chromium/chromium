@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -364,7 +363,7 @@ class MockService : public TestExtensionService {
   }
 
  protected:
-  const raw_ptr<TestExtensionPrefs> prefs_;
+  TestExtensionPrefs* const prefs_;
   PendingExtensionManager pending_extension_manager_;
 
  private:
@@ -373,7 +372,7 @@ class MockService : public TestExtensionService {
     std::unique_ptr<ExtensionDownloader> downloader =
         ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
             test_shared_url_loader_factory_,
-            downloader_delegate_override_ ? downloader_delegate_override_.get()
+            downloader_delegate_override_ ? downloader_delegate_override_
                                           : delegate,
             GetTestVerifierFormat());
     return downloader;
@@ -394,7 +393,7 @@ class MockService : public TestExtensionService {
   AccountInfo account_info_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  raw_ptr<ExtensionDownloaderDelegate> downloader_delegate_override_;
+  ExtensionDownloaderDelegate* downloader_delegate_override_;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -478,7 +477,7 @@ class ServiceForManifestTests : public MockService {
   }
 
  private:
-  raw_ptr<ExtensionRegistry> registry_;
+  ExtensionRegistry* registry_;
 };
 
 class ServiceForDownloadTests : public MockService {

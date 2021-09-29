@@ -16,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -278,7 +277,7 @@ class SSLInterstitialTimerObserver {
   }
 
   bool timer_started_ = false;
-  raw_ptr<const WebContents> web_contents_;
+  const WebContents* web_contents_;
   SSLErrorHandler::TimerStartedCallback callback_;
 
   std::unique_ptr<base::RunLoop> message_loop_runner_;
@@ -333,7 +332,7 @@ class ScopedContentBrowserClientSetting final {
   }
 
  private:
-  const raw_ptr<content::ContentBrowserClient> old_client_;
+  content::ContentBrowserClient* const old_client_;
 };
 
 std::string EncodeQuery(const std::string& query) {
@@ -3166,7 +3165,7 @@ class SSLUITestWaitForDOMNotification : public SSLUITestIgnoreCertErrors,
  private:
   content::NotificationRegistrar registrar_;
   std::string expected_notification_;
-  raw_ptr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 };
 
 // Tests that a mixed resource which includes HTTP in the redirect chain

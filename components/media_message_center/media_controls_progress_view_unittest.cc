@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -43,7 +42,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
         widget_.SetContentsView(std::make_unique<views::View>());
 
     progress_view_ = new MediaControlsProgressView(base::DoNothing());
-    container->AddChildView(progress_view_.get());
+    container->AddChildView(progress_view_);
 
     widget_.Show();
   }
@@ -54,7 +53,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  raw_ptr<MediaControlsProgressView> progress_view_ = nullptr;
+  MediaControlsProgressView* progress_view_ = nullptr;
 
  private:
   views::Widget widget_;

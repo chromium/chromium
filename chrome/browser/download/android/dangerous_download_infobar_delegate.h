@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -49,7 +48,7 @@ class DangerousDownloadInfoBarDelegate
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.
-  raw_ptr<download::DownloadItem> download_item_;
+  download::DownloadItem* download_item_;
   std::u16string message_text_;
 };
 

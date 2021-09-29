@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -108,9 +107,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // short amount of time has passed since initialization happened.
   void OnExecuteDatabaseMaintenanceTasks();
 
-  raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
+  optimization_guide::OptimizationGuideModelProvider* model_provider_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Config.
   std::unique_ptr<Config> config_;

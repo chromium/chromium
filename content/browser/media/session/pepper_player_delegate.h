@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 
 namespace content {
@@ -52,7 +51,7 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
  private:
   void SetVolume(int player_id, double volume);
 
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
   int32_t pp_instance_;
 };
 

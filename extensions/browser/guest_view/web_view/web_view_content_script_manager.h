@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -110,7 +109,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   // Caches callbacks and resumes them when all the scripts are loaded.
   std::vector<base::OnceClosure> pending_scripts_loading_callbacks_;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   base::WeakPtrFactory<WebViewContentScriptManager> weak_factory_{this};
 };

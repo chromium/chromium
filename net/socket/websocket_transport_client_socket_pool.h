@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -131,11 +130,11 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const NetLogWithSource& connect_job_net_log();
 
    private:
-    raw_ptr<WebSocketTransportClientSocketPool> owner_;
+    WebSocketTransportClientSocketPool* owner_;
 
     CompletionOnceCallback callback_;
     std::unique_ptr<ConnectJob> connect_job_;
-    const raw_ptr<ClientSocketHandle> socket_handle_;
+    ClientSocketHandle* const socket_handle_;
     const NetLogWithSource request_net_log_;
   };
 
@@ -158,7 +157,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const scoped_refptr<SocketParams> params;
     const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag;
     const RequestPriority priority;
-    const raw_ptr<ClientSocketHandle> handle;
+    ClientSocketHandle* const handle;
     CompletionOnceCallback callback;
     ProxyAuthCallback proxy_auth_callback;
     const NetLogWithSource net_log;

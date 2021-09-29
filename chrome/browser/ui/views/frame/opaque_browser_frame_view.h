@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -200,25 +199,25 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void UpdateCaptionButtonPlaceholderContainerBackground();
 
   // Our layout manager also calculates various bounds.
-  raw_ptr<OpaqueBrowserFrameViewLayout> layout_;
+  OpaqueBrowserFrameViewLayout* layout_;
 
   // Window controls.
-  raw_ptr<views::Button> minimize_button_;
-  raw_ptr<views::Button> maximize_button_;
-  raw_ptr<views::Button> restore_button_;
-  raw_ptr<views::Button> close_button_;
+  views::Button* minimize_button_;
+  views::Button* maximize_button_;
+  views::Button* restore_button_;
+  views::Button* close_button_;
 
   // The window icon and title.
   TabIconView* window_icon_;
-  raw_ptr<views::Label> window_title_;
+  views::Label* window_title_;
 
   // Background painter for the window frame.
   std::unique_ptr<views::FrameBackground> frame_background_;
 
   // PlaceholderContainer beneath the controls button for PWAs with window
   // controls overlay display override.
-  raw_ptr<CaptionButtonPlaceholderContainer>
-      caption_button_placeholder_container_ = nullptr;
+  CaptionButtonPlaceholderContainer* caption_button_placeholder_container_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_H_

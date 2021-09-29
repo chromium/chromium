@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
@@ -100,7 +99,7 @@ struct NET_EXPORT SSLServerConfig {
   // and must outlive any sockets spawned from this SSLServerContext.
   // This field is meaningful only if client certificates are requested.
   // If a verifier is not provided then all certificates are accepted.
-  raw_ptr<ClientCertVerifier> client_cert_verifier;
+  ClientCertVerifier* client_cert_verifier;
 
   // The list of application level protocols supported with ALPN (Application
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/media_router/browser/route_message_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -76,7 +75,7 @@ class BrowserPresentationConnectionProxy
 
  private:
   // |router_| not owned by this class.
-  const raw_ptr<MediaRouter> router_;
+  MediaRouter* const router_;
   const MediaRoute::Id route_id_;
 
   mojo::Receiver<blink::mojom::PresentationConnection> receiver_{this};

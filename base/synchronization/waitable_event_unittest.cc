@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -163,7 +162,7 @@ class WaitableEventSignaler : public PlatformThread::Delegate {
 
  private:
   const TimeDelta delay_;
-  raw_ptr<WaitableEvent> event_;
+  WaitableEvent* event_;
 };
 
 // Tests that a WaitableEvent can be safely deleted when |Wait| is done without

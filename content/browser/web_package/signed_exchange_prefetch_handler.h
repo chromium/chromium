@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -99,7 +98,7 @@ class SignedExchangePrefetchHandler final
 
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
-  raw_ptr<network::mojom::URLLoaderClient> forwarding_client_;
+  network::mojom::URLLoaderClient* forwarding_client_;
 };
 
 }  // namespace content

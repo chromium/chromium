@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -55,10 +54,10 @@ class PageBundleUpdateTask : public Task {
 
   // Owned by PrefetchService which also transitively owns |this|, so raw
   // pointer is OK.
-  raw_ptr<PrefetchStore> store_;
+  PrefetchStore* store_;
   // PrefetchDispatcher owns the task queue which owns |this|, so raw pointer is
   // OK.
-  raw_ptr<PrefetchDispatcher> dispatcher_;
+  PrefetchDispatcher* dispatcher_;
   std::string operation_name_;
   std::vector<RenderPageInfo> pages_;
 

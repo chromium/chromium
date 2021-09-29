@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
@@ -154,7 +153,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
         chrome::GetURLToBookmark(contents));
   }
 
-  const raw_ptr<Browser> browser_;
+  Browser* const browser_;
   base::RepeatingClosure close_cb_;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
@@ -183,7 +182,7 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
 
   if (reading_list_model_)
-    reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
+    reading_list_model_scoped_observation_.Observe(reading_list_model_);
 }
 
 ReadLaterToolbarButton::~ReadLaterToolbarButton() = default;
@@ -219,7 +218,7 @@ void ReadLaterToolbarButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_.get()));
+      reading_list_model_));
   reading_list_model_scoped_observation_.Reset();
 }
 
@@ -270,7 +269,7 @@ void ReadLaterToolbarButton::HideSidePanel() {
   DCHECK(browser_view->right_aligned_side_panel());
   if (side_panel_webview_) {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
-        side_panel_webview_.get());
+        side_panel_webview_);
     side_panel_webview_ = nullptr;
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }

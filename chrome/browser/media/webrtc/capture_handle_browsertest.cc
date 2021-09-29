@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -182,8 +181,8 @@ struct TabInfo {
     EXPECT_EQ(script_result, "embedding-done");
   }
 
-  raw_ptr<Browser> browser;
-  raw_ptr<WebContents> web_contents;
+  Browser* browser;
+  WebContents* web_contents;
   int tab_strip_index;
   std::string capture_handle;  // Expected value for those who may observe.
 };
@@ -334,7 +333,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Incognito browser.
   // Note: The regular one is accessible via browser().
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  Browser* incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -802,7 +801,7 @@ class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
 
  protected:
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
-  raw_ptr<WebContents> captured_web_contents_ = nullptr;
+  WebContents* captured_web_contents_ = nullptr;
 };
 
 // Verifies that pre-rendered pages don't change the capture handle config.

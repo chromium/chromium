@@ -7,8 +7,6 @@
 
 #include <cstdint>
 
-#include "base/memory/raw_ptr.h"
-
 namespace cast_api_bindings {
 
 struct Message;
@@ -52,7 +50,7 @@ class MessageConnector {
   virtual ~MessageConnector();
 
   uint32_t channel_id_;
-  raw_ptr<MessageConnector> peer_ = nullptr;
+  MessageConnector* peer_ = nullptr;
   bool started_ = false;
 };
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/interceptor.h"
@@ -94,7 +93,7 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
 
   v8::Persistent<v8::FunctionTemplate> function_template_;
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   base::WeakPtr<Client> client_;
 

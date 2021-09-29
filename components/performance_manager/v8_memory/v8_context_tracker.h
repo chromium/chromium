@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -97,7 +96,7 @@ class V8ContextTracker final
     // A pointer to the upstream ExecutionContextState that this V8Context is
     // associated with. Note that this can be nullptr for V8Contexts that are
     // not associated with an ExecutionContext.
-    const raw_ptr<ExecutionContextState> execution_context_state;
+    ExecutionContextState* const execution_context_state;
 
     // Whether or not this context is detached. A context becomes detached
     // when the blink::ExecutionContext it was associated with is torn down.

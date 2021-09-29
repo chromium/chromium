@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -85,7 +84,7 @@ class OmniboxTextView : public views::View {
   void OnStyleChanged();
 
   // To get color values.
-  raw_ptr<OmniboxResultView> result_view_;
+  OmniboxResultView* result_view_;
 
   // Font settings for this view.
   int font_height_ = 0;

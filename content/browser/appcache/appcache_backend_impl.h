@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/appcache/appcache_host.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
@@ -40,7 +39,7 @@ class CONTENT_EXPORT AppCacheBackendImpl
  private:
   // Raw pointer is safe because instances of this class are owned by
   // |service_|.
-  raw_ptr<AppCacheServiceImpl> service_;
+  AppCacheServiceImpl* service_;
   const int process_id_;
   const int routing_id_;
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;

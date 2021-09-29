@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -122,7 +121,7 @@ class DriveNotificationManager : public KeyedService,
       const std::string& team_drive_id) const;
   std::string ExtractTeamDriveId(base::StringPiece topic_name) const;
 
-  raw_ptr<invalidation::InvalidationService> invalidation_service_;
+  invalidation::InvalidationService* invalidation_service_;
   base::ObserverList<DriveNotificationObserver>::Unchecked observers_;
 
   // True when Drive File Sync Service is registered for Drive notifications.

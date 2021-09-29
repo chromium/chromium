@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
@@ -160,7 +159,7 @@ class SyncWorker : public SyncWorkerInterface,
 
   base::FilePath base_dir_;
 
-  raw_ptr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
 
   // Sync with SyncEngine.
   RemoteServiceState service_state_;
@@ -177,7 +176,7 @@ class SyncWorker : public SyncWorkerInterface,
 
   base::WeakPtr<extensions::ExtensionServiceInterface> extension_service_;
   // Only guaranteed to be valid if |extension_service_| is not null.
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  extensions::ExtensionRegistry* extension_registry_;
 
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;

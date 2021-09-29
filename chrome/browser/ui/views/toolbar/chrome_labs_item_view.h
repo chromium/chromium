@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_ITEM_VIEW_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/flags_ui/feature_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -49,12 +48,12 @@ class ChromeLabsItemView : public views::View {
  private:
   bool ShouldShowNewBadge(Profile* profile, const LabInfo& lab);
 
-  raw_ptr<NewBadgeLabel> experiment_name_;
+  NewBadgeLabel* experiment_name_;
 
   // Combobox with selected state of the lab.
   views::Combobox* lab_state_combobox_;
 
-  raw_ptr<const flags_ui::FeatureEntry> feature_entry_;
+  const flags_ui::FeatureEntry* feature_entry_;
 
   views::MdTextButton* feedback_button_;
 };

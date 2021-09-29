@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -88,9 +87,9 @@ class WebUsbServiceImpl
 
   void OnConnectionError();
 
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* const render_frame_host_;
   base::WeakPtr<WebUsbChooser> usb_chooser_;
-  raw_ptr<UsbChooserContext> chooser_context_;
+  UsbChooserContext* chooser_context_;
   url::Origin origin_;
 
   // Used to bind with Blink.

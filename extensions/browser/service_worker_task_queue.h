@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -231,7 +230,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // The state of worker of each activated extension.
   std::map<SequencedContextId, WorkerState> worker_state_map_;
 
-  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* const browser_context_ = nullptr;
 
   // A map of Service Worker registrations if this instance is for an
   // off-the-record BrowserContext. These are stored in the ExtensionPrefs

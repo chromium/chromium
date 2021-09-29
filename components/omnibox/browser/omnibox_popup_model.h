@@ -9,7 +9,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -237,12 +236,12 @@ class OmniboxPopupModel {
 
   std::map<int, SkBitmap> rich_suggestion_bitmaps_;
 
-  raw_ptr<OmniboxPopupView> view_;
+  OmniboxPopupView* view_;
 
-  raw_ptr<OmniboxEditModel> edit_model_;
+  OmniboxEditModel* edit_model_;
 
   // Non-owning reference to the pref service. Can be nullptr in tests or iOS.
-  const raw_ptr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   OmniboxPopupSelection selection_;
 

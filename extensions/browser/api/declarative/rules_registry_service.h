@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
@@ -165,13 +164,13 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
 
   // Weak pointer into rule_registries_ to make it easier to handle content rule
   // conditions.
-  raw_ptr<ContentRulesRegistry> content_rules_registry_;
+  ContentRulesRegistry* content_rules_registry_;
 
   // Listen to extension load, unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

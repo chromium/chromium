@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #include <stddef.h>
@@ -58,7 +57,7 @@ class MockChannelReader : public ChannelReader {
   }
 
  private:
-  raw_ptr<Message> last_dispatched_message_;
+  Message* last_dispatched_message_;
   std::string data_;
 };
 

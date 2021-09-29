@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -107,7 +106,7 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
   void OnBrowserAdded(Browser* browser) override;
 
   // Profile for which the browser should be opened.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   CreateOnceCallback callback_;
 };
 

@@ -11,7 +11,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -63,7 +62,7 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // screen space available).
   bool WasSuppressed();
 
-  raw_ptr<AutofillPopupController> controller_;  // weak.
+  AutofillPopupController* controller_;  // weak.
 
   // The index of the last item the user long-pressed (they will be shown a
   // confirmation dialog).

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 
 #include "base/bind.h"
@@ -52,7 +51,7 @@ class TriggerSingleReentrantUpdateHelper
   }
 
  private:
-  raw_ptr<MockOfflineContentProvider> wrapped_provider_;
+  MockOfflineContentProvider* wrapped_provider_;
   OfflineItem new_item_;
 };
 

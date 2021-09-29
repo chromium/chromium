@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -113,9 +112,9 @@ class Login
   // reconnection.
   void DoReconnect();
 
-  const raw_ptr<Delegate> delegate_;
+  Delegate* const delegate_;
   LoginSettings login_settings_;
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
   std::unique_ptr<SingleLoginAttempt> single_attempt_;
 
   // reconnection state.

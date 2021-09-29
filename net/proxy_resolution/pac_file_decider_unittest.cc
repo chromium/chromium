@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -130,8 +129,8 @@ class RuleBasedPacFileFetcher : public PacFileFetcher {
   }
 
  private:
-  raw_ptr<const Rules> rules_;
-  raw_ptr<URLRequestContext> request_context_;
+  const Rules* rules_;
+  URLRequestContext* request_context_;
 };
 
 // A mock retriever, returns asynchronously when CompleteRequests() is called.
@@ -158,7 +157,7 @@ class MockDhcpPacFileFetcher : public DhcpPacFileFetcher {
 
  private:
   CompletionOnceCallback callback_;
-  raw_ptr<std::u16string> utf16_text_;
+  std::u16string* utf16_text_;
   GURL gurl_;
 };
 

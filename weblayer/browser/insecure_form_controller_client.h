@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_INSECURE_FORM_CONTROLLER_CLIENT_H_
 #define WEBLAYER_BROWSER_INSECURE_FORM_CONTROLLER_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 
@@ -38,7 +37,7 @@ class InsecureFormControllerClient
   void Proceed() override;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace weblayer

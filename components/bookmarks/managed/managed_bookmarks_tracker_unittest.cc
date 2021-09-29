@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -80,7 +79,7 @@ class ManagedBookmarksTrackerTest : public testing::Test {
   }
 
   bool IsManaged(const BookmarkNode* node) {
-    return node && node->HasAncestor(managed_node_.get());
+    return node && node->HasAncestor(managed_node_);
   }
 
   void SetManagedPref(const std::string& path, const base::Value& value) {
@@ -159,7 +158,7 @@ class ManagedBookmarksTrackerTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<BookmarkModel> model_;
   MockBookmarkModelObserver observer_;
-  raw_ptr<BookmarkPermanentNode> managed_node_;
+  BookmarkPermanentNode* managed_node_;
   std::unique_ptr<ManagedBookmarksTracker> managed_bookmarks_tracker_;
 };
 

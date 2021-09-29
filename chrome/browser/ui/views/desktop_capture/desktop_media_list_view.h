@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
@@ -60,11 +59,11 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
-  raw_ptr<DesktopMediaListController> controller_;
+  DesktopMediaListController* controller_;
 
   DesktopMediaSourceViewStyle single_style_;
   DesktopMediaSourceViewStyle generic_style_;
-  raw_ptr<DesktopMediaSourceViewStyle> active_style_;
+  DesktopMediaSourceViewStyle* active_style_;
 
   const std::u16string accessible_name_;
 };

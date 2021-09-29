@@ -6,7 +6,6 @@
 #define SERVICES_DEVICE_USB_SCOPED_LIBUSB_DEVICE_HANDLE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 
 struct libusb_device_handle;
@@ -35,7 +34,7 @@ class ScopedLibusbDeviceHandle {
   bool IsValid() const;
 
  private:
-  raw_ptr<libusb_device_handle> handle_;
+  libusb_device_handle* handle_;
   scoped_refptr<UsbContext> context_;
 };
 

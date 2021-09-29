@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
@@ -42,7 +41,7 @@ class BuiltinProvider : public AutocompleteProvider {
   // returned in |index|.
   bool HasMatchThatShouldBeDefault(size_t* index) const;
 
-  raw_ptr<AutocompleteProviderClient> client_;
+  AutocompleteProviderClient* client_;
   Builtins builtins_;
 };
 

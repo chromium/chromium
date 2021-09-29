@@ -191,7 +191,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
-  AddChildView(app_icon_view_.get());
+  AddChildView(app_icon_view_);
 
   // Font list for text views.
   gfx::FontList font_list = GetHeaderTextFontList();
@@ -213,7 +213,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   app_name_view_->SetMultiLine(false);
   app_name_view_->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
   app_name_view_->SetID(NotificationView::kAppNameView);
-  AddChildView(app_name_view_.get());
+  AddChildView(app_name_view_);
 
   // Detail views which will be hidden in settings mode.
   detail_views_ = new views::View();
@@ -222,30 +222,30 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   detail_views_->SetID(NotificationView::kHeaderDetailViews);
-  AddChildView(detail_views_.get());
+  AddChildView(detail_views_);
 
   // Summary text divider
   summary_text_divider_ = create_label();
   summary_text_divider_->SetText(kNotificationHeaderDivider);
   summary_text_divider_->SetVisible(false);
-  detail_views_->AddChildView(summary_text_divider_.get());
+  detail_views_->AddChildView(summary_text_divider_);
 
   // Summary text view
   summary_text_view_ = create_label();
   summary_text_view_->SetVisible(false);
   summary_text_view_->SetID(NotificationView::kSummaryTextView);
-  detail_views_->AddChildView(summary_text_view_.get());
+  detail_views_->AddChildView(summary_text_view_);
 
   // Timestamp divider
   timestamp_divider_ = create_label();
   timestamp_divider_->SetText(kNotificationHeaderDivider);
   timestamp_divider_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_divider_.get());
+  detail_views_->AddChildView(timestamp_divider_);
 
   // Timestamp view
   timestamp_view_ = create_label();
   timestamp_view_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_view_.get());
+  detail_views_->AddChildView(timestamp_view_);
 
   if (has_expand_button) {
     expand_button_ = new ExpandButton();
@@ -255,7 +255,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
         views::ImageView::Alignment::kLeading);
     expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
     DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
-    detail_views_->AddChildView(expand_button_.get());
+    detail_views_->AddChildView(expand_button_);
   }
 
   // Spacer between left-aligned views and right-aligned views

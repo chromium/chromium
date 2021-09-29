@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -223,9 +222,9 @@ class ComponentLoader {
   void FinishLoadSpeechSynthesisExtension(const char* extension_id);
 #endif
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
-  raw_ptr<ExtensionSystem> extension_system_;
+  ExtensionSystem* extension_system_;
 
   // List of registered component extensions (see mojom::ManifestLocation).
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;

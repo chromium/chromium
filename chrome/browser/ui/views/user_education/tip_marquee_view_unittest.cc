@@ -6,7 +6,6 @@
 #include <cstddef>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -140,9 +139,9 @@ class TipMarqueeViewTest : public views::ViewsTestBase {
 
  protected:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::View> contents_ = nullptr;
-  raw_ptr<views::View> spacer_ = nullptr;
-  raw_ptr<TipMarqueeView> marquee_ = nullptr;
+  views::View* contents_ = nullptr;
+  views::View* spacer_ = nullptr;
+  TipMarqueeView* marquee_ = nullptr;
 };
 
 TEST_F(TipMarqueeViewTest, NotVisibleWhenNoTip) {

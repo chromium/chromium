@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
@@ -44,7 +43,7 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
   void OnResume() override;
 
  private:
-  const raw_ptr<HttpNetworkSession> session_;
+  HttpNetworkSession* const session_;
   bool suspended_;
 
   THREAD_CHECKER(thread_checker_);

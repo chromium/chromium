@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/common/content_export.h"
@@ -77,7 +76,7 @@ class CONTENT_EXPORT PermissionServiceImpl
 
   RequestsMap pending_requests_;
   // context_ owns |this|.
-  raw_ptr<PermissionServiceContext> context_;
+  PermissionServiceContext* context_;
   const url::Origin origin_;
   base::WeakPtrFactory<PermissionServiceImpl> weak_factory_{this};
 };

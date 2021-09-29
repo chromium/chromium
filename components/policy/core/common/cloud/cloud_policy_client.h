@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -794,7 +793,7 @@ class POLICY_EXPORT CloudPolicyClient {
   int64_t fetched_invalidation_version_ = 0;
 
   // Used for issuing requests to the cloud.
-  raw_ptr<DeviceManagementService> service_ = nullptr;
+  DeviceManagementService* service_ = nullptr;
 
   // Only one outstanding policy fetch or device/user registration request is
   // allowed. Using a separate job to track those requests. If multiple
@@ -807,13 +806,11 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Only one outstanding app push-install report upload is allowed, and it must
   // be accessible so that it can be canceled.
-  raw_ptr<DeviceManagementService::Job> app_install_report_request_job_ =
-      nullptr;
+  DeviceManagementService::Job* app_install_report_request_job_ = nullptr;
 
   // Only one outstanding extension install report upload is allowed, and it
   // must be accessible so that it can be canceled.
-  raw_ptr<DeviceManagementService::Job> extension_install_report_request_job_ =
-      nullptr;
+  DeviceManagementService::Job* extension_install_report_request_job_ = nullptr;
 
   // The policy responses returned by the last policy fetch operation.
   ResponseMap responses_;

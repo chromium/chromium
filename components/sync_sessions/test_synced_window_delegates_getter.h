@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/local_session_event_router.h"
@@ -204,7 +203,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
     void NotifySessionRestoreComplete();
 
    private:
-    raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
+    LocalSessionEventHandler* handler_ = nullptr;
   };
 
   SyncedWindowDelegateMap delegates_;

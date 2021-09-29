@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -259,7 +258,7 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
 
  private:
   TestingProfile profile_;
-  raw_ptr<AppServiceProxy> proxy_;
+  AppServiceProxy* proxy_;
 };
 
 TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {

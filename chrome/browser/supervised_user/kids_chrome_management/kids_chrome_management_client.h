@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -108,7 +107,7 @@ class KidsChromeManagementClient : public KeyedService {
       ErrorCode error);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  signin::IdentityManager* identity_manager_ = nullptr;
 
   // List of requests in execution.
   KidsChromeRequestList requests_in_progress_;

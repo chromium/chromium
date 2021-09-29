@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -62,11 +61,11 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
 
  private:
   // The BrowserView is our ClientView. This is a pointer to it.
-  raw_ptr<BrowserView> browser_view_;
-  raw_ptr<BrowserFrame> browser_frame_;
+  BrowserView* browser_view_;
+  BrowserFrame* browser_frame_;
 
   // Owned by the RootWindow.
-  raw_ptr<BrowserDesktopWindowTreeHost> browser_desktop_window_tree_host_;
+  BrowserDesktopWindowTreeHost* browser_desktop_window_tree_host_;
 
   std::unique_ptr<wm::VisibilityController> visibility_controller_;
 };

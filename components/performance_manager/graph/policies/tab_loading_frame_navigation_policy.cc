@@ -174,7 +174,7 @@ void TabLoadingFrameNavigationPolicy::OnPassedToGraph(Graph* graph) {
                                 [](MechanismDelegate* mechanism) {
                                   mechanism->SetThrottlingEnabled(true);
                                 },
-                                base::Unretained(mechanism_.get())));
+                                base::Unretained(mechanism_)));
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
   graph->RegisterObject(this);
@@ -187,7 +187,7 @@ void TabLoadingFrameNavigationPolicy::OnTakenFromGraph(Graph* graph) {
                                 [](MechanismDelegate* mechanism) {
                                   mechanism->SetThrottlingEnabled(false);
                                 },
-                                base::Unretained(mechanism_.get())));
+                                base::Unretained(mechanism_)));
   graph->UnregisterObject(this);
   graph->RemovePageNodeObserver(this);
   graph->RemoveFrameNodeObserver(this);
@@ -350,7 +350,7 @@ void TabLoadingFrameNavigationPolicy::StopThrottlingExpiredPages() {
                                           contents,
                                           proxy.LastNewDocNavigationId());
                                   },
-                                  base::Unretained(mechanism_.get()),
+                                  base::Unretained(mechanism_),
                                   page_node->GetContentsProxy()));
   }
 }

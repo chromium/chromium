@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_transport.h"
@@ -100,8 +99,8 @@ class CastSocketWrapper final : public CastSocket {
       NOTREACHED();
     }
 
-    raw_ptr<LibcastSocket> socket_;
-    raw_ptr<openscreen_platform::TaskRunner> openscreen_task_runner_;
+    LibcastSocket* socket_;
+    openscreen_platform::TaskRunner* openscreen_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   };
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -766,7 +765,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // For service worker execution contexts -------------------------------------
 
   // The ServiceWorkerHost that owns |this|.
-  raw_ptr<ServiceWorkerHost> service_worker_host_ = nullptr;
+  ServiceWorkerHost* service_worker_host_ = nullptr;
 
   // For all instances --------------------------------------------------------
 

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -46,9 +45,9 @@ class TestProofVerifierCallback : public quic::ProofVerifierCallback {
   }
 
  private:
-  const raw_ptr<TestCompletionCallback> comp_callback_;
-  const raw_ptr<bool> ok_;
-  const raw_ptr<string> error_details_;
+  TestCompletionCallback* const comp_callback_;
+  bool* const ok_;
+  string* const error_details_;
 };
 
 // RunVerification runs |verifier->VerifyProof| and asserts that the result
@@ -112,10 +111,10 @@ class TestCallback : public quic::ProofSource::Callback {
   }
 
  private:
-  raw_ptr<bool> called_;
-  raw_ptr<bool> ok_;
-  raw_ptr<quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>> chain_;
-  raw_ptr<quic::QuicCryptoProof> proof_;
+  bool* called_;
+  bool* ok_;
+  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* chain_;
+  quic::QuicCryptoProof* proof_;
 };
 
 class ProofTest : public ::testing::TestWithParam<quic::ParsedQuicVersion> {};
@@ -209,8 +208,8 @@ class TestingSignatureCallback : public quic::ProofSource::SignatureCallback {
   }
 
  private:
-  raw_ptr<bool> ok_out_;
-  raw_ptr<std::string> signature_out_;
+  bool* ok_out_;
+  std::string* signature_out_;
 };
 
 }  // namespace

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 
 namespace remoting {
@@ -39,7 +38,7 @@ class TestDeviceIdProvider final : public FtlDeviceIdProvider {
   ftl::DeviceId GetDeviceId() override;
 
  private:
-  raw_ptr<TokenStorage> token_storage_;
+  TokenStorage* token_storage_;
 };
 
 }  // namespace test

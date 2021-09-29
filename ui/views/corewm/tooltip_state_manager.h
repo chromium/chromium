@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
@@ -109,13 +108,13 @@ class VIEWS_EXPORT TooltipStateManager {
   std::unique_ptr<Tooltip> tooltip_;
 
   // The pointer to the view for which the tooltip is set.
-  raw_ptr<const void> tooltip_id_ = nullptr;
+  const void* tooltip_id_ = nullptr;
 
   // The text value used at the last tooltip update.
   std::u16string tooltip_text_;
 
   // The window on which the tooltip is added.
-  raw_ptr<aura::Window> tooltip_parent_window_ = nullptr;
+  aura::Window* tooltip_parent_window_ = nullptr;
 
   TooltipTrigger tooltip_trigger_ = TooltipTrigger::kCursor;
 

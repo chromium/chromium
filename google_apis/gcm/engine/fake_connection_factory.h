@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
 namespace gcm {
@@ -53,7 +52,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   bool reconnect_pending_;
   bool delay_reconnect_;
 
-  raw_ptr<ConnectionListener> connection_listener_;
+  ConnectionListener* connection_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeConnectionFactory);
 };

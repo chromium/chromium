@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -89,10 +88,10 @@ class CrossOriginOpenerPolicyStatus {
       network::mojom::URLResponseHead* response_head) const;
 
   // The NavigationRequest which owns this object.
-  const raw_ptr<NavigationRequest> navigation_request_;
+  NavigationRequest* const navigation_request_;
 
   // Tracks the FrameTreeNode in which this navigation is taking place.
-  raw_ptr<const FrameTreeNode> frame_tree_node_;
+  const FrameTreeNode* frame_tree_node_;
 
   bool require_browsing_instance_swap_ = false;
 

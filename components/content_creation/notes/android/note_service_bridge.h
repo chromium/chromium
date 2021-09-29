@@ -6,7 +6,6 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_ANDROID_NOTE_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_android.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/content_creation/notes/core/note_service.h"
 
@@ -46,7 +45,7 @@ class NoteServiceBridge : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  raw_ptr<NoteService> note_service_;
+  NoteService* note_service_;
 };
 
 }  // namespace content_creation

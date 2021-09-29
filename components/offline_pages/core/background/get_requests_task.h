@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -36,7 +35,7 @@ class GetRequestsTask : public Task {
       std::vector<std::unique_ptr<SavePageRequest>> requests);
 
   // Store from which requests will be read.
-  raw_ptr<RequestQueueStore> store_;
+  RequestQueueStore* store_;
   // Callback used to return the read results.
   RequestQueueStore::GetRequestsCallback callback_;
 

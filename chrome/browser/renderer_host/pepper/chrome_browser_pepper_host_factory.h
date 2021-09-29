@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RENDERER_HOST_PEPPER_CHROME_BROWSER_PEPPER_HOST_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ppapi/host/host_factory.h"
 
 namespace content {
@@ -33,7 +32,7 @@ class ChromeBrowserPepperHostFactory : public ppapi::host::HostFactory {
 
  private:
   // Non-owning pointer.
-  raw_ptr<content::BrowserPpapiHost> host_;
+  content::BrowserPpapiHost* host_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_PEPPER_CHROME_BROWSER_PEPPER_HOST_FACTORY_H_

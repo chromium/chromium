@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_NATIVE_MESSAGING_HOST_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_NATIVE_MESSAGING_HOST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
@@ -35,7 +34,7 @@ class RemoteWebAuthnNativeMessagingHost final
   void SendMessageToClient(base::Value message);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
+  extensions::NativeMessageHost::Client* client_ = nullptr;
 };
 
 }  // namespace remoting

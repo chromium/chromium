@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -56,9 +55,9 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  private:
   class ReplyProxyImpl;
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
-  raw_ptr<WebMessageHostFactory> connection_factory_;
+  WebMessageHostFactory* connection_factory_;
   OriginMatcher origin_matcher_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;

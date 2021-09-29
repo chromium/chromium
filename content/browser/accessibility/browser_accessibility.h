@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -150,7 +149,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     BrowserAccessibility* operator->() const override;
 
    private:
-    raw_ptr<const BrowserAccessibility> parent_;
+    const BrowserAccessibility* parent_;
     ui::AXNode::ChildIteratorBase<
         BrowserAccessibility,
         &BrowserAccessibility::PlatformGetNextSibling,
@@ -618,10 +617,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   virtual ui::TextAttributeList ComputeTextAttributes() const;
 
   // The manager of this tree of accessibility objects.
-  raw_ptr<BrowserAccessibilityManager> manager_ = nullptr;
+  BrowserAccessibilityManager* manager_ = nullptr;
 
   // The underlying node.
-  raw_ptr<ui::AXNode> node_ = nullptr;
+  ui::AXNode* node_ = nullptr;
 
   // Protected so that it can't be called directly on a BrowserAccessibility
   // where it could be confused with an id that comes from the node data,

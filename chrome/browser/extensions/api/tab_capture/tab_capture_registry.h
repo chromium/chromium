@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/extensions/api/tab_capture.h"
@@ -117,7 +116,7 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
   // Removes the |request| from |requests_|, thus causing its destruction.
   void KillRequest(LiveRequest* request);
 
-  const raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   std::vector<std::unique_ptr<LiveRequest>> requests_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

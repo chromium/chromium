@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -38,7 +37,7 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
   HttpNetworkSessionParams* params();
 
  private:
-  const raw_ptr<HttpNetworkSession> session_;
+  HttpNetworkSession* const session_;
 };
 
 }  // namespace net

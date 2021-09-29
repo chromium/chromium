@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 
 class ExtensionsToolbarButton;
@@ -31,7 +30,7 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   void UpdateAllIcons() override;
 
  private:
-  const raw_ptr<ExtensionsToolbarButton> extensions_button_;
+  ExtensionsToolbarButton* const extensions_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -105,7 +104,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   std::u16string GetSelectedText() override;
 
   // Not owned, non-null for the lifetime of this object.
-  raw_ptr<RenderWidgetHostViewAura> rwhva_;
+  RenderWidgetHostViewAura* rwhva_;
 
   class InternalClient final : public TouchSelectionControllerClient {
    public:
@@ -125,12 +124,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
     void DidScroll() override;
 
    private:
-    raw_ptr<RenderWidgetHostViewAura> rwhva_;
+    RenderWidgetHostViewAura* rwhva_;
   } internal_client_;
 
   // Keep track of which client interface to use.
-  raw_ptr<TouchSelectionControllerClient> active_client_;
-  raw_ptr<TouchSelectionMenuClient> active_menu_client_;
+  TouchSelectionControllerClient* active_client_;
+  TouchSelectionMenuClient* active_menu_client_;
   gfx::SelectionBound manager_selection_start_;
   gfx::SelectionBound manager_selection_end_;
 

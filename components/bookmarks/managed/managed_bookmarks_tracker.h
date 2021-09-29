@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class GURL;
@@ -77,9 +76,9 @@ class ManagedBookmarksTracker {
                            GURL* url,
                            const base::Value** children);
 
-  raw_ptr<BookmarkModel> model_;
-  raw_ptr<BookmarkPermanentNode> managed_node_;
-  raw_ptr<PrefService> prefs_;
+  BookmarkModel* model_;
+  BookmarkPermanentNode* managed_node_;
+  PrefService* prefs_;
   PrefChangeRegistrar registrar_;
   GetManagementDomainCallback get_management_domain_callback_;
 };

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -222,7 +221,7 @@ class StandaloneTrustedVaultBackend
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 
