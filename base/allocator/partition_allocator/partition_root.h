@@ -559,81 +559,31 @@ struct BASE_EXPORT PartitionRoot {
         DirectMapAllocationGranularity());
   }
 
-// PartitionRefCount contains a cookie if slow checks are enabled or
-// DCHECK_IS_ON(), which makes it 8B in size. On 32-bit architectures it fills
-// the entire smallest slot, which is also 8B there.
-#if (BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS) || DCHECK_IS_ON()) && \
-    !defined(PA_HAS_64_BITS_POINTERS)
-#define PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT 1
-#endif
-
   ALWAYS_INLINE size_t AdjustSize0IfNeeded(size_t size) const {
-#if BUILDFLAG(USE_BACKUP_REF_PTR) &&               \
-    (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) || \
-     defined(PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT))
-    // The minimum slot size is base::kAlignment. If |requested_size| is 0 and
-    // there are extras only before the allocation (which must be at least
-    // kAlignment), then these extras will fill the slot, leading to returning a
-    // pointer to the next slot. This is a problem, because e.g. FreeNoHooks()
-    // or ReallocFlags() call SlotSpan::FromSlotInnerPtr(ptr) prior to
-    // subtracting extras, thus getting a wrong, possibly non-existent, slot
-    // span. Fake the size to be 1 in order to counteract it.
+    // There are known cases where allowing size 0 would lead to problems:
+    // 1. If extras are present only before allocation (e.g. BRP ref-count), the
+    //    extras will fill the entire kAlignment-sized slot, leading to
+    //    returning a pointer to the next slot. FreeNoHooks() and ReallocFlags()
+    //    call SlotSpan::FromSlotInnerPtr(ptr) prior to subtracting extras, thus
+    //    potentially getting a wrong slot span.
+    // 2. If we put BRP ref-count in the previous slot, that slot may be free.
+    //    In this case, the slot needs to fit both, a free-list entry and a
+    //    ref-count. If sizeof(PartitionRefCount) is 8, it fills the entire
+    //    smallest slot on 32-bit systems (kSmallestBucket is 8), thus not
+    //    leaving space for the free-list entry.
+    // 3. On macOS and iOS, PartitionGetSizeEstimate() is used for two purposes:
+    //    as a zone dispatcher and as an underlying implementation of
+    //    malloc_size(3). As a zone dispatcher, zero has a special meaning of
+    //    "doesn't belong to this zone". When extras fill out the entire slot,
+    //    the usable size is 0, thus confusing the zone dispatcher.
     //
-    // Having any extras after the allocation nullifies the issue, so no need
-    // for this adjustment in the PUT_REF_COUNT_IN_PREVIOUS_SLOT case. Same for
-    // DCHECK_IS_ON(), but we prefer not to change codepaths between Release and
-    // Debug.
-    //
-    // In theory, this can be further refined using run-time checks. No need for
-    // this adjustment if |!extras_offset || (extras_size - extras_offset)|, but
-    // we prefer not to add more checks, as this function may be called on hot
-    // paths.
-    //
-    // We use this technique in another situation. When putting refcount in the
-    // previous slot, the previous slot may be free. In this case, the slot
-    // needs to fit both, a free-list entry and a ref-count. If
-    // sizeof(PartitionRefCount) is 8, it fills the entire smallest slot on
-    // 32-bit systems (kSmallestBucket is 8). Adjusting the request size from 0
-    // to 1 guarantees that we'll never allocate the smallest slot.
-    //
-    // Deliberately don't check for |brp_enabled|, because cost of patching up
-    // 0->1 unnecessarily is negligible, but cost of checking |brp_enabled| may
-    // not be.
+    // To save ourselves a branch on this hot path, we could eliminate this
+    // check at compile time for cases not listed above. The #if statement would
+    // be rather complex. Then there is also the fear of the unknown. The
+    // existing cases were discovered through obscure, painful-to-debug crashes.
+    // Better save ourselves trouble with not-yet-discovered cases.
     if (UNLIKELY(size == 0))
       return 1;
-#else
-    PA_DCHECK(!extras_offset || (extras_size - extras_offset));
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-    constexpr size_t kRefCountSize = sizeof(internal::PartitionRefCount);
-#else
-    constexpr size_t kRefCountSize = 0;
-#endif
-    static_assert(
-        sizeof(internal::EncodedPartitionFreelistEntry) + kRefCountSize <=
-            kSmallestBucket,
-        "Ref-count and free-list entry must fit in the smallest slot");
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
-        // (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) ||
-        // defined(PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT))
-
-#if defined(OS_APPLE) && DCHECK_IS_ON()
-    // On macOS and iOS, malloc zone's `size` function is used for two purposes;
-    // as a zone dispatcher and as an underlying implementation of
-    // malloc_size(3).  As a zone dispatcher, `size` function must not return
-    // zero as long as the given pointer belongs to this zone.  At the same
-    // time, the return value of `size` function is used as the result of
-    // malloc_size(3), so we have to actually allocate at least that size of
-    // memory.
-    //
-    // When DCHECK_IS_ON() and the requested size is zero, extras occupy the
-    // allocated memory entirely and the size of user data will be zero.  In
-    // order to avoid an allocation of zero bytes of user data, always allocate
-    // at least 1 byte memory.  When DCHECK is off, there is no extras and
-    // there is no case of zero bytes of user data.
-    if (UNLIKELY(size == 0))
-      return 1;
-#endif  // defined(OS_APPLE) && DCHECK_IS_ON()
-
     return size;
   }
 
