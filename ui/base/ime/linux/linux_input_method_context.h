@@ -6,6 +6,7 @@
 #define UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "ui/base/ime/text_input_type.h"
