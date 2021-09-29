@@ -32,6 +32,7 @@ TEST_F(CWVPasswordTest, Blocked) {
   password_form.signon_realm = "http://www.example.com/";
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = true;
+  password_form.encrypted_password = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
@@ -45,6 +46,7 @@ TEST_F(CWVPasswordTest, Blocked) {
   EXPECT_TRUE(password.blocked);
   EXPECT_FALSE(password.username);
   EXPECT_FALSE(password.password);
+  EXPECT_FALSE(password.keychainIdentifier);
 }
 
 // Tests CWVPassword initialization for a non-blocked site.
@@ -60,6 +62,7 @@ TEST_F(CWVPasswordTest, NonBlocked) {
   password_form.signon_realm = "http://www.example.com/";
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = false;
+  password_form.encrypted_password = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
@@ -73,6 +76,7 @@ TEST_F(CWVPasswordTest, NonBlocked) {
   EXPECT_FALSE(password.blocked);
   EXPECT_NSEQ(@"test@egmail.com", password.username);
   EXPECT_NSEQ(@"test", password.password);
+  EXPECT_NSEQ(@"test-encrypted-password", password.keychainIdentifier);
 }
 
 }  // namespace ios_web_view
