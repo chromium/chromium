@@ -154,6 +154,10 @@ const CGFloat kJavaScriptTimeout = 1;
     return nil;
   }
 
+  // User long pressed on a link or an image. Cancelling all touches will
+  // intentionally suppress system context menu UI. See crbug.com/1250352.
+  [self cancelAllTouches];
+
   // Adding the highlight/dismiss view here so they can be used in the
   // delegate's methods.
   [interaction.view addSubview:self.highlightView];
@@ -190,6 +194,22 @@ const CGFloat kJavaScriptTimeout = 1;
   return self.dismissView.window
              ? [[UITargetedPreview alloc] initWithView:self.dismissView]
              : nil;
+}
+
+#pragma mark - Private
+
+// Prevents the web view gesture recognizer to get the touch events.
+- (void)cancelAllTouches {
+  // All user gestures are handled by a subview of web view scroll view
+  // (WKContentView).
+  for (UIView* subview in self.webView.scrollView.subviews) {
+    for (UIGestureRecognizer* recognizer in subview.gestureRecognizers) {
+      if (recognizer.enabled) {
+        recognizer.enabled = NO;
+        recognizer.enabled = YES;
+      }
+    }
+  }
 }
 
 @end
