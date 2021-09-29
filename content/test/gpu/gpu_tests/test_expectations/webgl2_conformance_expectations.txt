@@ -293,6 +293,10 @@ crbug.com/1249006 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/ima
 crbug.com/1215624 [ win angle-d3d11 passthrough intel ] conformance2/textures/video/* [ RetryOnFailure ]
 crbug.com/1215624 [ win angle-d3d11 passthrough amd   ] conformance2/textures/video/* [ RetryOnFailure ]
 
+crbug.com/1254375 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/canvas/tex-2d-srgb8-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1254375 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1254375 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/misc/copy-texture-image-webgl-specific.html [ RetryOnFailure ]
+
 ####################
 # Mac failures     #
 ####################
