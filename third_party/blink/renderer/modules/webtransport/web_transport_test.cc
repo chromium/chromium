@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -1616,15 +1618,12 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
 
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
-  DOMException* exception = V8DOMException::ToImplWithTypeCheck(
+  WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
-  EXPECT_EQ(exception->code(),
-            static_cast<uint16_t>(DOMExceptionCode::kNetworkError));
-
-  // TODO(ricea): Fix this message if possible.
-  EXPECT_EQ(exception->message(),
-            "The stream was aborted by the remote server");
+  EXPECT_EQ(exception->name(), "WebTransportError");
+  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
 }
 
 TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
@@ -1647,15 +1646,12 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
 
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
-  DOMException* exception = V8DOMException::ToImplWithTypeCheck(
+  WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
-  EXPECT_EQ(exception->code(),
-            static_cast<uint16_t>(DOMExceptionCode::kNetworkError));
-
-  // TODO(ricea): Fix this message if possible.
-  EXPECT_EQ(exception->message(),
-            "The stream was aborted by the remote server");
+  EXPECT_EQ(exception->name(), "WebTransportError");
+  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
 }
 
 // BidirectionalStreams are thoroughly tested in bidirectional_stream_test.cc.

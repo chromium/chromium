@@ -74,9 +74,9 @@ class MODULES_EXPORT OutgoingStream final
 
   ScriptState* GetScriptState() { return script_state_; }
 
-  // Called from WebTransport via a WebTransportStream. Expects a JavaScript
+  // Errors the associated stream with the given reason. Expects a JavaScript
   // scope to be entered.
-  void Reset();
+  void Error(ScriptValue reason);
 
   State GetState() const { return state_; }
 
@@ -121,9 +121,7 @@ class MODULES_EXPORT OutgoingStream final
   ScriptValue CreateAbortException(IsLocalAbort);
 
   // Errors |writable_|, and resets |data_pipe_|.
-  // The error message used to error |writable_| depends on whether IsLocalAbort
-  // is true or not.
-  void ErrorStreamAbortAndReset(IsLocalAbort);
+  void ErrorStreamAbortAndReset(ScriptValue reason);
 
   // Reset the |data_pipe_|.
   void AbortAndReset();

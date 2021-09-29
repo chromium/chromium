@@ -120,9 +120,6 @@ class MODULES_EXPORT WebTransport final
 
   void Init(const String& url, const WebTransportOptions&, ExceptionState&);
 
-  // Reset the WebTransport object and all associated streams.
-  void ResetAll();
-
   void Dispose();
   void Cleanup(v8::Local<v8::Value> reason,
                v8::Local<v8::Value> error,

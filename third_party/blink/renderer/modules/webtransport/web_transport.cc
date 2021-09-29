@@ -1115,26 +1115,6 @@ void WebTransport::Init(const String& url,
           script_state_, received_bidirectional_streams_underlying_source_, 1);
 }
 
-void WebTransport::ResetAll() {
-  DVLOG(1) << "WebTransport::ResetAll() this=" << this;
-
-  // This loop is safe even if re-entered. It will always terminate because
-  // every iteration erases one entry from the map.
-  while (!incoming_stream_map_.IsEmpty()) {
-    auto it = incoming_stream_map_.begin();
-    auto stream = it->value;
-    incoming_stream_map_.erase(it);
-    stream->Reset();
-  }
-  while (!outgoing_stream_map_.IsEmpty()) {
-    auto it = outgoing_stream_map_.begin();
-    auto stream = it->value;
-    outgoing_stream_map_.erase(it);
-    stream->Reset();
-  }
-  Dispose();
-}
-
 void WebTransport::Dispose() {
   DVLOG(1) << "WebTransport::Dispose() this=" << this;
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
@@ -1155,11 +1135,9 @@ void WebTransport::Cleanup(v8::Local<v8::Value> reason,
   v8::Isolate* isolate = script_state_->GetIsolate();
 
   RejectPendingStreamResolvers(error);
-  // TODO(yhirano): Error all the incoming/outgoing streams.
-
+  ScriptValue error_value(isolate, error);
   datagram_underlying_source_->Error(error);
-  outgoing_datagrams_->Controller()->error(script_state_,
-                                           ScriptValue(isolate, error));
+  outgoing_datagrams_->Controller()->error(script_state_, error_value);
 
   // We use local variables to avoid re-entrant problems.
   auto* incoming_bidirectional_streams_source =
@@ -1168,8 +1146,17 @@ void WebTransport::Cleanup(v8::Local<v8::Value> reason,
       received_streams_underlying_source_.Get();
   auto* closed_resolver = closed_resolver_.Get();
   auto* ready_resolver = ready_resolver_.Get();
+  auto incoming_stream_map = std::move(incoming_stream_map_);
+  auto outgoing_stream_map = std::move(outgoing_stream_map_);
 
-  ResetAll();
+  Dispose();
+
+  for (const auto& kv : incoming_stream_map) {
+    kv.value->Error(error_value);
+  }
+  for (const auto& kv : outgoing_stream_map) {
+    kv.value->Error(error_value);
+  }
 
   if (abruptly) {
     closed_resolver->Reject(error);

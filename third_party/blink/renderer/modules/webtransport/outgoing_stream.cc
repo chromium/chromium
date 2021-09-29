@@ -154,10 +154,10 @@ void OutgoingStream::InitWithExistingWritableStream(
       /*optimizer=*/nullptr, exception_state);
 }
 
-void OutgoingStream::Reset() {
-  DVLOG(1) << "OutgoingStream::Reset() this=" << this;
+void OutgoingStream::Error(ScriptValue reason) {
+  DVLOG(1) << "OutgoingStream::Error() this=" << this;
 
-  ErrorStreamAbortAndReset(IsLocalAbort(false));
+  ErrorStreamAbortAndReset(reason);
 }
 
 void OutgoingStream::ContextDestroyed() {
@@ -209,7 +209,7 @@ void OutgoingStream::HandlePipeClosed() {
   DVLOG(1) << "OutgoingStream::HandlePipeClosed() this=" << this;
 
   ScriptState::Scope scope(script_state_);
-  ErrorStreamAbortAndReset(IsLocalAbort(false));
+  ErrorStreamAbortAndReset(CreateAbortException(IsLocalAbort(false)));
 }
 
 ScriptPromise OutgoingStream::SinkWrite(ScriptState* script_state,
@@ -341,17 +341,15 @@ ScriptValue OutgoingStream::CreateAbortException(IsLocalAbort is_local_abort) {
                          script_state_->GetIsolate(), code, message));
 }
 
-void OutgoingStream::ErrorStreamAbortAndReset(IsLocalAbort is_local_abort) {
+void OutgoingStream::ErrorStreamAbortAndReset(ScriptValue reason) {
   DVLOG(1) << "OutgoingStream::ErrorStreamAbortAndReset() this=" << this;
 
-  ScriptValue exception = CreateAbortException(is_local_abort);
-
   if (write_promise_resolver_) {
-    write_promise_resolver_->Reject(exception);
+    write_promise_resolver_->Reject(reason);
     write_promise_resolver_ = nullptr;
     controller_ = nullptr;
   } else if (controller_) {
-    controller_->error(script_state_, exception);
+    controller_->error(script_state_, reason);
     controller_ = nullptr;
   }
 

@@ -118,13 +118,13 @@ void IncomingStream::OnIncomingStreamClosed(bool fin_received) {
   }
 }
 
-void IncomingStream::Reset() {
-  DVLOG(1) << "IncomingStream::Reset() this=" << this;
+void IncomingStream::Error(ScriptValue reason) {
+  DVLOG(1) << "IncomingStream::Error() this=" << this;
 
   // We no longer need to call |on_abort_|.
   on_abort_.Reset();
 
-  ErrorStreamAbortAndReset(CreateAbortException(IsLocalAbort(false)));
+  ErrorStreamAbortAndReset(reason);
 }
 
 void IncomingStream::ContextDestroyed() {

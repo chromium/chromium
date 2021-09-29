@@ -63,9 +63,9 @@ class MODULES_EXPORT IncomingStream final
   // JavaScript.
   void OnIncomingStreamClosed(bool fin_received);
 
-  // Called via WebTransport via a WebTransportStream class. Expects a
+  // Errors the associated stream with the given reason. Expects a
   // JavaScript scope to have been entered.
-  void Reset();
+  void Error(ScriptValue reason);
 
   // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
