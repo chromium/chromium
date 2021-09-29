@@ -16,6 +16,7 @@ group("polymer3_elements") {
     ":gesture_navigation_module",
     ":marketing_opt_in_module",
     ":parental_handoff_module",
+    ":sync_consent_module",
     ":user_creation_module",
   ]
 }
@@ -40,6 +41,7 @@ js_type_check("closure_compile_module") {
     ":gesture_navigation.m",
     ":marketing_opt_in.m",
     ":parental_handoff.m",
+    ":sync_consent.m",
     ":user_creation.m",
   ]
 }
@@ -115,6 +117,21 @@ js_library("parental_handoff.m") {
   extra_deps = [ ":parental_handoff_module" ]
 }
 
+js_library("sync_consent.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/sync_consent.m.js" ]
+  deps = [
+    "../../components:display_manager_types.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":sync_consent_module" ]
+}
+
 polymer_modulizer("fingerprint_setup") {
   js_file = "fingerprint_setup.js"
   html_file = "fingerprint_setup.html"
@@ -164,6 +181,14 @@ polymer_modulizer("parental_handoff") {
 polymer_modulizer("user_creation") {
   js_file = "user_creation.js"
   html_file = "user_creation.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("sync_consent") {
+  js_file = "sync_consent.js"
+  html_file = "sync_consent.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

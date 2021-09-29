@@ -166,6 +166,7 @@ constexpr char kOobeCustomVarsCssJsM[] =
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
+constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
 constexpr char kArcAppDownloadingVideoPath[] = "res/arc_app_dowsnloading.mp4";
 #endif
 
@@ -188,6 +189,8 @@ void AddSyncConsentResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kSyncConsentIcons,
                           IDR_PRODUCT_CHROMEOS_SYNC_CONSENT_SCREEN_ICONS);
+  source->AddResourcePath(kSyncConsentIconsJs,
+                          IDR_PRODUCT_CHROMEOS_SYNC_CONSENT_SCREEN_ICONS_M_JS);
   // No #else section here as Sync Settings screen is Chrome-specific.
 #endif
 }

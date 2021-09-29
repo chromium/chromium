@@ -7,69 +7,81 @@
  * screen.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const SyncUIState = {
   NO_SPLIT: 'no-split',
   SPLIT: 'split',
   LOADING: 'loading',
 };
 
-Polymer({
-  is: 'sync-consent-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const SyncConsentScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+class SyncConsentScreen extends SyncConsentScreenElementBase {
+  static get is() {
+    return 'sync-consent-element';
+  }
 
-  properties: {
-    /**
-     * Flag that determines whether current account type is supervised or not.
-     */
-    isChildAccount_: Boolean,
+  /* #html_template_placeholder */
 
-    /** @private */
-    syncConsentOptionalEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * Flag that determines whether current account type is supervised or not.
+       */
+      isChildAccount_: Boolean,
 
-    /**
-     * Indicates whether user is minor mode user (e.g. under age of 18).
-     */
-    isMinorMode_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      syncConsentOptionalEnabled_: Boolean,
 
-    /**
-     * The text key for the opt-in button (it could vary based on whether
-     * the user is in minor mode).
-     */
-    optInButtonTextKey_: {
-      type: String,
-      computed: 'getOptInButtonTextKey_(isMinorMode_)',
-    }
-  },
+      /**
+       * Indicates whether user is minor mode user (e.g. under age of 18).
+       * @private
+       */
+      isMinorMode_: Boolean,
 
-  EXTERNAL_API: [
-    'setThrobberVisible',
-    'setIsMinorMode',
-  ],
+      /**
+       * The text key for the opt-in button (it could vary based on whether
+       * the user is in minor mode).
+       * @private
+       */
+      optInButtonTextKey_: {
+        type: String,
+        computed: 'getOptInButtonTextKey_(isMinorMode_)',
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    this.UI_STEPS = SyncUIState;
+
+    this.isChildAccount_ = false;
+    this.syncConsentOptionalEnabled_ = false;
+    this.isMinorMode_ = false;
+  }
+
+  get EXTERNAL_API() {
+    return ['setThrobberVisible', 'setIsMinorMode'];
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is shown.
@@ -78,20 +90,18 @@ Polymer({
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
     this.syncConsentOptionalEnabled_ = data['syncConsentOptionalEnabled'];
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
   onBeforeHide() {
     this.setThrobberVisible(false /*visible*/);
-  },
+  }
 
   defaultUIStep() {
     return this.getDefaultUIStep_();
-  },
-
-  UI_STEPS: UIState,
+  }
 
   /**
    * Set flag isChildAccount_ value.
@@ -99,22 +109,22 @@ Polymer({
    */
   setIsChildAccount(is_child_account) {
     this.isChildAccount_ = is_child_account;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('SyncConsentScreen', {
       resetAllowed: true,
     });
-    this.updateLocalizedContent();
-  },
+  }
 
   /**
    * Reacts to changes in loadTimeData.
    */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * This is called to show/hide the loading UI.
@@ -122,11 +132,11 @@ Polymer({
    */
   setThrobberVisible(visible) {
     if (visible) {
-      this.setUIStep(UIState.LOADING);
+      this.setUIStep(SyncUIState.LOADING);
     } else {
       this.setUIStep(this.getDefaultUIStep_());
     }
-  },
+  }
 
   /**
    * Set the minor mode flag, which controls whether we could use nudge
@@ -135,7 +145,7 @@ Polymer({
    */
   setIsMinorMode(isMinorMode) {
     this.isMinorMode_ = isMinorMode;
-  },
+  }
 
   /**
    * Returns split settings sync version or regular version depending on if
@@ -143,12 +153,14 @@ Polymer({
    * @private
    */
   getDefaultUIStep_() {
-    return this.syncConsentOptionalEnabled_ ? UIState.SPLIT : UIState.NO_SPLIT;
-  },
+    return this.syncConsentOptionalEnabled_ ? SyncUIState.SPLIT :
+                                              SyncUIState.NO_SPLIT;
+  }
 
   /**
    * Continue button click handler for pre-SplitSettingsSync.
    * @private
+   * @suppress {missingProperties}
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
@@ -157,15 +169,15 @@ Polymer({
       opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
       this.getConsentConfirmation_(e.path)
     ]);
-  },
+  }
 
   onNonSplitSettingsAccepted_(e) {
     this.onSettingsSaveAndContinue_(e, true /* opted_in */);
-  },
+  }
 
   onNonSplitSettingsDeclined_(e) {
     this.onSettingsSaveAndContinue_(e, false /* opted_in */);
-  },
+  }
 
   /**
    * Accept button handler for SplitSettingsSync.
@@ -178,7 +190,7 @@ Polymer({
     chrome.send('login.SyncConsentScreen.acceptAndContinue', [
       this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
     ]);
-  },
+  }
 
   /**
    * Decline button handler for SplitSettingsSync.
@@ -191,7 +203,7 @@ Polymer({
     chrome.send('login.SyncConsentScreen.declineAndContinue', [
       this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
     ]);
-  },
+  }
 
   /**
    * @param {!Array<!HTMLElement>} path Path of the click event. Must contain
@@ -221,17 +233,17 @@ Polymer({
     }
     assertNotReached('No consent confirmation element found.');
     return '';
-  },
+  }
 
   /** @return {!Array<string>} Text of the consent description elements. */
   getConsentDescription_() {
     let consentDescription =
-      Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
-        .filter(element => element.clientWidth * element.clientHeight > 0)
-        .map(element => element.innerHTML.trim());
+        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
+            .filter(element => element.clientWidth * element.clientHeight > 0)
+            .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
-  },
+  }
 
   /**
    * @param {boolean} isMinorMode
@@ -240,6 +252,7 @@ Polymer({
   getOptInButtonTextKey_(isMinorMode) {
     return isMinorMode ? 'syncConsentTurnOnSync' :
                          'syncConsentAcceptAndContinue';
-  },
-});
-})();
+  }
+}
+
+customElements.define(SyncConsentScreen.is, SyncConsentScreen);
