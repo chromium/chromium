@@ -1767,19 +1767,9 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
 
 #if defined(OS_APPLE) || defined(USE_OZONE)
   // |available_render_pass_overlay_backings_| are used or released in
-  // SwapBuffers() for every frames. For Ozone-Wayland
-  // |available_render_pass_overlay_backings_| is not always empty because the
-  // buffer management in 'GbmSurfacelessWayland::SwapBuffersAsync' will cause
-  // an accumulation of unsubmitted frames in |unsubmitted_frames_|. These are
-  // submitted in 'GbmSurfacelessWayland::MaybeSubmitFrames'. Later
-  // 'GbmSurfacelessWayland::OnSubmission' will then call the callback of these
-  // |submitted_frames| more than once. This means that this function
-  // 'DidSwapBuffersCompleteInternal' will get executed again before the
-  // corresponding 'SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal' has cleared
-  // 'available_render_pass_overlay_backings_'.
-#if !defined(USE_OZONE)
+  // SwapBuffers() for every frames.
   DCHECK(available_render_pass_overlay_backings_.empty());
-#endif
+
   // Erase mailboxes of render pass overlays from |params.released_overlays| and
   // move released backings for those render pass overlays from
   // |in_flight_render_pass_overlay_backings_| to

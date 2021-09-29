@@ -841,14 +841,14 @@ void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
     }
   }
 
-  // Right now, only macOS and Ozone need to return mailboxes of released
-  // overlays, so we should not release |committed_overlay_locks_| here. The
-  // resources in it will be released by DidReceiveReleasedOverlays() later.
-#if defined(OS_APPLE) || defined(USE_OZONE)
+  // Right now, only macOS needs to return mailboxes of released overlays, so
+  // we should not release |committed_overlay_locks_| here. The resources in it
+  // will be released by DidReceiveReleasedOverlays() later.
+#if defined(OS_APPLE)
   for (auto& lock : committed_overlay_locks_) {
     awaiting_release_overlay_locks_.insert(std::move(lock));
   }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // defined(OS_APPLE)
 
   // Find all locks that have a read-lock fence associated with them.
   // If we have a release fence, it's not safe to release them here.
@@ -877,8 +877,8 @@ void SkiaRenderer::BuffersPresented() {
 
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
-  // This method is only called on macOS and Ozone right now.
-#if defined(OS_APPLE) || defined(USE_OZONE)
+  // This method is only called on macOS right now.
+#if defined(OS_APPLE)
   for (const auto& mailbox : released_overlays) {
     auto it = awaiting_release_overlay_locks_.find(mailbox);
     if (it == awaiting_release_overlay_locks_.end()) {
@@ -889,7 +889,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   }
 #else
   NOTREACHED();
-#endif  // !(defined(OS_APPLE) || defined (USE_OZONE))
+#endif  // !defined(OS_APPLE)
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -3150,7 +3150,7 @@ bool SkiaRenderer::UsingSkiaForDelegatedInk() const {
   return delegated_ink_handler_ && delegated_ink_handler_->GetInkRenderer();
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if defined(OS_APPLE)
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
@@ -3168,6 +3168,6 @@ bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
   return lhs < rhs.mailbox();
 }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // defined(OS_APPLE)
 
 }  // namespace viz
