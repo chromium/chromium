@@ -110,31 +110,6 @@ void ModifyWidgetParams(int32_t restore_window_id,
                                                             out_params);
 }
 
-void OnTaskCreated(const std::string& app_id,
-                   int32_t task_id,
-                   int32_t session_id) {
-  FullRestoreReadHandler::GetInstance()->OnTaskCreated(app_id, task_id,
-                                                       session_id);
-  FullRestoreSaveHandler::GetInstance()->OnTaskCreated(app_id, task_id,
-                                                       session_id);
-}
-
-void OnTaskDestroyed(int32_t task_id) {
-  FullRestoreReadHandler::GetInstance()->OnTaskDestroyed(task_id);
-  FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(task_id);
-}
-
-void SetArcConnection(bool is_connection_ready) {
-  FullRestoreSaveHandler::GetInstance()->SetArcConnection(is_connection_ready);
-}
-
-void OnTaskThemeColorUpdated(int32_t task_id,
-                             uint32_t primary_color,
-                             uint32_t status_bar_color) {
-  FullRestoreSaveHandler::GetInstance()->OnTaskThemeColorUpdated(
-      task_id, primary_color, status_bar_color);
-}
-
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
   FullRestoreReadHandler::GetInstance()
       ->AddChromeBrowserLaunchInfoForTesting(  // IN-TEST
