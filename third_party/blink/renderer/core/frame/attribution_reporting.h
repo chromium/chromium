@@ -38,6 +38,8 @@ class CORE_EXPORT AttributionReporting final
                                           ExceptionState& exception_state);
 
  private:
+  void RegisterImpression(blink::Impression impression);
+
   HeapMojoAssociatedRemote<mojom::blink::ConversionHost> conversion_host_;
 };
 

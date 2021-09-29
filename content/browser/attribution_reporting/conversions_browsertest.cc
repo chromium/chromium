@@ -16,7 +16,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,6 +35,10 @@
 namespace content {
 
 namespace {
+
+namespace {
+constexpr char kBaseDataDir[] = "content/test/data/";
+}
 
 // Waits for the a given |report_url| to be received by the test server. Wraps a
 // ControllableHttpResponse so that it can wait for the server request in a
@@ -799,6 +805,260 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                                        url::Origin::Create(impression_url))));
 
   expected_report2.WaitForReport();
+}
+
+class ConversionsPrerenderBrowserTest : public ConversionsBrowserTest {
+ public:
+  ConversionsPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&ConversionsBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~ConversionsPrerenderBrowserTest() override = default;
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ConversionsPrerenderBrowserTest,
+                       NoImpressionRegisteredOnPrerender) {
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/
+      R"({"source_event_id":"7","source_type":"event","trigger_data":"1"})",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a starting page in the same origin.
+  const GURL kInitialUrl = https_server()->GetURL("a.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            kBaseDataDir, kInitialUrl.GetOrigin());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+  }
+
+  // Pre-render a page with a impression creator.
+  const GURL kImpressionUrl = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  int host_id = prerender_helper_.AddPrerender(kImpressionUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(kImpressionUrl);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  const GURL kConversionUrl = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+  // Register impression during pre-rendering for the target conversion url.
+  EXPECT_TRUE(
+      ExecJs(prerender_rfh, JsReplace(R"(
+              window.attributionReporting.registerAttributionSource({
+                attributionSourceEventId: "7",
+                attributionDestination: $1,
+              });)",
+                                      url::Origin::Create(kConversionUrl))));
+
+  // Navigate to the conversion url.
+  EXPECT_TRUE(NavigateToURL(web_contents(), kConversionUrl));
+
+  // Register a conversion with the original page as the reporting origin.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 123});)",
+                                       url::Origin::Create(kImpressionUrl))));
+
+  // Verify that registering a conversion had no effect on reports, as the
+  // impressions were never passed to the conversion URL, as the page was only
+  // pre-rendered.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(100));
+  EXPECT_FALSE(expected_report.HasRequest());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsPrerenderBrowserTest,
+                       ImpressionRegisteredOnActivatedPrerender) {
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/
+      R"({"source_event_id":"7","source_type":"event","trigger_data":"1"})",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a starting page in the same origin.
+  const GURL kInitialUrl = https_server()->GetURL("a.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            kBaseDataDir, kInitialUrl.GetOrigin());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+  }
+
+  // Pre-render a page with a impression creator.
+  const GURL kImpressionUrl = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  int host_id = prerender_helper_.AddPrerender(kImpressionUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(kImpressionUrl);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  const GURL kConversionUrl = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+  // Register impression during pre-rendering for the target conversion url.
+  EXPECT_TRUE(
+      ExecJs(prerender_rfh, JsReplace(R"(
+              window.attributionReporting.registerAttributionSource({
+                attributionSourceEventId: "7",
+                attributionDestination: $1,
+              });)",
+                                      url::Origin::Create(kConversionUrl))));
+
+  // Navigate to pre-rendered page, bringing it to the fore.
+  prerender_helper_.NavigatePrimaryPage(kImpressionUrl);
+  ASSERT_EQ(kImpressionUrl, web_contents()->GetLastCommittedURL());
+
+  // Navigate to the conversion url.
+  EXPECT_TRUE(NavigateToURL(web_contents(), kConversionUrl));
+
+  // Register a conversion with the original page as the reporting origin.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 123});)",
+                                       url::Origin::Create(kImpressionUrl))));
+
+  // Confirm that reports work as expected, and impressions were retrieved from
+  // the pre-rendered page, once it became a primary page.
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsPrerenderBrowserTest,
+                       NoConversionsOnPrerender) {
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/
+      R"({"source_event_id":"7","source_type":"event","trigger_data":"1"})",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page with impression creator.
+  const GURL kImpressionUrl = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kImpressionUrl));
+
+  const GURL kConversionUrl = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+  // Register impression for the target conversion url.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(
+                window.attributionReporting.registerAttributionSource({
+                  attributionSourceEventId: "7",
+                  attributionDestination: $1,
+                });)",
+                                       url::Origin::Create(kConversionUrl))));
+
+  // Navigate to a starting same origin page with the conversion url.
+  const GURL kEmptyUrl = https_server()->GetURL("b.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            kBaseDataDir, kEmptyUrl.GetOrigin());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  }
+
+  // Pre-render the conversion url.
+  int host_id = prerender_helper_.AddPrerender(kConversionUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  // Register a conversion with the original page as the reporting origin during
+  // pre-rendering.
+  EXPECT_TRUE(
+      ExecJs(prerender_rfh, JsReplace(R"(registerConversion({data: 0,
+                                         origin: $1,
+                                         eventSourceTriggerData: 123});)",
+                                      url::Origin::Create(kImpressionUrl))));
+
+  // Verify that registering a conversion had no effect on reports, as the
+  // impressions were never passed to the conversion URL, as the page was only
+  // pre-rendered.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(100));
+  EXPECT_FALSE(expected_report.HasRequest());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsPrerenderBrowserTest,
+                       ConversionsRegisteredOnActivatedPrerender) {
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/
+      R"({"source_event_id":"7","source_type":"event","trigger_data":"1"})",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page with impression creator.
+  const GURL kImpressionUrl = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kImpressionUrl));
+
+  // Register impression for the target conversion url.
+  const GURL kConversionUrl = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(
+                window.attributionReporting.registerAttributionSource({
+                  attributionSourceEventId: "7",
+                  attributionDestination: $1,
+                });)",
+                                       url::Origin::Create(kConversionUrl))));
+
+  // Navigate to a starting same origin page with the conversion url.
+  const GURL kEmptyUrl = https_server()->GetURL("b.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            kBaseDataDir, kEmptyUrl.GetOrigin());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  }
+
+  // Pre-render the conversion url.
+  int host_id = prerender_helper_.AddPrerender(kConversionUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  // Register a conversion with the original page as the reporting origin.
+  EXPECT_TRUE(
+      ExecJs(prerender_rfh, JsReplace(R"(registerConversion({data: 0,
+                                         origin: $1,
+                                         eventSourceTriggerData: 123});)",
+                                      url::Origin::Create(kImpressionUrl))));
+
+  // Navigate to pre-rendered page, bringing it to the fore.
+  prerender_helper_.NavigatePrimaryPage(kConversionUrl);
+  ASSERT_EQ(kConversionUrl, web_contents()->GetLastCommittedURL());
+
+  // Confirm that reports work as expected, and impressions were retrieved from
+  // the pre-rendered page, once it became a primary page.
+  expected_report.WaitForReport();
 }
 
 }  // namespace content

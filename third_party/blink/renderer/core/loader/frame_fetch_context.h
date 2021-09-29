@@ -35,6 +35,7 @@ n * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/conversions/conversions.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink-forward.h"
@@ -208,6 +209,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   // Returns true if the origin of |url| is same as the origin of the top level
   // frame's main resource.
   bool IsFirstPartyOrigin(const KURL& url) const;
+
+  void RegisterConversion(mojom::blink::ConversionPtr conversion) const;
 
   CoreProbeSink* Probe() const;
 

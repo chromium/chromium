@@ -942,6 +942,19 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
         is_valid_integer ? mojom::blink::DedupKey::New(dedup_key) : nullptr;
   }
 
+  if (document_->IsPrerendering()) {
+    document_->AddPostPrerenderingActivationStep(
+        WTF::Bind(&FrameFetchContext::RegisterConversion,
+                  WrapWeakPersistent(this), std::move(conversion)));
+  } else {
+    RegisterConversion(std::move(conversion));
+  }
+
+  return true;
+}
+
+void FrameFetchContext::RegisterConversion(
+    mojom::blink::ConversionPtr conversion) const {
   mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
   GetFrame()->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
@@ -952,8 +965,6 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
                     mojom::blink::WebFeature::kConversionAPIAll);
   UseCounter::Count(document_->domWindow(),
                     mojom::blink::WebFeature::kConversionRegistration);
-
-  return true;
 }
 
 mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>

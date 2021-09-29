@@ -97,10 +97,7 @@ ConversionHost::~ConversionHost() {
 }
 
 void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  // Impression navigations need to navigate the main frame to be valid.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main
-  // frame to preserve its semantics. Follow up to confirm correctness.
+  // Impression navigations need to navigate the primary main frame to be valid.
   if (!navigation_handle->GetImpression() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
       !conversion_manager_provider_->GetManager(web_contents())) {
@@ -157,12 +154,9 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 }
 
 void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  // Observe only navigation toward a new document in the main frame.
+  // Observe only navigation toward a new document in the primary main frame.
   // Impressions should never be attached to same-document navigations but can
   // be the result of a bad renderer.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
@@ -253,6 +247,10 @@ void ConversionHost::RegisterConversion(
     blink::mojom::ConversionPtr conversion) {
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
+
+  // ConversionHost calls are delayed in blink if pre-rendering.
+  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
+            render_frame_host->GetLifecycleState());
 
   // If there is no conversion manager available, ignore any conversion
   // registrations.
@@ -350,9 +348,16 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
       conversion_manager_provider_->GetManager(web_contents());
   if (!conversion_manager)
     return;
-  const url::Origin& impression_origin = receivers_.GetCurrentTargetFrame()
-                                             ->GetMainFrame()
-                                             ->GetLastCommittedOrigin();
+
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame()->GetMainFrame();
+
+  // ConversionHost calls are delayed in blink if pre-rendering.
+  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
+            render_frame_host->GetLifecycleState());
+
+  const url::Origin& impression_origin =
+      render_frame_host->GetLastCommittedOrigin();
   if (VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
                                impression_origin, impression,
                                *conversion_manager)) {
