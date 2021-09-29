@@ -3222,7 +3222,28 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableSuggestedFiles"
+                        "EnableSuggestedFiles",
+                        "LauncherItemSuggest"
+                    ]
+                },
+                {
+                    "name": "Quick_Access",
+                    "params": {
+                        "model_name": "quick_access"
+                    },
+                    "enable_features": [
+                        "EnableSuggestedFiles",
+                        "LauncherItemSuggest"
+                    ]
+                },
+                {
+                    "name": "Future_Access",
+                    "params": {
+                        "model_name": "future_access"
+                    },
+                    "enable_features": [
+                        "EnableSuggestedFiles",
+                        "LauncherItemSuggest"
                     ]
                 }
             ]
