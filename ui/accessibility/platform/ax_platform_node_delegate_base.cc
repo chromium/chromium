@@ -88,6 +88,11 @@ bool AXPlatformNodeDelegateBase::GetIntAttribute(
   return GetData().GetIntAttribute(attribute, value);
 }
 
+const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+AXPlatformNodeDelegateBase::GetStringAttributes() const {
+  return GetData().string_attributes;
+}
+
 bool AXPlatformNodeDelegateBase::HasStringAttribute(
     ax::mojom::StringAttribute attribute) const {
   return GetData().HasStringAttribute(attribute);
@@ -212,7 +217,7 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   // tree) is actually used by the renderer when assigning the "kValue"
   // attribute, including any redundant white space.
   std::u16string value =
-      GetData().GetString16Attribute(ax::mojom::StringAttribute::kValue);
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
   if (!value.empty())
     return value;
 
@@ -221,7 +226,7 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   // supposed to skip over nodes that are invisible or ignored, but
   // ViewAXPlatformNodeDelegate does not currently implement this behavior.
   if (IsLeaf() && !IsInvisibleOrIgnored())
-    return GetData().GetString16Attribute(ax::mojom::StringAttribute::kName);
+    return GetString16Attribute(ax::mojom::StringAttribute::kName);
 
   std::u16string inner_text;
   for (int i = 0; i < GetChildCount(); ++i) {
@@ -237,11 +242,11 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
-  if (!IsControl(GetData().role) && !GetData().IsRangeValueSupported())
+  if (!IsControl(GetRole()) && !GetData().IsRangeValueSupported())
     return std::u16string();
 
   std::u16string value =
-      GetData().GetString16Attribute(ax::mojom::StringAttribute::kValue);
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
   float numeric_value;
   if (GetData().IsRangeValueSupported() && value.empty() &&
       GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
@@ -355,8 +360,8 @@ bool AXPlatformNodeDelegateBase::IsIgnored() const {
   // this here because subclasses should make sure that the ignored state is
   // removed from all nodes that are currently focused. This condition will be
   // enforced once we switch to using an AXTree of AXNodes in Views.
-  return GetData().role == ax::mojom::Role::kNone ||
-         GetData().HasState(ax::mojom::State::kIgnored);
+  return GetRole() == ax::mojom::Role::kNone ||
+         HasState(ax::mojom::State::kIgnored);
 }
 
 bool AXPlatformNodeDelegateBase::IsInvisibleOrIgnored() const {
@@ -538,7 +543,7 @@ AXPlatformNodeDelegateBase::ChildrenEnd() {
 }
 
 const std::string& AXPlatformNodeDelegateBase::GetName() const {
-  return GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
+  return GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetHypertext() const {
@@ -632,21 +637,21 @@ AXPlatformNodeDelegateBase::GetTargetForNativeAccessibilityEvent() {
 }
 
 bool AXPlatformNodeDelegateBase::IsTable() const {
-  return ui::IsTableLike(GetData().role);
+  return ui::IsTableLike(GetRole());
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableRowCount() const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableColCount() const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableAriaColCount() const {
   int aria_column_count;
-  if (!GetData().GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
-                                 &aria_column_count)) {
+  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
+                       &aria_column_count)) {
     return absl::nullopt;
   }
   return aria_column_count;
@@ -654,8 +659,8 @@ absl::optional<int> AXPlatformNodeDelegateBase::GetTableAriaColCount() const {
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableAriaRowCount() const {
   int aria_row_count;
-  if (!GetData().GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
-                                 &aria_row_count)) {
+  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
+                       &aria_row_count)) {
     return absl::nullopt;
   }
   return aria_row_count;
@@ -693,41 +698,37 @@ AXPlatformNode* AXPlatformNodeDelegateBase::GetTableCaption() const {
 }
 
 bool AXPlatformNodeDelegateBase::IsTableRow() const {
-  return ui::IsTableRow(GetData().role);
+  return ui::IsTableRow(GetRole());
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableRowRowIndex() const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
 }
 
 bool AXPlatformNodeDelegateBase::IsTableCellOrHeader() const {
-  return ui::IsCellOrTableHeader(GetData().role);
+  return ui::IsCellOrTableHeader(GetRole());
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellColIndex() const {
-  return GetData().GetIntAttribute(
-      ax::mojom::IntAttribute::kTableCellColumnIndex);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellRowIndex() const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellColSpan() const {
-  return GetData().GetIntAttribute(
-      ax::mojom::IntAttribute::kTableCellColumnSpan);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellRowSpan() const {
-  return GetData().GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
+  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaColIndex()
     const {
-  if (GetData().HasIntAttribute(
-          ax::mojom::IntAttribute::kAriaCellColumnIndex)) {
-    return GetData().GetIntAttribute(
-        ax::mojom::IntAttribute::kAriaCellColumnIndex);
+  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex)) {
+    return GetIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex);
   }
 
   return absl::nullopt;
@@ -735,9 +736,8 @@ absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaColIndex()
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaRowIndex()
     const {
-  if (GetData().HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex)) {
-    return GetData().GetIntAttribute(
-        ax::mojom::IntAttribute::kAriaCellRowIndex);
+  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex)) {
+    return GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex);
   }
 
   return absl::nullopt;
@@ -848,7 +848,7 @@ bool AXPlatformNodeDelegateBase::IsMinimized() const {
 }
 
 bool AXPlatformNodeDelegateBase::IsText() const {
-  return ui::IsText(GetData().role);
+  return ui::IsText(GetRole());
 }
 
 bool AXPlatformNodeDelegateBase::IsWebContent() const {
@@ -864,7 +864,7 @@ AXPlatformNode* AXPlatformNodeDelegateBase::GetTargetNodeForRelation(
   DCHECK(IsNodeIdIntAttribute(attr));
 
   int target_id;
-  if (!GetData().GetIntAttribute(attr, &target_id))
+  if (!GetIntAttribute(attr, &target_id))
     return nullptr;
 
   return GetFromNodeID(target_id);
@@ -886,7 +886,7 @@ AXPlatformNodeDelegateBase::GetTargetNodesForRelation(
     ax::mojom::IntListAttribute attr) {
   DCHECK(IsNodeIdIntListAttribute(attr));
   std::vector<int32_t> target_ids;
-  if (!GetData().GetIntListAttribute(attr, &target_ids))
+  if (!GetIntListAttribute(attr, &target_ids))
     return std::vector<AXPlatformNode*>();
 
   // If we use std::set to eliminate duplicates, the resulting set will be

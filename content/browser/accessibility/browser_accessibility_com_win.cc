@@ -1507,7 +1507,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     // AXEventGenerator, as they are providing redundant information and will
     // lead to duplicate announcements.
     if (name() == old_win_attributes_->name ||
-        GetData().GetNameFrom() == ax::mojom::NameFrom::kContents) {
+        GetNameFrom() == ax::mojom::NameFrom::kContents) {
       size_t start, old_len, new_len;
       ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
       if (old_len > 0) {

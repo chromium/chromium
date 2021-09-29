@@ -436,17 +436,17 @@ bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,
 
 bool AccessibilityTextStyleBoldPredicate(BrowserAccessibility* start,
                                          BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kBold);
+  return node->HasTextStyle(ax::mojom::TextStyle::kBold);
 }
 
 bool AccessibilityTextStyleItalicPredicate(BrowserAccessibility* start,
                                            BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kItalic);
+  return node->HasTextStyle(ax::mojom::TextStyle::kItalic);
 }
 
 bool AccessibilityTextStyleUnderlinePredicate(BrowserAccessibility* start,
                                               BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
 }
 
 bool AccessibilityTreePredicate(BrowserAccessibility* start,

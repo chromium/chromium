@@ -223,17 +223,17 @@ ui::AXNode* GetStaticTextNodeFromNode(ui::AXNode* node) {
     return nullptr;
   ui::AXNode* static_node = node;
   // Get the static text from the link node.
-  if (node->data().role == ax::mojom::Role::kLink &&
+  if (node->GetRole() == ax::mojom::Role::kLink &&
       node->children().size() == 1) {
     static_node = node->children()[0];
   }
   // Get the static text from the highlight node.
-  if (node->data().role == ax::mojom::Role::kPdfActionableHighlight &&
+  if (node->GetRole() == ax::mojom::Role::kPdfActionableHighlight &&
       !node->children().empty()) {
     static_node = node->children()[0];
   }
   // If it's static text node, then it holds text.
-  if (static_node && static_node->data().role == ax::mojom::Role::kStaticText)
+  if (static_node && static_node->GetRole() == ax::mojom::Role::kStaticText)
     return static_node;
   return nullptr;
 }

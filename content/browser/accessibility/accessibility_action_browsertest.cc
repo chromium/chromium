@@ -761,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   GetManager()->DoDefaultAction(*target);
   waiter2.WaitForNotification();
 
-  auto&& control_list = target->GetData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kControlsIds);
+  auto&& control_list =
+      target->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   EXPECT_EQ(2u, control_list.size());
 
   auto find_radio1 =

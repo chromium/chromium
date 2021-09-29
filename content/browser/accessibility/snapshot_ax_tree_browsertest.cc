@@ -50,10 +50,9 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
                              std::string* dst) {
   for (int i = 0; i < indent; i++)
     *dst += "  ";
-  *dst += ui::ToString(node->data().role);
-  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kName))
-    *dst += " '" +
-            node->data().GetStringAttribute(ax::mojom::StringAttribute::kName) +
+  *dst += ui::ToString(node->GetRole());
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
+    *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
   *dst += "\n";
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
@@ -93,11 +92,11 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   ui::AXTree tree(waiter.snapshot());
   ui::AXNode* root = tree.root();
   ASSERT_NE(nullptr, root);
-  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   ui::AXNode* group = root->GetUnignoredChildAtIndex(0);
-  ASSERT_EQ(ax::mojom::Role::kGenericContainer, group->data().role);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, group->GetRole());
   ui::AXNode* button = group->GetUnignoredChildAtIndex(0);
-  ASSERT_EQ(ax::mojom::Role::kButton, button->data().role);
+  ASSERT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
 class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
@@ -425,34 +424,34 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   ui::AXTree tree(waiter.snapshot());
   ui::AXNode* root = tree.root();
   ASSERT_TRUE(root);
-  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
 
   // Img alt text should be present.
   ui::AXNode* image = root->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(image);
-  ASSERT_EQ(ax::mojom::Role::kImage, image->data().role);
-  ASSERT_EQ("Unicorns", image->data().GetStringAttribute(
-                            ax::mojom::StringAttribute::kName));
+  ASSERT_EQ(ax::mojom::Role::kImage, image->GetRole());
+  ASSERT_EQ("Unicorns",
+            image->GetStringAttribute(ax::mojom::StringAttribute::kName));
 
   // List attributes like posinset should be present.
   ui::AXNode* ul = root->GetUnignoredChildAtIndex(1);
   ASSERT_TRUE(ul);
-  ASSERT_EQ(ax::mojom::Role::kList, ul->data().role);
+  ASSERT_EQ(ax::mojom::Role::kList, ul->GetRole());
   ui::AXNode* li = ul->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(li);
-  ASSERT_EQ(ax::mojom::Role::kListItem, li->data().role);
+  ASSERT_EQ(ax::mojom::Role::kListItem, li->GetRole());
   EXPECT_EQ(5, *li->GetPosInSet());
 
   // Table attributes like colspan should be present.
   ui::AXNode* table = root->GetUnignoredChildAtIndex(2);
   ASSERT_TRUE(table);
-  ASSERT_EQ(ax::mojom::Role::kTable, table->data().role);
+  ASSERT_EQ(ax::mojom::Role::kTable, table->GetRole());
   ui::AXNode* tr = table->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(tr);
-  ASSERT_EQ(ax::mojom::Role::kRow, tr->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRow, tr->GetRole());
   ui::AXNode* td = tr->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(td);
-  ASSERT_EQ(ax::mojom::Role::kCell, td->data().role);
+  ASSERT_EQ(ax::mojom::Role::kCell, td->GetRole());
   EXPECT_EQ(2, *td->GetTableCellColSpan());
 }
 

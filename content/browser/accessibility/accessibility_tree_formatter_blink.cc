@@ -78,24 +78,22 @@ std::string IntAttrToString(const ui::AXNode& node,
     if (!target)
       return "null";
 
-    std::string result = ui::ToString(target->data().role);
+    std::string result = ui::ToString(target->GetRole());
     // Provide some extra info about the related object via the name or
     // possibly the class (if an element).
     // TODO(accessibility) Include all relational attributes here.
     // TODO(accessibility) Consider using line numbers from the results instead.
     if (attr == ax::mojom::IntAttribute::kNextOnLineId ||
         attr == ax::mojom::IntAttribute::kPreviousOnLineId) {
-      if (target->data().HasStringAttribute(
-              ax::mojom::StringAttribute::kName)) {
+      if (target->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
         result += ":\"";
-        result += target->data().GetStringAttribute(
-            ax::mojom::StringAttribute::kName);
+        result += target->GetStringAttribute(ax::mojom::StringAttribute::kName);
         result += "\"";
-      } else if (target->data().HasStringAttribute(
+      } else if (target->HasStringAttribute(
                      ax::mojom::StringAttribute::kClassName)) {
         result += ".";
-        result += target->data().GetStringAttribute(
-            ax::mojom::StringAttribute::kClassName);
+        result +=
+            target->GetStringAttribute(ax::mojom::StringAttribute::kClassName);
       }
     }
     return result;
@@ -318,7 +316,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
   int id = node.GetId();
   dict->SetInteger("id", id);
 
-  dict->SetString("internalRole", ui::ToString(node.GetData().role));
+  dict->SetString("internalRole", ui::ToString(node.GetRole()));
 
   gfx::Rect bounds =
       gfx::ToEnclosingRect(node.GetData().relative_bounds.bounds);
@@ -412,7 +410,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
         if (ui::IsNodeIdIntListAttribute(attr)) {
           BrowserAccessibility* target = node.manager()->GetFromID(values[i]);
           if (target)
-            value_list.Append(ui::ToString(target->GetData().role));
+            value_list.Append(ui::ToString(target->GetRole()));
           else
             value_list.Append("null");
         } else {
@@ -455,7 +453,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
     base::DictionaryValue* dict) const {
   int id = node.id();
   dict->SetInteger("id", id);
-  dict->SetString("internalRole", ui::ToString(node.data().role));
+  dict->SetString("internalRole", ui::ToString(node.GetRole()));
 
   gfx::Rect bounds = gfx::ToEnclosingRect(node.data().relative_bounds.bounds);
   dict->SetInteger("boundsX", bounds.x());
@@ -499,7 +497,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        state_index <= static_cast<int32_t>(ax::mojom::State::kMaxValue);
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
-    if (node.data().HasState(state))
+    if (node.HasState(state))
       dict->SetBoolean(ui::ToString(state), true);
   }
 
@@ -520,7 +518,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntAttribute>(attr_index);
     int32_t value;
-    if (node.data().GetIntAttribute(attr, &value)) {
+    if (node.GetIntAttribute(attr, &value)) {
       dict->SetString(ui::ToString(attr), IntAttrToString(node, attr, value));
     }
   }
@@ -562,7 +560,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
                                    ->GetNodeFromTree(tree_id, node.id());
 
           if (target)
-            value_list.Append(ui::ToString(target->data().role));
+            value_list.Append(ui::ToString(target->GetRole()));
           else
             value_list.Append("null");
         } else {
@@ -593,7 +591,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        action_index <= static_cast<int32_t>(ax::mojom::Action::kMaxValue);
        ++action_index) {
     auto action = static_cast<ax::mojom::Action>(action_index);
-    if (node.data().HasAction(action))
+    if (node.HasAction(action))
       actions_strings.push_back(ui::ToString(action));
   }
   if (!actions_strings.empty())

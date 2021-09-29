@@ -122,6 +122,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual int GetIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
   virtual bool GetIntAttribute(ax::mojom::IntAttribute attribute,
                                int* value) const = 0;
+  virtual const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  GetStringAttributes() const = 0;
   virtual bool HasStringAttribute(
       ax::mojom::StringAttribute attribute) const = 0;
   virtual const std::string& GetStringAttribute(

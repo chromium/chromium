@@ -75,7 +75,7 @@ bool PdfAXActionTarget::PerformAction(
 }
 
 bool PdfAXActionTarget::Click() const {
-  if (target_plugin_node_.data().role != ax::mojom::Role::kLink)
+  if (target_plugin_node_.GetRole() != ax::mojom::Role::kLink)
     return false;
 
   absl::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =

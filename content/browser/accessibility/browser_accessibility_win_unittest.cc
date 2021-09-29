@@ -1518,7 +1518,7 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   BrowserAccessibilityComWin* menu_accessible_com =
       ToBrowserAccessibilityComWin(root_accessible->PlatformGetChild(0));
   ASSERT_NE(nullptr, menu_accessible_com);
-  ASSERT_EQ(ax::mojom::Role::kMenu, menu_accessible_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kMenu, menu_accessible_com->GetRole());
 
   EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
@@ -1654,27 +1654,27 @@ TEST_F(BrowserAccessibilityWinTest,
   BrowserAccessibilityComWin* static_text_1_com =
       ToBrowserAccessibilityWin(body_accessible->PlatformGetChild(0))->GetCOM();
   ASSERT_NE(nullptr, static_text_1_com);
-  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_1_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_1_com->GetRole());
 
   BrowserAccessibilityComWin* menu_1_accessible_com =
       ToBrowserAccessibilityWin(body_accessible->PlatformGetChild(1))->GetCOM();
   ASSERT_NE(nullptr, menu_1_accessible_com);
-  ASSERT_EQ(ax::mojom::Role::kMenu, menu_1_accessible_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kMenu, menu_1_accessible_com->GetRole());
 
   BrowserAccessibilityComWin* menu_2_accessible_com =
       ToBrowserAccessibilityWin(body_accessible->PlatformGetChild(2))->GetCOM();
   ASSERT_NE(nullptr, menu_2_accessible_com);
-  ASSERT_EQ(ax::mojom::Role::kMenu, menu_2_accessible_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kMenu, menu_2_accessible_com->GetRole());
 
   BrowserAccessibilityComWin* static_text_2_com =
       ToBrowserAccessibilityWin(body_accessible->PlatformGetChild(3))->GetCOM();
   ASSERT_NE(nullptr, static_text_2_com);
-  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_2_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_2_com->GetRole());
 
   BrowserAccessibilityComWin* static_text_3_com =
       ToBrowserAccessibilityWin(body_accessible->PlatformGetChild(4))->GetCOM();
   ASSERT_NE(nullptr, static_text_3_com);
-  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_3_com->GetData().role);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_3_com->GetRole());
 
   // [obj] stands for the embedded object replacement character \xFFFC.
 

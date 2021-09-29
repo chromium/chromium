@@ -27,7 +27,7 @@ namespace {
 
 int CountOffscreenButtons(const ui::AXTree* tree, const ui::AXNode* node) {
   int count = 0;
-  if (node->data().role == ax::mojom::Role::kButton) {
+  if (node->GetRole() == ax::mojom::Role::kButton) {
     bool offscreen = false;
     tree->GetTreeBounds(node, &offscreen, /* clip = */ true);
     if (offscreen)

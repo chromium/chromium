@@ -29,10 +29,9 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
   // attribute as a UTF-8 string.
   std::string GetAttr(const ui::AXNode* node,
                       const ax::mojom::StringAttribute attr) {
-    const ui::AXNodeData& data = node->data();
-    for (size_t i = 0; i < data.string_attributes.size(); ++i) {
-      if (data.string_attributes[i].first == attr)
-        return data.string_attributes[i].second;
+    for (const auto& attribute_pair : node->GetStringAttributes()) {
+      if (attribute_pair.first == attr)
+        return attribute_pair.second;
     }
     return std::string();
   }
@@ -127,18 +126,18 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   // Use this for debugging if the test fails.
   VLOG(1) << tree->ToString();
 
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   ASSERT_EQ(2u, root->GetUnignoredChildCount());
 
   const ui::AXNode* live_region = root->GetUnignoredChildAtIndex(0);
   ASSERT_EQ(1u, live_region->GetUnignoredChildCount());
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer, live_region->data().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, live_region->GetRole());
 
   const ui::AXNode* para = live_region->GetUnignoredChildAtIndex(0);
-  EXPECT_EQ(ax::mojom::Role::kParagraph, para->data().role);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
 
   const ui::AXNode* button = root->GetUnignoredChildAtIndex(1);
-  EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
 #if defined(OS_ANDROID)

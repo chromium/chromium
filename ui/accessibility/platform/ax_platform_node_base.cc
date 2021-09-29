@@ -459,6 +459,16 @@ bool AXPlatformNodeBase::GetIntAttribute(ax::mojom::IntAttribute attribute,
   return delegate_->GetIntAttribute(attribute, value);
 }
 
+const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+AXPlatformNodeBase::GetStringAttributes() const {
+  static const base::NoDestructor<
+      const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetStringAttributes();
+}
+
 bool AXPlatformNodeBase::HasStringAttribute(
     ax::mojom::StringAttribute attribute) const {
   if (!delegate_)

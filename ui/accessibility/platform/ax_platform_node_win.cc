@@ -7242,8 +7242,8 @@ AXPlatformNodeWin* AXPlatformNodeWin::ComputeUIALabeledBy() {
 
   // This property only accepts static text elements to be returned. Find the
   // first static text used to label this node.
-  for (int32_t id : GetData().GetIntListAttribute(
-           ax::mojom::IntListAttribute::kLabelledbyIds)) {
+  for (int32_t id :
+       GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds)) {
     auto* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(id));
     if (!node_win)

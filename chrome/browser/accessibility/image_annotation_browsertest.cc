@@ -53,10 +53,10 @@ void DescribeNodesWithAnnotations(const ui::AXNode& node,
   std::string annotation =
       node.GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
   if (!annotation.empty()) {
-    std::string role_str = ui::ToString(node.data().role);
+    std::string role_str = ui::ToString(node.GetRole());
     std::string name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    if (!name.empty() && node.data().role != ax::mojom::Role::kRootWebArea)
+    if (!name.empty() && node.GetRole() != ax::mojom::Role::kRootWebArea)
       descriptions->push_back(role_str + " " + name + " " + annotation);
     else
       descriptions->push_back(role_str + " " + annotation);

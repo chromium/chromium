@@ -381,7 +381,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
   if (popup_root_ids_.size() == 1) {
     BrowserAccessibility* node = GetFromID(*popup_root_ids_.begin());
     if (node) {
-      DCHECK(node->GetData().role == ax::mojom::Role::kRootWebArea);
+      DCHECK(node->GetRole() == ax::mojom::Role::kRootWebArea);
       return node;
     }
   }
@@ -1414,7 +1414,7 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
 
     // We fire these here, immediately, to ensure we can send platform
     // notifications prior to the actual destruction of the object.
-    if (node->data().role == ax::mojom::Role::kMenu)
+    if (node->GetRole() == ax::mojom::Role::kMenu)
       FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
   }
 }
@@ -1430,7 +1430,7 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
   wrapper->Init(this, node);
 
   if (tree->root() != node &&
-      node->data().role == ax::mojom::Role::kRootWebArea) {
+      node->GetRole() == ax::mojom::Role::kRootWebArea) {
     popup_root_ids_.insert(node->id());
   }
 }
@@ -1749,11 +1749,11 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
     }
 
     // When a node is editable, update the editable root too.
-    if (!changed_node->data().HasState(ax::mojom::State::kEditable))
+    if (!changed_node->HasState(ax::mojom::State::kEditable))
       continue;
     const ui::AXNode* editable_root = changed_node;
-    while (editable_root->parent() && editable_root->parent()->data().HasState(
-                                          ax::mojom::State::kEditable)) {
+    while (editable_root->parent() &&
+           editable_root->parent()->HasState(ax::mojom::State::kEditable)) {
       editable_root = editable_root->parent();
     }
 

@@ -139,7 +139,7 @@ bool BrowserAccessibility::IsValid() const {
   // If the input type is not plain or text it may be a complex field, such as
   // a datetime input. We don't try to enforce a special structure for those.
   std::string input_type =
-      GetData().GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+      GetStringAttribute(ax::mojom::StringAttribute::kInputType);
   if (!input_type.empty() && input_type != "text")
     return true;  // Not a plain text field, just consider it valid.
 
@@ -1191,7 +1191,7 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
 
 std::u16string BrowserAccessibility::GetAuthorUniqueId() const {
   std::u16string html_id;
-  GetData().GetHtmlAttribute("id", &html_id);
+  GetHtmlAttribute("id", &html_id);
   return html_id;
 }
 
@@ -1336,6 +1336,11 @@ int BrowserAccessibility::GetIntAttribute(
 bool BrowserAccessibility::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                            int* value) const {
   return node_->GetIntAttribute(attribute, value);
+}
+
+const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+BrowserAccessibility::GetStringAttributes() const {
+  return node()->GetStringAttributes();
 }
 
 bool BrowserAccessibility::HasStringAttribute(
@@ -2054,7 +2059,7 @@ BrowserAccessibility::GetLocalizedRoleDescriptionForUnlabeledImage() const {
 std::u16string BrowserAccessibility::GetLocalizedStringForLandmarkType() const {
   ContentClient* content_client = content::GetContentClient();
 
-  switch (GetData().role) {
+  switch (GetRole()) {
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kHeader:
       return content_client->GetLocalizedString(IDS_AX_ROLE_BANNER);
@@ -2078,7 +2083,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     const {
   ContentClient* content_client = content::GetContentClient();
 
-  switch (GetData().role) {
+  switch (GetRole()) {
     case ax::mojom::Role::kArticle:
       return content_client->GetLocalizedString(IDS_AX_ROLE_ARTICLE);
 
@@ -2102,8 +2107,8 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
 
     case ax::mojom::Role::kDateTime: {
       std::string input_type;
-      if (GetData().GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                       &input_type)) {
+      if (GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                             &input_type)) {
         if (input_type == "datetime-local") {
           return content_client->GetLocalizedString(
               IDS_AX_ROLE_DATE_TIME_LOCAL);
@@ -2162,8 +2167,8 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
 
     case ax::mojom::Role::kTextField: {
       std::string input_type;
-      if (GetData().GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                       &input_type)) {
+      if (GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                             &input_type)) {
         if (input_type == "email") {
           return content_client->GetLocalizedString(IDS_AX_ROLE_EMAIL);
         } else if (input_type == "tel") {
@@ -2187,7 +2192,7 @@ std::u16string BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
     const {
   const BrowserAccessibility* current_node = this;
   while (current_node) {
-    if (current_node->GetData().role == ax::mojom::Role::kMark) {
+    if (current_node->GetRole() == ax::mojom::Role::kMark) {
       ContentClient* content_client = content::GetContentClient();
       return content_client->GetLocalizedString(IDS_AX_ROLE_MARK);
     }

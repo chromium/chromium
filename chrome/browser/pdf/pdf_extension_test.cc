@@ -1679,28 +1679,28 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilitySelection) {
   ui::AXNode* sel_start_node =
       ax_tree.GetFromId(ax_tree.data().sel_anchor_object_id);
   ASSERT_TRUE(sel_start_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, sel_start_node->data().role);
-  std::string start_node_name = sel_start_node->data().GetStringAttribute(
-      ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, sel_start_node->GetRole());
+  std::string start_node_name =
+      sel_start_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("1 First Section\r\n", start_node_name);
   EXPECT_EQ(0, ax_tree.data().sel_anchor_offset);
   ui::AXNode* para = sel_start_node->parent();
-  EXPECT_EQ(ax::mojom::Role::kParagraph, para->data().role);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
   ui::AXNode* region = para->parent();
-  EXPECT_EQ(ax::mojom::Role::kRegion, region->data().role);
+  EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 
   ui::AXNode* sel_end_node =
       ax_tree.GetFromId(ax_tree.data().sel_focus_object_id);
   ASSERT_TRUE(sel_end_node);
-  std::string end_node_name = sel_end_node->data().GetStringAttribute(
-      ax::mojom::StringAttribute::kName);
+  std::string end_node_name =
+      sel_end_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("3", end_node_name);
   EXPECT_EQ(static_cast<int>(end_node_name.size()),
             ax_tree.data().sel_focus_offset);
   para = sel_end_node->parent();
-  EXPECT_EQ(ax::mojom::Role::kParagraph, para->data().role);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
   region = para->parent();
-  EXPECT_EQ(ax::mojom::Role::kRegion, region->data().role);
+  EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
@@ -3078,22 +3078,22 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
     std::string line;
     for (ui::AXNode* node : text_nodes) {
       // StaticText begins a new paragraph.
-      if (node->data().role == ax::mojom::Role::kStaticText && !line.empty()) {
+      if (node->GetRole() == ax::mojom::Role::kStaticText && !line.empty()) {
         lines.push_back(line);
         lines.push_back("\u00b6");  // pilcrow/paragraph mark, Alt+0182
         line.clear();
       }
 
       // We collect all inline text boxes within the paragraph.
-      if (node->data().role != ax::mojom::Role::kInlineTextBox)
+      if (node->GetRole() != ax::mojom::Role::kInlineTextBox)
         continue;
 
       std::string name =
-          node->data().GetStringAttribute(ax::mojom::StringAttribute::kName);
+          node->GetStringAttribute(ax::mojom::StringAttribute::kName);
       base::StringPiece trimmed_name =
           base::TrimString(name, "\r\n", base::TRIM_TRAILING);
-      int prev_id = node->data().GetIntAttribute(
-          ax::mojom::IntAttribute::kPreviousOnLineId);
+      int prev_id =
+          node->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId);
       if (previous_node_next_id == node->id()) {
         // Previous node pointed to us, so we are part of the same line.
         EXPECT_EQ(previous_node_id, prev_id)
@@ -3112,7 +3112,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
 
       previous_node_id = node->id();
       previous_node_next_id =
-          node->data().GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId);
+          node->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId);
     }
     if (!line.empty())
       lines.push_back(line);
@@ -3131,7 +3131,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
   void FindAXNodes(ui::AXNode* current,
                    const base::flat_set<ax::mojom::Role> roles,
                    std::vector<ui::AXNode*>* results) {
-    if (base::Contains(roles, current->data().role))
+    if (base::Contains(roles, current->GetRole()))
       results->push_back(current);
 
     for (ui::AXNode* child : current->children())

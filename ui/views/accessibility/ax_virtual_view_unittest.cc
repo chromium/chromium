@@ -115,9 +115,9 @@ class AXVirtualViewTest : public ViewsTestBase {
 };
 
 TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
-  EXPECT_EQ(ax::mojom::Role::kButton, GetButtonAccessibility()->GetData().role);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, virtual_label_->GetData().role);
-  EXPECT_EQ("Label", virtual_label_->GetData().GetStringAttribute(
+  EXPECT_EQ(ax::mojom::Role::kButton, GetButtonAccessibility()->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, virtual_label_->GetRole());
+  EXPECT_EQ("Label", virtual_label_->GetStringAttribute(
                          ax::mojom::StringAttribute::kName));
 }
 
@@ -125,27 +125,26 @@ TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
 // state of the real view ancestor, however the enabled state should.
 TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
   virtual_label_->GetCustomData().AddState(ax::mojom::State::kFocusable);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             virtual_label_->GetData().GetRestriction());
 
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(
+      GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             virtual_label_->GetData().GetRestriction());
 
   button_->SetEnabled(false);
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(
+      GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kDisabled,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kDisabled,
@@ -154,10 +153,8 @@ TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
   button_->SetEnabled(true);
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   virtual_label_->GetCustomData().RemoveState(ax::mojom::State::kFocusable);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_FALSE(
-      virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
@@ -342,15 +339,13 @@ TEST_F(AXVirtualViewTest, GetIndexOfVirtualChild) {
 // ax::mojom::State::kInvisible state.
 TEST_F(AXVirtualViewTest, InvisibleVirtualViews) {
   EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kInvisible));
   EXPECT_FALSE(
-      virtual_label_->GetData().HasState(ax::mojom::State::kInvisible));
+      GetButtonAccessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(virtual_label_->HasState(ax::mojom::State::kInvisible));
 
   button_->SetVisible(false);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kInvisible));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kInvisible));
   button_->SetVisible(true);
 }
 

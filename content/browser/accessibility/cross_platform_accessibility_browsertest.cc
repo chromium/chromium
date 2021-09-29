@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(3U, body->PlatformChildCount());
 
   const BrowserAccessibility* button1 = body->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kButton, button1->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button1->GetRole());
   EXPECT_STREQ(
       "Button 1",
       GetAttr(button1->node(), ax::mojom::StringAttribute::kName).c_str());
@@ -543,20 +543,20 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(1U, iframe->PlatformChildCount());
 
   const BrowserAccessibility* sub_document = iframe->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->GetRole());
   ASSERT_EQ(1U, sub_document->PlatformChildCount());
 
   const BrowserAccessibility* sub_body = sub_document->PlatformGetChild(0);
   ASSERT_EQ(1U, sub_body->PlatformChildCount());
 
   const BrowserAccessibility* button2 = sub_body->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kButton, button2->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button2->GetRole());
   EXPECT_STREQ(
       "Button 2",
       GetAttr(button2->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* button3 = body->PlatformGetChild(2);
-  EXPECT_EQ(ax::mojom::Role::kButton, button3->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button3->GetRole());
   EXPECT_STREQ(
       "Button 3",
       GetAttr(button3->node(), ax::mojom::StringAttribute::kName).c_str());
@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const BrowserAccessibility* root = GetManager()->GetRoot();
   BrowserAccessibility::PlatformChildIterator it =
       root->PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*it).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*it).GetRole());
   it = (*it).PlatformChildrenBegin();
   EXPECT_STREQ(
       "Button 1",
@@ -889,10 +889,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       GetAttr((*it).node(), ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(1U, (*it).PlatformChildCount());
   auto iframe_iterator = (*it).PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, (*iframe_iterator).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer,
-            (*iframe_iterator).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
   EXPECT_STREQ("Button 2", GetAttr((*iframe_iterator).node(),
                                    ax::mojom::StringAttribute::kName)
@@ -1538,19 +1537,19 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest, GeneratedText) {
   ASSERT_EQ(3U, heading->PlatformChildCount());
 
   const BrowserAccessibility* static1 = heading->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetRole());
   EXPECT_STREQ(
       "[ ",
       GetAttr(static1->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* static2 = heading->PlatformGetChild(1);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetRole());
   EXPECT_STREQ(
       "Foo",
       GetAttr(static2->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* static3 = heading->PlatformGetChild(2);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetRole());
   EXPECT_STREQ(
       " ]",
       GetAttr(static3->node(), ax::mojom::StringAttribute::kName).c_str());
