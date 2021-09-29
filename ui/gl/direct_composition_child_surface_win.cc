@@ -57,6 +57,9 @@ bool g_direct_composition_swap_chain_failed = false;
 // the swap chain with full damage.
 float kForceFullDamageThreshold = 0.6f;
 
+const char* kDirectCompositionChildSurfaceLabel =
+    "DirectCompositionChildSurface";
+
 bool SupportsLowLatencyPresentation() {
   return base::FeatureList::IsEnabled(
       features::kDirectCompositionLowLatencyPresentation);
@@ -444,6 +447,9 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
       return false;
     }
 
+    gl::LabelSwapChainAndBuffers(swap_chain_.Get(),
+                                 kDirectCompositionChildSurfaceLabel);
+
     Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain;
     if (SUCCEEDED(swap_chain_.As(&swap_chain))) {
       hr = swap_chain->SetColorSpace1(
@@ -556,6 +562,11 @@ bool DirectCompositionChildSurfaceWin::Resize(
                           SUCCEEDED(hr));
     if (SUCCEEDED(hr))
       return true;
+
+    // Resizing swap chain buffers causes the internal textures to be released
+    // and re-created as new textures. We need to label the new textures.
+    gl::LabelSwapChainBuffers(swap_chain_.Get(),
+                              kDirectCompositionChildSurfaceLabel);
     DLOG(ERROR) << "ResizeBuffers failed with error 0x" << std::hex << hr;
   }
   // Next SetDrawRectangle call will recreate the swap chain or surface.

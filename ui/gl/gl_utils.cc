@@ -23,6 +23,9 @@
 #endif
 
 #if defined(OS_WIN)
+#include <d3d11_1.h>
+#include "base/strings/stringprintf.h"
+#include "media/base/win/mf_helpers.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #endif
 
@@ -159,6 +162,43 @@ bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
     return true;
   }();
   return should_force;
+}
+
+// Labels swapchain buffers with the string name_prefix + _Buffer_ +
+// <buffer_number>
+void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
+                           const char* name_prefix) {
+  DXGI_SWAP_CHAIN_DESC desc;
+  HRESULT hr = swap_chain->GetDesc(&desc);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to GetDesc from swap chain: "
+                << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+  for (unsigned int i = 0; i < desc.BufferCount; i++) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
+    hr = swap_chain->GetBuffer(i, IID_PPV_ARGS(&swap_chain_buffer));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "GetBuffer on swap chain buffer " << i
+                  << "failed: " << logging::SystemErrorCodeToString(hr);
+      return;
+    }
+    const std::string buffer_name =
+        base::StringPrintf("%s_Buffer_%d", name_prefix, i);
+    hr = media::SetDebugName(swap_chain_buffer.Get(), buffer_name.c_str());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to label swap chain buffer " << i << ": "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+}
+
+// Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
+// operations
+void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
+                              const char* name_prefix) {
+  media::SetDebugName(swap_chain, name_prefix);
+  LabelSwapChainBuffers(swap_chain, name_prefix);
 }
 #endif  // OS_WIN
 

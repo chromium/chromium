@@ -36,6 +36,9 @@ specific_include_rules = {
   "gl_image_egl_pixmap.cc": [
     "+ui/base/ui_base_features.h",
   ],
+  "gl_utils.cc": [
+    "+media/base/win/mf_helpers.h"
+  ],
   "hdr_metadata_helper_win_unittest.cc": [
     "+media/base/win/d3d11_mocks.h",
   ],

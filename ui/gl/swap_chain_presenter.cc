@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/win/mf_helpers.h"
@@ -175,32 +174,6 @@ void UpdateSwapChainTransform(const gfx::Size& quad_size,
   float swap_chain_scale_y =
       quad_size.height() * 1.0f / swap_chain_size.height();
   transform->Scale(swap_chain_scale_x, swap_chain_scale_y);
-}
-
-void LabelSwapChainBuffers(IDXGISwapChain* swap_chain) {
-  DXGI_SWAP_CHAIN_DESC desc;
-  HRESULT hr = swap_chain->GetDesc(&desc);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to GetDesc from swap chain: "
-                << logging::SystemErrorCodeToString(hr);
-    return;
-  }
-  for (unsigned int i = 0; i < desc.BufferCount; i++) {
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
-    hr = swap_chain->GetBuffer(i, IID_PPV_ARGS(&swap_chain_buffer));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "GetBuffer on swap chain buffer " << i
-                  << "failed: " << logging::SystemErrorCodeToString(hr);
-      return;
-    }
-    hr = media::SetDebugName(
-        swap_chain_buffer.Get(),
-        base::StringPrintf("SwapChainPresenter_Buffer_%d", i).c_str());
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to label swap chain buffer " << i << ": "
-                  << logging::SystemErrorCodeToString(hr);
-    }
-  }
 }
 
 }  // namespace
@@ -1576,7 +1549,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
       return false;
     }
   }
-  LabelSwapChainBuffers(swap_chain_.Get());
+  gl::LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
+
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
   return true;
