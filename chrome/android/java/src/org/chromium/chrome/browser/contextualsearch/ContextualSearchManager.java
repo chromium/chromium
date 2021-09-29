@@ -850,11 +850,12 @@ public class ContextualSearchManager
                 spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
                 spToPx(defaultQueryWidthSpInPanel));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
-            // Call #onSetCaption() to set the caption. For entities, the caption should not be
-            // regarded as an answer. In the future, when quick actions are added, doesAnswer will
-            // need to be determined rather than always set to false.
+            // For entities the caption should not be regarded as an answer.
+            // TODO(donnd): For Translations and definitions doesAnswer should be set to true
+            // to generate a metrics signal indicating that the caption might be supplying an
+            // an answer that would make opening the panel unnecessary.
             boolean doesAnswer = false;
-            onSetCaption(resolvedSearchTerm.caption(), doesAnswer);
+            setCaption(resolvedSearchTerm.caption(), doesAnswer);
         }
         ensureCaption();
 
@@ -933,18 +934,34 @@ public class ContextualSearchManager
     }
 
     /**
-     * Called to set a caption. The caption may either be included with the search term resolution
-     * response or set by the page through the CS JavaScript API used to notify CS that there is
-     * a caption available on the current overlay.
+     * Called to set a caption by the Search Result page in the overlay through the CS JavaScript
+     * API. This notifies CS that there is a caption to show for the current overlay.
      * @param caption The caption to display.
      * @param doesAnswer Whether the caption should be regarded as an answer such
      *        that the user may not need to open the panel, or whether the caption
      *        is simply informative or descriptive of the answer in the full results.
      */
     @CalledByNative
-    private void onSetCaption(String caption, boolean doesAnswer) {
-        if (TextUtils.isEmpty(caption) || mSearchPanel == null) return;
+    @VisibleForTesting
+    void onSetCaption(String caption, boolean doesAnswer) {
+        // If the Partial Translations Feature is enabled we don't want to show these SERP
+        // Translations until we can associate the right icon to match what's shown for that
+        // Feature (for consistency). See https://crbug.com/1249656 for details.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)
+                || TextUtils.isEmpty(caption) || mSearchPanel == null) {
+            return;
+        }
+        setCaption(caption, doesAnswer);
+    }
 
+    /**
+     * Called to set a caption to show in a second line in the Bar.
+     * @param caption The caption to display.
+     * @param doesAnswer Whether the caption should be regarded as an answer such
+     *        that the user may not need to open the panel, or whether the caption
+     *        is simply informative or descriptive of the answer in the full results.
+     */
+    private void setCaption(String caption, boolean doesAnswer) {
         // Notify the UI of the caption.
         mSearchPanel.setCaption(caption);
         if (mQuickAnswersHeuristic != null) {
