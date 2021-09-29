@@ -237,7 +237,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             controllers.add(new PageInfoHistoryController(
                     mainController, historyRow, this, () -> { return tab; }));
         }
-        if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled()) {
+        if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
             final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
             storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
             rowWrapper.addView(storeInfoRow);
