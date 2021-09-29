@@ -136,9 +136,6 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
     int64_t command_id,
     int32_t event_flags,
     int64_t display_id) {
-  // TODO(https://crbug.com/1225848): Distinguish between context menus coming
-  // from ash shelf for filtered windows and context_menu_.
-
   // The current API for showing existing windows in a context menu, and then
   // later receiving a callback here is intrinsically racy. There is no way to
   // encode all relevant information in |command_id|.
@@ -146,13 +143,19 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
   // the aura::Windows for destruction. This should almost always work. In rare
   // edge cases, this will cause the wrong window to be selected, but will not
   // cause undefined behavior.
-  if (command_id < 0 || command_id >= context_menu_windows_.size())
+  if (command_id >= 0 && command_id < context_menu_windows_.size()) {
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        context_menu_windows_[command_id]);
+    AppWindowBase app_window(shelf_id(), widget);
+    ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
+        &app_window, /*can_minimize=*/false);
     return;
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      context_menu_windows_[command_id]);
-  AppWindowBase app_window(shelf_id(), widget);
-  ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-      &app_window, /*can_minimize=*/false);
+  }
+
+  // This must be from the context menu, or there has been a race condition and
+  // context_menu_windows_ is smaller than it used to be. Either way forward the
+  // command.
+  context_menu_->ExecuteCommand(command_id, event_flags);
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::Close() {

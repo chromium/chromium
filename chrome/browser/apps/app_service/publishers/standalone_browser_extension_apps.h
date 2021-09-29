@@ -69,6 +69,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void StopApp(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;

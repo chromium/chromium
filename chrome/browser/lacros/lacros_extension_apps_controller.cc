@@ -20,6 +20,9 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -204,7 +207,20 @@ void LacrosExtensionAppsController::ExecuteContextMenuCommand(
 }
 
 void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
-  NOTIMPLEMENTED();
+  // Find the extension.
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success =
+      lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
+  if (!success)
+    return;
+
+  // Close all app windows.
+  for (extensions::AppWindow* app_window :
+       extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(
+           extension->id())) {
+    app_window->GetBaseWindow()->Close();
+  }
 }
 
 void LacrosExtensionAppsController::FinishedEnableFlow(

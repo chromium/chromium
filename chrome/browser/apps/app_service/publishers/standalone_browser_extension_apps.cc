@@ -106,6 +106,15 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
   std::move(callback).Run(mojom::MenuItems::New());
 }
 
+void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->StopApp(app_id);
+}
+
 void StandaloneBrowserExtensionApps::OnApps(
     std::vector<apps::mojom::AppPtr> deltas) {
   for (apps::mojom::AppPtr& delta : deltas) {
