@@ -59,6 +59,12 @@ class PrefRegistrySyncable;
                                                         browser:
                                                             (Browser*)browser;
 
+// Returns a coordinator for forced sign-in workflow.
+// |viewController| presents the sign-in.
++ (instancetype)forcedSigninCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                      browser:(Browser*)browser;
+
 // Returns a coordinator for upgrade sign-in workflow.
 // |viewController| presents the sign-in.
 + (instancetype)upgradeSigninPromoCoordinatorWithBaseViewController:

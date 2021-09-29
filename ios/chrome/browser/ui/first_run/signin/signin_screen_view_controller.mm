@@ -157,6 +157,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 - (UITextView*)learnMoreTextView {
   if (!_learnMoreTextView) {
     _learnMoreTextView = [[UITextView alloc] init];
+    _learnMoreTextView.backgroundColor = UIColor.clearColor;
     _learnMoreTextView.scrollEnabled = NO;
     _learnMoreTextView.editable = NO;
     _learnMoreTextView.adjustsFontForContentSizeCategory = YES;

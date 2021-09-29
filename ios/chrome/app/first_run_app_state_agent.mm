@@ -271,9 +271,7 @@
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.presentingInterface.bvc
-                         browser:self.presentingInterface.browser
-                     mainBrowser:self.mainBrowser
-                   syncPresenter:self.presentingInterface.bvc
+                         browser:self.mainBrowser
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
   [self.firstRunCoordinator start];

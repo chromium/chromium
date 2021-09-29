@@ -1518,14 +1518,9 @@ bool IsSigninForcedByPolicy() {
                                           accessPoint:command.accessPoint];
       break;
     case AUTHENTICATION_OPERATION_FORCED_SIGNIN:
-      // TODO(crbug.com/1246108): Use the coordinator for the forced sign-in
-      // policy when available.
       self.signinCoordinator = [SigninCoordinator
-          userSigninCoordinatorWithBaseViewController:baseViewController
-                                              browser:mainBrowser
-                                             identity:command.identity
-                                          accessPoint:command.accessPoint
-                                          promoAction:command.promoAction];
+          forcedSigninCoordinatorWithBaseViewController:baseViewController
+                                                browser:mainBrowser];
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
