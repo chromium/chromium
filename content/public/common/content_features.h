@@ -163,7 +163,6 @@ CONTENT_EXPORT extern const base::Feature kSecurePaymentConfirmationDebug;
 CONTENT_EXPORT extern const base::Feature
     kSendBeaconThrowForBlobWithNonSimpleType;
 CONTENT_EXPORT extern const base::Feature kServiceWorkerPaymentApps;
-CONTENT_EXPORT extern const base::Feature kServiceWorkerPrefersUnusedProcess;
 CONTENT_EXPORT extern const base::Feature
     kServiceWorkerTerminationOnNoControllee;
 CONTENT_EXPORT extern const base::Feature kSharedArrayBuffer;

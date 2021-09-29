@@ -686,13 +686,6 @@ const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
 const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, prefer to start service workers in an unused renderer process if
-// available. This helps let navigations and service workers use the same
-// process when a process was already created for a navigation but not yet
-// claimed by it (as is common for navigations from the Android New Tab Page).
-const base::Feature kServiceWorkerPrefersUnusedProcess{
-    "ServiceWorkerPrefersUnusedProcess", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Use this feature to experiment terminating a service worker when it doesn't
 // control any clients: https://crbug.com/1043845.
 const base::Feature kServiceWorkerTerminationOnNoControllee{

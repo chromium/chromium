@@ -865,22 +865,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderProcessHostUnitTest,
                            GuestsAreNotSuitableHosts);
 
-  // Returns an existing RenderProcessHost that has not yet been used and is
-  // suitable for the given |site_instance|, or null if no such process host
-  // exists.
-  //
-  // This function is used when finding a process for a service worker. The
-  // idea is to choose the process that will be chosen by a navigation that will
-  // use the service worker. While navigations typically try to choose the
-  // process with the relevant service worker (using
-  // UnmatchedServiceWorkerProcessTracker), navigations out of the Android New
-  // Tab Page use a SiteInstance with an empty URL by design in order to choose
-  // the NTP process, and do not go through the typical matching algorithm. The
-  // goal of this function is to return the NTP process so the service worker
-  // can also use it.
-  static RenderProcessHost* GetUnusedProcessHostForServiceWorker(
-      SiteInstanceImpl* site_instance);
-
   // Returns a RenderProcessHost that is rendering a URL corresponding to
   // |site_instance| in one of its frames, or that is expecting a navigation to
   // that SiteInstance.
