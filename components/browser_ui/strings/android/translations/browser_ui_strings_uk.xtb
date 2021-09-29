@@ -40,7 +40,7 @@
 <translation id="2025115093177348061">Доповнена реальність</translation>
 <translation id="2030769033451695672">Натисніть, щоб повернутися на сторінку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
-<translation id="2091887806945687916">Сигнал</translation>
+<translation id="2091887806945687916">Звук</translation>
 <translation id="2107397443965016585">Запитувати, перш ніж дозволяти сайтам відтворювати захищений вміст (рекомендовано)</translation>
 <translation id="2146738493024040262">Відкрити додаток із миттєвим запуском</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
@@ -121,7 +121,7 @@
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4336434711095810371">Видалити всі дані</translation>
 <translation id="4402755511846832236">Блокувати сайтам інформацію про те, чи ви активно використовуєте цей пристрій</translation>
-<translation id="4434045419905280838">Спливаючі вікна й переадресація</translation>
+<translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
 <translation id="445467742685312942">Дозволити сайтам відтворювати захищений вміст</translation>
 <translation id="4468959413250150279">Вимкнути звук для певного сайту.</translation>
 <translation id="4479647676395637221">Запитувати, перш ніж дозволити сайтам використовувати камеру (рекомендується)</translation>
