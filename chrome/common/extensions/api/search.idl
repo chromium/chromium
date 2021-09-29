@@ -34,6 +34,7 @@ namespace search {
     // Used to query the default search provider.
     // In case of an error,
     // $(ref:runtime.lastError) will be set.
-    static void query(QueryInfo queryInfo, optional QueryCallback callback);
+    [supportsPromises] static void query(QueryInfo queryInfo,
+                                         optional QueryCallback callback);
   };
 };
