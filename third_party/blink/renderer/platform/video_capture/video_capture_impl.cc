@@ -16,6 +16,8 @@
 #include <memory>
 #include <utility>
 
+#include <GLES2/gl2extchromium.h>
+
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
@@ -467,11 +469,21 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
 
+  unsigned texture_target =
+      buffer_context_->gpu_factories()->ImageTextureTarget(
+          gpu_memory_buffer_->GetFormat());
+
 #if defined(OS_WIN)
   if (output_format ==
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
+
+    // Explicitly set GL_TEXTURE_EXTERNAL_OES since ImageTextureTarget() will
+    // return GL_TEXTURE_2D due to GMB factory not supporting NV12 DXGI GMBs.
+    // See https://crbug.com/1253791#c17
+    texture_target = GL_TEXTURE_EXTERNAL_OES;
+
     if (should_recreate_shared_image ||
         buffer_context_->gmb_resources()->mailboxes[0].IsZero()) {
       auto plane_mailboxes = sii->CreateSharedImageVideoPlanes(
@@ -511,10 +523,6 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
 
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-
-  const unsigned texture_target =
-      buffer_context_->gpu_factories()->ImageTextureTarget(
-          gpu_memory_buffer_->GetFormat());
 
   gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
   for (size_t plane = 0; plane < planes.size(); ++plane) {
