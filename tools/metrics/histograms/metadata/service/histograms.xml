@@ -82,7 +82,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ActivateEvent.Time" units="ms"
     expires_after="2022-07-23">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     Execution time of ServiceWorkerGlobalScope.onactivate. Includes the time for
@@ -92,7 +93,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.ActivateEventStatus"
     enum="ServiceWorkerStatusCode" expires_after="2022-07-23">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of dispatching the activate event to the worker. This is recorded
@@ -374,7 +376,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.FetchEvent.MainResource.Status"
     enum="ServiceWorkerStatusCode" expires_after="2022-02-27">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of dispatching a fetch event to a Service Worker for a main
@@ -385,7 +388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ServiceWorker.FetchEvent.QueuingTime" units="ms"
     expires_after="2022-02-06">
   <owner>asamidoi@chromium.org</owner>
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time that a fetch event was queued. The start time is when the event is
@@ -397,7 +400,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.FetchEvent.Subresource.Status"
     enum="ServiceWorkerStatusCode" expires_after="2022-02-27">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of dispatching a fetch event to a Service Worker for a
@@ -443,7 +447,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.InstallEvent.{type}.Status"
     enum="ServiceWorkerStatusCode" expires_after="2022-07-23">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of dispatching the install event to the worker. This histogram
@@ -458,7 +463,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.InstallEvent.{type}.Time" units="ms"
     expires_after="2022-07-23">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken between dispatching an InstallEvent to a Service Worker and
@@ -814,7 +820,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.RegisteredStorageKeyCount" units="origins"
     expires_after="2022-04-29">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The number of StorageKeys that have a service worker registration. Recorded
@@ -1173,7 +1180,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.StartWorker.Status"
     enum="ServiceWorkerStatusCode" expires_after="2022-02-13">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The result of trying to start a Service Worker that is already installed.
@@ -1197,7 +1205,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.StartWorker.Time" units="ms"
     expires_after="2022-02-13">
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken to start a Service Worker that is already installed, from
