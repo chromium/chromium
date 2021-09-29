@@ -140,9 +140,6 @@ crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure
 [ chromeos ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
 [ chromeos ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 
-# ChromeOS
-crbug.com/1253576 [ chromeos chromeos-board-kevin ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
-
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 
