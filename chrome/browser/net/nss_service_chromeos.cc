@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -142,35 +143,20 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
       &StartTPMSlotInitializationOnIOThread, account_id, username_hash));
 }
 
-// Used to convert a callback that takes a net::NSSCertDatabase to one that
-// takes a net::NSSCertDatabaseChromeOS.
-void CallWithNSSCertDatabase(
-    base::OnceCallback<void(net::NSSCertDatabase*)> callback,
-    net::NSSCertDatabaseChromeOS* db) {
-  std::move(callback).Run(db);
-}
-
 }  // namespace
 
-// Creates and manages a NSSCertDatabaseChromeOS.  Created on the UI thread, but
+// Creates and manages a NSSCertDatabaseChromeOS. Created on the UI thread, but
 // all other calls are made on the IO thread.
 class NssServiceChromeOS::NSSCertDatabaseChromeOSManager {
  public:
-  typedef base::OnceCallback<void(net::NSSCertDatabaseChromeOS*)>
-      GetNSSCertDatabaseCallback;
+  using GetNSSCertDatabaseCallback =
+      base::OnceCallback<void(net::NSSCertDatabase*)>;
 
   NSSCertDatabaseChromeOSManager(std::string username_hash,
-                                 bool user_is_affiliated)
-      : username_hash_(std::move(username_hash)) {
+                                 bool enable_system_slot)
+      : username_hash_(std::move(username_hash)),
+        enable_system_slot_(enable_system_slot) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    if (user_is_affiliated) {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &NSSCertDatabaseChromeOSManager::EnableNSSSystemKeySlot,
-              weak_ptr_factory_.GetWeakPtr()));
-    }
   }
 
   NSSCertDatabaseChromeOSManager(const NSSCertDatabaseChromeOSManager&) =
@@ -180,95 +166,74 @@ class NssServiceChromeOS::NSSCertDatabaseChromeOSManager {
 
   ~NSSCertDatabaseChromeOSManager() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
 
-  net::NSSCertDatabaseChromeOS* GetNSSCertDatabaseChromeOS(
-      NSSCertDatabaseChromeOSManager::GetNSSCertDatabaseCallback callback) {
+  net::NSSCertDatabase* GetNSSCertDatabase(
+      GetNSSCertDatabaseCallback callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    if (nss_cert_database_)
+    if (nss_cert_database_) {
       return nss_cert_database_.get();
+    }
 
     ready_callback_list_.AddUnsafe(std::move(callback));
 
-    // If database creation has already started, nothing else to do.
-    if (database_creation_started_)
-      return nullptr;
+    if (!database_creation_started_) {
+      database_creation_started_ = true;
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&NSSCertDatabaseChromeOSManager::StartDatabaseCreation,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
 
-    // Otherwise, start creating the database.
-    database_creation_started_ = true;
+    return nullptr;
+  }
+
+ private:
+  void StartDatabaseCreation() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
     crypto::ScopedPK11Slot private_slot(crypto::GetPrivateSlotForChromeOSUser(
         username_hash_,
         base::BindOnce(&NSSCertDatabaseChromeOSManager::DidGetPrivateSlot,
                        weak_ptr_factory_.GetWeakPtr())));
     if (private_slot)
       DidGetPrivateSlot(std::move(private_slot));
-
-    return nullptr;
-  }
-
-  // Just like GetNSSCertDatabaseChromeOS(), but uses net::NSSCertDatabase
-  // instead of net::NSSCertDatabaseChromeOS.
-  net::NSSCertDatabase* GetNSSCertDatabase(
-      base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
-    return GetNSSCertDatabaseChromeOS(
-        base::BindOnce(&CallWithNSSCertDatabase, std::move(callback)));
-  }
-
- private:
-  using ReadyCallbackList =
-      base::OnceCallbackList<GetNSSCertDatabaseCallback::RunType>;
-
-  void EnableNSSSystemKeySlot() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    // This should only be called once.
-    DCHECK(!pending_system_slot_);
-
-    crypto::GetSystemNSSKeySlot(
-        base::BindOnce(&NSSCertDatabaseChromeOSManager::SetSystemSlotOfDB,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void SetSystemSlotOfDB(crypto::ScopedPK11Slot system_slot) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    if (!system_slot) {
-      // It's valid for `system_slot` to be nullptr, such as when there is no
-      // TPM, and it's not been overridden for testing. In this scenario,
-      // initialization is complete, because there's nothing to pass to the
-      // NSSCertDatabaseChromeOS.
-      return;
-    }
-
-    pending_system_slot_ = std::move(system_slot);
-
-    base::RepeatingCallback<void(net::NSSCertDatabaseChromeOS*)> callback =
-        base::BindRepeating(&NSSCertDatabaseChromeOSManager::SetSystemSlot,
-                            weak_ptr_factory_.GetWeakPtr());
-
-    net::NSSCertDatabaseChromeOS* db = GetNSSCertDatabaseChromeOS(callback);
-    if (db)
-      SetSystemSlot(db);
-  }
-
-  void SetSystemSlot(net::NSSCertDatabaseChromeOS* db) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    db->SetSystemSlot(std::move(pending_system_slot_));
   }
 
   void DidGetPrivateSlot(crypto::ScopedPK11Slot private_slot) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+    if (!enable_system_slot_) {
+      CreateDatabase(std::move(private_slot),
+                     /*system_slot=*/crypto::ScopedPK11Slot());
+      return;
+    }
+
+    crypto::GetSystemNSSKeySlot(base::BindOnce(
+        &NSSCertDatabaseChromeOSManager::CreateDatabase,
+        weak_ptr_factory_.GetWeakPtr(), std::move(private_slot)));
+  }
+
+  void CreateDatabase(crypto::ScopedPK11Slot private_slot,
+                      crypto::ScopedPK11Slot system_slot) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
     nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::GetPublicSlotForChromeOSUser(username_hash_),
         std::move(private_slot));
+
+    if (system_slot)
+      nss_cert_database_->SetSystemSlot(std::move(system_slot));
 
     ready_callback_list_.Notify(nss_cert_database_.get());
   }
 
   const std::string username_hash_;
+  bool enable_system_slot_ = false;
   bool database_creation_started_ = false;
 
-  crypto::ScopedPK11Slot pending_system_slot_;
-
   std::unique_ptr<net::NSSCertDatabaseChromeOS> nss_cert_database_;
-  ReadyCallbackList ready_callback_list_;
+  base::OnceCallbackList<GetNSSCertDatabaseCallback::RunType>
+      ready_callback_list_;
 
   base::WeakPtrFactory<NSSCertDatabaseChromeOSManager> weak_ptr_factory_{this};
 };
@@ -283,7 +248,7 @@ NssServiceChromeOS::NssServiceChromeOS(Profile* profile) {
   // username hash is empty, even when the NSS is not initialized for the
   // user.
   std::string username_hash;
-  bool user_is_affiliated = false;
+  bool enable_system_slot = false;
   if (user && !user->username_hash().empty()) {
     username_hash = user->username_hash();
     DCHECK(!username_hash.empty());
@@ -291,13 +256,13 @@ NssServiceChromeOS::NssServiceChromeOS(Profile* profile) {
         FROM_HERE, base::BindOnce(&StartNSSInitOnIOThread, user->GetAccountId(),
                                   username_hash, profile->GetPath()));
 
-    user_is_affiliated = user->IsAffiliated();
+    enable_system_slot = user->IsAffiliated();
   }
 
-  DCHECK(!(username_hash.empty() && user_is_affiliated));
+  DCHECK(!(username_hash.empty() && enable_system_slot));
 
   nss_cert_database_manager_ = std::make_unique<NSSCertDatabaseChromeOSManager>(
-      std::move(username_hash), user_is_affiliated);
+      std::move(username_hash), enable_system_slot);
 }
 
 NssServiceChromeOS::~NssServiceChromeOS() {

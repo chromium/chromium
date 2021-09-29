@@ -161,11 +161,7 @@ class NET_EXPORT NSSCertDatabase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get the slot for system-wide key data. May be NULL if the system token was
-  // not explicitly set.
-  // Note: The System slot is set after the NSSCertDatabase is constructed and
-  // this call returns synchronously. Thus, it is possible to call this function
-  // before SetSystemSlot is called and get a NULL result.
-  // See https://crbug.com/399554 .
+  // not enabled for this database.
   virtual crypto::ScopedPK11Slot GetSystemSlot() const;
 
   // Checks whether |cert| is stored on |slot|.
