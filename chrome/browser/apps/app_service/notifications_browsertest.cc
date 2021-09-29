@@ -43,11 +43,9 @@
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -143,14 +141,9 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
  public:
   const Extension* LoadExtensionAndWait(const std::string& test_name) {
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
-    content::WindowedNotificationObserver page_created(
-        extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
-    const extensions::Extension* extension = LoadExtension(extdir);
-    if (extension) {
-      page_created.Wait();
-    }
-    return extension;
+    // ExtensionApiTest::LoadExtension uses ChromeTestExtensionLoader, which
+    // waits for the extension background page to be ready before returning.
+    return LoadExtension(extdir);
   }
 
   const Extension* LoadAppWithWindowState(const std::string& test_name) {
