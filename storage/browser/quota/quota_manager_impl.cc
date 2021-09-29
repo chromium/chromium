@@ -233,15 +233,18 @@ bool UpdateAccessTimeOnDBThread(const StorageKey& storage_key,
                                 base::Time accessed_time,
                                 QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetStorageKeyLastAccessTime(storage_key, type,
-                                               accessed_time);
+  QuotaError result =
+      database->SetStorageKeyLastAccessTime(storage_key, type, accessed_time);
+  return result != QuotaError::kDatabaseError;
 }
 
 bool UpdateBucketAccessTimeOnDBThread(const BucketId bucket_id,
                                       base::Time accessed_time,
                                       QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetBucketLastAccessTime(bucket_id, accessed_time);
+  QuotaError result =
+      database->SetBucketLastAccessTime(bucket_id, accessed_time);
+  return result != QuotaError::kDatabaseError;
 }
 
 bool UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
@@ -249,15 +252,18 @@ bool UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
                                   base::Time modified_time,
                                   QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetStorageKeyLastModifiedTime(storage_key, type,
-                                                 modified_time);
+  QuotaError result =
+      database->SetStorageKeyLastModifiedTime(storage_key, type, modified_time);
+  return result != QuotaError::kDatabaseError;
 }
 
 bool UpdateBucketModifiedTimeOnDBThread(const BucketId bucket_id,
                                         base::Time modified_time,
                                         QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetBucketLastModifiedTime(bucket_id, modified_time);
+  QuotaError result =
+      database->SetBucketLastModifiedTime(bucket_id, modified_time);
+  return result != QuotaError::kDatabaseError;
 }
 
 void DidGetUsageAndQuotaStripBreakdown(

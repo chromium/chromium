@@ -142,25 +142,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
-  bool SetStorageKeyLastAccessTime(const blink::StorageKey& storage_key,
-                                   blink::mojom::StorageType type,
-                                   base::Time last_accessed);
+  QuotaError SetStorageKeyLastAccessTime(const blink::StorageKey& storage_key,
+                                         blink::mojom::StorageType type,
+                                         base::Time last_accessed);
 
   // Called by QuotaClient implementers to update when the bucket was last
   // accessed.  If `bucket_id` refers to a bucket with an opaque StorageKey, the
   // bucket's last access time will not be updated and the function will return
   // false.
-  bool SetBucketLastAccessTime(BucketId bucket_id, base::Time last_accessed);
+  QuotaError SetBucketLastAccessTime(BucketId bucket_id,
+                                     base::Time last_accessed);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastModifiedTime.
-  bool SetStorageKeyLastModifiedTime(const blink::StorageKey& storage_key,
-                                     blink::mojom::StorageType type,
-                                     base::Time last_modified);
+  QuotaError SetStorageKeyLastModifiedTime(const blink::StorageKey& storage_key,
+                                           blink::mojom::StorageType type,
+                                           base::Time last_modified);
 
   // Called by QuotaClient implementers to update when the bucket was last
   // modified.
-  bool SetBucketLastModifiedTime(BucketId bucket_id, base::Time last_modified);
+  QuotaError SetBucketLastModifiedTime(BucketId bucket_id,
+                                       base::Time last_modified);
 
   // Register initial `storage_keys` info `type` to the database.
   // This method is assumed to be called only after the installation or
@@ -168,13 +170,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool RegisterInitialStorageKeyInfo(
       const std::set<blink::StorageKey>& storage_keys,
       blink::mojom::StorageType type);
-
-  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetBucketInfo. Gets the BucketTableEntry for `storage_key`. Returns whether
-  // the record for a storage key's default bucket could be found.
-  bool GetStorageKeyInfo(const blink::StorageKey& storage_key,
-                         blink::mojom::StorageType type,
-                         BucketTableEntry* entry);
 
   // Gets the table entry for `bucket`. Returns whether the record for an
   // origin bucket can be found.

@@ -328,112 +328,124 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForStorageKey(
   return buckets;
 }
 
-bool QuotaDatabase::SetStorageKeyLastAccessTime(const StorageKey& storage_key,
-                                                StorageType type,
-                                                base::Time last_accessed) {
+QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
+    const StorageKey& storage_key,
+    StorageType type,
+    base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
-  BucketTableEntry entry;
-  if (!GetStorageKeyInfo(storage_key, type, &entry)) {
-    QuotaErrorOr<BucketInfo> result =
+  // Check if bucket exists first. Running an update statement on a bucket that
+  // doesn't exist fails DCHECK and crashes.
+  // TODO(crbug/1210252): Update to not execute 2 sql statements.
+  QuotaErrorOr<BucketInfo> result =
+      GetBucket(storage_key, kDefaultBucketName, type);
+  if (!result.ok()) {
+    if (result.error() != QuotaError::kNotFound)
+      return result.error();
+
+    QuotaErrorOr<BucketInfo> created_bucket =
         CreateBucketInternal(storage_key, type, kDefaultBucketName,
                              /*use_count=*/1, last_accessed, last_accessed);
-    return result.ok();
+    return created_bucket.ok() ? QuotaError::kNone : created_bucket.error();
   }
 
-  ++entry.use_count;
+  // clang-format off
   static constexpr char kSql[] =
-      // clang-format off
       "UPDATE buckets "
-        "SET use_count = ?, last_accessed = ? "
-        "WHERE storage_key = ? AND type = ? AND name = ?";
+        "SET use_count = use_count + 1, last_accessed = ? "
+        "WHERE id = ?";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt(0, entry.use_count);
-  statement.BindTime(1, last_accessed);
-  statement.BindString(2, storage_key.Serialize());
-  statement.BindInt(3, static_cast<int>(type));
-  statement.BindString(4, kDefaultBucketName);
+  statement.BindTime(0, last_accessed);
+  statement.BindInt64(1, result->id.value());
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
-bool QuotaDatabase::SetBucketLastAccessTime(const BucketId bucket_id,
-                                            base::Time last_accessed) {
+QuotaError QuotaDatabase::SetBucketLastAccessTime(const BucketId bucket_id,
+                                                  base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   BucketTableEntry entry;
   if (!GetBucketInfo(bucket_id, &entry))
-    return false;
+    return QuotaError::kNotFound;
 
-  ++entry.use_count;
+  // clang-format off
   static constexpr char kSql[] =
-      "UPDATE buckets SET use_count = ?, last_accessed = ? WHERE id = ?";
+      "UPDATE buckets "
+        "SET use_count = use_count + 1, last_accessed = ? "
+        "WHERE id = ?";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt(0, entry.use_count);
-  statement.BindTime(1, last_accessed);
-  statement.BindInt64(2, bucket_id.value());
+  statement.BindTime(0, last_accessed);
+  statement.BindInt64(1, bucket_id.value());
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
-bool QuotaDatabase::SetStorageKeyLastModifiedTime(const StorageKey& storage_key,
-                                                  StorageType type,
-                                                  base::Time last_modified) {
+QuotaError QuotaDatabase::SetStorageKeyLastModifiedTime(
+    const StorageKey& storage_key,
+    StorageType type,
+    base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
-  BucketTableEntry entry;
-  if (!GetStorageKeyInfo(storage_key, type, &entry)) {
-    QuotaErrorOr<BucketInfo> result =
+  // Check if bucket exists first. Running an update statement on a bucket that
+  // doesn't exist fails DCHECK and crashes.
+  // TODO(crbug/1210252): Update to not execute 2 sql statements.
+  QuotaErrorOr<BucketInfo> result =
+      GetBucket(storage_key, kDefaultBucketName, type);
+  if (!result.ok()) {
+    if (result.error() != QuotaError::kNotFound)
+      return result.error();
+
+    QuotaErrorOr<BucketInfo> created_bucket =
         CreateBucketInternal(storage_key, type, kDefaultBucketName,
                              /*use_count=*/0, last_modified, last_modified);
-    return result.ok();
+    return created_bucket.ok() ? QuotaError::kNone : created_bucket.error();
   }
 
   static constexpr char kSql[] =
-      // clang-format off
-      "UPDATE buckets "
-        "SET last_modified = ? "
-        "WHERE storage_key = ? AND type = ? AND name = ?";
-  // clang-format on
+      "UPDATE buckets SET last_modified = ? WHERE id = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindTime(0, last_modified);
-  statement.BindString(1, storage_key.Serialize());
-  statement.BindInt(2, static_cast<int>(type));
-  statement.BindString(3, kDefaultBucketName);
+  statement.BindInt64(1, result->id.value());
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
-bool QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
-                                              base::Time last_modified) {
+QuotaError QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
+                                                    base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   BucketTableEntry entry;
   if (!GetBucketInfo(bucket_id, &entry))
-    return false;
+    return QuotaError::kNotFound;
 
   static constexpr char kSql[] =
       "UPDATE buckets SET last_modified = ? WHERE id = ?";
@@ -442,10 +454,10 @@ bool QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
   statement.BindInt64(1, bucket_id.value());
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
 bool QuotaDatabase::RegisterInitialStorageKeyInfo(
@@ -482,37 +494,6 @@ bool QuotaDatabase::RegisterInitialStorageKeyInfo(
   }
 
   ScheduleCommit();
-  return true;
-}
-
-bool QuotaDatabase::GetStorageKeyInfo(const StorageKey& storage_key,
-                                      StorageType type,
-                                      QuotaDatabase::BucketTableEntry* entry) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
-
-  static constexpr char kSql[] =
-      // clang-format off
-      "SELECT "
-          "id,"
-          "use_count,"
-          "last_accessed,"
-          "last_modified "
-        "FROM buckets "
-        "WHERE storage_key = ? AND type = ? AND name = ?";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindInt(1, static_cast<int>(type));
-  statement.BindString(2, kDefaultBucketName);
-
-  if (!statement.Step())
-    return false;
-
-  *entry = BucketTableEntry(BucketId(statement.ColumnInt64(0)), storage_key,
-                            type, kDefaultBucketName, statement.ColumnInt(1),
-                            statement.ColumnTime(2), statement.ColumnTime(3));
   return true;
 }
 
