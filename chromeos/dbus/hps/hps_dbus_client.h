@@ -5,8 +5,10 @@
 #ifndef CHROMEOS_DBUS_HPS_HPS_DBUS_CLIENT_H_
 #define CHROMEOS_DBUS_HPS_HPS_DBUS_CLIENT_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -33,8 +35,14 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
     Observer();
   };
 
+  using GetResultHpsNotifyCallback =
+      base::OnceCallback<void(absl::optional<bool>)>;
+
   HpsDBusClient(const HpsDBusClient&) = delete;
   HpsDBusClient& operator=(const HpsDBusClient&) = delete;
+
+  // Polls the HPS notify state.
+  virtual void GetResultHpsNotify(GetResultHpsNotifyCallback cb) = 0;
 
   // Registers the given observer to receive HPS signals.
   virtual void AddObserver(Observer* observer) = 0;

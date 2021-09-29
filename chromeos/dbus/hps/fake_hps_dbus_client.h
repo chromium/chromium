@@ -21,6 +21,7 @@ class FakeHpsDBusClient : public HpsDBusClient {
   // HpsDBusClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void GetResultHpsNotify(GetResultHpsNotifyCallback cb) override;
 };
 
 }  // namespace chromeos

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hps/dbus-constants.h"
 
 namespace chromeos {
@@ -22,6 +24,22 @@ namespace chromeos {
 namespace {
 
 HpsDBusClient* g_instance = nullptr;
+
+// Extracts the HPS notify data out of a DBus response.
+absl::optional<bool> UnwrapHpsNotifyResult(dbus::Response* response) {
+  if (response == nullptr) {
+    return absl::nullopt;
+  }
+
+  dbus::MessageReader reader(response);
+  bool result = false;
+  if (!reader.PopBool(&result)) {
+    LOG(ERROR) << "Invalid DBus response data";
+    return absl::nullopt;
+  }
+
+  return result;
+}
 
 class HpsDBusClientImpl : public HpsDBusClient {
  public:
@@ -65,6 +83,15 @@ class HpsDBusClientImpl : public HpsDBusClient {
   }
 
   // HpsDBusClient:
+
+  void GetResultHpsNotify(GetResultHpsNotifyCallback cb) override {
+    dbus::MethodCall method_call(hps::kHpsServiceInterface,
+                                 hps::kGetResultHpsNotify);
+    dbus::MessageWriter writer(&method_call);
+    hps_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UnwrapHpsNotifyResult).Then(std::move(cb)));
+  }
 
   void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
