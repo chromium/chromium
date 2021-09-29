@@ -48,33 +48,22 @@ public class FirstRunFlowSequencerTest {
     /**
      * Testing version of FirstRunFlowSequencer that allows us to override all needed checks.
      */
-    public static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {
-        public Bundle returnedBundle;
-        public boolean calledOnFlowIsKnown;
-        public boolean calledSetFirstRunFlowSignInComplete;
-
-        public boolean isFirstRunFlowComplete;
+    private static class TestFirstRunFlowSequencerDelegate
+            extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
         public boolean isSignedIn;
         public boolean isSyncAllowed;
         public boolean shouldSkipFirstUseHints;
-        public boolean isFirstRunEulaAccepted;
         public boolean shouldShowDataReductionPage;
         public boolean shouldShowSearchEnginePage;
 
-        public TestFirstRunFlowSequencer(Activity activity) {
-            super(activity);
+        @Override
+        public boolean shouldShowDataReductionPage() {
+            return shouldShowDataReductionPage;
         }
 
         @Override
-        public void onFlowIsKnown(Bundle freProperties) {
-            calledOnFlowIsKnown = true;
-            if (freProperties != null) onNativeAndPoliciesInitialized(freProperties);
-            returnedBundle = freProperties;
-        }
-
-        @Override
-        public boolean isFirstRunFlowComplete() {
-            return isFirstRunFlowComplete;
+        public boolean shouldShowSearchEnginePage() {
+            return shouldShowSearchEnginePage;
         }
 
         @Override
@@ -88,23 +77,25 @@ public class FirstRunFlowSequencerTest {
         }
 
         @Override
-        public boolean shouldSkipFirstUseHints() {
+        public boolean shouldSkipFirstUseHints(Activity activity) {
             return shouldSkipFirstUseHints;
         }
+    }
 
-        @Override
-        public boolean isFirstRunEulaAccepted() {
-            return isFirstRunEulaAccepted;
+    private static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {
+        public Bundle returnedBundle;
+        public boolean calledOnFlowIsKnown;
+        public boolean calledSetFirstRunFlowSignInComplete;
+
+        public TestFirstRunFlowSequencer(Activity activity) {
+            super(activity);
         }
 
         @Override
-        public boolean shouldShowDataReductionPage() {
-            return shouldShowDataReductionPage;
-        }
-
-        @Override
-        public boolean shouldShowSearchEnginePage() {
-            return shouldShowSearchEnginePage;
+        public void onFlowIsKnown(Bundle freProperties) {
+            calledOnFlowIsKnown = true;
+            if (freProperties != null) onNativeAndPoliciesInitialized(freProperties);
+            returnedBundle = freProperties;
         }
 
         @Override
@@ -115,26 +106,30 @@ public class FirstRunFlowSequencerTest {
 
     private ActivityController<Activity> mActivityController;
     private TestFirstRunFlowSequencer mSequencer;
+    private TestFirstRunFlowSequencerDelegate mDelegate;
 
     @Before
     public void setUp() {
         mActivityController = Robolectric.buildActivity(Activity.class);
-        mSequencer = new TestFirstRunFlowSequencer(mActivityController.setup().get());
+        Activity activity = mActivityController.setup().get();
+        mDelegate = new TestFirstRunFlowSequencerDelegate();
+        FirstRunFlowSequencer.setDelegateForTesting(mDelegate);
+        mSequencer = new TestFirstRunFlowSequencer(activity);
     }
 
     @After
     public void tearDown() {
         mActivityController.pause().stop().destroy();
+        FirstRunFlowSequencer.setDelegateForTesting(null);
     }
 
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowTosNotSeen() {
-        mSequencer.isFirstRunFlowComplete = false;
-        mSequencer.isSignedIn = false;
-        mSequencer.isSyncAllowed = true;
-        mSequencer.shouldSkipFirstUseHints = false;
-        mSequencer.shouldShowDataReductionPage = false;
+        mDelegate.isSignedIn = false;
+        mDelegate.isSyncAllowed = true;
+        mDelegate.shouldSkipFirstUseHints = false;
+        mDelegate.shouldShowDataReductionPage = false;
         mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
@@ -153,11 +148,10 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowOneChildAccount() {
-        mSequencer.isFirstRunFlowComplete = false;
-        mSequencer.isSignedIn = false;
-        mSequencer.isSyncAllowed = true;
-        mSequencer.shouldSkipFirstUseHints = false;
-        mSequencer.shouldShowDataReductionPage = false;
+        mDelegate.isSignedIn = false;
+        mDelegate.isSyncAllowed = true;
+        mDelegate.shouldSkipFirstUseHints = false;
+        mDelegate.shouldShowDataReductionPage = false;
         mSequencer.initializeSharedState(
                 ChildAccountStatus.REGULAR_CHILD, Collections.singletonList(DEFAULT_ACCOUNT));
 
@@ -177,12 +171,11 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowShowDataReductionPage() {
-        mSequencer.isFirstRunFlowComplete = false;
-        mSequencer.isSignedIn = false;
-        mSequencer.isSyncAllowed = true;
-        mSequencer.shouldSkipFirstUseHints = false;
-        mSequencer.shouldShowDataReductionPage = true;
-        mSequencer.shouldShowSearchEnginePage = false;
+        mDelegate.isSignedIn = false;
+        mDelegate.isSyncAllowed = true;
+        mDelegate.shouldSkipFirstUseHints = false;
+        mDelegate.shouldShowDataReductionPage = true;
+        mDelegate.shouldShowSearchEnginePage = false;
         mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
@@ -201,12 +194,11 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowShowSearchEnginePage() {
-        mSequencer.isFirstRunFlowComplete = false;
-        mSequencer.isSignedIn = false;
-        mSequencer.isSyncAllowed = true;
-        mSequencer.shouldSkipFirstUseHints = false;
-        mSequencer.shouldShowDataReductionPage = true;
-        mSequencer.shouldShowSearchEnginePage = true;
+        mDelegate.isSignedIn = false;
+        mDelegate.isSyncAllowed = true;
+        mDelegate.shouldSkipFirstUseHints = false;
+        mDelegate.shouldShowDataReductionPage = true;
+        mDelegate.shouldShowSearchEnginePage = true;
         mSequencer.initializeSharedState(ChildAccountStatus.NOT_CHILD, Collections.emptyList());
 
         mSequencer.processFreEnvironmentPreNative();
