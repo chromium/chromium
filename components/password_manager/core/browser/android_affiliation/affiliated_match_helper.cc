@@ -19,7 +19,7 @@ namespace password_manager {
 constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
 
 AffiliatedMatchHelper::AffiliatedMatchHelper(
-    PasswordStore* password_store,
+    PasswordStoreInterface* password_store,
     AffiliationService* affiliation_service)
     : password_store_(password_store),
       affiliation_service_(affiliation_service) {}

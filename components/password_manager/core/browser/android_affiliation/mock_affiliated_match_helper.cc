@@ -16,7 +16,7 @@ MockAffiliatedMatchHelper::MockAffiliatedMatchHelper()
     : AffiliatedMatchHelper(nullptr, nullptr) {}
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper(
-    PasswordStore* password_store,
+    PasswordStoreInterface* password_store,
     AffiliationService* affiliation_service)
     : AffiliatedMatchHelper(password_store, affiliation_service) {}
 

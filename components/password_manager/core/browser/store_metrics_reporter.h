@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 class PrefService;
