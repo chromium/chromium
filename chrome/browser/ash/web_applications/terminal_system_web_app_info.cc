@@ -107,16 +107,3 @@ bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(
   }
   return true;
 }
-
-bool TerminalSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
-  // Terminal System App loads nassh extension which can redirect to
-  // uberproxy and google login.
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return url.host() == "iodihamcpbpeioajjeobimgagajmlibd";
-  }
-  if (url.SchemeIs(url::kHttpsScheme)) {
-    return url.host() == "sup-ssh-relay.corp.google.com" ||
-           url.host() == "login.google.com";
-  }
-  return false;
-}
