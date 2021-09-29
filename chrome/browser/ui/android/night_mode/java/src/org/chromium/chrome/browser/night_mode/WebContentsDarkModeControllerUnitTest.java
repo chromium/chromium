@@ -27,8 +27,11 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkSettingsChangeSource;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -41,7 +44,8 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Unit tests for {@link WebContentsDarkModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = WebContentsDarkModeControllerUnitTest.ShadowApplicationStatus.class)
+        shadows = {WebContentsDarkModeControllerUnitTest.ShadowApplicationStatus.class,
+                ShadowRecordHistogram.class})
 public class WebContentsDarkModeControllerUnitTest {
     @Implements(ApplicationStatus.class)
     static class ShadowApplicationStatus {
@@ -111,6 +115,8 @@ public class WebContentsDarkModeControllerUnitTest {
         Profile.setLastUsedProfileForTesting(mMockProfile);
         ShadowApplicationStatus.sApplicationState = ApplicationState.HAS_RUNNING_ACTIVITIES;
 
+        ShadowRecordHistogram.reset();
+
         Mockito.doAnswer(invocation -> {
                    mIsAutoDarkEnabledBySettings = (boolean) invocation.getArguments()[2];
                    return null;
@@ -132,6 +138,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
         ShadowApplicationStatus.sApplicationState = ApplicationState.UNKNOWN;
         ShadowApplicationStatus.sLastListener = null;
+        ShadowRecordHistogram.reset();
     }
 
     @Test
@@ -158,23 +165,35 @@ public class WebContentsDarkModeControllerUnitTest {
         assertIsObservingNightMode(false);
     }
 
-    private void doTestSetAutoDarkEnabled(boolean enabled) {
+    private void doTestSetAutoDarkEnabled(
+            boolean enabled, @AutoDarkSettingsChangeSource int source) {
         mNightModeStateProvider.mIsInNightMode = true;
 
-        WebContentsDarkModeController.setGlobalUserSettings(enabled);
+        WebContentsDarkModeController.setGlobalUserSettings(enabled, source);
         Assert.assertEquals(
                 "Auto dark settings state incorrect.", enabled, mIsAutoDarkEnabledBySettings);
         assertForceDarkModeEnabled(enabled);
+        assertAutoDarkModeChangeSourceRecorded(source, enabled, 1);
     }
 
     @Test
-    public void testSetAutoDarkEnabledBySettings_Enabled() {
-        doTestSetAutoDarkEnabled(true);
+    public void testEnable_ByThemeSettings() {
+        doTestSetAutoDarkEnabled(true, AutoDarkSettingsChangeSource.THEME_SETTINGS);
     }
 
     @Test
-    public void testSetAutoDarkEnabledBySettings_Disabled() {
-        doTestSetAutoDarkEnabled(false);
+    public void testEnable_BySiteSettings() {
+        doTestSetAutoDarkEnabled(true, AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL);
+    }
+
+    @Test
+    public void testDisabled_ByThemeSettings() {
+        doTestSetAutoDarkEnabled(false, AutoDarkSettingsChangeSource.THEME_SETTINGS);
+    }
+
+    @Test
+    public void testDisabled_BySiteSettings() {
+        doTestSetAutoDarkEnabled(false, AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL);
     }
 
     @Test
@@ -204,5 +223,15 @@ public class WebContentsDarkModeControllerUnitTest {
             Assert.assertNull("Controller will not should not observing night mode.",
                     mNightModeStateProvider.mObserver);
         }
+    }
+
+    private void assertAutoDarkModeChangeSourceRecorded(
+            @AutoDarkSettingsChangeSource int source, boolean enabled, int expectedCounts) {
+        String histogramName = "Android.DarkTheme.AutoDark.SettingsChangeSource."
+                + (enabled ? "Enabled" : "Disabled");
+        int actualCount = RecordHistogram.getHistogramValueCountForTesting(histogramName, source);
+        Assert.assertEquals("Histogram <" + histogramName + "> for sample <" + source
+                        + "> is not recorded correctly.",
+                expectedCounts, actualCount);
     }
 }

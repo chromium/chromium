@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.night_mode;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -77,9 +79,10 @@ public class WebContentsDarkModeMessageController {
      */
     @VisibleForTesting
     static void onPrimaryAction(Activity activity, SettingsLauncher settingsLauncher) {
-        settingsLauncher.launchSettingsActivity(activity, ThemeSettingsFragment.class);
-        // TODO(crbug.com/1250800): Update UMA OpenSettingsFrom and mark UMA AutoDarkSettingsEntry
-        // from message.
+        Bundle args = new Bundle();
+        args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
+        settingsLauncher.launchSettingsActivity(activity, ThemeSettingsFragment.class, args);
     }
 
     /**

@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITE
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -25,8 +26,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -86,11 +89,6 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
                 .when(mMockWebsitePreferenceBridgeJni)
                 .setContentSettingEnabled(
                         any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mFragment = mSettingsActivityTestRule.getFragment();
-        mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
-                ThemeSettingsFragment.PREF_UI_THEME_PREF);
     }
 
     @Override
@@ -105,6 +103,7 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
     @SmallTest
     @Feature({"Themes"})
     public void testSelectThemes() {
+        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             int expectedDefaultTheme = ThemeType.LIGHT;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -148,6 +147,7 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
     @Feature({"Themes"})
     @Features.EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
+        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             int expectedDefaultTheme = ThemeType.LIGHT;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -217,6 +217,23 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
         });
     }
 
+    @Test
+    @SmallTest
+    public void testStartThemeSettings_FromAutoDarkMessages() {
+        launchThemeSettings(ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
+    }
+
+    private void launchThemeSettings(@ThemeSettingsEntry Integer settingsEntry) {
+        Bundle args = new Bundle();
+        args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY, settingsEntry);
+        mSettingsActivityTestRule.startSettingsActivity(args);
+
+        mFragment = mSettingsActivityTestRule.getFragment();
+        mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
+                ThemeSettingsFragment.PREF_UI_THEME_PREF);
+        assertThemeSettingsEntryRecorded(settingsEntry);
+    }
+
     private RadioButtonWithDescription getButton(int index) {
         return (RadioButtonWithDescription) mPreference.getButtonsForTesting().get(index);
     }
@@ -238,5 +255,17 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
         Assert.assertTrue(buttonTitle + " button should be checked.", getButton(index).isChecked());
         Assert.assertTrue(
                 "Buttons except " + buttonTitle + " should be unchecked.", isRestUnchecked(index));
+    }
+
+    private void assertThemeSettingsEntryRecorded(int sample) {
+        Assert.assertEquals("<Android.DarkTheme.ThemeSettingsEntry> should be recorded once.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry"));
+        Assert.assertEquals(
+                "<Android.DarkTheme.ThemeSettingsEntry> should be recorded once for sample <"
+                        + sample + ">.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry", sample));
     }
 }

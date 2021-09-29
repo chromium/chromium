@@ -1797,6 +1797,13 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="NEON support"/>
 </enum>
 
+<enum name="AndroidAutoDarkModeSettingsChangeSource">
+  <summary>See Android.DarkTheme.AutoDarkMode.SettingsChangeSource.*</summary>
+  <int value="0" label="Theme settings"/>
+  <int value="1" label="Site settings global"/>
+  <int value="2" label="App menu"/>
+</enum>
+
 <enum name="AndroidComponentLoaderLoadStatus">
   <int value="0" label="Component loaded"/>
   <int value="1" label="Failed to connect to ComponentsProviderService"/>
@@ -2359,6 +2366,12 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Undo Pressed"/>
   <int value="3" label="Undos Dismissed (Timeout) (Deprecated)"/>
   <int value="4" label="Undos Dismissed (Action) (Deprecated)"/>
+</enum>
+
+<enum name="AndroidThemeSettingsEntry">
+  <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
+  <int value="0" label="Settings"/>
+  <int value="1" label="Auto dark mode message"/>
 </enum>
 
 <enum name="AndroidWebViewActualUiThread">

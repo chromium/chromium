@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.night_mode;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -17,6 +19,9 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * A controller class could enable or disable web content dark mode feature based on the night mode
  * and the user preference.
@@ -24,6 +29,25 @@ import org.chromium.url.GURL;
  * TODO(https://crbug.com/1249345): Rework and try removing Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED.
  */
 public class WebContentsDarkModeController implements ApplicationStateListener {
+    /**
+     * Source from which auto dark web content settings changed. This includes both changes to the
+     * global user settings and the site exceptions.
+     *
+     * This is used for histograms and should therefore be treated as append-only.
+     * See AndroidAutoDarkModeSettingsChangeSource in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({AutoDarkSettingsChangeSource.THEME_SETTINGS,
+            AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL,
+            AutoDarkSettingsChangeSource.APP_MENU})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AutoDarkSettingsChangeSource {
+        int THEME_SETTINGS = 0;
+        int SITE_SETTINGS_GLOBAL = 1;
+        int APP_MENU = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     private NightModeStateProvider.Observer mNightModeObserver;
     private static WebContentsDarkModeController sController;
 
@@ -72,17 +96,24 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
 
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 profile, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url, contentSettingValue);
+        recordAutoDarkSettingsChangeSource(AutoDarkSettingsChangeSource.APP_MENU, enabled);
     }
 
     /**
      * Enable or disable the global user settings for auto dark mode. If the global settings is
      * enabled, the web contents will be darkened by default if Chrome is in dark mode.
      * @param enabled The new global setting state of the web content auto dark mode.
+     * @param source The {@link AutoDarkSettingsChangeSource} that changes the auto dark web content
+     *               settings.
      */
-    public static void setGlobalUserSettings(boolean enabled) {
+    public static void setGlobalUserSettings(
+            boolean enabled, @AutoDarkSettingsChangeSource int source) {
+        assert source == AutoDarkSettingsChangeSource.THEME_SETTINGS
+                || source == AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
         WebsitePreferenceBridge.setContentSettingEnabled(Profile.getLastUsedRegularProfile(),
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, enabled);
         enableWebContentsDarkMode(shouldEnableWebContentsDarkMode());
+        recordAutoDarkSettingsChangeSource(source, enabled);
     }
 
     /** Return whether web content dark mode is enabled by settings. */
@@ -134,5 +165,19 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
     @VisibleForTesting
     public static void setTestInstance(WebContentsDarkModeController testInstance) {
         sController = testInstance;
+    }
+
+    /**
+     * Records the source that changes the auto dark web content settings.
+     * @param source The {@link AutoDarkSettingsChangeSource} that changes the auto dark web content
+     *         settings.
+     * @param enabled Whether auto dark is enabled after the change.
+     */
+    private static void recordAutoDarkSettingsChangeSource(
+            @AutoDarkSettingsChangeSource int source, boolean enabled) {
+        String histogram = "Android.DarkTheme.AutoDark.SettingsChangeSource."
+                + (enabled ? "Enabled" : "Disabled");
+        RecordHistogram.recordEnumeratedHistogram(
+                histogram, source, AutoDarkSettingsChangeSource.NUM_ENTRIES);
     }
 }

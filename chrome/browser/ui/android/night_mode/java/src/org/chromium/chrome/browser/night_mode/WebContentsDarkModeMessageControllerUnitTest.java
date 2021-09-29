@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.night_mode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,9 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 
 /**
  * Unit tests for {@link WebContentsDarkModeMessageController}.
+ *
+ * TODO(https://crbug.com/1252868): Add a test case to have message not send because of feature
+ * engagement system.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebContentsDarkModeMessageControllerUnitTest {
@@ -85,7 +89,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Message not clicked, so action was not run.
         verify(mSettingsLauncher, times(0))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class));
+                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
 
         // TODO(crbug.com/1252868): Message dismissed and marked as shown as a result.
         WebContentsDarkModeMessageController.onMessageDismissed(DismissReason.UNKNOWN);
@@ -101,7 +105,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         // Message clicked, so action was run.
         WebContentsDarkModeMessageController.onPrimaryAction(mActivity, mSettingsLauncher);
         verify(mSettingsLauncher, times(1))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class));
+                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
 
         // TODO(crbug.com/1252868): Message dismissed and marked as shown as a result.
         WebContentsDarkModeMessageController.onMessageDismissed(DismissReason.UNKNOWN);
@@ -120,13 +124,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Message not shown, so action not run.
         verify(mSettingsLauncher, times(0))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class));
+                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
 
         // TODO(crbug.com/1252868): Message not marked as shown.
-    }
-
-    @Test
-    public void testSendMessage_messageShownBefore() {
-        // TODO(crbug.com/1252868): Have message not send because of feature engagement system
     }
 }

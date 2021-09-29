@@ -13,9 +13,11 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkSettingsChangeSource;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.UiUtils;
@@ -25,6 +27,8 @@ import org.chromium.ui.UiUtils;
  */
 public class ThemeSettingsFragment extends PreferenceFragmentCompat {
     static final String PREF_UI_THEME_PREF = "ui_theme_pref";
+
+    public static final String KEY_THEME_SETTINGS_ENTRY = "theme_settings_entry";
 
     private boolean mWebContentsDarkModeEnabled;
 
@@ -47,8 +51,8 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
                         != mWebContentsDarkModeEnabled) {
                     mWebContentsDarkModeEnabled =
                             radioButtonGroupThemePreference.isDarkenWebsitesEnabled();
-                    WebContentsDarkModeController.setGlobalUserSettings(
-                            mWebContentsDarkModeEnabled);
+                    WebContentsDarkModeController.setGlobalUserSettings(mWebContentsDarkModeEnabled,
+                            AutoDarkSettingsChangeSource.THEME_SETTINGS);
                 }
             }
             int theme = (int) newValue;
@@ -57,6 +61,14 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
         });
 
         // TODO(crbug.com/1252868): Notify feature engagement system that settings were opened.
+        // Record entry point metrics if this fragment is freshly created.
+        if (savedInstanceState == null) {
+            assert getArguments() != null
+                    && getArguments().containsKey(KEY_THEME_SETTINGS_ENTRY)
+                : "<theme_settings_entry> is missing in args.";
+            NightModeMetrics.recordThemeSettingsEntry(
+                    getArguments().getInt(KEY_THEME_SETTINGS_ENTRY));
+        }
     }
 
     @Override

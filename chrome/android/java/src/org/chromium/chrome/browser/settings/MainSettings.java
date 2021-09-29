@@ -22,7 +22,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -245,7 +247,10 @@ public class MainSettings extends PreferenceFragmentCompat
         }
 
         if (DeveloperSettings.shouldShowDeveloperSettings()) {
-            addPreferenceIfAbsent(PREF_DEVELOPER);
+            addPreferenceIfAbsent(PREF_DEVELOPER)
+                    .getExtras()
+                    .putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                            ThemeSettingsEntry.SETTINGS);
         } else {
             removePreferenceIfPresent(PREF_DEVELOPER);
         }
