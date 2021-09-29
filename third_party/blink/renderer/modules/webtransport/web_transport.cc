@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -578,7 +577,8 @@ class WebTransport::ReceiveStreamVendor final
 
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
-    web_transport_->stream_map_.insert(stream_id, receive_stream);
+    web_transport_->incoming_stream_map_.insert(
+        stream_id, receive_stream->GetIncomingStream());
 
     auto it =
         web_transport_->closed_potentially_pending_streams_.find(stream_id);
@@ -589,7 +589,7 @@ class WebTransport::ReceiveStreamVendor final
 
       // This can run JavaScript. This is safe because `receive_stream` hasn't
       // been exposed yet.
-      receive_stream->OnIncomingStreamClosed(fin_received);
+      receive_stream->GetIncomingStream()->OnIncomingStreamClosed(fin_received);
     }
 
     std::move(enqueue).Run(receive_stream);
@@ -643,7 +643,10 @@ class WebTransport::BidirectionalStreamVendor final
 
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
-    web_transport_->stream_map_.insert(stream_id, bidirectional_stream);
+    web_transport_->incoming_stream_map_.insert(
+        stream_id, bidirectional_stream->GetIncomingStream());
+    web_transport_->outgoing_stream_map_.insert(
+        stream_id, bidirectional_stream->GetOutgoingStream());
 
     std::move(enqueue).Run(bidirectional_stream);
   }
@@ -882,9 +885,9 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
                                           bool fin_received) {
   DVLOG(1) << "WebTransport::OnIncomingStreamClosed(" << stream_id << ", "
            << fin_received << ") this=" << this;
-  auto it = stream_map_.find(stream_id);
+  auto it = incoming_stream_map_.find(stream_id);
 
-  if (it == stream_map_.end()) {
+  if (it == incoming_stream_map_.end()) {
     // We reach here from two reasons.
     // 1) The stream may have already been removed from the map because of races
     //    between different ways of closing bidirectional streams.
@@ -898,8 +901,7 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
     return;
   }
 
-  WebTransportStream* stream = it->value;
-  DCHECK(stream);
+  IncomingStream* stream = it->value;
   stream->OnIncomingStreamClosed(fin_received);
 }
 
@@ -928,7 +930,10 @@ void WebTransport::ContextDestroyed() {
   // Child streams must be reset first to ensure that garbage collection
   // ordering is safe. ContextDestroyed() is required not to execute JavaScript,
   // so this loop will not be re-entered.
-  for (WebTransportStream* stream : stream_map_.Values()) {
+  for (IncomingStream* stream : incoming_stream_map_.Values()) {
+    stream->ContextDestroyed();
+  }
+  for (OutgoingStream* stream : outgoing_stream_map_.Values()) {
     stream->ContextDestroyed();
   }
   Dispose();
@@ -947,8 +952,12 @@ void WebTransport::AbortStream(uint32_t stream_id) {
   transport_remote_->AbortStream(stream_id, /*code=*/0);
 }
 
-void WebTransport::ForgetStream(uint32_t stream_id) {
-  stream_map_.erase(stream_id);
+void WebTransport::ForgetIncomingStream(uint32_t stream_id) {
+  incoming_stream_map_.erase(stream_id);
+}
+
+void WebTransport::ForgetOutgoingStream(uint32_t stream_id) {
+  outgoing_stream_map_.erase(stream_id);
 }
 
 void WebTransport::Trace(Visitor* visitor) const {
@@ -967,7 +976,8 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(ready_);
   visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);
-  visitor->Trace(stream_map_);
+  visitor->Trace(incoming_stream_map_);
+  visitor->Trace(outgoing_stream_map_);
   visitor->Trace(received_streams_);
   visitor->Trace(received_streams_underlying_source_);
   visitor->Trace(received_bidirectional_streams_);
@@ -1110,11 +1120,17 @@ void WebTransport::ResetAll() {
 
   // This loop is safe even if re-entered. It will always terminate because
   // every iteration erases one entry from the map.
-  while (!stream_map_.IsEmpty()) {
-    auto it = stream_map_.begin();
-    auto close_proxy = it->value;
-    stream_map_.erase(it);
-    close_proxy->Reset();
+  while (!incoming_stream_map_.IsEmpty()) {
+    auto it = incoming_stream_map_.begin();
+    auto stream = it->value;
+    incoming_stream_map_.erase(it);
+    stream->Reset();
+  }
+  while (!outgoing_stream_map_.IsEmpty()) {
+    auto it = outgoing_stream_map_.begin();
+    auto stream = it->value;
+    outgoing_stream_map_.erase(it);
+    stream->Reset();
   }
   Dispose();
 }
@@ -1122,7 +1138,8 @@ void WebTransport::ResetAll() {
 void WebTransport::Dispose() {
   DVLOG(1) << "WebTransport::Dispose() this=" << this;
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
-  stream_map_.clear();
+  incoming_stream_map_.clear();
+  outgoing_stream_map_.clear();
   connector_.reset();
   transport_remote_.reset();
   handshake_client_receiver_.reset();
@@ -1229,7 +1246,7 @@ void WebTransport::OnCreateSendStreamResponse(
 
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
   CHECK_LT(stream_id, 0xfffffffe);
-  stream_map_.insert(stream_id, send_stream);
+  outgoing_stream_map_.insert(stream_id, send_stream->GetOutgoingStream());
 
   resolver->Resolve(send_stream);
 }
@@ -1277,7 +1294,10 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
 
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
   CHECK_LT(stream_id, 0xfffffffe);
-  stream_map_.insert(stream_id, bidirectional_stream);
+  incoming_stream_map_.insert(stream_id,
+                              bidirectional_stream->GetIncomingStream());
+  outgoing_stream_map_.insert(stream_id,
+                              bidirectional_stream->GetOutgoingStream());
 
   resolver->Resolve(bidirectional_stream);
 }

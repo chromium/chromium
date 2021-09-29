@@ -114,4 +114,9 @@ void TestWebTransportCreator::BindConnector(
           std::move(handle)));
 }
 
+void TestWebTransportCreator::Reset() {
+  client_remote_.reset();
+  connector_receiver_.reset();
+}
+
 }  // namespace blink

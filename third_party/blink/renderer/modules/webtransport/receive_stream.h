@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/incoming_stream.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -23,8 +22,7 @@ class WebTransport;
 // Implementation of ReceiveStream from the standard:
 // https://wicg.github.io/web-transport/#receive-stream.
 
-class MODULES_EXPORT ReceiveStream final : public ReadableStream,
-                                           public WebTransportStream {
+class MODULES_EXPORT ReceiveStream final : public ReadableStream {
  public:
   // ReceiveStream doesn't have a JavaScript constructor. It is only
   // constructed from C++.
@@ -37,19 +35,12 @@ class MODULES_EXPORT ReceiveStream final : public ReadableStream,
     incoming_stream_->InitWithExistingReadableStream(this, exception_state);
   }
 
-  // Implementation of WebTransportStream.
-  void OnIncomingStreamClosed(bool fin_received) override;
-  void Reset() override;
-  void ContextDestroyed() override;
+  IncomingStream* GetIncomingStream() { return incoming_stream_; }
 
   void Trace(Visitor*) const override;
 
  private:
-  void OnAbort();
-
   const Member<IncomingStream> incoming_stream_;
-  const Member<WebTransport> web_transport_;
-  const uint32_t stream_id_;
 };
 
 }  // namespace blink

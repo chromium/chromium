@@ -31,13 +31,14 @@ namespace blink {
 
 class DatagramDuplexStream;
 class ExceptionState;
+class IncomingStream;
+class OutgoingStream;
 class ReadableStream;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 class WebTransportCloseInfo;
 class WebTransportOptions;
-class WebTransportStream;
 class WritableStream;
 
 // https://wicg.github.io/web-transport/#web-transport
@@ -101,7 +102,9 @@ class MODULES_EXPORT WebTransport final
   void AbortStream(uint32_t stream_id);
 
   // Removes the reference to a stream.
-  void ForgetStream(uint32_t stream_id);
+  void ForgetIncomingStream(uint32_t stream_id);
+  // Removes the reference to a stream.
+  void ForgetOutgoingStream(uint32_t stream_id);
 
   // ScriptWrappable implementation
   void Trace(Visitor* visitor) const override;
@@ -151,15 +154,25 @@ class MODULES_EXPORT WebTransport final
 
   const KURL url_;
 
-  // Map from stream_id to SendStream, ReceiveStream or BidirectionalStream.
+  // Map from stream_id to IncomingStream.
   // Intentionally keeps streams reachable by GC as long as they are open.
   // This doesn't support stream ids of 0xfffffffe or larger.
   // TODO(ricea): Find out if such large stream ids are possible.
   HeapHashMap<uint32_t,
-              Member<WebTransportStream>,
+              Member<IncomingStream>,
               WTF::DefaultHash<uint32_t>::Hash,
               WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
-      stream_map_;
+      incoming_stream_map_;
+
+  // Map from stream_id to OutgoingStream.
+  // Intentionally keeps streams reachable by GC as long as they are open.
+  // This doesn't support stream ids of 0xfffffffe or larger.
+  // TODO(ricea): Find out if such large stream ids are possible.
+  HeapHashMap<uint32_t,
+              Member<OutgoingStream>,
+              WTF::DefaultHash<uint32_t>::Hash,
+              WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+      outgoing_stream_map_;
 
   // A map from stream id to whether the fin signal was received. When
   // OnIncomingStreamClosed is called with a stream ID which doesn't have its

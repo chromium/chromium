@@ -1472,7 +1472,7 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
 
   ASSERT_TRUE(receive_stream);
 
-  receive_stream->OnIncomingStreamClosed(false);
+  receive_stream->GetIncomingStream()->OnIncomingStreamClosed(false);
 
   test::RunPendingTasks();
 
@@ -1505,7 +1505,7 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
 
   ASSERT_TRUE(receive_stream);
 
-  receive_stream->OnIncomingStreamClosed(false);
+  receive_stream->GetIncomingStream()->OnIncomingStreamClosed(false);
 
   test::RunPendingTasks();
 

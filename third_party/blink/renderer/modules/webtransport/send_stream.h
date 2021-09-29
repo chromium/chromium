@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/outgoing_stream.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -21,9 +20,7 @@ class ExceptionState;
 class WebTransport;
 class ScriptState;
 
-class MODULES_EXPORT SendStream final : public WritableStream,
-                                        public WebTransportStream,
-                                        public OutgoingStream::Client {
+class MODULES_EXPORT SendStream final : public WritableStream {
  public:
   // SendStream doesn't have a JavaScript constructor. It is only constructed
   // from C++.
@@ -37,21 +34,12 @@ class MODULES_EXPORT SendStream final : public WritableStream,
     outgoing_stream_->InitWithExistingWritableStream(this, exception_state);
   }
 
-  // Implementation of WebTransportStream.
-  void OnIncomingStreamClosed(bool fin_received) override;
-  void Reset() override;
-  void ContextDestroyed() override;
-
-  // Implementation of OutgoingStream::Client
-  void SendFin() override;
-  void OnOutgoingStreamAbort() override;
+  OutgoingStream* GetOutgoingStream() { return outgoing_stream_; }
 
   void Trace(Visitor*) const override;
 
  private:
   const Member<OutgoingStream> outgoing_stream_;
-  const Member<WebTransport> web_transport_;
-  const uint32_t stream_id_;
 };
 
 }  // namespace blink
