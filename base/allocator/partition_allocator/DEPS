@@ -30,6 +30,7 @@ include_rules = [
     "+base/mac/foundation_util.h",
     "+base/mac/mac_util.h",
     "+base/mac/scoped_cftyperef.h",
+    "+base/memory/nonscannable_memory.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
     "+base/memory/tagging.h",

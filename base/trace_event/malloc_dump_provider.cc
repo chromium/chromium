@@ -133,6 +133,10 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   auto& nonscannable_allocator = internal::NonScannableAllocator::Instance();
   if (auto* root = nonscannable_allocator.root())
     root->DumpStats("nonscannable", is_light_dump, &partition_stats_dumper);
+  auto& nonquarantinable_allocator =
+      internal::NonQuarantinableAllocator::Instance();
+  if (auto* root = nonquarantinable_allocator.root())
+    root->DumpStats("nonquarantinable", is_light_dump, &partition_stats_dumper);
 
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();

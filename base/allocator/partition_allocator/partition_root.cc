@@ -21,6 +21,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
+#include "base/memory/nonscannable_memory.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -58,12 +59,28 @@ void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
   if (aligned_root != regular_root)
     aligned_root->lock_.Lock();
 
+  if (auto* nonscannable_root =
+          internal::NonScannableAllocator::Instance().root())
+    nonscannable_root->lock_.Lock();
+
+  if (auto* nonquarantinable_root =
+          internal::NonQuarantinableAllocator::Instance().root())
+    nonquarantinable_root->lock_.Lock();
+
   internal::ThreadCacheRegistry::GetLock().Lock();
 }
 
 void ReleaseLocks() NO_THREAD_SAFETY_ANALYSIS {
   // In reverse order, even though there are no lock ordering dependencies.
   internal::ThreadCacheRegistry::GetLock().Unlock();
+
+  if (auto* nonquarantinable_root =
+          internal::NonQuarantinableAllocator::Instance().root())
+    nonquarantinable_root->lock_.Unlock();
+
+  if (auto* nonscannable_root =
+          internal::NonScannableAllocator::Instance().root())
+    nonscannable_root->lock_.Unlock();
 
   auto* regular_root = internal::PartitionAllocMalloc::Allocator();
 

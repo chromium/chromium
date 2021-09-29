@@ -534,7 +534,8 @@ void EnablePCScan(base::internal::PCScan::InitConfig config) {
   if (Allocator() != AlignedAllocator())
     internal::PCScan::RegisterScannableRoot(AlignedAllocator());
 
-  internal::NonScannableAllocator::Instance().EnablePCScan();
+  internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
+  internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
 #endif  // defined(PA_ALLOW_PCSCAN)
 
@@ -596,13 +597,19 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
                                   &aligned_allocator_dumper);
   }
 
-  // Dump stats for nonscannable allocators.
+  // Dump stats for nonscannable and nonquarantinable allocators.
   auto& nonscannable_allocator =
       base::internal::NonScannableAllocator::Instance();
   base::SimplePartitionStatsDumper nonscannable_allocator_dumper;
   if (auto* nonscannable_root = nonscannable_allocator.root())
     nonscannable_root->DumpStats("malloc", true,
                                  &nonscannable_allocator_dumper);
+  auto& nonquarantinable_allocator =
+      base::internal::NonQuarantinableAllocator::Instance();
+  base::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
+  if (auto* nonquarantinable_root = nonquarantinable_allocator.root())
+    nonquarantinable_root->DumpStats("malloc", true,
+                                     &nonquarantinable_allocator_dumper);
 
   struct mallinfo info = {0};
   info.arena = 0;  // Memory *not* allocated with mmap().
@@ -610,15 +617,18 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   // Memory allocated with mmap(), aka virtual size.
   info.hblks = allocator_dumper.stats().total_mmapped_bytes +
                aligned_allocator_dumper.stats().total_mmapped_bytes +
-               nonscannable_allocator_dumper.stats().total_mmapped_bytes;
+               nonscannable_allocator_dumper.stats().total_mmapped_bytes +
+               nonquarantinable_allocator_dumper.stats().total_mmapped_bytes;
   // Resident bytes.
   info.hblkhd = allocator_dumper.stats().total_resident_bytes +
                 aligned_allocator_dumper.stats().total_resident_bytes +
-                nonscannable_allocator_dumper.stats().total_resident_bytes;
+                nonscannable_allocator_dumper.stats().total_resident_bytes +
+                nonquarantinable_allocator_dumper.stats().total_resident_bytes;
   // Allocated bytes.
   info.uordblks = allocator_dumper.stats().total_active_bytes +
                   aligned_allocator_dumper.stats().total_active_bytes +
-                  nonscannable_allocator_dumper.stats().total_active_bytes;
+                  nonscannable_allocator_dumper.stats().total_active_bytes +
+                  nonquarantinable_allocator_dumper.stats().total_active_bytes;
 
   return info;
 }
