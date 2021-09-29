@@ -2172,10 +2172,6 @@
       status: "experimental",
     },
     {
-      name: "TextFragmentColorChange",
-      status: "test",
-    },
-    {
       name: "TextFragmentIdentifiers",
       origin_trial_feature_name: "TextFragmentIdentifiers",
       status: "stable",

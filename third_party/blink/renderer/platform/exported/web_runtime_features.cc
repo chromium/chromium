@@ -383,10 +383,6 @@ void WebRuntimeFeatures::EnableTextFragmentAnchor(bool enable) {
   RuntimeEnabledFeatures::SetTextFragmentIdentifiersEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableTextFragmentColorChange(bool enable) {
-  RuntimeEnabledFeatures::SetTextFragmentColorChangeEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePreciseMemoryInfo(bool enable) {
   RuntimeEnabledFeatures::SetPreciseMemoryInfoEnabled(enable);
 }

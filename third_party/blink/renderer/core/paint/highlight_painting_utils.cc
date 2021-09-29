@@ -118,11 +118,7 @@ Color HighlightThemeBackgroundColor(const Document& document,
                  : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
                        style.UsedColorScheme());
     case kPseudoIdTargetText:
-      if (RuntimeEnabledFeatures::TextFragmentColorChangeEnabled())
-        return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
-
-      return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-          false /* active match */, style.UsedColorScheme());
+      return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
     case kPseudoIdHighlight:
       // TODO(ffiori): not assigning any visual effects to custom highlights by
       // default as the spec doesn't define it. See

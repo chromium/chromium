@@ -2543,11 +2543,6 @@ const char kTabRestoreSubMenusDescription[] =
     "Show app menu history sub menus for the contents of recently closed tab "
     "groups and windows.";
 
-const char kTextFragmentColorChangeName[] = "Text Fragment color change";
-const char kTextFragmentColorChangeDescription[] =
-    "Changes the Text Fragment background color"
-    "away from the default yellow.";
-
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";

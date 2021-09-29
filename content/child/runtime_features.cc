@@ -381,8 +381,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
           {"TargetBlankImpliesNoOpener",
            blink::features::kTargetBlankImpliesNoOpener},
-          {"TextFragmentColorChange",
-           blink::features::kTextFragmentColorChange},
           {"ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
            blink::features::
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
