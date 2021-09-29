@@ -119,7 +119,7 @@ const base::Feature kArcResizeLock{"ArcResizeLock",
 
 // Controls whether to enable assistive autocorrect.
 const base::Feature kAssistAutoCorrect{"AssistAutoCorrect",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable enhanced assistive emoji suggestions.
 const base::Feature kAssistEmojiEnhanced{"AssistEmojiEnhanced",
