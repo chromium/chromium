@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/win/winhttp_proxy_resolver_functions.h"
+#include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 WinHttpProxyResolverFunctions::WinHttpProxyResolverFunctions() {
   HMODULE winhttp_module =
@@ -38,4 +38,4 @@ WinHttpProxyResolverFunctions::GetInstance() {
   return *instance;
 }
 
-}  // namespace net
+}  // namespace proxy_resolver_win

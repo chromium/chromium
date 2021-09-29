@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/win/windows_system_proxy_resolver_impl.h"
+#include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 
 #include <cwchar>
 #include <string>
@@ -16,11 +16,11 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
-#include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
-#include "net/proxy_resolution/win/winhttp_api_wrapper.h"
+#include "services/proxy_resolver_win/windows_system_proxy_resolution_request.h"
+#include "services/proxy_resolver_win/winhttp_api_wrapper.h"
 #include "url/url_canon.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 namespace {
 
@@ -367,4 +367,4 @@ void WindowsSystemProxyResolverImpl::HandleErrorForCallbackTarget(
                                                        windows_error);
 }
 
-}  // namespace net
+}  // namespace proxy_resolver_win

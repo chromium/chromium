@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+component("proxy_resolver_win") {
+  sources = [
+    # TODO(https://crbug.com/1032820): Implement Proxy Resolver
+    # "windows_system_proxy_resolver_impl.cc",
+    # "windows_system_proxy_resolver_impl.h",
+    "winhttp_api_wrapper.cc",
+    "winhttp_api_wrapper.h",
+    "winhttp_proxy_resolver_functions.cc",
+    "winhttp_proxy_resolver_functions.h",
+  ]
+
+  libs = [ "winhttp.lib" ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  public_deps = [
+    "//net",
+    "//net:constants",
+  ]
+}

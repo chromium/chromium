@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_PROXY_RESOLUTION_WIN_WINHTTP_API_WRAPPER_H_
-#define NET_PROXY_RESOLUTION_WIN_WINHTTP_API_WRAPPER_H_
+#ifndef SERVICES_PROXY_RESOLVER_WIN_WINHTTP_API_WRAPPER_H_
+#define SERVICES_PROXY_RESOLVER_WIN_WINHTTP_API_WRAPPER_H_
 
 #include <windows.h>
 #include <winhttp.h>
@@ -12,9 +12,8 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "net/base/net_export.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 // This is a utility class that encapsulates the memory management necessary for
 // WINHTTP_CURRENT_USER_IE_PROXY_CONFIG in RAII style.
@@ -38,7 +37,7 @@ class ScopedIEConfig final {
 // and it's expected that the caller will handle using it on the same thread or
 // sequence. In general, documentation for these APIs can be found here:
 // https://docs.microsoft.com/en-us/windows/win32/api/winhttp/
-class NET_EXPORT WinHttpAPIWrapper {
+class WinHttpAPIWrapper {
  public:
   WinHttpAPIWrapper();
 
@@ -125,6 +124,6 @@ class NET_EXPORT WinHttpAPIWrapper {
   HINTERNET session_handle_ = nullptr;
 };
 
-}  // namespace net
+}  // namespace proxy_resolver_win
 
-#endif  // NET_PROXY_RESOLUTION_WIN_WINHTTP_API_WRAPPER_H_
+#endif  // SERVICES_PROXY_RESOLVER_WIN_WINHTTP_API_WRAPPER_H_

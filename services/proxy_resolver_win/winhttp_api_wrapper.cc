@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/win/winhttp_api_wrapper.h"
+#include "services/proxy_resolver_win/winhttp_api_wrapper.h"
 
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "net/proxy_resolution/win/winhttp_proxy_resolver_functions.h"
+#include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 // TODO(https://crbug.com/1032820): Capture telemetry for WinHttp APIs if
 // interesting.
@@ -115,4 +115,4 @@ void WinHttpAPIWrapper::CloseSessionHandle() {
   }
 }
 
-}  // namespace net
+}  // namespace proxy_resolver_win

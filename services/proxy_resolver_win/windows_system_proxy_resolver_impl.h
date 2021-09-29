@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
-#define NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
+#ifndef SERVICES_PROXY_RESOLVER_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
+#define SERVICES_PROXY_RESOLVER_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
 
 #include <windows.h>
 #include <winhttp.h>
@@ -21,7 +21,7 @@
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/proxy_list.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 class WindowsSystemProxyResolutionRequest;
 class WinHttpAPIWrapper;
@@ -126,6 +126,6 @@ class NET_EXPORT WindowsSystemProxyResolverImpl
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 
-}  // namespace net
+}  // namespace proxy_resolver_win
 
-#endif  // NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
+#endif  // SERVICES_PROXY_RESOLVER_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_

@@ -1299,14 +1299,6 @@ component("net") {
       "proxy_resolution/win/windows_system_proxy_resolution_service.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service.h",
       "proxy_resolution/win/windows_system_proxy_resolver.h",
-
-      # TODO(https://crbug.com/1032820): Move WinHttp code to new service
-      # "proxy_resolution/win/windows_system_proxy_resolver_impl.cc",
-      # "proxy_resolution/win/windows_system_proxy_resolver_impl.h",
-      "proxy_resolution/win/winhttp_api_wrapper.cc",
-      "proxy_resolution/win/winhttp_api_wrapper.h",
-      "proxy_resolution/win/winhttp_proxy_resolver_functions.cc",
-      "proxy_resolution/win/winhttp_proxy_resolver_functions.h",
       "socket/tcp_socket_win.cc",
       "socket/tcp_socket_win.h",
       "socket/udp_socket_win.cc",

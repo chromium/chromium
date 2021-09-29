@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_PROXY_RESOLUTION_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
-#define NET_PROXY_RESOLUTION_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
+#ifndef SERVICES_PROXY_RESOLVER_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
+#define SERVICES_PROXY_RESOLVER_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
 
 #include <windows.h>
 #include <winhttp.h>
 
 #include "base/no_destructor.h"
 
-namespace net {
+namespace proxy_resolver_win {
 
 // Not all WinHttp APIs we'll be using exist in all versions of Windows.
 // Several only exist in Windows 8+. Thus, each function entry point must be
@@ -42,6 +42,6 @@ struct WinHttpProxyResolverFunctions {
   ~WinHttpProxyResolverFunctions();
 };
 
-}  // namespace net
+}  // namespace proxy_resolver_win
 
-#endif  // NET_PROXY_RESOLUTION_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
+#endif  // SERVICES_PROXY_RESOLVER_WIN_WINHTTP_PROXY_RESOLVER_FUNCTIONS_H_
