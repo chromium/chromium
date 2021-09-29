@@ -10,6 +10,12 @@ partial interface AnimationTimeline {
 };
 
 [Exposed=Window]
+partial interface Animation {
+    attribute CSSNumberish?       startTime;
+    attribute CSSNumberish?       currentTime;
+};
+
+[Exposed=Window]
 partial interface AnimationEffect {
     // Timing hierarchy
     readonly attribute GroupEffect?     parent;
