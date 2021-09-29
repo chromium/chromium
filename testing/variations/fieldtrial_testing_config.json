@@ -6918,6 +6918,21 @@
             ]
         }
     ],
+    "SafeBrowsingPasswordProtectionForSignedInUsers": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingPasswordProtectionForSignedInUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingPasswordProtectionRequestWithToken": [
         {
             "platforms": [
