@@ -37,9 +37,6 @@ class LaunchParams {
   constructor() {
     /** @type {Array<FileSystemHandle>} */
     this.files;
-
-    /** @type {Request} */
-    this.request;
   }
 }
 
