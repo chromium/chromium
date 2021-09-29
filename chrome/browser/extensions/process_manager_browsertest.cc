@@ -53,7 +53,7 @@
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -545,14 +545,15 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   ProcessManager* pm = ProcessManager::Get(profile());
 
   // 1 background page + 1 frame in background page from Extension 2.
-  BackgroundPageWatcher(pm, extension2).WaitForOpen();
+  ExtensionBackgroundPageWaiter(profile(), *extension2).WaitForBackgroundOpen();
   EXPECT_EQ(2u, pm->GetAllFrames().size());
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension1->id()).size());
   EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
   ExecuteScriptInBackgroundPageNoWait(extension2->id(),
                                       "setTimeout(window.close, 0)");
-  BackgroundPageWatcher(pm, extension2).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension2)
+      .WaitForBackgroundClosed();
   EXPECT_EQ(0u, pm->GetAllFrames().size());
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
