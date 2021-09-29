@@ -64,7 +64,6 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = resultdb_bigquery_exports,
-        isolated_server = "https://isolateserver-dev.appspot.com",
         goma_backend = goma.backend.RBE_PROD,
         resultdb_index_by_timestamp = True,
         **kwargs

@@ -12,9 +12,6 @@
     "emulate_gce": true,
     "git_auth": true
   },
-  "$recipe_engine/isolated": {
-    "server": "https://isolateserver.appspot.com"
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
