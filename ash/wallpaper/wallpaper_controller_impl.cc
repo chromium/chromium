@@ -1096,7 +1096,7 @@ void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
     return;
 
   RemoveUserWallpaper(account_id);
-  if (!InitializeUserWallpaperInfo(account_id)) {
+  if (!SetDefaultWallpaperInfo(account_id, base::Time::Now())) {
     LOG(ERROR) << "Initializing user wallpaper info fails. This should never "
                   "happen except in tests.";
   }
@@ -1239,7 +1239,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
 
   WallpaperInfo info;
   if (!GetUserWallpaperInfo(account_id, &info)) {
-    if (!InitializeUserWallpaperInfo(account_id))
+    if (!SetDefaultWallpaperInfo(account_id, base::Time::Min()))
       return;
     GetUserWallpaperInfo(account_id, &info);
   }
@@ -1442,7 +1442,6 @@ WallpaperInfo WallpaperControllerImpl::GetActiveUserWallpaperInfo() {
     info.location = std::string();
     info.layout = NUM_WALLPAPER_LAYOUT;
   }
-
   return info;
 }
 
@@ -1851,14 +1850,15 @@ void WallpaperControllerImpl::ReadAndDecodeWallpaper(
   DecodeImageFile(std::move(callback), file_path);
 }
 
-bool WallpaperControllerImpl::InitializeUserWallpaperInfo(
-    const AccountId& account_id) {
+bool WallpaperControllerImpl::SetDefaultWallpaperInfo(
+    const AccountId& account_id,
+    const base::Time& date) {
   const WallpaperInfo info = {/*in_location=*/std::string(),
                               /*in_asset_id=*/absl::nullopt,
                               /*in_collection_id=*/std::string(),
                               WALLPAPER_LAYOUT_CENTER_CROPPED,
                               DEFAULT,
-                              base::Time::Now()};
+                              date};
   return SetUserWallpaperInfo(account_id, info);
 }
 
@@ -2424,9 +2424,6 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     case CUSTOMIZED:
       HandleCustomWallpaperInfoSyncedIn(account_id, info);
       break;
-    case DEFAULT:
-      SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
-      break;
     case DAILY:
       HandleDailyWallpaperInfoSyncedIn(account_id, info);
       break;
@@ -2439,6 +2436,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
                                 /*daily_refresh_enabled=*/false},
           base::DoNothing());
       break;
+    case DEFAULT:
     case POLICY:
     case THIRDPARTY:
     case DEVICE:
@@ -2470,9 +2468,9 @@ constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
   switch (type) {
     case DAILY:
     case CUSTOMIZED:
-    case DEFAULT:
     case ONLINE:
       return true;
+    case DEFAULT:
     case POLICY:
     case THIRDPARTY:
     case DEVICE:

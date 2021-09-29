@@ -634,6 +634,32 @@ class WallpaperControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
+  void CacheOnlineWallpaper(std::string path) {
+    // Set an Online Wallpaper from Data, so syncing in doesn't need to download
+    // an Online Wallpaper.
+    SetBypassDecode();
+    SimulateUserLogin(account_id_1);
+    ClearWallpaperCount();
+    controller_->SetOnlineWallpaperFromData(
+        OnlineWallpaperParams(
+            account_id_1, /*asset_id=*/absl::nullopt, GURL(path),
+            /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+            /*preview_mode=*/false, /*from_user=*/false,
+            /*daily_refresh_enabled=*/false),
+        /*image_data=*/std::string(),
+        WallpaperControllerImpl::SetOnlineWallpaperCallback());
+    RunAllTasksUntilIdle();
+
+    // Change the on-screen wallpaper to a different one. (Otherwise the
+    // subsequent calls will be no-op since we intentionally prevent reloading
+    // the same wallpaper.)
+    ClearWallpaperCount();
+    controller_->SetCustomWallpaper(
+        account_id_1, file_name_1, WALLPAPER_LAYOUT_CENTER_CROPPED,
+        CreateImage(640, 480, kWallpaperColor), false /*preview_mode=*/);
+    RunAllTasksUntilIdle();
+  }
+
   WallpaperControllerImpl* controller_ = nullptr;  // Not owned.
 
   base::ScopedTempDir user_data_dir_;
@@ -3145,8 +3171,11 @@ TEST_F(WallpaperControllerTest,
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
-  SimulateUserLogin(account_id_1);
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
+  CacheOnlineWallpaper(kDummyUrl);
+
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               ONLINE, base::Time::Now()};
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
 
@@ -3159,17 +3188,19 @@ TEST_F(WallpaperControllerTest,
 
   controller_->OnActiveUserPrefServiceChanged(
       GetProfilePrefService(account_id_1));
+  RunAllTasksUntilIdle();
   WallpaperInfo actual_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_EQ(DEFAULT, actual_info.type);
+  EXPECT_EQ(ONLINE, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
-
-  SimulateUserLogin(account_id_1);
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
+  CacheOnlineWallpaper(kDummyUrl);
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               ONLINE, base::Time::Now()};
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
 
@@ -3189,33 +3220,26 @@ TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
   EXPECT_EQ(THIRDPARTY, actual_info.type);
 }
 
-TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedDefault) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
-
-  SimulateUserLogin(account_id_1);
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
-                          GetProfilePrefService(account_id_1),
-                          prefs::kSyncableWallpaperInfo);
-  WallpaperInfo actual_info;
-  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_EQ(DEFAULT, actual_info.type);
-}
 
 TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
+  CacheOnlineWallpaper(kDummyUrl);
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(POLICY),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
 
   SimulateUserLogin(account_id_1);
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               ONLINE, base::Time::Now()};
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
+  RunAllTasksUntilIdle();
+
   WallpaperInfo actual_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_NE(DEFAULT, actual_info.type);
+  EXPECT_NE(ONLINE, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest,
@@ -3223,18 +3247,24 @@ TEST_F(WallpaperControllerTest,
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
+  CacheOnlineWallpaper(kDummyUrl);
+
   WallpaperInfo local_info = InfoWithType(THIRDPARTY);
   local_info.date = DayBeforeYesterdayish();
   PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
 
   SimulateUserLogin(account_id_1);
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               ONLINE, base::Time::Now()};
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
+  RunAllTasksUntilIdle();
+
   WallpaperInfo actual_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_EQ(DEFAULT, actual_info.type);
+  EXPECT_EQ(ONLINE, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest,
@@ -3242,15 +3272,17 @@ TEST_F(WallpaperControllerTest,
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
+  CacheOnlineWallpaper(kDummyUrl);
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(THIRDPARTY),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
 
-  WallpaperInfo synced_info = InfoWithType(DEFAULT);
-  synced_info.date = DayBeforeYesterdayish();
-  SimulateUserLogin(account_id_1);
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               ONLINE, DayBeforeYesterdayish()};
   PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
+  RunAllTasksUntilIdle();
+
   WallpaperInfo actual_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
   EXPECT_EQ(THIRDPARTY, actual_info.type);
@@ -3260,30 +3292,7 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
-  SetBypassDecode();
-  SimulateUserLogin(account_id_1);
-
-  // Set an online wallpaper with image data. Verify that the wallpaper is set
-  // successfully.
-  ClearWallpaperCount();
-  controller_->SetOnlineWallpaperFromData(
-      OnlineWallpaperParams(
-          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
-          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
-          /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
-      /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
-  RunAllTasksUntilIdle();
-
-  // Change the on-screen wallpaper to a different one. (Otherwise the
-  // subsequent calls will be no-op since we intentionally prevent reloading the
-  // same wallpaper.)
-  ClearWallpaperCount();
-  controller_->SetCustomWallpaper(
-      account_id_1, file_name_1, WALLPAPER_LAYOUT_CENTER_CROPPED,
-      CreateImage(640, 480, kWallpaperColor), false /*preview_mode=*/);
-  RunAllTasksUntilIdle();
+  CacheOnlineWallpaper(kDummyUrl);
 
   // Attempt to set an online wallpaper without providing the image data. Verify
   // it succeeds this time because |SetOnlineWallpaperFromData| has saved the
