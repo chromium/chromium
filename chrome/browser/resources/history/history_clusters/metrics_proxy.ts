@@ -32,7 +32,13 @@ export enum VisitType {
   SRP = 'SRP',
 }
 
-export class MetricsProxy {
+export interface MetricsProxy {
+  recordClusterAction(action: ClusterAction, index: number): void;
+  recordRelatedSearchAction(action: RelatedSearchAction, index: number): void;
+  recordVisitAction(action: VisitAction, index: number, type: VisitType): void;
+}
+
+export class MetricsProxyImpl implements MetricsProxy {
   recordClusterAction(action: ClusterAction, index: number) {
     chrome.metricsPrivate.recordMediumCount(
         `History.Clusters.UIActions.Cluster.${action}`, index);
@@ -51,7 +57,7 @@ export class MetricsProxy {
   }
 
   static getInstance(): MetricsProxy {
-    return instance || (instance = new MetricsProxy());
+    return instance || (instance = new MetricsProxyImpl());
   }
 
   static setInstance(obj: MetricsProxy) {

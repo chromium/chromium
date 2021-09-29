@@ -7,8 +7,8 @@ import './shared_style.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchQuery} from './history_clusters.mojom-webui.js';
-import {MetricsProxy, RelatedSearchAction} from './metrics_proxy.js';
-import {OpenWindowProxy} from './open_window_proxy.js';
+import {MetricsProxyImpl, RelatedSearchAction} from './metrics_proxy.js';
+import {OpenWindowProxyImpl} from './open_window_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
@@ -58,7 +58,7 @@ class SearchQueryElement extends PolymerElement {
   //============================================================================
 
   private onAuxClick_() {
-    MetricsProxy.getInstance().recordRelatedSearchAction(
+    MetricsProxyImpl.getInstance().recordRelatedSearchAction(
         RelatedSearchAction.CLICKED, this.index);
 
     // Notify the parent <history-cluster> element of this event.
@@ -73,7 +73,7 @@ class SearchQueryElement extends PolymerElement {
 
     this.onAuxClick_();
 
-    OpenWindowProxy.getInstance().open(this.searchQuery.url.url);
+    OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);
   }
 }
 
