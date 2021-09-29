@@ -1044,8 +1044,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   //
   // Layout inside the slot:
   //  <-extras->                  <-extras->
-  //  <---------utilized_slot_size--------->
-  //           <----usable_size--->
+  //  <-------GetUtilizedSlotSize()-------->
+  //           <-GetUsableSize()-->
   //  |[refcnt]|...data...|[empty]|[cookie]|[unused]|
   //           ^
   //          ptr
@@ -1053,12 +1053,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: ref-count and cookie can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
-#if EXPENSIVE_DCHECKS_ARE_ON() || defined(PA_ZERO_RANDOMLY_ON_FREE)
-  const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
-#endif
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON()
-  const size_t usable_size = slot_span->GetUsableSize(this);
-#endif
+
   void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
 #if DCHECK_IS_ON()
@@ -1066,7 +1061,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
     char* char_ptr = static_cast<char*>(ptr);
-    internal::PartitionCookieCheckValue(char_ptr + usable_size);
+    internal::PartitionCookieCheckValue(char_ptr +
+                                        slot_span->GetUsableSize(this));
   }
 #endif
 
@@ -1089,7 +1085,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes.
     if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
-      internal::SecureMemset(ptr, kQuarantinedByte, usable_size);
+      internal::SecureMemset(ptr, kQuarantinedByte,
+                             slot_span->GetUsableSize(this));
 
     if (UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {
       total_size_of_brp_quarantined_bytes.fetch_add(
@@ -1104,7 +1101,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // memset() can be really expensive.
 #if EXPENSIVE_DCHECKS_ARE_ON()
   memset(slot_start, kFreedByte,
-         utilized_slot_size
+         slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
              - sizeof(internal::PartitionRefCount)
 #endif
@@ -1115,7 +1112,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (UNLIKELY(internal::RandomPeriod()) &&
       !IsDirectMappedBucket(slot_span->bucket)) {
     internal::SecureMemset(slot_start, 0,
-                           utilized_slot_size
+                           slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                                - sizeof(internal::PartitionRefCount)
 #endif
