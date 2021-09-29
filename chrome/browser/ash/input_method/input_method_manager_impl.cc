@@ -754,24 +754,11 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
   }
 }
 
-bool InputMethodManagerImpl::StateImpl::CanCycleInputMethod() const {
-  // Sanity checks.
-  if (enabled_input_method_ids_.empty()) {
-    DVLOG(1) << "enabled input method is empty";
-    return false;
-  }
-
-  if (current_input_method_.id().empty()) {
-    DVLOG(1) << "current_input_method_ is unknown";
-    return false;
-  }
-
-  return enabled_input_method_ids_.size() > 1;
-}
-
 void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
-  if (!CanCycleInputMethod())
+  if (enabled_input_method_ids_.size() <= 1 ||
+      current_input_method_.id().empty()) {
     return;
+  }
 
   auto iter =
       std::find(enabled_input_method_ids_.begin(),
@@ -784,8 +771,10 @@ void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
 }
 
 void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
-  if (!CanCycleInputMethod())
+  if (enabled_input_method_ids_.size() <= 1 ||
+      current_input_method_.id().empty()) {
     return;
+  }
 
   if (last_used_input_method_id_.empty() ||
       last_used_input_method_id_ == current_input_method_.id()) {

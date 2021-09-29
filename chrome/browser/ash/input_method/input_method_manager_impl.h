@@ -130,11 +130,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns true if given input method requires pending extension.
     bool MethodAwaitsExtensionLoad(const std::string& input_method_id) const;
 
-    // Returns whether the input method (or keyboard layout) can be switched
-    // to the next or previous one. Returns false if only one input method is
-    // enabled.
-    bool CanCycleInputMethod() const;
-
     // Returns true if the passed input method is allowed. By default, all input
     // methods are allowed. After SetAllowedKeyboardLayoutInputMethods was
     // called, the passed keyboard layout input methods are allowed and all
