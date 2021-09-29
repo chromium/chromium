@@ -17,11 +17,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_paths.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -163,18 +160,16 @@ scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
     Profile* profile,
     const char* test_path_ascii) {
   base::ScopedAllowBlockingForTesting allow_io;
-  content::WindowedNotificationObserver handler_ready(
-      extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-      content::NotificationService::AllSources());
   extensions::ChromeTestExtensionLoader loader(profile);
 
   base::FilePath path;
   CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
   path = path.AppendASCII(test_path_ascii);
 
+  // ChromeTestExtensionLoader waits for the background page to load before
+  // returning.
   auto extension = loader.LoadExtension(path);
   CHECK(extension);
-  handler_ready.Wait();
   return extension;
 }
 
