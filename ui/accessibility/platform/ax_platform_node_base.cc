@@ -833,28 +833,13 @@ bool AXPlatformNodeBase::IsImageWithMap() const {
 AXPlatformNodeBase* AXPlatformNodeBase::GetSelectionContainer() const {
   if (!delegate_)
     return nullptr;
-  AXPlatformNodeBase* container = const_cast<AXPlatformNodeBase*>(this);
-  while (container &&
-         !IsContainerWithSelectableChildren(container->GetRole())) {
-    gfx::NativeViewAccessible parent_accessible = container->GetParent();
-    AXPlatformNodeBase* parent = FromNativeViewAccessible(parent_accessible);
-
-    container = parent;
-  }
-  return container;
+  return FromNativeViewAccessible(delegate_->GetSelectionContainer());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTable() const {
   if (!delegate_)
     return nullptr;
-  AXPlatformNodeBase* table = const_cast<AXPlatformNodeBase*>(this);
-  while (table && !IsTableLike(table->GetRole())) {
-    gfx::NativeViewAccessible parent_accessible = table->GetParent();
-    AXPlatformNodeBase* parent = FromNativeViewAccessible(parent_accessible);
-
-    table = parent;
-  }
-  return table;
+  return FromNativeViewAccessible(delegate_->GetTableAncestor());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCaption() const {

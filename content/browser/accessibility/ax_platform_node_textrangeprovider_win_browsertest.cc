@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   BrowserAccessibility* node = FindNode(ax::mojom::Role::kStaticText, "Text1");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_text_node =
       FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
-  EXPECT_TRUE(input_text_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_search_node =
       FindNode(ax::mojom::Role::kSearchBox, "input_search");
   ASSERT_NE(nullptr, input_search_node);
-  EXPECT_TRUE(input_search_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_search_node->IsLeaf());
   EXPECT_EQ(0u, input_search_node->PlatformChildCount());
 
   GetTextRangeProviderFromTextNode(*input_search_node, &text_range_provider);
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_text_node =
       FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
-  EXPECT_TRUE(input_text_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_search_node =
       FindNode(ax::mojom::Role::kSearchBox, "input_search");
   ASSERT_NE(nullptr, input_search_node);
-  EXPECT_TRUE(input_search_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_search_node->IsLeaf());
   EXPECT_EQ(0u, input_search_node->PlatformChildCount());
 
   GetTextRangeProviderFromTextNode(*input_search_node, &text_range_provider);
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_text_node =
       FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
-  EXPECT_TRUE(input_text_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   AccessibilityNotificationWaiter edit_waiter(shell()->web_contents(),
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   //         text range endpoints.
   BrowserAccessibility* node = FindNode(ax::mojom::Role::kStaticText, "item");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   GetTextRangeProviderFromTextNode(*node, &text_range_provider);
@@ -771,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* input_text_node =
       FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
-  EXPECT_TRUE(input_text_node->PlatformIsLeaf());
+  EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   AccessibilityNotificationWaiter edit_waiter(shell()->web_contents(),
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   auto* node = FindNode(ax::mojom::Role::kStaticText, "AsdfAsdfAsdf");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       </html>)HTML");
   auto* node = FindNode(ax::mojom::Role::kStaticText, "plain 1");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       </html>)HTML");
   auto* node = FindNode(ax::mojom::Role::kStaticText, "plain 1");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -2236,7 +2236,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   auto* node = FindNode(ax::mojom::Role::kStaticText, "After frame");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -2370,7 +2370,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   auto* node = FindNode(ax::mojom::Role::kStaticText, "After frame");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -2435,7 +2435,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   auto* node = FindNode(ax::mojom::Role::kStaticText, "plain");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -2485,7 +2485,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   auto* node = FindNode(ax::mojom::Role::kParagraph, "space")
                    ->PlatformDeepestFirstChild();
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -2519,7 +2519,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // Case 3: test on degenerate range after whitespace.
   node = FindNode(ax::mojom::Role::kStaticText, "3.14");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   GetTextRangeProviderFromTextNode(*node, &text_range_provider);
@@ -3096,7 +3096,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* text_node =
       FindNode(ax::mojom::Role::kStaticText, "Hello,");
   ASSERT_NE(nullptr, text_node);
-  EXPECT_TRUE(text_node->PlatformIsLeaf());
+  EXPECT_TRUE(text_node->IsLeaf());
   EXPECT_EQ(0u, text_node->PlatformChildCount());
 
   // |view_offset| is necessary to account for differences in the shell

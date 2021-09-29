@@ -3684,9 +3684,9 @@ bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
     }
   }
 
-  // TODO(accessibility): GetSelectionContainer returns nullptr when the current
-  // object is a descendant of a select element with a size of 1. Intentional?
-  // For now, handle that scenario here.
+  // TODO(accessibility): `GetSelectionContainer()` returns nullptr when the
+  // current object is a descendant of a select element with a size of 1.
+  // Intentional? For now, handle that scenario here.
   //
   // If the selection is changing on a collapsed select element, focus remains
   // on the select element and not the newly-selected descendant.

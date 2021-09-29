@@ -63,7 +63,7 @@ BrowserAccessibilityComWin::BrowserAccessibilityComWin()
       previous_scroll_x_(0),
       previous_scroll_y_(0) {}
 
-BrowserAccessibilityComWin::~BrowserAccessibilityComWin() {}
+BrowserAccessibilityComWin::~BrowserAccessibilityComWin() = default;
 
 //
 // IAccessible2 overrides:

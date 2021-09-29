@@ -408,7 +408,7 @@ bool BrowserAccessibilityManagerAuraLinux::CanEmitChildrenChanged(
   if (!node || !ShouldFireEventForNode(node))
     return false;
   BrowserAccessibility* parent = node->PlatformGetParent();
-  if (!parent || parent->PlatformIsLeaf())
+  if (!parent || parent->IsLeaf())
     return false;
   return true;
 }

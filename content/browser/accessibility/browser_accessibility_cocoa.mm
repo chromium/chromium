@@ -363,11 +363,11 @@ BrowserAccessibility::AXRange CreateAXRange(
     int end_offset,
     ax::mojom::TextAffinity end_affinity) {
   BrowserAccessibility::AXPosition anchor =
-      start_object.PlatformIsLeaf()
+      start_object.IsLeaf()
           ? CreateTextPosition(start_object, start_offset, start_affinity)
           : CreateTreePosition(start_object, start_offset);
   BrowserAccessibility::AXPosition focus =
-      end_object.PlatformIsLeaf()
+      end_object.IsLeaf()
           ? CreateTextPosition(end_object, end_offset, end_affinity)
           : CreateTreePosition(end_object, end_offset);
   // |BrowserAccessibility::AXRange| takes ownership of its anchor and focus.

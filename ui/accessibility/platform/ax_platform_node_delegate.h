@@ -298,6 +298,13 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // contenteditable without the role, (see `AXNodeData::IsTextField()`).
   virtual gfx::NativeViewAccessible GetTextFieldAncestor() const = 0;
 
+  // If this node is within a container (or widget) that supports either single
+  // or multiple selection, returns the node that represents the container.
+  virtual gfx::NativeViewAccessible GetSelectionContainer() const = 0;
+
+  // If within a table, returns the node representing the table.
+  virtual gfx::NativeViewAccessible GetTableAncestor() const = 0;
+
   class ChildIterator {
    public:
     virtual ~ChildIterator() = default;
@@ -519,9 +526,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
                                             int col_index) const = 0;
   virtual absl::optional<int32_t> CellIndexToId(int cell_index) const = 0;
 
-  // Helper methods to check if a cell is an ARIA-1.1+ 'cell' or 'gridcell'
-  virtual bool IsCellOrHeaderOfARIATable() const = 0;
-  virtual bool IsCellOrHeaderOfARIAGrid() const = 0;
+  // TODO(nektar): Why is this method needed?
+  virtual bool IsCellOrHeaderOfAriaTable() const = 0;
+
+  // Returns true if this node is a cell or a row/column header in an ARIA grid
+  // or treegrid.
+  virtual bool IsCellOrHeaderOfAriaGrid() const = 0;
 
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const = 0;

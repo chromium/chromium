@@ -288,6 +288,7 @@ class AX_EXPORT AXNode final {
 
   // Returns true if this node is equal to or a descendant of |ancestor|.
   bool IsDescendantOf(const AXNode* ancestor) const;
+  bool IsDescendantOfCrossingTreeBoundary(const AXNode* ancestor) const;
 
   // Gets the text offsets where new lines start either from the node's data or
   // by computing them and caching the result.
@@ -571,9 +572,12 @@ class AX_EXPORT AXNode final {
   void GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const;
   void GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const;
 
-  // Helper methods to check if a cell is an ARIA-1.1+ 'cell' or 'gridcell'
-  bool IsCellOrHeaderOfARIATable() const;
-  bool IsCellOrHeaderOfARIAGrid() const;
+  // TODO(nektar): Why is this method needed?
+  bool IsCellOrHeaderOfAriaTable() const;
+
+  // Returns true if this node is a cell or a row/column header in an ARIA grid
+  // or treegrid.
+  bool IsCellOrHeaderOfAriaGrid() const;
 
   // Return an object containing information about the languages detected on
   // this node.
@@ -672,6 +676,13 @@ class AX_EXPORT AXNode final {
   // an editable region is synonymous to a node with the kTextField role, or a
   // contenteditable without the role, (see `AXNodeData::IsTextField()`).
   AXNode* GetTextFieldAncestor() const;
+
+  // If this node is within a container (or widget) that supports either single
+  // or multiple selection, returns the node that represents the container.
+  AXNode* GetSelectionContainer() const;
+
+  // If this node is within a table, returns the node that represents the table.
+  AXNode* GetTableAncestor() const;
 
   // Returns true if this node is either an atomic text field , or one of its
   // ancestors is. An atomic text field does not expose its internal

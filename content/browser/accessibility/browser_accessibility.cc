@@ -163,11 +163,6 @@ void BrowserAccessibility::OnDataChanged() {
 #endif
 }
 
-bool BrowserAccessibility::PlatformIsLeaf() const {
-  // TODO(nektar): Remove in favor of IsLeaf.
-  return IsLeaf();
-}
-
 bool BrowserAccessibility::CanFireEvents() const {
   // Allow events unless this object would be trimmed away.
   return !IsChildOfLeaf();
@@ -180,16 +175,16 @@ ui::AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {
 }
 
 uint32_t BrowserAccessibility::PlatformChildCount() const {
-  if (PlatformIsLeaf())
+  if (IsLeaf())
     return 0;
-  return PlatformGetRootOfChildTree() ? 1 : InternalChildCount();
+  return static_cast<uint32_t>(
+      node()->GetUnignoredChildCountCrossingTreeBoundary());
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
   ui::AXNode* parent = node()->GetUnignoredParent();
   if (parent)
     return manager()->GetFromAXNode(parent);
-
   return manager()->GetParentNodeFromParentTree();
 }
 
@@ -220,28 +215,12 @@ BrowserAccessibility::PlatformChildrenEnd() const {
   return PlatformChildIterator(this, nullptr);
 }
 
-BrowserAccessibility* BrowserAccessibility::PlatformGetSelectionContainer()
-    const {
-  BrowserAccessibility* container = PlatformGetParent();
-  while (container &&
-         !ui::IsContainerWithSelectableChildren(container->GetRole())) {
-    container = container->PlatformGetParent();
-  }
-  return container;
-}
-
 bool BrowserAccessibility::IsDescendantOf(
     const BrowserAccessibility* ancestor) const {
   if (!ancestor)
     return false;
-
-  if (this == ancestor)
-    return true;
-
-  if (PlatformGetParent())
-    return PlatformGetParent()->IsDescendantOf(ancestor);
-
-  return false;
+  DCHECK(ancestor->node());
+  return node()->IsDescendantOfCrossingTreeBoundary(ancestor->node());
 }
 
 bool BrowserAccessibility::IsPlatformDocument() const {
@@ -284,6 +263,14 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetTextFieldAncestor()
   if (!text_field_ancestor)
     return nullptr;
   return manager()->GetFromAXNode(text_field_ancestor);
+}
+
+BrowserAccessibility* BrowserAccessibility::PlatformGetSelectionContainer()
+    const {
+  ui::AXNode* selection_container_ancestor = node()->GetSelectionContainer();
+  if (!selection_container_ancestor)
+    return nullptr;
+  return manager()->GetFromAXNode(selection_container_ancestor);
 }
 
 bool BrowserAccessibility::IsPreviousSiblingOnSameLine() const {
@@ -387,7 +374,6 @@ BrowserAccessibility* BrowserAccessibility::InternalGetChild(
   ui::AXNode* child_node = node_->GetUnignoredChildAtIndex(child_index);
   if (!child_node)
     return nullptr;
-
   return manager_->GetFromAXNode(child_node);
 }
 
@@ -947,8 +933,7 @@ bool BrowserAccessibility::IsNonAtomicTextField() const {
 }
 
 bool BrowserAccessibility::HasExplicitlyEmptyName() const {
-  return GetData().GetNameFrom() ==
-         ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+  return GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
 }
 
 std::string BrowserAccessibility::GetLiveRegionText() const {
@@ -1476,7 +1461,7 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
   // adjusted if the anchor or the focus nodes include ignored children.
   const BrowserAccessibility* anchor_object =
       manager()->GetFromID(selection.anchor_object_id);
-  if (anchor_object && !anchor_object->PlatformIsLeaf()) {
+  if (anchor_object && !anchor_object->IsLeaf()) {
     DCHECK_GE(selection.anchor_offset, 0);
     if (static_cast<size_t>(selection.anchor_offset) <
         anchor_object->node()->children().size()) {
@@ -1492,7 +1477,7 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
 
   const BrowserAccessibility* focus_object =
       manager()->GetFromID(selection.focus_object_id);
-  if (focus_object && !focus_object->PlatformIsLeaf()) {
+  if (focus_object && !focus_object->IsLeaf()) {
     DCHECK_GE(selection.focus_offset, 0);
     if (static_cast<size_t>(selection.focus_offset) <
         focus_object->node()->children().size()) {
@@ -1642,6 +1627,21 @@ gfx::NativeViewAccessible BrowserAccessibility::GetTextFieldAncestor() const {
   BrowserAccessibility* text_field_ancestor = PlatformGetTextFieldAncestor();
   if (text_field_ancestor)
     return text_field_ancestor->GetNativeViewAccessible();
+  return nullptr;
+}
+
+gfx::NativeViewAccessible BrowserAccessibility::GetSelectionContainer() const {
+  BrowserAccessibility* selection_container = PlatformGetSelectionContainer();
+  if (selection_container)
+    return selection_container->GetNativeViewAccessible();
+  return nullptr;
+}
+
+gfx::NativeViewAccessible BrowserAccessibility::GetTableAncestor() const {
+  BrowserAccessibility* table_ancestor =
+      manager()->GetFromAXNode(node()->GetTableAncestor());
+  if (table_ancestor)
+    return table_ancestor->GetNativeViewAccessible();
   return nullptr;
 }
 
@@ -1893,12 +1893,12 @@ absl::optional<int32_t> BrowserAccessibility::CellIndexToId(
   return cell->id();
 }
 
-bool BrowserAccessibility::IsCellOrHeaderOfARIATable() const {
-  return node()->IsCellOrHeaderOfARIATable();
+bool BrowserAccessibility::IsCellOrHeaderOfAriaTable() const {
+  return node()->IsCellOrHeaderOfAriaTable();
 }
 
-bool BrowserAccessibility::IsCellOrHeaderOfARIAGrid() const {
-  return node()->IsCellOrHeaderOfARIAGrid();
+bool BrowserAccessibility::IsCellOrHeaderOfAriaGrid() const {
+  return node()->IsCellOrHeaderOfAriaGrid();
 }
 
 bool BrowserAccessibility::AccessibilityPerformAction(
@@ -1948,7 +1948,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       const BrowserAccessibility* anchor_object =
           selection_manager->GetFromID(selection.anchor_node_id);
       DCHECK(anchor_object);
-      if (!anchor_object->PlatformIsLeaf()) {
+      if (!anchor_object->IsLeaf()) {
         DCHECK_GE(selection.anchor_offset, 0);
         const BrowserAccessibility* anchor_child =
             anchor_object->InternalGetChild(
@@ -1972,7 +1972,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       // Blink only supports selections between two nodes in the same tree.
       DCHECK_EQ(anchor_object->GetTreeData().tree_id,
                 focus_object->GetTreeData().tree_id);
-      if (!focus_object->PlatformIsLeaf()) {
+      if (!focus_object->IsLeaf()) {
         DCHECK_GE(selection.focus_offset, 0);
         const BrowserAccessibility* focus_child =
             focus_object->InternalGetChild(
@@ -2377,7 +2377,7 @@ void BrowserAccessibility::MergeSpellingAndGrammarIntoTextAttributes(
 ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
     const ui::TextAttributeList& default_attributes) const {
   ui::TextAttributeMap attributes_map;
-  if (PlatformIsLeaf()) {
+  if (IsLeaf()) {
     attributes_map[0] = default_attributes;
     const ui::TextAttributeMap spelling_attributes =
         GetSpellingAndGrammarAttributes();

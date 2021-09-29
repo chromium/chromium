@@ -1213,7 +1213,7 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
 
   // Pre-order traversal might leave some text-only objects behind if we don't
   // start from the deepest children of the end object.
-  if (!end_text_object->PlatformIsLeaf())
+  if (!end_text_object->IsLeaf())
     end_text_object = end_text_object->PlatformDeepestLastChild();
 
   if (!start_text_object->IsText())

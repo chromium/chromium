@@ -38,19 +38,14 @@
 namespace content {
 class BrowserAccessibilityManager;
 
-////////////////////////////////////////////////////////////////////////////////
+// A `BrowserAccessibility` object represents one node in the accessibility tree
+// on the browser side. It wraps an `AXNode` and assists in exposing
+// web-specific information from the node. It's owned by a
+// `BrowserAccessibilityManager`.
 //
-// BrowserAccessibility
-//
-// A BrowserAccessibility object represents one node in the accessibility
-// tree on the browser side. It exactly corresponds to one WebAXObject from
-// Blink. It's owned by a BrowserAccessibilityManager.
-//
-// There are subclasses of BrowserAccessibility for each platform where
-// we implement native accessibility APIs. This base class is used occasionally
-// for tests.
-//
-////////////////////////////////////////////////////////////////////////////////
+// There are subclasses of BrowserAccessibility for each platform where we
+// implement some of the native accessibility APIs that are only specific to the
+// Web.
 class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
  public:
   using AXPosition = ui::AXNodePosition::AXPositionInstance;
@@ -105,9 +100,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // See `AXNode::IsEmptyLeaf()`.
   bool IsEmptyLeaf() const;
 
-  // See `AXNode::IsLeaf()`.
-  bool PlatformIsLeaf() const;
-
   // Returns true if this object can fire events.
   virtual bool CanFireEvents() const;
 
@@ -124,6 +116,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   virtual BrowserAccessibility* PlatformGetChild(uint32_t child_index) const;
 
   BrowserAccessibility* PlatformGetParent() const;
+
+  // The following methods are virtual so that they can be overridden on Mac to
+  // take into account the "extra Mac nodes".
+  //
+  // TODO(nektar): Refactor `AXNode` so that it can handle "extra Mac nodes"
+  // itself when using any of its tree traversal methods.
   virtual BrowserAccessibility* PlatformGetFirstChild() const;
   virtual BrowserAccessibility* PlatformGetLastChild() const;
   virtual BrowserAccessibility* PlatformGetNextSibling() const;
@@ -181,8 +179,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   PlatformChildIterator PlatformChildrenBegin() const;
   PlatformChildIterator PlatformChildrenEnd() const;
-  // Return a pointer to the first ancestor that is a selection container
-  BrowserAccessibility* PlatformGetSelectionContainer() const;
 
   // If this object is exposed to the platform's accessibility layer, returns
   // this object. Otherwise, returns the lowest ancestor that is exposed to the
@@ -194,6 +190,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // returns nullptr. In accessibility, an editable region includes all types of
   // text fields, (see `AXNodeData::IsTextField()`).
   BrowserAccessibility* PlatformGetTextFieldAncestor() const;
+
+  // If this node is within a container (or widget) that supports either single
+  // or multiple selection, returns the node that represents the container.
+  BrowserAccessibility* PlatformGetSelectionContainer() const;
 
   bool IsPreviousSiblingOnSameLine() const;
   bool IsNextSiblingOnSameLine() const;
@@ -365,6 +365,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // True if this is a web area, and its grandparent is a presentational iframe.
   bool IsWebAreaForPresentationalIframe() const;
 
+  // See AXNodeData::IsClickable().
   virtual bool IsClickable() const;
 
   // See AXNodeData::IsTextField().
@@ -384,6 +385,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // Get text to announce for a live region change, for ATs that do not
   // implement this functionality.
+  //
+  // TODO(nektar): Replace with `AXNode::GetInnerText()`.
   std::string GetLiveRegionText() const;
 
   // |offset| could only be a character offset. Depending on the platform, the
@@ -485,6 +488,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
   gfx::NativeViewAccessible GetTextFieldAncestor() const override;
+  gfx::NativeViewAccessible GetSelectionContainer() const override;
+  gfx::NativeViewAccessible GetTableAncestor() const override;
 
   std::unique_ptr<ChildIterator> ChildrenBegin() override;
   std::unique_ptr<ChildIterator> ChildrenEnd() override;
@@ -558,8 +563,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
                                     int col_index) const override;
   absl::optional<int32_t> CellIndexToId(int cell_index) const override;
 
-  bool IsCellOrHeaderOfARIATable() const override;
-  bool IsCellOrHeaderOfARIAGrid() const override;
+  bool IsCellOrHeaderOfAriaTable() const override;
+  bool IsCellOrHeaderOfAriaGrid() const override;
 
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   std::u16string GetLocalizedStringForImageAnnotationStatus(
@@ -616,10 +621,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
  protected:
   virtual ui::TextAttributeList ComputeTextAttributes() const;
 
-  // The manager of this tree of accessibility objects.
+  // The manager of this tree of accessibility objects. Weak, owns us.
   BrowserAccessibilityManager* manager_ = nullptr;
 
-  // The underlying node.
+  // The underlying node. Weak, `AXTree` owns this.
   ui::AXNode* node_ = nullptr;
 
   // Protected so that it can't be called directly on a BrowserAccessibility

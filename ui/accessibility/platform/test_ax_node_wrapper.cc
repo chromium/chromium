@@ -565,12 +565,12 @@ absl::optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
   return cell->id();
 }
 
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIATable() const {
-  return node_->IsCellOrHeaderOfARIATable();
+bool TestAXNodeWrapper::IsCellOrHeaderOfAriaTable() const {
+  return node_->IsCellOrHeaderOfAriaTable();
 }
 
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIAGrid() const {
-  return node_->IsCellOrHeaderOfARIAGrid();
+bool TestAXNodeWrapper::IsCellOrHeaderOfAriaGrid() const {
+  return node_->IsCellOrHeaderOfAriaGrid();
 }
 
 bool TestAXNodeWrapper::AccessibilityPerformAction(

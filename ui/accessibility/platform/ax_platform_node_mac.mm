@@ -113,7 +113,7 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
       NotifyMacEvent(native_node_, ax::mojom::Event::kFocus);
       return;
     } else if (ui::IsListItem(role)) {
-      if (AXPlatformNodeBase* container = GetSelectionContainer()) {
+      if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&
             GetDelegate()->GetFocus() == GetNativeViewAccessible()) {

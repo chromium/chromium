@@ -677,12 +677,20 @@ void AXNode::Destroy() {
 bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
   if (!ancestor)
     return false;
-
   if (this == ancestor)
     return true;
-  if (GetParent())
-    return GetParent()->IsDescendantOf(ancestor);
+  if (const AXNode* parent = GetParent())
+    return parent->IsDescendantOf(ancestor);
+  return false;
+}
 
+bool AXNode::IsDescendantOfCrossingTreeBoundary(const AXNode* ancestor) const {
+  if (!ancestor)
+    return false;
+  if (this == ancestor)
+    return true;
+  if (const AXNode* parent = GetParentCrossingTreeBoundary())
+    return parent->IsDescendantOfCrossingTreeBoundary(ancestor);
   return false;
 }
 
@@ -1339,7 +1347,7 @@ void AXNode::GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const {
   IdVectorToNodeVector(row_header_ids, row_headers);
 }
 
-bool AXNode::IsCellOrHeaderOfARIATable() const {
+bool AXNode::IsCellOrHeaderOfAriaTable() const {
   if (!IsTableCellOrHeader())
     return false;
 
@@ -1352,7 +1360,7 @@ bool AXNode::IsCellOrHeaderOfARIATable() const {
   return node->GetRole() == ax::mojom::Role::kTable;
 }
 
-bool AXNode::IsCellOrHeaderOfARIAGrid() const {
+bool AXNode::IsCellOrHeaderOfAriaGrid() const {
   if (!IsTableCellOrHeader())
     return false;
 
@@ -1831,6 +1839,24 @@ AXNode* AXNode::GetTextFieldAncestor() const {
                     ancestor->IsText());
        ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->data().IsTextField())
+      return ancestor;
+  }
+  return nullptr;
+}
+
+AXNode* AXNode::GetSelectionContainer() const {
+  for (AXNode* ancestor = const_cast<AXNode*>(this); ancestor;
+       ancestor = ancestor->GetUnignoredParent()) {
+    if (IsContainerWithSelectableChildren(ancestor->GetRole()))
+      return ancestor;
+  }
+  return nullptr;
+}
+
+AXNode* AXNode::GetTableAncestor() const {
+  for (AXNode* ancestor = const_cast<AXNode*>(this); ancestor;
+       ancestor = ancestor->GetUnignoredParent()) {
+    if (ancestor->IsTable())
       return ancestor;
   }
   return nullptr;

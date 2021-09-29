@@ -429,6 +429,35 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetTextFieldAncestor()
   return nullptr;
 }
 
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetSelectionContainer()
+    const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegateBase*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (IsContainerWithSelectableChildren(ancestor_delegate->GetRole()))
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetTableAncestor() const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegateBase*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (IsTableLike(ancestor_delegate->GetRole()))
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
+}
+
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
     AXPlatformNodeDelegateBase* parent,
     int index)
@@ -729,11 +758,11 @@ absl::optional<int32_t> AXPlatformNodeDelegateBase::CellIndexToId(
   return absl::nullopt;
 }
 
-bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfARIATable() const {
+bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaTable() const {
   return false;
 }
 
-bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfARIAGrid() const {
+bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaGrid() const {
   return false;
 }
 
