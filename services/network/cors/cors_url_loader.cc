@@ -463,13 +463,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
 
-  if (request_.redirect_mode == mojom::RedirectMode::kManual) {
-    deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
-    forwarding_client_->OnReceiveRedirect(redirect_info,
-                                          std::move(response_head));
-    return;
-  }
-
   // If |CORS flag| is set and a CORS check for |request| and |response| returns
   // failure, then return a network error.
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
@@ -485,6 +478,13 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
       HandleComplete(URLLoaderCompletionStatus(*error_status));
       return;
     }
+  }
+
+  if (request_.redirect_mode == mojom::RedirectMode::kManual) {
+    deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
+    forwarding_client_->OnReceiveRedirect(redirect_info,
+                                          std::move(response_head));
+    return;
   }
 
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
