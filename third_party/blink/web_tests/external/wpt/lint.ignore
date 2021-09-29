@@ -821,6 +821,7 @@ CSS-COLLIDING-REF-NAME: css/css-backgrounds/reference/background-image-001-ref.h
 CSS-COLLIDING-REF-NAME: css/css-break/background-image-001-ref.html
 
 # Ported crashtests from Mozilla
+SET TIMEOUT: editing/crashtests/backcolor-in-nested-editing-host-td-from-DOMAttrModified.html
 SET TIMEOUT: editing/crashtests/inserthtml-in-text-adopted-to-other-document.html
 SET TIMEOUT: editing/crashtests/insertorderedlist-in-text-adopted-to-other-document.html
 SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html

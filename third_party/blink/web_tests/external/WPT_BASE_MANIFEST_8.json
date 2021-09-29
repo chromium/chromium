@@ -1671,6 +1671,20 @@
    },
    "editing": {
     "crashtests": {
+     "backcolor-in-nested-editing-host-td-from-DOMAttrModified.html": [
+      "f8f004b910373c460e247fa0b05d9718cb1cb301",
+      [
+       null,
+       {}
+      ]
+     ],
+     "execCommand-backcolor-and-hilitecolor-in-empty-iframe-in-designMode.html": [
+      "0750dddca7b8a820e93c459fbb38aaa100c90ff7",
+      [
+       null,
+       {}
+      ]
+     ],
      "format-block-selection-containing-non-editable-list.html": [
       "2f8f8ea5ab2a795f945d00edbbe275aa716ddb96",
       [
@@ -1706,6 +1720,13 @@
        {}
       ]
      ],
+     "insertorderedlist-in-focused-inline-editing-host.html": [
+      "73869af3b597697c4774640e596eb54dceeddbfb",
+      [
+       null,
+       {}
+      ]
+     ],
      "insertorderedlist-in-text-adopted-to-other-document.html": [
       "e505e5bf2f7fa5fdc6ad80b1fbbc958ec9298707",
       [
@@ -1734,6 +1755,13 @@
        {}
       ]
      ],
+     "loading-different-page-in-iframe-while-iframe-sets-spellcheck-attr-from-load.html": [
+      "afddac34e19d429cc8b533337d84e5d6cc6f5a01",
+      [
+       null,
+       {}
+      ]
+     ],
      "make-parent-element-editable-after-making-focused-editing-host-non-editable.html": [
       "d624d7d3b98a7c615951f10e381e99fb1266c424",
       [
@@ -1750,6 +1778,34 @@
      ],
      "outdent-in-empty-body-editing-host.html": [
       "f68e46bc5391a1687ec1d11315c492e38f6301a6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "queryCommandIndeterm-backcolor-and-hilitecolor-in-empty-iframe-in-designMode.html": [
+      "6cf2524a54495d85af5da9a0b932ea77b4a88117",
+      [
+       null,
+       {}
+      ]
+     ],
+     "queryCommandIndeterm-backcolor-in-empty-iframe-in-designMode-from-load.html": [
+      "74d80e19b3893a4d55c6484462610f6d362927d9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "queryCommandState-backcolor-after-removing-html-element-in-designMode-from-load.html": [
+      "1c8fe5db9b3a21352283c7fccbf2a5d2bbc09c46",
+      [
+       null,
+       {}
+      ]
+     ],
+     "queryCommandValue-backcolor-after-replacing-html-element-with-new-one-in-designMode-from-load.html": [
+      "d14422c9319e0aff1bde91c932905caf510207cd",
       [
        null,
        {}
@@ -160898,7 +160954,7 @@
       ]
      ],
      "text-decoration-propagation-display-contents.html": [
-      "70e839a035a16c703a84d36b373b4da085c1b56e",
+      "d77dfe55b19be6e9a66b2085d80a45c6e16c55ee",
       [
        null,
        [
@@ -202919,6 +202975,19 @@
           [
            "/html/semantics/forms/the-textarea-element/multiline-placeholder-ref.html",
            "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "placeholder-white-space.tentative.html": [
+        "7af55643fb4bfe491f67c94fce84f79ab230d4d4",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-textarea-element/placeholder-white-space-notref.html",
+           "!="
           ]
          ],
          {}
@@ -248736,20 +248805,12 @@
        "1224acda348ca6a8ebeb4a208a065f623e0442c8",
        []
       ],
-      "min-height-invalid-expected.txt": [
-       "a1da7b6bea6cca15d0d3c295b1fe7db3c46f5f78",
-       []
-      ],
       "min-height-valid-expected.txt": [
        "30b22b0265d6f85baa4d0c929a0cffd74ebe12c5",
        []
       ],
       "min-width-computed-expected.txt": [
        "c90cbefe391089409c4ab804bf52ab7d777cf2fa",
-       []
-      ],
-      "min-width-invalid-expected.txt": [
-       "17f36512c414fb6c9ddde8e455fb776a2cbac608",
        []
       ],
       "min-width-valid-expected.txt": [
@@ -252757,7 +252818,7 @@
        []
       ],
       "text-decoration-propagation-display-contents-ref.html": [
-       "1bbdafa4d1719dd5396fc01937ad01ce5d728964",
+       "5eecc8c8b4e39c4b940e472e5e0f39e9262e10d9",
        []
       ],
       "text-decoration-shorthands-001-ref.html": [
@@ -280577,6 +280638,10 @@
         "0234ed64c9ad7155a42b254a5fe35a39535cbff8",
         []
        ],
+       "placeholder-white-space-notref.html": [
+        "375bdef8742cc9f394732ba08dc9090a4755d087",
+        []
+       ],
        "support": {
         "placeholder.css": [
          "9aaed05c86ac001a9c9b7749424b501b8a38281a",
@@ -286858,7 +286923,7 @@
     ]
    },
    "lint.ignore": [
-    "26e79442f640326c4a43c69854ddb2f18f8d72fa",
+    "c67b7412b13b94dc691513bcd802ace59aec123b",
     []
    ],
    "loading": {
@@ -300578,7 +300643,7 @@
       ]
      },
      "test-helpers.js": [
-      "90900e02586301f975704bcc2a414d2e6fc7f03c",
+      "32cbb2f6b1d98e5b0e169d836b0d8a635da1bfb9",
       []
      ],
      "urn-uuid.har": [
@@ -300777,11 +300842,11 @@
        []
       ],
       "relative-url-test.js": [
-       "fa78a4a16204573f3be2a58205902b59c8c2486b",
+       "bd9c80a0da5f551171fec280eac9884a748dd364",
        []
       ],
       "relative-url-with-base-test.js": [
-       "1f658ac646d7f53893b9b2bcabb5210afac02aa8",
+       "c09cd3307d5e9640fc8803489d7a192b309f367a",
        []
       ],
       "request-destination-test.sub.js": [
@@ -353039,7 +353104,7 @@
        ]
       ],
       "min-height-invalid.html": [
-       "57119fc1ae50339c6ce34b09a285b6c09185df55",
+       "8df96e22d41b01bcdbfe05ed19564344af6c656c",
        [
         null,
         {}
@@ -353060,7 +353125,7 @@
        ]
       ],
       "min-width-invalid.html": [
-       "1286acd9d07047d89fec5d32abe60a7ff5ffae77",
+       "443ccc310798b1faa461ad5c15f0a4c4085d9b04",
        [
         null,
         {}
@@ -389749,7 +389814,7 @@
        ]
       ],
       "redirect-mode.any.js": [
-       "eed44e0414cb8947c9b7c21df6ef288f733f8994",
+       "9f1ff98c65af97bcf185867ac6c6e128dbd77715",
        [
         "fetch/api/redirect/redirect-mode.any.html",
         {
@@ -496813,7 +496878,7 @@
       ]
      ],
      "link-relative-url-with-base.https.tentative.html": [
-      "07ba9159e9b5008fc3f4dce6178bb55bcf0142e0",
+      "3609fc8004f671cf1794ee22c54fb7d2a3ebced9",
       [
        null,
        {}
@@ -496939,7 +497004,7 @@
       ]
      ],
      "script-relative-url-with-base.https.tentative.html": [
-      "5732a0935ec6a20a76a531688084ee1ba016eafe",
+      "afbaab08b491e394560df8f345a455a3c2510da7",
       [
        null,
        {}
