@@ -6,7 +6,7 @@
 #error "This file requires ARC support."
 #endif
 
-#include "ios/chrome/credential_provider_extension/password_util.h"
+#include "ios/components/credential_provider_extension/password_util.h"
 
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>

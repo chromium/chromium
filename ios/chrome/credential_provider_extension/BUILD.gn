@@ -118,12 +118,10 @@ source_set("unit_tests") {
   sources = [
     "metrics_util_unittest.mm",
     "password_spec_fetcher_unittest.mm",
-    "password_util_unittest.mm",
   ]
   deps = [
     ":metrics_util",
     ":password_spec_fetcher",
-    ":password_util",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser/proto",
@@ -177,11 +175,9 @@ source_set("password_util") {
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/components/credential_provider_extension:password_util",
   ]
-  frameworks = [
-    "Security.framework",
-    "Foundation.framework",
-  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("metrics_util") {
