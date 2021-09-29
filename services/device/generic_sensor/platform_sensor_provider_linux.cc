@@ -27,7 +27,9 @@ constexpr base::TaskTraits kBlockingTaskRunnerTraits = {
 }  // namespace
 
 PlatformSensorProviderLinux::PlatformSensorProviderLinux()
-    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+    : sensor_nodes_enumerated_(false),
+      sensor_nodes_enumeration_started_(false),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           kBlockingTaskRunnerTraits)),
       sensor_device_manager_(nullptr,
                              base::OnTaskRunnerDeleter(blocking_task_runner_)) {
@@ -43,16 +45,16 @@ void PlatformSensorProviderLinux::CreateSensorInternal(
     CreateSensorCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (enumeration_status_ == SensorEnumerationState::kNotEnumerated) {
-    // Unretained() is safe because the deletion of |sensor_device_manager_|
-    // is scheduled on |blocking_task_runner_| when
-    // PlatformSensorProviderLinux is deleted.
-    const bool will_run = blocking_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SensorDeviceManager::Start,
-                       base::Unretained(sensor_device_manager_.get())));
-    if (will_run)
-      enumeration_status_ = SensorEnumerationState::kEnumerationStarted;
+  if (!sensor_nodes_enumerated_) {
+    if (!sensor_nodes_enumeration_started_) {
+      // Unretained() is safe because the deletion of |sensor_device_manager_|
+      // is scheduled on |blocking_task_runner_| when
+      // PlatformSensorProviderLinux is deleted.
+      sensor_nodes_enumeration_started_ = blocking_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SensorDeviceManager::Start,
+                         base::Unretained(sensor_device_manager_.get())));
+    }
     return;
   }
 
@@ -136,8 +138,8 @@ void PlatformSensorProviderLinux::CreateSensorAndNotify(
 
 void PlatformSensorProviderLinux::OnSensorNodesEnumerated() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(enumeration_status_, SensorEnumerationState::kEnumerationFinished);
-  enumeration_status_ = SensorEnumerationState::kEnumerationFinished;
+  DCHECK(!sensor_nodes_enumerated_);
+  sensor_nodes_enumerated_ = true;
   ProcessStoredRequests();
 }
 

@@ -68,16 +68,11 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
   void OnDeviceRemoved(mojom::SensorType type,
                        const std::string& device_node) override;
 
-  enum class SensorEnumerationState : uint8_t {
-    // Original state.
-    kNotEnumerated,
+  // Set to true when enumeration is ready.
+  bool sensor_nodes_enumerated_;
 
-    // |sensor_device_manager_| has started to enumerate sensors.
-    kEnumerationStarted,
-
-    // Sensor enumeration has finished.
-    kEnumerationFinished
-  } enumeration_status_ = SensorEnumerationState::kNotEnumerated;
+  // Set to true when |sensor_device_manager_| has already started enumeration.
+  bool sensor_nodes_enumeration_started_;
 
   // Stores all available sensor devices by type.
   SensorDeviceMap sensor_devices_by_type_;
