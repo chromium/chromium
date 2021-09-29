@@ -146,19 +146,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
                                  bool consented_to_sync);
 
-  // Starts the sign out process. If |assert_signout_allowed| is true then
-  // the sign out process will DCHECK if user sign out is not allowed.
+  // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
                     signin_metrics::SignoutDelete signout_delete_metric,
-                    RemoveAccountsOption remove_option,
-                    bool assert_signout_allowed = false);
+                    RemoveAccountsOption remove_option);
 
   // The sign out process which is started by SigninClient::PreSignOut()
   void OnSignoutDecisionReached(
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric,
       RemoveAccountsOption remove_option,
-      bool assert_signout_allowed,
       SigninClient::SignoutDecision signout_decision);
 
   // Returns the current state of the primary account.
