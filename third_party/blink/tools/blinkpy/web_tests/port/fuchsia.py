@@ -247,7 +247,8 @@ class FuchsiaPort(base.Port):
                 enable_graphics=False,
                 hardware_gpu=False,
                 with_network=False,
-                logs_dir=self.results_directory())
+                logs_dir=self.results_directory(),
+                custom_image=None)
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)

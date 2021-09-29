@@ -40,16 +40,26 @@ class FvdlTarget(emu_target.EmuTarget):
   _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 
   def __init__(self, out_dir, target_cpu, require_kvm, enable_graphics,
-               hardware_gpu, with_network, ram_size_mb, logs_dir):
+               hardware_gpu, with_network, ram_size_mb, logs_dir, custom_image):
     super(FvdlTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
     self._with_network = with_network
     self._ram_size_mb = ram_size_mb
+    self._custom_image = custom_image
 
     self._host = None
     self._pid = None
+
+    if custom_image:
+      components = custom_image.split('.')
+      if len(components) != 2:
+        raise ValueError("Invalid custom_image name:", custom_image)
+      self._image_type, self._image_arch = components
+    else:
+      self._image_arch = self._GetTargetSdkArch()
+      self._image_type = boot_data.TARGET_TYPE_QEMU
 
     # Use a temp file for vdl output.
     self._vdl_output_file = tempfile.NamedTemporaryFile()
@@ -63,7 +73,8 @@ class FvdlTarget(emu_target.EmuTarget):
   def CreateFromArgs(args):
     return FvdlTarget(args.out_dir, args.target_cpu, args.require_kvm,
                       args.enable_graphics, args.hardware_gpu,
-                      args.with_network, args.ram_size_mb, args.logs_dir)
+                      args.with_network, args.ram_size_mb, args.logs_dir,
+                      args.custom_image)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -72,19 +83,22 @@ class FvdlTarget(emu_target.EmuTarget):
                            action='store_true',
                            default=False,
                            help='Run emulator with emulated nic via tun/tap.')
+    fvdl_args.add_argument('--custom-image',
+                           help='Specify an image used for booting up the '
+                           'emulator.')
 
   def _BuildCommand(self):
     boot_data.ProvisionSSH()
     self._host_ssh_port = common.GetAvailableTcpPort()
     kernel_image = common.EnsurePathExists(
-        boot_data.GetTargetFile('qemu-kernel.kernel', self._GetTargetSdkArch(),
-                                boot_data.TARGET_TYPE_QEMU))
+        boot_data.GetTargetFile('qemu-kernel.kernel', self._image_arch,
+                                self._image_type))
     zbi_image = common.EnsurePathExists(
-        boot_data.GetTargetFile('zircon-a.zbi', self._GetTargetSdkArch(),
-                                boot_data.TARGET_TYPE_QEMU))
+        boot_data.GetTargetFile('zircon-a.zbi', self._image_arch,
+                                self._image_type))
     fvm_image = common.EnsurePathExists(
-        boot_data.GetTargetFile('storage-full.blk', self._GetTargetSdkArch(),
-                                boot_data.TARGET_TYPE_QEMU))
+        boot_data.GetTargetFile('storage-full.blk', self._image_arch,
+                                self._image_type))
     aemu_path = common.EnsurePathExists(
         os.path.join(common.GetEmuRootForPlatform(self.EMULATOR_NAME),
                      'emulator'))

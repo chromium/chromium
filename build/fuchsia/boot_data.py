@@ -63,8 +63,6 @@ def GetTargetFile(filename, target_arch, target_type):
   """Computes a path to |filename| in the Fuchsia boot image directory specific
   to |target_type| and |target_arch|."""
 
-  assert target_type == TARGET_TYPE_QEMU or target_type == TARGET_TYPE_GENERIC
-
   return os.path.join(common.IMAGES_ROOT, target_arch, target_type, filename)
 
 

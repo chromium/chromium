@@ -88,6 +88,16 @@ solutions = [
 target_os = ['fuchsia']
 ```
 
+The Fuchsia boot images that are checked out is controlled by the
+`checkout_fuchsia_boot_images` variable. For instance, adding
+```
+"checkout_fuchsia_boot_images": "qemu.x64,workstation.qemu-x64-release",
+```
+to the `custom_vars` section of your `.gclient` file would allow you to check
+out both images.
+
+```
+
 You will then need to run:
 
 ```shell

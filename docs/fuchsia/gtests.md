@@ -17,6 +17,11 @@ shuts the emulator down when finished.
 $ out/fuchsia/bin/run_base_unittests
 ```
 
+The flag `--custom-image` can be used to specify the Fuchsia boot image used
+by the emulator. For instance, setting
+`--custom-image=workstation.qemu-x64-release` would run the test on a
+workstation image.
+
 ## Run on an physical device
 
 Note the `-d` flag, which is an alias for `--device`.

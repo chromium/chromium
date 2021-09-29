@@ -162,7 +162,7 @@ vars = {
   #
   # Example of images include:
   #   Emulation:
-  #     qemu.x64, qemu.arm64
+  #     qemu.x64, qemu.arm64, workstation.qemu-x64-release
   #   Hardware:
   #     generic.x64, generic.arm64
   #
