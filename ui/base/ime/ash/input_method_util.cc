@@ -428,15 +428,6 @@ std::string InputMethodUtil::GetLocalizedDisplayName(
   return disp;
 }
 
-// Gets legacy xkb id (e.g. xkb:us::eng) from the new extension based xkb id
-// (e.g. _comp_ime_...xkb:us::eng). If the given id is not prefixed with
-// 'xkb:', just return the same as the given id.
-std::string MaybeGetLegacyXkbId(const std::string& input_method_id) {
-  if (extension_ime_util::IsKeyboardLayoutExtension(input_method_id))
-    return extension_ime_util::GetComponentIDByInputMethodID(input_method_id);
-  return input_method_id;
-}
-
 bool InputMethodUtil::IsValidInputMethodId(
     const std::string& input_method_id) const {
   // We can't check the component extension is whilelisted or not here because
@@ -479,8 +470,14 @@ std::u16string InputMethodUtil::GetInputMethodLongNameInternal(
 
   std::u16string text;
   if (short_name || localized_display_name.empty()) {
-    // Legacy xkb id is required to get the translated string.
-    std::string key_string = MaybeGetLegacyXkbId(input_method_id);
+    // Gets legacy xkb id (e.g. xkb:us::eng) from the new extension based xkb id
+    // (e.g. _comp_ime_...xkb:us::eng). If the given id is not prefixed with
+    // 'xkb:', just return the same as the given id.
+    std::string key_string =
+        extension_ime_util::IsKeyboardLayoutExtension(input_method_id)
+            ? extension_ime_util::GetComponentIDByInputMethodID(input_method_id)
+            : input_method_id;
+
     auto iter = english_to_resource_id_.find(key_string);
 
     if (iter == english_to_resource_id_.end()) {
