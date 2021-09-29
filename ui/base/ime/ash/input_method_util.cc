@@ -437,25 +437,6 @@ std::string MaybeGetLegacyXkbId(const std::string& input_method_id) {
   return input_method_id;
 }
 
-std::u16string InputMethodUtil::TranslateString(
-    const std::string& english_string) const {
-  // |english_string| could be an input method id. So legacy xkb id is required
-  // to get the translated string.
-  std::string key_string = MaybeGetLegacyXkbId(english_string);
-  auto iter = english_to_resource_id_.find(key_string);
-
-  if (iter == english_to_resource_id_.end()) {
-    // TODO(yusukes): Write Autotest which checks if all display names and all
-    // property names for supported input methods are listed in the resource
-    // ID array (crosbug.com/4572).
-    LOG(ERROR) << "Resource ID is not found for: " << english_string
-               << ", " << key_string;
-    return base::UTF8ToUTF16(english_string);
-  }
-
-  return delegate_->GetLocalizedString(iter->second);
-}
-
 bool InputMethodUtil::IsValidInputMethodId(
     const std::string& input_method_id) const {
   // We can't check the component extension is whilelisted or not here because
@@ -490,14 +471,32 @@ std::u16string InputMethodUtil::GetInputMethodLongNameInternal(
     const InputMethodDescriptor& input_method,
     bool short_name) const {
   std::string localized_display_name = GetLocalizedDisplayName(input_method);
-  if (!localized_display_name.empty() && !IsKeyboardLayout(input_method.id())) {
+  const std::string& input_method_id = input_method.id();
+  if (!localized_display_name.empty() && !IsKeyboardLayout(input_method_id)) {
     // If the descriptor has a name, use it.
     return base::UTF8ToUTF16(localized_display_name);
   }
 
-  std::u16string text = (short_name || localized_display_name.empty())
-                            ? TranslateString(input_method.id())
-                            : base::UTF8ToUTF16(localized_display_name);
+  std::u16string text;
+  if (short_name || localized_display_name.empty()) {
+    // Legacy xkb id is required to get the translated string.
+    std::string key_string = MaybeGetLegacyXkbId(input_method_id);
+    auto iter = english_to_resource_id_.find(key_string);
+
+    if (iter == english_to_resource_id_.end()) {
+      // TODO(yusukes): Write Autotest which checks if all display names and all
+      // property names for supported input methods are listed in the resource
+      // ID array (crosbug.com/4572).
+      LOG(ERROR) << "Resource ID is not found for: " << input_method_id << ", "
+                 << key_string;
+      text = base::UTF8ToUTF16(input_method_id);
+    } else {
+      text = delegate_->GetLocalizedString(iter->second);
+    }
+  } else {
+    text = base::UTF8ToUTF16(localized_display_name);
+  }
+
   DCHECK(!text.empty());
   return text;
 }
