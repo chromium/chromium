@@ -2018,13 +2018,6 @@ crbug.com/1223681 virtual/plz-dedicated-worker/external/wpt/service-workers/serv
 # crbug.com/1218723 This test fails when SplitCacheByNetworkIsolationKey is enabled.
 crbug.com/1218723 http/tests/devtools/network/network-prefetch.js [ Failure ]
 
-# We've removed the existing console warning and replaced it with error message
-# tooltips in the HTTP request cookies view. We intend to also add a DevTools
-# Issue that makes it easier for developers to notice that a large cookie has
-# been rejected. Once that occurs, modify this test to look for the DevTools
-# Issue being created and then re-enable it.
-crbug.com/1252463 http/tests/devtools/network/warning-for-long-cookie.js [ Failure ]
-
 # No support for WPT print-reftests:
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match-print.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.html [ Failure ]
