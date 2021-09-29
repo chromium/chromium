@@ -1092,6 +1092,29 @@
             ]
         }
     ],
+    "AutofillRendererFormCacheMemoryLeak": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NewFormExtraction_20210815",
+                    "enable_features": [
+                        "AutofillUseNewFormExtraction",
+                        "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillServerTypeTakesPrecedence": [
         {
             "platforms": [
@@ -1181,27 +1204,6 @@
                     "disable_features": [
                         "AutofillCardSurvey",
                         "AutofillPasswordSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval"
                     ]
                 }
             ]
