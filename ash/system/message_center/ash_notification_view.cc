@@ -228,7 +228,11 @@ AshNotificationView::AshNotificationView(
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  control_buttons_view_ = AddChildView(CreateControlButtonsView());
+  auto control_buttons_view = CreateControlButtonsView();
+  control_buttons_view->SetButtonIconColors(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
+  control_buttons_view_ = AddChildView(std::move(control_buttons_view));
 
   // Header left content contains header row and left content.
   auto header_left_content = std::make_unique<views::View>();
