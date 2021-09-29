@@ -1311,7 +1311,7 @@ try_.chromium_linux_builder(
     name = "linux-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    cores = "2|4",
+    cores = 4,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
