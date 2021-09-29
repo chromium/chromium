@@ -378,12 +378,18 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // Handle taps on the dismiss button.
 - (void)didTapDismissBarButton {
   DCHECK(self.showDismissBarButton);
-  [self.actionHandler confirmationAlertDismissAction];
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
+    [self.actionHandler confirmationAlertDismissAction];
+  }
 }
 
 // Handle taps on the help button.
 - (void)didTapHelpButton {
-  [self.actionHandler confirmationAlertLearnMoreAction];
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertLearnMoreAction)]) {
+    [self.actionHandler confirmationAlertLearnMoreAction];
+  }
 }
 
 // Handle taps on the primary action button.
@@ -394,16 +400,18 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // Handle taps on the secondary action button
 - (void)didTapSecondaryActionButton {
   DCHECK(self.secondaryActionAvailable);
-  [self.actionHandler confirmationAlertSecondaryAction];
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertSecondaryAction)]) {
+    [self.actionHandler confirmationAlertSecondaryAction];
+  }
 }
 
 - (void)didTapTertiaryActionButton {
   DCHECK(self.tertiaryActionAvailable);
-  if (![self.actionHandler
+  if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertTertiaryAction)]) {
-    return;
+    [self.actionHandler confirmationAlertTertiaryAction];
   }
-  [self.actionHandler confirmationAlertTertiaryAction];
 }
 
 // Helper to create the top toolbar.

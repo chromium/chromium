@@ -75,11 +75,6 @@
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // There should be no cancel toolbar button for this UI.
-  NOTREACHED();
-}
-
 - (void)confirmationAlertPrimaryAction {
   if (IsInRemindMeLaterGroup()) {
     if (self.defaultBrowerPromoViewController.tertiaryActionAvailable) {

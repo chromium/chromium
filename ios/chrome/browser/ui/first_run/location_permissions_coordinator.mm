@@ -89,14 +89,6 @@ enum class LocationPermissionsFirstRunModalIOSEnum {
   [[OmniboxGeolocationController sharedInstance] systemPromptSkippedForNewUser];
 }
 
-- (void)confirmationAlertDismissAction {
-  // No-op.
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  // No-op.
-}
-
 #pragma mark - Private
 
 - (void)logModalInteractionForAction:

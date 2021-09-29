@@ -109,10 +109,6 @@
       presentReminderOnViewController:self.viewController];
 }
 
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
-}
-
 - (void)confirmationAlertLearnMoreAction {
   NSString* message =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_MORE_INFO_STRING",

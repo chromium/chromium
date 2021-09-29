@@ -28,9 +28,7 @@
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
   self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
   self.pointerInteractionEnabled = YES;
 

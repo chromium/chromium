@@ -135,11 +135,6 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // There should be no cancel toolbar button for this UI.
-  NOTREACHED();
-}
-
 - (void)confirmationAlertPrimaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));

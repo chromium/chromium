@@ -217,14 +217,6 @@
   // No-op.
 }
 
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  // No-op.
-}
-
 #pragma mark - Private
 
 // Asks user for hardware reauthentication if needed.

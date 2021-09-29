@@ -92,28 +92,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // There should be no cancel toolbar button for this UI.
-  NOTREACHED();
-}
-
 - (void)confirmationAlertPrimaryAction {
-  [self dismissSignOutViewController];
-  [self showSignIn];
-}
-
-- (void)confirmationAlertSecondaryAction {
   [self.delegate enterpriseSignoutCoordinatorDidDismiss];
-}
-
-- (void)confirmationAlertTertiaryAction {
-  // There should be no tertiary action button for this UI.
-  NOTREACHED();
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  // There should be no Learn More action button for this UI.
-  NOTREACHED();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

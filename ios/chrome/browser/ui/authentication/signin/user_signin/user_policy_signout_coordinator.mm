@@ -77,16 +77,6 @@
   [applicationHandler openURLInNewTab:command];
 }
 
-- (void)confirmationAlertTertiaryAction {
-  // There should be no tertiary action button for this UI.
-  NOTREACHED();
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  // There should be no Learn More action button for this UI.
-  NOTREACHED();
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:

@@ -77,14 +77,6 @@
   [self startPasswordCheck];
 }
 
-- (void)confirmationAlertSecondaryAction {
-  NOTREACHED();
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  NOTREACHED();
-}
-
 #pragma mark - Private
 
 - (void)startPasswordCheck {
