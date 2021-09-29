@@ -369,3 +369,9 @@ TEST_F(OverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(OverlayWindowViewsTest, ShowControlsOnFocus) {
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+  overlay_window().OnNativeFocus();
+  EXPECT_TRUE(overlay_window().AreControlsVisible());
+}

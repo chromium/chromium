@@ -995,6 +995,11 @@ void OverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
       true /* stretch_content_to_fill_bounds */);
 }
 
+void OverlayWindowViews::OnNativeFocus() {
+  UpdateControlsVisibility(true);
+  views::Widget::OnNativeFocus();
+}
+
 void OverlayWindowViews::OnNativeBlur() {
   // Controls should be hidden when there is no more focus on the window. This
   // is used for tabbing and touch interactions. For mouse interactions, the

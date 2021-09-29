@@ -70,6 +70,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   // views::Widget:
   bool IsActive() const override;
   bool IsVisible() const override;
+  void OnNativeFocus() override;
   void OnNativeBlur() override;
   void OnNativeWidgetDestroyed() override;
   gfx::Size GetMinimumSize() const override;
