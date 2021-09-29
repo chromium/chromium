@@ -1137,10 +1137,14 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
         TRACE_EVENT_END("cc,benchmark", trace_track, end_time);
       }
     }
-    TRACE_EVENT_END("cc,benchmark", trace_track, stage.end_time);
+    TRACE_EVENT_END(
+        "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+        trace_track, stage.end_time);
   }
 
-  TRACE_EVENT_END("cc,benchmark", trace_track, frame_termination_time_);
+  TRACE_EVENT_END(
+      "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+      trace_track, frame_termination_time_);
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
