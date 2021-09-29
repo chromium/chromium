@@ -44,12 +44,6 @@ class SystemIdleCache;
 // business logic of this class.
 class LacrosServiceNeverBlockingState;
 
-// Prefer to use LacrosService instead of LacrosService. There is an
-// ongoing, low priority refactor to rename LacrosService to
-// LacrosService. https://crbug.com/1195401.
-class LacrosService;
-using LacrosService = LacrosService;
-
 // This class is responsible for receiving and routing mojo messages from
 // ash-chrome via the mojo::Receiver |sequenced_state_.receiver_|. This class is
 // responsible for sending and routing messages to ash-chrome via the
