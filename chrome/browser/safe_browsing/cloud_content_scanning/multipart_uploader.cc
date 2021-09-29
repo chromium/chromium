@@ -156,7 +156,11 @@ std::unique_ptr<MultipartDataPipeGetter> CreateFileDataPipeGetterBlocking(
     const std::string& boundary,
     const std::string& metadata,
     const base::FilePath& path) {
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
+  // clicking "Open Now" without causing download errors.
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_SHARE_DELETE);
+
   return MultipartDataPipeGetter::Create(boundary, metadata, std::move(file));
 }
 
