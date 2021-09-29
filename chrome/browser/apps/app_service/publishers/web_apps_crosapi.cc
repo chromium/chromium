@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -106,7 +107,24 @@ void WebAppsCrosapi::LaunchAppWithIntent(
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
-  launch_params->intent = std::move(intent);
+  launch_params->intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
+  controller_->Launch(std::move(launch_params), base::DoNothing());
+}
+
+void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,
+                                        int32_t event_flags,
+                                        apps::mojom::LaunchSource launch_source,
+                                        apps::mojom::FilePathsPtr file_paths) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent =
+      apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   controller_->Launch(std::move(launch_params), base::DoNothing());
 }
 

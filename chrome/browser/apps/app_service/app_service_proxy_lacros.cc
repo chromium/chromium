@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/profiles/profile.h"
@@ -281,7 +282,8 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
-  launch_params->intent = std::move(intent);
+  launch_params->intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
       std::move(launch_params));
 }

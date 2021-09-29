@@ -11,6 +11,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
@@ -94,6 +98,29 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif
 
+#if defined(OS_CHROMEOS)
+// Convert App Service Intent to Crosapi Intent.
+// TODO(crbug.com/1253219): Needs manual conversion rather than mojom traits
+// because Lacros does not support FileSystemURL as Ash, this method can be
+// replaced with mojom traits after migrating the App Service Intent to use the
+// file path.
+crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
+    const apps::mojom::IntentPtr& app_service_intent,
+    absl::optional<Profile*> profile);
+
+// Convert Crosapi Intent to App Service Intent. Note that the converted App
+// Service Intent will not contain the files field in lacros-chrome.
+// TODO(crbug.com/1253219): Needs manual conversion rather than mojom traits
+// because Lacros does not support FileSystemURL as Ash, this method can be
+// replaced with mojom traits after migrating the App Service Intent to use the
+// file path.
+apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
+    const crosapi::mojom::IntentPtr& crosapi_intent,
+    absl::optional<Profile*> profile);
+
+crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
+    const apps::mojom::FilePathsPtr& file_paths);
+#endif
 }  // namespace apps_util
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_

@@ -164,6 +164,28 @@ TEST_F(FileUtilsTest, GetFileUrls) {
   EXPECT_EQ(url_path, test_file);
 }
 
+TEST_F(FileUtilsTest, GetSingleFileSystemURL) {
+  GURL url;
+  storage::FileSystemURL fsurl;
+
+  const std::string path = "Documents/foo.txt";
+  url = ToGURL(base::FilePath(storage::kTestDir), path);
+  fsurl = GetFileSystemURL(GetProfile(), url);
+  EXPECT_EQ(fsurl, ToTestFileSystemURL(path));
+}
+
+TEST_F(FileUtilsTest, GetSingleFileSystemUrl) {
+  GURL url;
+  base::FilePath file_path;
+
+  const std::string path = "Images/foo.jpg";
+  file_path = base::FilePath(fs_root_).Append(path);
+  url = GetFileSystemUrl(GetProfile(), file_path);
+  EXPECT_EQ(
+      url,
+      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
+}
+
 }  // namespace
 
 }  // namespace apps

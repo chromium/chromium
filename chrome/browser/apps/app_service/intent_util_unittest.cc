@@ -21,6 +21,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/strings/strcat.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension.h"
+#include "net/base/filename_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#endif
+
 using apps::mojom::Condition;
 using apps::mojom::ConditionType;
 using apps::mojom::IntentFilterPtr;
@@ -367,3 +383,109 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
 
   ASSERT_EQ(app_service_filter1, app_service_filter2);
 }
+
+#if defined(OS_CHROMEOS)
+TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
+  apps::mojom::IntentPtr original_intent =
+      apps_util::CreateIntentFromUrl(GURL("www.google.com"));
+  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      original_intent, absl::nullopt);
+  auto converted_intent = apps_util::ConvertCrosapiToAppServiceIntent(
+      crosapi_intent, absl::nullopt);
+  EXPECT_EQ(original_intent, converted_intent);
+
+  original_intent = apps_util::CreateShareIntentFromText("text", "title");
+  crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(original_intent,
+                                                               absl::nullopt);
+  converted_intent = apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent,
+                                                                 absl::nullopt);
+  EXPECT_EQ(original_intent, converted_intent);
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class IntentUtilsFileTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    testing::Test::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("testing_profile");
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+            mount_name_, storage::FileSystemType::kFileSystemTypeExternal,
+            storage::FileSystemMountOption(), base::FilePath(fs_root_)));
+  }
+
+  void TearDown() override {
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+            mount_name_));
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_ = nullptr;
+    profile_manager_.reset();
+  }
+
+  TestingProfile* GetProfile() { return profile_; }
+
+  // FileUtils explicitly relies on ChromeOS Files.app for files manipulation.
+  const url::Origin GetFileManagerOrigin() {
+    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+        file_manager::kFileManagerAppId));
+  }
+
+  // For a given |root| converts the given virtual |path| to a GURL.
+  GURL ToGURL(const base::FilePath& root, const std::string& path) {
+    const std::string abs_path = root.Append(path).value();
+    return GURL(base::StrCat({url::kFileSystemScheme, ":",
+                              GetFileManagerOrigin().Serialize(), abs_path}));
+  }
+
+ protected:
+  const std::string mount_name_ = "TestMountName";
+  const std::string fs_root_ = "/path/to/test/filesystemroot";
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* profile_;
+};
+
+TEST_F(IntentUtilsFileTest, AppServiceIntentToCrosapi) {
+  auto app_service_intent = apps::mojom::Intent::New();
+  app_service_intent->action = "action";
+  app_service_intent->mime_type = "mime_type";
+  const std::string path = "Documents/foo.txt";
+  auto url = ToGURL(base::FilePath(storage::kTestDir), path);
+  app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
+  auto file = apps::mojom::IntentFile::New();
+  file->url = url;
+  app_service_intent->files->push_back(std::move(file));
+  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      app_service_intent, GetProfile());
+  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
+  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
+  ASSERT_TRUE(crosapi_intent->files.has_value());
+  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
+  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, base::FilePath(path));
+}
+
+TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
+  const std::string path = "Documents/foo.txt";
+  auto file_path = base::FilePath(fs_root_).Append(path);
+  auto file_paths = apps::mojom::FilePaths::New();
+  file_paths->file_paths.push_back(file_path);
+  auto crosapi_intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+
+  auto app_service_intent =
+      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, GetProfile());
+  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
+  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
+  ASSERT_TRUE(crosapi_intent->files.has_value());
+  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
+  EXPECT_EQ(
+      app_service_intent->files.value()[0]->url,
+      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
+}
+#endif

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/image/mojom/image.mojom";
@@ -280,16 +281,25 @@ enum WindowMode {
   kTabbedWindow,
 };
 
+// Metadata for a single file shared through an intent.
+[Stable]
+struct IntentFile {
+  // The file path of the file to share.
+  mojo_base.mojom.FilePath file_path;
+};
+
 // Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
 [Stable]
 struct Intent {
-  string action@0; // Intent action. e.g. view, send.
-  url.mojom.Url? url@1; // The URL of the intent. e.g. https://www.google.com/.
-  string? mime_type@2; // MIME type. e.g. text/plain, image/*.
-  string? share_text@3; // Text to share. e.g. Share link to other app.
+  string action@0;       // Intent action. e.g. view, send.
+  url.mojom.Url? url@1;  // The URL of the intent. e.g. https://www.google.com/.
+  string? mime_type@2;   // MIME type. e.g. text/plain, image/*.
+  string? share_text@3;  // Text to share. e.g. Share link to other app.
   string? share_title@4; // Title for the share.
+  // The files to view or share.
+  [MinVersion=5]array<IntentFile>? files@5;
 };
 
 // The result from launching an app.
@@ -333,7 +343,7 @@ enum LaunchSource {
 [Stable]
 // The parameters to launch an app.
 struct LaunchParams {
-  string app_id;               // The app id of the app.
-  LaunchSource launch_source;  // The app launch source.
-  Intent? intent;              // The intent the app will launch with.
+  string app_id@0;               // The app id of the app.
+  LaunchSource launch_source@1;  // The app launch source.
+  Intent? intent@2;              // The intent the app will launch with.
 };

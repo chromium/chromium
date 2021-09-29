@@ -120,16 +120,6 @@ mojom("mojom") {
           cpp = "::apps::mojom::AppType"
         },
         {
-          mojom = "crosapi.mojom.Intent"
-          cpp = "::apps::mojom::IntentPtr"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.IntentFile"
-          cpp = "::apps::mojom::IntentFilePtr"
-          move_only = true
-        },
-        {
           mojom = "crosapi.mojom.LaunchSource"
           cpp = "::apps::mojom::LaunchSource"
         },

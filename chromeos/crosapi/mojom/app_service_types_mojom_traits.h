@@ -316,34 +316,6 @@ struct EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode> {
 };
 
 template <>
-struct StructTraits<crosapi::mojom::IntentDataView, apps::mojom::IntentPtr> {
-  static const std::string& action(const apps::mojom::IntentPtr& r) {
-    return r->action;
-  }
-
-  static const absl::optional<GURL>& url(const apps::mojom::IntentPtr& r) {
-    return r->url;
-  }
-
-  static const absl::optional<std::string>& mime_type(
-      const apps::mojom::IntentPtr& r) {
-    return r->mime_type;
-  }
-
-  static const absl::optional<std::string>& share_text(
-      const apps::mojom::IntentPtr& r) {
-    return r->share_text;
-  }
-
-  static const absl::optional<std::string>& share_title(
-      const apps::mojom::IntentPtr& r) {
-    return r->share_title;
-  }
-
-  static bool Read(crosapi::mojom::IntentDataView, apps::mojom::IntentPtr* out);
-};
-
-template <>
 struct EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource> {
   static crosapi::mojom::LaunchSource ToMojom(apps::mojom::LaunchSource input);
   static bool FromMojom(crosapi::mojom::LaunchSource input,

@@ -1090,6 +1090,22 @@ const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 
+content::WebContents* WebAppPublisherHelper::MaybeNavigateExistingWindow(
+    const std::string& app_id,
+    absl::optional<GURL> url) {
+  content::WebContents* web_contents = nullptr;
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return web_contents;
+  }
+  if (web_app->capture_links() ==
+      blink::mojom::CaptureLinks::kExistingClientNavigate) {
+    web_contents = provider_->ui_manager().NavigateExistingWindow(
+        app_id, url ? url.value() : registrar().GetAppLaunchUrl(app_id));
+  }
+  return web_contents;
+}
+
 content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
@@ -1100,20 +1116,10 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
     return nullptr;
   }
 
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return nullptr;
-  }
-
-  if (web_app->capture_links() ==
-      blink::mojom::CaptureLinks::kExistingClientNavigate) {
-    content::WebContents* web_contents =
-        provider_->ui_manager().NavigateExistingWindow(
-            app_id, intent->url ? intent->url.value()
-                                : registrar().GetAppLaunchUrl(app_id));
-    if (web_contents) {
-      return web_contents;
-    }
+  content::WebContents* web_contents =
+      MaybeNavigateExistingWindow(app_id, intent->url);
+  if (web_contents) {
+    return web_contents;
   }
 
   auto params = apps::CreateAppLaunchParamsForIntent(

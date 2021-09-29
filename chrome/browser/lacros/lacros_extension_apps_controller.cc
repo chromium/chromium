@@ -8,6 +8,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
@@ -182,7 +183,8 @@ void LacrosExtensionAppsController::Launch(
 
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
   if (launch_params->intent) {
-    intent = std::move(launch_params->intent.value());
+    intent = apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
+                                                         profile);
   }
 
   extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(

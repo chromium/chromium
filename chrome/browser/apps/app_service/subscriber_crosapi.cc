@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -123,9 +124,10 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
-  if (launch_params->intent.has_value()) {
+  if (launch_params->intent) {
     proxy->LaunchAppWithIntent(launch_params->app_id, ui::EF_NONE,
-                               std::move(launch_params->intent.value()),
+                               apps_util::ConvertCrosapiToAppServiceIntent(
+                                   launch_params->intent, profile_),
                                launch_params->launch_source, nullptr);
   } else {
     proxy->Launch(launch_params->app_id, ui::EF_NONE,

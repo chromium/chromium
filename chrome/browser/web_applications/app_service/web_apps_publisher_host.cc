@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -245,14 +247,37 @@ void WebAppsPublisherHost::StopApp(const std::string& app_id) {
   publisher_helper().StopApp(app_id);
 }
 
+// TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
+// duplicated code.
 void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
                                   LaunchCallback callback) {
-  content::WebContents* web_contents;
-  if (launch_params->intent.has_value()) {
-    web_contents = publisher_helper().LaunchAppWithIntent(
+  content::WebContents* web_contents = nullptr;
+  if (launch_params->intent) {
+    if (!profile_) {
+      ReturnLaunchResult(profile_, nullptr, std::move(callback));
+      return;
+    }
+
+    web_contents = publisher_helper().MaybeNavigateExistingWindow(
+        launch_params->app_id, launch_params->intent->url);
+    if (web_contents) {
+      ReturnLaunchResult(profile_, web_contents, std::move(callback));
+      return;
+    }
+    auto params = apps::CreateAppLaunchParamsForIntent(
         launch_params->app_id, ui::EF_NONE,
-        std::move(launch_params->intent.value()), launch_params->launch_source,
-        nullptr);
+        apps::GetAppLaunchSource(launch_params->launch_source),
+        display::kDefaultDisplayId,
+        ConvertDisplayModeToAppLaunchContainer(
+            registrar().GetAppEffectiveDisplayMode(launch_params->app_id)),
+        apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
+                                                    profile_));
+    if (launch_params->intent->files.has_value()) {
+      for (const auto& file : launch_params->intent->files.value()) {
+        params.launch_files.push_back(file->file_path);
+      }
+    }
+    web_contents = publisher_helper().LaunchAppWithParams(std::move(params));
   } else {
     web_contents =
         publisher_helper().Launch(launch_params->app_id, ui::EF_NONE,

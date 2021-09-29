@@ -29,6 +29,17 @@ std::vector<storage::FileSystemURL> GetFileSystemURL(
   return file_system_urls;
 }
 
+storage::FileSystemURL GetFileSystemURL(Profile* profile,
+                                        const GURL& file_url) {
+  storage::FileSystemContext* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(profile);
+
+  storage::FileSystemURL file_system_url;
+  file_system_url = file_system_context->CrackURLInFirstPartyContext(file_url);
+
+  return file_system_url;
+}
+
 std::vector<GURL> GetFileSystemUrls(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths) {
@@ -42,6 +53,16 @@ std::vector<GURL> GetFileSystemUrls(
     }
   }
   return file_urls;
+}
+
+GURL GetFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
+  GURL file_url;
+  if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, file_path, file_manager::util::GetFileManagerURL(),
+          &file_url)) {
+    return file_url;
+  }
+  return GURL();
 }
 
 std::vector<GURL> GetFileUrls(const std::vector<base::FilePath>& file_paths) {
