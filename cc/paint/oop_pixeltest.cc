@@ -531,6 +531,51 @@ TEST_F(OopPixelTest, DrawRect) {
   ExpectEquals(actual, expected);
 }
 
+TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
+  gfx::Size output_size(10, 10);
+
+  // The paint record filter's ops would fill the right half of the image with
+  // green, but its record bounds are configured to clip it to the bottom right
+  // quarter of the output.
+  PaintFlags internal_flags;
+  internal_flags.setColor(SK_ColorGREEN);
+  sk_sp<PaintOpBuffer> filter_buffer(new PaintOpBuffer);
+  filter_buffer->push<DrawRectOp>(
+      SkRect::MakeLTRB(output_size.width() / 2.f, 0.f, output_size.width(),
+                       output_size.height()),
+      internal_flags);
+  sk_sp<RecordPaintFilter> record_filter = sk_make_sp<RecordPaintFilter>(
+      filter_buffer,
+      SkRect::MakeLTRB(output_size.width() / 2.f, output_size.height() / 2.f,
+                       output_size.width(), output_size.height()));
+
+  PaintFlags record_flags;
+  record_flags.setImageFilter(record_filter);
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  display_item_list->push<SaveLayerOp>(nullptr, &record_flags);
+  display_item_list->push<RestoreOp>();
+  display_item_list->EndPaintOfUnpaired(gfx::Rect(output_size));
+  display_item_list->Finalize();
+
+  SkImageInfo ii =
+      SkImageInfo::MakeN32Premul(output_size.width(), output_size.height());
+  SkBitmap expected;
+  expected.allocPixels(ii, ii.minRowBytes());
+  expected.eraseColor(SK_ColorWHITE);
+  expected.erase(
+      SK_ColorGREEN,
+      SkIRect::MakeLTRB(output_size.width() / 2, output_size.height() / 2,
+                        output_size.width(), output_size.height()));
+
+  auto actual_oop = Raster(display_item_list, output_size);
+  auto actual_gpu = RasterExpectedBitmap(display_item_list, output_size);
+  ExpectEquals(actual_oop, expected);
+  ExpectEquals(actual_gpu, expected);
+}
+
 TEST_P(OopImagePixelTest, DrawImage) {
   SCOPED_TRACE(base::StringPrintf("UseTooLargeImage: %d, FilterQuality: %d\n",
                                   UseTooLargeImage(), FilterQuality()));

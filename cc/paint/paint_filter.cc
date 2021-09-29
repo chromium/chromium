@@ -961,6 +961,8 @@ RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
       raster_scale_(raster_scale),
       scaling_behavior_(scaling_behavior) {
   DCHECK(raster_scale_.width() > 0.f && raster_scale_.height() > 0.f);
+  DCHECK(scaling_behavior == ScalingBehavior::kFixedScale ||
+         (raster_scale_.width() == 1.f && raster_scale_.height() == 1.f));
 
   sk_sp<SkPicture> picture =
       ToSkPicture(record_, record_bounds_, image_provider);
@@ -970,19 +972,23 @@ RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
     cached_sk_filter_ = SkImageFilters::Picture(std::move(picture));
   } else {
     DCHECK(scaling_behavior == ScalingBehavior::kFixedScale);
-    // Convert the record to an image and then reference that in the filter DAG
+
+    // Convert the record to an image at the scaled resolution, but draw it in
+    // the filter DAG at the original record bounds.
     int width = SkScalarCeilToInt(record_bounds.width());
     int height = SkScalarCeilToInt(record_bounds.height());
+    SkMatrix originAdjust =
+        SkMatrix::Translate(-record_bounds.fLeft, -record_bounds.fTop);
     auto image = SkImage::MakeFromPicture(
-        std::move(picture), SkISize::Make(width, height), nullptr, nullptr,
-        SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
+        std::move(picture), SkISize::Make(width, height), &originAdjust,
+        nullptr, SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
 
     // Must account for the raster scale when drawing the picture image,
     SkRect src = SkRect::MakeWH(record_bounds.width(), record_bounds.height());
     SkScalar inv_x = 1.f / raster_scale_.width();
     SkScalar inv_y = 1.f / raster_scale_.height();
-    SkRect dst = {inv_x * src.fLeft, inv_y * src.fTop, inv_x * src.fRight,
-                  inv_y * src.fBottom};
+    SkRect dst = {inv_x * record_bounds.fLeft, inv_y * record_bounds.fTop,
+                  inv_x * record_bounds.fRight, inv_y * record_bounds.fBottom};
 
     // Use Mitchell cubic filter, matching historic
     // PaintFlags::FilterQuality::kHigh
