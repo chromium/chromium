@@ -46,14 +46,18 @@ class BrowserDataMigrator {
   struct TargetInfo {
     TargetInfo();
     ~TargetInfo();
-    TargetInfo(const TargetInfo&);
+    TargetInfo(TargetInfo&&);
 
-    // Items that have to be copied that are directly under user data directory.
-    std::vector<TargetItem> user_data_items;
-    // Items that have to be copied that are directly under profile data
-    // directory. Profile data directory itself is inside user data directory.
-    std::vector<TargetItem> profile_data_items;
-    int64_t total_byte_count;
+    // Items that should stay in ash data dir.
+    std::vector<TargetItem> ash_data_items;
+    // Items that should be moved to lacros data dir.
+    std::vector<TargetItem> lacros_data_items;
+    // The total size of `ash_data_items`.
+    int64_t ash_data_size;
+    // The total size of items that can be deleted during the migration.
+    int64_t no_copy_data_size;
+    // The total size of `lacros_data_items`.
+    int64_t lacros_data_size;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -137,6 +141,7 @@ class BrowserDataMigrator {
   static bool IsMigrationSmallEnough(const TargetInfo& target_info);
   // Copies items to `to_dir`.
   static bool CopyTargetItems(const TargetInfo& target_info,
+                              const base::FilePath& from_dir,
                               const base::FilePath& to_dir);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
