@@ -106,6 +106,18 @@ class VisitRowElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
+  private onKeydown_(e: KeyboardEvent) {
+    // To be consistent with <history-list>, only handle Enter, and not Space.
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    // To record metrics.
+    this.onAuxClick_();
+
+    OpenWindowProxy.getInstance().open(this.visit.normalizedUrl.url);
+  }
+
   private onActionMenuButtonClick_(event: MouseEvent) {
     this.$.actionMenu.get().showAt(this.$.actionMenuButton);
     event.preventDefault();  // Prevent default browser action (navigation).
@@ -123,13 +135,14 @@ class VisitRowElement extends PolymerElement {
   }
 
   private onClick_(event: MouseEvent) {
-    // Ignore previousely handled events.
+    // Ignore previously handled events.
     if (event.defaultPrevented) {
       return;
     }
 
     event.preventDefault();  // Prevent default browser action (navigation).
 
+    // To record metrics.
     this.onAuxClick_();
 
     OpenWindowProxy.getInstance().open(this.visit.normalizedUrl.url);

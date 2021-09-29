@@ -22,7 +22,8 @@
     items="[[result_.clusters]]"
     on-remove-visits="onRemoveVisits_">
   <template>
-    <history-cluster cluster="[[item]]" index="[[index]]"
+    <history-cluster cluster="[[item]]" index="[[index]]" 
+        tabindex$="[[tabIndex]]"
         on-remove-cluster="onRemoveCluster_">
     </history-cluster>
   </template>

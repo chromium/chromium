@@ -3,8 +3,13 @@
     background-color: var(--white-fill-color);
     box-sizing: border-box;
     display: block;
+    outline: none;
     padding: var(--cluster-padding) 0;
     width: var(--cluster-width);
+  }
+
+  :host-context(.focus-outline-visible):host(:focus) {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 </style>
 <template is="dom-repeat" items="[[cluster.visits]]">
