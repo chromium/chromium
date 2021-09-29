@@ -325,6 +325,14 @@
           'scripts': 'public_build_scripts',
         },
       },
+      'win-archive-tagged': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'public_build_scripts',
+        },
+      },
       'win-official': {
         'additional_compile_targets': [
           'all',

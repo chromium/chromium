@@ -1642,6 +1642,20 @@ ci.chromium_builder(
 )
 
 ci.chromium_builder(
+    name = "win-archive-tagged",
+    console_view_entry = consoles.console_view_entry(
+        category = "win|tag",
+        short_name = "64",
+    ),
+    cores = 32,
+    main_console_view = "main",
+    os = os.WINDOWS_DEFAULT,
+    tree_closing = False,
+    schedule = "triggered",
+    triggered_by = [],
+)
+
+ci.chromium_builder(
     name = "win-official",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_console_view = "main",

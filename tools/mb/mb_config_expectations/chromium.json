@@ -123,6 +123,12 @@
       "use_goma": true
     }
   },
+  "win-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
   "win-official": {
     "gn_args": {
       "is_official_build": true,
