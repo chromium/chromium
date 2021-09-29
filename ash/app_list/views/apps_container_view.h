@@ -11,11 +11,13 @@
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -35,7 +37,8 @@ class ASH_EXPORT AppsContainerView
     : public AppListPage,
       public AppListFolderController,
       public PaginationModelObserver,
-      public PagedAppsGridView::ContainerDelegate {
+      public PagedAppsGridView::ContainerDelegate,
+      public RecentAppsView::Delegate {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
 
@@ -87,6 +90,7 @@ class ASH_EXPORT AppsContainerView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnShown() override;
@@ -124,6 +128,10 @@ class ASH_EXPORT AppsContainerView
   // PagedAppsGridView::ContainerDelegate:
   bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
   bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const override;
+
+  // RecentAppsView::Delegate:
+  void MoveFocusUpFromRecents() override;
+  void MoveFocusDownFromRecents(int column) override;
 
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
@@ -210,7 +218,9 @@ class ASH_EXPORT AppsContainerView
 
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
-  views::View* continue_section_ = nullptr;
+  views::View* continue_container_ = nullptr;
+  RecentAppsView* recent_apps_ = nullptr;
+  views::Separator* separator_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;

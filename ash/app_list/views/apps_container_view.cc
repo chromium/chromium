@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -47,7 +48,11 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
+
+using views::BoxLayout;
 
 namespace ash {
 
@@ -82,6 +87,15 @@ constexpr int kSortButtonSpacing = 10;
 
 // The preferred size of a sort button.
 constexpr int kSortButtonPreferredSize = 20;
+
+// The number of columns available for the ContinueSectionView.
+constexpr int kContinueColumnCount = 4;
+
+// The vertical spacing above and below the separator.
+constexpr int kSeparatorVerticalInset = 16;
+
+// The width of the separator.
+constexpr int kSeparatorWidth = 240;
 
 // SortButton ------------------------------------------------------------------
 
@@ -199,23 +213,50 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 
   scrollable_container_ = AddChildView(std::make_unique<views::View>());
   scrollable_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  AppListViewDelegate* view_delegate =
+      contents_view_->GetAppListMainView()->view_delegate();
+
   if (features::IsAppListBubbleEnabled()) {
     // The bounds of the |scrollable_container_| will visually clip the
-    // |continue_section_| layer during page changes.
+    // |continue_container_| layer during page changes.
     scrollable_container_->layer()->SetMasksToBounds(true);
 
-    // TODO(anasalazar): Add the actual continue section view.
-    continue_section_ =
+    continue_container_ =
         scrollable_container_->AddChildView(std::make_unique<views::View>());
-    continue_section_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    continue_section_->layer()->SetColor(SK_ColorTRANSPARENT);
+    continue_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+
+    auto* layout = continue_container_->SetLayoutManager(
+        std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+    layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
+
+    auto* continue_section =
+        continue_container_->AddChildView(std::make_unique<ContinueSectionView>(
+            view_delegate, kContinueColumnCount));
+    continue_section->SetPaintToLayer();
+    continue_section->layer()->SetFillsBoundsOpaquely(false);
+    continue_section->UpdateSuggestionTasks();
+
+    recent_apps_ = continue_container_->AddChildView(
+        std::make_unique<RecentAppsView>(this, view_delegate));
+    recent_apps_->SetPaintToLayer();
+    recent_apps_->layer()->SetFillsBoundsOpaquely(false);
+
+    separator_ =
+        continue_container_->AddChildView(std::make_unique<views::Separator>());
+    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+    separator_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kSeparatorVerticalInset, 0)));
+    separator_->SetPreferredSize(
+        gfx::Size(kSeparatorWidth,
+                  kSeparatorVerticalInset * 2 + views::Separator::kThickness));
+    separator_->SetPaintToLayer();
+    separator_->layer()->SetFillsBoundsOpaquely(false);
   } else {
     suggestion_chip_container_view_ = AddChildViewAt(
         std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
-  AppListViewDelegate* view_delegate =
-      contents_view_->GetAppListMainView()->view_delegate();
   AppListA11yAnnouncer* a11y_announcer =
       contents_view->app_list_view()->a11y_announcer();
   apps_grid_view_ = scrollable_container_->AddChildView(
@@ -359,12 +400,12 @@ void AppsContainerView::ReparentDragEnded() {
 // PaginationModelObserver:
 void AppsContainerView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
-  // |continue_section_| is hidden above the grid when not on the first page.
+  // |continue_container_| is hidden above the grid when not on the first page.
   gfx::Transform transform;
   gfx::Vector2dF translate;
   translate.set_y(-scrollable_container_->bounds().height() * new_selected);
   transform.Translate(translate);
-  continue_section_->layer()->SetTransform(transform);
+  continue_container_->layer()->SetTransform(transform);
 }
 
 void AppsContainerView::TransitionChanged() {
@@ -374,10 +415,10 @@ void AppsContainerView::TransitionChanged() {
   if (!pagination_model->is_valid_page(transition.target_page))
     return;
 
-  // Because |continue_section_| only shows on the first page, only update its
+  // Because |continue_container_| only shows on the first page, only update its
   // transform if its page is involved in the transition. Otherwise, there is
-  // no need to transform the |continue_section_| because it will remain hidden
-  // throughout the transition.
+  // no need to transform the |continue_container_| because it will remain
+  // hidden throughout the transition.
   if (transition.target_page == 0 || pagination_model->selected_page() == 0) {
     const int page_height = scrollable_container_->bounds().height();
     gfx::Vector2dF translate;
@@ -391,7 +432,7 @@ void AppsContainerView::TransitionChanged() {
     }
     gfx::Transform transform;
     transform.Translate(translate);
-    continue_section_->layer()->SetTransform(transform);
+    continue_container_->layer()->SetTransform(transform);
   }
 }
 
@@ -417,6 +458,31 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
                                    GetAppListConfig().page_flip_zone_size();
   return point_in_parent.y() > kBottomDragBufferMin &&
          point_in_parent.y() < kBottomDragBufferMax;
+}
+
+// RecentAppsView::Delegate:
+void AppsContainerView::MoveFocusUpFromRecents() {
+  DCHECK(!recent_apps_->children().empty());
+  views::View* first_recent = recent_apps_->children()[0];
+  DCHECK(views::IsViewClass<AppListItemView>(first_recent));
+  // Find the view one step in reverse from the first recent app.
+  views::View* previous_view = GetFocusManager()->GetNextFocusableView(
+      first_recent, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
+  DCHECK(previous_view);
+  previous_view->RequestFocus();
+}
+
+void AppsContainerView::MoveFocusDownFromRecents(int column) {
+  int top_level_item_count = apps_grid_view_->view_model()->view_size();
+  if (top_level_item_count <= 0)
+    return;
+  // Attempt to focus the item at `column` in the first row, or the last item if
+  // there aren't enough items. This could happen if the user's apps are in a
+  // small number of folders.
+  int index = std::min(column, top_level_item_count - 1);
+  AppListItemView* item = apps_grid_view_->GetItemViewAt(index);
+  DCHECK(item);
+  item->RequestFocus();
 }
 
 void AppsContainerView::UpdateControlVisibility(AppListViewState app_list_state,
@@ -489,12 +555,12 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
   if (suggestion_chip_container_view_) {
     suggestion_chip_container_view_->SetY(target_suggestion_chip_y);
     animator.Run(offset, suggestion_chip_container_view_->layer());
-    scrollable_container_->SetY(target_suggestion_chip_y +
-                                chip_grid_y_distance_);
-    animator.Run(offset, scrollable_container_->layer());
-    page_switcher_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
-    animator.Run(offset, page_switcher_->layer());
   }
+
+  scrollable_container_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
+  animator.Run(offset, scrollable_container_->layer());
+  page_switcher_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
+  animator.Run(offset, page_switcher_->layer());
 
   if (features::IsLauncherAppSortEnabled()) {
     sort_button_container_->SetY(target_suggestion_chip_y);
@@ -572,22 +638,22 @@ void AppsContainerView::Layout() {
   grid_rect.Inset(-grid_insets.left(), 0, -grid_insets.right(),
                   -grid_insets.bottom());
   scrollable_container_->SetBoundsRect(grid_rect);
-  // TODO(crbug.com/1234061): Make it so that the |continue_section| and the
-  // |apps_grid_view_| do not overlap visually. The first row of apps should
-  // appear below the continue section.
+  if (features::IsAppListBubbleEnabled()) {
+    continue_container_->SetBoundsRect(
+        gfx::Rect(0, 0, grid_rect.width(),
+                  continue_container_->GetPreferredSize().height()));
+    // Setting this offset prevents the app items in the grid from overlapping
+    // with the continue section.
+    apps_grid_view_->set_first_page_offset(
+        continue_container_->bounds().height());
+  }
   apps_grid_view_->SetBoundsRect(
       gfx::Rect(0, 0, grid_rect.width(), grid_rect.height()));
-
-  if (features::IsAppListBubbleEnabled())
-    continue_section_->SetBoundsRect(gfx::Rect(0, 0, grid_rect.width(), 200));
 
   // Record the distance of y position between suggestion chip container
   // and apps grid view to avoid duplicate calculation of apps grid view's
   // y position during dragging.
-  if (suggestion_chip_container_view_) {
-    chip_grid_y_distance_ =
-        scrollable_container_->y() - suggestion_chip_container_view_->y();
-  }
+  chip_grid_y_distance_ = scrollable_container_->y() - chip_container_rect.y();
 
   // Layout page switcher.
   const int page_switcher_width = page_switcher_->GetPreferredSize().width();
@@ -666,6 +732,14 @@ void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
   // If the temporary event was handled, we don't want to handle it again.
   if (grid_event.handled())
     event->SetHandled();
+}
+
+void AppsContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (separator_) {
+    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+  }
 }
 
 void AppsContainerView::OnShown() {
@@ -948,12 +1022,11 @@ void AppsContainerView::UpdateContentsOpacity(float progress,
 
 void AppsContainerView::UpdateContentsYPosition(float progress) {
   const int current_suggestion_chip_y = GetExpectedSuggestionChipY(progress);
-  if (suggestion_chip_container_view_) {
+  if (suggestion_chip_container_view_)
     suggestion_chip_container_view_->SetY(current_suggestion_chip_y);
-    scrollable_container_->SetY(current_suggestion_chip_y +
-                                chip_grid_y_distance_);
-    page_switcher_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
-  }
+  scrollable_container_->SetY(current_suggestion_chip_y +
+                              chip_grid_y_distance_);
+  page_switcher_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
 
   // If app list is in drag, reset transforms that might started animating in
   // AnimateYPosition().

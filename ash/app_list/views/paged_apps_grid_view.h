@@ -148,6 +148,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Gets the PaginationModel used for the grid view.
   PaginationModel* pagination_model() { return &pagination_model_; }
 
+  void set_first_page_offset(int offset) { first_page_offset_ = offset; }
+
  private:
   friend class test::AppsGridViewTest;
 
@@ -276,6 +278,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int max_rows_ = 0;
 
   PaginationModel pagination_model_{this};
+
+  // The amount that tiles need to be offset on the y-axis to avoid overlap
+  // with the recent apps and continue section.
+  int first_page_offset_ = 0;
 
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };

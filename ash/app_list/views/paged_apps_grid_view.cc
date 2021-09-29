@@ -658,12 +658,13 @@ int PagedAppsGridView::GetMaxRowsInPage(int page) const {
 }
 
 gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
+  const int y_offset = page == 0 ? first_page_offset_ : 0;
   if (!cardified_state_)
-    return gfx::Vector2d();
+    return gfx::Vector2d(0, y_offset);
   const gfx::Rect bounds = GetContentsBounds();
   const gfx::Size grid_size = GetTileGridSizeForPage(page);
   return gfx::Vector2d((bounds.width() - grid_size.width()) / 2,
-                       (bounds.height() - grid_size.height()) / 2);
+                       (bounds.height() + y_offset - grid_size.height()) / 2);
 }
 
 void PagedAppsGridView::UpdatePaging() {
@@ -1229,10 +1230,13 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
       (GetContentsBounds().width() - background_card_size.width()) / 2 +
       extra_padding_for_cardified_state;
 
+  const int y_offset = (new_page_index == 0 ? first_page_offset_ : 0);
   // The vertical padding should account for the fadeout mask.
-  const int vertical_padding =
-      (GetContentsBounds().height() - background_card_size.height()) / 2 +
-      GetAppListConfig().grid_fadeout_mask_height();
+  const int vertical_padding = y_offset +
+                               (GetContentsBounds().height() - y_offset -
+                                background_card_size.height()) /
+                                   2 +
+                               GetAppListConfig().grid_fadeout_mask_height();
 
   const int padding_between_pages = GetPaddingBetweenPages();
   // The space that each page occupies in the items container. This is the size
