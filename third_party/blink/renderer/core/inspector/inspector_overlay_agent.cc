@@ -819,6 +819,38 @@ Response InspectorOverlayAgent::setShowContainerQueryOverlays(
   return Response::Success();
 }
 
+Response InspectorOverlayAgent::setShowIsolatedElements(
+    std::unique_ptr<
+        protocol::Array<protocol::Overlay::IsolatedElementHighlightConfig>>
+        isolated_element_highlight_configs) {
+  if (!persistent_tool_) {
+    persistent_tool_ =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
+  }
+
+  Vector<std::pair<Member<Element>,
+                   std::unique_ptr<InspectorIsolationModeHighlightConfig>>>
+      configs;
+
+  for (std::unique_ptr<protocol::Overlay::IsolatedElementHighlightConfig>&
+           config : *isolated_element_highlight_configs) {
+    Element* element = nullptr;
+    // Isolation mode can only be triggered on elements
+    Response response = dom_agent_->AssertElement(config->getNodeId(), element);
+    if (!response.IsSuccess())
+      return response;
+    configs.push_back(std::make_pair(
+        element, InspectorOverlayAgent::ToIsolationModeHighlightConfig(
+                     config->getIsolationModeHighlightConfig())));
+  }
+
+  persistent_tool_->SetIsolatedElementConfigs(std::move(configs));
+
+  PickTheRightTool();
+
+  return Response::Success();
+}
+
 Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,
@@ -1340,7 +1372,7 @@ void InspectorOverlayAgent::OnResizeTimer(TimerBase*) {
   resize_timer_.StartOneShot(base::TimeDelta::FromSeconds(1), FROM_HERE);
 }
 
-void InspectorOverlayAgent::Dispatch(const String& message) {
+void InspectorOverlayAgent::Dispatch(const ScriptValue& message) {
   inspect_tool_->Dispatch(message);
 }
 
@@ -1690,6 +1722,25 @@ InspectorOverlayAgent::ToFlexItemHighlightConfig(
       InspectorOverlayAgent::ToLineStyle(config->getBaseSizeBorder(nullptr));
   highlight_config->flexibility_arrow =
       InspectorOverlayAgent::ToLineStyle(config->getFlexibilityArrow(nullptr));
+
+  return highlight_config;
+}
+
+// static
+std::unique_ptr<InspectorIsolationModeHighlightConfig>
+InspectorOverlayAgent::ToIsolationModeHighlightConfig(
+    protocol::Overlay::IsolationModeHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorIsolationModeHighlightConfig> highlight_config =
+      std::make_unique<InspectorIsolationModeHighlightConfig>();
+  highlight_config->resizer_color =
+      InspectorDOMAgent::ParseColor(config->getResizerColor(nullptr));
+  highlight_config->resizer_handle_color =
+      InspectorDOMAgent::ParseColor(config->getResizerHandleColor(nullptr));
+  highlight_config->mask_color =
+      InspectorDOMAgent::ParseColor(config->getMaskColor(nullptr));
 
   return highlight_config;
 }

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/resources/grit/inspector_overlay_resources_map.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -434,7 +435,8 @@ String PersistentTool::GetOverlayName() {
 
 bool PersistentTool::IsEmpty() {
   return !grid_node_highlights_.size() && !flex_container_configs_.size() &&
-         !scroll_snap_configs_.size() && !container_query_configs_.size();
+         !scroll_snap_configs_.size() && !container_query_configs_.size() &&
+         !isolated_element_configs_.size();
 }
 
 void PersistentTool::SetGridConfigs(GridConfigs configs) {
@@ -453,8 +455,12 @@ void PersistentTool::SetContainerQueryConfigs(ContainerQueryConfigs configs) {
   container_query_configs_ = std::move(configs);
 }
 
+void PersistentTool::SetIsolatedElementConfigs(IsolatedElementConfigs configs) {
+  isolated_element_configs_ = std::move(configs);
+}
+
 bool PersistentTool::ForwardEventsToOverlay() {
-  return false;
+  return true;
 }
 
 bool PersistentTool::HideOnHideHighlight() {
@@ -497,6 +503,61 @@ void PersistentTool::Draw(float scale) {
     overlay_->EvaluateInOverlay("drawContainerQueryHighlight",
                                 std::move(highlight));
   }
+  for (wtf_size_t i = 0; i < isolated_element_configs_.size(); ++i) {
+    auto& entry = isolated_element_configs_.at(i);
+    std::unique_ptr<protocol::Value> highlight =
+        InspectorIsolatedElementHighlight(entry.first.Get(), *(entry.second),
+                                          i);
+    if (!highlight)
+      continue;
+    overlay_->EvaluateInOverlay("drawIsolatedElementHighlight",
+                                std::move(highlight));
+  }
+}
+
+// Accepts a message of the following format:
+// {
+//   highlightType: 'grid'|'flex'|'scrollSnap'|'container'|'isolatedElement',
+//   highlightIndex: number,
+//   newWidth: string,
+//   newHeight: string,
+//   resizerType: 'width'|'height'|'bidrection'
+// }
+// If the message is correct, sets the property inline style according to the
+// message.
+void PersistentTool::Dispatch(const ScriptValue& message) {
+  Dictionary dict = Dictionary(message);
+  DummyExceptionStateForTesting exception_state;
+
+  String highlight_type =
+      dict.Get<IDLString>("highlightType", exception_state).value_or("");
+  int32_t index =
+      dict.Get<IDLLong>("highlightIndex", exception_state).value_or(-1);
+  String new_width =
+      dict.Get<IDLString>("newWidth", exception_state).value_or("");
+  String new_height =
+      dict.Get<IDLString>("newHeight", exception_state).value_or("");
+  String resizer_type =
+      dict.Get<IDLString>("resizerType", exception_state).value_or("");
+
+  DCHECK(!exception_state.HadException())
+      << "Error parsing message sent to PersistentTool::Dispatch";
+
+  Element* element = nullptr;
+  if (highlight_type == "isolatedElement") {
+    if (index < static_cast<int>(isolated_element_configs_.size()) &&
+        index >= 0) {
+      element = isolated_element_configs_.at(index).first.Get();
+    }
+  }
+
+  if (!element)
+    return;
+
+  if (resizer_type == "width" || resizer_type == "bidirection")
+    element->SetInlineStyleProperty(CSSPropertyID::kWidth, new_width, true);
+  if (resizer_type == "height" || resizer_type == "bidirection")
+    element->SetInlineStyleProperty(CSSPropertyID::kHeight, new_height, true);
 }
 
 std::unique_ptr<protocol::DictionaryValue>
@@ -682,18 +743,25 @@ String ScreenshotTool::GetOverlayName() {
   return OverlayNames::OVERLAY_SCREENSHOT;
 }
 
-void ScreenshotTool::Dispatch(const String& message) {
+void ScreenshotTool::Dispatch(const ScriptValue& message) {
   if (message.IsEmpty())
     return;
+
+  String message_string;
+  if (!message.ToString(message_string))
+    return;
+
   std::vector<uint8_t> cbor;
-  if (message.Is8Bit()) {
+  if (message_string.Is8Bit()) {
     crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint8_t>(message.Characters8(), message.length()), &cbor);
+        crdtp::span<uint8_t>(message_string.Characters8(),
+                             message_string.length()),
+        &cbor);
   } else {
     crdtp::json::ConvertJSONToCBOR(
         crdtp::span<uint16_t>(
-            reinterpret_cast<const uint16_t*>(message.Characters16()),
-            message.length()),
+            reinterpret_cast<const uint16_t*>(message_string.Characters16()),
+            message_string.length()),
         &cbor);
   }
   std::unique_ptr<protocol::DOM::Rect> box =
@@ -763,10 +831,13 @@ void PausedInDebuggerTool::Draw(float scale) {
   overlay_->EvaluateInOverlay("drawPausedInDebuggerMessage", message_);
 }
 
-void PausedInDebuggerTool::Dispatch(const String& message) {
-  if (message == "resume")
+void PausedInDebuggerTool::Dispatch(const ScriptValue& message) {
+  String message_string;
+  if (!message.ToString(message_string))
+    return;
+  if (message_string == "resume")
     v8_session_->resume();
-  else if (message == "stepOver")
+  else if (message_string == "stepOver")
     v8_session_->stepOver();
 }
 

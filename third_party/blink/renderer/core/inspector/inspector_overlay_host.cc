@@ -33,7 +33,7 @@ namespace blink {
 InspectorOverlayHost::InspectorOverlayHost(Delegate* delegate)
     : delegate_(delegate) {}
 
-void InspectorOverlayHost::send(const String& message) {
+void InspectorOverlayHost::send(const ScriptValue& message) {
   if (delegate_)
     delegate_->Dispatch(message);
 }

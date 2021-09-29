@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -110,7 +111,7 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual bool ForwardEventsToOverlay();
   virtual bool SupportsPersistentOverlays();
   virtual void Draw(float scale) {}
-  virtual void Dispatch(const String& message) {}
+  virtual void Dispatch(const ScriptValue& message) {}
   virtual void Trace(Visitor* visitor) const;
   virtual bool HideOnHideHighlight();
   virtual bool HideOnMouseMove();
@@ -157,6 +158,9 @@ class CORE_EXPORT InspectorOverlayAgent final
       protocol::Overlay::ContainerQueryContainerHighlightConfig*);
   static std::unique_ptr<InspectorFlexItemHighlightConfig>
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
+  static std::unique_ptr<InspectorIsolationModeHighlightConfig>
+  ToIsolationModeHighlightConfig(
+      protocol::Overlay::IsolationModeHighlightConfig*);
   static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
   static absl::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
@@ -245,6 +249,10 @@ class CORE_EXPORT InspectorOverlayAgent final
       std::unique_ptr<
           protocol::Array<protocol::Overlay::ContainerQueryHighlightConfig>>
           container_query_highlight_configs) override;
+  protocol::Response setShowIsolatedElements(
+      std::unique_ptr<
+          protocol::Array<protocol::Overlay::IsolatedElementHighlightConfig>>
+          isolated_element_highlight_configs) override;
 
   // InspectorBaseAgent overrides.
   void Restore() override;
@@ -277,7 +285,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   class InspectorPageOverlayDelegate;
 
   // InspectorOverlayHost::Delegate implementation.
-  void Dispatch(const String& message) override;
+  void Dispatch(const ScriptValue& message) override;
 
   bool IsEmpty();
 

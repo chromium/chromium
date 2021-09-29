@@ -136,6 +136,17 @@ struct CORE_EXPORT InspectorFlexItemHighlightConfig {
   absl::optional<LineStyle> flexibility_arrow;
 };
 
+struct CORE_EXPORT InspectorIsolationModeHighlightConfig {
+  USING_FAST_MALLOC(InspectorIsolationModeHighlightConfig);
+
+ public:
+  InspectorIsolationModeHighlightConfig() = default;
+
+  Color resizer_color;
+  Color resizer_handle_color;
+  Color mask_color;
+};
+
 struct CORE_EXPORT InspectorHighlightConfig {
   USING_FAST_MALLOC(InspectorHighlightConfig);
 
@@ -287,6 +298,11 @@ std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
     Node* node,
     const InspectorContainerQueryContainerHighlightConfig& config);
 
+std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
+    Element* element,
+    const InspectorIsolationModeHighlightConfig& config,
+    int highlight_index);
+
 // CORE_EXPORT is required to make these functions available for unit tests.
 std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
 BuildSnapContainerInfo(Node* node);
@@ -297,6 +313,11 @@ BuildContainerQueryContainerInfo(
     const InspectorContainerQueryContainerHighlightConfig&
         container_query_container_highlight_config,
     float scale);
+
+std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
+BuildIsolatedElementInfo(Element& element,
+                         const InspectorIsolationModeHighlightConfig& config,
+                         float scale);
 
 }  // namespace blink
 

@@ -31,5 +31,5 @@
 [
     LegacyNoInterfaceObject
 ] interface InspectorOverlayHost {
-    void send(DOMString command);
+    void send(any command);
 };
