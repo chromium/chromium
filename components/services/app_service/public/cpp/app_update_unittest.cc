@@ -90,13 +90,11 @@ class AppUpdateTest : public testing::Test {
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
-  static constexpr uint32_t kPermissionTypeLocation = 100;
-  static constexpr uint32_t kPermissionTypeNotification = 200;
-
-  apps::mojom::PermissionPtr MakePermission(uint32_t permission_id,
-                                            apps::mojom::TriState value) {
+  apps::mojom::PermissionPtr MakePermission(
+      apps::mojom::PermissionType permission_type,
+      apps::mojom::TriState value) {
     apps::mojom::PermissionPtr permission = apps::mojom::Permission::New();
-    permission->permission_id = permission_id;
+    permission->permission_type = permission_type;
     permission->value_type = apps::mojom::PermissionValueType::kTriState;
     permission->value = static_cast<uint32_t>(value);
     return permission;
@@ -691,9 +689,9 @@ class AppUpdateTest : public testing::Test {
     // Permission tests.
 
     if (state) {
-      auto p0 = MakePermission(kPermissionTypeLocation,
+      auto p0 = MakePermission(apps::mojom::PermissionType::kLocation,
                                apps::mojom::TriState::kAllow);
-      auto p1 = MakePermission(kPermissionTypeNotification,
+      auto p1 = MakePermission(apps::mojom::PermissionType::kNotifications,
                                apps::mojom::TriState::kAllow);
       state->permissions.push_back(p0.Clone());
       state->permissions.push_back(p1.Clone());
@@ -705,9 +703,9 @@ class AppUpdateTest : public testing::Test {
 
     if (delta) {
       expect_permissions_.clear();
-      auto p0 = MakePermission(kPermissionTypeNotification,
+      auto p0 = MakePermission(apps::mojom::PermissionType::kNotifications,
                                apps::mojom::TriState::kAllow);
-      auto p1 = MakePermission(kPermissionTypeLocation,
+      auto p1 = MakePermission(apps::mojom::PermissionType::kLocation,
                                apps::mojom::TriState::kBlock);
 
       delta->permissions.push_back(p0.Clone());

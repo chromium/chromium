@@ -301,12 +301,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
 
   const std::vector<apps::mojom::PermissionPtr>& permissions =
       mock_app_publisher.get_deltas().back()->permissions;
-  auto camera_permission = std::find_if(
-      permissions.begin(), permissions.end(),
-      [](const apps::mojom::PermissionPtr& permission) {
-        return permission->permission_id ==
-               static_cast<uint32_t>(ContentSettingsType::MEDIASTREAM_CAMERA);
-      });
+  auto camera_permission =
+      std::find_if(permissions.begin(), permissions.end(),
+                   [](const apps::mojom::PermissionPtr& permission) {
+                     return permission->permission_type ==
+                            apps::mojom::PermissionType::kCamera;
+                   });
   ASSERT_TRUE(camera_permission != permissions.end());
   EXPECT_EQ((*camera_permission)->value_type,
             apps::mojom::PermissionValueType::kTriState);

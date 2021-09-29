@@ -78,6 +78,45 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::NOTIFICATIONS,
 };
 
+bool GetContentSettingsType(apps::mojom::PermissionType permission_type,
+                            ContentSettingsType& content_setting_type) {
+  switch (permission_type) {
+    case apps::mojom::PermissionType::kCamera:
+      content_setting_type = ContentSettingsType::MEDIASTREAM_CAMERA;
+      return true;
+    case apps::mojom::PermissionType::kLocation:
+      content_setting_type = ContentSettingsType::GEOLOCATION;
+      return true;
+    case apps::mojom::PermissionType::kMicrophone:
+      content_setting_type = ContentSettingsType::MEDIASTREAM_MIC;
+      return true;
+    case apps::mojom::PermissionType::kNotifications:
+      content_setting_type = ContentSettingsType::NOTIFICATIONS;
+      return true;
+    case apps::mojom::PermissionType::kUnknown:
+    case apps::mojom::PermissionType::kContacts:
+    case apps::mojom::PermissionType::kStorage:
+    case apps::mojom::PermissionType::kPrinting:
+      return false;
+  }
+}
+
+apps::mojom::PermissionType GetPermissionType(
+    ContentSettingsType content_setting_type) {
+  switch (content_setting_type) {
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      return apps::mojom::PermissionType::kCamera;
+    case ContentSettingsType::GEOLOCATION:
+      return apps::mojom::PermissionType::kLocation;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      return apps::mojom::PermissionType::kMicrophone;
+    case ContentSettingsType::NOTIFICATIONS:
+      return apps::mojom::PermissionType::kNotifications;
+    default:
+      return apps::mojom::PermissionType::kUnknown;
+  }
+}
+
 apps::mojom::InstallReason GetHighestPriorityInstallReason(
     const WebApp* web_app) {
   // TODO(crbug.com/1189949): Introduce kOem as a new Source::Type value
@@ -279,7 +318,7 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
     host_content_settings_map->GetWebsiteSetting(url, url, type, &setting_info);
 
     auto permission = apps::mojom::Permission::New();
-    permission->permission_id = static_cast<uint32_t>(type);
+    permission->permission_type = GetPermissionType(type);
     permission->value_type = apps::mojom::PermissionValueType::kTriState;
     permission->value = static_cast<uint32_t>(setting_val);
     permission->is_managed =
@@ -648,10 +687,9 @@ void WebAppPublisherHelper::SetPermission(
 
   const GURL url = web_app->start_url();
 
-  ContentSettingsType permission_type =
-      static_cast<ContentSettingsType>(permission->permission_id);
-  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(
-          permission_type)) {
+  ContentSettingsType permission_type;
+
+  if (!GetContentSettingsType(permission->permission_type, permission_type)) {
     return;
   }
 

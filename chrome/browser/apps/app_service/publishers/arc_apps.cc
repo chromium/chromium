@@ -137,13 +137,60 @@ void OnArcAppIconCompletelyLoaded(
   UpdateIconImage(std::move(callback), std::move(iv));
 }
 
+apps::mojom::PermissionType GetAppServicePermissionType(
+    arc::mojom::AppPermission arc_permission_type) {
+  switch (arc_permission_type) {
+    case arc::mojom::AppPermission::CAMERA:
+      return apps::mojom::PermissionType::kCamera;
+    case arc::mojom::AppPermission::LOCATION:
+      return apps::mojom::PermissionType::kLocation;
+    case arc::mojom::AppPermission::MICROPHONE:
+      return apps::mojom::PermissionType::kMicrophone;
+    case arc::mojom::AppPermission::NOTIFICATIONS:
+      return apps::mojom::PermissionType::kNotifications;
+    case arc::mojom::AppPermission::CONTACTS:
+      return apps::mojom::PermissionType::kContacts;
+    case arc::mojom::AppPermission::STORAGE:
+      return apps::mojom::PermissionType::kStorage;
+  }
+}
+
+bool GetArcPermissionType(
+    apps::mojom::PermissionType app_service_permission_type,
+    arc::mojom::AppPermission& arc_permission) {
+  switch (app_service_permission_type) {
+    case apps::mojom::PermissionType::kCamera:
+      arc_permission = arc::mojom::AppPermission::CAMERA;
+      return true;
+    case apps::mojom::PermissionType::kLocation:
+      arc_permission = arc::mojom::AppPermission::LOCATION;
+      return true;
+    case apps::mojom::PermissionType::kMicrophone:
+      arc_permission = arc::mojom::AppPermission::MICROPHONE;
+      return true;
+    case apps::mojom::PermissionType::kNotifications:
+      arc_permission = arc::mojom::AppPermission::NOTIFICATIONS;
+      return true;
+    case apps::mojom::PermissionType::kContacts:
+      arc_permission = arc::mojom::AppPermission::CONTACTS;
+      return true;
+    case apps::mojom::PermissionType::kStorage:
+      arc_permission = arc::mojom::AppPermission::STORAGE;
+      return true;
+    case apps::mojom::PermissionType::kUnknown:
+    case apps::mojom::PermissionType::kPrinting:
+      return false;
+  }
+}
+
 void UpdateAppPermissions(
     const base::flat_map<arc::mojom::AppPermission,
                          arc::mojom::PermissionStatePtr>& new_permissions,
     std::vector<apps::mojom::PermissionPtr>* permissions) {
   for (const auto& new_permission : new_permissions) {
     auto permission = apps::mojom::Permission::New();
-    permission->permission_id = static_cast<uint32_t>(new_permission.first);
+    permission->permission_type =
+        GetAppServicePermissionType(new_permission.first);
     permission->value_type = apps::mojom::PermissionValueType::kBool;
     permission->value = static_cast<uint32_t>(new_permission.second->granted);
     permission->is_managed = new_permission.second->managed;
@@ -838,8 +885,14 @@ void ArcApps::SetPermission(const std::string& app_id,
     return;
   }
 
-  auto permission_type =
-      static_cast<arc::mojom::AppPermission>(permission->permission_id);
+  // TODO(crbug.com/1198390): Add unknown type for arc permissions enum.
+  arc::mojom::AppPermission permission_type = arc::mojom::AppPermission::CAMERA;
+
+  if (!GetArcPermissionType(permission->permission_type, permission_type)) {
+    LOG(ERROR) << "SetPermission failed, permission type not supported by ARC.";
+    return;
+  }
+
   if (permission->value) {
     auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
         arc_service_manager->arc_bridge_service()->app_permissions(),

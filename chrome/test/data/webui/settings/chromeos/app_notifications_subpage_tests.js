@@ -221,15 +221,15 @@ suite('AppNotificationsSubpageTests', function() {
   }
 
   /**
-   * @param {number} id
+   * @param {!apps.mojom.PermissionType} permissionType
    * @param {!apps.mojom.PermissionValueType} value_type
    * @param {number} value
    * @param {boolean} is_managed
    * @return {!apps.mojom.Permission}
    */
-  function createPermission(id, value_type, value, is_managed) {
+  function createPermission(permissionType, value_type, value, is_managed) {
     return {
-      permissionId: id,
+      permissionType: permissionType,
       valueType: value_type,
       value: value,
       isManaged: is_managed
@@ -255,10 +255,10 @@ suite('AppNotificationsSubpageTests', function() {
 
   test('loadAppListAndClickToggle', async () => {
     const permission1 = createPermission(
-        /**id=*/ 1, /**value_type=*/ 0,
+        /**permissionType=*/ 1, /**value_type=*/ 0,
         /**value=*/ 0, /**is_managed=*/ false);
     const permission2 = createPermission(
-        /**id=*/ 2, /**value_type=*/ 0,
+        /**permissionType=*/ 2, /**value_type=*/ 0,
         /**value=*/ 1, /**is_managed=*/ false);
     const app1 = createApp('1', 'App1', permission1);
     const app2 = createApp('2', 'App2', permission2);
@@ -291,7 +291,7 @@ suite('AppNotificationsSubpageTests', function() {
     // Verify that the sent message matches the app it was clicked from.
     assertEquals('1', mojoApi_.getLastUpdatedAppId());
     const lastUpdatedPermission = mojoApi_.getLastUpdatedPermission();
-    assertEquals(1, lastUpdatedPermission.permissionId);
+    assertEquals(1, lastUpdatedPermission.permissionType);
     assertEquals(0, lastUpdatedPermission.valueType);
     assertEquals(false, lastUpdatedPermission.isManaged);
     assertEquals(1, lastUpdatedPermission.value);
@@ -299,10 +299,10 @@ suite('AppNotificationsSubpageTests', function() {
 
   test('RemovedApp', async () => {
     const permission1 = createPermission(
-        /**id=*/ 1, /**value_type=*/ 0,
+        /**permissionType=*/ 1, /**value_type=*/ 0,
         /**value=*/ 0, /**is_managed=*/ false);
     const permission2 = createPermission(
-        /**id=*/ 2, /**value_type=*/ 0,
+        /**permissionType=*/ 2, /**value_type=*/ 0,
         /**value=*/ 1, /**is_managed=*/ false);
     const app1 = createApp('1', 'App1', permission1);
     const app2 = createApp('2', 'App2', permission2);
@@ -335,10 +335,10 @@ suite('AppNotificationsSubpageTests', function() {
     const appTitle1 = 'Files';
     const appTitle2 = 'Chrome';
     const permission1 = createPermission(
-        /**id=*/ 1, /**value_type=*/ 0,
+        /**permissionType=*/ 1, /**value_type=*/ 0,
         /**value=*/ 0, /**is_managed=*/ true);
     const permission2 = createPermission(
-        /**id=*/ 2, /**value_type=*/ 0,
+        /**permissionType=*/ 2, /**value_type=*/ 0,
         /**value=*/ 1, /**is_managed=*/ false);
     const app1 = createApp('file-id', appTitle1, permission1);
     const app2 = createApp('chrome-id', appTitle2, permission2);

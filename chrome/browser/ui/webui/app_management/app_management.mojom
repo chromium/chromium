@@ -71,35 +71,39 @@ interface Page {
 // Permission Type Enums for each App Publisher. The App Publishers are
 // required to provide these values so the WebUI can map permission ID to
 // permission value.
+// TODO(crbug.com/1198390): Updating to use App Service Permission Type
+// Enum instead of publisher permission ID. Not updating the front end
+// js code to keep the CL manageable.
 
 // This enum shows the ARC permission values currently supported over the
-// App Service. It should always match the AppPermission enum in
-// app_permissions.mojom
+// App Service. It should always match the PermissionType enum in
+// components/services/app_service/public/mojom/types.mojom
 enum ArcPermissionType {
-  CAMERA          = 0,
-  LOCATION        = 1,
-  MICROPHONE      = 2,
-  NOTIFICATIONS   = 3,
-  CONTACTS        = 4,
-  STORAGE         = 5,
+  CAMERA          = 1,
+  LOCATION        = 2,
+  MICROPHONE      = 3,
+  NOTIFICATIONS   = 4,
+  CONTACTS        = 5,
+  STORAGE         = 6,
 };
 
-// This enum takes the important permission values from the
-// contents_settings_type.h ContentSettingsType enum.
+// This enum shows the PWA permission values currently supported over the
+// App Service. It should always match the PermissionType enum in
+// components/services/app_service/public/mojom/types.mojom
 enum PwaPermissionType {
-  GEOLOCATION = 4,
-  NOTIFICATIONS = 5,
-  MEDIASTREAM_MIC = 8,
-  MEDIASTREAM_CAMERA = 9,
+  LOCATION = 2,
+  NOTIFICATIONS = 4,
+  MICROPHONE = 3,
+  CAMERA = 1,
 };
 
 // The Plugin VM app publisher uses this enum directly.
 enum PluginVmPermissionType {
-  PRINTING = 0,
+  PRINTING = 7,
   CAMERA = 1,
-  MICROPHONE = 2,
+  MICROPHONE = 3,
 };
 
 enum BorealisPermissionType {
-  MICROPHONE = 0,
+  MICROPHONE = 3,
 };

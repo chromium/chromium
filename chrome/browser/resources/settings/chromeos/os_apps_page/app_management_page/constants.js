@@ -61,6 +61,8 @@ export const InstallReason = apps.mojom.InstallReason;
 
 export const WindowMode = apps.mojom.WindowMode;
 
+export const PermissionType = apps.mojom.PermissionType;
+
 // This histogram is also declared and used at chrome/browser/ui/webui/settings/
 // chromeos/app_management/app_management_uma.h.
 export const AppManagementEntryPointsHistogramName =

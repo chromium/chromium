@@ -21,12 +21,8 @@ namespace {
 app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   apps::mojom::PermissionPtr permission_copy;
   for (const auto& permission : update.Permissions()) {
-    if ((static_cast<app_management::mojom::PwaPermissionType>(
-             permission->permission_id) ==
-         app_management::mojom::PwaPermissionType::NOTIFICATIONS) ||
-        (static_cast<app_management::mojom::ArcPermissionType>(
-             permission->permission_id) ==
-         app_management::mojom::ArcPermissionType::NOTIFICATIONS)) {
+    if (permission->permission_type ==
+        apps::mojom::PermissionType::kNotifications) {
       permission_copy = permission->Clone();
       break;
     }
@@ -57,19 +53,11 @@ bool ShouldIncludeApp(const apps::AppUpdate& update) {
   }
 
   // Only kArc and kWeb apps are supported.
-  if (update.AppType() == apps::mojom::AppType::kArc) {
+  if (update.AppType() == apps::mojom::AppType::kArc ||
+      update.AppType() == apps::mojom::AppType::kWeb) {
     for (const auto& permission : update.Permissions()) {
-      if (static_cast<app_management::mojom::ArcPermissionType>(
-              permission->permission_id) ==
-          app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
-        return true;
-      }
-    }
-  } else if (update.AppType() == apps::mojom::AppType::kWeb) {
-    for (const auto& permission : update.Permissions()) {
-      if (static_cast<app_management::mojom::PwaPermissionType>(
-              permission->permission_id) ==
-          app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+      if (permission->permission_type ==
+          apps::mojom::PermissionType::kNotifications) {
         return true;
       }
     }

@@ -10,8 +10,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -40,9 +40,8 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
           return;
 
         for (const auto& permission : update.Permissions()) {
-          if (static_cast<app_management::mojom::PwaPermissionType>(
-                  permission->permission_id) !=
-              app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+          if (permission->permission_type !=
+              apps::mojom::PermissionType::kNotifications) {
             continue;
           }
           DCHECK(permission->value_type ==
@@ -89,8 +88,7 @@ void PwaNotifierController::SetNotifierEnabled(
   // We should not set permissions for a profile we are not currently observing.
   DCHECK(observed_profile_->IsSameOrParent(profile));
   auto permission = apps::mojom::Permission::New();
-  permission->permission_id =
-      static_cast<int>(app_management::mojom::PwaPermissionType::NOTIFICATIONS);
+  permission->permission_type = apps::mojom::PermissionType::kNotifications;
   permission->value_type = apps::mojom::PermissionValueType::kTriState;
   permission->value = static_cast<uint32_t>(
       enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);
@@ -140,9 +138,8 @@ void PwaNotifierController::OnAppUpdate(const apps::AppUpdate& update) {
 
   if (update.PermissionsChanged()) {
     for (const auto& permission : update.Permissions()) {
-      if (static_cast<app_management::mojom::PwaPermissionType>(
-              permission->permission_id) ==
-          app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+      if (permission->permission_type ==
+          apps::mojom::PermissionType::kNotifications) {
         message_center::NotifierId notifier_id(
             message_center::NotifierType::APPLICATION, update.AppId());
         observer_->OnNotifierEnabledChanged(notifier_id, permission->value);

@@ -70,9 +70,9 @@ suite('<app-management-pwa-detail-view>', function() {
     };
 
     await checkToggle('NOTIFICATIONS');
-    await checkToggle('GEOLOCATION');
-    await checkToggle('MEDIASTREAM_CAMERA');
-    await checkToggle('MEDIASTREAM_MIC');
+    await checkToggle('LOCATION');
+    await checkToggle('CAMERA');
+    await checkToggle('MICROPHONE');
   });
 
   test('Pin to shelf toggle', async function() {

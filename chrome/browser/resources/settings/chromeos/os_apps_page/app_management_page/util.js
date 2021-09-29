@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
 
-import {AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState, WindowMode} from './constants.js';
+import {AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, OptionalBool, PermissionType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState, WindowMode} from './constants.js';
 
 /**
  * @fileoverview Utility functions for the App Management page.
@@ -40,15 +40,15 @@ export function createInitialState(apps) {
 }
 
 /**
- * @param {number} permissionId
+ * @param {number} permissionType
  * @param {!PermissionValueType} valueType
  * @param {number} value
  * @param {boolean} isManaged
  * @return {!Permission}
  */
-export function createPermission(permissionId, valueType, value, isManaged) {
+export function createPermission(permissionType, valueType, value, isManaged) {
   return {
-    permissionId,
+    /** @type {PermissionType} */ permissionType,
     valueType,
     value,
     isManaged,

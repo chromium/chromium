@@ -259,13 +259,12 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   base::flat_map<uint32_t, apps::mojom::PermissionPtr> permissions;
   for (const auto& permission : update.Permissions()) {
-    if (static_cast<app_management::mojom::ArcPermissionType>(
-            permission->permission_id) ==
-            app_management::mojom::ArcPermissionType::STORAGE &&
+    if (permission->permission_type == apps::mojom::PermissionType::kStorage &&
         ShouldHideStoragePermission(update.AppId())) {
       continue;
     }
-    permissions[permission->permission_id] = permission->Clone();
+    permissions[static_cast<uint32_t>(permission->permission_type)] =
+        permission->Clone();
   }
 
   auto app = app_management::mojom::App::New();

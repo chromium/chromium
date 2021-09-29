@@ -18,10 +18,10 @@ export class FakePageHandler {
    */
   static createWebPermissions(options) {
     const permissionIds = [
-      PwaPermissionType.GEOLOCATION,
+      PwaPermissionType.LOCATION,
       PwaPermissionType.NOTIFICATIONS,
-      PwaPermissionType.MEDIASTREAM_MIC,
-      PwaPermissionType.MEDIASTREAM_CAMERA,
+      PwaPermissionType.MICROPHONE,
+      PwaPermissionType.CAMERA,
     ];
 
     const permissions = {};
@@ -228,10 +228,10 @@ export class FakePageHandler {
     const app = AppManagementStore.getInstance().data.apps[appId];
 
     // Check that the app had a previous value for the given permission
-    assert(app.permissions[permission.permissionId]);
+    assert(app.permissions[permission.permissionType]);
 
     const newPermissions = Object.assign({}, app.permissions);
-    newPermissions[permission.permissionId] = permission;
+    newPermissions[permission.permissionType] = permission;
     const newApp = /** @type {!App} */ (
         Object.assign({}, app, {permissions: newPermissions}));
     this.page.onAppChanged(newApp);

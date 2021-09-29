@@ -34,11 +34,11 @@ export class BrowserProxy {
       this.handler = this.fakeHandler.getRemote();
 
       const permissionOptions = {};
-      permissionOptions[PwaPermissionType.GEOLOCATION] = {
+      permissionOptions[PwaPermissionType.LOCATION] = {
         permissionValue: TriState.kAllow,
         isManaged: true,
       };
-      permissionOptions[PwaPermissionType.MEDIASTREAM_CAMERA] = {
+      permissionOptions[PwaPermissionType.CAMERA] = {
         permissionValue: TriState.kBlock,
         isManaged: true
       };

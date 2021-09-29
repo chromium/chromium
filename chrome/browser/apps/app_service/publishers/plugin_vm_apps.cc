@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -31,21 +30,21 @@
 namespace {
 
 struct PermissionInfo {
-  app_management::mojom::PluginVmPermissionType permission;
+  apps::mojom::PermissionType permission;
   const char* pref_name;
 };
 
+// TODO(crbug.com/1198390): Update to use a switch to map between two enum.
 constexpr PermissionInfo permission_infos[] = {
-    {app_management::mojom::PluginVmPermissionType::PRINTING,
+    {apps::mojom::PermissionType::kPrinting,
      plugin_vm::prefs::kPluginVmPrintersAllowed},
-    {app_management::mojom::PluginVmPermissionType::CAMERA,
+    {apps::mojom::PermissionType::kCamera,
      plugin_vm::prefs::kPluginVmCameraAllowed},
-    {app_management::mojom::PluginVmPermissionType::MICROPHONE,
+    {apps::mojom::PermissionType::kMicrophone,
      plugin_vm::prefs::kPluginVmMicAllowed},
 };
 
-const char* PermissionToPrefName(
-    app_management::mojom::PluginVmPermissionType permission) {
+const char* PermissionToPrefName(apps::mojom::PermissionType permission) {
   for (const PermissionInfo& info : permission_infos) {
     if (info.permission == permission) {
       return info.pref_name;
@@ -79,7 +78,7 @@ void SetShowInAppManagement(apps::mojom::App* app, bool installed) {
 void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
-    permission->permission_id = static_cast<uint32_t>(info.permission);
+    permission->permission_type = info.permission;
     permission->value_type = apps::mojom::PermissionValueType::kBool;
     permission->value =
         static_cast<uint32_t>(profile->GetPrefs()->GetBoolean(info.pref_name));
@@ -207,8 +206,7 @@ void PluginVmApps::Launch(const std::string& app_id,
 
 void PluginVmApps::SetPermission(const std::string& app_id,
                                  apps::mojom::PermissionPtr permission_ptr) {
-  auto permission = static_cast<app_management::mojom::PluginVmPermissionType>(
-      permission_ptr->permission_id);
+  auto permission = permission_ptr->permission_type;
   const char* pref_name = PermissionToPrefName(permission);
   if (!pref_name) {
     return;

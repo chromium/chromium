@@ -84,15 +84,24 @@ struct App {
 };
 
 struct Permission {
-  // An AppType-specific value, opaque to the App Service.
-  // Different publishers (with different AppType's) can
-  // re-use the same numerical value to mean different things.
-  uint32 permission_id;
+  PermissionType permission_type;
   PermissionValueType value_type;
   // The semantics of value depends on the value_type.
   uint32 value;
   // If the permission is managed by an enterprise policy.
   bool is_managed;
+};
+
+// The types of permissions in App Service.
+enum PermissionType {
+  kUnknown         = 0,
+  kCamera          = 1,
+  kLocation        = 2,
+  kMicrophone      = 3,
+  kNotifications   = 4,
+  kContacts        = 5,
+  kStorage         = 6,
+  kPrinting        = 7,
 };
 
 // The types of apps available in the registry.

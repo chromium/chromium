@@ -590,7 +590,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "Permissions:" << std::endl;
   for (const auto& permission : app.Permissions()) {
-    out << "  ID: " << permission->permission_id;
+    out << "  ID: " << permission->permission_type;
     out << " value: " << permission->value;
     out << " is_managed: " << permission->is_managed << std::endl;
   }

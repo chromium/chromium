@@ -23,11 +23,11 @@ suite('<app-management-managed-apps>', () => {
     // Create a Web app which is installed and pinned by policy
     // and has location set to on and camera set to off by policy.
     const permissionOptions = {};
-    permissionOptions[PwaPermissionType.GEOLOCATION] = {
+    permissionOptions[PwaPermissionType.LOCATION] = {
       permissionValue: TriState.kAllow,
       isManaged: true,
     };
-    permissionOptions[PwaPermissionType.MEDIASTREAM_CAMERA] = {
+    permissionOptions[PwaPermissionType.CAMERA] = {
       permissionValue: TriState.kBlock,
       isManaged: true
     };
@@ -66,9 +66,9 @@ suite('<app-management-managed-apps>', () => {
           policyAffected);
     }
     checkToggle('NOTIFICATIONS', false);
-    checkToggle('GEOLOCATION', true);
-    checkToggle('MEDIASTREAM_CAMERA', true);
-    checkToggle('MEDIASTREAM_MIC', false);
+    checkToggle('LOCATION', true);
+    checkToggle('CAMERA', true);
+    checkToggle('MICROPHONE', false);
   });
 
   test('Pin to shelf toggle effected by policy', () => {

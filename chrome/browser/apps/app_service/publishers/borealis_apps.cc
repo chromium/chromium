@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -29,17 +28,16 @@
 namespace {
 
 struct PermissionInfo {
-  app_management::mojom::BorealisPermissionType permission;
+  apps::mojom::PermissionType permission;
   const char* pref_name;
 };
 
 constexpr PermissionInfo permission_infos[] = {
-    {app_management::mojom::BorealisPermissionType::MICROPHONE,
+    {apps::mojom::PermissionType::kMicrophone,
      borealis::prefs::kBorealisMicAllowed},
 };
 
-const char* PermissionToPrefName(
-    app_management::mojom::BorealisPermissionType permission) {
+const char* PermissionToPrefName(apps::mojom::PermissionType permission) {
   for (const PermissionInfo& info : permission_infos) {
     if (info.permission == permission) {
       return info.pref_name;
@@ -83,7 +81,7 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
 void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
-    permission->permission_id = static_cast<uint32_t>(info.permission);
+    permission->permission_type = info.permission;
     permission->value_type = apps::mojom::PermissionValueType::kBool;
     permission->value =
         static_cast<uint32_t>(profile->GetPrefs()->GetBoolean(info.pref_name));
@@ -212,8 +210,7 @@ void BorealisApps::Launch(const std::string& app_id,
 
 void BorealisApps::SetPermission(const std::string& app_id,
                                  apps::mojom::PermissionPtr permission_ptr) {
-  auto permission = static_cast<app_management::mojom::BorealisPermissionType>(
-      permission_ptr->permission_id);
+  auto permission = permission_ptr->permission_type;
   const char* pref_name = PermissionToPrefName(permission);
   if (!pref_name) {
     return;
