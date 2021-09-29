@@ -125,6 +125,9 @@ void QuickAnswersUiController::UpdateQuickAnswersBounds(
 
   if (user_notice_view_)
     user_notice_view_->UpdateAnchorViewBounds(anchor_bounds);
+
+  if (user_consent_view_)
+    user_consent_view_->UpdateAnchorViewBounds(anchor_bounds);
 }
 
 void QuickAnswersUiController::CreateUserNoticeView(

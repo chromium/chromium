@@ -92,10 +92,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
     return notice_controller_.get();
   }
 
-  void SetVisibilityForTesting(QuickAnswersVisibility visibility) {
-    visibility_ = visibility;
-  }
-
  private:
   void MaybeDismissQuickAnswersNotice();
   void MaybeDismissQuickAnswersConsent();

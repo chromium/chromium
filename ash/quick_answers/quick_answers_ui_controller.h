@@ -116,6 +116,9 @@ class ASH_EXPORT QuickAnswersUiController {
   const quick_answers::UserNoticeView* notice_view_for_testing() const {
     return user_notice_view_;
   }
+  const quick_answers::UserConsentView* consent_view_for_testing() const {
+    return user_consent_view_;
+  }
 
  private:
   QuickAnswersControllerImpl* controller_ = nullptr;
