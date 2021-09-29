@@ -177,6 +177,15 @@ class WebTransportTest : public ::testing::Test {
       WebTransport* web_transport,
       base::TimeDelta expected_outgoing_datagram_expiration_duration =
           base::TimeDelta()) {
+    ConnectSuccessfullyWithoutRunningPendingTasks(
+        web_transport, expected_outgoing_datagram_expiration_duration);
+    test::RunPendingTasks();
+  }
+
+  void ConnectSuccessfullyWithoutRunningPendingTasks(
+      WebTransport* web_transport,
+      base::TimeDelta expected_outgoing_datagram_expiration_duration =
+          base::TimeDelta()) {
     DCHECK(!mock_web_transport_) << "Only one connection supported, sorry";
 
     test::RunPendingTasks();
@@ -222,8 +231,6 @@ class WebTransportTest : public ::testing::Test {
         client_remote.InitWithNewPipeAndPassReceiver(),
         network::mojom::blink::HttpResponseHeaders::New());
     client_remote_.Bind(std::move(client_remote));
-
-    test::RunPendingTasks();
   }
 
   // Creates, connects and returns a WebTransport object with the given |url|.
@@ -787,9 +794,24 @@ TEST_F(WebTransportTest, SendDatagramBeforeConnect) {
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
 
-  ConnectSuccessfully(web_transport);
+  ConnectSuccessfullyWithoutRunningPendingTasks(web_transport);
 
-  // No datagram is sent.
+  testing::Sequence s;
+  EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
+      .WillOnce(Invoke([](base::span<const uint8_t>,
+                          MockWebTransport::SendDatagramCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('N'), _))
+      .WillOnce(Invoke([](base::span<const uint8_t>,
+                          MockWebTransport::SendDatagramCallback callback) {
+        std::move(callback).Run(true);
+      }));
+
+  test::RunPendingTasks();
+  *chunk->Data() = 'N';
+  result = writer->write(script_state, ScriptValue::From(script_state, chunk),
+                         ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester tester(script_state, result);
   tester.WaitUntilSettled();

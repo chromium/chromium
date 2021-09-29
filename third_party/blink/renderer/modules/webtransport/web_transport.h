@@ -143,6 +143,7 @@ class MODULES_EXPORT WebTransport final
 
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.
   Member<WritableStream> outgoing_datagrams_;
+  Member<DatagramUnderlyingSink> datagram_underlying_sink_;
 
   base::TimeDelta outgoing_datagram_expiration_duration_;
 

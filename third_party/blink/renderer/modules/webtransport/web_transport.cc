@@ -141,32 +141,43 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     return ScriptPromise::CastUndefined(script_state);
   }
 
+  void SendPendingDatagrams() {
+    DCHECK(web_transport_->transport_remote_.is_bound());
+    for (const auto& datagram : pending_datagrams_) {
+      web_transport_->transport_remote_->SendDatagram(
+          base::make_span(datagram),
+          WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
+                    WrapWeakPersistent(this)));
+    }
+    pending_datagrams_.clear();
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(web_transport_);
     visitor->Trace(datagrams_);
-    visitor->Trace(pending_datagrams_);
+    visitor->Trace(pending_datagrams_resolvers_);
     UnderlyingSinkBase::Trace(visitor);
   }
 
  private:
   ScriptPromise SendDatagram(base::span<const uint8_t> data) {
-    if (!web_transport_->transport_remote_.is_bound()) {
-      // Silently drop the datagram if we are not connected.
-      // TODO(ricea): Change the behaviour if the standard changes. See
-      // https://github.com/WICG/web-transport/issues/93.
-      return ScriptPromise::CastUndefined(web_transport_->script_state_);
-    }
-
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
         web_transport_->script_state_);
-    pending_datagrams_.push_back(resolver);
+    pending_datagrams_resolvers_.push_back(resolver);
 
-    web_transport_->transport_remote_->SendDatagram(
-        data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
-                        WrapWeakPersistent(this)));
+    if (web_transport_->transport_remote_.is_bound()) {
+      web_transport_->transport_remote_->SendDatagram(
+          data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
+                          WrapWeakPersistent(this)));
+    } else {
+      Vector<uint8_t> datagram;
+      datagram.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+      pending_datagrams_.push_back(std::move(datagram));
+    }
     int high_water_mark = datagrams_->outgoingHighWaterMark();
     DCHECK_GT(high_water_mark, 0);
-    if (pending_datagrams_.size() < static_cast<wtf_size_t>(high_water_mark)) {
+    if (pending_datagrams_resolvers_.size() <
+        static_cast<wtf_size_t>(high_water_mark)) {
       // In this case we pretend that the datagram is processed immediately, to
       // get more requests from the stream.
       return ScriptPromise::CastUndefined(web_transport_->script_state_);
@@ -175,17 +186,18 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
   }
 
   void OnDatagramProcessed(bool sent) {
-    DCHECK(!pending_datagrams_.empty());
+    DCHECK(!pending_datagrams_resolvers_.empty());
 
-    ScriptPromiseResolver* resolver = pending_datagrams_.front();
-    pending_datagrams_.pop_front();
+    ScriptPromiseResolver* resolver = pending_datagrams_resolvers_.front();
+    pending_datagrams_resolvers_.pop_front();
 
     resolver->Resolve();
   }
 
   Member<WebTransport> web_transport_;
   const Member<DatagramDuplexStream> datagrams_;
-  HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_;
+  Vector<Vector<uint8_t>> pending_datagrams_;
+  HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_resolvers_;
 };
 
 // Passes incoming datagrams to the datagrams.readable stream. It maintains its
@@ -839,6 +851,8 @@ void WebTransport::OnConnectionEstablished(
         outgoing_datagram_expiration_duration_);
   }
 
+  datagram_underlying_sink_->SendPendingDatagrams();
+
   received_streams_underlying_source_->NotifyOpened();
   received_bidirectional_streams_underlying_source_->NotifyOpened();
 
@@ -942,6 +956,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(received_datagrams_);
   visitor->Trace(datagram_underlying_source_);
   visitor->Trace(outgoing_datagrams_);
+  visitor->Trace(datagram_underlying_sink_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
   visitor->Trace(connector_);
@@ -1070,9 +1085,10 @@ void WebTransport::Init(const String& url,
   // the datagram
   //    queue in the network service, because the timestamp is taken when the
   //    datagram is added to the queue.
+  datagram_underlying_sink_ =
+      MakeGarbageCollected<DatagramUnderlyingSink>(this, datagrams_);
   outgoing_datagrams_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state_,
-      MakeGarbageCollected<DatagramUnderlyingSink>(this, datagrams_), 1);
+      script_state_, datagram_underlying_sink_, 1);
 
   received_streams_underlying_source_ =
       StreamVendingUnderlyingSource::CreateWithVendor<ReceiveStreamVendor>(
