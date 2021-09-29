@@ -12,7 +12,7 @@ import sys
 
 
 def get_archive_name(archive_prefix):
-  supported_release = 'trusty'
+  supported_release = 'xenial'
   release = subprocess.check_output(['lsb_release', '-cs']).strip()
   if release != supported_release:
     print('WARNING: unsupported distro. You need to run a Trusty Docker '

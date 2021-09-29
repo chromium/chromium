@@ -8,7 +8,7 @@ import("//build/toolchain/goma.gni")
 
 declare_args() {
   # The platform on which the instrumented libraries are being built.
-  instrumented_libraries_platform = "trusty"
+  instrumented_libraries_platform = "xenial"
 }
 
 group("deps") {
