@@ -47528,6 +47528,7 @@ from previous Chrome versions.
   <int value="-2026156288"
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
   <int value="-2025367104" label="enable-material-design-ntp"/>
+  <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
@@ -51582,6 +51583,7 @@ from previous Chrome versions.
   <int value="1112051724" label="DetectingHeavyPages:enabled"/>
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>
   <int value="1113196543" label="ShowManagedUi:disabled"/>
+  <int value="1113281154" label="enable-raw-draw"/>
   <int value="1113365156" label="tab-management-experiment-type-chive"/>
   <int value="1113558288"
       label="AbusiveOriginNotificationPermissionRevocation:disabled"/>
@@ -52711,6 +52713,7 @@ from previous Chrome versions.
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
   <int value="1976885976" label="DefaultChatWebApp:disabled"/>
   <int value="1978548617" label="FilesZipMount:enabled"/>
+  <int value="1978570295" label="RawDraw:disabled"/>
   <int value="1979222611" label="XRSandbox:disabled"/>
   <int value="1979472169" label="TabGroupsFeedback:disabled"/>
   <int value="1980011075" label="debug-packed-apps"/>

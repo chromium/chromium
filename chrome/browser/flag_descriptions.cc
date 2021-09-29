@@ -743,6 +743,10 @@ const char kEnablePreconnectToSearchName[] =
 const char kEnablePreconnectToSearchDescription[] =
     "Enables the feature that preconnects to the user's default search engine.";
 
+const char kEnableRawDrawName[] = "Enable raw draw";
+const char kEnableRawDrawDescription[] =
+    "When enabled, web content will be rastered on output surface directly.";
+
 const char kEnableRemovingAllThirdPartyCookiesName[] =
     "Enable removing SameSite=None cookies";
 const char kEnableRemovingAllThirdPartyCookiesDescription[] =

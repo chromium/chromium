@@ -7672,6 +7672,10 @@ const FeatureEntry kFeatureEntries[] = {
                                  component_updater::kSwitchTestRequestParam)},
 #endif
 
+    {"enable-raw-draw", flag_descriptions::kEnableRawDrawName,
+     flag_descriptions::kEnableRawDrawDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kRawDraw)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

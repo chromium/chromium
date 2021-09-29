@@ -441,6 +441,9 @@ extern const char kEnableNavigationPredictorDescription[];
 extern const char kEnablePreconnectToSearchName[];
 extern const char kEnablePreconnectToSearchDescription[];
 
+extern const char kEnableRawDrawName[];
+extern const char kEnableRawDrawDescription[];
+
 extern const char kEnableRemovingAllThirdPartyCookiesName[];
 extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 
