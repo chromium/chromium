@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
-#include "third_party/blink/renderer/core/style/svg_paint.h"
 #include "third_party/blink/renderer/core/style/text_decoration_thickness.h"
 
 namespace blink {
@@ -21,15 +20,6 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
         TextDecorationThickness(Length()), Length());
     EXPECT_EQ(instance1, instance2);
   }
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    EXPECT_EQ(instance1, instance2);
-  }
 
   // Only TextDecoration is different.
   {
@@ -39,15 +29,6 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
     AppliedTextDecoration instance2(
         TextDecoration::kOverline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-  }
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(
-        TextDecoration::kLineThrough, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
 
@@ -61,15 +42,6 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kWavy, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-  }
 
   // Only Color is different.
   {
@@ -79,43 +51,6 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
     AppliedTextDecoration instance2(
         TextDecoration::kUnderline, ETextDecorationStyle::kSolid,
         Color(Color::kBlack), TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-  }
-
-  // Only |fill| is different.
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    SVGPaint fill;
-    fill.type = SVG_PAINTTYPE_COLOR;
-    AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, fill,
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-  }
-
-  // Only |stroke| is different.
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    SVGPaint stroke;
-    stroke.type = SVG_PAINTTYPE_COLOR;
-    AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        stroke, TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-  }
-
-  // Color vs. SVGPaint
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
-        TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
 
@@ -150,13 +85,6 @@ TEST(AppliedTextDecorationTest, CopyConstructor) {
     AppliedTextDecoration instance2(instance1);
     EXPECT_EQ(instance1, instance2);
   }
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(instance1);
-    EXPECT_EQ(instance1, instance2);
-  }
 }
 
 TEST(AppliedTextDecorationTest, Assignment) {
@@ -169,17 +97,6 @@ TEST(AppliedTextDecorationTest, Assignment) {
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
     instance2 = instance1;
-    EXPECT_EQ(instance1, instance2);
-  }
-  {
-    AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    AppliedTextDecoration instance2(
-        TextDecoration::kBlink, ETextDecorationStyle::kSolid, SVGPaint(),
-        SVGPaint(), TextDecorationThickness(Length()), Length());
-    EXPECT_NE(instance1, instance2);
-    instance1 = instance2;
     EXPECT_EQ(instance1, instance2);
   }
 }

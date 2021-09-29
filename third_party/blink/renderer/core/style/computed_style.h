@@ -2173,7 +2173,6 @@ class ComputedStyle : public ComputedStyleBase,
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   void ApplyTextDecorations(const Color& parent_text_decoration_color,
                             bool override_existing_colors);
-  void ApplySvgTextDecorations();
   void ClearAppliedTextDecorations();
   void RestoreParentTextDecorations(const ComputedStyle& parent_style);
   CORE_EXPORT const Vector<AppliedTextDecoration>& AppliedTextDecorations()

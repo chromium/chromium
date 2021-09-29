@@ -802,13 +802,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     style.ClearAppliedTextDecorations();
   else
     style.RestoreParentTextDecorations(layout_parent_style);
-  if (svg_element) {
-    style.ApplySvgTextDecorations();
-  } else {
-    style.ApplyTextDecorations(
-        parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-        OverridesTextDecorationColors(element));
-  }
+  style.ApplyTextDecorations(
+      parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
+      OverridesTextDecorationColors(element));
 
   // Cull out any useless layers and also repeat patterns into additional
   // layers.
