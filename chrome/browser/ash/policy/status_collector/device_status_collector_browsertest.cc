@@ -3755,19 +3755,23 @@ struct FakeDeviceData {
   const char* mac_address;
   const char* meid;
   const char* imei;
+  const char* mdn;
+  const char* iccid;
   int expected_type;  // proto enum type value, -1 for not present.
 };
 
 static const FakeDeviceData kFakeDevices[] = {
     {"/device/ethernet", shill::kTypeEthernet, "ethernet", "112233445566", "",
-     "", em::NetworkInterface::TYPE_ETHERNET},
+     "", "", "", em::NetworkInterface::TYPE_ETHERNET},
     {"/device/cellular1", shill::kTypeCellular, "cellular1", "abcdefabcdef",
-     "A10000009296F2", "", em::NetworkInterface::TYPE_CELLULAR},
-    {"/device/cellular2", shill::kTypeCellular, "cellular2", "abcdefabcdef", "",
-     "352099001761481", em::NetworkInterface::TYPE_CELLULAR},
-    {"/device/wifi", shill::kTypeWifi, "wifi", "aabbccddeeff", "", "",
+     "A10000009296F2", "", "test_mdn", "test_iccid",
+     em::NetworkInterface::TYPE_CELLULAR},
+    {"/device/cellular2", shill::kTypeCellular, "cellular2", "abcdefabcdef",
+     "test_mdn", "test_iccid", "352099001761481", "",
+     em::NetworkInterface::TYPE_CELLULAR},
+    {"/device/wifi", shill::kTypeWifi, "wifi", "aabbccddeeff", "", "", "", "",
      em::NetworkInterface::TYPE_WIFI},
-    {"/device/vpn", shill::kTypeVPN, "vpn", "", "", "", -1},
+    {"/device/vpn", shill::kTypeVPN, "vpn", "", "", "", "", "", -1},
 };
 
 // Fake network state.
@@ -3857,6 +3861,16 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
       if (*dev.imei) {
         device_client->SetDeviceProperty(dev.device_path, shill::kImeiProperty,
                                          base::Value(dev.imei),
+                                         /*notify_changed=*/true);
+      }
+      if (*dev.mdn) {
+        device_client->SetDeviceProperty(dev.device_path, shill::kMdnProperty,
+                                         base::Value(dev.mdn),
+                                         /*notify_changed=*/true);
+      }
+      if (*dev.iccid) {
+        device_client->SetDeviceProperty(dev.device_path, shill::kIccidProperty,
+                                         base::Value(dev.iccid),
                                          /*notify_changed=*/true);
       }
     }
@@ -3992,16 +4006,18 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->has_mac_address() == !!*dev.mac_address &&
             iface->has_meid() == !!*dev.meid &&
             iface->has_imei() == !!*dev.imei &&
+            iface->has_mdn() == !!*dev.mdn &&
+            iface->has_iccid() == !!*dev.iccid &&
             iface->mac_address() == dev.mac_address &&
             iface->meid() == dev.meid && iface->imei() == dev.imei &&
-            iface->device_path() == dev.device_path) {
+            iface->device_path() == dev.device_path &&
+            iface->mdn() == dev.mdn && iface->iccid() == dev.iccid) {
           found_match = true;
           break;
         }
       }
 
-      EXPECT_TRUE(found_match)
-          << "No matching interface for fake device " << dev.device_path;
+      EXPECT_TRUE(found_match);
       count++;
     }
 

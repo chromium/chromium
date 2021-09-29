@@ -2276,6 +2276,10 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
       interface->set_meid((*device)->meid());
     if (!(*device)->imei().empty())
       interface->set_imei((*device)->imei());
+    if (!(*device)->mdn().empty())
+      interface->set_mdn((*device)->mdn());
+    if (!(*device)->iccid().empty())
+      interface->set_iccid((*device)->iccid());
     if (!(*device)->path().empty())
       interface->set_device_path((*device)->path());
     anything_reported = true;

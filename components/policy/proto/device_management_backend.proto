@@ -912,6 +912,12 @@ message NetworkInterface {
 
   // The device path associated with this network interface.
   optional string device_path = 5;
+
+  // The integrated circuit card ID associated with the device's sim card.
+  optional string iccid = 6;
+
+  // The mobile directory number associated with the device's sim card.
+  optional string mdn = 7;
 }
 
 // Information about configured/visible networks - this is separate from
