@@ -146,8 +146,8 @@ suite('PrivacyPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        privacyPage.$$('#enableVerifiedAccess').$$('cr-toggle');
+    const deepLinkElement = privacyPage.$$('#enableVerifiedAccess')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -258,7 +258,8 @@ suite('PrivacePageTest_OfficialBuild', async () => {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = privacyPage.$$('#enable-logging').$$('cr-toggle');
+    const deepLinkElement =
+        privacyPage.$$('#enable-logging').shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

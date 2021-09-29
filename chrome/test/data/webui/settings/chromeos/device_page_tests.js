@@ -749,7 +749,7 @@ cr.define('device_page_tests', function() {
         const slider = assert(pointersPage.$$('#mouse settings-slider'));
         expectEquals(4, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
+            slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
         expectEquals(3, devicePage.prefs.settings.mouse.sensitivity2.value);
 
         pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
@@ -765,7 +765,8 @@ cr.define('device_page_tests', function() {
         const slider = assert(pointersPage.$$('#touchpad settings-slider'));
         expectEquals(3, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider'), 39 /* right */, [], 'ArrowRight');
+            slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
+            'ArrowRight');
         expectEquals(4, devicePage.prefs.settings.touchpad.sensitivity2.value);
 
         pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
@@ -818,7 +819,7 @@ cr.define('device_page_tests', function() {
             assert(pointersPage.$$('#pointingStick settings-slider'));
         expectEquals(4, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
+            slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
         expectEquals(
             3, devicePage.prefs.settings.pointing_stick.sensitivity.value);
 
@@ -829,28 +830,32 @@ cr.define('device_page_tests', function() {
       test('Deep link to pointing stick primary button setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '437',
-            pointersPage.$$('#pointingStickSwapButtonDropdown').$$('select'),
+            pointersPage.$$('#pointingStickSwapButtonDropdown')
+                .shadowRoot.querySelector('select'),
             'Pointing stick primary button dropdown');
       });
 
       test('Deep link to pointing stick acceleration setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '436',
-            pointersPage.$$('#pointingStickAcceleration').$$('cr-toggle'),
+            pointersPage.$$('#pointingStickAcceleration')
+                .shadowRoot.querySelector('cr-toggle'),
             'Pointing stick acceleration slider');
       });
 
       test('Deep link to pointing stick speed setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '435',
-            pointersPage.$$('#pointingStickSpeedSlider').$$('cr-slider'),
+            pointersPage.$$('#pointingStickSpeedSlider')
+                .shadowRoot.querySelector('cr-slider'),
             'Pointing stick speed slider');
       });
 
       test('Deep link to touchpad speed', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '405',
-            pointersPage.$$('#touchpadSensitivity').$$('cr-slider'),
+            pointersPage.$$('#touchpadSensitivity')
+                .shadowRoot.querySelector('cr-slider'),
             'Touchpad speed slider');
       });
     });
@@ -945,11 +950,13 @@ cr.define('device_page_tests', function() {
 
         // Test interaction with the settings-slider's underlying cr-slider.
         MockInteractions.pressAndReleaseKeyOn(
-            keyboardPage.$$('#delaySlider').$$('cr-slider'), 37 /* left */, [],
-            'ArrowLeft');
+            keyboardPage.$$('#delaySlider')
+                .shadowRoot.querySelector('cr-slider'),
+            37 /* left */, [], 'ArrowLeft');
         MockInteractions.pressAndReleaseKeyOn(
-            keyboardPage.$$('#repeatRateSlider').$$('cr-slider'), 39, [],
-            'ArrowRight');
+            keyboardPage.$$('#repeatRateSlider')
+                .shadowRoot.querySelector('cr-slider'),
+            39, [], 'ArrowRight');
         await test_util.flushTasks();
         expectEquals(1000, get('xkb_auto_repeat_delay_r2'));
         expectEquals(300, get('xkb_auto_repeat_interval_r2'));
@@ -1648,7 +1655,7 @@ cr.define('device_page_tests', function() {
           sendLid(settings.LidClosedBehavior.SUSPEND);
           assertTrue(lidClosedToggle.checked);
 
-          lidClosedToggle.$$('#control').click();
+          lidClosedToggle.shadowRoot.querySelector('#control').click();
           expectEquals(
               settings.LidClosedBehavior.DO_NOTHING,
               settings.DevicePageBrowserProxyImpl.getInstance()
@@ -1656,7 +1663,7 @@ cr.define('device_page_tests', function() {
           sendLid(settings.LidClosedBehavior.DO_NOTHING);
           expectFalse(lidClosedToggle.checked);
 
-          lidClosedToggle.$$('#control').click();
+          lidClosedToggle.shadowRoot.querySelector('#control').click();
           expectEquals(
               settings.LidClosedBehavior.SUSPEND,
               settings.DevicePageBrowserProxyImpl.getInstance()
@@ -2002,7 +2009,8 @@ cr.define('device_page_tests', function() {
             });
         test('Deep link to sleep when laptop lid closed', async () => {
           return checkDeepLink(
-              settings.routes.POWER, '424', lidClosedToggle.$$('cr-toggle'),
+              settings.routes.POWER, '424',
+              lidClosedToggle.shadowRoot.querySelector('cr-toggle'),
               'Sleep when closed toggle');
         });
       });
@@ -2535,7 +2543,9 @@ cr.define('device_page_tests', function() {
               expectTrue(keepLastNoteOnLockScreenToggle().checked);
 
               // Clicking the toggle updates the pref value.
-              keepLastNoteOnLockScreenToggle().$$('#control').click();
+              keepLastNoteOnLockScreenToggle()
+                  .shadowRoot.querySelector('#control')
+                  .click();
               expectFalse(keepLastNoteOnLockScreenToggle().checked);
 
               expectFalse(devicePage.prefs.settings

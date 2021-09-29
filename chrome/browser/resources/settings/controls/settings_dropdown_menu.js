@@ -16,14 +16,14 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
 import {assert} from '//resources/js/assert.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
-import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
+import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_behavior.js';
 
 /**
  * The |name| is shown in the gui.  The |value| us use to set or compare with
@@ -43,11 +43,11 @@ export let DropdownMenuOptionList;
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {PrefControlBehaviorInterface}
- * @implements {CrPolicyPrefBehaviorInterface}
+ * @implements {PrefControlMixinInterface}
+ * @implements {CrPolicyPrefMixinInterface}
  */
 const SettingsDropdownMenuElementBase =
-    mixinBehaviors([CrPolicyPrefBehavior, PrefControlBehavior], PolymerElement);
+    CrPolicyPrefMixin(PrefControlMixin(PolymerElement));
 
 /** @polymer */
 class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {

@@ -253,8 +253,8 @@ suite('input page', () => {
 
       Polymer.dom.flush();
 
-      const deepLinkElement =
-          inputPage.$$('#enableSpellcheckingToggle').$$('cr-toggle');
+      const deepLinkElement = inputPage.$$('#enableSpellcheckingToggle')
+                                  .shadowRoot.querySelector('cr-toggle');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

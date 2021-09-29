@@ -127,8 +127,8 @@ suite('DarkModeHandler', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        darkModePage.$$('#darkModeToggleButton').$$('cr-toggle');
+    const deepLinkElement = darkModePage.$$('#darkModeToggleButton')
+                                .shadowRoot.querySelector('cr-toggle');
 
     await test_util.waitAfterNextRender(deepLinkElement);
 

@@ -119,7 +119,8 @@ suite('UserPage', () => {
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 
-    const deepLinkElement = page.$$('#allowGuestBrowsing').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#allowGuestBrowsing').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -134,7 +135,8 @@ suite('UserPage', () => {
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 
-    const deepLinkElement = page.$$('#showUserNamesOnSignIn').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#showUserNamesOnSignIn').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -150,7 +152,8 @@ suite('UserPage', () => {
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 
-    const deepLinkElement = page.$$('#restrictSignIn').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#restrictSignIn').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
