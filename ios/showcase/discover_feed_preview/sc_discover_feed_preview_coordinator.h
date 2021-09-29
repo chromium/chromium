@@ -9,7 +9,7 @@
 
 #import "ios/showcase/common/navigation_coordinator.h"
 
-@interface SCDiscoverFeedPreviewCoordinator : NSObject <NavigationCoordinator>
+@interface SCLinkPreviewCoordinator : NSObject <NavigationCoordinator>
 @end
 
 #endif  // IOS_SHOWCASE_DISCOVER_FEED_PREVIEW_SC_DISCOVER_FEED_PREVIEW_COORDINATOR_H_

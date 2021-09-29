@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_mediator.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_mediator.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_consumer.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -20,12 +20,12 @@
 #error "This file requires ARC support."
 #endif
 
-@interface DiscoverFeedPreviewMediator () <CRWWebStateObserver>
+@interface LinkPreviewMediator () <CRWWebStateObserver>
 
 // The current web state associated with the preview.
 @property(nonatomic, assign) web::WebState* webState;
 
-// URL of the discover feed preview.
+// URL of the preview.
 @property(nonatomic, assign) GURL URL;
 
 // YES if the restoration of the webState is finished.
@@ -33,7 +33,7 @@
 
 @end
 
-@implementation DiscoverFeedPreviewMediator {
+@implementation LinkPreviewMediator {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
 }
 

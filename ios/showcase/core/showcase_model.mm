@@ -190,8 +190,8 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey : @"New FRE screen with scrolling example",
     },
     @{
-      showcase::kClassForDisplayKey : @"DiscoverFeedPreviewViewController",
-      showcase::kClassForInstantiationKey : @"SCDiscoverFeedPreviewCoordinator",
+      showcase::kClassForDisplayKey : @"LinkPreviewViewController",
+      showcase::kClassForInstantiationKey : @"SCLinkPreviewCoordinator",
       showcase::kUseCaseKey : @"Link Preview",
     },
   ];

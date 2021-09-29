@@ -4,7 +4,7 @@
 
 #import "ios/showcase/discover_feed_preview/sc_discover_feed_preview_coordinator.h"
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_view_controller.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,10 +24,9 @@
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
   containerStack.axis = UILayoutConstraintAxisVertical;
 
-  DiscoverFeedPreviewViewController* previewViewController =
-      [[DiscoverFeedPreviewViewController alloc]
-          initWithView:[[UIView alloc] init]
-                origin:@"test.url"];
+  LinkPreviewViewController* previewViewController =
+      [[LinkPreviewViewController alloc] initWithView:[[UIView alloc] init]
+                                               origin:@"test.url"];
 
   [self addChildViewController:previewViewController];
   [containerStack addArrangedSubview:previewViewController.view];
@@ -49,7 +48,7 @@
 
 @end
 
-@implementation SCDiscoverFeedPreviewCoordinator
+@implementation SCLinkPreviewCoordinator
 
 @synthesize baseViewController;
 

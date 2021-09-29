@@ -8,7 +8,7 @@ source_set("discover_feed_preview") {
     "sc_discover_feed_preview_coordinator.mm",
   ]
   deps = [
-    "//ios/chrome/browser/ui/ntp/discover_feed_preview:discover_feed_preview_ui",
+    "//ios/chrome/browser/ui/context_menu/link_preview:link_preview_ui",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",
   ]
@@ -26,7 +26,7 @@ source_set("eg2_tests") {
   sources = [ "sc_discover_feed_preview_coordinator_egtest.mm" ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/ntp/discover_feed_preview:constants",
+    "//ios/chrome/browser/ui/context_menu/link_preview:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

@@ -34,12 +34,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_delegate.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_coordinator.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_delegate.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
@@ -146,8 +146,7 @@
 
 // The Coordinator to display previews for Discover feed websites. It also
 // handles the actions related to them.
-@property(nonatomic, strong)
-    DiscoverFeedPreviewCoordinator* discoverFeedPreviewCoordinator;
+@property(nonatomic, strong) LinkPreviewCoordinator* linkPreviewCoordinator;
 
 @end
 
@@ -535,19 +534,17 @@
 #pragma mark - DiscoverFeedPreviewDelegate
 
 - (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL {
-  self.discoverFeedPreviewCoordinator =
-      [[DiscoverFeedPreviewCoordinator alloc] initWithBrowser:self.browser
-                                                          URL:URL];
-  [self.discoverFeedPreviewCoordinator start];
-  return
-      [self.discoverFeedPreviewCoordinator discoverFeedPreviewViewController];
+  self.linkPreviewCoordinator =
+      [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser URL:URL];
+  [self.linkPreviewCoordinator start];
+  return [self.linkPreviewCoordinator linkPreviewViewController];
 }
 
 - (void)didTapDiscoverFeedPreview {
-  DCHECK(self.discoverFeedPreviewCoordinator);
-  [self.discoverFeedPreviewCoordinator handlePreviewAction];
-  [self.discoverFeedPreviewCoordinator stop];
-  self.discoverFeedPreviewCoordinator = nil;
+  DCHECK(self.linkPreviewCoordinator);
+  [self.linkPreviewCoordinator handlePreviewAction];
+  [self.linkPreviewCoordinator stop];
+  self.linkPreviewCoordinator = nil;
 }
 
 #pragma mark - OverscrollActionsControllerDelegate

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_view_controller.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
 
 #import <MaterialComponents/MaterialProgressView.h>
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_constants.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/gfx/ios/uikit_util.h"
@@ -22,7 +22,7 @@ const CGFloat kSeparatorHeight = 0.1f;
 const CGFloat kProgressBarHeight = 2.0f;
 }  // namespace
 
-@interface DiscoverFeedPreviewViewController ()
+@interface LinkPreviewViewController ()
 
 // The view of the loaded webState.
 @property(nonatomic, strong) UIView* webStateView;
@@ -41,7 +41,7 @@ const CGFloat kProgressBarHeight = 2.0f;
 
 @end
 
-@implementation DiscoverFeedPreviewViewController
+@implementation LinkPreviewViewController
 
 - (instancetype)initWithView:(UIView*)webStateView origin:(NSString*)origin {
   self = [super initWithNibName:nil bundle:nil];
@@ -130,7 +130,7 @@ const CGFloat kProgressBarHeight = 2.0f;
   ]];
 }
 
-#pragma mark - DiscoverFeedPreviewConsumer
+#pragma mark - LinkPreviewConsumer
 
 - (void)setLoadingState:(BOOL)loading {
   if (self.loading == loading)
