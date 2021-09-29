@@ -146,11 +146,6 @@
 #define EGL_DIRECT_COMPOSITION_ANGLE 0x33A5
 #endif /* EGL_ANGLE_direct_composition */
 
-#ifndef EGL_ANGLE_flexible_surface_compatibility
-#define EGL_ANGLE_flexible_surface_compatibility 1
-#define EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE 0x33A6
-#endif /* EGL_ANGLE_flexible_surface_compatibility */
-
 #ifndef EGL_ANGLE_display_robust_resource_initialization
 #define EGL_ANGLE_display_robust_resource_initialization 1
 #define EGL_DISPLAY_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x3453
@@ -201,7 +196,7 @@ bool g_egl_context_priority_supported = false;
 bool g_egl_khr_colorspace = false;
 bool g_egl_ext_colorspace_display_p3 = false;
 bool g_egl_ext_colorspace_display_p3_passthrough = false;
-bool g_egl_flexible_surface_compatibility_supported = false;
+bool g_egl_no_config_context_supported = false;
 bool g_egl_robust_resource_init_supported = false;
 bool g_egl_display_texture_share_group_supported = false;
 bool g_egl_display_semaphore_share_group_supported = false;
@@ -1020,12 +1015,10 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
       (HasEGLExtension("EGL_ANDROID_front_buffer_auto_refresh") &&
        HasEGLExtension("EGL_ANDROID_create_native_client_buffer"));
 
-#if defined(OS_WIN)
-  // Need EGL_ANGLE_flexible_surface_compatibility to allow surfaces with and
-  // without alpha to be bound to the same context.
-  g_egl_flexible_surface_compatibility_supported =
-      HasEGLExtension("EGL_ANGLE_flexible_surface_compatibility");
-#endif
+  // Need EGL_KHR_no_config_context to allow surfaces with and without alpha to
+  // be bound to the same context.
+  g_egl_no_config_context_supported =
+      HasEGLExtension("EGL_KHR_no_config_context");
 
   g_egl_display_texture_share_group_supported =
       HasEGLExtension("EGL_ANGLE_display_texture_share_group");
@@ -1229,8 +1222,8 @@ bool GLSurfaceEGL::IsEGLContextPrioritySupported() {
 }
 
 // static
-bool GLSurfaceEGL::IsEGLFlexibleSurfaceCompatibilitySupported() {
-  return g_egl_flexible_surface_compatibility_supported;
+bool GLSurfaceEGL::IsEGLNoConfigContextSupported() {
+  return g_egl_no_config_context_supported;
 }
 
 bool GLSurfaceEGL::IsRobustResourceInitSupported() {

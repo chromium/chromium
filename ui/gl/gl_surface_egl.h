@@ -122,7 +122,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsCreateContextWebGLCompatabilitySupported();
   static bool IsEGLSurfacelessContextSupported();
   static bool IsEGLContextPrioritySupported();
-  static bool IsEGLFlexibleSurfaceCompatibilitySupported();
+  static bool IsEGLNoConfigContextSupported();
   static bool IsRobustResourceInitSupported();
   static bool IsDisplayTextureShareGroupSupported();
   static bool IsDisplaySemaphoreShareGroupSupported();

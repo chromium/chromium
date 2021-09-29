@@ -26,11 +26,6 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-#ifndef EGL_ANGLE_flexible_surface_compatibility
-#define EGL_ANGLE_flexible_surface_compatibility 1
-#define EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE 0x33A6
-#endif /* EGL_ANGLE_flexible_surface_compatibility */
-
 namespace gl {
 namespace {
 // Whether the overlay caps are valid or not. GUARDED_BY GetOverlayLock().
@@ -428,10 +423,10 @@ bool DirectCompositionSurfaceWin::IsDirectCompositionSupported() {
       return false;
     }
 
-    // Flexible surface compatibility is required to be able to MakeCurrent with
-    // the default pbuffer surface.
-    if (!GLSurfaceEGL::IsEGLFlexibleSurfaceCompatibilitySupported()) {
-      DLOG(ERROR) << "EGL_ANGLE_flexible_surface_compatibility not supported";
+    // EGL_KHR_no_config_context surface compatibility is required to be able to
+    // MakeCurrent with the default pbuffer surface.
+    if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
+      DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
       return false;
     }
 

@@ -31,11 +31,6 @@
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/vsync_thread_win.h"
 
-#ifndef EGL_ANGLE_flexible_surface_compatibility
-#define EGL_ANGLE_flexible_surface_compatibility 1
-#define EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE 0x33A6
-#endif /* EGL_ANGLE_flexible_surface_compatibility */
-
 #ifndef EGL_ANGLE_d3d_texture_client_buffer
 #define EGL_ANGLE_d3d_texture_client_buffer 1
 #define EGL_D3D_TEXTURE_ANGLE 0x33A3
@@ -108,8 +103,6 @@ bool DirectCompositionChildSurfaceWin::Initialize(GLSurfaceFormat format) {
       1,
       EGL_HEIGHT,
       1,
-      EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE,
-      EGL_TRUE,
       EGL_NONE,
   };
 
@@ -486,8 +479,6 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
   pbuffer_attribs.push_back(size_.width());
   pbuffer_attribs.push_back(EGL_HEIGHT);
   pbuffer_attribs.push_back(size_.height());
-  pbuffer_attribs.push_back(EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE);
-  pbuffer_attribs.push_back(EGL_TRUE);
   if (use_angle_texture_offset_) {
     pbuffer_attribs.push_back(EGL_TEXTURE_OFFSET_X_ANGLE);
     pbuffer_attribs.push_back(draw_offset_.x());
