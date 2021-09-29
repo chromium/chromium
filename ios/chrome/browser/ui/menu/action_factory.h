@@ -108,6 +108,10 @@ class GURL;
 // Creates a UIAction instance for entering tab selection mode.
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for searching an image with Lens.
+// Invokes the given |completion| block after execution.
+- (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

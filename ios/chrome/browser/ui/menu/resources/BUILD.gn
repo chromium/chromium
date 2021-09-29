@@ -60,6 +60,14 @@ imageset("edit") {
   ]
 }
 
+imageset("lens_icon") {
+  sources = [
+    "lens_icon.imageset/Contents.json",
+    "lens_icon.imageset/lens_icon@2x.png",
+    "lens_icon.imageset/lens_icon@3x.png",
+  ]
+}
+
 imageset("open_image_in_new_tab") {
   sources = [
     "open_image_in_new_tab.imageset/Contents.json",

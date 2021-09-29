@@ -475,6 +475,12 @@ const char kURLBlocklistIOSDescription[] =
     "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
     "enterprise policies.";
 
+const char kUseLensToSearchForImageName[] =
+    "Use Google Lens to Search for images";
+const char kUseLensToSearchForImageDescription[] =
+    "When enabled, use Lens to search for images from the long press context "
+    "menu when Google is the selected search engine.";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

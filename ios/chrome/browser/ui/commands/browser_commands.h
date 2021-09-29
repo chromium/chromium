@@ -19,7 +19,7 @@
 
 class GURL;
 @class ReadingListAddCommand;
-@class SearchByImageCommand;
+@class SearchImageWithLensCommand;
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
@@ -84,6 +84,9 @@ class GURL;
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
+
+// Search for an image with Lens, using |command| parameters.
+- (void)searchImageWithLens:(SearchImageWithLensCommand*)command;
 
 // Shows/Hides the activity indicator overlay that appears over the view to
 // prevent interaction with the web page.

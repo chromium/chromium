@@ -411,6 +411,11 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kURLBlocklistIOSName[];
 extern const char kURLBlocklistIOSDescription[];
 
+// Title and description for the flag to enable using Lens to search for an
+// image from the long press context menu.
+extern const char kUseLensToSearchForImageName[];
+extern const char kUseLensToSearchForImageDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

@@ -127,4 +127,13 @@ bool SupportsSearchByImage(TemplateURLService* service) {
          default_url->image_url_ref().IsValid(service->search_terms_data());
 }
 
+bool SupportsSearchImageWithLens(TemplateURLService* service) {
+  if (!service) {
+    return false;
+  }
+  const TemplateURL* default_url = service->GetDefaultSearchProvider();
+  return default_url &&
+         default_url->url_ref().HasGoogleBaseURLs(service->search_terms_data());
+}
+
 }  // namespace search_engines

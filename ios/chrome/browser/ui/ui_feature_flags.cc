@@ -55,6 +55,9 @@ const base::Feature kUpdateHistoryEntryPointsInIncognito{
 const base::Feature kContextMenuActionsRefresh{
     "ContextMenuActionsRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsContextMenuActionsRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
 }

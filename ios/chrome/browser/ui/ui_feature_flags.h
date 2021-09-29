@@ -62,6 +62,9 @@ extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 // Feature to update context menu actions.
 extern const base::Feature kContextMenuActionsRefresh;
 
+// Feature flag to enable using Lens to search for images.
+extern const base::Feature kUseLensToSearchForImage;
+
 // Whether the ContextMenuActionsRefresh flag is enabled.
 bool IsContextMenuActionsRefreshEnabled();
 

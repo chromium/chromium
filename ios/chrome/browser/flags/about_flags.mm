@@ -724,7 +724,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-new-download-api", flag_descriptions::kEnableNewDownloadAPIName,
      flag_descriptions::kEnableNewDownloadAPIDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableNewDownloadAPI)},
-};
+    {"use-lens-to-search-for-image",
+     flag_descriptions::kUseLensToSearchForImageName,
+     flag_descriptions::kUseLensToSearchForImageDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseLensToSearchForImage)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

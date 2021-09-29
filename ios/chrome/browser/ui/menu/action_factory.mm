@@ -239,4 +239,14 @@
   return action;
 }
 
+- (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHLENS)
+                      image:[UIImage imageNamed:@"lens_icon"]
+                       type:MenuActionType::SearchImageWithLens
+                      block:block];
+  return action;
+}
+
 @end

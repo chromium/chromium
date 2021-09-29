@@ -5381,6 +5381,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "use-lens-to-search-for-image",
+    "owners": [ "bernsteine", "hujasonx" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "use-lookalikes-for-navigation-suggestions",
     "owners": [ "jdeblasio", "meacer" ],
     "expiry_milestone": 86

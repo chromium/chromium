@@ -27,6 +27,7 @@
 #import "components/signin/ios/browser/account_consistency_service.h"
 #include "components/signin/ios/browser/active_state_manager.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
@@ -63,6 +64,8 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/chrome/browser/signin/account_reconcilor_factory.h"
+#include "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
@@ -84,6 +87,7 @@
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -185,6 +189,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#include "ios/public/provider/chrome/browser/lens/lens_api.h"
+#include "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/common/crw_input_view_provider.h"
@@ -197,6 +203,7 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "net/base/mac/url_conversions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -300,6 +307,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 @interface BrowserViewController () <BubblePresenterDelegate,
                                      CaptivePortalDetectorTabHelperDelegate,
+                                     ChromeLensControllerDelegate,
                                      CRWWebStateDelegate,
                                      CRWWebStateObserver,
                                      FindBarPresentationDelegate,
@@ -427,6 +435,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The disabler that prevents the toolbar from being scrolled offscreen when
   // the thumb strip is visible.
   std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
+
+  // A controller that can provide an entrypoint into Lens features.
+  id<ChromeLensController> _lensController;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -4169,6 +4180,33 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+- (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
+  LensConfiguration* configuration = [[LensConfiguration alloc] init];
+  configuration.isIncognito = self.isOffTheRecord;
+
+  if (!self.isOffTheRecord) {
+    ChromeBrowserState* browserState = _browser->GetBrowserState();
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(browserState);
+    ChromeIdentity* chromeIdentity = authenticationService->GetPrimaryIdentity(
+        ::signin::ConsentLevel::kSignin);
+    configuration.identity = chromeIdentity;
+  }
+
+  _lensController = ios::provider::NewChromeLensController(configuration);
+  if (!_lensController) {
+    // Lens is not available.
+    return;
+  }
+  _lensController.delegate = self;
+
+  UIViewController* lensViewController =
+      [_lensController postCaptureViewControllerForImage:command.image];
+  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
+  // stack.
+  [self presentViewController:lensViewController animated:YES completion:nil];
+}
+
 #pragma mark - BrowserCommands helpers
 
 // Reloads the original url of the last non-redirect item (including non-history
@@ -4179,6 +4217,26 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   web::WebState* webState = self.currentWebState;
   web::NavigationManager* navigationManager = webState->GetNavigationManager();
   navigationManager->ReloadWithUserAgentType(userAgentType);
+}
+
+#pragma mark - ChromeLensControllerDelegate
+
+- (void)lensControllerDidTapDismissButton {
+  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
+  // stack.
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)lensControllerDidSelectURL:(NSURL*)URL {
+  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
+  // stack.
+  UrlLoadParams loadParams = UrlLoadParams::InNewTab(net::GURLWithNSURL(URL));
+  loadParams.SetInBackground(YES);
+  loadParams.in_incognito = self.isOffTheRecord;
+  loadParams.append_to = kCurrentTab;
+  UrlLoadingBrowserAgent* loadingAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  loadingAgent->Load(loadParams);
 }
 
 #pragma mark - WebStateListObserving methods

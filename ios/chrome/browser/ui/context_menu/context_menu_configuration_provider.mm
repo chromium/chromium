@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
@@ -273,11 +274,21 @@ const CGFloat kFaviconWidthHeight = 24;
                                                      completion:nil];
     [menuElements addObject:openImageInNewTab];
 
-    // Search by image.
+    // Search by image or Search image with Lens.
     TemplateURLService* service =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    if (search_engines::SupportsSearchByImage(service)) {
+    __weak ContextMenuConfigurationProvider* weakSelf = self;
+    if (base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
+        search_engines::SupportsSearchImageWithLens(service)) {
+      UIAction* searchImageWithLensAction =
+          [actionFactory actionToSearchImageUsingLensWithBlock:^{
+            [weakSelf searchImageWithURL:imageUrl
+                               usingLens:YES
+                                referrer:referrer];
+          }];
+      [menuElements addObject:searchImageWithLensAction];
+    } else if (search_engines::SupportsSearchByImage(service)) {
       const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
       NSString* title =
           IsContextMenuActionsRefreshEnabled()
@@ -287,15 +298,9 @@ const CGFloat kFaviconWidthHeight = 24;
       UIAction* searchByImage = [actionFactory
           actionSearchImageWithTitle:title
                                Block:^{
-                                 ImageFetchTabHelper* imageFetcher =
-                                     ImageFetchTabHelper::FromWebState(
-                                         self.currentWebState);
-                                 DCHECK(imageFetcher);
-                                 imageFetcher->GetImageData(
-                                     imageUrl, referrer, ^(NSData* data) {
-                                       [weakSelf searchByImageData:data
-                                                          imageURL:imageUrl];
-                                     });
+                                 [weakSelf searchImageWithURL:imageUrl
+                                                    usingLens:NO
+                                                     referrer:referrer];
                                }];
       [menuElements addObject:searchByImage];
     }
@@ -686,6 +691,24 @@ const CGFloat kFaviconWidthHeight = 24;
 
 #pragma mark - Private
 
+// Searches an image with the given |imageURL| and |referrer|, optionally using
+// Lens.
+- (void)searchImageWithURL:(GURL)imageUrl
+                 usingLens:(BOOL)usingLens
+                  referrer:(web::Referrer)referrer {
+  ImageFetchTabHelper* imageFetcher =
+      ImageFetchTabHelper::FromWebState(self.currentWebState);
+  DCHECK(imageFetcher);
+  __weak ContextMenuConfigurationProvider* weakSelf = self;
+  imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
+    if (usingLens) {
+      [weakSelf searchImageUsingLensWithData:data];
+    } else {
+      [weakSelf searchByImageData:data imageURL:imageUrl];
+    }
+  });
+}
+
 // Starts a reverse image search based on |imageData| and |imageURL| in a new
 // tab.
 - (void)searchByImageData:(NSData*)imageData imageURL:(const GURL&)URL {
@@ -698,6 +721,16 @@ const CGFloat kFaviconWidthHeight = 24;
   UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
   params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+}
+
+// Searches an image with Lens using the given |imageData|.
+- (void)searchImageUsingLensWithData:(NSData*)imageData {
+  id<BrowserCommands> handler =
+      static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
+  UIImage* image = [UIImage imageWithData:imageData];
+  SearchImageWithLensCommand* command =
+      [[SearchImageWithLensCommand alloc] initWithImage:image];
+  [handler searchImageWithLens:command];
 }
 
 @end
