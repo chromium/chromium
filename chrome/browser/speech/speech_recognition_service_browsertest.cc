@@ -148,6 +148,16 @@ class SpeechRecognitionServiceTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
 
+  // Disable the sandbox on Windows and MacOS as the sandboxes on those
+  // platforms have not been configured yet.
+#if defined(OS_WIN) || defined(OS_MAC)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Required for the utility process to access the directory containing the
+    // test files.
+    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
+  }
+#endif
+
  protected:
   void CloseCaptionBubble() {
     is_client_requesting_speech_recognition_ = false;
@@ -207,8 +217,16 @@ void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
 }
 
 void SpeechRecognitionServiceTest::SetUpPrefs() {
+  base::FilePath soda_binary_path;
+#if defined(OS_WIN) || defined(OS_MAC)
+  soda_binary_path =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaTestBinaryRelativePath);
+#else
+  soda_binary_path = GetSodaTestBinaryPath();
+#endif
   g_browser_process->local_state()->SetFilePath(prefs::kSodaBinaryPath,
-                                                GetSodaTestBinaryPath());
+                                                soda_binary_path);
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
