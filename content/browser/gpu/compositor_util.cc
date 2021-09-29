@@ -207,6 +207,8 @@ const GpuFeatureData GetGpuFeatureData(
      false},
     {"skia_renderer", gpu::kGpuFeatureStatusEnabled,
      !features::IsUsingSkiaRenderer(), DisableInfo::NotProblem(), false},
+    {"raw_draw", gpu::kGpuFeatureStatusEnabled, !features::IsUsingRawDraw(),
+     DisableInfo::NotProblem(), false},
   };
   DCHECK(index < base::size(kGpuFeatureData));
   *eof = (index == base::size(kGpuFeatureData) - 1);
@@ -240,6 +242,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
     std::string status;
     // Features undergoing a finch controlled roll out.
     if (gpu_feature_data.name == "skia_renderer" ||
+        gpu_feature_data.name == "raw_draw" ||
         gpu_feature_data.name == "viz_hit_test_surface_layer") {
       status = (gpu_feature_data.disabled ? "disabled_off_ok" : "enabled_on");
     } else if (gpu_feature_data.disabled || gpu_access_blocked ||

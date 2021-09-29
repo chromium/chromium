@@ -278,6 +278,7 @@ export function makeInfoView(browserBridge) {
         'webgl2': 'WebGL2',
         'skia_renderer': 'Skia Renderer',
         'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
+        'raw_draw': 'Raw Draw',
       };
 
       const statusMap = {
