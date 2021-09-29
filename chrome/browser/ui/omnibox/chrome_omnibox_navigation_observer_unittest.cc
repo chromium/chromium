@@ -193,7 +193,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory);
 
-  const int kNetError = 0;
+  const int kNetError = net::ERR_FAILED;
   const int kNoResponse = -1;
   struct Response {
     const std::vector<std::string> urls;  // If more than one, 301 between them.
@@ -303,7 +303,12 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
     // Make sure the fetcher(s) have finished.
     base::RunLoop().RunUntilIdle();
 
-    navigation->Commit();
+    if (test_case.response.http_response_code != kNetError) {
+      navigation->Commit();
+    } else {
+      navigation->Fail(kNetError);
+      navigation->CommitErrorPage();
+    }
 
     // See if AlternateNavInfoBarDelegate::Create() was called.
     EXPECT_EQ(test_case.expected_alternate_nav_bar_shown, displayed_infobar);

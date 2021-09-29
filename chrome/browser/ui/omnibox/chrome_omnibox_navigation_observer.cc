@@ -277,20 +277,25 @@ void ChromeOmniboxNavigationObserver::DidFinishNavigation(
   // of the WebContents.
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
+  // Ignore navigations which didn't commit, or committed a page which bypassed
+  // the network (e.g. about:blank).
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->GetResponseHeaders()) {
+    return;
+  }
+
   // We can get only get virtual URL from the WebContents for now. This is
   // correct here (as we are processing a committed primary main frame
   // navigation), but we should consider adding a way to get virtual URL
   // directly from NavigationHandle.
-  if (navigation_handle->HasCommitted() &&
-      ResponseCodeIndicatesSuccess(
+  if (ResponseCodeIndicatesSuccess(
           navigation_handle->GetResponseHeaders()->response_code()) &&
       IsValidNavigation(match_.destination_url,
                         navigation_handle->GetWebContents()->GetVisibleURL())) {
     ChromeOmniboxClient::OnSuccessfulNavigation(profile_, text_, match_);
   }
 
-  if (navigation_handle->HasCommitted() &&
-      navigation_handle->GetResponseHeaders()->response_code() == 404) {
+  if (navigation_handle->GetResponseHeaders()->response_code() == 404) {
     On404();
   }
 }
