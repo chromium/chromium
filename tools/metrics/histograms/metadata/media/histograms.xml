@@ -988,9 +988,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadline" units="%"
-    expires_after="2021-10-04">
-  <owner>gudou@chromium.org</owner>
+    expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
+  <owner>gudou@chromium.org</owner>
   <summary>
     The percentage of input audio data blocks that had to be buffered because
     there was not room in the shared memory ring buffer on the browser/renderer
@@ -1049,9 +1049,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioOutputController.CallbackError" enum="BooleanError"
-    expires_after="2021-10-09">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2022-10-09">
   <owner>olka@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
   <summary>
     A boolean that reflects whether or not an error was reported during audio
     rendering, reported after a stream has stopped, if it was started.
@@ -1122,10 +1122,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"
     enum="AudioOutputResamplerLowLatencyOpenStreamResult"
-    expires_after="2021-10-09">
+    expires_after="2022-10-09">
+  <owner>olka@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
   <summary>
     Whether a low latency stream to be rendered through the resampler was opened
     successfully or which type of fallback stream was used instead. In case a
@@ -1225,7 +1225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioRendererImpl.SinkStatus" enum="OutputDeviceStatus"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>armax@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -2528,7 +2528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.InputStreamDurationWithoutCallback" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <summary>
