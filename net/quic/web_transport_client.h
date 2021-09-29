@@ -52,6 +52,15 @@ enum class WebTransportState {
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os, WebTransportState state);
+// https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-5
+struct NET_EXPORT WebTransportCloseInfo final {
+  WebTransportCloseInfo();
+  WebTransportCloseInfo(uint32_t code, base::StringPiece reason);
+  ~WebTransportCloseInfo();
+
+  uint32_t code = 0;
+  std::string reason;
+};
 
 // A visitor that gets notified about events that happen to a WebTransport
 // client.
@@ -66,7 +75,8 @@ class NET_EXPORT WebTransportClientVisitor {
   // CONNECTING -> FAILED
   virtual void OnConnectionFailed(const WebTransportError& error) = 0;
   // CONNECTED -> CLOSED
-  virtual void OnClosed() = 0;
+  virtual void OnClosed(
+      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
   // CONNECTED -> FAILED
   virtual void OnError(const WebTransportError& error) = 0;
 
@@ -107,6 +117,12 @@ class NET_EXPORT WebTransportClient {
   // Connect() is an asynchronous operation.  Once the operation is finished,
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
   virtual void Connect() = 0;
+
+  // Starts the client-initiated termination process. This can be called only
+  // when the state is CONNECTED. The associated visitor is still waiting for
+  // OnClosed or OnError to be called.
+  virtual void Close(
+      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
 
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;

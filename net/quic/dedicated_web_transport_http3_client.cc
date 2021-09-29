@@ -228,6 +228,13 @@ void DedicatedWebTransportHttp3Client::Connect() {
   DoLoop(OK);
 }
 
+void DedicatedWebTransportHttp3Client::Close(
+    const absl::optional<WebTransportCloseInfo>& close_info) {
+  // TODO(vasilvv): Implement this.
+  // For now, immediately transition to CLOSED in order to avoid leaks.
+  TransitionToState(WebTransportState::CLOSED);
+}
+
 quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
   if (web_transport_session_ == nullptr)
     return nullptr;
@@ -527,7 +534,7 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
 
     case WebTransportState::CLOSED:
       DCHECK_EQ(last_state, WebTransportState::CONNECTED);
-      visitor_->OnClosed();
+      visitor_->OnClosed(/*close_info=*/absl::nullopt);
       break;
 
     case WebTransportState::FAILED:

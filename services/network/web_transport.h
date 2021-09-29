@@ -68,11 +68,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void StopSending(uint32_t stream_id, uint8_t code) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
 
+  void Close(const absl::optional<net::WebTransportCloseInfo>& close_info);
+
   // WebTransportClientVisitor implementation:
   void OnConnected(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void OnConnectionFailed(const net::WebTransportError& error) override;
-  void OnClosed() override;
+  void OnClosed(
+      const absl::optional<net::WebTransportCloseInfo>& close_info) override;
   void OnError(const net::WebTransportError& error) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
@@ -104,6 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   mojo::Remote<mojom::WebTransportClient> client_;
   base::queue<base::OnceCallback<void(bool)>> datagram_callbacks_;
 
+  bool closing_ = false;
   bool torn_down_ = false;
 
   // This must be the last member.

@@ -479,6 +479,20 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
+void WebTransport::Close(
+    const absl::optional<net::WebTransportCloseInfo>& close_info) {
+  if (torn_down_) {
+    return;
+  }
+  closing_ = true;
+
+  receiver_.reset();
+  handshake_client_.reset();
+  client_.reset();
+
+  transport_->Close(close_info);
+}
+
 void WebTransport::OnConnected(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   if (torn_down_) {
@@ -510,12 +524,18 @@ void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
   TearDown();
 }
 
-void WebTransport::OnClosed() {
+void WebTransport::OnClosed(
+    const absl::optional<net::WebTransportCloseInfo>& close_info) {
   if (torn_down_) {
     return;
   }
 
   DCHECK(!handshake_client_);
+  if (closing_) {
+    closing_ = false;
+  } else {
+    // TODO(yhirano): Call client_-> OnClosed().
+  }
 
   TearDown();
 }
@@ -523,6 +543,10 @@ void WebTransport::OnClosed() {
 void WebTransport::OnError(const net::WebTransportError& error) {
   if (torn_down_) {
     return;
+  }
+
+  if (closing_) {
+    closing_ = false;
   }
 
   DCHECK(!handshake_client_);

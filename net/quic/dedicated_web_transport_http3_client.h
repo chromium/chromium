@@ -63,6 +63,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   // Connect() is an asynchronous operation.  Once the operation is finished,
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
   void Connect() override;
+  void Close(const absl::optional<WebTransportCloseInfo>& close_info) override;
 
   quic::WebTransportSession* session() override;
 

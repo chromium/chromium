@@ -20,6 +20,9 @@ class FailedWebTransportClient : public WebTransportClient {
                /*safe_to_report_details=*/true),
         visitor_(visitor) {}
   void Connect() override { visitor_->OnConnectionFailed(error_); }
+  void Close(const absl::optional<WebTransportCloseInfo>& close_info) override {
+    NOTREACHED();
+  }
 
   quic::WebTransportSession* session() override { return nullptr; }
 
@@ -52,6 +55,12 @@ std::ostream& operator<<(std::ostream& os, WebTransportState state) {
   }
   return os;
 }
+
+WebTransportCloseInfo::WebTransportCloseInfo() = default;
+WebTransportCloseInfo::WebTransportCloseInfo(uint32_t code,
+                                             base::StringPiece reason)
+    : code(code), reason(reason) {}
+WebTransportCloseInfo::~WebTransportCloseInfo() = default;
 
 WebTransportClientVisitor::~WebTransportClientVisitor() = default;
 
