@@ -2902,7 +2902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.SampleReportSent" units="Boolean"
-    expires_after="2021-10-31">
+    expires_after="2022-10-31">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
