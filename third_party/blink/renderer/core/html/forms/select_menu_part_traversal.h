@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class HTMLSelectMenuElement;
 class Node;
 
 // Used by <selectmenu> to find child parts. The <selectmenu> parts search
@@ -43,6 +44,10 @@ class CORE_EXPORT SelectMenuPartTraversal {
   // Returns true if other is an ancestor of node, and there are no <select> or
   // <selectmenu> ancestors in the parent chain between node and other.
   static bool IsDescendantOf(const Node& node, const Node& other);
+
+  // Returns the nearest ancestor of node that is a <selectmenu>, stopping when
+  // a <select> is encountered before a <selectmenu> in the ancestor chain.
+  static HTMLSelectMenuElement* NearestSelectMenuAncestor(const Node& node);
 
  private:
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);

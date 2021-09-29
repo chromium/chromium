@@ -20,7 +20,7 @@ class Document;
 // --enable-blink-features=HTMLSelectMenuElement. See
 // https://groups.google.com/u/1/a/chromium.org/g/blink-dev/c/9TcfjaOs5zg/m/WAiv6WpUAAAJ
 // for more details.
-class HTMLSelectMenuElement final : public HTMLElement {
+class CORE_EXPORT HTMLSelectMenuElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,6 +31,17 @@ class HTMLSelectMenuElement final : public HTMLElement {
   bool open() const;
 
   void Trace(Visitor*) const override;
+
+  enum class PartType { kNone, kButton, kListBox, kOption };
+
+  // If node is a flat tree descendant of an HTMLSelectMenuElement
+  // and is registered as a part of that HTMLSelectMenuElement,
+  // returns that HTMLSelectMenuElement. Else returns null.
+  static HTMLSelectMenuElement* OwnerSelectMenu(Node* node);
+
+  PartType AssignedPartType(Node* node) const;
+
+  Element* ButtonPart() const { return button_part_; }
 
  private:
   class SelectMutationCallback;

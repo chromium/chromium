@@ -172,6 +172,32 @@ HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
           *this);
 }
 
+// static
+HTMLSelectMenuElement* HTMLSelectMenuElement::OwnerSelectMenu(Node* node) {
+  HTMLSelectMenuElement* nearest_select_menu_ancestor =
+      SelectMenuPartTraversal::NearestSelectMenuAncestor(*node);
+
+  if (nearest_select_menu_ancestor &&
+      nearest_select_menu_ancestor->AssignedPartType(node) != PartType::kNone) {
+    return nearest_select_menu_ancestor;
+  }
+
+  return nullptr;
+}
+
+HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
+    Node* node) const {
+  if (node == button_part_) {
+    return PartType::kButton;
+  } else if (node == listbox_part_) {
+    return PartType::kListBox;
+  } else if (option_parts_.Contains(DynamicTo<Element>(node))) {
+    return PartType::kOption;
+  }
+
+  return PartType::kNone;
+}
+
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 

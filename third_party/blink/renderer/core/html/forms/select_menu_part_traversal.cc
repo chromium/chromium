@@ -97,6 +97,19 @@ bool SelectMenuPartTraversal::IsDescendantOf(const Node& node,
   return false;
 }
 
+HTMLSelectMenuElement* SelectMenuPartTraversal::NearestSelectMenuAncestor(
+    const Node& node) {
+  for (Node* ancestor = FlatTreeTraversal::Parent(node); ancestor;
+       ancestor = FlatTreeTraversal::Parent(*ancestor)) {
+    if (IsA<HTMLSelectMenuElement>(ancestor))
+      return DynamicTo<HTMLSelectMenuElement>(ancestor);
+    if (IsA<HTMLSelectElement>(ancestor))
+      return nullptr;
+  }
+
+  return nullptr;
+}
+
 bool SelectMenuPartTraversal::IsNestedSelectMenu(const Node& node) {
   // When searching for parts of a given <selectmenu>, don't look
   // inside nested <selectmenu> or <select> elements.
