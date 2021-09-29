@@ -8230,6 +8230,11 @@ void AXPlatformNodeWin::SanitizeTextAttributeValue(const std::string& input,
 
 void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
     PATTERNID pattern_id) const {
+  // Non-web content is always enabled, if a client isn't looking for web
+  // content, don't enable.
+  if (!GetDelegate() || !GetDelegate()->IsWebContent())
+    return;
+
   bool probable_advanced_client_detected = false;
   bool text_pattern_support_needed = false;
   switch (pattern_id) {
@@ -8255,8 +8260,14 @@ void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
       observer.OnTextPatternRequested();
   }
 }
+
 void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     PROPERTYID property_id) const {
+  // Non-web content is always enabled, if a client isn't looking for web
+  // content, don't enable.
+  if (!GetDelegate() || !GetDelegate()->IsWebContent())
+    return;
+
   bool probable_advanced_client_detected = false;
   bool probable_screen_reader_detected = false;
   bool uiautomation_id_requested = false;

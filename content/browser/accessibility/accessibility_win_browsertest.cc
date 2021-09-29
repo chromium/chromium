@@ -5217,6 +5217,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
 
+  // Now get the fragment root's first (only) child.
+  Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
+  uia->get_RawViewWalker(&tree_walker);
+  Microsoft::WRL::ComPtr<IUIAutomationElement> first_child;
+  tree_walker->GetFirstChildElement(root.Get(), &first_child);
+  ASSERT_NE(nullptr, first_child.Get());
+  base::win::ScopedVariant control_type;
+  // Query Property value on non web content.
+  ASSERT_HRESULT_SUCCEEDED(first_child->GetCurrentPropertyValue(
+      UIA_ControlTypePropertyId, control_type.Receive()));
+  // As this is not on web content, this should not cause any enablement.
+  EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
+                               ->GetAccessibilityMode());
+  // While no additional enablement is done, the result should still be correct.
+  EXPECT_EQ(UIA_PaneControlTypeId, control_type.ptr()->intVal);
+
   // Now try to get the text content.
   Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
   base::win::ScopedVariant control_type_variant(UIA_TextControlTypeId);
