@@ -366,6 +366,13 @@ void RemoteFrame::SetCcLayer(scoped_refptr<cc::Layer> layer,
     static_cast<cc::SurfaceLayer&>(*cc_layer_)
         .SetHasPointerEventsNone(IsIgnoredForHitTest());
   }
+
+  // If we now have a CC layer make sure its bounds match previously sent visual
+  // properties. This is necessary for the crash ui layer to be shown.
+  if (cc_layer_ && sent_visual_properties_) {
+    cc_layer_->SetBounds(sent_visual_properties_->local_frame_size);
+  }
+
   HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
   owner->SetNeedsCompositingUpdate();
 
@@ -961,8 +968,16 @@ void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
-  if (!GetFrameSinkId().is_valid() || remote_process_gone_)
+  if (!GetFrameSinkId().is_valid())
     return false;
+
+  // If the remote process is gone and we have new bounds adjust the
+  // crash ui layer so at least it tracks the new size.
+  if (remote_process_gone_) {
+    if (cc_layer_)
+      cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
+    return false;
+  }
 
   bool capture_sequence_number_changed =
       sent_visual_properties_ &&
