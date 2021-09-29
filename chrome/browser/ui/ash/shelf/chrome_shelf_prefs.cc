@@ -111,40 +111,6 @@ const std::string GetShelfDefaultPinLayoutPref() {
   return prefs::kShelfDefaultPinLayoutRolls;
 }
 
-// Returns true in case some configuration was rolled.
-bool IsAnyDefaultPinLayoutRolled(Profile* profile) {
-  const auto* layouts_rolled =
-      profile->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref());
-
-  return layouts_rolled && !layouts_rolled->GetList().empty();
-}
-
-// Returns true in case default pin layout |default_pin_layout| was already
-// rolled.
-bool IsDefaultPinLayoutRolled(Profile* profile,
-                              const std::string& default_pin_layout) {
-  const auto* layouts_rolled =
-      profile->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref());
-  if (!layouts_rolled)
-    return false;
-
-  for (const auto& layout_rolled : layouts_rolled->GetList()) {
-    if (layout_rolled.GetString() == default_pin_layout)
-      return true;
-  }
-
-  return false;
-}
-
-// Marks that default pin layout |default_pin_layout| is rolled.
-void MarkDefaultPinLayoutRolled(Profile* profile,
-                                const std::string& default_pin_layout) {
-  DCHECK(!IsDefaultPinLayoutRolled(profile, default_pin_layout));
-
-  ListPrefUpdate update(profile->GetPrefs(), GetShelfDefaultPinLayoutPref());
-  update->Append(default_pin_layout);
-}
-
 // Returns true in case default pin layout configuration could be applied
 // safely. That means all required components are synced or worked in local
 // mode.
@@ -203,8 +169,11 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
 
 const char ChromeShelfPrefs::kPinnedAppsPrefAppIDKey[] = "id";
 
-ChromeShelfPrefs::ChromeShelfPrefs() = default;
-ChromeShelfPrefs::~ChromeShelfPrefs() = default;
+ChromeShelfPrefs::ChromeShelfPrefs(Profile* profile) : profile_(profile) {}
+
+ChromeShelfPrefs::~ChromeShelfPrefs() {
+  StopObservingSyncService();
+}
 
 void ChromeShelfPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -231,11 +200,11 @@ void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
 // Helper that extracts app list from policy preferences.
 std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     ShelfControllerHelper* helper) {
-  const PrefService* prefs = helper->profile()->GetPrefs();
+  const PrefService* prefs = GetPrefs();
   std::vector<std::string> result;
   const base::Value* policy_apps =
       prefs->GetList(prefs::kPolicyPinnedLauncherApps);
-  if (!policy_apps)
+  if (!policy_apps || policy_apps->GetList().empty())
     return result;
 
   // Obtain here all ids of ARC apps because it takes linear time, and getting
@@ -303,11 +272,10 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
 // Returns pinned app position even if app is not currently visible on device
 // that is leftmost item on the shelf. If |exclude_chrome| is true then Chrome
 // app is not processed. if nothing pinned found, returns an invalid ordinal.
-syncer::StringOrdinal GetFirstPinnedAppPosition(Profile* profile,
-                                                bool exclude_chrome) {
+syncer::StringOrdinal GetFirstPinnedAppPosition(
+    app_list::AppListSyncableService* syncable_service,
+    bool exclude_chrome) {
   syncer::StringOrdinal position;
-  app_list::AppListSyncableService* syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile);
   for (const auto& sync_peer : syncable_service->sync_items()) {
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
@@ -323,9 +291,10 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(Profile* profile,
 
 // Helper to create pin position that stays before any synced app, even if
 // app is not currently visible on a device.
-syncer::StringOrdinal CreateFirstPinPosition(Profile* profile) {
+syncer::StringOrdinal CreateFirstPinPosition(
+    app_list::AppListSyncableService* syncable_service) {
   const syncer::StringOrdinal position =
-      GetFirstPinnedAppPosition(profile, false /* exclude_chrome */);
+      GetFirstPinnedAppPosition(syncable_service, false /* exclude_chrome */);
   return position.IsValid() ? position.CreateBefore()
                             : syncer::StringOrdinal::CreateInitialOrdinal();
 }
@@ -354,13 +323,8 @@ syncer::StringOrdinal CreateLastPinPosition(Profile* profile) {
 // If Chrome is not the first pinned app then apps are pinned before any other
 // app.
 void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-    ShelfControllerHelper* helper,
     app_list::AppListSyncableService* syncable_service,
-    const std::vector<std::string>& app_ids,
-    std::vector<PinInfo>* pin_infos) {
-  if (app_ids.empty())
-    return;
-
+    const std::vector<std::string>& app_ids) {
   // Chrome must be pinned at this point.
   const syncer::StringOrdinal chrome_position =
       syncable_service->GetPinPosition(extension_misc::kChromeAppId);
@@ -370,21 +334,17 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   syncer::StringOrdinal after;
   // New pins are inserted before this position.
   syncer::StringOrdinal before =
-      GetFirstPinnedAppPosition(helper->profile(), true /* exclude_chrome */);
+      GetFirstPinnedAppPosition(syncable_service, true /* exclude_chrome */);
 
-  if (before.IsValid() && before.GreaterThan(chrome_position)) {
+  if (!before.IsValid()) {
+    before = chrome_position.CreateAfter();
+  }
+
+  if (before.GreaterThan(chrome_position)) {
     // Perfect case, Chrome is the first pinned app and we have next pinned app.
     after = chrome_position;
   } else {
-    if (before.IsValid()) {
-      // Chrome is not first. Generate after as position before |before|.
-      after = before.CreateBefore();
-    } else {
-      // Chrome is first and no more other pinned apps or apps are
-      // conflicting with Chrome pin position.
-      after = chrome_position;
-      before = chrome_position.CreateAfter();
-    }
+    after = before.CreateBefore();
   }
 
   for (const auto& app_id : app_ids) {
@@ -395,10 +355,6 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     const syncer::StringOrdinal position = after.CreateBetween(before);
     syncable_service->SetPinPosition(app_id, position);
 
-    // Even if app is not currently visible, its pin is pre-created.
-    if (helper->IsValidIDForCurrentUser(app_id))
-      pin_infos->emplace_back(PinInfo(app_id, position));
-
     // Shift after position, next policy pin position will be created after
     // current item.
     after = position;
@@ -407,18 +363,50 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
 
 std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     ShelfControllerHelper* helper) {
-  PrefService* prefs = helper->profile()->GetPrefs();
+  PrefService* prefs = GetPrefs();
   app_list::AppListSyncableService* const syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(helper->profile());
+      GetSyncableService();
+
   // Some unit tests may not have it or service may not be initialized.
   if (!syncable_service || !syncable_service->IsInitialized() ||
       skip_pinned_apps_from_sync_for_test) {
     return std::vector<ash::ShelfID>();
   }
 
-  if (!performed_migrations_) {
-    performed_migrations_ = true;
-    MigrateLegacyCameraApp(syncable_service, prefs);
+  ObserveSyncService();
+
+  if (ShouldPerformConsistencyMigrations()) {
+    needs_consistency_migrations_ = false;
+    MigrateLegacyCameraApp(syncable_service);
+    EnsureChromePinned(syncable_service);
+  }
+
+  // This migration must be run outside of the consistency migrations block
+  // since the timing can occur later, after apps have been synced.
+  if (!DidAddDefaultApps(prefs) && ShouldAddDefaultApps(prefs)) {
+    AddDefaultApps(prefs, syncable_service);
+  }
+
+  // Handle pins, forced by policy. In case Chrome is first app they are added
+  // after Chrome, otherwise they are added to the front. Note, we handle apps
+  // that may not be currently on device. At this case pin position would be
+  // preallocated and apps will appear on shelf in deterministic order, even if
+  // their install order differ.
+  InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
+                                               GetAppsPinnedByPolicy(helper));
+
+  // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
+  // is pinned. Lacros doesn't support multi-signin, so only add the icon for
+  // the primary user.
+  if (crosapi::browser_util::IsLacrosEnabled() &&
+      chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+    syncer::StringOrdinal lacros_position =
+        syncable_service->GetPinPosition(extension_misc::kLacrosAppId);
+    if (!lacros_position.IsValid()) {
+      // If Lacros isn't already pinned, add it to the right of the Chrome icon.
+      InsertPinsAfterChromeAndBeforeFirstPinnedApp(
+          syncable_service, {extension_misc::kLacrosAppId});
+    }
   }
 
   std::vector<PinInfo> pin_infos;
@@ -431,70 +419,12 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
 
-    if (sync_peer.first != extension_misc::kChromeAppId &&
-        !helper->IsValidIDForCurrentUser(sync_peer.first)) {
+    if (!IsSyncItemValid(sync_peer.first, helper)) {
       continue;
     }
 
     std::string pinned_app_id = sync_peer.first;
     pin_infos.emplace_back(pinned_app_id, sync_peer.second->item_pin_ordinal);
-  }
-
-  // Make sure Chrome is always pinned.
-  syncer::StringOrdinal chrome_position =
-      syncable_service->GetPinPosition(extension_misc::kChromeAppId);
-  if (!chrome_position.IsValid()) {
-    chrome_position = CreateFirstPinPosition(helper->profile());
-    syncable_service->SetPinPosition(extension_misc::kChromeAppId,
-                                     chrome_position);
-    pin_infos.emplace_back(
-        PinInfo(extension_misc::kChromeAppId, chrome_position));
-  }
-
-  // Apply default apps in case profile syncing is done. Otherwise there is a
-  // risk that applied default apps would be overwritten by sync once it is
-  // completed. prefs::kPolicyPinnedLauncherApps overrides any default layout.
-  // This also limits applying experimental configuration only for users who
-  // have the default pin layout specified by |kDefaultPinnedApps| or for
-  // fresh users who have no pin information at all. Default configuration is
-  // not applied if any of experimental layout was rolled.
-  std::string shelf_layout = IsAnyDefaultPinLayoutRolled(helper->profile())
-                                 ? std::string()
-                                 : kDefaultPinnedAppsKey;
-
-  if (!prefs->HasPrefPath(prefs::kPolicyPinnedLauncherApps) &&
-      IsSafeToApplyDefaultPinLayout(helper->profile()) &&
-      !shelf_layout.empty() &&
-      !IsDefaultPinLayoutRolled(helper->profile(), shelf_layout)) {
-    VLOG(1) << "Roll default shelf pin layout " << shelf_layout;
-    std::vector<std::string> default_app_ids;
-    for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor())
-      default_app_ids.push_back(default_app_id);
-    InsertPinsAfterChromeAndBeforeFirstPinnedApp(helper, syncable_service,
-                                                 default_app_ids, &pin_infos);
-    MarkDefaultPinLayoutRolled(helper->profile(), shelf_layout);
-  }
-
-  // Handle pins, forced by policy. In case Chrome is first app they are added
-  // after Chrome, otherwise they are added to the front. Note, we handle apps
-  // that may not be currently on device. At this case pin position would be
-  // preallocated and apps will appear on shelf in deterministic order, even if
-  // their install order differ.
-  InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-      helper, syncable_service, GetAppsPinnedByPolicy(helper), &pin_infos);
-
-  // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
-  // is pinned. Lacros doesn't support multi-signin, so only add the icon for
-  // the primary user.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(helper->profile())) {
-    syncer::StringOrdinal lacros_position =
-        syncable_service->GetPinPosition(extension_misc::kLacrosAppId);
-    if (!lacros_position.IsValid()) {
-      // If Lacros isn't already pinned, add it to the right of the Chrome icon.
-      InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-          helper, syncable_service, {extension_misc::kLacrosAppId}, &pin_infos);
-    }
   }
 
   // Sort pins according their ordinals.
@@ -590,8 +520,7 @@ void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
 }
 
 void ChromeShelfPrefs::MigrateLegacyCameraApp(
-    app_list::AppListSyncableService* syncable_service,
-    PrefService* prefs) {
+    app_list::AppListSyncableService* syncable_service) {
   syncer::StringOrdinal legacy_camera_pinned_position;
 
   for (const auto& sync_peer : syncable_service->sync_items()) {
@@ -616,5 +545,90 @@ void ChromeShelfPrefs::MigrateLegacyCameraApp(
       legacy_camera_pinned_position.IsValid()) {
     syncable_service->SetPinPosition(extension_misc::kCameraAppId,
                                      legacy_camera_pinned_position);
+  }
+}
+
+void ChromeShelfPrefs::EnsureChromePinned(
+    app_list::AppListSyncableService* syncable_service) {
+  syncer::StringOrdinal chrome_position =
+      syncable_service->GetPinPosition(extension_misc::kChromeAppId);
+  if (!chrome_position.IsValid()) {
+    chrome_position = CreateFirstPinPosition(syncable_service);
+    syncable_service->SetPinPosition(extension_misc::kChromeAppId,
+                                     chrome_position);
+  }
+}
+
+bool ChromeShelfPrefs::DidAddDefaultApps(PrefService* pref_service) {
+  const auto* layouts_rolled =
+      pref_service->GetList(GetShelfDefaultPinLayoutPref());
+  DCHECK(layouts_rolled);
+  return !layouts_rolled->GetList().empty();
+}
+
+bool ChromeShelfPrefs::ShouldAddDefaultApps(PrefService* pref_service) {
+  // Apply default apps in case profile syncing is done. Otherwise there is a
+  // risk that applied default apps would be overwritten by sync once it is
+  // completed. prefs::kPolicyPinnedLauncherApps overrides any default layout.
+  // This also limits applying experimental configuration only for users who
+  // have the default pin layout specified by |kDefaultPinnedApps| or for
+  // fresh users who have no pin information at all. Default configuration is
+  // not applied if any of experimental layout was rolled.
+  return !pref_service->HasPrefPath(prefs::kPolicyPinnedLauncherApps) &&
+         IsSafeToApplyDefaultPinLayout(profile_);
+}
+
+void ChromeShelfPrefs::AddDefaultApps(
+    PrefService* pref_service,
+    app_list::AppListSyncableService* syncable_service) {
+  VLOG(1) << "Roll default shelf pin layout " << kDefaultPinnedAppsKey;
+  std::vector<std::string> default_app_ids;
+  for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor())
+    default_app_ids.push_back(default_app_id);
+  InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
+                                               default_app_ids);
+  ListPrefUpdate update(pref_service, GetShelfDefaultPinLayoutPref());
+  update->Append(kDefaultPinnedAppsKey);
+}
+
+void ChromeShelfPrefs::AttachProfile(Profile* profile) {
+  profile_ = profile;
+  needs_consistency_migrations_ = true;
+  StopObservingSyncService();
+}
+
+bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() {
+  return needs_consistency_migrations_;
+}
+
+app_list::AppListSyncableService* const ChromeShelfPrefs::GetSyncableService() {
+  return app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
+}
+
+PrefService* ChromeShelfPrefs::GetPrefs() {
+  return profile_->GetPrefs();
+}
+
+bool ChromeShelfPrefs::IsSyncItemValid(const std::string& id,
+                                       ShelfControllerHelper* helper) {
+  return id == extension_misc::kChromeAppId ||
+         helper->IsValidIDForCurrentUser(id);
+}
+
+void ChromeShelfPrefs::ObserveSyncService() {
+  if (!observed_sync_service_) {
+    observed_sync_service_ = GetSyncableService();
+    observed_sync_service_->AddObserverAndStart(this);
+  }
+}
+
+void ChromeShelfPrefs::OnSyncModelUpdated() {
+  needs_consistency_migrations_ = true;
+}
+
+void ChromeShelfPrefs::StopObservingSyncService() {
+  if (observed_sync_service_) {
+    observed_sync_service_->RemoveObserver(this);
+    observed_sync_service_ = nullptr;
   }
 }

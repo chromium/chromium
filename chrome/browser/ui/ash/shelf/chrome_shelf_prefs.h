@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class ShelfControllerHelper;
 class PrefService;
@@ -25,12 +28,12 @@ class PrefRegistrySyncable;
 
 // This class is responsible for briding between sync/pref-store and the ash
 // shelf.
-class ChromeShelfPrefs {
+class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
  public:
-  ChromeShelfPrefs();
+  explicit ChromeShelfPrefs(Profile* profile);
   ChromeShelfPrefs(const ChromeShelfPrefs&) = delete;
   ChromeShelfPrefs& operator=(const ChromeShelfPrefs&) = delete;
-  ~ChromeShelfPrefs();
+  ~ChromeShelfPrefs() override;
 
   // Key for the dictionary entries in the prefs::kPinnedLauncherApps list
   // specifying the extension ID of the app to be pinned by that entry.
@@ -77,16 +80,89 @@ class ChromeShelfPrefs {
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
 
-  // This is a one-time operation. This method unpins any of the legacy camera
-  // apps. and then uses their pinned position for the new camera app.
+  // This is run once each time ash launches. This method unpins any of the
+  // legacy camera apps. and then uses their pinned position for the new camera
+  // app.
   void MigrateLegacyCameraApp(
-      app_list::AppListSyncableService* syncable_service,
-      PrefService* prefs);
+      app_list::AppListSyncableService* syncable_service);
+
+  // This is run once each time ash launches. If the chrome app is not pinned
+  // then this creates a pin for the chrome app.
+  void EnsureChromePinned(app_list::AppListSyncableService* syncable_service);
+
+  // Whether the default apps have already been added for this device form
+  // factor.
+  bool DidAddDefaultApps(PrefService* pref_service);
+
+  // Virtual for testing.
+  // Whether it's safe to add the default apps. We will refrain from adding the
+  // default apps if there are policies that modify the pinned apps, or if app
+  // sync has not yet started.
+  virtual bool ShouldAddDefaultApps(PrefService* pref_service);
+
+  // This migration is run once per device form factor and the result is stored
+  // in prefs. It is never run again if that pref is present. It causes several
+  // default apps to be shown in the shelf.
+  void AddDefaultApps(PrefService* pref_service,
+                      app_list::AppListSyncableService* syncable_service);
+
+  // In multi-user login, it's possible for the profile to change during a
+  // session. This requires resetting all migrations. This method is also called
+  // shorty after initialization.
+  void AttachProfile(Profile* profile);
+
+  // Sync is the source of truth. However, the data from sync can be
+  // nonsensical, either because the user nuked all sync data, corruption, or
+  // otherwise. The purpose of the consistency migrations are two fold:
+  //   (1) To perform what should logically be 1-time migrations.
+  //   (2) In case of data loss or corruption, to bring the user back to a
+  //   safe/consistent state.
+  // By necessity, all consistency migrations must be idempotent. Otherwise the
+  // logic will trigger on every call to GetPinnedAppsFromSync().
+  //
+  // This method returns whether the consistency migrations need to be run
+  // again.
+  bool ShouldPerformConsistencyMigrations();
+
+ protected:
+  // Virtual for testing. Returns the syncable service associated with the
+  // current profile.
+  virtual app_list::AppListSyncableService* const GetSyncableService();
+
+  // Virtual for testing. Returns the pref service associated with the current
+  // profile.
+  virtual PrefService* GetPrefs();
+
+  // Virtual for testing. Returns whether the sync item can be shown in the
+  // shelf. Returns false for items that are not present in the app service.
+  virtual bool IsSyncItemValid(const std::string& id,
+                               ShelfControllerHelper* helper);
+
+  // Starts observing the sync service if not already doing so.
+  virtual void ObserveSyncService();
 
  private:
-  // Migrations are performed exactly once, on the first call to
-  // GetPinnedAppsFromSync that has sync data.
-  bool performed_migrations_ = false;
+  // app_list::AppListSyncableService::Observer:
+  void OnSyncModelUpdated() override;
+
+  // Stops observing the current sync service.
+  void StopObservingSyncService();
+
+  // Migrations are performed in several situations:
+  //   (1) On first launch
+  //   (2) Any time there's a sync update
+  //   (3) On profile change.
+  // In order to prevent an endless cycle of sync updates, all migrations must
+  // be idempotent.
+  bool needs_consistency_migrations_ = true;
+
+  // The sync service instance that is currently being observed. If nullptr then
+  // nothing is being observed.
+  app_list::AppListSyncableService* observed_sync_service_ = nullptr;
+
+  // The owner of this class is responsible for ensuring the validity of this
+  // pointer.
+  Profile* profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_

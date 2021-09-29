@@ -174,7 +174,8 @@ class AppListSyncableService : public syncer::SyncableService,
   AppListModelUpdater* GetModelUpdater();
 
   // Returns true if this service was initialized.
-  bool IsInitialized() const;
+  // Virtual for testing.
+  virtual bool IsInitialized() const;
 
   // Signalled when AppListSyncableService is Initialized.
   const base::OneShotEvent& on_initialized() const { return on_initialized_; }

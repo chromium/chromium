@@ -209,7 +209,9 @@ ChromeShelfController* ChromeShelfController::instance_ = nullptr;
 ChromeShelfController::ChromeShelfController(Profile* profile,
                                              ash::ShelfModel* model,
                                              ChromeShelfItemFactory* creator)
-    : model_(model), shelf_item_factory_(creator), shelf_prefs_(std::make_unique<ChromeShelfPrefs>()) {
+    : model_(model),
+      shelf_item_factory_(creator),
+      shelf_prefs_(std::make_unique<ChromeShelfPrefs>(profile)) {
   DCHECK(!instance_);
   instance_ = this;
 
@@ -1126,7 +1128,7 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
 }
 
 void ChromeShelfController::OnSyncModelUpdated() {
-  UpdatePinnedAppsFromSync();
+  ScheduleUpdatePinnedAppsFromSync();
 }
 
 void ChromeShelfController::OnIsSyncingChanged() {
@@ -1405,6 +1407,7 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
   profile_ = profile_to_attach;
   latest_active_profile_ = profile_to_attach;
 
+  shelf_prefs_->AttachProfile(profile_to_attach);
   AddAppUpdaterAndIconLoader(profile_to_attach);
 
   pref_change_registrar_.Init(profile()->GetPrefs());

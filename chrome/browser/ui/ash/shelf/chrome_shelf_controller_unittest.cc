@@ -772,6 +772,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     sync_list.push_back(syncer::SyncChange(
         FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
     app_list_syncable_service_->ProcessSyncChanges(FROM_HERE, sync_list);
+    content::RunAllTasksUntilIdle();
   }
 
   // Gets the IDs of the currently pinned app items.
@@ -4541,6 +4542,7 @@ TEST_P(ChromeShelfControllerTest, SyncOffLocalUpdate) {
 
   // Resume syncing and sync information overrides local copy.
   StartAppSyncService(copy_sync_list);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
 }
 
