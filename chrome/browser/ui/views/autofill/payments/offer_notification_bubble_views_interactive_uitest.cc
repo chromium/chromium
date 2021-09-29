@@ -156,8 +156,14 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
+#if defined(OS_LINUX)
+// Flaky: https://crbug.com/1186169.
+#define MAYBE_Logging_Shown DISABLED_Logging_Shown
+#else
+#define MAYBE_Logging_Shown Logging_Shown
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Shown) {
+                       MAYBE_Logging_Shown) {
   base::HistogramTester histogram_tester;
   ShowBubbleAndVerify();
 
@@ -178,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
-#if defined(OS_MAC)
-// OS_MAC: Flaky: https://crbug.com/1186169.
+#if defined(OS_LINUX) || defined(OS_MAC)
+// Flaky: https://crbug.com/1186169.
 #define MAYBE_Logging_Acknowledged DISABLED_Logging_Acknowledged
 #else
 #define MAYBE_Logging_Acknowledged Logging_Acknowledged
@@ -215,8 +221,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
-#if defined(OS_MAC)
-// OS_MAC: Flaky: https://crbug.com/1186164.
+#if defined(OS_LINUX) || defined(OS_MAC)
+// Flaky: https://crbug.com/1186169.
 #define MAYBE_Logging_Closed DISABLED_Logging_Closed
 #else
 #define MAYBE_Logging_Closed Logging_Closed
