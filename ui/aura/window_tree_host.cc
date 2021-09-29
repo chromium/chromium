@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -51,7 +52,16 @@ const char kWindowTreeHostForAcceleratedWidget[] =
 
 bool ShouldEvictRootSurfaceWhenHidden() {
 #if defined(OS_WIN)
-  return base::FeatureList::IsEnabled(features::kEvictRootSurfaceWhenHidden);
+  if (!base::FeatureList::IsEnabled(
+          features::kApplyNativeOcclusionToCompositor)) {
+    return false;
+  }
+
+  const std::string type = base::GetFieldTrialParamValueByFeature(
+      features::kApplyNativeOcclusionToCompositor,
+      features::kApplyNativeOcclusionToCompositorType);
+  return type == features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict ||
+         type == features::kApplyNativeOcclusionToCompositorTypeEvictOnly;
 #else
   return false;
 #endif

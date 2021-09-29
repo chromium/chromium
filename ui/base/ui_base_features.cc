@@ -19,17 +19,25 @@
 namespace features {
 
 #if defined(OS_WIN)
+// Once enabled, the exact behavior is dictated by the field trial param
+// name `kApplyNativeOcclusionToCompositorType`.
 const base::Feature kApplyNativeOcclusionToCompositor{
     "ApplyNativeOcclusionToCompositor", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Field trial param name for `kApplyNativeOcclusionToCompositor`.
+const char kApplyNativeOcclusionToCompositorType[] = "type";
+// Indicates occlusion should be applied to the compositor.
+const char kApplyNativeOcclusionToCompositorTypeApplyOnly[] = "apply";
+// Indicates occlusion should be applied to the compositor, and when occluded
+// the root surface should be evicted when hidden/occluded.
+const char kApplyNativeOcclusionToCompositorTypeApplyAndEvict[] =
+    "apply-and-evict";
+// Indicates the root surface should be evicted when hidden/occluded.
+const char kApplyNativeOcclusionToCompositorTypeEvictOnly[] = "evict";
 
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{
     "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, when the AcceleratedWidget is hidden the root frame's surface
-// is evicted. This results in freeing up all resources used for drawing.
-const base::Feature kEvictRootSurfaceWhenHidden{
-    "EvictRootSurfaceWhenHidden", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, listen for screen power state change and factor into the native
 // window occlusion detection - Windows-only.

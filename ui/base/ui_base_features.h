@@ -60,9 +60,15 @@ extern const char kElasticOverscrollTypeTransform[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kApplyNativeOcclusionToCompositor;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kCalculateNativeWinOcclusion;
+extern const char kApplyNativeOcclusionToCompositorType[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kEvictRootSurfaceWhenHidden;
+extern const char kApplyNativeOcclusionToCompositorTypeApplyOnly[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeApplyAndEvict[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeEvictOnly[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kCalculateNativeWinOcclusion;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputPaneOnScreenKeyboard;
 COMPONENT_EXPORT(UI_BASE_FEATURES)

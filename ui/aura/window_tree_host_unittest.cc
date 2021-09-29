@@ -202,10 +202,13 @@ class WindowTreeHostWithOcclusionTest : public test::AuraTestBase {
   void SetUp() override {
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
-    scoped_feature_list_.InitWithFeatures(
-        {features::kApplyNativeOcclusionToCompositor,
-         features::kEvictRootSurfaceWhenHidden,
-         features::kCalculateNativeWinOcclusion},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kCalculateNativeWinOcclusion, {}},
+            {features::kApplyNativeOcclusionToCompositor,
+             {{features::kApplyNativeOcclusionToCompositorType,
+               features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict}}},
+        },
         {});
     AuraTestBase::SetUp();
   }

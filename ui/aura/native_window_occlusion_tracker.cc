@@ -4,6 +4,7 @@
 
 #include "ui/aura/native_window_occlusion_tracker.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
@@ -51,11 +52,18 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
   // chromedriver uses the environment variable CHROME_HEADLESS. In this case
   // it expected that native occlusion is not applied.
   static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
-  return (!is_headless || !g_headless_check_enabled) &&
-         base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion) &&
-         base::FeatureList::IsEnabled(
-             features::kApplyNativeOcclusionToCompositor) &&
-         host->IsNativeWindowOcclusionEnabled();
+  if ((is_headless && g_headless_check_enabled) ||
+      !host->IsNativeWindowOcclusionEnabled() ||
+      !base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion) ||
+      !base::FeatureList::IsEnabled(
+          features::kApplyNativeOcclusionToCompositor)) {
+    return false;
+  }
+  const std::string type = base::GetFieldTrialParamValueByFeature(
+      features::kApplyNativeOcclusionToCompositor,
+      features::kApplyNativeOcclusionToCompositorType);
+  return type == features::kApplyNativeOcclusionToCompositorTypeApplyOnly ||
+         type == features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict;
 #else
   return false;
 #endif
