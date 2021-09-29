@@ -296,6 +296,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.can_use_lcd_text = platform->IsLcdTextEnabled();
   settings.use_zero_copy = cmd.HasSwitch(switches::kEnableZeroCopy);
   settings.use_partial_raster = !cmd.HasSwitch(switches::kDisablePartialRaster);
+  // Partial raster is not supported with RawDraw
+  settings.use_partial_raster &= !::features::IsUsingRawDraw();
   settings.enable_elastic_overscroll = platform->IsElasticOverscrollEnabled();
   settings.resource_settings.use_gpu_memory_buffer_resources =
       cmd.HasSwitch(switches::kEnableGpuMemoryBufferCompositorResources);
