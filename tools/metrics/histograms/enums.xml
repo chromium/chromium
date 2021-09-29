@@ -19890,6 +19890,11 @@ Called by update_debug_scenarios.py.-->
   <int value="43" label="ignoreListJSFramesOnTimeline"/>
   <int value="44" label="contrastIssues"/>
   <int value="45" label="experimentalCookieFeatures"/>
+  <int value="46" label="localizedDevTools"/>
+  <int value="47" label="bfcacheDebugging"/>
+  <int value="48" label="hideIssuesFeature"/>
+  <int value="49" label="reportingApiDebugging"/>
+  <int value="50" label="syncSettings"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
