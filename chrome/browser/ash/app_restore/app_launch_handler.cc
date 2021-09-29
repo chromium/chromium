@@ -138,7 +138,8 @@ void AppLaunchHandler::LaunchApps() {
 }
 
 bool AppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
-    const std::string& app_id) {
+    const std::string& app_id,
+    const ::app_restore::RestoreData::LaunchList& launch_list) {
   return true;
 }
 
@@ -163,7 +164,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
-      if (ShouldLaunchSystemWebAppOrChromeApp(app_id))
+      if (ShouldLaunchSystemWebAppOrChromeApp(app_id, it->second))
         LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:

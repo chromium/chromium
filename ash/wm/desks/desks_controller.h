@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/restore_data.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -265,8 +266,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // get launched from a saved template. Moves the existing app instance to the
   // active desk without animation if it exists. Returns true if we should
   // launch the app (i.e. the app was not found and thus should be launched),
-  // and false otherwise.
-  bool OnSingleInstanceAppLaunchingFromTemplate(const std::string& app_id);
+  // and false otherwise. Optional launch parameters may be present in
+  // `launch_list`.
+  bool OnSingleInstanceAppLaunchingFromTemplate(
+      const std::string& app_id,
+      const app_restore::RestoreData::LaunchList& launch_list);
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
   // desks. This is called when desks are added, removed or reordered to update

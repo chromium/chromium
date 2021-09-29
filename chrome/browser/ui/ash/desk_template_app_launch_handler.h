@@ -37,7 +37,7 @@ class DeskTemplateAppLaunchHandler
   void SetRestoreDataAndLaunch(
       std::unique_ptr<app_restore::RestoreData> restore_data);
 
-  // full_restore::DeskTemplateReadHandler::Delegate:
+  // app_restore::DeskTemplateReadHandler::Delegate:
   std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int restore_window_id) override;
   int32_t FetchRestoreWindowId(const std::string& app_id) override;
@@ -45,7 +45,9 @@ class DeskTemplateAppLaunchHandler
 
  protected:
   // chromeos::AppLaunchHandler:
-  bool ShouldLaunchSystemWebAppOrChromeApp(const std::string& app_id) override;
+  bool ShouldLaunchSystemWebAppOrChromeApp(
+      const std::string& app_id,
+      const app_restore::RestoreData::LaunchList& launch_list) override;
   void OnExtensionLaunching(const std::string& app_id) override;
   base::WeakPtr<ash::AppLaunchHandler> GetWeakPtrAppLaunchHandler() override;
 

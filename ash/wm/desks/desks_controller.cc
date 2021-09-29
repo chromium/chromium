@@ -34,6 +34,7 @@
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -928,7 +929,8 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
-    const std::string& app_id) {
+    const std::string& app_id,
+    const app_restore::RestoreData::LaunchList& launch_list) {
   // Iterate through the windows on each desk to see if there is an existing app
   // window instance.
   aura::Window* existing_app_instance_window = nullptr;
@@ -958,20 +960,39 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   // No need to shift a window that is visible on all desks.
   // TODO(sammiequon): Remove this property if the window on the new desk should
   // not be visible on all desks.
-  if (desks_util::IsWindowVisibleOnAllWorkspaces(existing_app_instance_window))
-    return false;
+  if (!desks_util::IsWindowVisibleOnAllWorkspaces(
+          existing_app_instance_window)) {
+    DCHECK(src_desk);
+    DCHECK_NE(src_desk, active_desk_);
+    DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+    base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
+    src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
+                               existing_app_instance_window->GetRootWindow(),
+                               /*unminimize=*/false);
+    MaybeUpdateShelfItems(
+        /*windows_on_inactive_desk=*/{},
+        /*windows_on_active_desk=*/{existing_app_instance_window});
+    ReportNumberOfWindowsPerDeskHistogram();
+  }
 
-  DCHECK(src_desk);
-  DCHECK_NE(src_desk, active_desk_);
-  DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
-  base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
-  src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
-                             existing_app_instance_window->GetRootWindow(),
-                             /*unminimize=*/false);
-  MaybeUpdateShelfItems(
-      /*windows_on_inactive_desk=*/{},
-      /*windows_on_active_desk=*/{existing_app_instance_window});
-  ReportNumberOfWindowsPerDeskHistogram();
+  // We can now apply properties from the restore data. If we are in this
+  // function, then we are dealing with a single instance app and there should
+  // be at most one entry in the launch list.
+  DCHECK_LE(launch_list.size(), 1u);
+  if (!launch_list.empty()) {
+    if (const auto& app_restore_data = launch_list.begin()->second) {
+      if (app_restore_data->current_bounds) {
+        existing_app_instance_window->SetBounds(
+            *app_restore_data->current_bounds);
+      }
+      if (app_restore_data->activation_index) {
+        existing_app_instance_window->SetProperty(
+            app_restore::kActivationIndexKey,
+            *app_restore_data->activation_index);
+      }
+    }
+    WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
+  }
 
   // TODO(sammiequon): Read something for chromevox, either here or when the
   // whole template launches.

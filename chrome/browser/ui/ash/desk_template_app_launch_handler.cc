@@ -119,7 +119,8 @@ bool DeskTemplateAppLaunchHandler::IsFullRestoreRunning() const {
 }
 
 bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
-    const std::string& app_id) {
+    const std::string& app_id,
+    const app_restore::RestoreData::LaunchList& launch_list) {
   // Find out if the app can have multiple instances. Apps that can have
   // multiple instances are:
   //   1) System web apps which can open multiple windows
@@ -166,7 +167,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     return true;
 
   return ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
-      app_id);
+      app_id, launch_list);
 }
 
 void DeskTemplateAppLaunchHandler::OnExtensionLaunching(

@@ -425,6 +425,7 @@ void WindowRestoreController::OnWindowDestroying(aura::Window* window) {
 void WindowRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   DCHECK(window);
   DCHECK(window->parent());
+
   windows_observation_.AddObservation(window);
 
   // Unless minimized, snap state and activation unblock are done when the
@@ -441,6 +442,10 @@ void WindowRestoreController::UpdateAndObserveWindow(aura::Window* window) {
     window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
   }
 
+  StackWindow(window);
+}
+
+void WindowRestoreController::StackWindow(aura::Window* window) {
   int32_t* activation_index =
       window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)

@@ -82,6 +82,9 @@ class ASH_EXPORT WindowRestoreController
   // before this is called.
   void OnWindowActivated(aura::Window* gained_active);
 
+  // Stacks the window according to its activation index.
+  void StackWindow(aura::Window* window);
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;

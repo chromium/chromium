@@ -57,10 +57,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -535,17 +537,21 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   ASSERT_TRUE(settings_window);
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 
-  base::RunLoop run_loop;
-  std::unique_ptr<ash::DeskTemplate> desk_template;
-  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<ash::DeskTemplate> captured_desk_template,
-              std::string error_string) {
-            run_loop.Quit();
-            ASSERT_TRUE(captured_desk_template);
-            desk_template = std::move(captured_desk_template);
-          }));
-  run_loop.Run();
+  // Give the settings app a known position.
+  const gfx::Rect settings_bounds(100, 100, 600, 400);
+  settings_window->SetBounds(settings_bounds);
+  // Focus the browser so that the settings window is stacked at the bottom.
+  browser()->window()->GetNativeWindow()->Focus();
+  ASSERT_THAT(settings_window->parent()->children(),
+              ElementsAre(settings_window, _));
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  // Move the settings window to a new place and stack it on top so that we can
+  // later verify that it has been placed and stacked correctly.
+  settings_window->SetBounds(gfx::Rect(150, 150, 650, 500));
+  settings_window->Focus();
 
   ash::DesksController* desks_controller = ash::DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
@@ -553,9 +559,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   // Set the template we created as the template we want to launch.
   SetAndLaunchTemplate(std::move(desk_template));
 
-  // We launch a new browser window, but not a new settings app.
+  // We launch a new browser window, but not a new settings app. Verify that the
+  // window has been moved to the right place and stacked at the bottom.
   EXPECT_EQ(3u, BrowserList::GetInstance()->size());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(settings_window));
+  EXPECT_EQ(settings_bounds, settings_window->bounds());
+  ASSERT_THAT(settings_window->parent()->children(),
+              ElementsAre(settings_window, _));
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
