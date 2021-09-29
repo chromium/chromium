@@ -95,7 +95,8 @@ class CONTENT_EXPORT ComputePressureManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to determine when it's safe to stop the ComputePressureSampler.
-  std::set<url::Origin> hosts_with_observers_;
+  std::set<url::Origin> hosts_with_observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

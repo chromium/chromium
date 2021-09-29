@@ -70,7 +70,7 @@ class CONTENT_EXPORT ComputePressureHost
       GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver);
 
-  // blink.mojom.ComputePressureManager implementation.
+  // blink::mojom::ComputePressureHost implementation.
   void AddObserver(
       mojo::PendingRemote<blink::mojom::ComputePressureObserver> observer,
       blink::mojom::ComputePressureQuantizationPtr quantization,
@@ -124,7 +124,7 @@ class CONTENT_EXPORT ComputePressureHost
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Implements the quantizing scheme used for all the origin's observers.
-  ComputePressureQuantizer quantizer_;
+  ComputePressureQuantizer quantizer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The (quantized) sample that was last reported to this origin's observers.
   //

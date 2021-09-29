@@ -97,7 +97,7 @@ class CONTENT_EXPORT ComputePressureSampler {
   // on the differences observed between two Update() calls. For this reason,
   // the ComputePressureSample reported after a first Update() call is not
   // reported via `sampling_callback_`.
-  bool got_probe_baseline_ = false;
+  bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<ComputePressureSampler> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
