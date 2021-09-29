@@ -44,6 +44,9 @@ enum PhoneHubViewID {
   kTetherConnectionPendingView,
 
   kPhoneHubRecentAppsView,
+
+  // Camera roll view and its components.
+  kCameraRollView,
 };
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/camera_roll_view.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -61,6 +62,12 @@ PhoneConnectedView::PhoneConnectedView(
       recent_apps_handler) {
     setup_layered_view(AddChildView(
         std::make_unique<PhoneHubRecentAppsView>(recent_apps_handler)));
+  }
+
+  auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
+  if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
+    setup_layered_view(
+        AddChildView(std::make_unique<CameraRollView>(camera_roll_manager)));
   }
 }
 
