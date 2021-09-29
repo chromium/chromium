@@ -655,6 +655,7 @@ extern const char kDevToolsPortForwardingEnabled[];
 extern const char kDevToolsPortForwardingDefaultSet[];
 extern const char kDevToolsPortForwardingConfig[];
 extern const char kDevToolsPreferences[];
+extern const char kDevToolsSyncPreferences[];
 extern const char kDevToolsSyncedPreferencesSyncEnabled[];
 extern const char kDevToolsSyncedPreferencesSyncDisabled[];
 extern const char kDevToolsDiscoverTCPTargetsEnabled[];

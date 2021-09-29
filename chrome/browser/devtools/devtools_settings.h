@@ -25,6 +25,10 @@ struct RegisterOptions {
 
 class DevToolsSettings {
  public:
+  // The frontend setting name that mirrors prefs::kDevToolsSyncPreferences.
+  static const char kSyncDevToolsPreferencesFrontendName[];
+  static const bool kSyncDevToolsPreferencesDefault;
+
   explicit DevToolsSettings(Profile* profile);
   ~DevToolsSettings();
 

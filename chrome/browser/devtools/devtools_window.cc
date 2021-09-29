@@ -496,6 +496,10 @@ void DevToolsWindow::RegisterProfilePrefs(
                                 true);
   registry->RegisterListPref(prefs::kDevToolsTCPDiscoveryConfig);
   registry->RegisterDictionaryPref(prefs::kDevToolsPreferences);
+  registry->RegisterBooleanPref(
+      prefs::kDevToolsSyncPreferences,
+      DevToolsSettings::kSyncDevToolsPreferencesDefault,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       prefs::kDevToolsSyncedPreferencesSyncEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

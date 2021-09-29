@@ -8,11 +8,20 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
+const char DevToolsSettings::kSyncDevToolsPreferencesFrontendName[] =
+    "sync_preferences";
+const bool DevToolsSettings::kSyncDevToolsPreferencesDefault = false;
+
 DevToolsSettings::DevToolsSettings(Profile* profile) : profile_(profile) {}
 DevToolsSettings::~DevToolsSettings() = default;
 
 void DevToolsSettings::Register(const std::string& name,
                                 const RegisterOptions& options) {
+  // kSyncDevToolsPreferenceFrontendName is not stored in any of the relevant
+  // dictionaries. Skip registration.
+  if (name == kSyncDevToolsPreferencesFrontendName)
+    return;
+
   if (options.sync_mode == RegisterOptions::SyncMode::kSync) {
     synced_setting_names_.insert(name);
   }
@@ -57,6 +66,8 @@ base::Value DevToolsSettings::Get() {
   base::Value settings(base::Value::Type::DICTIONARY);
 
   PrefService* prefs = profile_->GetPrefs();
+  settings.SetBoolKey(kSyncDevToolsPreferencesFrontendName,
+                      prefs->GetBoolean(prefs::kDevToolsSyncPreferences));
   settings.MergeDictionary(prefs->GetDictionary(prefs::kDevToolsPreferences));
   // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
   // settings sync is enabled.
@@ -67,18 +78,32 @@ base::Value DevToolsSettings::Get() {
 }
 
 void DevToolsSettings::Set(const std::string& name, const std::string& value) {
+  if (name == kSyncDevToolsPreferencesFrontendName) {
+    profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
+                                     value == "true");
+    return;
+  }
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               GetDictionaryNameForSettingsName(name));
   update.Get()->SetKey(name, base::Value(value));
 }
 
 void DevToolsSettings::Remove(const std::string& name) {
+  if (name == kSyncDevToolsPreferencesFrontendName) {
+    profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
+                                     kSyncDevToolsPreferencesDefault);
+    return;
+  }
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               GetDictionaryNameForSettingsName(name));
   update.Get()->RemoveKey(name);
 }
 
 void DevToolsSettings::Clear() {
+  profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
+                                   kSyncDevToolsPreferencesDefault);
   DictionaryPrefUpdate unsynced_update(profile_->GetPrefs(),
                                        prefs::kDevToolsPreferences);
   unsynced_update.Get()->Clear();

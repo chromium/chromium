@@ -38,7 +38,9 @@ TEST_F(DevToolsSettingsTest, BasicApiTest) {
 
   settings.Clear();
   prefs = settings.Get();
-  EXPECT_EQ(prefs.DictSize(), static_cast<size_t>(0));
+  // kSyncDevToolsPreferenceFrontendName is always reported.
+  EXPECT_EQ(prefs.DictSize(), static_cast<size_t>(1));
+  EXPECT_EQ(prefs.FindStringKey("setting_b"), nullptr);
 }
 
 TEST_F(DevToolsSettingsTest, CanMoveUnsyncedSettingToBeingSynced) {
@@ -112,4 +114,59 @@ TEST_F(DevToolsSettingsTest, MovingUnsycnedToSyncedDoesNotOverwrite) {
 
   base::Value prefs = settings.Get();
   EXPECT_EQ(*prefs.FindStringKey("setting"), "overwritten synced value");
+}
+
+TEST_F(DevToolsSettingsTest, Set_SetsTheUnderlyingTogglePreference) {
+  DevToolsSettings settings(&profile_);
+  settings.Register(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,
+                    {RegisterOptions::SyncMode::kSync});
+
+  settings.Set(DevToolsSettings::kSyncDevToolsPreferencesFrontendName, "true");
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences));
+
+  settings.Set(DevToolsSettings::kSyncDevToolsPreferencesFrontendName, "false");
+  EXPECT_FALSE(
+      profile_.GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences));
+}
+
+TEST_F(DevToolsSettingsTest, Get_GetsTheUnderlyingTogglePreference) {
+  DevToolsSettings settings(&profile_);
+  settings.Register(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,
+                    {RegisterOptions::SyncMode::kSync});
+
+  profile_.GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences, true);
+  auto prefs = settings.Get();
+  EXPECT_EQ(
+      prefs.FindBoolKey(DevToolsSettings::kSyncDevToolsPreferencesFrontendName),
+      true);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences, false);
+  prefs = settings.Get();
+  EXPECT_EQ(
+      prefs.FindBoolKey(DevToolsSettings::kSyncDevToolsPreferencesFrontendName),
+      false);
+}
+
+TEST_F(DevToolsSettingsTest, Remove_ResetsUnderlyingTogglePreference) {
+  DevToolsSettings settings(&profile_);
+  settings.Register(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,
+                    {RegisterOptions::SyncMode::kSync});
+  settings.Set(DevToolsSettings::kSyncDevToolsPreferencesFrontendName, "true");
+
+  settings.Remove(DevToolsSettings::kSyncDevToolsPreferencesFrontendName);
+
+  EXPECT_EQ(profile_.GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences),
+            DevToolsSettings::kSyncDevToolsPreferencesDefault);
+}
+
+TEST_F(DevToolsSettingsTest, Clear_ResetsUnderlyingTogglePreference) {
+  DevToolsSettings settings(&profile_);
+  settings.Register(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,
+                    {RegisterOptions::SyncMode::kSync});
+  settings.Set(DevToolsSettings::kSyncDevToolsPreferencesFrontendName, "true");
+
+  settings.Clear();
+
+  EXPECT_EQ(profile_.GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences),
+            DevToolsSettings::kSyncDevToolsPreferencesDefault);
 }

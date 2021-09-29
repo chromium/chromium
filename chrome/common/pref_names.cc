@@ -1923,8 +1923,12 @@ const char kDevToolsTCPDiscoveryConfig[] = "devtools.tcp_discovery_config";
 // A dictionary with all unsynced DevTools settings.
 const char kDevToolsPreferences[] = "devtools.preferences";
 
-// Dictionaries with all synced DevTools settings. Depending on whether DevTools
-// settings sync is enabled or not, one or the other dictionary will be used.
+// A boolean specyfing whether the "syncable" subset of DevTools preferences
+// should be synced or not.
+const char kDevToolsSyncPreferences[] = "devtools.sync_preferences";
+
+// Dictionaries with all synced DevTools settings. Depending on the state of the
+// kDevToolsSyncPreferences toggle, one or the other dictionary will be used.
 // The "Enabled" dictionary is synced via Chrome Sync with the rest of Chrome
 // settings, while the "Disabled" dictionary won't be synced. This allows
 // DevTools to opt-in of syncing DevTools settings independently from syncing
