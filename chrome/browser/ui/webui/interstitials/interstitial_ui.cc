@@ -558,19 +558,6 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     allow_access_requests = allow_access_requests_string == "1";
   }
 
-  bool is_child_account = false;
-  std::string is_child_account_string;
-  if (net::GetValueForKeyInQuery(url, "is_child_account",
-                                 &is_child_account_string)) {
-    is_child_account = is_child_account_string == "1";
-  }
-
-  bool is_deprecated = false;
-  std::string is_deprecated_string;
-  if (net::GetValueForKeyInQuery(url, "is_deprecated", &is_deprecated_string)) {
-    is_deprecated = is_deprecated_string == "1" && !is_child_account;
-  }
-
   std::string custodian;
   net::GetValueForKeyInQuery(url, "custodian", &custodian);
   std::string second_custodian;
@@ -589,7 +576,7 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       supervised_user_error_page::DEFAULT;
   std::string reason_string;
   if (net::GetValueForKeyInQuery(url, "reason", &reason_string)) {
-    if (reason_string == "safe_sites" && is_child_account) {
+    if (reason_string == "safe_sites") {
       reason = supervised_user_error_page::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
       reason = supervised_user_error_page::MANUAL;
@@ -600,8 +587,8 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
 
   return supervised_user_error_page::BuildHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
-      custodian_email, second_custodian, second_custodian_email,
-      is_child_account, is_deprecated, reason,
-      g_browser_process->GetApplicationLocale());
+      custodian_email, second_custodian, second_custodian_email, reason,
+      g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
+      /*is_main_frame=*/true);
 }
 #endif

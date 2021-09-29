@@ -19,7 +19,6 @@ namespace supervised_user_error_page {
 
 struct BlockMessageIDTestParameter {
   FilteringBehaviorReason reason;
-  bool is_child_account;
   bool single_parent;
   int expected_result;
 };
@@ -30,25 +29,19 @@ class SupervisedUserErrorPageTest_GetBlockMessageID
 TEST_P(SupervisedUserErrorPageTest_GetBlockMessageID, GetBlockMessageID) {
   BlockMessageIDTestParameter param = GetParam();
   EXPECT_EQ(param.expected_result,
-            GetBlockMessageID(param.reason, param.is_child_account,
-                              param.single_parent))
+            GetBlockMessageID(param.reason, param.single_parent))
       << "reason = " << param.reason
-      << " is_child_account = " << param.is_child_account
       << " single parent = " << param.single_parent;
 }
 
 BlockMessageIDTestParameter block_message_id_test_params[] = {
-    {DEFAULT, false, false, IDS_SUPERVISED_USER_BLOCK_MESSAGE_DEFAULT},
-    {DEFAULT, false, true, IDS_SUPERVISED_USER_BLOCK_MESSAGE_DEFAULT},
-    {DEFAULT, true, true, IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT},
-    {DEFAULT, true, false, IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT},
+    {DEFAULT, true, IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT},
+    {DEFAULT, false, IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT},
     // SafeSites is not enabled for supervised users.
-    {ASYNC_CHECKER, true, true, IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
-    {ASYNC_CHECKER, true, false, IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
-    {MANUAL, false, false, IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL},
-    {MANUAL, false, true, IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL},
-    {MANUAL, true, true, IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT},
-    {MANUAL, true, false, IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT},
+    {ASYNC_CHECKER, true, IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
+    {ASYNC_CHECKER, false, IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
+    {MANUAL, true, IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT},
+    {MANUAL, false, IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT},
 };
 
 INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
@@ -63,8 +56,6 @@ struct BuildHtmlTestParameter {
   const std::string& custodian_email;
   const std::string& second_custodian;
   const std::string& second_custodian_email;
-  bool is_child_account;
-  bool is_deprecated;
   FilteringBehaviorReason reason;
   bool has_two_parents;
   bool is_local_web_approvals_enabled;
@@ -80,11 +71,12 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     scoped_feature_list_.InitWithFeatures(
         {supervised_users::kLocalWebApprovals}, {});
   }
-  std::string result = BuildHtml(
-      param.allow_access_requests, param.profile_image_url,
-      param.profile_image_url2, param.custodian, param.custodian_email,
-      param.second_custodian, param.second_custodian_email,
-      param.is_child_account, param.is_deprecated, param.reason, "");
+  std::string result =
+      BuildHtml(param.allow_access_requests, param.profile_image_url,
+                param.profile_image_url2, param.custodian,
+                param.custodian_email, param.second_custodian,
+                param.second_custodian_email, param.reason, /*app_locale=*/"",
+                /*already_sent_request=*/false, /*is_main_frame=*/true);
   // The result should contain the original HTML (with $i18n{} replacements)
   // plus scripts that plug values into it. The test can't easily check that the
   // scripts are correct, but can check that the output contains the expected
@@ -106,7 +98,6 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   // Messages containing parameters aren't tested since they get modified before
   // they are added to the result.
   if (param.allow_access_requests) {
-    if (param.is_child_account) {
       EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                               IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
       if (param.is_local_web_approvals_enabled &&
@@ -138,18 +129,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
         EXPECT_THAT(result, testing::HasSubstr(
                                 l10n_util::GetStringUTF8(IDS_BACK_BUTTON)));
       }
-    } else {
-      EXPECT_THAT(result,
-                  testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-                      IDS_CHILD_BLOCK_INTERSTITIAL_HEADER))));
-      EXPECT_THAT(result,
-                  testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-                      IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE))));
-      EXPECT_THAT(
-          result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED))));
-    }
+
   } else {
     EXPECT_THAT(result,
                 testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
@@ -161,70 +141,51 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                 testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED)));
   }
-  if (param.is_child_account) {
-    if (param.is_local_web_approvals_enabled) {
-      EXPECT_THAT(result,
-                  testing::HasSubstr(l10n_util::GetStringUTF8(
-                      IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE)));
-      if (param.has_two_parents) {
-        EXPECT_THAT(
-            result,
-            testing::HasSubstr(l10n_util::GetStringUTF8(
-                IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT)));
-      } else {
-        EXPECT_THAT(
-            result,
-            testing::HasSubstr(l10n_util::GetStringUTF8(
-                IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT)));
-      }
-    } else if (param.has_two_parents) {
-      EXPECT_THAT(
-          result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT))));
+  if (param.is_local_web_approvals_enabled) {
+    EXPECT_THAT(result,
+                testing::HasSubstr(l10n_util::GetStringUTF8(
+                    IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE)));
+    if (param.has_two_parents) {
       EXPECT_THAT(
           result,
           testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT)));
-      EXPECT_THAT(
-          result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT))));
-      EXPECT_THAT(
-          result,
-          testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT)));
+              IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT)));
     } else {
       EXPECT_THAT(
           result,
           testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT)));
-      EXPECT_THAT(
-          result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT))));
-      EXPECT_THAT(
-          result,
-          testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT)));
-      EXPECT_THAT(
-          result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT))));
+              IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT)));
     }
-  } else {
+  } else if (param.has_two_parents) {
     EXPECT_THAT(
         result,
         testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
             IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT))));
     EXPECT_THAT(
         result,
-        testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT))));
+        testing::HasSubstr(l10n_util::GetStringUTF8(
+            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT)));
     EXPECT_THAT(
         result,
         testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
             IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT))));
+    EXPECT_THAT(
+        result,
+        testing::HasSubstr(l10n_util::GetStringUTF8(
+            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT)));
+  } else {
+    EXPECT_THAT(
+        result,
+        testing::HasSubstr(l10n_util::GetStringUTF8(
+            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT)));
+    EXPECT_THAT(
+        result,
+        testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
+            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT))));
+    EXPECT_THAT(
+        result,
+        testing::HasSubstr(l10n_util::GetStringUTF8(
+            IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT)));
     EXPECT_THAT(
         result,
         testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
@@ -233,32 +194,32 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
 }
 
 BuildHtmlTestParameter build_html_test_parameter[] = {
-    {true, "url1", "url2", "custodian", "custodian_email", "", "", true, false,
-     DEFAULT, false, false},
+    {true, "url1", "url2", "custodian", "custodian_email", "", "", DEFAULT,
+     false, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true, false},
+     "custodian2_email", DEFAULT, true, false},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true, false},
+     "custodian2_email", DEFAULT, true, false},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, true, DEFAULT, true, false},
+     "custodian2_email", DEFAULT, true, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, false, DEFAULT, true, false},
+     "custodian2_email", DEFAULT, true, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, ASYNC_CHECKER, true, false},
+     "custodian2_email", ASYNC_CHECKER, true, false},
 
     // Test cases with local web approvals feature enabled
-    {true, "url1", "url2", "custodian", "custodian_email", "", "", true, false,
-     DEFAULT, false, true},
+    {true, "url1", "url2", "custodian", "custodian_email", "", "", DEFAULT,
+     false, true},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true, true},
+     "custodian2_email", DEFAULT, true, true},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true, true},
+     "custodian2_email", DEFAULT, true, true},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, true, DEFAULT, true, true},
+     "custodian2_email", DEFAULT, true, true},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, false, DEFAULT, true, true},
+     "custodian2_email", DEFAULT, true, true},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, ASYNC_CHECKER, true, true},
+     "custodian2_email", ASYNC_CHECKER, true, true},
 };
 
 INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,

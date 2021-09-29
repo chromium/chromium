@@ -185,10 +185,6 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
     supervised_user_error_page::FilteringBehaviorReason reason,
     bool already_sent_request,
     bool is_main_frame) {
-  bool is_child_account = profile->IsChild();
-
-  bool is_deprecated = !is_child_account;
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
 
@@ -208,8 +204,7 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
 
   return supervised_user_error_page::BuildHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
-      custodian_email, second_custodian, second_custodian_email,
-      is_child_account, is_deprecated, reason,
+      custodian_email, second_custodian, second_custodian_email, reason,
       g_browser_process->GetApplicationLocale(), already_sent_request,
       is_main_frame);
 }
@@ -245,10 +240,6 @@ void SupervisedUserInterstitial::RequestPermission(
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {
-  // TODO(yilkal): Remove checking IsChild since legacy supervised users are
-  // deprecated.
-  bool is_child_account = profile_->IsChild();
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   std::string second_custodian =
@@ -256,11 +247,10 @@ void SupervisedUserInterstitial::ShowFeedback() {
 
   std::u16string reason =
       l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
-          reason_, is_child_account, second_custodian.empty()));
+          reason_, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
 #if defined(OS_ANDROID)
-  DCHECK(is_child_account);
   ReportChildAccountFeedback(web_contents_, message, url_);
 #else
   chrome::ShowFeedbackPage(
