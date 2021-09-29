@@ -28,9 +28,9 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   request.request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  request.request_body->AppendFileRange(
-      base::FilePath::FromUTF8Unsafe(kFilePath), 0,
-      std::numeric_limits<uint64_t>::max(), base::Time());
+  request.request_body->AppendFileRange(base::FilePath::FromASCII(kFilePath), 0,
+                                        std::numeric_limits<uint64_t>::max(),
+                                        base::Time());
   WebRequestInfo info(
       WebRequestInfoInitParams(0, 0, 0, nullptr, 0, request, false, false,
                                false, absl::nullopt, ukm::kInvalidSourceIdObj));

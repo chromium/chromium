@@ -359,7 +359,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   bool RegisterServiceWorkerForExtension(
       const std::string& service_worker_script) {
     const char kServiceWorkerPath[] = "service_worker.js";
-    dir_.WriteFile(base::FilePath::FromUTF8Unsafe(kServiceWorkerPath).value(),
+    dir_.WriteFile(base::FilePath::FromASCII(kServiceWorkerPath).value(),
                    service_worker_script);
 
     const char kRegistrationScript[] = R"(

@@ -406,6 +406,9 @@ class BASE_EXPORT FilePath {
   // Similar to AsUTF8Unsafe, but returns UTF-16 instead.
   std::u16string AsUTF16Unsafe() const;
 
+  // Returns a FilePath object from a path name in ASCII.
+  static FilePath FromASCII(StringPiece ascii);
+
   // Returns a FilePath object from a path name in UTF-8. This function
   // should only be used for cases where you are sure that the input
   // string is UTF-8.

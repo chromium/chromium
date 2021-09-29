@@ -512,8 +512,7 @@ TEST_F(ContentVerifyJobUnittest, DifferentSizedFiles) {
       {"8191.js", 8191}, {"8193.js", 8193},
   };
   for (const auto& file_to_test : kFilesToTest) {
-    base::FilePath resource_path =
-        base::FilePath::FromUTF8Unsafe(file_to_test.name);
+    base::FilePath resource_path = base::FilePath::FromASCII(file_to_test.name);
     std::string contents;
     base::ReadFileToString(unzipped_path.AppendASCII(file_to_test.name),
                            &contents);

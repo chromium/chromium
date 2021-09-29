@@ -639,6 +639,12 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
+FilePath FilePath::FromASCII(StringPiece ascii) {
+  DCHECK(base::IsStringASCII(ascii));
+  return FilePath(ASCIIToWide(ascii));
+}
+
+// static
 FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
   return FilePath(UTF8ToWide(utf8));
 }
@@ -677,6 +683,12 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 #else
   return WideToUTF16(SysNativeMBToWide(value()));
 #endif
+}
+
+// static
+FilePath FilePath::FromASCII(StringPiece ascii) {
+  DCHECK(base::IsStringASCII(ascii));
+  return FilePath(ascii);
 }
 
 // static

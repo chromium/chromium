@@ -1179,6 +1179,19 @@ TEST_F(FilePathTest, ReferencesParent) {
   }
 }
 
+TEST_F(FilePathTest, FromASCII) {
+  const struct UTF8TestData cases[] = {
+      {FPL("foo.txt"), "foo.txt"},
+      {FPL("!#$%&'()"), "!#$%&'()"},
+  };
+
+  for (size_t i = 0; i < base::size(cases); ++i) {
+    FilePath from_ascii = FilePath::FromASCII(cases[i].utf8);
+    EXPECT_EQ(FilePath::StringType(cases[i].native), from_ascii.value())
+        << "i: " << i << ", input: " << cases[i].utf8;
+  }
+}
+
 TEST_F(FilePathTest, FromUTF8Unsafe_And_AsUTF8Unsafe) {
   const struct UTF8TestData cases[] = {
     { FPL("foo.txt"), "foo.txt" },

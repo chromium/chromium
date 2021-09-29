@@ -232,8 +232,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFile_ExternalPath) {
   const std::string file_contents = "hello world!";
   const base::FilePath test_file = CreateTestFile(file_contents);
   const base::FilePath virtual_path =
-      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-          .Append(test_file.BaseName());
+      base::FilePath::FromASCII(kTestMountPoint).Append(test_file.BaseName());
 
   ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
   selected_file.virtual_path = virtual_path;
@@ -1126,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   // The last picked directory exists.
   PathInfo good_dir_info;
-  good_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint);
+  good_dir_info.path = base::FilePath::FromASCII(kTestMountPoint);
   good_dir_info.type = PathType::kExternal;
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
@@ -1212,8 +1211,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   // The last picked directory no longer exists, so resort to showing the
   // default directory, then set the test_file's dir as last picked.
   PathInfo bad_dir_info;
-  bad_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-                          .AppendASCII("nonexistent");
+  bad_dir_info.path =
+      base::FilePath::FromASCII(kTestMountPoint).AppendASCII("nonexistent");
   base::FilePath default_dir;
   default_dir = temp_dir_.GetPath().AppendASCII("default");
 
@@ -1440,8 +1439,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        StartIn_FileHandle_External) {
   const base::FilePath test_file = CreateTestFile("");
   const base::FilePath virtual_path =
-      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-          .Append(test_file.BaseName());
+      base::FilePath::FromASCII(kTestMountPoint).Append(test_file.BaseName());
 
   ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
   selected_file.virtual_path = virtual_path;

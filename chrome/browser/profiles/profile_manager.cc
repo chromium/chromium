@@ -488,7 +488,7 @@ base::FilePath GetLastUsedProfileBaseName() {
     return last_used_profile_base_name;
   }
 
-  return base::FilePath::FromUTF8Unsafe(chrome::kInitialProfile);
+  return base::FilePath::FromASCII(chrome::kInitialProfile);
 }
 
 }  // namespace
