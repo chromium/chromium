@@ -17,6 +17,9 @@ constexpr int kMessageCenterSidePadding = 8;
 constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;
 
+constexpr int kNotificationBarVerticalPadding = 8;
+constexpr int kNotificationBarHorizontalPadding = 16;
+
 constexpr gfx::Insets kAppIconViewExpandedPadding(2, 0, 0, 0);
 constexpr gfx::Insets kAppIconViewCollapsedPadding(6, 0, 0, 0);
 

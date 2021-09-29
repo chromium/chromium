@@ -82,6 +82,8 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       scroller_(new views::ScrollView()),
       message_list_view_(new UnifiedMessageListView(this, model)),
       last_scroll_position_from_bottom_(0),
+      is_notifications_refresh_enabled_(
+          features::IsNotificationsRefreshEnabled()),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {}
 
@@ -216,9 +218,13 @@ void UnifiedMessageCenterView::Layout() {
   if (notification_bar_->GetVisible()) {
     gfx::Rect counter_bounds(GetContentsBounds());
 
+    int notification_bar_expanded_height = kStackedNotificationBarHeight;
+    if (is_notifications_refresh_enabled_)
+      notification_bar_expanded_height += 2 * kNotificationBarVerticalPadding;
+
     int notification_bar_height = collapsed_
                                       ? kStackedNotificationBarCollapsedHeight
-                                      : kStackedNotificationBarHeight;
+                                      : notification_bar_expanded_height;
     int notification_bar_offset = 0;
     if (animation_state_ ==
         UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR)
@@ -228,9 +234,14 @@ void UnifiedMessageCenterView::Layout() {
     counter_bounds.set_y(counter_bounds.y() - notification_bar_offset);
     notification_bar_->SetBoundsRect(counter_bounds);
 
+    int scroller_bottom_inset = 0;
+    if (is_notifications_refresh_enabled_)
+      scroller_bottom_inset += kMessageCenterBottomPadding;
+
     gfx::Rect scroller_bounds(GetContentsBounds());
-    scroller_bounds.Inset(gfx::Insets(
-        notification_bar_height - notification_bar_offset, 0, 0, 0));
+    scroller_bounds.Inset(
+        gfx::Insets(notification_bar_height - notification_bar_offset, 0,
+                    scroller_bottom_inset, 0));
     scroller_->SetBoundsRect(scroller_bounds);
   } else {
     scroller_->SetBoundsRect(GetContentsBounds());
@@ -244,6 +255,8 @@ gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
 
   if (notification_bar_->GetVisible()) {
     int bar_height = kStackedNotificationBarHeight;
+    if (is_notifications_refresh_enabled_)
+      bar_height += 2 * kNotificationBarVerticalPadding;
     if (animation_state_ ==
         UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR)
       bar_height -= GetAnimationValue() * bar_height;
@@ -261,7 +274,7 @@ gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
     preferred_size.set_height(kStackedNotificationBarCollapsedHeight);
   }
 
-  if (features::IsNotificationsRefreshEnabled())
+  if (is_notifications_refresh_enabled_)
     preferred_size.set_height(preferred_size.height() +
                               kMessageCenterBottomPadding);
 

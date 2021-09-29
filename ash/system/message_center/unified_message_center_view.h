@@ -181,6 +181,8 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;
 
+  const bool is_notifications_refresh_enabled_;
+
   // The height available to the message center view. This is the remaining
   // height of the system tray excluding the system menu (which can be expanded
   // or collapsed).

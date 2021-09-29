@@ -550,6 +550,9 @@ void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>

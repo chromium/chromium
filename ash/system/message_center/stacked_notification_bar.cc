@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -30,6 +32,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -45,7 +48,6 @@ class StackingBarLabelButton : public views::LabelButton {
                          UnifiedMessageCenterView* message_center_view)
       : views::LabelButton(std::move(callback), text),
         message_center_view_(message_center_view) {
-    SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetBorder(views::CreateEmptyBorder(gfx::Insets()));
     label()->SetSubpixelRenderingEnabled(false);
@@ -54,32 +56,39 @@ class StackingBarLabelButton : public views::LabelButton {
     TrayPopupUtils::ConfigureTrayPopupButton(
         this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true,
         /*highlight_on_focus=*/true);
-    // SetCreateHighlightCallback and SetCreateRippleCallback are
-    // explicitly called after ConfigureTrayPopupButton as
-    // ConfigureTrayPopupButton configures the InkDrop and these callbacks
-    // override that behavior.
-    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-        [](Button* host) {
-          auto highlight = std::make_unique<views::InkDropHighlight>(
-              gfx::SizeF(host->size()), message_center_style::kInkRippleColor);
-          highlight->set_visible_opacity(
-              message_center_style::kInkRippleOpacity);
-          return highlight;
-        },
-        this));
-    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
-          return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(),
-              views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-              message_center_style::kInkRippleColor,
-              message_center_style::kInkRippleOpacity);
-        },
-        this));
+
     if (features::IsNotificationsRefreshEnabled()) {
       // Need a textured layer here since the parent uses a solid color layer.
       SetPaintToLayer();
       layer()->SetFillsBoundsOpaquely(false);
+
+      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                    kTrayItemSize / 2.f);
+    } else {
+      SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
+      // SetCreateHighlightCallback and SetCreateRippleCallback are
+      // explicitly called after ConfigureTrayPopupButton as
+      // ConfigureTrayPopupButton configures the InkDrop and these callbacks
+      // override that behavior.
+      views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+          [](Button* host) {
+            auto highlight = std::make_unique<views::InkDropHighlight>(
+                gfx::SizeF(host->size()),
+                message_center_style::kInkRippleColor);
+            highlight->set_visible_opacity(
+                message_center_style::kInkRippleOpacity);
+            return highlight;
+          },
+          this));
+      views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+          [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
+            return std::make_unique<views::FloodFillInkDropRipple>(
+                host->size(),
+                views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+                message_center_style::kInkRippleColor,
+                message_center_style::kInkRippleOpacity);
+          },
+          this));
     }
   }
 
@@ -110,6 +119,16 @@ class StackingBarLabelButton : public views::LabelButton {
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
     views::LabelButton::PaintButtonContents(canvas);
+  }
+
+  void OnThemeChanged() override {
+    views::LabelButton::OnThemeChanged();
+    if (features::IsNotificationsRefreshEnabled()) {
+      views::FocusRing::Get(this)->SetColor(
+          AshColorProvider::Get()->GetControlsLayerColor(
+              AshColorProvider::ControlsLayerType::kFocusRingColor));
+      element_style::DecorateIconlessFloatingPillButton(this);
+    }
   }
 
  private:
@@ -289,7 +308,11 @@ StackedNotificationBar::StackedNotificationBar(
           message_center_view))) {
   SetVisible(false);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
+      views::BoxLayout::Orientation::kHorizontal,
+      features::IsNotificationsRefreshEnabled()
+          ? gfx::Insets(kNotificationBarVerticalPadding,
+                        kNotificationBarHorizontalPadding)
+          : gfx::Insets()));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
