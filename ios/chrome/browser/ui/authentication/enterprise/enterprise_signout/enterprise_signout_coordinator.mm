@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_signout/enterprise_signout_coordinator.h"
 
+#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -18,6 +19,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+constexpr CGFloat kHalfSheetCornerRadius = 20;
+}  // namespace
 
 @interface EnterpriseSignoutCoordinator () <
     ConfirmationAlertActionHandler,
@@ -57,10 +62,22 @@
 
 - (void)start {
   [super start];
+
   self.viewController = [[EnterpriseSignoutViewController alloc] init];
-  [self.viewController setModalPresentationStyle:UIModalPresentationFormSheet];
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
+
+  if (@available(iOS 15, *)) {
+    self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    UISheetPresentationController* presentationController =
+        base::mac::ObjCCast<UISheetPresentationController>(
+            self.viewController.presentationController);
+    presentationController.detents =
+        @[ UISheetPresentationControllerDetent.mediumDetent ];
+    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+  } else {
+    self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  }
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

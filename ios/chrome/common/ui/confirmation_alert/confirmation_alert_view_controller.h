@@ -61,9 +61,17 @@ extern NSString* const
 // The image. Must be set before the view is loaded.
 @property(nonatomic, strong) UIImage* image;
 
+// Sets the custom spacing between the top and the image, if there is no
+// toolbar. Must be set before the view is loaded.
+@property(nonatomic, assign) CGFloat customSpacingBeforeImageIfNoToolbar;
+
 // Sets the custom spacing between the image and the title / subtitle. Must be
 // set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingAfterImage;
+
+// When YES, the image, title and subtitle are set to high hugging priority,
+// leaving spaces for the customSpacing defined.
+@property(nonatomic) BOOL tighterLayout;
 
 // The accessibility label for the image view. If nil, the image won't be
 // accessible.

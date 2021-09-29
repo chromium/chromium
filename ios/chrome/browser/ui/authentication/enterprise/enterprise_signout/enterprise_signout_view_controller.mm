@@ -17,7 +17,7 @@
 #pragma mark - Public
 
 - (void)loadView {
-  self.image = [UIImage imageNamed:@"enterprise_icon_blue_large"];
+  self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
   self.customSpacingAfterImage = 30;
 
@@ -33,6 +33,14 @@
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
   self.pointerInteractionEnabled = YES;
+
+  if (@available(iOS 15, *)) {
+    self.titleTextStyle = UIFontTextStyleTitle2;
+    // Icon already contains some spacing for the shadow.
+    self.customSpacingBeforeImageIfNoToolbar = 24;
+    self.customSpacingAfterImage = 1;
+    self.tighterLayout = YES;
+  }
 
   [super loadView];
 }

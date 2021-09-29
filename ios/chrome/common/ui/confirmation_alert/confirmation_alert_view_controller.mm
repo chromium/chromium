@@ -89,8 +89,10 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-  self.topToolbar = [self createTopToolbar];
-  [self.view addSubview:self.topToolbar];
+  if (self.hasTopToolbar) {
+    self.topToolbar = [self createTopToolbar];
+    [self.view addSubview:self.topToolbar];
+  }
 
   self.imageView = [self createImageView];
   UILabel* title = [self createTitleLabel];
@@ -98,6 +100,12 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 
   NSArray* stackSubviews = @[ self.imageView, title, subtitle ];
   self.stackView = [self createStackViewWithArrangedSubviews:stackSubviews];
+  if (self.tighterLayout) {
+    [title setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                             forAxis:UILayoutConstraintAxisVertical];
+    [subtitle setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                forAxis:UILayoutConstraintAxisVertical];
+  }
 
   UIScrollView* scrollView = [self createScrollView];
   [scrollView addSubview:self.stackView];
@@ -106,10 +114,12 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   self.view.preservesSuperviewLayoutMargins = YES;
   UILayoutGuide* margins = self.view.layoutMarginsGuide;
 
-  // Toolbar constraints to the top.
-  AddSameConstraintsToSides(
-      self.topToolbar, self.view.safeAreaLayoutGuide,
-      LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
+  if (self.hasTopToolbar) {
+    // Toolbar constraints to the top.
+    AddSameConstraintsToSides(
+        self.topToolbar, self.view.safeAreaLayoutGuide,
+        LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
+  }
 
   // Scroll View constraints to the height of its content. Can be overridden.
   NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
@@ -211,10 +221,25 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                                                   .bottomAnchor];
   }
 
-  [NSLayoutConstraint activateConstraints:@[
-    [scrollView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.topToolbar.bottomAnchor],
-  ]];
+  if (self.hasTopToolbar) {
+    if (self.tighterLayout) {
+      [NSLayoutConstraint activateConstraints:@[
+        [scrollView.topAnchor
+            constraintEqualToAnchor:self.topToolbar.bottomAnchor],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [scrollView.topAnchor
+            constraintGreaterThanOrEqualToAnchor:self.topToolbar.bottomAnchor],
+      ]];
+    }
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [scrollView.topAnchor
+          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                         constant:self.customSpacingBeforeImageIfNoToolbar],
+    ]];
+  }
 
   if (!self.imageHasFixedSize) {
     // Constrain the image to the scroll view size and its aspect ratio.
@@ -233,6 +258,11 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
           constraintEqualToAnchor:self.imageView.heightAnchor
                        multiplier:imageAspectRatio],
     ]];
+  } else if (self.tighterLayout) {
+    [self.imageView setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [self.imageView setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
   }
 }
 
@@ -505,6 +535,10 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   subtitle.accessibilityIdentifier =
       kConfirmationAlertSubtitleAccessibilityIdentifier;
   return subtitle;
+}
+
+- (BOOL)hasTopToolbar {
+  return self.helpButtonAvailable || self.showDismissBarButton;
 }
 
 // Helper to create the scroll view.
