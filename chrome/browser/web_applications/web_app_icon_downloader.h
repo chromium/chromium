@@ -83,8 +83,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
                           const std::vector<gfx::Size>& original_bitmap_sizes);
 
   // content::WebContentsObserver overrides:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
