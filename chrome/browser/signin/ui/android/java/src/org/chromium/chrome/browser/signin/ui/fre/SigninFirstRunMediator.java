@@ -116,7 +116,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mListener.addAccount();
             return;
         } else if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
-            mListener.advanceToNextPage();
+            mListener.acceptTermsOfService();
             return;
         }
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
@@ -124,7 +124,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            mListener.advanceToNextPage();
+            mListener.acceptTermsOfService();
             return;
         }
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -134,7 +134,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        mListener.advanceToNextPage();
+                        mListener.acceptTermsOfService();
                     }
 
                     @Override
@@ -155,11 +155,19 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN, mListener::advanceToNextPage,
+                    .signOut(SignoutReason.ABORT_SIGNIN, this::dismissWithoutSignin,
                             /* forceWipeUserData= */ false);
         } else {
-            mListener.advanceToNextPage();
+            dismissWithoutSignin();
         }
+    }
+
+    /**
+     * Dismisses the sync consent screen if users do not sign in on welcome screen.
+     */
+    private void dismissWithoutSignin() {
+        mListener.acceptTermsOfService();
+        mListener.advanceToNextPage();
     }
 
     private void setSelectedAccountName(String accountName) {

@@ -23,7 +23,10 @@ public class SigninFirstRunCoordinator {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
 
-        /** Notifies when the user clicked the dismiss button. */
+        /** Notifies when the user accepts the terms of service. */
+        void acceptTermsOfService();
+
+        /** Notifies when the user wants to advance to the next page. */
         void advanceToNextPage();
     }
 

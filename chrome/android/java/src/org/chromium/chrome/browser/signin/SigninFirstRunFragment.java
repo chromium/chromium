@@ -129,14 +129,17 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Listener}. */
     @Override
-    public void advanceToNextPage() {
+    public void acceptTermsOfService() {
         getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
     }
 
-    /**
-     * Implements {@link
-     * org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator.Listener}
-     */
+    /** Implements {@link SigninFirstRunCoordinator.Listener}. */
+    @Override
+    public void advanceToNextPage() {
+        getPageDelegate().advanceToNextPage();
+    }
+
+    /** Implements {@link FreUMADialogCoordinator.Listener} */
     @Override
     public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
         mAllowCrashUpload = allowCrashUpload;
