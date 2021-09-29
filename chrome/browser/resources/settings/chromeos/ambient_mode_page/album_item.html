@@ -136,6 +136,9 @@
 <div id="albumContainer" class$="[[computeClass_(topicSource)]]">
   <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
       aria-hidden="true">
+    <iron-media-query query="(prefers-color-scheme: dark)"
+        query-matches="{{isDarkModeActive_}}">
+    </iron-media-query>
     <!-- Only shows the images and icon when the URLs are successfully
          fetched -->
     <template is="dom-if" if="[[album.recentHighlightsUrls]]">
@@ -157,7 +160,7 @@
             hidden="[[!album.recentHighlightsUrls.3]]">
         </img>
       </div>
-      <iron-icon icon="os-settings:ic-checked-filled"
+      <iron-icon icon="[[computeCheckedIcon_(isDarkModeActive_)]]"
           class$="check [[computeClass_(topicSource)]]"
           hidden="[[!album.checked]]">
       </iron-icon>
@@ -166,7 +169,7 @@
       <img id="image" class$="[[computeClass_(topicSource)]]" actionable
           src="[[album.url]]" on-click="onImageClick_">
       </img>
-      <iron-icon icon="os-settings:ic-checked-filled"
+      <iron-icon icon="[[computeCheckedIcon_(isDarkModeActive_)]]"
           class$="check [[computeClass_(topicSource)]]"
           hidden="[[!album.checked]]">
       </iron-icon>

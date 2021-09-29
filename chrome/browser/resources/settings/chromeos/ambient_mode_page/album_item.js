@@ -7,6 +7,7 @@
  */
 
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import './text_with_tooltip.js';
@@ -57,6 +58,15 @@ Polymer({
       type: Boolean,
       observer: 'tooltipVisibilityChanged_',
     },
+
+    /**
+     * Whether dark mode is the active preferred color scheme.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {keydown: 'onKeydown_'},
@@ -69,6 +79,15 @@ Polymer({
     return this.topicSource === AmbientModeTopicSource.GOOGLE_PHOTOS ?
         'personal-album' :
         'art-album';
+  },
+
+  /**
+   * @return {string} Checked icon for album.
+   * @private
+   */
+  computeCheckedIcon_() {
+    return this.isDarkModeActive_ ? 'os-settings:ic-checked-filled-dark' :
+                                    'os-settings:ic-checked-filled';
   },
 
   /**
