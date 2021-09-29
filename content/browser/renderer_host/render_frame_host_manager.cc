@@ -3382,8 +3382,8 @@ void RenderFrameHostManager::CommitPending(
 
   // Notify that we've swapped RenderFrameHosts. We do this before shutting down
   // the RFH so that we can clean up RendererResources related to the RFH first.
-  delegate_->NotifySwappedFromRenderManager(
-      old_render_frame_host.get(), render_frame_host_.get(), is_main_frame);
+  delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),
+                                            render_frame_host_.get());
 
   // Make the new view show the contents of old view until it has something
   // useful to show.

@@ -472,7 +472,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // This is only for subframes, as the main frame case is taken care of by
   // WebContentsImpl::Init.
   manager_delegate_->NotifySwappedFromRenderManager(
-      nullptr, added_node->current_frame_host(), false /* is_main_frame */);
+      nullptr, added_node->current_frame_host());
   return added_node;
 }
 

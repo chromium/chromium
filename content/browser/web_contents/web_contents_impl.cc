@@ -2921,8 +2921,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   // main RenderFrameHost. It must be done here for main frames, since the
   // NotifySwappedFromRenderManager expects view_ to already be created and that
   // happens after RenderFrameHostManager::Init.
-  NotifySwappedFromRenderManager(
-      nullptr, GetRenderManager()->current_frame_host(), true);
+  NotifySwappedFromRenderManager(nullptr,
+                                 GetRenderManager()->current_frame_host());
 }
 
 void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
@@ -6452,8 +6452,7 @@ void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
 }
 
 void WebContentsImpl::NotifyFrameSwapped(RenderFrameHostImpl* old_frame,
-                                         RenderFrameHostImpl* new_frame,
-                                         bool is_main_frame) {
+                                         RenderFrameHostImpl* new_frame) {
   TRACE_EVENT2("content", "WebContentsImpl::NotifyFrameSwapped", "old_frame",
                old_frame, "new_frame", new_frame);
 #if defined(OS_ANDROID)
@@ -7727,8 +7726,7 @@ void WebContentsImpl::CancelModalDialogsForRenderManager() {
 
 void WebContentsImpl::NotifySwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
-    RenderFrameHostImpl* new_frame,
-    bool is_main_frame) {
+    RenderFrameHostImpl* new_frame) {
   TRACE_EVENT2("content", "WebContentsImpl::NotifySwappedFromRenderManager",
                "old_render_frame_host", old_frame, "new_render_frame_host",
                new_frame);
@@ -7770,7 +7768,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
     NotifyPrimaryMainFrameProcessIsAlive();
   }
 
-  NotifyFrameSwapped(old_frame, new_frame, is_main_frame);
+  NotifyFrameSwapped(old_frame, new_frame);
 }
 
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(

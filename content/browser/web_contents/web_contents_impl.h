@@ -970,8 +970,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool* proceed_to_fire_unload) override;
   void CancelModalDialogsForRenderManager() override;
   void NotifySwappedFromRenderManager(RenderFrameHostImpl* old_frame,
-                                      RenderFrameHostImpl* new_frame,
-                                      bool is_main_frame) override;
+                                      RenderFrameHostImpl* new_frame) override;
   void NotifyMainFrameSwappedFromRenderManager(
       RenderFrameHostImpl* old_frame,
       RenderFrameHostImpl* new_frame) override;
@@ -1666,8 +1665,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Helper functions for sending notifications.
   void NotifyViewSwapped(RenderViewHost* old_view, RenderViewHost* new_view);
   void NotifyFrameSwapped(RenderFrameHostImpl* old_frame,
-                          RenderFrameHostImpl* new_frame,
-                          bool is_main_frame);
+                          RenderFrameHostImpl* new_frame);
 
   // TODO(creis): This should take in a FrameTreeNode to know which node's
   // render manager to return.  For now, we just return the root's.

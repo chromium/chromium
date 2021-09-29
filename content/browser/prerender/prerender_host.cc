@@ -125,8 +125,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
         /*old_frame=*/nullptr,
-        frame_tree_->root()->render_manager()->current_frame_host(),
-        /*is_main_frame=*/true);
+        frame_tree_->root()->render_manager()->current_frame_host());
   }
 
   ~PageHolder() override {
