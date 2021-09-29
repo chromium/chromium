@@ -6792,7 +6792,8 @@ void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
     CreateFencedFrameCallback callback) {
-  fenced_frames_.push_back(std::make_unique<FencedFrame>(*this));
+  fenced_frames_.push_back(
+      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef()));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   fenced_frame->Bind(std::move(pending_receiver));
 

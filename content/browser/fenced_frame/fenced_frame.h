@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/safe_ref.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
@@ -31,7 +32,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
                                    public FrameTree::Delegate,
                                    public FrameTreeNode::Observer {
  public:
-  explicit FencedFrame(RenderFrameHostImpl& owner_render_frame_host);
+  explicit FencedFrame(
+      base::SafeRef<RenderFrameHostImpl> owner_render_frame_host);
   ~FencedFrame() override;
 
   void Bind(mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
@@ -83,8 +85,12 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   WebContentsImpl* const web_contents_;
 
   // This is the RenderFrameHostImpl that owns the <fencedframe> element in the
-  // renderer.
-  RenderFrameHostImpl& owner_render_frame_host_;
+  // renderer, as such this object never outlives the RenderFrameHostImpl (and
+  // SafeRef will crash safely in the case of a bug). The FencedFrame may be
+  // detached and destroyed before the `owner_render_frame_host_` if removed
+  // from the DOM by the renderer. Otherwise, it will be detached and destroyed
+  // with the current document in the ancestor `owner_render_frame_host_`.
+  base::SafeRef<RenderFrameHostImpl> owner_render_frame_host_;
 
   // The FrameTreeNode in the outer FrameTree that represents the inner fenced
   // frame FrameTree. It is a "dummy" child FrameTreeNode that `this` is

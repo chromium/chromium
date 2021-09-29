@@ -10,9 +10,10 @@
 
 namespace content {
 
-FencedFrame::FencedFrame(RenderFrameHostImpl& owner_render_frame_host)
+FencedFrame::FencedFrame(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host)
     : web_contents_(static_cast<WebContentsImpl*>(
-          WebContents::FromRenderFrameHost(&owner_render_frame_host))),
+          WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
       frame_tree_(std::make_unique<FrameTree>(
           web_contents_->GetBrowserContext(),
@@ -67,12 +68,12 @@ void FencedFrame::Navigate(const GURL& url) {
   // the navigation even though this wouldn't be reflected here. See that bug
   // for more discussion and plans for an eventual resolution.
   const blink::LocalFrameToken initiator_frame_token =
-      owner_render_frame_host_.GetFrameToken();
+      owner_render_frame_host_->GetFrameToken();
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), url, &initiator_frame_token,
-      owner_render_frame_host_.GetProcess()->GetID(),
-      owner_render_frame_host_.GetLastCommittedOrigin(),
-      owner_render_frame_host_.GetSiteInstance(), content::Referrer(),
+      owner_render_frame_host_->GetProcess()->GetID(),
+      owner_render_frame_host_->GetLastCommittedOrigin(),
+      owner_render_frame_host_->GetSiteInstance(), content::Referrer(),
       ui::PAGE_TRANSITION_LINK,
       /*should_replace_current_entry=*/false, download_policy, "GET",
       /*post_body=*/nullptr, /*extra_headers=*/"",
@@ -103,7 +104,7 @@ RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
 void FencedFrame::OnFrameTreeNodeDestroyed(
     FrameTreeNode* outer_delegate_frame_tree_node) {
   DCHECK_EQ(outer_delegate_frame_tree_node_, outer_delegate_frame_tree_node);
-  owner_render_frame_host_.DestroyFencedFrame(*this);
+  owner_render_frame_host_->DestroyFencedFrame(*this);
   // Don't use `this` after this point, as it is destroyed.
 }
 
@@ -112,10 +113,10 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   DCHECK(!outer_delegate_frame_tree_node_);
 
   outer_delegate_frame_tree_node_ =
-      owner_render_frame_host_.frame_tree()->AddFrame(
-          &owner_render_frame_host_,
-          owner_render_frame_host_.GetProcess()->GetID(),
-          owner_render_frame_host_.GetProcess()->GetNextRoutingID(),
+      owner_render_frame_host_->frame_tree()->AddFrame(
+          &*owner_render_frame_host_,
+          owner_render_frame_host_->GetProcess()->GetID(),
+          owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
           /*frame_remote=*/mojo::NullAssociatedRemote(),
           mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
               .InitWithNewPipeAndPassReceiver(),
@@ -140,7 +141,7 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   FrameTreeNode* inner_root = frame_tree_->root();
   proxy_to_inner_main_frame_ =
       inner_root->render_manager()->CreateOuterDelegateProxy(
-          owner_render_frame_host_.GetSiteInstance());
+          owner_render_frame_host_->GetSiteInstance());
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 }

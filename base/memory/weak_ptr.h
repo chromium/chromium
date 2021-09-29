@@ -83,6 +83,8 @@
 
 namespace base {
 
+template <typename T>
+class SafeRef;
 template <typename T> class SupportsWeakPtr;
 template <typename T> class WeakPtr;
 
@@ -207,6 +209,11 @@ class SupportsWeakPtrBase {
   }
 };
 
+// Forward declaration from safe_ptr.h.
+template <typename T>
+SafeRef<T> MakeSafeRefFromWeakPtrInternals(const internal::WeakReference& ref,
+                                           T* ptr);
+
 }  // namespace internal
 
 template <typename T> class WeakPtrFactory;
@@ -282,6 +289,9 @@ class WeakPtr : public internal::WeakPtrBase {
   template <typename U> friend class WeakPtr;
   friend class SupportsWeakPtr<T>;
   friend class WeakPtrFactory<T>;
+  friend SafeRef<T> internal::MakeSafeRefFromWeakPtrInternals(
+      const internal::WeakReference& ref,
+      T* ptr);
 
   WeakPtr(const internal::WeakReference& ref, T* ptr)
       : WeakPtrBase(ref, reinterpret_cast<uintptr_t>(ptr)) {}
@@ -331,6 +341,19 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
   WeakPtr<T> GetWeakPtr() const {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
+  }
+
+  // Returns a smart pointer that is valid until the WeakPtrFactory is
+  // invalidated. Unlike WeakPtr, this smart pointer cannot be null, and cannot
+  // be checked to see if the WeakPtrFactory is invalidated. It's intended to
+  // express that the pointer will not (intentionally) outlive the `T` object it
+  // points to, and to crash safely in the case of a bug instead of causing a
+  // use-after-free. This type provides an alternative to WeakPtr to prevent
+  // use-after-free bugs without also introducing "fuzzy lifetimes" that can be
+  // checked for at runtime.
+  SafeRef<T> GetSafeRef() const {
+    return internal::MakeSafeRefFromWeakPtrInternals(
+        weak_reference_owner_.GetRef(), reinterpret_cast<T*>(ptr_));
   }
 
   // Call this method to invalidate all existing weak pointers.
