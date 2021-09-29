@@ -31,6 +31,12 @@ import shutil
 import subprocess
 import sys
 
+CHROMIUM_ROOT = os.path.join(os.path.dirname(__file__), os.pardir)
+BUILD_DIR = os.path.join(CHROMIUM_ROOT, 'build')
+
+if BUILD_DIR not in sys.path:
+  sys.path.insert(0, BUILD_DIR)
+import gn_helpers
 
 INTERNAL_ERROR_EXIT_CODE = -1000
 
@@ -49,20 +55,17 @@ def _Spawn(args):
   - The command line arguments object.
   """
   index, args, cas_digest, swarming_command = args
+  runner_args = []
   json_file = os.path.join(args.results, '%d.json' % index)
   trigger_args = [
       'tools/luci-go/swarming',
       'trigger',
       '-S',
       'https://chromium-swarm.appspot.com',
-      '-d',
-      'pool=' + args.pool,
       '-digest',
       cas_digest,
       '-dump-json',
       json_file,
-      '-d',
-      'os=' + args.swarming_os,
       '-tag=purpose:user-debug-run-swarmed',
   ]
   if args.target_os == 'fuchsia':
@@ -72,25 +75,33 @@ def _Spawn(args):
         '-d',
         'gpu=none',
     ]
-  if args.arch != 'detect':
+  elif args.target_os == 'android':
+    if args.arch == 'x86':
+      # No x86 Android devices are available in swarming. So assume we want to
+      # run on emulators when building for x86 on Android.
+      args.swarming_os = 'Linux'
+      args.pool = 'chromium.tests.avd'
+      # generic_android28 == Android P emulator. See //tools/android/avd/proto/
+      # for other options.
+      runner_args.append(
+          '--avd-config=../../tools/android/avd/proto/generic_android28.textpb')
+    elif args.device_type is None and args.device_os is None:
+      # The aliases for device type are stored here:
+      # luci/appengine/swarming/ui2/modules/alias.js
+      # for example 'blueline' = 'Pixel 3'
+      trigger_args += ['-d', 'device_type=' + DEFAULT_ANDROID_DEVICE_TYPE]
+  elif args.arch != 'detect':
     trigger_args += [
         '-d',
         'cpu=' + args.arch,
     ]
 
-  # The aliases for device type are stored here:
-  # luci/appengine/swarming/ui2/modules/alias.js
-  # for example 'blueline' = 'Pixel 3'
-  if args.target_os == 'android':
-    if args.device_type is None and args.device_os is None:
-      trigger_args += ['-d', 'device_type=' + DEFAULT_ANDROID_DEVICE_TYPE]
   if args.device_type:
     trigger_args += ['-d', 'device_type=' + args.device_type]
 
   if args.device_os:
     trigger_args += ['-d', 'device_os=' + args.device_os]
 
-  runner_args = []
   if not args.no_test_flags:
     # These flags are recognized by our test runners, but do not work
     # when running custom scripts.
@@ -113,6 +124,8 @@ def _Spawn(args):
     if os.path.isfile(filter_file):
       runner_args.append('--test-launcher-filter-file=../../' + filter_file)
 
+  trigger_args.extend(['-d', 'os=' + args.swarming_os])
+  trigger_args.extend(['-d', 'pool=' + args.pool])
   trigger_args.extend(['--relative-cwd', args.out_dir, '--'])
   trigger_args.extend(swarming_command)
   trigger_args.extend(runner_args)
@@ -203,14 +216,10 @@ def main():
 
   args = parser.parse_args()
 
+  with open(os.path.join(args.out_dir, 'args.gn')) as f:
+    gn_args = gn_helpers.FromGNArgs(f.read())
+
   if args.target_os == 'detect':
-    with open(os.path.join(args.out_dir, 'args.gn')) as f:
-      gn_args = {}
-      for l in f:
-        l = l.split('#')[0].strip()
-        if not l: continue
-        k, v = map(str.strip, l.split('=', 1))
-        gn_args[k] = v
     if 'target_os' in gn_args:
       args.target_os = gn_args['target_os'].strip('"')
     else:
@@ -231,13 +240,16 @@ def main():
     args.target_name = os.path.splitext(args.target_name)[0]
 
   # Determine the CPU architecture of the test binary, if not specified.
-  if args.arch == 'detect' and args.target_os not in ('android', 'mac', 'win'):
-    executable_info = subprocess.check_output(
-        ['file', os.path.join(args.out_dir, args.target_name)])
-    if 'ARM aarch64' in executable_info:
-      args.arch = 'arm64',
-    else:
-      args.arch = 'x86-64'
+  if args.arch == 'detect':
+    if args.target_os not in ('android', 'mac', 'win'):
+      executable_info = subprocess.check_output(
+          ['file', os.path.join(args.out_dir, args.target_name)])
+      if 'ARM aarch64' in executable_info:
+        args.arch = 'arm64',
+      else:
+        args.arch = 'x86-64'
+    elif args.target_os == 'android':
+      args.arch = gn_args.get('target_cpu', 'detect')
 
   mb_cmd = [sys.executable, 'tools/mb/mb.py', 'isolate']
   if not args.build:
