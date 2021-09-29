@@ -22,17 +22,24 @@ import org.chromium.chrome.browser.content_creation.reactions.internal.R;
  * Dialog for the reactions creation.
  */
 public class LightweightReactionsDialog extends DialogFragment {
+    interface ReactionsDialogObserver {
+        void onViewCreated(View view);
+    }
+
+    private View mContentView;
     private Bitmap mScreenshot;
     private LightweightReactionsSceneCoordinator mSceneCoordinator;
-    private View mContentView;
+    private ReactionsDialogObserver mDialogObserver;
 
     /**
      * Initialize the dialog outside of the constructor as fragments require default constructor.
      *
      * @param screenshot A {@link Bitmap} of the screenshot of the page to set as the background.
+     * @param obs A class implementing the {@link ReactionsDialogObserver} interface.
      */
-    void init(Bitmap screenshot) {
+    void init(Bitmap screenshot, ReactionsDialogObserver obs) {
         mScreenshot = screenshot;
+        mDialogObserver = obs;
     }
 
     @NonNull
@@ -45,6 +52,10 @@ public class LightweightReactionsDialog extends DialogFragment {
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         setBackgroundImage();
         builder.setView(mContentView);
+
+        if (mDialogObserver != null) {
+            mDialogObserver.onViewCreated(mContentView);
+        }
 
         return builder.create();
     }

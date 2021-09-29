@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarControlsDelegate;
+import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,9 +19,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 /**
  * Responsible for reactions main UI and its subcomponents.
  */
-public class LightweightReactionsCoordinatorImpl
-        extends BaseScreenshotCoordinator implements LightweightReactionsCoordinator {
+public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinator
+        implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
     private final LightweightReactionsDialog mDialog;
+    private ToolbarCoordinator mToolbarCoordinator;
+
     /**
      * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
      * Lightweight Reactions scene.
@@ -36,15 +41,37 @@ public class LightweightReactionsCoordinatorImpl
         mDialog = new LightweightReactionsDialog();
     }
 
+    /**
+     * Initializes the toolbar after the root dialog view is ready.
+     * @param view The root {@link View} of the dialog.
+     */
+    private void onViewCreated(View view) {
+        mToolbarCoordinator = new ToolbarCoordinator(view, this);
+    }
+
+    // LightweightReactionsCoordinator implementation.
     @Override
     public void showDialog() {
         FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
         mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
 
+    // BaseScreenshotCoordinator implementation.
     @Override
     protected void handleScreenshot() {
-        mDialog.init(mScreenshot);
+        mDialog.init(mScreenshot, this::onViewCreated);
         showDialog();
+    }
+
+    // ToolbarControlsDelegate implementation.
+    @Override
+    public void cancelButtonTapped() {
+        mDialog.dismiss();
+    }
+
+    @Override
+    public void doneButtonTapped() {
+        // For now, simply dismiss the dialog.
+        mDialog.dismiss();
     }
 }
