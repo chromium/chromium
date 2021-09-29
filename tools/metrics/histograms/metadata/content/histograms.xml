@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.Popups.BlockerActions"
-    enum="PopupBlockerAction" expires_after="2021-10-31">
+    enum="PopupBlockerAction" expires_after="M101">
   <owner>csharrison@chromium.org</owner>
   <owner>lazzzis@google.com</owner>
   <owner>src/components/blocked_content/OWNERS</owner>
