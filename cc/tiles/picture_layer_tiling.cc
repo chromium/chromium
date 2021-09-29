@@ -725,34 +725,6 @@ void PictureLayerTiling::VerifyLiveTilesRect() const {
 #endif
 }
 
-bool PictureLayerTiling::IsTileOccluded(const Tile* tile) const {
-  // If this tile is not occluded on this tree, then it is not occluded.
-  if (!IsTileOccludedOnCurrentTree(tile))
-    return false;
-
-  // Otherwise, if this is the pending tree, we're done and the tile is
-  // occluded.
-  if (tree_ == PENDING_TREE)
-    return true;
-
-  // On the active tree however, we need to check if this tile will be
-  // unoccluded upon activation, in which case it has to be considered
-  // unoccluded.
-  const PictureLayerTiling* pending_twin =
-      client_->GetPendingOrActiveTwinTiling(this);
-  if (pending_twin) {
-    // If there's a pending tile in the same position. Or if the pending twin
-    // would have to be creating all tiles, then we don't need to worry about
-    // occlusion on the twin.
-    if (!TilingMatchesTileIndices(pending_twin) ||
-        pending_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index())) {
-      return true;
-    }
-    return pending_twin->IsTileOccludedOnCurrentTree(tile);
-  }
-  return true;
-}
-
 bool PictureLayerTiling::IsTileOccludedOnCurrentTree(const Tile* tile) const {
   if (!current_occlusion_in_layer_space_.HasOcclusion())
     return false;
@@ -804,30 +776,35 @@ bool PictureLayerTiling::ShouldDecodeCheckeredImagesForTile(
 
 void PictureLayerTiling::UpdateRequiredStatesOnTile(Tile* tile) const {
   tile->set_required_for_activation(IsTileRequiredForActivation(
-      tile, [this](const Tile* tile) { return IsTileVisible(tile); }));
+      tile, [this](const Tile* tile) { return IsTileVisible(tile); },
+      IsTileOccluded(tile)));
   tile->set_required_for_draw(IsTileRequiredForDraw(
       tile, [this](const Tile* tile) { return IsTileVisible(tile); }));
 }
 
 PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
     Tile* tile,
-    PriorityRectType priority_rect_type) const {
+    PriorityRectType priority_rect_type,
+    bool is_tile_occluded) const {
   DCHECK(tile);
   DCHECK(
       raster_source()->IntersectsRect(tile->enclosing_layer_rect(), *client_))
       << "Recording rect: "
       << EnclosingLayerRectFromContentsRect(tile->content_rect()).ToString();
 
-  tile->set_required_for_activation(
-      IsTileRequiredForActivation(tile, [priority_rect_type](const Tile*) {
+  tile->set_required_for_activation(IsTileRequiredForActivation(
+      tile,
+      [priority_rect_type](const Tile*) {
         return priority_rect_type == VISIBLE_RECT;
-      }));
+      },
+      is_tile_occluded));
   tile->set_required_for_draw(
       IsTileRequiredForDraw(tile, [priority_rect_type](const Tile*) {
         return priority_rect_type == VISIBLE_RECT;
       }));
 
-  const auto& tile_priority = ComputePriorityForTile(tile, priority_rect_type);
+  const auto& tile_priority =
+      ComputePriorityForTile(tile, priority_rect_type, is_tile_occluded);
   DCHECK((!tile->required_for_activation() && !tile->required_for_draw()) ||
          tile_priority.priority_bin == TilePriority::NOW ||
          !client_->HasValidTilePriorities());
@@ -849,7 +826,7 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
       client_->ScrollInteractionInProgress() &&
       client_->CurrentScrollCheckerboardsDueToNoRecording())
     process_for_images_only = false;
-  return PrioritizedTile(tile, this, tile_priority, IsTileOccluded(tile),
+  return PrioritizedTile(tile, this, tile_priority, is_tile_occluded,
                          process_for_images_only,
                          ShouldDecodeCheckeredImagesForTile(tile));
 }
@@ -859,8 +836,8 @@ PictureLayerTiling::UpdateAndGetAllPrioritizedTilesForTesting() const {
   std::map<const Tile*, PrioritizedTile> result;
   for (const auto& key_tile_pair : tiles_) {
     Tile* tile = key_tile_pair.second.get();
-    PrioritizedTile prioritized_tile =
-        MakePrioritizedTile(tile, ComputePriorityRectTypeForTile(tile));
+    PrioritizedTile prioritized_tile = MakePrioritizedTile(
+        tile, ComputePriorityRectTypeForTile(tile), IsTileOccluded(tile));
     result.insert(std::make_pair(prioritized_tile.tile(), prioritized_tile));
   }
   return result;
@@ -868,7 +845,8 @@ PictureLayerTiling::UpdateAndGetAllPrioritizedTilesForTesting() const {
 
 TilePriority PictureLayerTiling::ComputePriorityForTile(
     const Tile* tile,
-    PriorityRectType priority_rect_type) const {
+    PriorityRectType priority_rect_type,
+    bool is_tile_occluded) const {
   // TODO(vmpstr): See if this can be moved to iterators.
   DCHECK_EQ(ComputePriorityRectTypeForTile(tile), priority_rect_type);
   DCHECK_EQ(TileAt(tile->tiling_i_index(), tile->tiling_j_index()), tile);
@@ -877,8 +855,7 @@ TilePriority PictureLayerTiling::ComputePriorityForTile(
   if (client_->HasValidTilePriorities()) {
     // Occluded tiles are given a lower PriorityBin to ensure they are evicted
     // before non-occluded tiles.
-    priority_bin =
-        IsTileOccluded(tile) ? TilePriority::SOON : TilePriority::NOW;
+    priority_bin = is_tile_occluded ? TilePriority::SOON : TilePriority::NOW;
   } else {
     priority_bin = TilePriority::EVENTUALLY;
   }
@@ -933,8 +910,8 @@ void PictureLayerTiling::GetAllPrioritizedTilesForTracing(
     std::vector<PrioritizedTile>* prioritized_tiles) const {
   for (const auto& tile_pair : tiles_) {
     Tile* tile = tile_pair.second.get();
-    prioritized_tiles->push_back(
-        MakePrioritizedTile(tile, ComputePriorityRectTypeForTile(tile)));
+    prioritized_tiles->push_back(MakePrioritizedTile(
+        tile, ComputePriorityRectTypeForTile(tile), IsTileOccluded(tile)));
   }
 }
 
