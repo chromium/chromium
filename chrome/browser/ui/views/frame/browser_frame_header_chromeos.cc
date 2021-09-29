@@ -176,6 +176,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 }
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
+  SetPaintAsActive(target_widget()->ShouldPaintAsActive());
   UpdateCaptionButtonColors();
   view()->SchedulePaint();
 }
