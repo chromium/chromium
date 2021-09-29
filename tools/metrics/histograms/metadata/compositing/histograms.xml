@@ -463,7 +463,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Compositing.Renderer.LayerSkippedForDrawPropertiesDueToBackface"
-    units="boolean" expires_after="2021-10-25">
+    units="boolean" expires_after="2022-02-01">
   <owner>chrishtr@chromium.org</owner>
   <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -507,7 +507,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Renderer.LayerUpdateSkippedDueToBackface"
-    units="boolean" expires_after="2021-10-25">
+    units="boolean" expires_after="2022-02-01">
   <owner>chrishtr@chromium.org</owner>
   <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
