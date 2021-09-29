@@ -6,7 +6,6 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "base/bind.h"
@@ -645,15 +644,12 @@ class DOMDragEventCounter {
 
 const char kTestPagePath[] = "/drag_and_drop/page.html";
 
-// bool use_cross_site_subframe, double device_scale_factor.
-using TestParam = std::tuple<bool, double>;
-
 }  // namespace
 
 // Note: Tests that require OS events need to be added to
 // ozone-linux.interactive_ui_tests_wayland.filter.
 class DragAndDropBrowserTest : public InProcessBrowserTest,
-                               public testing::WithParamInterface<TestParam> {
+                               public testing::WithParamInterface<bool> {
  public:
   DragAndDropBrowserTest() = default;
 
@@ -679,13 +675,6 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   void CrossTabDrag_Step3(CrossTabDrag_TestState*);
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        "force-device-scale-factor",
-        base::NumberToString(std::get<1>(GetParam())));
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
@@ -700,7 +689,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   bool use_cross_site_subframe() {
     // This is controlled by gtest's test param from INSTANTIATE_TEST_SUITE_P.
-    return std::get<0>(GetParam());
+    return GetParam();
   }
 
   content::RenderFrameHost* GetLeftFrame(
@@ -935,12 +924,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<DragAndDropSimulator> drag_simulator_;
 };
 
-using DragAndDropWithoutScalingBrowserTest = DragAndDropBrowserTest;
-
 // Scenario: drag text from outside the browser and drop to the right frame.
 // Test coverage: dragover, drop DOM events.
-IN_PROC_BROWSER_TEST_P(DragAndDropWithoutScalingBrowserTest,
-                       DropTextFromOutside) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
   std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
   ASSERT_TRUE(NavigateToTestPage("a.com"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
@@ -1176,7 +1162,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 
 // Scenario: starting a drag in left frame
 // Test coverage: dragstart DOM event, dragstart data passed to the OS.
-IN_PROC_BROWSER_TEST_P(DragAndDropWithoutScalingBrowserTest, DragStartInFrame) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
   std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
   ASSERT_TRUE(NavigateToTestPage("a.com"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
@@ -1949,43 +1935,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // of a drag operation, and cross-site drags should be allowed across a
 // navigation.
 
-// Injecting input with scaling works as expected on Chromeos.
-#if defined(OS_CHROMEOS)
-constexpr auto ui_scaling_factors = {1.0, 1.25, 2.0};
-constexpr auto maybe_ui_scaling_factors = {1.0, 1.25, 2.0};
-#elif defined(OS_LINUX)
-// Injecting input with non-1x scaling doesn't work correctly with x11 ozone.
-constexpr auto ui_scaling_factors = {1.0};
-constexpr auto maybe_ui_scaling_factors = {1.0};
-#else
-// Injecting input with non-1x scaling has some slight expectation mismatches
-// (possibly due to rounding) on other platforms.
-constexpr auto ui_scaling_factors = {1.0, 1.25, 2.0};
-constexpr auto maybe_ui_scaling_factors = {1.0};
-#endif
+INSTANTIATE_TEST_SUITE_P(SameSiteSubframe,
+                         DragAndDropBrowserTest,
+                         ::testing::Values(false));
 
-INSTANTIATE_TEST_SUITE_P(
-    SameSiteSubframe,
-    DragAndDropBrowserTest,
-    ::testing::Combine(::testing::Values(false),
-                       ::testing::ValuesIn(ui_scaling_factors)));
-
-INSTANTIATE_TEST_SUITE_P(
-    CrossSiteSubframe,
-    DragAndDropBrowserTest,
-    ::testing::Combine(::testing::Values(true),
-                       ::testing::ValuesIn(ui_scaling_factors)));
-
-INSTANTIATE_TEST_SUITE_P(
-    SameSiteSubframe,
-    DragAndDropWithoutScalingBrowserTest,
-    ::testing::Combine(::testing::Values(false),
-                       ::testing::ValuesIn(maybe_ui_scaling_factors)));
-
-INSTANTIATE_TEST_SUITE_P(
-    CrossSiteSubframe,
-    DragAndDropWithoutScalingBrowserTest,
-    ::testing::Combine(::testing::Values(true),
-                       ::testing::ValuesIn(maybe_ui_scaling_factors)));
+INSTANTIATE_TEST_SUITE_P(CrossSiteSubframe,
+                         DragAndDropBrowserTest,
+                         ::testing::Values(true));
 
 }  // namespace chrome
