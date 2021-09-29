@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_settings.h"
 
 namespace {
 
@@ -58,6 +59,16 @@ bool GetValue(const base::Value& value, gfx::Rect* rect) {
   }
 
   rect->SetRect(x.value(), y.value(), width.value(), height.value());
+  return true;
+}
+
+bool GetValue(const base::Value& value, RegisterOptions* options) {
+  if (!value.is_dict())
+    return false;
+
+  const bool synced = value.FindBoolKey("synced").value_or(false);
+  options->sync_mode = synced ? RegisterOptions::SyncMode::kSync
+                              : RegisterOptions::SyncMode::kDontSync;
   return true;
 }
 
@@ -231,6 +242,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::RecordUserMetricsAction, delegate);
   d->RegisterHandlerWithCallback("sendJsonRequest",
                                  &Delegate::SendJsonRequest, delegate);
+  d->RegisterHandler("registerPreference", &Delegate::RegisterPreference,
+                     delegate);
   d->RegisterHandlerWithCallback("getPreferences",
                                  &Delegate::GetPreferences, delegate);
   d->RegisterHandler("setPreference",

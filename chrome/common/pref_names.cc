@@ -1920,8 +1920,19 @@ const char kDevToolsDiscoverTCPTargetsEnabled[] =
 // A list of strings representing devtools target discovery servers.
 const char kDevToolsTCPDiscoveryConfig[] = "devtools.tcp_discovery_config";
 
-// A dictionary with generic DevTools settings.
+// A dictionary with all unsynced DevTools settings.
 const char kDevToolsPreferences[] = "devtools.preferences";
+
+// Dictionaries with all synced DevTools settings. Depending on whether DevTools
+// settings sync is enabled or not, one or the other dictionary will be used.
+// The "Enabled" dictionary is synced via Chrome Sync with the rest of Chrome
+// settings, while the "Disabled" dictionary won't be synced. This allows
+// DevTools to opt-in of syncing DevTools settings independently from syncing
+// Chrome settings.
+const char kDevToolsSyncedPreferencesSyncEnabled[] =
+    "devtools.synced_preferences_sync_enabled";
+const char kDevToolsSyncedPreferencesSyncDisabled[] =
+    "devtools.synced_preferences_sync_disabled";
 
 #if !defined(OS_ANDROID)
 // Tracks the number of times the dice signin promo has been shown in the user

@@ -9,25 +9,92 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 DevToolsSettings::DevToolsSettings(Profile* profile) : profile_(profile) {}
+DevToolsSettings::~DevToolsSettings() = default;
 
-const base::Value* DevToolsSettings::Get() {
-  return profile_->GetPrefs()->GetDictionary(prefs::kDevToolsPreferences);
+void DevToolsSettings::Register(const std::string& name,
+                                const RegisterOptions& options) {
+  if (options.sync_mode == RegisterOptions::SyncMode::kSync) {
+    synced_setting_names_.insert(name);
+  }
+
+  // Setting might have had a different sync status in the past. Move the
+  // setting to the correct dictionary.
+  PrefService* prefs = profile_->GetPrefs();
+  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
+  // settings sync is enabled.
+  const char* dictionary_to_remove_from =
+      options.sync_mode == RegisterOptions::SyncMode::kSync
+          ? prefs::kDevToolsPreferences
+          : prefs::kDevToolsSyncedPreferencesSyncDisabled;
+  const std::string* settings_value =
+      prefs->GetDictionary(dictionary_to_remove_from)->FindStringKey(name);
+  if (!settings_value) {
+    return;
+  }
+
+  const char* dictionary_to_insert_into =
+      GetDictionaryNameForSettingsName(name);
+  // Settings already moved to the synced dictionary on a different device have
+  // precedence.
+  const std::string* already_synced_value =
+      prefs->GetDictionary(dictionary_to_insert_into)->FindStringKey(name);
+  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
+  // settings sync is enabled.
+  if (dictionary_to_insert_into !=
+          prefs::kDevToolsSyncedPreferencesSyncDisabled ||
+      !already_synced_value) {
+    DictionaryPrefUpdate insert_update(profile_->GetPrefs(),
+                                       dictionary_to_insert_into);
+    insert_update.Get()->SetKey(name, base::Value(*settings_value));
+  }
+
+  DictionaryPrefUpdate remove_update(profile_->GetPrefs(),
+                                     dictionary_to_remove_from);
+  remove_update.Get()->RemoveKey(name);
+}
+
+base::Value DevToolsSettings::Get() {
+  base::Value settings(base::Value::Type::DICTIONARY);
+
+  PrefService* prefs = profile_->GetPrefs();
+  settings.MergeDictionary(prefs->GetDictionary(prefs::kDevToolsPreferences));
+  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
+  // settings sync is enabled.
+  settings.MergeDictionary(
+      prefs->GetDictionary(prefs::kDevToolsSyncedPreferencesSyncDisabled));
+
+  return settings;
 }
 
 void DevToolsSettings::Set(const std::string& name, const std::string& value) {
   DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
+                              GetDictionaryNameForSettingsName(name));
   update.Get()->SetKey(name, base::Value(value));
 }
 
 void DevToolsSettings::Remove(const std::string& name) {
   DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
+                              GetDictionaryNameForSettingsName(name));
   update.Get()->RemoveKey(name);
 }
 
 void DevToolsSettings::Clear() {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->Clear();
+  DictionaryPrefUpdate unsynced_update(profile_->GetPrefs(),
+                                       prefs::kDevToolsPreferences);
+  unsynced_update.Get()->Clear();
+  DictionaryPrefUpdate sync_enabled_update(
+      profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncEnabled);
+  sync_enabled_update.Get()->Clear();
+  DictionaryPrefUpdate sync_disabled_update(
+      profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncDisabled);
+  sync_disabled_update.Get()->Clear();
+}
+
+const char* DevToolsSettings::GetDictionaryNameForSettingsName(
+    const std::string& name) const {
+  // TODO(crbug.com/1245541): Use the "Enabled" dictionary when DevTools
+  // settings sync is enabled.
+  return synced_setting_names_.contains(name)
+             ? prefs::kDevToolsSyncedPreferencesSyncDisabled
+             : prefs::kDevToolsPreferences;
 }

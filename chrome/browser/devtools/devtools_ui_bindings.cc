@@ -1251,8 +1251,14 @@ void DevToolsUIBindings::OpenNodeFrontend() {
   delegate_->OpenNodeFrontend();
 }
 
+void DevToolsUIBindings::RegisterPreference(const std::string& name,
+                                            const RegisterOptions& options) {
+  settings_.Register(name, options);
+}
+
 void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
-  std::move(callback).Run(settings_.Get());
+  base::Value settings = settings_.Get();
+  std::move(callback).Run(&settings);
 }
 
 void DevToolsUIBindings::SetPreference(const std::string& name,

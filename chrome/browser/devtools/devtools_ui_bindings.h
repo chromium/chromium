@@ -171,6 +171,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void SendJsonRequest(DispatchCallback callback,
                        const std::string& browser_id,
                        const std::string& url) override;
+  void RegisterPreference(const std::string& name,
+                          const RegisterOptions& options) override;
   void GetPreferences(DispatchCallback callback) override;
   void SetPreference(const std::string& name,
                      const std::string& value) override;

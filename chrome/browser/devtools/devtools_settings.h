@@ -7,23 +7,42 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
+
 class Profile;
 
 namespace base {
 class Value;
 }
 
+struct RegisterOptions {
+  enum class SyncMode {
+    kSync,
+    kDontSync,
+  };
+  SyncMode sync_mode;
+};
+
 class DevToolsSettings {
  public:
   explicit DevToolsSettings(Profile* profile);
+  ~DevToolsSettings();
 
-  const base::Value* Get();
+  void Register(const std::string& name, const RegisterOptions& options);
+  base::Value Get();
   void Set(const std::string& name, const std::string& value);
   void Remove(const std::string& name);
   void Clear();
 
  private:
+  const char* GetDictionaryNameForSettingsName(const std::string& name) const;
+
   Profile* const profile_;
+
+  // Contains the set of synced settings.
+  // The DevTools frontend *must* call `Register` for each setting prior to
+  // use, which guarantees that this set must not be persisted.
+  base::flat_set<std::string> synced_setting_names_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_SETTINGS_H_
