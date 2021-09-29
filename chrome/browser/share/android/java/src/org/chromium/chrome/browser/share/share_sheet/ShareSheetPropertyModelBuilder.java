@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -159,7 +160,8 @@ public class ShareSheetPropertyModelBuilder {
                     shareStartTime, linkGenerationStatusForMetrics, linkToggleMetricsDetails);
         };
         return createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
-                (String) info.loadLabel(mPackageManager), onClickListener,
+                (String) info.loadLabel(mPackageManager), /*accessibilityDescription=*/null,
+                onClickListener,
                 /*displayNew*/ false);
     }
 
@@ -263,14 +265,21 @@ public class ShareSheetPropertyModelBuilder {
         return resolveInfoList;
     }
 
-    static PropertyModel createPropertyModel(
-            Drawable icon, String label, OnClickListener listener, boolean showNewBadge) {
-        return new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
-                .with(ShareSheetItemViewProperties.ICON, icon)
-                .with(ShareSheetItemViewProperties.LABEL, label)
-                .with(ShareSheetItemViewProperties.CLICK_LISTENER, listener)
-                .with(ShareSheetItemViewProperties.SHOW_NEW_BADGE, showNewBadge)
-                .build();
+    static PropertyModel createPropertyModel(Drawable icon, String label,
+            @Nullable String accessibilityDescription, OnClickListener listener,
+            boolean showNewBadge) {
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
+                        .with(ShareSheetItemViewProperties.ICON, icon)
+                        .with(ShareSheetItemViewProperties.LABEL, label)
+                        .with(ShareSheetItemViewProperties.CLICK_LISTENER, listener)
+                        .with(ShareSheetItemViewProperties.SHOW_NEW_BADGE, showNewBadge);
+
+        if (accessibilityDescription != null) {
+            builder.with(
+                    ShareSheetItemViewProperties.CONTENT_DESCRIPTION, accessibilityDescription);
+        }
+        return builder.build();
     }
 
     private List<String> getThirdPartyActivityNames() {

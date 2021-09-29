@@ -330,6 +330,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         return ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
                 activity.getResources().getString(R.string.sharing_more_icon_label),
+                /*accessibilityDescription=*/null,
                 (shareParams)
                         -> {
                     recordShareMetrics("SharingHubAndroid.MoreSelected",

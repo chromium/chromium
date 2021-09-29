@@ -195,6 +195,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         } else if (ShareSheetItemViewProperties.LABEL.equals(propertyKey)) {
             TextView view = (TextView) parent.findViewById(R.id.text);
             view.setText(model.get(ShareSheetItemViewProperties.LABEL));
+        } else if (ShareSheetItemViewProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
+            TextView view = (TextView) parent.findViewById(R.id.text);
+            view.setContentDescription(model.get(ShareSheetItemViewProperties.CONTENT_DESCRIPTION));
         } else if (ShareSheetItemViewProperties.CLICK_LISTENER.equals(propertyKey)) {
             View layout = (View) parent.findViewById(R.id.layout);
             layout.setOnClickListener(model.get(ShareSheetItemViewProperties.CLICK_LISTENER));

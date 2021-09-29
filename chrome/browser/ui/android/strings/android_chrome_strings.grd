@@ -4766,6 +4766,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Create card
       </message>
 
+      <message name="IDS_SHARING_WEBNOTES_ACCESSIBILITY_DESCRIPTION" desc="Accessibility description for the button in sharing hub for creating card for the highlight text.">
+        Create stylized card with highlight
+      </message>
+
       <message name="IDS_SHARING_SAVE_IMAGE" desc="Label for the button in sharing hub for saving an image to device.">
         Save to device
       </message>

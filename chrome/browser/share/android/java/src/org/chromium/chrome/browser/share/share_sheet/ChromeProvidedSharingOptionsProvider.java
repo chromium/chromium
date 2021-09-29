@@ -155,6 +155,7 @@ public class ChromeProvidedSharingOptionsProvider {
     private class FirstPartyOptionBuilder {
         private int mIcon;
         private int mIconLabel;
+        private String mIconContentDescription;
         private String mFeatureNameForMetrics;
         private Callback<View> mOnClickCallback;
         private boolean mDisableForMultiWindow;
@@ -171,6 +172,11 @@ public class ChromeProvidedSharingOptionsProvider {
         FirstPartyOptionBuilder setIcon(int icon, int iconLabel) {
             mIcon = icon;
             mIconLabel = iconLabel;
+            return this;
+        }
+
+        FirstPartyOptionBuilder setIconContentDescription(int iconContentDescription) {
+            mIconContentDescription = mActivity.getResources().getString(iconContentDescription);
             return this;
         }
 
@@ -208,7 +214,8 @@ public class ChromeProvidedSharingOptionsProvider {
         FirstPartyOption build() {
             PropertyModel model = ShareSheetPropertyModelBuilder.createPropertyModel(
                     AppCompatResources.getDrawable(mActivity, mIcon),
-                    mActivity.getResources().getString(mIconLabel), (view) -> {
+                    mActivity.getResources().getString(mIconLabel),
+                    mIconContentDescription, (view) -> {
                         ShareSheetCoordinator.recordShareMetrics(mFeatureNameForMetrics,
                                 mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
                                 mShareStartTime);
@@ -418,6 +425,7 @@ public class ChromeProvidedSharingOptionsProvider {
         String title = mTabProvider.get().getTitle();
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
                 .setIcon(R.drawable.webnote, R.string.sharing_webnotes_create_card)
+                .setIconContentDescription(R.string.sharing_webnotes_accessibility_description)
                 .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
                 .setOnClickCallback((view) -> {
                     NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create(
