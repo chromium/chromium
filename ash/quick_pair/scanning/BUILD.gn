@@ -11,6 +11,8 @@ source_set("scanning") {
   sources = [
     "fast_pair/fast_pair_discoverable_scanner.cc",
     "fast_pair/fast_pair_discoverable_scanner.h",
+    "fast_pair/fast_pair_not_discoverable_scanner.cc",
+    "fast_pair/fast_pair_not_discoverable_scanner.h",
     "fast_pair/fast_pair_scanner.h",
     "fast_pair/fast_pair_scanner_impl.cc",
     "fast_pair/fast_pair_scanner_impl.h",
@@ -27,6 +29,7 @@ source_set("scanning") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
     "//ash/services/quick_pair",
+    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
@@ -59,6 +62,7 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair/fast_pair_discoverable_scanner_unittest.cc",
+    "fast_pair/fast_pair_not_discoverable_scanner_unittest.cc",
     "fast_pair/fast_pair_scanner_unittest.cc",
     "range_calculations_unittest.cc",
     "range_tracker_unittest.cc",
@@ -68,6 +72,7 @@ source_set("unit_tests") {
     ":scanning",
     ":test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/repository:repository",
     "//ash/quick_pair/repository:test_support",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair:test_support",
