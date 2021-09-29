@@ -7,12 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // A view controller to showcase an example of a screen that has content
 // overflow, to simulate dynamic types.
-@interface SCFirstRunScrollingScreenViewController
-    : FirstRunScreenViewController
+@interface SCFirstRunScrollingScreenViewController : PromoStyleViewController
 
 @end
 

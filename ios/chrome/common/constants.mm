@@ -9,3 +9,4 @@
 #endif
 
 const NSTimeInterval kSecurePasteboardExpiration = 60 * 20;  // 20 minutes.
+const CGFloat kSmallDeviceThreshold = 22.0;

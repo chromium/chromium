@@ -8,12 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_consumer.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // Delegate of sync screen view controller.
-@protocol
-    SyncScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
+@protocol SyncScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Called when the user taps to see sync settings.
 - (void)showSyncSettings;
@@ -24,8 +23,7 @@
 
 // View controller of sync screen.
 @interface SyncScreenViewController
-    : FirstRunScreenViewController <AuthenticationFlowDelegate,
-                                    SyncScreenConsumer>
+    : PromoStyleViewController <AuthenticationFlowDelegate, SyncScreenConsumer>
 
 @property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate;
 

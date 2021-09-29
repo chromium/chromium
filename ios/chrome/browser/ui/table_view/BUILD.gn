@@ -129,8 +129,5 @@ source_set("utils") {
     "table_view_utils.h",
     "table_view_utils.mm",
   ]
-  deps = [
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/util",
-  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
 }

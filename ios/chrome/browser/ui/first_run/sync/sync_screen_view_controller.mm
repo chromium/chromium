@@ -43,6 +43,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   // Add sync screen-specific content
   UILabel* contentText = [self createContentText];

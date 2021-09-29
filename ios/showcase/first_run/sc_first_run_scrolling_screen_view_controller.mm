@@ -5,6 +5,8 @@
 #import "ios/showcase/first_run/sc_first_run_scrolling_screen_view_controller.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,6 +40,8 @@
       @"metus. Integer eget quam a orci ultrices gravida. Sed a justo sit amet "
       @"lorem scelerisque rhoncus.";
   self.primaryActionString = @"Continue";
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.bannerImage = [UIImage imageNamed:@"Sample-banner"];
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;

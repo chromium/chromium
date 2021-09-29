@@ -2,35 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
-#import "ios/chrome/browser/ui/first_run/highlighted_button.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/highlighted_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#include "ios/chrome/common/ui/util/device_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-NSString* const kFirstRunTitleAccessibilityIdentifier =
-    @"kFirstRunTitleAccessibilityIdentifier";
-NSString* const kFirstRunSubtitleAccessibilityIdentifier =
-    @"kFirstRunSubtitleAccessibilityIdentifier";
-NSString* const kFirstRunPrimaryActionAccessibilityIdentifier =
-    @"kFirstRunPrimaryActionAccessibilityIdentifier";
-NSString* const kFirstRunSecondaryActionAccessibilityIdentifier =
-    @"kFirstRunSecondaryActionAccessibilityIdentifier";
-NSString* const kFirstRunTertiaryActionAccessibilityIdentifier =
-    @"kFirstRunTertiaryActionAccessibilityIdentifier";
-NSString* const kFirstRunScrollViewAccessibilityIdentifier =
-    @"kFirstRunScrollViewAccessibilityIdentifier";
+NSString* const kPromoStyleTitleAccessibilityIdentifier =
+    @"kPromoStyleTitleAccessibilityIdentifier";
+NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
+    @"kPromoStyleSubtitleAccessibilityIdentifier";
+NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
+    @"kPromoStylePrimaryActionAccessibilityIdentifier";
+NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
+    @"kPromoStyleSecondaryActionAccessibilityIdentifier";
+NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
+    @"kPromoStyleTertiaryActionAccessibilityIdentifier";
+NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
+    @"kPromoStyleScrollViewAccessibilityIdentifier";
 
 namespace {
 
@@ -47,7 +46,7 @@ constexpr CGFloat kSeparatorHeight = 1;
 
 }  // namespace
 
-@interface FirstRunScreenViewController () <UIScrollViewDelegate>
+@interface PromoStyleViewController () <UIScrollViewDelegate>
 
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) UIImageView* imageView;
@@ -69,7 +68,7 @@ constexpr CGFloat kSeparatorHeight = 1;
 
 @end
 
-@implementation FirstRunScreenViewController
+@implementation PromoStyleViewController
 
 #pragma mark - Public
 
@@ -349,7 +348,7 @@ constexpr CGFloat kSeparatorHeight = 1;
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _scrollView.accessibilityIdentifier =
-        kFirstRunScrollViewAccessibilityIdentifier;
+        kPromoStyleScrollViewAccessibilityIdentifier;
   }
   return _scrollView;
 }
@@ -403,7 +402,7 @@ constexpr CGFloat kSeparatorHeight = 1;
       self.traitCollection.preferredContentSizeCategory);
 
   if (!dynamicTypeEnabled) {
-    if (IsRegularXRegularSizeClass(self.traitCollection)) {
+    if ([self isRegularXRegularSizeClass:self.traitCollection]) {
       return UIFontTextStyleTitle1;
     } else if (!IsSmallDevice()) {
       return UIFontTextStyleLargeTitle;
@@ -422,7 +421,8 @@ constexpr CGFloat kSeparatorHeight = 1;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _titleLabel.adjustsFontForContentSizeCategory = YES;
-    _titleLabel.accessibilityIdentifier = kFirstRunTitleAccessibilityIdentifier;
+    _titleLabel.accessibilityIdentifier =
+        kPromoStyleTitleAccessibilityIdentifier;
   }
   return _titleLabel;
 }
@@ -450,7 +450,7 @@ constexpr CGFloat kSeparatorHeight = 1;
     _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _subtitleLabel.adjustsFontForContentSizeCategory = YES;
     _subtitleLabel.accessibilityIdentifier =
-        kFirstRunSubtitleAccessibilityIdentifier;
+        kPromoStyleSubtitleAccessibilityIdentifier;
   }
   return _subtitleLabel;
 }
@@ -490,7 +490,7 @@ constexpr CGFloat kSeparatorHeight = 1;
                           forState:UIControlStateNormal];
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
-        kFirstRunPrimaryActionAccessibilityIdentifier;
+        kPromoStylePrimaryActionAccessibilityIdentifier;
     _primaryActionButton.titleEdgeInsets =
         UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
     _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -521,6 +521,7 @@ constexpr CGFloat kSeparatorHeight = 1;
     return;
   }
 
+  DCHECK(self.readMoreString);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kSolidButtonTextColor],
     NSFontAttributeName :
@@ -528,10 +529,8 @@ constexpr CGFloat kSeparatorHeight = 1;
   };
 
   NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(
-                             IDS_IOS_FIRST_RUN_SCREEN_READ_MORE)
-              attributes:textAttributes];
+      [[NSMutableAttributedString alloc] initWithString:self.readMoreString
+                                             attributes:textAttributes];
 
   // Use |ceilf()| when calculating the icon's bounds to ensure the
   // button's content height does not shrink by fractional points, as the
@@ -556,7 +555,7 @@ constexpr CGFloat kSeparatorHeight = 1;
   // animation when using setTitle:forState: doesn't handle adding a
   // UIImage well (the old title gets abruptly pushed to the side as it's
   // fading out to make room for the new image, which looks awkward).
-  __weak FirstRunScreenViewController* weakSelf = self;
+  __weak PromoStyleViewController* weakSelf = self;
   [UIView performWithoutAnimation:^{
     [weakSelf.primaryActionButton setAttributedTitle:attributedString
                                             forState:UIControlStateNormal];
@@ -570,7 +569,7 @@ constexpr CGFloat kSeparatorHeight = 1;
     _secondaryActionButton =
         [self createButtonWithText:self.secondaryActionString
             accessibilityIdentifier:
-                kFirstRunSecondaryActionAccessibilityIdentifier];
+                kPromoStyleSecondaryActionAccessibilityIdentifier];
     [_secondaryActionButton addTarget:self
                                action:@selector(didTapSecondaryActionButton)
                      forControlEvents:UIControlEventTouchUpInside];
@@ -582,9 +581,10 @@ constexpr CGFloat kSeparatorHeight = 1;
 - (UIButton*)tertiaryActionButton {
   if (!_tertiaryActionButton) {
     DCHECK(self.tertiaryActionString);
-    _tertiaryActionButton = [self
-           createButtonWithText:self.tertiaryActionString
-        accessibilityIdentifier:kFirstRunTertiaryActionAccessibilityIdentifier];
+    _tertiaryActionButton =
+        [self createButtonWithText:self.tertiaryActionString
+            accessibilityIdentifier:
+                kPromoStyleTertiaryActionAccessibilityIdentifier];
     [_tertiaryActionButton addTarget:self
                               action:@selector(didTapTertiaryActionButton)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -690,6 +690,14 @@ constexpr CGFloat kSeparatorHeight = 1;
           respondsToSelector:@selector(didTapTertiaryActionButton)]) {
     [self.delegate didTapTertiaryActionButton];
   }
+}
+
+// Helper that returns whether the |traitCollection| has a regular vertical
+// and regular horizontal size class.
+// Copied from "ios/chrome/browser/ui/util/uikit_ui_util.mm"
+- (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
+  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
+         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
 #pragma mark - UIScrollViewDelegate

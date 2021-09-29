@@ -13,8 +13,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface DefaultBrowserScreenCoordinator () <
-    FirstRunScreenViewControllerDelegate>
+@interface DefaultBrowserScreenCoordinator () <PromoStyleViewControllerDelegate>
 
 // Default browser screen view controller.
 @property(nonatomic, strong) DefaultBrowserScreenViewController* viewController;
@@ -62,7 +61,7 @@
   self.viewController = nil;
 }
 
-#pragma mark - FirstRunScreenViewControllerDelegate
+#pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
   base::UmaHistogramEnumeration(

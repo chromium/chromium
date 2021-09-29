@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_
+#define IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller_delegate.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
-// A base view controller for the common UI controls in the new First Run
-// Experience screens.
-@interface FirstRunScreenViewController : UIViewController
+// A base view controller for the common UI controls in the new Promo
+// Style screens.
+@interface PromoStyleViewController : UIViewController
 
 // The banner image. Must be set before the view is loaded.
 @property(nonatomic, strong) UIImage* bannerImage;
@@ -47,7 +47,7 @@
 
 // The delegate to invoke when buttons are tapped. Can be derived by screen-
 // specific view controllers if additional buttons are used.
-@property(nonatomic, weak) id<FirstRunScreenViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<PromoStyleViewControllerDelegate> delegate;
 
 // When set to YES, the primary button is temporarily replaced with a "More"
 // button that scrolls the content, until the user scrolls to the very end of
@@ -55,6 +55,10 @@
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
+// The text for the "More" button. Must be set before the view is loaded
+// for views with "scrollToMandatory = YES."
+@property(nonatomic, strong) NSString* readMoreString;
+
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_

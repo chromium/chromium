@@ -38,7 +38,7 @@ using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 namespace {
 
 NSString* const kScrollViewIdentifier =
-    @"kFirstRunScrollViewAccessibilityIdentifier";
+    @"kPromoStyleScrollViewAccessibilityIdentifier";
 
 NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
     @"kMetricsConsentCheckboxAccessibilityIdentifier";

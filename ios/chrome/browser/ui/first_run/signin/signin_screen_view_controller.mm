@@ -66,6 +66,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
                                             : @"signin_screen_banner"];
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);

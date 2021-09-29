@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_DELEGATE_H_
+#ifndef IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_DELEGATE_H_
+#define IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_DELEGATE_H_
 
 #import <UIKit/UIKit.h>
 
-// Base delegate protocol for the base first run screen view controller to
+// Base delegate protocol for the base promo style controller to
 // communicate with screen-specific coordinators. Only the shared action buttons
 // are included in this base protocol; screens with additional buttons should
 // extend this protocol.
-@protocol FirstRunScreenViewControllerDelegate <NSObject>
+@protocol PromoStyleViewControllerDelegate <NSObject>
 
 @optional
 
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_DELEGATE_H_
+#endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_DELEGATE_H_

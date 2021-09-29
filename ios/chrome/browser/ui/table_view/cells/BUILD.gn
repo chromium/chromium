@@ -85,7 +85,7 @@ source_set("cells_constants") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/util",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

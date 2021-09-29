@@ -62,6 +62,8 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   self.bannerImage = [UIImage imageNamed:@"welcome_screen_banner"];
   self.isTallBanner = YES;
   self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON);
 

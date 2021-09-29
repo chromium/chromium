@@ -44,7 +44,6 @@ source_set("first_run") {
     ":constants",
     ":field_trial",
     ":first_run_provider",
-    ":first_run_ui",
     ":screen_delegate",
     ":static_file_ui",
     ":utils",
@@ -92,6 +91,7 @@ source_set("first_run") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
@@ -151,27 +151,6 @@ source_set("constants") {
 source_set("screen_delegate") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "first_run_screen_delegate.h" ]
-}
-
-source_set("first_run_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "first_run_screen_view_controller.h",
-    "first_run_screen_view_controller.mm",
-    "first_run_screen_view_controller_delegate.h",
-    "highlighted_button.h",
-    "highlighted_button.mm",
-  ]
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:dynamic_type_util",
-    "//ui/base",
-  ]
 }
 
 source_set("static_file_ui") {
