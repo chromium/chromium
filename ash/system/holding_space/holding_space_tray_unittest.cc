@@ -42,10 +42,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -78,6 +78,14 @@ void DoubleClick(const views::View* view, int flags = ui::EF_NONE) {
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.set_flags(flags);
   event_generator.DoubleClickLeftButton();
+}
+
+void RightClick(const views::View* view, int flags = ui::EF_NONE) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.set_flags(flags);
+  event_generator.ClickRightButton();
 }
 
 void GestureTap(const views::View* view) {
@@ -127,6 +135,21 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
   return std::make_unique<HoldingSpaceImage>(
       holding_space_util::GetMaxImageSizeForType(type), file_path,
       /*async_bitmap_resolver=*/base::DoNothing());
+}
+
+std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
+  std::vector<HoldingSpaceItem::Type> types;
+  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
+    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
+  return types;
+}
+
+std::vector<HoldingSpaceCommandId> GetHoldingSpaceCommandIds() {
+  std::vector<HoldingSpaceCommandId> ids;
+  for (int i = static_cast<int>(HoldingSpaceCommandId::kMinValue);
+       i <= static_cast<int>(HoldingSpaceCommandId::kMaxValue); ++i)
+    ids.push_back(static_cast<HoldingSpaceCommandId>(i));
+  return ids;
 }
 
 // Waiters ---------------------------------------------------------------------
@@ -815,9 +838,6 @@ TEST_F(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
 // Tests that a shelf alignment change will behave as expected when there are
 // multiple displays (and therefore multiple shelves/trays).
 TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
   // This test requires multiple displays. Create two.
   UpdateDisplay("1280x768,1280x768");
 
@@ -2337,9 +2357,6 @@ TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 // Verifies that selection UI is correctly represented depending on device state
 // and the number of selected holding space item views.
 TEST_F(HoldingSpaceTrayTest, SelectionUi) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
   StartSession();
 
   // Add both a chip-style and screen-capture-style holding space item.
@@ -2471,9 +2488,6 @@ TEST_F(HoldingSpaceTrayTest, SelectionUi) {
 
 // Verifies selection state after pressing primary/secondary actions.
 TEST_F(HoldingSpaceTrayTest, SelectionWithPrimaryAndSecondaryActions) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
   StartSession();
 
   // Add multiple in-progress holding space items.
@@ -2574,9 +2588,6 @@ TEST_F(HoldingSpaceTrayTest, SelectionWithPrimaryAndSecondaryActions) {
 // Verifies that attempting to open holding space items via double click works
 // as expected with event modifiers.
 TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
   StartSession();
 
   // Add multiple holding space items.
@@ -2668,9 +2679,6 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 // TODO(crbug.com/1208501): Fix flakes and re-enable.
 // Verifies that the holding space tray animates in and out as expected.
 TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
   // Prior to session start, the tray should not be showing.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
@@ -2782,6 +2790,144 @@ TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
 
   // Clean up.
   UnregisterModelForUser(kSecondaryUserId);
+}
+
+// Base class for holding space tray tests which make assertions about primary
+// and secondary actions on holding space item views. Tests are parameterized by
+// holding space item type.
+class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
+    : public HoldingSpaceTrayTest,
+      public testing::WithParamInterface<HoldingSpaceItem::Type> {
+ public:
+  // Returns the parameterized holding space item type.
+  HoldingSpaceItem::Type GetType() const { return GetParam(); }
+
+  // Returns whether a context menu is currently showing.
+  bool IsShowingContextMenu() const {
+    return views::MenuController::GetActiveInstance();
+  }
+
+  // Returns whether a primary action is currently showing.
+  bool IsShowingPrimaryAction(views::View* view) const {
+    auto* v = view->GetViewByID(kHoldingSpaceItemPrimaryActionContainerId);
+    return v && v->GetVisible();
+  }
+
+  // Returns whether a secondary action is currently showing.
+  bool IsShowingSecondaryAction(views::View* view) const {
+    auto* v = view->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId);
+    return v && v->GetVisible();
+  }
+
+  // Returns whether a context menu is showing with a command matching `id`.
+  bool HasContextMenuCommand(HoldingSpaceCommandId id) const {
+    if (!IsShowingContextMenu())
+      return false;
+    auto* menu_controller = views::MenuController::GetActiveInstance();
+    auto* menu_item = menu_controller->GetSelectedMenuItem();
+    return menu_item && menu_item->GetMenuItemByID(static_cast<int>(id));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceTrayPrimaryAndSecondaryActionsTest,
+                         testing::ValuesIn(GetHoldingSpaceItemTypes()));
+
+// Verifies that holding space item views have the expected primary and
+// secondary actions for their state of progress, both inline and in their
+// associated context menu.
+TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
+  StartSession();
+
+  // Create an in-progress holding space `item` of the parameterized type.
+  HoldingSpaceItem* item = AddItem(GetType(), base::FilePath("/tmp/fake"),
+                                   HoldingSpaceProgress(0, 100));
+
+  // Show holding space UI.
+  test_api()->Show();
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // Expect and cache a single holding space item view.
+  std::vector<views::View*> item_views = test_api()->GetHoldingSpaceItemViews();
+  ASSERT_EQ(item_views.size(), 1u);
+
+  // Hover over the item view.
+  MoveMouseTo(item_views.front());
+
+  // Expect a primary and secondary action to be shown only for download type
+  // holding space items. In-progress items of other types do not currently
+  // support primary and secondary actions.
+  EXPECT_EQ(IsShowingPrimaryAction(item_views.front()),
+            HoldingSpaceItem::IsDownload(item->type()));
+  EXPECT_EQ(IsShowingSecondaryAction(item_views.front()),
+            HoldingSpaceItem::IsDownload(item->type()));
+
+  // Right click the item view to show the context menu.
+  RightClick(item_views.front());
+  EXPECT_TRUE(IsShowingContextMenu());
+
+  // Verify context menu commands for in-progress holding space items.
+  for (const HoldingSpaceCommandId& id : GetHoldingSpaceCommandIds()) {
+    bool expect_context_menu_command = false;
+    switch (id) {
+      case HoldingSpaceCommandId::kShowInFolder:
+        expect_context_menu_command = true;
+        break;
+      case HoldingSpaceCommandId::kCancelItem:
+      case HoldingSpaceCommandId::kPauseItem:
+        expect_context_menu_command =
+            HoldingSpaceItem::IsDownload(item->type());
+        break;
+      default:
+        // No action necessary.
+        break;
+    }
+    EXPECT_EQ(HasContextMenuCommand(id), expect_context_menu_command);
+  }
+
+  // Press and release ESC to close the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_FALSE(IsShowingContextMenu());
+
+  // Complete the holding space `item`.
+  model()->UpdateItem(item->id())->SetProgress(HoldingSpaceProgress(100, 100));
+
+  // Hover over the item view.
+  MoveMouseTo(item_views.front());
+
+  // Expect only a primary action to be shown for completed items.
+  EXPECT_TRUE(IsShowingPrimaryAction(item_views.front()));
+  EXPECT_FALSE(IsShowingSecondaryAction(item_views.front()));
+
+  // Right click the item view to show the context menu.
+  RightClick(item_views.front());
+  EXPECT_TRUE(IsShowingContextMenu());
+
+  // Verify context menu commands for completed holding space items.
+  for (const HoldingSpaceCommandId& id : GetHoldingSpaceCommandIds()) {
+    bool expect_context_menu_command = false;
+    switch (id) {
+      case HoldingSpaceCommandId::kPinItem:
+        expect_context_menu_command =
+            item->type() != HoldingSpaceItem::Type::kPinnedFile;
+        break;
+      case HoldingSpaceCommandId::kRemoveItem:
+        expect_context_menu_command =
+            item->type() != HoldingSpaceItem::Type::kPinnedFile;
+        break;
+      case HoldingSpaceCommandId::kShowInFolder:
+        expect_context_menu_command = true;
+        break;
+      case HoldingSpaceCommandId::kUnpinItem:
+        expect_context_menu_command =
+            item->type() == HoldingSpaceItem::Type::kPinnedFile;
+        break;
+      default:
+        // No action necessary.
+        break;
+    }
+    EXPECT_EQ(HasContextMenuCommand(id), expect_context_menu_command);
+  }
 }
 
 }  // namespace ash

@@ -568,17 +568,23 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   for (const HoldingSpaceItemView* view : selection) {
     const HoldingSpaceItem* item = view->item();
 
-    // The "Pause" command should only be present if *all* of the selected
-    // holding space items are pausable.
-    is_pausable &= !item->progress().IsComplete() && !item->IsPaused();
+    // NOTE: The "Pause"/"Resume"/"Cancel" commands are only currently supported
+    // by download type holding space items.
+    if (HoldingSpaceItem::IsDownload(item->type())) {
+      // The "Pause" command should only be present if *all* of the selected
+      // holding space items are pausable.
+      is_pausable &= !item->progress().IsComplete() && !item->IsPaused();
 
-    // The "Resume" command should only be present if *all* of the selected
-    // holding space items are resumable.
-    is_resumable &= item->IsPaused();
+      // The "Resume" command should only be present if *all* of the selected
+      // holding space items are resumable.
+      is_resumable &= item->IsPaused();
 
-    // The "Cancel" command should only be present if *all* of the selected
-    // holding space items are cancelable.
-    is_cancelable &= !item->progress().IsComplete();
+      // The "Cancel" command should only be present if *all* of the selected
+      // holding space items are cancelable.
+      is_cancelable &= !item->progress().IsComplete();
+    } else {
+      is_pausable = is_resumable = is_cancelable = false;
+    }
 
     // The "Remove" command should only be present if *all* of the selected
     // holding space items are removable.

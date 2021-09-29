@@ -36,7 +36,8 @@ constexpr int kHoldingSpaceTrayIconSize = 20;
 
 // Context menu commands.
 enum class HoldingSpaceCommandId {
-  kCancelItem,
+  kMinValue = 1,  // NOTE: Zero is used when command id is unset.
+  kCancelItem = kMinValue,
   kCopyImageToClipboard,
   kHidePreviews,
   kRemoveItem,
@@ -46,6 +47,7 @@ enum class HoldingSpaceCommandId {
   kShowInFolder,
   kShowPreviews,
   kUnpinItem,
+  kMaxValue = kUnpinItem,
 };
 
 // View IDs.

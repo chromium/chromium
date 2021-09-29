@@ -65,6 +65,11 @@ class ASH_EXPORT HoldingSpaceTestApi {
       const std::vector<views::View*>& item_views,
       const std::string& item_id);
 
+  // Returns all holding space item views regardless of the section in which
+  // they reside. Views are returned in top-to-bottom, left-to-right order (or
+  // mirrored for RTL).
+  std::vector<views::View*> GetHoldingSpaceItemViews();
+
   // Returns the header of the downloads section in holding space UI.
   views::View* GetDownloadsSectionHeader();
 

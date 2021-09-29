@@ -594,9 +594,10 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   if (!item())
     return;
 
-  const bool has_secondary_action = !checkmark()->GetVisible() &&
-                                    !item()->progress().IsComplete() &&
-                                    IsMouseHovered();
+  // NOTE: Only download type items currently support secondary actions.
+  const bool has_secondary_action =
+      !checkmark()->GetVisible() && !item()->progress().IsComplete() &&
+      HoldingSpaceItem::IsDownload(item()->type()) && IsMouseHovered();
 
   if (!has_secondary_action) {
     image_->SetVisible(!checkmark()->GetVisible());

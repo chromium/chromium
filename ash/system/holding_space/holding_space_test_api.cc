@@ -118,6 +118,18 @@ views::View* HoldingSpaceTestApi::GetHoldingSpaceItemView(
   return it != item_views.end() ? *it : nullptr;
 }
 
+std::vector<views::View*> HoldingSpaceTestApi::GetHoldingSpaceItemViews() {
+  std::vector<views::View*> item_views;
+  if (holding_space_tray_->bubble_for_testing()) {
+    for (HoldingSpaceItemView*& item_view :
+         holding_space_tray_->bubble_for_testing()
+             ->GetHoldingSpaceItemViews()) {
+      item_views.push_back(item_view);
+    }
+  }
+  return item_views;
+}
+
 views::View* HoldingSpaceTestApi::GetDownloadsSectionHeader() {
   return holding_space_tray_->GetBubbleView()
              ? holding_space_tray_->GetBubbleView()->GetViewByID(
