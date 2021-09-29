@@ -49,7 +49,8 @@ class CalendarViewTest : public AshTestBase {
     calendar_view_ = std::make_unique<CalendarView>(
         delegate_.get(), tray_controller_.get(), controller_.get());
     // TODO(https://crbug.com/1236276): remove calling `Layout()` once we can
-    // pop up the view from the tray. And add tests for focusing behaviors.
+    // pop up the view from the tray. (https://crbug.com/1254491) And add tests
+    // for focusing behaviors.
     calendar_view_->Layout();
   }
 

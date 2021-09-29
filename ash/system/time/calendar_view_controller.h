@@ -21,7 +21,7 @@ class ASH_EXPORT CalendarViewController {
       delete;
   ~CalendarViewController();
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Gets called when `current_date_ ` changes.
     virtual void OnMonthChanged(const base::Time::Exploded current_month) = 0;
@@ -67,7 +67,7 @@ class ASH_EXPORT CalendarViewController {
   // if current month is not today's month.
   base::Time current_date_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // The today's date cell row number (which is index +1) in its
   // `CalendarMonthView`.

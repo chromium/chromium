@@ -98,8 +98,7 @@ class MonthHeaderView : public views::View {
           views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
-      label->SetFontList(views::Label::GetDefaultFontList().Derive(
-          1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+      label->SetTextContext(CONTEXT_CALENDAR_DATE);
 
       layout->AddView(std::move(label));
     }
@@ -336,6 +335,7 @@ void CalendarView::ResetToToday() {
 
   SetMonthViews();
   ScrollToToday();
+  MaybeResetContentViewFocusBehavior();
 }
 
 void CalendarView::ScrollToToday() {
@@ -367,6 +367,15 @@ bool CalendarView::IsDateCellViewFocused() {
     return false;
 
   return focused_view->GetClassName() == CalendarDateCellView::kViewClassName;
+}
+
+void CalendarView::MaybeResetContentViewFocusBehavior() {
+  if (IsDateCellViewFocused() ||
+      content_view_->GetFocusBehavior() == FocusBehavior::ALWAYS) {
+    return;
+  }
+
+  content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
 void CalendarView::OnThemeChanged() {
@@ -502,6 +511,8 @@ void CalendarView::ScrollUpOneMonth() {
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), position);
+
+  MaybeResetContentViewFocusBehavior();
 }
 
 void CalendarView::ScrollDownOneMonth() {
@@ -533,6 +544,8 @@ void CalendarView::ScrollDownOneMonth() {
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), position);
+
+  MaybeResetContentViewFocusBehavior();
 }
 
 void CalendarView::ScrollUpOneMonthAndAutoScroll() {
@@ -590,29 +603,58 @@ void CalendarView::OnEvent(ui::Event* event) {
   switch (key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN: {
-      auto* next_focusable_view = focus_manager->GetFocusedView();
+      auto* current_focusable_view = focus_manager->GetFocusedView();
 
       // Moving 7 (`kDateInOneWeek`) steps will focus on the cell which is right
       // above or below the current cell, since each row has 7 days.
       for (int count = 0; count < calendar_utils::kDateInOneWeek; count++) {
-        next_focusable_view = focus_manager->GetNextFocusableView(
-            next_focusable_view, GetWidget(),
+        auto* next_focusable_view = focus_manager->GetNextFocusableView(
+            current_focusable_view, GetWidget(),
             /*reverse=*/key_code == ui::VKEY_UP,
             /*dont_loop=*/false);
 
+        // There could be a corner case that the next month view is very short
+        // (e.g. February in some year), and except the last 2 rows all the
+        // other rows of it are visible on the screen. In this case if the
+        // current focused view is in the second to last row of this next month,
+        // the next to-be-focused cell could be in the first row of the next
+        // month's next month. But at this time the next month's next month is
+        // not created yet since it did not trigger the condition (which is
+        // either the next month's label hit the top of the scroll window or the
+        // last row of the next month hit the bottom of the scroll window) to
+        // build it. Now since it cannot find the next next month, it will focus
+        // on the `previous_month_`'s first focusable cell
+        // (`next_focusable_view->y() < current_focusable_view->y()`). So here
+        // if we get to this corner case, we manually scroll down 2 rows to make
+        // sure the next next month get created when needed.
+        if (key_code == ui::VKEY_DOWN && next_focusable_view &&
+            current_focusable_view->GetClassName() ==
+                CalendarDateCellView::kViewClassName &&
+            next_focusable_view->y() < current_focusable_view->y()) {
+          // Scrolls down 2 rows.
+          scroll_view_->ScrollToPosition(
+              scroll_view_->vertical_scroll_bar(),
+              scroll_view_->GetVisibleRect().y() +
+                  2 * calendar_view_controller_->row_height());
+          next_focusable_view = focus_manager->GetNextFocusableView(
+              current_focusable_view, GetWidget(),
+              /*reverse=*/key_code == ui::VKEY_UP,
+              /*dont_loop=*/false);
+        }
+        current_focusable_view = next_focusable_view;
         // Sometimes the position of the upper row cells, which should be
         // focused next, are above (and hidden behind) the header buttons. So
         // this loop skips those buttons.
-        while (!!next_focusable_view &&
-               next_focusable_view->GetClassName() !=
+        while (current_focusable_view &&
+               current_focusable_view->GetClassName() !=
                    CalendarDateCellView::kViewClassName) {
-          next_focusable_view = focus_manager->GetNextFocusableView(
-              next_focusable_view, GetWidget(),
+          current_focusable_view = focus_manager->GetNextFocusableView(
+              current_focusable_view, GetWidget(),
               /*reverse=*/key_code == ui::VKEY_UP,
               /*dont_loop=*/false);
         }
       }
-      focus_manager->SetFocusedView(next_focusable_view);
+      focus_manager->SetFocusedView(current_focusable_view);
       return;
     }
     case ui::VKEY_LEFT:

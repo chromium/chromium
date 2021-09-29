@@ -110,6 +110,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // If currently focusing on any date cell.
   bool IsDateCellViewFocused();
 
+  // If focusing on `CalendarDateCellView` is interrupted (by scrolling or by
+  // today's button), resets the content view's `FocusBehavior` to `ALWAYS`.
+  void MaybeResetContentViewFocusBehavior();
+
   // Unowned.
   UnifiedSystemTrayController* controller_;
 

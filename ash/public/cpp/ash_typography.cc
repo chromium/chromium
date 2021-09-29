@@ -21,6 +21,7 @@ void ApplyAshFontStyles(int context,
       break;
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
+    case CONTEXT_CALENDAR_DATE:
       details.size_delta = 2;
       break;
     case CONTEXT_SEARCH_RESULT_VIEW:

@@ -40,6 +40,9 @@ enum AshTextContext {
   // A month label that appears in the Calendar view.
   CONTEXT_CALENDAR_LABEL,
 
+  // Date text in the Calendar view.
+  CONTEXT_CALENDAR_DATE,
+
   // Title and details text label used in search result view. Usually 14 pt.
   CONTEXT_SEARCH_RESULT_VIEW,
 

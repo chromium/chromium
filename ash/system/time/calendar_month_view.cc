@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_month_view.h"
 
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -52,15 +53,14 @@ CalendarDateCellView::CalendarDateCellView(base::Time::Exploded& date,
             // TODO(https://crbug.com/1238927): Add a menthod in the
             // controller to open the expandable view and call it here.
           })),
-          base::UTF8ToUTF16(base::NumberToString(date.day_of_month))),
+          base::UTF8ToUTF16(base::NumberToString(date.day_of_month)),
+          CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetSubpixelRenderingEnabled(false);
-  label()->SetFontList(views::Label::GetDefaultFontList().Derive(
-      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColor(ColorProvider::Get()->GetControlsLayerColor(
@@ -84,8 +84,6 @@ void CalendarDateCellView::OnThemeChanged() {
 
 // Draws the background for 'today'. If today is a grayed out date, which is
 // shown in its previous/next month, we won't draw this background.
-// TODO(https://crbug.com/1253620): Consider to make the text view a square and
-// use ` CreateRoundedRectBackground`.
 void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
