@@ -61,6 +61,16 @@ struct MediaSerializer<std::vector<VecType>> {
   }
 };
 
+// Serialize unique pointers
+template <typename T>
+struct MediaSerializer<std::unique_ptr<T>> {
+  static base::Value Serialize(const std::unique_ptr<T>& ptr) {
+    if (!ptr)
+      return base::Value("nullptr");
+    return MediaSerializer<T>::Serialize(*ptr);
+  }
+};
+
 // serialize optional types
 template <typename OptType>
 struct MediaSerializer<absl::optional<OptType>> {
@@ -89,7 +99,18 @@ struct MediaSerializer<double> {
 template <>
 struct MediaSerializer<int64_t> {
   static inline base::Value Serialize(int64_t value) {
-    return MediaSerializer<double>::Serialize(static_cast<double>(value));
+    std::stringstream stream;
+    stream << "0x" << std::hex << value;
+    return MediaSerializer<std::string>::Serialize(stream.str());
+  }
+};
+
+template <>
+struct MediaSerializer<uint32_t> {
+  static inline base::Value Serialize(uint32_t value) {
+    std::stringstream stream;
+    stream << "0x" << std::hex << value;
+    return MediaSerializer<std::string>::Serialize(stream.str());
   }
 };
 
@@ -419,18 +440,30 @@ struct MediaSerializer<StatusCode> {
 };
 
 // Class (complex)
-template <>
-struct MediaSerializer<Status> {
-  static base::Value Serialize(const Status& status) {
+template <typename T>
+struct MediaSerializer<TypedStatus<T>> {
+  static base::Value Serialize(const TypedStatus<T>& status) {
+    // TODO: replace this with some kind of static "description"
+    // of the default type, instead of "Ok".
     if (status.is_ok())
       return base::Value("Ok");
+    return MediaSerialize(status.data_);
+  }
+};
 
+// Class (complex)
+template <>
+struct MediaSerializer<StatusData> {
+  static base::Value Serialize(const StatusData& status) {
     base::Value result(base::Value::Type::DICTIONARY);
-    FIELD_SERIALIZE("status_code", status.code());
-    FIELD_SERIALIZE("status_message", status.message());
-    FIELD_SERIALIZE("stack", status.data_->frames);
-    FIELD_SERIALIZE("data", status.data_->data);
-    FIELD_SERIALIZE("causes", status.data_->causes);
+    // TODO: replace code with a stringified version, since
+    // this representation will only go to medialog anyway.
+    FIELD_SERIALIZE("code", status.code);
+    FIELD_SERIALIZE("group", status.group);
+    FIELD_SERIALIZE("message", status.message);
+    FIELD_SERIALIZE("stack", status.frames);
+    FIELD_SERIALIZE("data", status.data);
+    FIELD_SERIALIZE("causes", status.causes);
     return result;
   }
 };

@@ -326,6 +326,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.StatusData"
+          cpp = "::media::internal::StatusData"
+        },
+        {
           mojom = "media.mojom.Status"
           cpp = "::media::Status"
         },

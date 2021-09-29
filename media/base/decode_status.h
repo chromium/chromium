@@ -9,11 +9,10 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/status.h"
 #include "media/base/status_codes.h"
 
 namespace media {
-
-class Status;
 
 // TODO(crbug.com/1129662): This is temporary, to allow DecodeStatus::OK to
 // work, while we replace DecodeStatus with actual status codes.

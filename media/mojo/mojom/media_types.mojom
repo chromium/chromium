@@ -490,12 +490,17 @@ struct VideoPipelineInfo {
 };
 
 // See media/base/status.h for descriptions.
-struct Status {
-  StatusCode code;
-  string? message;
+struct StatusData {
+  string group;
+  uint16 code;
+  string message;
   array<mojo_base.mojom.Value> frames;
-  array<media.mojom.Status> causes;
-  mojo_base.mojom.Value? data;
+  array<StatusData> causes;
+  mojo_base.mojom.Value data;
+};
+
+struct Status {
+  StatusData? internal;
 };
 
 // Types of media stream, categorised by the media stream's source.

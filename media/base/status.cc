@@ -10,69 +10,51 @@
 
 namespace media {
 
-Status::Status() = default;
+namespace internal {
 
-Status::Status(StatusCode code,
-               base::StringPiece message,
-               const base::Location& location) {
-  // Note that |message| is dropped in this case.
-  if (code == StatusCode::kOk) {
-    DCHECK(message.empty());
-    return;
-  }
-  data_ = std::make_unique<StatusInternal>(code, std::string(message));
-  AddFrame(location);
-}
+StatusData::StatusData() = default;
 
-// Copy Constructor
-Status::Status(const Status& copy) {
+StatusData::StatusData(const StatusData& copy) {
   *this = copy;
 }
 
-Status& Status::operator=(const Status& copy) {
-  if (copy.is_ok()) {
-    data_.reset();
-    return *this;
-  }
-
-  data_ = std::make_unique<StatusInternal>(copy.code(), copy.message());
-  for (const base::Value& frame : copy.data_->frames)
-    data_->frames.push_back(frame.Clone());
-  for (const Status& err : copy.data_->causes)
-    data_->causes.push_back(err);
-  data_->data = copy.data_->data.Clone();
-  return *this;
-}
-
-// Allow move.
-Status::Status(Status&&) = default;
-Status& Status::operator=(Status&&) = default;
-
-Status::~Status() = default;
-
-Status::StatusInternal::StatusInternal(StatusCode code, std::string message)
-    : code(code),
+StatusData::StatusData(StatusGroupType group,
+                       StatusCodeType code,
+                       std::string message)
+    : group(group),
+      code(code),
       message(std::move(message)),
       data(base::Value(base::Value::Type::DICTIONARY)) {}
 
-Status::StatusInternal::~StatusInternal() = default;
-
-Status&& Status::AddHere(const base::Location& location) && {
-  DCHECK(data_);
-  AddFrame(location);
-  return std::move(*this);
+std::unique_ptr<StatusData> StatusData::copy() const {
+  auto result = std::make_unique<StatusData>(group, code, message);
+  for (const auto& frame : frames)
+    result->frames.push_back(frame.Clone());
+  for (const auto& cause : causes)
+    result->causes.push_back(cause);
+  result->data = data.Clone();
+  return result;
 }
 
-Status&& Status::AddCause(Status&& cause) && {
-  DCHECK(data_ && cause.data_);
-  data_->causes.push_back(std::move(cause));
-  return std::move(*this);
+StatusData::~StatusData() = default;
+
+StatusData& StatusData::operator=(const StatusData& copy) {
+  group = copy.group;
+  code = copy.code;
+  message = copy.message;
+  for (const auto& frame : copy.frames)
+    frames.push_back(frame.Clone());
+  for (const auto& cause : copy.causes)
+    causes.push_back(cause);
+  data = copy.data.Clone();
+  return *this;
 }
 
-void Status::AddFrame(const base::Location& location) {
-  DCHECK(data_);
-  data_->frames.push_back(MediaSerialize(location));
+void StatusData::AddLocation(const base::Location& location) {
+  frames.push_back(MediaSerialize(location));
 }
+
+}  // namespace internal
 
 Status OkStatus() {
   return Status(StatusCode::kOk);
