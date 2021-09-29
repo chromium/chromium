@@ -156,10 +156,7 @@ Polymer({
     },
 
     /** @private {boolean} */
-    showActionToolbar_: {
-      type: Boolean,
-      computed: 'computeShowActionToolbar_(appState, isMultiPageScan)',
-    },
+    showActionToolbar_: Boolean,
 
     /** @private {string} */
     dialogTitleText_: String,
@@ -239,6 +236,7 @@ Polymer({
     this.multiPageScanning_ = this.appState === AppState.MULTI_PAGE_SCANNING;
     this.showSingleImageFocus_ =
         this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
+    this.showActionToolbar_ = this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
 
     // If no longer showing the scanned images, reset |scannedImagesLoaded_| so
     // it can be used again for the next scan job.
@@ -486,15 +484,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowActionToolbar_() {
-    return this.isMultiPageScan &&
-        this.appState == AppState.MULTI_PAGE_NEXT_ACTION;
-  },
-
-  /**
    * Called when the "show-remove-page-dialog" event fires from the action
    * toolbar button click.
    * @param {Event} e
@@ -651,5 +640,14 @@ Polymer({
   updatePreviewElements_() {
     this.setMultiPageScanProgressHeight_();
     this.setActionToolbarPosition_();
+  },
+
+  /**
+   * Hide the action toolbar if it's page is not currently in view.
+   * @return {boolean}
+   * @private
+   */
+  showActionToolbarByIndex_(index) {
+    return index === this.currentPageIndexInView_ && this.showActionToolbar_;
   },
 });

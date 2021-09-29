@@ -154,12 +154,13 @@ export function scanPreviewTest() {
   // Tests that the action toolbar is only displayed for multi-page scans.
   test('showActionToolbarForMultiPageScans', () => {
     scanPreview.objectUrls = ['image'];
-    scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-    scanPreview.isMultiPageScan = false;
-    assertTrue(scanPreview.$$('action-toolbar').hidden);
-    scanPreview.isMultiPageScan = true;
-    flush();
-    assertFalse(scanPreview.$$('action-toolbar').hidden);
+    scanPreview.appState = AppState.DONE;
+    return flushTasks().then(() => {
+      assertTrue(scanPreview.$$('action-toolbar').hidden);
+      scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+      flush();
+      assertFalse(scanPreview.$$('action-toolbar').hidden);
+    });
   });
 
   // Tests that the toolbar will get repositioned after subsequent scans.
@@ -223,40 +224,48 @@ export function scanPreviewTest() {
       pageIndexFromEvent = e.detail;
     });
     scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
-    assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-    scanPreview.$$('action-toolbar')
-        .dispatchEvent(new CustomEvent(
-            'show-remove-page-dialog', {detail: pageIndexToRemove}));
-    return flushTasks().then(() => {
-      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
-      assertEquals(
-          'Remove page?', scanPreview.$$('#dialogTitle').textContent.trim());
-      assertEquals(
-          'Remove', scanPreview.$$('#actionButton').textContent.trim());
-      assertEquals(
-          loadTimeData.getStringF(
-              'removePageConfirmationText', pageIndexToRemove + 1),
-          scanPreview.$$('#dialogConfirmationText').textContent.trim());
+    return flushTasks()
+        .then(() => {
+          assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+          scanPreview.$$('action-toolbar')
+              .dispatchEvent(new CustomEvent(
+                  'show-remove-page-dialog', {detail: pageIndexToRemove}));
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(scanPreview.$$('#scanPreviewDialog').open);
+          assertEquals(
+              'Remove page?',
+              scanPreview.$$('#dialogTitle').textContent.trim());
+          assertEquals(
+              'Remove', scanPreview.$$('#actionButton').textContent.trim());
+          assertEquals(
+              loadTimeData.getStringF(
+                  'removePageConfirmationText', pageIndexToRemove + 1),
+              scanPreview.$$('#dialogConfirmationText').textContent.trim());
 
-      scanPreview.$$('#actionButton').click();
-      assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-      assertEquals(pageIndexToRemove, pageIndexFromEvent);
-    });
+          scanPreview.$$('#actionButton').click();
+          assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+          assertEquals(pageIndexToRemove, pageIndexFromEvent);
+        });
   });
 
   // Tests that clicking the cancel button closes the remove page dialog.
   test('cancelRemovePageDialog', () => {
     scanPreview.objectUrls = ['image'];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-    scanPreview.$$('action-toolbar')
-        .dispatchEvent(new CustomEvent('show-remove-page-dialog'));
+    return flushTasks()
+        .then(() => {
+          scanPreview.$$('action-toolbar')
+              .dispatchEvent(new CustomEvent('show-remove-page-dialog'));
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(scanPreview.$$('#scanPreviewDialog').open);
 
-    return flushTasks().then(() => {
-      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
-
-      scanPreview.$$('#cancelButton').click();
-      assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-    });
+          scanPreview.$$('#cancelButton').click();
+          assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+        });
   });
 
   // Tests that the rescan page dialog opens and shows the correct page number.
@@ -264,19 +273,22 @@ export function scanPreviewTest() {
     const pageIndex = 6;
     scanPreview.objectUrls = ['image1', 'image2'];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
-    scanPreview.$$('action-toolbar')
-        .dispatchEvent(
-            new CustomEvent('show-rescan-page-dialog', {detail: pageIndex}));
-
-    return flushTasks().then(() => {
-      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
-      assertEquals(
-          'Rescan page ' + (pageIndex + 1) + '?',
-          scanPreview.$$('#dialogTitle').textContent.trim());
-      assertEquals(
-          loadTimeData.getStringF('rescanPageConfirmationText', pageIndex),
-          scanPreview.$$('#dialogConfirmationText').textContent.trim());
-    });
+    return flushTasks()
+        .then(() => {
+          scanPreview.$$('action-toolbar')
+              .dispatchEvent(new CustomEvent(
+                  'show-rescan-page-dialog', {detail: pageIndex}));
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(scanPreview.$$('#scanPreviewDialog').open);
+          assertEquals(
+              'Rescan page ' + (pageIndex + 1) + '?',
+              scanPreview.$$('#dialogTitle').textContent.trim());
+          assertEquals(
+              loadTimeData.getStringF('rescanPageConfirmationText', pageIndex),
+              scanPreview.$$('#dialogConfirmationText').textContent.trim());
+        });
   });
 
   // Tests that the scan preview viewport is force scrolled to the expected page

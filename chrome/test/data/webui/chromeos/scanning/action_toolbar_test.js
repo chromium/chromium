@@ -28,17 +28,14 @@ export function actionToolbarTest() {
   // Verify the page count text updates when the number of scanned images
   // changes.
   test('totalPageCountIncrements', () => {
-    actionToolbar.currentPageIndexInView = 0;
+    actionToolbar.pageIndex = 0;
     assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 3;
     assertEquals('1 of 3', actionToolbar.$$('#pageNumbers').textContent.trim());
 
-    actionToolbar.currentPageIndexInView = -1;
-    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
-
     actionToolbar.numTotalPages = 4;
-    actionToolbar.currentPageIndexInView = 1;
+    actionToolbar.pageIndex = 1;
     assertEquals('2 of 4', actionToolbar.$$('#pageNumbers').textContent.trim());
   });
 
@@ -48,7 +45,7 @@ export function actionToolbarTest() {
     const expectedPageIndex = 5;
     let pageIndexFromEvent = -1;
 
-    actionToolbar.currentPageIndexInView = expectedPageIndex;
+    actionToolbar.pageIndex = expectedPageIndex;
     actionToolbar.addEventListener('show-remove-page-dialog', (e) => {
       pageIndexFromEvent = e.detail;
     });
@@ -65,7 +62,7 @@ export function actionToolbarTest() {
     const expectedPageIndex = 5;
     let pageIndexFromEvent = -1;
 
-    actionToolbar.currentPageIndexInView = expectedPageIndex;
+    actionToolbar.pageIndex = expectedPageIndex;
     actionToolbar.addEventListener('show-rescan-page-dialog', (e) => {
       pageIndexFromEvent = e.detail;
     });
