@@ -60,4 +60,39 @@ int64_t GetLinearBucketMin(double sample, int32_t bucket_size) {
   return val;
 }
 
+int64_t METRICS_EXPORT GetSemanticBucketMinForDurationTiming(int64_t sample) {
+  DCHECK(sample > 0);
+  const int64_t kMillisecondsPerMinute = 60 * 1000;
+  const int64_t kMillisecondsPerTenMinutes = 10 * kMillisecondsPerMinute;
+  const int64_t kMillisecondsPerHour = 60 * kMillisecondsPerMinute;
+  const int64_t kMillisecondsPerDay = 24 * kMillisecondsPerHour;
+  int64_t modulus = 1;
+  // If |sample| is a duration longer than a day, then use exponential bucketing
+  // by number of days.
+  // Algorithm is: convert ms to days, rounded down. Exponentially bucket.
+  // Convert back to milliseconds, return sample.
+  if (sample > kMillisecondsPerDay) {
+    sample = sample / kMillisecondsPerDay;
+    sample = GetExponentialBucketMinForUserTiming(sample);
+    return sample * kMillisecondsPerDay;
+  }
+
+  if (sample > kMillisecondsPerHour) {
+    modulus = kMillisecondsPerHour;
+  } else if (sample > kMillisecondsPerTenMinutes) {
+    modulus = kMillisecondsPerTenMinutes;
+  } else if (sample > kMillisecondsPerMinute) {
+    modulus = kMillisecondsPerMinute;
+  } else if (sample > 20000) {  // Above 20s, 10s granularity
+    modulus = 10000;
+  } else if (sample > 5000) {  // Above 5s, 1s granularity
+    modulus = 1000;
+  } else if (sample > 100) {  // Above 100ms, 100ms granularity
+    modulus = 100;
+  } else if (sample > 10) {  // Above 10ms, 10ms granularity
+    modulus = 10;
+  }
+  return sample - (sample % modulus);
+}
+
 }  // namespace ukm

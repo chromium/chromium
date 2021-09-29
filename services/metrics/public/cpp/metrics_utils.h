@@ -42,6 +42,16 @@ int64_t METRICS_EXPORT GetExponentialBucketMinForBytesUnder1KB(int64_t sample);
 int64_t METRICS_EXPORT GetLinearBucketMin(int64_t sample, int32_t bucket_size);
 int64_t METRICS_EXPORT GetLinearBucketMin(double sample, int32_t bucket_size);
 
+// A specialized bucketing function for durations, based on the assumption that
+// as durations get longer, specific timings matter less and less.
+// Buckets at the 1 millisecond level up to 10 ms, at the 10ms level up
+// to 100ms, at the 100ms up to five seconds, at the 1 second level up to twenty
+// seconds, at the ten second level up to one minute, at the minute level up to
+// 10 minutes, at the hour level up to 1 day. Once days are reached the sample
+// will be bucketed exponentially by day.
+// |sample| should be a positive value in milliseconds.
+int64_t METRICS_EXPORT GetSemanticBucketMinForDurationTiming(int64_t sample);
+
 }  // namespace ukm
 
 #endif  // SERVICES_METRICS_PUBLIC_CPP_METRICS_UTILS_H_
