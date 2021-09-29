@@ -16,16 +16,20 @@
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace tray {
 namespace {
+
+const char kDeviceId[] = "/device/id";
 
 using chromeos::bluetooth_config::AdapterStateController;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
@@ -221,6 +225,24 @@ TEST_F(BluetoothDetailedViewControllerTest,
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
   bluetooth_detailed_view_delegate()->OnPairNewDeviceRequested();
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
+}
+
+TEST_F(BluetoothDetailedViewControllerTest,
+       OnDeviceListItemSelectedOpensBluetoothSettings) {
+  PairedBluetoothDevicePropertiesPtr selected_device =
+      CreatePairedDevice(DeviceConnectionState::kNotConnected);
+  selected_device->device_properties->id = kDeviceId;
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_TRUE(
+      GetSystemTrayClient()->last_bluetooth_settings_device_id().empty());
+
+  bluetooth_detailed_view_delegate()->OnDeviceListItemSelected(selected_device);
+
+  EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_STREQ(
+      kDeviceId,
+      GetSystemTrayClient()->last_bluetooth_settings_device_id().c_str());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,

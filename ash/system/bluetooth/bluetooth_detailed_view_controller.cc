@@ -100,7 +100,10 @@ void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
 
 void BluetoothDetailedViewController::OnDeviceListItemSelected(
     const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
-        device) {}
+        device) {
+  Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings(
+      device->device_properties->id);
+}
 
 void BluetoothDetailedViewController::BluetoothEnabledStateChanged() {
   const bool bluetooth_enabled_state =

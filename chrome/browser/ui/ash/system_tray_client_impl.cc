@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -299,6 +300,13 @@ void SystemTrayClientImpl::ShowBluetoothSettings() {
   base::RecordAction(base::UserMetricsAction("ShowBluetoothSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowBluetoothSettings(const std::string& device_id) {
+  base::RecordAction(base::UserMetricsAction("ShowBluetoothSettingsPage"));
+  ShowSettingsSubPageForActiveUser(base::StrCat(
+      {chromeos::settings::mojom::kBluetoothDeviceDetailSubpagePath,
+       "?id=", device_id}));
 }
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(

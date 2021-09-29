@@ -24,6 +24,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to Bluetooth devices (e.g. to add a device).
   virtual void ShowBluetoothSettings() = 0;
 
+  // Shows the detailed settings for the Bluetooth device with ID |device_id|.
+  virtual void ShowBluetoothSettings(const std::string& device_id) = 0;
+
   // Show the Bluetooth pairing dialog. When provided, |device_address| is the
   // unique device address that the dialog should attempt to pair with and
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not

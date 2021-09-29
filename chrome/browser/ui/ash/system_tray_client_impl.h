@@ -63,6 +63,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   // ash::SystemTrayClient:
   void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
+  void ShowBluetoothSettings(const std::string& device_id) override;
   void ShowBluetoothPairingDialog(
       absl::optional<base::StringPiece> device_address) override;
   void ShowDateSettings() override;

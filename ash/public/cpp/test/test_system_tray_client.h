@@ -26,6 +26,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   // SystemTrayClient:
   void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
+  void ShowBluetoothSettings(const std::string& device_id) override;
   void ShowBluetoothPairingDialog(
       absl::optional<base::StringPiece> device_address) override;
   void ShowDateSettings() override;
@@ -86,6 +87,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_sim_unlock_settings_count_;
   }
 
+  const std::string& last_bluetooth_settings_device_id() const {
+    return last_bluetooth_settings_device_id_;
+  }
+
  private:
   int show_bluetooth_settings_count_ = 0;
   int show_bluetooth_pairing_dialog_count_ = 0;
@@ -94,6 +99,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
+  std::string last_bluetooth_settings_device_id_;
 };
 
 }  // namespace ash
