@@ -2297,6 +2297,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(arguments.is_list());
   CHECK(CanExecuteJavaScript());
+  AssertNonSpeculativeFrame();
 
   const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptMethodExecuteRequest(
@@ -2308,6 +2309,7 @@ void RenderFrameHostImpl::ExecuteJavaScript(const std::u16string& javascript,
                                             JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(CanExecuteJavaScript());
+  AssertNonSpeculativeFrame();
 
   const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptExecuteRequest(javascript, wants_result,
@@ -2321,6 +2323,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GT(world_id, ISOLATED_WORLD_ID_GLOBAL);
   DCHECK_LE(world_id, ISOLATED_WORLD_ID_MAX);
+  AssertNonSpeculativeFrame();
 
   const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptExecuteRequestInIsolatedWorld(
@@ -2332,6 +2335,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
     JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AssertNonSpeculativeFrame();
 
   const bool has_user_gesture = false;
   const bool wants_result = !callback.is_null();
@@ -2344,6 +2348,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
     const std::u16string& javascript,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AssertNonSpeculativeFrame();
 
   // TODO(mustaq): The render-to-browser state update caused by the below
   // JavaScriptExecuteRequestsForTests call is redundant with this update. We
@@ -8442,6 +8447,7 @@ void RenderFrameHostImpl::ClearWebUI() {
 
 const mojo::Remote<blink::mojom::ImageDownloader>&
 RenderFrameHostImpl::GetMojoImageDownloader() {
+  // TODO(https://crbug.com/1249933): Call AssertNonSpeculativeFrame() here.
   if (!mojo_image_downloader_.is_bound() && GetRemoteInterfaces()) {
     GetRemoteInterfaces()->GetInterface(
         mojo_image_downloader_.BindNewPipeAndPassReceiver());
@@ -12555,6 +12561,14 @@ void RenderFrameHostImpl::IncreaseCommitNavigationCounter() {
 
 bool RenderFrameHostImpl::ShouldWaitForUnloadHandlers() const {
   return has_unload_handlers() && !IsInBackForwardCache();
+}
+
+void RenderFrameHostImpl::AssertNonSpeculativeFrame() const {
+  if (lifecycle_state() != LifecycleStateImpl::kSpeculative)
+    return;
+
+  NOTREACHED();
+  base::debug::DumpWithoutCrashing();
 }
 
 // Returns the string corresponding to LifecycleStateImpl, used for logging

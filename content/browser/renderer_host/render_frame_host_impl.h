@@ -2728,6 +2728,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLLoaderFactoryOverridePtr* factory_override = nullptr);
 
   // Returns true if the ExecuteJavaScript() API can be used on this host.
+  // The checks do not apply to ExecuteJavaScriptInIsolatedWorld, nor to
+  // ExecuteJavaScriptForTests.  See also AssertNonSpeculativeFrame method.
   bool CanExecuteJavaScript();
 
   // Returns the AXTreeID of the parent when the current frame is a child frame
@@ -3137,6 +3139,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Check if we should wait for unload handlers when shutting down the
   // renderer.
   bool ShouldWaitForUnloadHandlers() const;
+
+  // Asserts that `this` is not a speculative frame and calls
+  // DumpWithoutCrashing otherwise.  This method should be called from
+  // RenderFrameHostImpl's methods that require the caller to "be careful" not
+  // to call them on a speculative frame.  One such example is
+  // JavaScriptExecuteRequestInIsolatedWorld.
+  void AssertNonSpeculativeFrame() const;
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
