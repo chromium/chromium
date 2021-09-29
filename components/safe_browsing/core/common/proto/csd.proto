@@ -88,6 +88,27 @@ message ChromeUserPopulation {
 
   // Server-side only field.
   reserved 13;
+
+  // Tokens to connect different requests on the same page, used for measuring
+  // the performance of Safe Browsing protections. If two requests have the
+  // same token, it means they are from the same user visiting the same page.
+  // See go/chrome-sb-pageload-tokens.
+  message PageLoadToken {
+    // The source that generates the token.
+    enum TokenSource {
+      SOURCE_UNSPECIFIED = 0;
+      // The token is randomly generated on the client-side. It is 32 bytes long.
+      CLIENT_GENERATION = 1;
+    }
+    optional TokenSource token_source = 1;
+    // The timestamp when the token is generated or received.
+    optional int64 token_time_msec = 2;
+    // The value of the token.
+    optional bytes token_value = 3;
+  }
+  // Note: This field is set as repeated to support tokens from multiple
+  // sources.
+  repeated PageLoadToken page_load_tokens = 14;
 }
 
 message ClientPhishingRequest {

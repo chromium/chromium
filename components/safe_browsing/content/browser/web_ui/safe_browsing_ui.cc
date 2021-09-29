@@ -692,6 +692,32 @@ base::Value SerializeChromeUserPopulation(
                            base::Value(population.number_of_open_profiles()));
   }
 
+  base::ListValue page_load_tokens;
+  for (const ChromeUserPopulation::PageLoadToken& token :
+       population.page_load_tokens()) {
+    base::DictionaryValue token_dict;
+    std::string token_source;
+    switch (token.token_source()) {
+      case ChromeUserPopulation::PageLoadToken::SOURCE_UNSPECIFIED:
+        token_source = "SOURCE_UNSPECIFIED";
+        break;
+      case ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION:
+        token_source = "CLIENT_GENERATION";
+        break;
+    }
+    token_dict.SetKey("token_source", base::Value(token_source));
+    token_dict.SetKey(
+        "token_time_msec",
+        base::Value(static_cast<double>(token.token_time_msec())));
+
+    std::string token_base64;
+    base::Base64Encode(token.token_value(), &token_base64);
+    token_dict.SetKey("token_value", base::Value(token_base64));
+
+    page_load_tokens.Append(std::move(token_dict));
+  }
+  population_dict.SetKey("page_load_tokens", std::move(page_load_tokens));
+
   return std::move(population_dict);
 }
 
