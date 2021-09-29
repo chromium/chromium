@@ -218,17 +218,17 @@ export class GalleryButton {
   /**
    * @override
    */
-  async startSaveVideo(videoRotation) {
-    const file = await filesystem.createVideoFile(VideoType.MP4);
-    return VideoSaver.createForFile(file, videoRotation);
+  async saveGif(blob, name) {
+    const file = await filesystem.saveBlob(blob, name);
+    await this.updateCover_(file);
   }
 
   /**
    * @override
    */
-  async startSaveGif(resolution) {
-    const file = await filesystem.createVideoFile(VideoType.GIF);
-    return VideoSaver.createForGifFile(file, resolution);
+  async startSaveVideo(videoRotation) {
+    const file = await filesystem.createVideoFile(VideoType.MP4);
+    return VideoSaver.createForFile(file, videoRotation);
   }
 
   /**
@@ -240,15 +240,6 @@ export class GalleryButton {
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
-    await this.updateCover_(file);
-  }
-
-  /**
-   * @override
-   */
-  async finishSaveGif(gifVideo) {
-    const file = await gifVideo.endWrite();
-    assert(file !== null);
     await this.updateCover_(file);
   }
 }

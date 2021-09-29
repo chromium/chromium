@@ -18,9 +18,17 @@ export class ResultSaver {
    * Saves photo capture result.
    * @param {!Blob} blob Data of the photo to be added.
    * @param {string} name Name of the photo to be saved.
-   * @return {!Promise} Promise for the operation.
+   * @return {!Promise}
    */
   async savePhoto(blob, name) {}
+
+  /**
+   * Saves gif capture result.
+   * @param {!Blob} blob Data of the gif to be added.
+   * @param {string} name Name of the gif to be saved.
+   * @return {!Promise}
+   */
+  async saveGif(blob, name) {}
 
   /**
    * Returns a video saver to save captured result video.
@@ -32,25 +40,10 @@ export class ResultSaver {
   async startSaveVideo(videoRotation) {}
 
   /**
-   * Returns a gif saver to save captured result gif.
-   * @param {!Resolution} resolution
-   * @return {!Promise<!VideoSaver>}
-   */
-  async startSaveGif(resolution) {}
-
-  /**
    * Saves captured video result.
    * @param {!VideoSaver} video Contains the video result to be
    *     saved.
    * @return {!Promise}
    */
   async finishSaveVideo(video) {}
-
-  /**
-   * Saves captured gif result.
-   * @param {!VideoSaver} gifVideo Contains the gif result to be
-   *     saved.
-   * @return {!Promise}
-   */
-  async finishSaveGif(gifVideo) {}
 }

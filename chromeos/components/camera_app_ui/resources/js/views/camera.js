@@ -807,13 +807,6 @@ export class Camera extends View {
   /**
    * @override
    */
-  createGifSaver(resolution) {
-    return this.resultSaver_.startSaveGif(resolution);
-  }
-
-  /**
-   * @override
-   */
   getPreviewVideo() {
     const video = this.preview_.getVideoElement();
     assertInstanceof(video, HTMLVideoElement);
@@ -872,8 +865,8 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultGif(gifSaver) {
-    await this.resultSaver_.finishSaveGif(gifSaver);
+  async handleResultGif(blob, name) {
+    await this.resultSaver_.saveGif(blob, name);
   }
 
   /**

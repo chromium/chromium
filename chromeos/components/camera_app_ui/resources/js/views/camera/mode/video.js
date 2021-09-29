@@ -17,6 +17,7 @@ import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as loadTimeData from '../../../models/load_time_data.js';
 import {
+  GifSaver,
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
@@ -31,6 +32,7 @@ import {
   NoChunkError,
   PerfEvent,
   Resolution,
+  VideoType,
 } from '../../../type.js';
 import {WaitableEvent} from '../../../waitable_event.js';
 
@@ -160,14 +162,6 @@ export class VideoHandler {
   createVideoSaver() {}
 
   /**
-   * Creates VideoSaver to save video capture result.
-   * @param {!Resolution} resolution
-   * @return {!Promise<!VideoSaver>}
-   * @abstract
-   */
-  createGifSaver(resolution) {}
-
-  /**
    * Handles the result video.
    * @param {!VideoResult} video Captured video result.
    * @return {!Promise}
@@ -177,11 +171,12 @@ export class VideoHandler {
 
   /**
    * Handles the result gif video.
-   * @param {!VideoSaver} gifSaver Captured gif video result.
+   * @param {!Blob} blob Captured gif blob.
+   * @param {string} name Name of captured gif.
    * @return {!Promise}
    * @abstract
    */
-  handleResultGif(gifSaver) {}
+  handleResultGif(blob, name) {}
 
   /**
    * Handles the result video snapshot.
@@ -501,6 +496,7 @@ export class Video extends ModeBase {
 
     this.recordingType_ = this.getToggledRecordOption_();
     if (this.recordingType_ === RecordType.GIF) {
+      const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
       state.set(state.State.RECORDING_GIF, true);
       state.set(state.State.SHUTTER_PROGRESSING, true);
       this.gifRecordTime_.start({resume: false});
@@ -510,9 +506,13 @@ export class Video extends ModeBase {
       state.set(state.State.SHUTTER_PROGRESSING, false);
       this.gifRecordTime_.stop({pause: false});
 
+      // Measure the latency of gif encoder finishing rest of the encoding
+      // works.
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
-      await this.handler_.handleResultGif(gifSaver);
+      const blob = await gifSaver.endWrite();
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
+
+      await this.handler_.handleResultGif(blob, gifName);
 
       state.set(state.State.RECORDING_GIF, false);
     } else {
@@ -588,7 +588,7 @@ export class Video extends ModeBase {
   /**
    * Starts recording gif animation and waits for stop recording event triggered
    * by stop shutter or time out over 5 seconds.
-   * @return {!Promise<!VideoSaver>} Saves recorded video.
+   * @return {!Promise<!GifSaver>} Saves recorded video.
    * @private
    */
   async captureGif_() {
@@ -599,8 +599,7 @@ export class Video extends ModeBase {
       width = Math.round(width * ratio);
       height = Math.round(height * ratio);
     }
-    const gifSaver =
-        await this.handler_.createGifSaver(new Resolution(width, height));
+    const gifSaver = await GifSaver.create(new Resolution(width, height));
     const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
@@ -620,9 +619,7 @@ export class Video extends ModeBase {
         encodedFrames++;
         if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
           context.drawImage(video, 0, 0, width, height);
-          gifSaver.write(new Blob([
-            context.getImageData(0, 0, width, height).data,
-          ]));
+          gifSaver.write(context.getImageData(0, 0, width, height).data);
         }
         video.requestVideoFrameCallback(updateCanvas);
       };
