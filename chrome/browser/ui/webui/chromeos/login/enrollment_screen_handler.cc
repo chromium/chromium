@@ -278,6 +278,7 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentCloudReadyNotAllowedError() {
+  ShowScreen(EnrollmentScreenView::kScreenId);
   ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED, false);
 }
 

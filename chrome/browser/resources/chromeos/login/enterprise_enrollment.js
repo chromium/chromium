@@ -253,6 +253,10 @@ Polymer({
    * URL.
    */
   onBeforeShow(data) {
+    if (data == undefined) {
+      return;
+    }
+
     if (Oobe.getInstance().forceKeyboardFlow) {
       // We run the tab remapping logic inside of the webview so that the
       // simulated tab events will use the webview tab-stops. Simulated tab

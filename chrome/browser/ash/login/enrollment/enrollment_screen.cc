@@ -243,7 +243,6 @@ void EnrollmentScreen::ShowImpl() {
   UMA(policy::kMetricEnrollmentTriggered);
   UpdateFlowType();
   if (switches::IsOsInstallAllowed()) {
-    view_->Show();
     view_->ShowEnrollmentCloudReadyNotAllowedError();
     return;
   }
