@@ -169,11 +169,18 @@ bool IsSnapped(WindowStateType state) {
 // Returns true if the bounds change of |window| is from VK request and can be
 // allowed by the current window's state.
 bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) {
-  if (!window->GetProperty(wm::kVirtualKeyboardRestoreBoundsKey))
-    return false;
   WindowStateType state_type = WindowState::Get(window)->GetStateType();
-  return state_type == WindowStateType::kNormal ||
-         state_type == WindowStateType::kDefault;
+  if (state_type == WindowStateType::kNormal ||
+      state_type == WindowStateType::kDefault) {
+    return window->GetProperty(wm::kVirtualKeyboardRestoreBoundsKey) != nullptr;
+  }
+
+  if (state_type == WindowStateType::kPrimarySnapped ||
+      state_type == WindowStateType::kSecondarySnapped) {
+    return SplitViewController::Get(window)->BoundsChangeIsFromVKAndAllowed(
+        window);
+  }
+  return false;
 }
 
 }  // namespace

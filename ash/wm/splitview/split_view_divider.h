@@ -20,6 +20,7 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -68,6 +69,13 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   gfx::Rect GetDividerBoundsInScreen(bool is_dragging);
 
   void SetAlwaysOnTop(bool on_top);
+
+  // Set adjustability of the divider bar. Unadjustable divider does not receive
+  // event and the divider bar view is not visible. When the divider is moved
+  // for the virtual keyboard, the divider will be set unadjustable.
+  void SetAdjustable(bool adjustable);
+  // Get the adjustability of the divider bar.
+  bool IsAdjustable() const;
 
   void AddObservedWindow(aura::Window* window);
   void RemoveObservedWindow(aura::Window* window);
@@ -122,6 +130,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // Tracks observed windows.
   aura::Window::Windows observed_windows_;
+
+  // The content view of the divider.
+  views::View* divider_view_ = nullptr;
 
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

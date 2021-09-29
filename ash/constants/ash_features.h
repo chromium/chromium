@@ -18,6 +18,8 @@ namespace features {
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAccountManagementFlowsV2;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAdjustSplitViewForVK;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAllowAmbientEQ;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAllowRepeatedUpdates;
@@ -456,6 +458,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool AreDesksTrackpadSwipeImprovementsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool DoWindowsFollowCursor();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAccountManagementFlowsV2Enabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();

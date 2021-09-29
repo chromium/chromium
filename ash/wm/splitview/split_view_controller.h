@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -24,6 +25,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
 class Layer;
@@ -48,7 +50,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public OverviewObserver,
                                        public display::DisplayObserver,
                                        public TabletModeObserver,
-                                       public AccessibilityObserver {
+                                       public AccessibilityObserver,
+                                       public ash::KeyboardControllerObserver,
+                                       public wm::ActivationChangeObserver {
  public:
   // |LEFT| and |RIGHT| are named for the positions to which they correspond in
   // clamshell mode or primary-landscape-oriented tablet mode. In portrait-
@@ -271,6 +275,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewController::SnapPosition ComputeSnapPosition(
       const gfx::Point& last_location_in_screen);
 
+  // In portrait mode split view, if the virtual keyboard occludes the input
+  // field in the bottom window. The bottom window will be pushed up above the
+  // virtual keyboard. In this case, we allow window state to set bounds for
+  // snapped window.
+  bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) const;
+
   void AddObserver(SplitViewObserver* observer);
   void RemoveObserver(SplitViewObserver* observer);
 
@@ -312,6 +322,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
   void OnAccessibilityControllerShutdown() override;
+
+  // KeyboardControllerObserver
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   aura::Window* root_window() const { return root_window_; }
   aura::Window* left_window() { return left_window_; }
@@ -624,6 +642,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // tablet resize mode can switch to normal mode (letting windows be resized)
   // even if the divider isn't moved.
   base::OneShotTimer resize_timer_;
+
+  // A flag indicates the window bounds is currently changed due to the virtual
+  // keyboard.
+  bool changing_bounds_by_vk_ = false;
 };
 
 }  // namespace ash

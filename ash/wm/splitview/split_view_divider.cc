@@ -121,6 +121,10 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
     divider_handler_view_->DoSpawningAnimation(divider_signed_offset);
   }
 
+  void SetDividerBarVisible(bool visible) {
+    divider_handler_view_->SetVisible(visible);
+  }
+
   // views::View:
   void Layout() override {
     // There is no divider in clamshell split view. If we are in clamshell mode,
@@ -341,6 +345,21 @@ void SplitViewDivider::SetAlwaysOnTop(bool on_top) {
   }
 }
 
+void SplitViewDivider::SetAdjustable(bool adjustable) {
+  if (adjustable == IsAdjustable())
+    return;
+
+  divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+      adjustable ? aura::EventTargetingPolicy::kTargetAndDescendants
+                 : aura::EventTargetingPolicy::kNone);
+  static_cast<DividerView*>(divider_view_)->SetDividerBarVisible(adjustable);
+}
+
+bool SplitViewDivider::IsAdjustable() const {
+  return divider_widget_->GetNativeWindow()->event_targeting_policy() !=
+         aura::EventTargetingPolicy::kNone;
+}
+
 void SplitViewDivider::AddObservedWindow(aura::Window* window) {
   if (!base::Contains(observed_windows_, window)) {
     window->AddObserver(this);
@@ -452,7 +471,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   divider_widget_->Init(std::move(params));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
-  divider_widget_->SetContentsView(
+  divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
   divider_widget_->Show();

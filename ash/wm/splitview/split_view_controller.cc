@@ -10,6 +10,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/window_properties.h"
@@ -57,6 +58,8 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/types/display_constants.h"
@@ -68,7 +71,6 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -93,6 +95,15 @@ constexpr float kTwoThirdPositionRatio = 0.67f;
 // details.
 constexpr float kBlackScrimFadeInRatio = 0.1f;
 constexpr float kBlackScrimOpacity = 0.4f;
+
+// In portrait mode split view, if the caret in the bottom window is less than
+// `kMinCaretKeyboardDist` dip above the upper bounds of the virtual keyboard,
+// then we push up the bottom window above the virtual keyboard to avoid the
+// input field being occluded by the virtual keyboard. The upper bounds of the
+// bottom window after being pushed up cannot exceeds 1 -
+// `kMinDividerPositionRatio` of screen height.
+constexpr int kMinCaretKeyboardDist = 16;
+constexpr float kMinDividerPositionRatio = 0.15f;
 
 // If performant split view resizing is enabled, the speed at which the divider
 // is moved controls whether windows are scaled or translated. If the divider is
@@ -158,6 +169,13 @@ gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
                                 bounds_in_screen.right() - 1),
                     base::clamp(location_in_screen.y(), bounds_in_screen.y(),
                                 bounds_in_screen.bottom() - 1));
+}
+
+ui::InputMethod* GetCurrentInputMethod() {
+  if (auto* bridge = ui::IMEBridge::Get())
+    if (auto* handler = bridge->GetInputContextHandler())
+      return handler->GetInputMethod();
+  return nullptr;
 }
 
 WindowStateType GetStateTypeFromSnapPosition(
@@ -873,6 +891,10 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
     // Add observers when the split view mode starts.
     Shell::Get()->AddShellObserver(this);
     Shell::Get()->overview_controller()->AddObserver(this);
+    if (features::IsAdjustSplitViewForVKEnabled()) {
+      keyboard::KeyboardUIController::Get()->AddObserver(this);
+      Shell::Get()->activation_client()->AddObserver(this);
+    }
 
     auto_snap_controller_ = std::make_unique<AutoSnapController>(this);
 
@@ -1279,6 +1301,10 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   // Remove observers when the split view mode ends.
   Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
+  if (features::IsAdjustSplitViewForVKEnabled()) {
+    keyboard::KeyboardUIController::Get()->RemoveObserver(this);
+    Shell::Get()->activation_client()->RemoveObserver(this);
+  }
 
   auto_snap_controller_.reset();
 
@@ -1417,6 +1443,13 @@ SplitViewController::SnapPosition SplitViewController::ComputeSnapPosition(
   return (position <= divider_position) == IsLayoutPrimary(root_window_)
              ? SplitViewController::LEFT
              : SplitViewController::RIGHT;
+}
+
+bool SplitViewController::BoundsChangeIsFromVKAndAllowed(
+    aura::Window* window) const {
+  // Make sure that it is the bottom window who is requiring bounds change.
+  return features::IsAdjustSplitViewForVKEnabled() && changing_bounds_by_vk_ &&
+         window == (IsLayoutPrimary(window) ? right_window_ : left_window_);
 }
 
 void SplitViewController::AddObserver(SplitViewObserver* observer) {
@@ -1832,6 +1865,99 @@ void SplitViewController::OnAccessibilityControllerShutdown() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
 }
 
+void SplitViewController::OnKeyboardOccludedBoundsChanged(
+    const gfx::Rect& screen_bounds) {
+  if (!features::IsAdjustSplitViewForVKEnabled())
+    return;
+
+  // The window only needs to be moved if it is in the portrait mode.
+  if (IsLayoutHorizontal(root_window_))
+    return;
+
+  // We only modify the bottom window if there is one and the current active
+  // input field is in the bottom window.
+  aura::Window* bottom_window = GetPhysicalRightOrBottomWindow();
+  if (!bottom_window &&
+      !bottom_window->Contains(window_util::GetActiveWindow())) {
+    return;
+  }
+
+  // If the virtual keyboard is disabled, restore to original layout.
+  if (screen_bounds.IsEmpty()) {
+    UpdateSnappedWindowsAndDividerBounds();
+    return;
+  }
+
+  // Get caret bounds.
+  auto* text_input_client = GetCurrentInputMethod()->GetTextInputClient();
+  const gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
+  if (caret_bounds == gfx::Rect())
+    return;
+
+  // Move the bottom window if the caret is less than `kMinCaretKeyboardDist`
+  // dip above the upper bounds of the virtual keyboard.
+  const int keyboard_occluded_y = screen_bounds.y();
+  if (keyboard_occluded_y - caret_bounds.bottom() > kMinCaretKeyboardDist)
+    return;
+
+  // Move bottom window above the virtual keyboard but the upper bounds cannot
+  // exceeds `kMinDividerPositionRatio` of the screen height.
+  gfx::Rect bottom_bounds = bottom_window->GetBoundsInScreen();
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window_);
+  const int y =
+      std::max(keyboard_occluded_y - bottom_bounds.height(),
+               static_cast<int>(work_area.y() +
+                                work_area.height() * kMinDividerPositionRatio));
+  bottom_bounds.set_y(y);
+  bottom_bounds.set_height(keyboard_occluded_y - y);
+
+  int divider_position = y - kSplitviewDividerShortSideLength;
+
+  // Set bottom window bounds.
+  {
+    base::AutoReset<bool> enable_bounds_change(&changing_bounds_by_vk_, true);
+    bottom_window->SetBoundsInScreen(
+        bottom_bounds,
+        display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_));
+  }
+
+  // Set split view divider bounds.
+  split_view_divider_->divider_widget()->SetBounds(
+      SplitViewDivider::GetDividerBoundsInScreen(work_area, /*landscape=*/false,
+                                                 divider_position,
+                                                 /*is_dragging=*/false));
+  // Make split view divider unadjustable.
+  split_view_divider_->SetAdjustable(false);
+}
+
+void SplitViewController::OnWindowActivated(ActivationReason reason,
+                                            aura::Window* gained_active,
+                                            aura::Window* lost_active) {
+  if (!features::IsAdjustSplitViewForVKEnabled())
+    return;
+
+  // If the bottom window is moved for the virtual keyboard (the split view
+  // divider bar is unadjustable), when the bottom window lost active, restore
+  // to the original layout.
+  if (!split_view_divider_ || split_view_divider_->IsAdjustable())
+    return;
+
+  // It should be in portrait mode.
+  if (IsLayoutHorizontal(root_window_))
+    return;
+
+  aura::Window* bottom_window = GetPhysicalRightOrBottomWindow();
+  if (!bottom_window)
+    return;
+
+  if (bottom_window->Contains(lost_active) &&
+      !bottom_window->Contains(gained_active)) {
+    UpdateSnappedWindowsAndDividerBounds();
+  }
+}
+
 aura::Window* SplitViewController::GetPhysicalLeftOrTopWindow() {
   // TODO(crbug.com/1233194): Rename |left_window_| and |right_window_| to
   // |primary_window_| and |secondary_window_|.
@@ -2009,9 +2135,15 @@ void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
     WindowState::Get(right_window_)->OnWMEvent(&right_window_event);
   }
 
-  // Update divider's bounds.
-  if (split_view_divider_)
+  // Update divider's bounds and make it adjustable.
+  if (split_view_divider_) {
     split_view_divider_->UpdateDividerBounds();
+
+    // Make the split view divider adjustable.
+    if (features::IsAdjustSplitViewForVKEnabled()) {
+      split_view_divider_->SetAdjustable(true);
+    }
+  }
 }
 
 SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
