@@ -1007,7 +1007,13 @@ TEST_F(SystemPerfettoTest, EnablePerfettoSystemTracingDefaultState) {
 #endif
 }
 
-TEST_F(SystemPerfettoTest, SetupSystemTracing) {
+// Failing on Android, see https://crbug.com/1254159.
+#if defined(ANDROID)
+#define MAYBE_SetupSystemTracing DISABLED_SetupSystemTracing
+#else
+#define MAYBE_SetupSystemTracing SetupSystemTracing
+#endif
+TEST_F(SystemPerfettoTest, MAYBE_SetupSystemTracing) {
   ClearAndRestoreSystemProducerScope saved_system_producer;
   EXPECT_FALSE(PerfettoTracedProcess::Get()->system_producer());
   PerfettoTracedProcess::Get()->SetupSystemTracing();
