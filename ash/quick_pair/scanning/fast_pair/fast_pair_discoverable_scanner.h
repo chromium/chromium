@@ -57,7 +57,7 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
                                  const std::string model_id,
                                  DeviceMetadata* device_metadata);
-  void OnProcessStopped(
+  void OnUtilityProcessStopped(
       device::BluetoothDevice* device,
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
