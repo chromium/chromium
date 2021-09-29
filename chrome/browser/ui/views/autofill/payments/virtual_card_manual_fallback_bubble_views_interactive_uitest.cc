@@ -140,8 +140,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 }
 
 // Invokes the bubble and verifies the bubble is dismissed upon page navigation.
-// Flaky on macOS. crbug.com/1254101
-#if defined(OS_MAC)
+// Flaky on macOS and Linux. crbug.com/1254101
+#if defined(OS_MAC) || defined(OS_LINUX)
 #define MAYBE_DismissBubbleUponNavigation DISABLED_DismissBubbleUponNavigation
 #else
 #define MAYBE_DismissBubbleUponNavigation DismissBubbleUponNavigation
