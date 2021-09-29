@@ -1931,7 +1931,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Possibly augment |download_policy| based on the status of |frame_host| as
   // well as |user_gesture|.
   virtual void AugmentNavigationDownloadPolicy(
-      WebContents* web_contents,
       RenderFrameHost* frame_host,
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy);

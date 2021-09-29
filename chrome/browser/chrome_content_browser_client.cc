@@ -5727,7 +5727,6 @@ ChromeContentBrowserClient::GetPluginMimeTypesWithExternalHandlers(
 }
 
 void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
-    content::WebContents* web_contents,
     content::RenderFrameHost* frame_host,
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {
