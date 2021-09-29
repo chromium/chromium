@@ -74,6 +74,8 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     VENDOR_PRODUCT_RULE(0x18d1, 0x5026),
     // VASCO
     VENDOR_PRODUCT_RULE(0x1a44, 0x00bb),
+    // OnlyKey
+    VENDOR_PRODUCT_RULE(0x1d50, 0x60fc),
     // Keydo AES
     VENDOR_PRODUCT_RULE(0x1e0d, 0xf1ae),
     // Neowave Keydo
