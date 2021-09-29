@@ -909,7 +909,7 @@ void PaintOpReader::ReadColorFilterPaintFilter(
                   DeserializationError::kSkColorFilterUnflattenFailure);
   Read(&input);
   if (!color_filter)
-    DCHECK(!valid_);
+    SetInvalid(DeserializationError::kZeroSkColorFilterBytes);
   if (!valid_)
     return;
   filter->reset(new ColorFilterPaintFilter(std::move(color_filter),

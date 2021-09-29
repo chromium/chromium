@@ -63793,6 +63793,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="49" label="SharedImageProvider unknown mailbox"/>
   <int value="50" label="SharedImageProvider no access"/>
   <int value="51" label="SharedImageProvider SkImage creation failed"/>
+  <int value="52" label="Zero SkColorFilter bytes"/>
 </enum>
 
 <enum name="PaletteModeCancelType">

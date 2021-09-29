@@ -182,8 +182,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSharedImageProviderUnknownMailbox = 49,
     kSharedImageProviderNoAccess = 50,
     kSharedImageProviderSkImageCreationFailed = 51,
+    kZeroSkColorFilterBytes = 52,
 
-    kMaxValue = kSharedImageProviderSkImageCreationFailed,
+    kMaxValue = kZeroSkColorFilterBytes,
   };
 
   template <typename T>
