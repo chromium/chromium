@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_host_test_helper.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "extensions/browser/extension_host.h"
@@ -23,6 +24,20 @@ ExtensionHostTestHelper::ExtensionHostTestHelper(
 }
 
 ExtensionHostTestHelper::~ExtensionHostTestHelper() = default;
+
+void ExtensionHostTestHelper::RestrictToType(mojom::ViewType type) {
+  // Restricting to both a specific host and a type is either redundant (if
+  // the types match) or contradictory (if they don't). Don't allow it.
+  DCHECK(!restrict_to_host_) << "Can't restrict to both a host and view type.";
+  restrict_to_type_ = type;
+}
+
+void ExtensionHostTestHelper::RestrictToHost(const ExtensionHost* host) {
+  // Restricting to both a specific host and a type is either redundant (if
+  // the types match) or contradictory (if they don't). Don't allow it.
+  DCHECK(!restrict_to_type_) << "Can't restrict to both a host and view type.";
+  restrict_to_host_ = host;
+}
 
 void ExtensionHostTestHelper::OnExtensionHostRenderProcessReady(
     content::BrowserContext* browser_context,
@@ -77,6 +92,8 @@ void ExtensionHostTestHelper::EventSeen(ExtensionHost* host, HostEvent event) {
   if (!extension_id_.empty() && host->extension_id() != extension_id_)
     return;
   if (restrict_to_type_ && host->extension_host_type() != restrict_to_type_)
+    return;
+  if (restrict_to_host_ && host != restrict_to_host_)
     return;
 
   if (event == HostEvent::kDestroyed) {

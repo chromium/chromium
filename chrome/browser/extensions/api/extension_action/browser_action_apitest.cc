@@ -8,8 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -52,7 +50,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_host_observer.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -848,40 +846,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
   ASSERT_EQ("",
             action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 
-  // A helper class to wait for the ExtensionHost to shut down.
-  // TODO(devlin): Hoist this somewhere more common and track down other similar
-  // usages.
-  class ExtensionHostDestructionObserver : public ExtensionHostObserver {
-   public:
-    explicit ExtensionHostDestructionObserver(ExtensionHost* host) {
-      host_observation_.Observe(host);
-    }
-    ExtensionHostDestructionObserver(
-        const ExtensionHostDestructionObserver& other) = delete;
-    ExtensionHostDestructionObserver& operator=(
-        const ExtensionHostDestructionObserver& other) = delete;
-    ~ExtensionHostDestructionObserver() override = default;
-
-    void OnExtensionHostDestroyed(ExtensionHost* host) override {
-      ASSERT_TRUE(host_observation_.IsObservingSource(host));
-      host_observation_.Reset();
-      run_loop_.QuitWhenIdle();
-    }
-
-    void Wait() { run_loop_.Run(); }
-
-   private:
-    base::RunLoop run_loop_;
-    base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
-        host_observation_{this};
-  };
-
-  ExtensionHostDestructionObserver host_destroyed_observer(extension_host);
+  ExtensionHostTestHelper host_destroyed_observer(profile());
+  host_destroyed_observer.RestrictToHost(extension_host);
 
   // Click the browser action.
   ExecuteExtensionAction(browser(), extension);
 
-  host_destroyed_observer.Wait();
+  host_destroyed_observer.WaitForHostDestroyed();
 
   EXPECT_FALSE(manager->GetBackgroundHostForExtension(extension->id()));
   EXPECT_EQ("X",
