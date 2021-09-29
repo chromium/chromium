@@ -4,8 +4,10 @@
 
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -31,6 +34,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/views/controls/label.h"
@@ -75,18 +79,28 @@ class TextChangeWaiter {
 
 }  // anonymous namespace
 
-class BrowserNonClientFrameViewMacBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+enum class PrefixTitles { kEnabled, kDisabled };
+
+class BrowserNonClientFrameViewMacBrowserTestTitlePrefixed
+    : public web_app::WebAppControllerBrowserTest,
+      public testing::WithParamInterface<PrefixTitles> {
  public:
-  BrowserNonClientFrameViewMacBrowserTest() = default;
-  BrowserNonClientFrameViewMacBrowserTest(
-      const BrowserNonClientFrameViewMacBrowserTest&) = delete;
-  BrowserNonClientFrameViewMacBrowserTest& operator=(
-      const BrowserNonClientFrameViewMacBrowserTest&) = delete;
-  ~BrowserNonClientFrameViewMacBrowserTest() override = default;
+  BrowserNonClientFrameViewMacBrowserTestTitlePrefixed() {
+    if (GetParam() == PrefixTitles::kEnabled) {
+      features_.InitAndEnableFeature(features::kPrefixWebAppWindowsWithAppName);
+    } else {
+      features_.InitAndDisableFeature(
+          features::kPrefixWebAppWindowsWithAppName);
+    }
+  }
+  ~BrowserNonClientFrameViewMacBrowserTestTitlePrefixed() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
+                       TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   const GURL start_url = GetInstallableAppURL();
@@ -108,7 +122,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
     chrome::ToggleFullscreenMode(browser);
     EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    const std::u16string expected_title(u"Full Screen");
+    std::u16string expected_title(u"Full Screen");
+    if (GetParam() == PrefixTitles::kEnabled)
+      expected_title = base::StrCat({u"A Web App - ", expected_title});
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Full Screen'"));
@@ -120,7 +136,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
     chrome::ToggleFullscreenMode(browser);
     EXPECT_FALSE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    const std::u16string expected_title(u"Not Full Screen");
+    std::u16string expected_title(u"Not Full Screen");
+    if (GetParam() == PrefixTitles::kEnabled)
+      expected_title = base::StrCat({u"A Web App - ", expected_title});
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Not Full Screen'"));
@@ -128,6 +146,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
     EXPECT_EQ(expected_title, title->GetText());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
+                         testing::Values(PrefixTitles::kEnabled,
+                                         PrefixTitles::kDisabled));
+
+using BrowserNonClientFrameViewMacBrowserTest =
+    web_app::WebAppControllerBrowserTest;
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
