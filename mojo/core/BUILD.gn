@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
+import("//chrome/process_version_rc_template.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -190,6 +191,13 @@ core_impl_source_set("impl_for_embedder") {
   for_shared_library = false
 }
 
+if (is_win) {
+  process_version_rc_template("mojo_core_version") {
+    sources = [ "mojo_core.ver" ]
+    output = "$target_gen_dir/mojo_core_version.rc"
+  }
+}
+
 if (is_chromeos || is_linux || is_android || is_win) {
   core_impl_source_set("impl_for_shared_library") {
     for_shared_library = true
@@ -206,6 +214,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
     ]
     if (is_win) {
       sources += [ "mojo_core.def" ]
+      deps += [ ":mojo_core_version" ]
     } else {
       configs += [ ":export_only_thunks_api" ]
     }
