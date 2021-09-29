@@ -85,10 +85,12 @@ if (use_locally_built_instrumented_libraries) {
     libgcrypt_package_ = "libgcrypt11"
     librtmp_package_ = "librtmp0"
     libgnutls_package_ = "libgnutls26"
+    libudev_package_ = "udev"
   } else {
     libgcrypt_package_ = "libgcrypt20"
     librtmp_package_ = "librtmp1"
     libgnutls_package_ = "libgnutls30"
+    libudev_package_ = "libudev1"
   }
 
   group("locally_built") {
@@ -107,6 +109,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libcairo2",
       ":libcap2",
       ":libcredentialkit_pkcs11",
+      ":libcurl3-gnutls",
       ":libdbus-1-3",
       ":libdbus-glib-1-2",
       ":libdbusmenu",
@@ -155,10 +158,10 @@ if (use_locally_built_instrumented_libraries) {
       ":nss",
       ":pango1.0",
       ":pulseaudio",
-      ":udev",
       ":zlib1g",
       ":" + libgcrypt_package_,
       ":" + librtmp_package_,
+      ":" + libudev_package_,
     ]
     if (is_msan) {
       deps += [
@@ -447,6 +450,17 @@ if (use_locally_built_instrumented_libraries) {
     pre_build = "scripts/pre-build/libcups2.sh"
   }
 
+  instrumented_library("libcurl3-gnutls") {
+    build_method = "custom_libcurl"
+    if (instrumented_libraries_platform == "trusty") {
+      # This patch is in upstream Xenial and later.
+      patches = [ "patches/libcurl3-gnutls.trusty.diff" ]
+    } else {
+      # Don't generate zsh completions.
+      patches = [ "patches/libcurl3-gnutls.xenial.diff" ]
+    }
+  }
+
   instrumented_library("libdbus-1-3") {
     extra_configure_flags = [
       "--disable-static",
@@ -598,6 +612,25 @@ if (use_locally_built_instrumented_libraries) {
       "--with-libgcrypt",
       "--with-packager=Debian",
     ]
+    if (is_msan) {
+      # MSAN is not compatible with instructions such as CPUID.
+      # https://github.com/google/oss-fuzz/issues/578
+      extra_configure_flags += [
+        "--disable-hardware-acceleration",
+      ]
+    }
+    if (instrumented_libraries_platform == "xenial") {
+      patches = [
+        # Make sure to use the memset/memcmp provided by MSAN, not the
+        # gnutls-provided ones.
+        "patches/libgnutls30.1.diff",
+
+        # Work around several usages of uninitialized memory.  The allocated
+        # memory is contained within libgnutls, so will not affect Chromium test
+        # coverage.
+        "patches/libgnutls30.2.diff",
+      ]
+    }
   }
 
   instrumented_library("libgpg-error0") {
@@ -615,6 +648,11 @@ if (use_locally_built_instrumented_libraries) {
       "--enable-x11-backend",
     ]
     pre_build = "scripts/pre-build/libgtk-3-0.sh"
+    patches = [
+      # MSAN does not support GL, so it must be disabled in GTK.
+      # https://www.chromium.org/developers/testing/memorysanitizer#TOC-Disable-OpenGL
+      "patches/libgtk-3-0.diff"
+    ]
   }
 
   instrumented_library("libido3-0.1-0") {
@@ -780,7 +818,7 @@ if (use_locally_built_instrumented_libraries) {
     build_method = "debian"
     if (instrumented_libraries_platform == "xenial") {
       # Ensure we build with clang.
-      patches = [ "patches/librtmp1.patch" ]
+      patches = [ "patches/librtmp1.diff" ]
     }
   }
 
@@ -987,7 +1025,7 @@ if (use_locally_built_instrumented_libraries) {
     pre_build = "scripts/pre-build/pulseaudio.sh"
   }
 
-  instrumented_library("udev") {
+  target("instrumented_library", libudev_package_) {
     if (instrumented_libraries_platform == "trusty") {
       extra_configure_flags = [
         "--disable-static",

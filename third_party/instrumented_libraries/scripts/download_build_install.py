@@ -307,8 +307,12 @@ class DebianBuilder(InstrumentedPackageBuilder):
       self.shell_call("dpkg-deb -x %s %s" % (deb_file, self.temp_dir()))
 
     dpkg_arch = self.shell_call("dpkg-architecture -qDEB_HOST_MULTIARCH").strip()
-    lib_dir = "usr/lib/%s" % dpkg_arch
-    lib_paths = glob.glob(os.path.join(self.temp_dir(), lib_dir, "*.so.*"))
+    lib_dirs = [
+      "usr/lib/%s" % dpkg_arch,
+      "lib/%s" % dpkg_arch,
+    ]
+    lib_paths = [path for lib_dir in lib_dirs for path in
+                 glob.glob(os.path.join(self.temp_dir(), lib_dir, "*.so.*"))]
     for lib_path in lib_paths:
       dest_path = os.path.join(self.dest_libdir(), os.path.basename(lib_path))
       try:
@@ -336,6 +340,13 @@ class DebianBuilder(InstrumentedPackageBuilder):
       deb_files.append(pathname)
 
     return deb_files
+
+
+class LibcurlBuilder(DebianBuilder):
+  def build_and_install(self):
+    DebianBuilder.build_and_install(self)
+    self.shell_call('ln -rsf %s/libcurl-gnutls.so.4 %s/libcurl.so' %
+                    (self.dest_libdir(), self.dest_libdir()))
 
 
 class LibcapBuilder(InstrumentedPackageBuilder):
@@ -518,6 +529,8 @@ def main():
     builder = NSSBuilder(args, clobber)
   elif args.build_method == 'custom_libcap':
     builder = LibcapBuilder(args, clobber)
+  elif args.build_method == 'custom_libcurl':
+    builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
   elif args.build_method == 'debian':

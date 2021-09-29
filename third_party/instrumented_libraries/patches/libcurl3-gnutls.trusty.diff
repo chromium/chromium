@@ -1,0 +1,11 @@
+--- curl-7.35.0/lib/vtls/gtls.c	2014-01-22 13:41:08.000000000 -0800
++++ curl-7.35.0-patched/lib/vtls/gtls.c	2021-03-30 10:33:59.396439588 -0700
+@@ -851,7 +851,7 @@ gtls_connect_step3(struct connectdata *c
+        might've been rejected and then a new one is in use now and we need to
+        detect that. */
+     void *connect_sessionid;
+-    size_t connect_idsize;
++    size_t connect_idsize = 0;
+ 
+     /* get the session ID data size */
+     gnutls_session_get_data(session, NULL, &connect_idsize);
