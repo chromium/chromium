@@ -1084,6 +1084,9 @@ StoragePartitionImpl::~StoragePartitionImpl() {
                                   GetDatabaseTracker()));
   }
 
+  if (GetFileSystemAccessManager())
+    GetFileSystemAccessManager()->Shutdown();
+
   if (GetFileSystemContext())
     GetFileSystemContext()->Shutdown();
 
