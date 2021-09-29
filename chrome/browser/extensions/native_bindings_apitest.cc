@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,7 +20,9 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -120,11 +121,15 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, LazyListeners) {
   ProcessManager::SetEventPageIdleTimeForTesting(1);
   ProcessManager::SetEventPageSuspendingTimeForTesting(1);
 
-  LazyBackgroundObserver background_page_done(profile());
+  ExtensionHostTestHelper background_page_done(profile());
+  background_page_done.RestrictToType(
+      mojom::ViewType::kExtensionBackgroundPage);
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("native_bindings/lazy_listeners"));
   ASSERT_TRUE(extension);
-  background_page_done.Wait();
+  // Wait for the event page to cycle.
+  background_page_done.WaitForDocumentElementAvailable();
+  background_page_done.WaitForHostDestroyed();
 
   EventRouter* event_router = EventRouter::Get(profile());
   EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),

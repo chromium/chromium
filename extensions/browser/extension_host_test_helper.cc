@@ -18,7 +18,8 @@ ExtensionHostTestHelper::ExtensionHostTestHelper(
 ExtensionHostTestHelper::ExtensionHostTestHelper(
     content::BrowserContext* browser_context,
     ExtensionId extension_id)
-    : extension_id_(std::move(extension_id)) {
+    : browser_context_(browser_context),
+      extension_id_(std::move(extension_id)) {
   host_registry_observation_.Observe(
       ExtensionHostRegistry::Get(browser_context));
 }
@@ -89,6 +90,12 @@ ExtensionHost* ExtensionHostTestHelper::WaitFor(HostEvent event) {
 
 void ExtensionHostTestHelper::EventSeen(ExtensionHost* host, HostEvent event) {
   // Check if the host matches our restrictions.
+  // Note: We have to check the browser context explicitly because the
+  // ExtensionHostRegistry is shared between on- and off-the-record profiles,
+  // so the `host`'s browser context may not be the same as the one associated
+  // with this object in the case of split mode extensions.
+  if (host->browser_context() != browser_context_)
+    return;
   if (!extension_id_.empty() && host->extension_id() != extension_id_)
     return;
   if (restrict_to_type_ && host->extension_host_type() != restrict_to_type_)

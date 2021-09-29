@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
@@ -37,7 +36,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -339,7 +339,9 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
         extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
       }
 
-      LazyBackgroundObserver page_complete(profile());
+      extensions::ExtensionHostTestHelper host_helper(profile());
+      host_helper.RestrictToType(
+          extensions::mojom::ViewType::kExtensionBackgroundPage);
       const Extension* file_handler =
           LoadExtension(test_data_dir_.AppendASCII(filehandler_path));
       if (!file_handler) {
@@ -348,9 +350,9 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
       }
 
       if (flags & FLAGS_LAZY_FILE_HANDLER) {
-        page_complete.WaitUntilClosed();
+        host_helper.WaitForHostDestroyed();
       } else {
-        page_complete.WaitUntilLoaded();
+        host_helper.WaitForDocumentElementAvailable();
       }
     }
 

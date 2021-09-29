@@ -7,16 +7,17 @@
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 
 namespace extensions {
@@ -39,11 +40,15 @@ class SystemIndicatorApiTest : public ExtensionApiTest {
   }
 
   const Extension* LoadExtensionAndWait(const std::string& test_name) {
-    LazyBackgroundObserver page_complete(profile());
+    ExtensionHostTestHelper host_helper(profile());
+    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
     const Extension* extension = LoadExtension(extdir);
-    if (extension)
-      page_complete.Wait();
+    if (extension) {
+      // Wait for the background page to cycle.
+      host_helper.WaitForDocumentElementAvailable();
+      host_helper.WaitForHostDestroyed();
+    }
     return extension;
   }
 

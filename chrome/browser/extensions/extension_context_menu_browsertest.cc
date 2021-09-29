@@ -17,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -32,12 +31,14 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -927,11 +928,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
   if (GetParam() == ContextType::kServiceWorker)
     return;
   GURL about_blank("about:blank");
-  LazyBackgroundObserver page_complete(profile());
+  extensions::ExtensionHostTestHelper host_helper(profile());
+  host_helper.RestrictToType(
+      extensions::mojom::ViewType::kExtensionBackgroundPage);
   const extensions::Extension* extension =
       LoadContextMenuExtension("event_page");
   ASSERT_TRUE(extension);
-  page_complete.Wait();
+  // Wait for the background page to cycle.
+  host_helper.WaitForDocumentElementAvailable();
+  host_helper.WaitForHostDestroyed();
 
   // Test that menu items appear while the page is unloaded.
   ASSERT_TRUE(MenuHasItemWithLabel(
@@ -940,7 +945,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
       about_blank, GURL(), GURL(), std::string("Checkbox 1")));
 
   // Test that checked menu items retain their checkedness.
-  LazyBackgroundObserver checkbox_checked(profile());
+  extensions::ExtensionHostTestHelper checkbox_checked(profile());
+  host_helper.RestrictToType(
+      extensions::mojom::ViewType::kExtensionBackgroundPage);
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetWebContents(), about_blank, GURL(),
                                         GURL()));
@@ -954,7 +961,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
   // Executing the checkbox also fires the onClicked event.
   ExtensionTestMessageListener listener("onClicked fired for checkbox1", false);
   menu->ExecuteCommand(command_id, 0);
-  checkbox_checked.WaitUntilClosed();
+  checkbox_checked.WaitForHostDestroyed();
 
   EXPECT_TRUE(menu->IsCommandIdChecked(command_id));
   ASSERT_TRUE(listener.WaitUntilSatisfied());

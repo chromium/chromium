@@ -106,6 +106,9 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // A closure to quit an active run loop, if we're waiting on a given event.
   base::OnceClosure quit_loop_;
 
+  // The associated browser context.
+  content::BrowserContext* const browser_context_;
+
   // The ID of the extension whose hosts this helper is watching, if it is
   // restricted to a given ID.
   const ExtensionId extension_id_;
