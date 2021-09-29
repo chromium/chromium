@@ -104,11 +104,6 @@ class PLATFORM_EXPORT DisplayItemClient {
     marked_for_validation_ = 0;
   }
 
-#if DCHECK_IS_ON()
-  void OnCreate();
-  void OnDestroy();
-#endif
-
   mutable uint8_t paint_invalidation_reason_ : 7;
   mutable uint8_t marked_for_validation_ : 1;
 };
