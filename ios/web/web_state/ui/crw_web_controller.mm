@@ -796,11 +796,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)takeSnapshotWithRect:(CGRect)rect
                   completion:(void (^)(UIImage*))completion {
-  // On iOS 15, web process will die if a snapshot is taken on a PDF file.
-  // TODO(crbug.com/1233014): reenable PDF snapshots.
-  if (!self.webView ||
-      (![self contentIsHTML] &&
-       !web::features::ShouldTakeScreenshotOnNonHTMLContent())) {
+  if (!self.webView) {
     dispatch_async(dispatch_get_main_queue(), ^{
       completion(nil);
     });
