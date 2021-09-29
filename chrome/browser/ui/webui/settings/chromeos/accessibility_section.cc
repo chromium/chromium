@@ -337,10 +337,6 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
-bool IsSwitchAccessPointScanningEnabled() {
-  return ::features::IsSwitchAccessPointScanningEnabled();
-}
-
 bool IsSwitchAccessSetupGuideAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
@@ -769,9 +765,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
-
-  html_source->AddBoolean("isSwitchAccessPointScanningEnabled",
-                          IsSwitchAccessPointScanningEnabled());
 
   html_source->AddBoolean("showSwitchAccessSetupGuide",
                           IsSwitchAccessSetupGuideAllowed());

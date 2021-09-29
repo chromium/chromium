@@ -373,14 +373,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean} Whether Switch Access point scanning is enabled.
-   * @private
-   */
-  isSwitchAccessPointScanningEnabled_() {
-    return loadTimeData.getBoolean('isSwitchAccessPointScanningEnabled');
-  },
-
-  /**
    * @param {number} scanSpeedValueMs
    * @return {string} a string representing the scan speed in seconds.
    * @private

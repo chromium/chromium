@@ -94,13 +94,6 @@ AX_BASE_EXPORT extern const base::Feature
 // following mode in Magnifier settings is enabled.
 AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 
-// Enables ability to choose point scanning mode in switch access.
-AX_BASE_EXPORT extern const base::Feature kEnableSwitchAccessPointScanning;
-
-// Returns true if the feature to allow point scanning in switch access is
-// enabled.
-AX_BASE_EXPORT bool IsSwitchAccessPointScanningEnabled();
-
 // Enables dictation to use on-device speech recognition when available.
 AX_BASE_EXPORT extern const base::Feature
     kExperimentalAccessibilityDictationOffline;

@@ -117,14 +117,6 @@ bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
       ::features::kMagnifierContinuousMouseFollowingModeSetting);
 }
 
-const base::Feature kEnableSwitchAccessPointScanning{
-    "EnableSwitchAccessPointScanning", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsSwitchAccessPointScanningEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableSwitchAccessPointScanning);
-}
-
 const base::Feature kExperimentalAccessibilityDictationOffline{
     "ExperimentalAccessibilityDictationOffline",
     base::FEATURE_DISABLED_BY_DEFAULT};

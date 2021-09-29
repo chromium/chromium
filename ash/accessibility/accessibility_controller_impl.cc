@@ -1149,9 +1149,7 @@ bool AccessibilityControllerImpl::IsPointScanEnabled() {
 }
 
 void AccessibilityControllerImpl::StartPointScan() {
-  if (features::IsSwitchAccessPointScanningEnabled()) {
-    point_scan_controller_->Start();
-  }
+  point_scan_controller_->Start();
 }
 
 void AccessibilityControllerImpl::SetA11yOverrideWindow(

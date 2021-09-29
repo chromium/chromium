@@ -4619,12 +4619,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kSwitchAccessPointScanningName[] =
-    "Enable point scanning with Switch Access.";
-const char kSwitchAccessPointScanningDescription[] =
-    "Enable an in-process feature to select points onscreen with Switch "
-    "Access.";
-
 const char kExperimentalAccessibilitySwitchAccessSetupGuideName[] =
     "Enable setup guide for Switch Access.";
 const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[] =

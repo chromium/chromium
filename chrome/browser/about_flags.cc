@@ -4161,10 +4161,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-switch-access-point-scanning",
-     flag_descriptions::kSwitchAccessPointScanningName,
-     flag_descriptions::kSwitchAccessPointScanningDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnableSwitchAccessPointScanning)},
     {"enable-experimental-accessibility-switch-access-setup-guide",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessSetupGuideName,
      flag_descriptions::
