@@ -68,6 +68,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnAuctionComplete(RunAdAuctionCallback callback,
                          AuctionRunner* auction,
                          absl::optional<GURL> render_url,
+                         absl::optional<std::vector<GURL>> ad_component_urls,
                          absl::optional<GURL> bidder_report_url,
                          absl::optional<GURL> seller_report_url,
                          std::vector<std::string> errors);

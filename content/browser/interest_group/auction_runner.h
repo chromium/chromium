@@ -43,6 +43,9 @@ class CONTENT_EXPORT AuctionRunner {
   // `render_url` URL of auction winning ad to render. Null if there is no
   // winner.
   //
+  // `ad_component_urls` is the list of ad component URLs returned by the
+  // winning bidder. Null if there is no winner or no list was returned.
+  //
   // `bidder_report_url` URL to use for reporting result to the bidder. Null if
   //  no report should be sent.
   //
@@ -51,12 +54,13 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
-  using RunAuctionCallback =
-      base::OnceCallback<void(AuctionRunner* auction_runner,
-                              const absl::optional<GURL> render_url,
-                              const absl::optional<GURL> bidder_report_url,
-                              const absl::optional<GURL> seller_report_url,
-                              std::vector<std::string> errors)>;
+  using RunAuctionCallback = base::OnceCallback<void(
+      AuctionRunner* auction_runner,
+      const absl::optional<GURL> render_url,
+      const absl::optional<std::vector<GURL>> ad_component_urls,
+      const absl::optional<GURL> bidder_report_url,
+      const absl::optional<GURL> seller_report_url,
+      std::vector<std::string> errors)>;
 
   // Delegate class to allow dependency injection in tests. Note that all
   // objects this returns can crash and be restarted, so passing in raw pointers

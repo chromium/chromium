@@ -91,6 +91,54 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
   return v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size());
 }
 
+// Converts a vector of blink::InterestGroup::Ads into a v8 object.
+bool CreateAdVector(AuctionV8Helper* v8_helper,
+                    v8::Local<v8::Context> context,
+                    const std::vector<blink::InterestGroup::Ad>& ads,
+                    v8::Local<v8::Value>& out_value) {
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  std::vector<v8::Local<v8::Value>> ads_vector;
+  for (const auto& ad : ads) {
+    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
+    gin::Dictionary ad_dict(isolate, ad_object);
+    if (!ad_dict.Set("renderUrl", ad.render_url.spec()) ||
+        (ad.metadata && !v8_helper->InsertJsonValue(context, "metadata",
+                                                    *ad.metadata, ad_object))) {
+      return false;
+    }
+    ads_vector.emplace_back(std::move(ad_object));
+  }
+  out_value = v8::Array::New(isolate, ads_vector.data(), ads_vector.size());
+  return true;
+}
+
+// Checks that `url` is a valid URL and is in `ads`. Appends an error to
+// `out_errors` if not. `script_source_url` is used in output error messages
+// only.
+bool IsAllowedAdUrl(const GURL& url,
+                    const GURL& script_source_url,
+                    const char* argument_name,
+                    const std::vector<blink::InterestGroup::Ad>& ads,
+                    std::vector<std::string>& out_errors) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+    out_errors.push_back(
+        base::StrCat({script_source_url.spec(), " generateBid() returned ",
+                      argument_name, " URL that isn't a valid https:// URL."}));
+    return false;
+  }
+
+  for (const auto& ad : ads) {
+    if (url == ad.render_url)
+      return true;
+  }
+  out_errors.push_back(base::StrCat({script_source_url.spec(),
+                                     " generateBid() returned ", argument_name,
+                                     " URL that isn't one "
+                                     "of the registered creative URLs."}));
+  return false;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -316,23 +364,20 @@ void BidderWorklet::V8State::GenerateBid() {
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> ads_vector;
-  for (const auto& ad : *interest_group.ads) {
-    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
-    gin::Dictionary ad_dict(isolate, ad_object);
-    if (!ad_dict.Set("renderUrl", ad.render_url.spec()) ||
-        (ad.metadata && !v8_helper_->InsertJsonValue(
-                            context, "metadata", *ad.metadata, ad_object))) {
-      PostErrorBidCallbackToUserThread();
-      return;
-    }
-    ads_vector.emplace_back(std::move(ad_object));
-  }
-  if (!v8_helper_->InsertValue(
-          "ads", v8::Array::New(isolate, ads_vector.data(), ads_vector.size()),
-          interest_group_object)) {
+  v8::Local<v8::Value> ads;
+  if (!CreateAdVector(v8_helper_.get(), context, *interest_group.ads, ads) ||
+      !v8_helper_->InsertValue("ads", std::move(ads), interest_group_object)) {
     PostErrorBidCallbackToUserThread();
-    return;
+  }
+
+  if (interest_group.ad_components) {
+    v8::Local<v8::Value> ad_components;
+    if (!CreateAdVector(v8_helper_.get(), context,
+                        *interest_group.ad_components, ad_components) ||
+        !v8_helper_->InsertValue("adComponents", std::move(ad_components),
+                                 interest_group_object)) {
+      PostErrorBidCallbackToUserThread();
+    }
   }
 
   args.push_back(std::move(interest_group_object));
@@ -428,33 +473,74 @@ void BidderWorklet::V8State::GenerateBid() {
   }
 
   GURL render_url(render_url_string);
-  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme)) {
-    errors_out.push_back(base::StrCat(
-        {script_source_url_.spec(),
-         " generateBid() returned render_url isn't a valid https:// URL."}));
+  if (!IsAllowedAdUrl(render_url, script_source_url_, "render",
+                      *interest_group.ads, errors_out)) {
     PostErrorBidCallbackToUserThread(std::move(errors_out));
     return;
   }
 
-  // `render_url` must be in `ad_render_urls`.
-  for (const auto& ad : *interest_group.ads) {
-    if (render_url == ad.render_url) {
-      user_thread_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,
-                         parent_,
-                         mojom::BidderWorkletBid::New(
-                             std::move(ad_json), bid, std::move(render_url),
-                             base::TimeTicks::Now() - start /* bid_duration */),
-                         std::move(errors_out)));
+  absl::optional<std::vector<GURL>> ad_component_urls;
+  v8::Local<v8::Value> ad_components;
+  if (result_dict.Get("adComponents", &ad_components) &&
+      !ad_components->IsNullOrUndefined()) {
+    if (!interest_group.ad_components) {
+      errors_out.push_back(
+          base::StrCat({script_source_url_.spec(),
+                        " generateBid() return value contains adComponents but "
+                        "InterestGroup has no adComponents."}));
+      PostErrorBidCallbackToUserThread(std::move(errors_out));
       return;
     }
+
+    if (!ad_components->IsArray()) {
+      errors_out.push_back(base::StrCat(
+          {script_source_url_.spec(),
+           " generateBid() returned adComponents value must be an array."}));
+      PostErrorBidCallbackToUserThread(std::move(errors_out));
+      return;
+    }
+
+    v8::Local<v8::Array> ad_components_array = ad_components.As<v8::Array>();
+    if (ad_components_array->Length() > 20) {
+      errors_out.push_back(base::StrCat(
+          {script_source_url_.spec(),
+           " generateBid() returned adComponents with over 20 items."}));
+      PostErrorBidCallbackToUserThread(std::move(errors_out));
+      return;
+    }
+
+    ad_component_urls.emplace();
+    for (size_t i = 0; i < ad_components_array->Length(); ++i) {
+      std::string url_string;
+      if (!gin::ConvertFromV8(
+              isolate, ad_components_array->Get(context, i).ToLocalChecked(),
+              &url_string)) {
+        errors_out.push_back(
+            base::StrCat({script_source_url_.spec(),
+                          " generateBid() returned adComponents value must be "
+                          "an array of strings."}));
+        PostErrorBidCallbackToUserThread(std::move(errors_out));
+        return;
+      }
+
+      GURL ad_component_url(url_string);
+      if (!IsAllowedAdUrl(ad_component_url, script_source_url_, "adComponents",
+                          *interest_group.ad_components, errors_out)) {
+        PostErrorBidCallbackToUserThread(std::move(errors_out));
+        return;
+      }
+      ad_component_urls->emplace_back(std::move(ad_component_url));
+    }
   }
-  errors_out.push_back(
-      base::StrCat({script_source_url_.spec(),
-                    " generateBid() returned render_url isn't one "
-                    "of the registered creative URLs."}));
-  PostErrorBidCallbackToUserThread(std::move(errors_out));
+
+  user_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread, parent_,
+                     mojom::BidderWorkletBid::New(
+                         std::move(ad_json), bid, std::move(render_url),
+                         std::move(ad_component_urls),
+                         base::TimeTicks::Now() - start /* bid_duration */),
+                     std::move(errors_out)));
 }
 
 void BidderWorklet::V8State::ConnectDevToolsAgent(

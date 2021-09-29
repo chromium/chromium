@@ -57,6 +57,16 @@ struct BidderWorkletBid {
   // Render URL of the bid.
   url.mojom.Url render_url;
 
+  // Ad components associated with bid, if any. These allow a single ad to be
+  // composed of multiple smaller ads. The `render_url` is the main URL, and
+  // is responsible for laying out these ads URLs in its subframes.
+  //
+  // May only contain URLs matching the `render_url`s of the `ad_components`
+  // of the InterestGroup that made this bid. May have at most 20 URLs. Must
+  // be null if the InterestGroup making this bid has a null `ad_components`
+  // field.
+  array<url.mojom.Url>? ad_components;
+
   // How long it took to run the generateBid() script.
   mojo_base.mojom.TimeDelta bid_duration;
 };
