@@ -72,7 +72,11 @@ void InputMethodFuchsia::OnTextInputTypeChanged(const TextInputClient* client) {
   if (!virtual_keyboard_controller_)
     return;
 
-  if (IsTextInputTypeNone()) {
+  if (!IsTextInputClientFocused(client))
+    return;
+
+  if (client->GetTextInputType() == TEXT_INPUT_TYPE_NONE ||
+      client->GetTextInputMode() == TEXT_INPUT_MODE_NONE) {
     virtual_keyboard_controller_->DismissVirtualKeyboard();
   } else {
     virtual_keyboard_controller_->UpdateTextType();
