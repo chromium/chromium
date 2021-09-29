@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigni
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -79,6 +80,9 @@ public class SigninFirstRunFragmentRenderTest {
             new ChromeTabbedActivityTestRule();
 
     @Mock
+    private ExternalAuthUtils mExternalAuthUtilsMock;
+
+    @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     @Mock
@@ -101,6 +105,8 @@ public class SigninFirstRunFragmentRenderTest {
 
     @Before
     public void setUp() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         SigninCheckerProvider.setForTests(mock(SigninChecker.class));
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
@@ -184,6 +190,21 @@ public class SigninFirstRunFragmentRenderTest {
             return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
         });
         mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_with_child_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testFragmentWhenCannotUseGooglePlayService(boolean nightModeEnabled)
+            throws IOException {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+
+        launchActivityWithFragment();
+
+        mRenderTestRule.render(
+                mFragment.getView(), "signin_first_run_fragment_signin_not_supported");
     }
 
     private void launchActivityWithFragment() {

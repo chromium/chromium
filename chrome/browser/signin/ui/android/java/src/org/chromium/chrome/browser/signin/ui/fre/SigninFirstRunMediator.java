@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordin
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunCoordinator.Listener;
 import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunProperties.FrePolicy;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -47,8 +48,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mModalDialogManager = modalDialogManager;
         mListener = listener;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-        mModel = SigninFirstRunProperties.createModel(
-                this::onSelectedAccountClicked, this::onContinueAsClicked, this::onDismissClicked);
+        mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
+                this::onContinueAsClicked, this::onDismissClicked,
+                ExternalAuthUtils.getInstance().canUseGooglePlayServices());
 
         mProfileDataCache.addObserver(this);
 
@@ -100,8 +102,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     /**
-     * Callback for the PropertyKey
-     * {@link SigninFirstRunProperties#ON_SELECTED_ACCOUNT_CLICKED}.
+     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_SELECTED_ACCOUNT_CLICKED}.
      */
     private void onSelectedAccountClicked() {
         mDialogCoordinator =
@@ -112,10 +113,15 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}.
      */
     private void onContinueAsClicked() {
+        if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
+            dismissWithoutSignin();
+            return;
+        }
         if (mSelectedAccountName == null) {
             mListener.addAccount();
             return;
-        } else if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
+        }
+        if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             mListener.acceptTermsOfService();
             return;
         }

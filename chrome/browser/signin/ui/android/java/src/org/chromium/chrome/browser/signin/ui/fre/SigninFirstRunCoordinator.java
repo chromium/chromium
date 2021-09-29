@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @MainThread
 public class SigninFirstRunCoordinator {
-    /** Listener for srignin fist run MVC. */
+    /** Listener for signin fist run MVC. */
     public interface Listener {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();

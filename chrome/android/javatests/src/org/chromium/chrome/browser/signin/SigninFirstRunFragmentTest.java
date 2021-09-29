@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -138,6 +139,9 @@ public class SigninFirstRunFragmentTest {
             new ChromeTabbedActivityTestRule();
 
     @Mock
+    private ExternalAuthUtils mExternalAuthUtilsMock;
+
+    @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     @Mock
@@ -150,6 +154,8 @@ public class SigninFirstRunFragmentTest {
 
     @Before
     public void setUp() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         SigninCheckerProvider.setForTests(mock(SigninChecker.class));
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
@@ -215,6 +221,39 @@ public class SigninFirstRunFragmentTest {
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
         onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWhenCannotUseGooglePlayService() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+
+        launchActivityWithFragment();
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
+        });
+        onView(withText(R.string.continue_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButtonWhenCannotUseGooglePlayService() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        CriteriaHelper.pollUiThread(() -> {
+            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
+        });
+
+        onView(withText(R.string.continue_button)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAdvanceToNextPageCalled);
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test

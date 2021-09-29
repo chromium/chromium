@@ -14,4 +14,7 @@ specific_include_rules = {
   "SigninPromoController.java": [
   "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java"
   ],
+  "SigninFirstRunMediator.java": [
+  "+components/externalauth/android/java/src/org/chromium/components/externalauth/ExternalAuthUtils.java"
+  ],
 }

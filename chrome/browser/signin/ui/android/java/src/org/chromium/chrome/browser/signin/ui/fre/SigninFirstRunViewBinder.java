@@ -32,19 +32,7 @@ class SigninFirstRunViewBinder {
                     .setOnClickListener(
                             model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));
         } else if (propertyKey == SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) {
-            final @Nullable DisplayableProfileData profileData =
-                    model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA);
-            if (profileData == null) {
-                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
-                button.setText(R.string.signin_add_account_to_device);
-            } else {
-                ExistingAccountRowViewBinder.bindAccountView(
-                        profileData, view.findViewById(R.id.signin_fre_selected_account));
-                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
-                button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
-                        profileData.getGivenNameOrFullNameOrEmail()));
-            }
-            updateVisibility(view, model);
+            updateSelectedAccount(view, model);
         } else if (propertyKey == SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
             final boolean isSelectedAccountSupervised =
                     model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
@@ -58,9 +46,33 @@ class SigninFirstRunViewBinder {
                     .setVisibility(model.get(SigninFirstRunProperties.FRE_POLICY) != null
                                     ? View.VISIBLE
                                     : View.GONE);
+        } else if (propertyKey == SigninFirstRunProperties.IS_SIGNIN_SUPPORTED) {
+            if (!model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
+                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
+                button.setText(R.string.continue_button);
+                updateVisibility(view, model);
+            }
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }
+    }
+
+    private static void updateSelectedAccount(View view, PropertyModel model) {
+        final @Nullable DisplayableProfileData profileData =
+                model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA);
+        if (profileData == null) {
+            if (model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
+                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
+                button.setText(R.string.signin_add_account_to_device);
+            }
+        } else {
+            ExistingAccountRowViewBinder.bindAccountView(
+                    profileData, view.findViewById(R.id.signin_fre_selected_account));
+            ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
+            button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
+                    profileData.getGivenNameOrFullNameOrEmail()));
+        }
+        updateVisibility(view, model);
     }
 
     private static void updateVisibility(View view, PropertyModel model) {
@@ -69,21 +81,26 @@ class SigninFirstRunViewBinder {
         view.findViewById(R.id.signin_fre_progress_spinner)
                 .setVisibility(areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
 
-        if (areNativeAndPolicyLoaded) {
-            view.findViewById(R.id.signin_fre_selected_account)
-                    .setVisibility(model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) == null
-                                    ? View.GONE
-                                    : View.VISIBLE);
-            final boolean isSelectedAccountSupervised =
-                    model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
-            view.findViewById(R.id.signin_fre_dismiss_button)
-                    .setVisibility(isSelectedAccountSupervised ? View.GONE : View.VISIBLE);
-            view.findViewById(R.id.signin_fre_selected_account_expand_icon)
-                    .setVisibility(isSelectedAccountSupervised ? View.INVISIBLE : View.VISIBLE);
-        } else {
-            view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.GONE);
-            view.findViewById(R.id.signin_fre_dismiss_button).setVisibility(View.GONE);
-        }
+        final int selectedAccountVisibility = areNativeAndPolicyLoaded
+                        && model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) != null
+                ? View.VISIBLE
+                : View.GONE;
+        view.findViewById(R.id.signin_fre_selected_account)
+                .setVisibility(selectedAccountVisibility);
+        final boolean isSelectedAccountSupervised =
+                model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        view.findViewById(R.id.signin_fre_selected_account_expand_icon)
+                .setVisibility(
+                        selectedAccountVisibility == View.VISIBLE && isSelectedAccountSupervised
+                                ? View.INVISIBLE
+                                : View.VISIBLE);
+        final int dismissButtonVisibility = areNativeAndPolicyLoaded
+                        && model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)
+                        && !isSelectedAccountSupervised
+                ? View.VISIBLE
+                : View.GONE;
+        view.findViewById(R.id.signin_fre_dismiss_button).setVisibility(dismissButtonVisibility);
+
         final int otherElementsVisibility = areNativeAndPolicyLoaded ? View.VISIBLE : View.GONE;
         view.findViewById(R.id.signin_fre_continue_button).setVisibility(otherElementsVisibility);
         view.findViewById(R.id.signin_fre_footer).setVisibility(otherElementsVisibility);

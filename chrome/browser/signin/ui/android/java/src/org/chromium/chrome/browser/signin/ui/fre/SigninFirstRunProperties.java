@@ -40,6 +40,9 @@ class SigninFirstRunProperties {
     static final WritableObjectPropertyKey<FrePolicy> FRE_POLICY =
             new WritableObjectPropertyKey<>("fre_policy");
 
+    static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
+            new WritableBooleanPropertyKey("is_signin_supported");
+
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ON_SELECTED_ACCOUNT_CLICKED,
             SELECTED_ACCOUNT_DATA,
@@ -48,13 +51,14 @@ class SigninFirstRunProperties {
             ON_DISMISS_CLICKED,
             ARE_NATIVE_AND_POLICY_LOADED,
             FRE_POLICY,
+            IS_SIGNIN_SUPPORTED,
     };
 
     /**
      * Creates a default model for FRE bottom group.
      */
     static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, Runnable onDismissClicked) {
+            Runnable onContinueAsClicked, Runnable onDismissClicked, boolean isSigninSupported) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
@@ -63,6 +67,7 @@ class SigninFirstRunProperties {
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
                 .with(ARE_NATIVE_AND_POLICY_LOADED, false)
                 .with(FRE_POLICY, null)
+                .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
                 .build();
     }
 

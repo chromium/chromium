@@ -21,6 +21,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
     "//components/prefs/android:java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
