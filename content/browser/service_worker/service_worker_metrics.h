@@ -184,12 +184,6 @@ class ServiceWorkerMetrics {
   static void RecordStartWorkerTimingClockConsistency(
       CrossProcessTimeDelta type);
 
-  // Records the result of a start attempt that occurred after the worker had
-  // failed |failure_count| consecutive times.
-  static void RecordStartStatusAfterFailure(
-      int failure_count,
-      blink::ServiceWorkerStatusCode status);
-
   // Records the size of Service-Worker-Navigation-Preload header when the
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);

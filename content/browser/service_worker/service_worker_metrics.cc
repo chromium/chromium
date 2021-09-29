@@ -459,31 +459,6 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
-void ServiceWorkerMetrics::RecordStartStatusAfterFailure(
-    int failure_count,
-    blink::ServiceWorkerStatusCode status) {
-  DCHECK_GT(failure_count, 0);
-
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    UMA_HISTOGRAM_COUNTS_1000("ServiceWorker.StartWorker.FailureStreakEnded",
-                              failure_count);
-  } else if (failure_count < std::numeric_limits<int>::max()) {
-    UMA_HISTOGRAM_COUNTS_1000("ServiceWorker.StartWorker.FailureStreak",
-                              failure_count + 1);
-  }
-
-  if (failure_count == 1) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_1",
-                              status);
-  } else if (failure_count == 2) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_2",
-                              status);
-  } else if (failure_count == 3) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_3",
-                              status);
-  }
-}
-
 void ServiceWorkerMetrics::RecordOfflineCapableReason(
     blink::ServiceWorkerStatusCode status,
     int status_code) {

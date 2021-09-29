@@ -879,11 +879,6 @@ void ServiceWorkerContextCore::UpdateVersionFailureCount(
     return;
 
   auto it = failure_counts_.find(version_id);
-  if (it != failure_counts_.end()) {
-    ServiceWorkerMetrics::RecordStartStatusAfterFailure(it->second.count,
-                                                        status);
-  }
-
   if (status == blink::ServiceWorkerStatusCode::kOk) {
     if (it != failure_counts_.end())
       failure_counts_.erase(it);
