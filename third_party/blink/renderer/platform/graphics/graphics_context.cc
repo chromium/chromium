@@ -791,13 +791,19 @@ void GraphicsContext::DrawImageRRect(
         *GetDarkModeFilter(), image, &image_flags, src_rect, dest.Rect());
   }
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = sampling;
+  draw_options.respect_orientation = respect_orientation;
+  draw_options.decode_mode = decode_mode;
+  draw_options.apply_dark_mode = auto_dark_mode.enabled;
+
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
                      image->HasDefaultOrientation());
   if (use_shader) {
     const SkMatrix local_matrix =
         SkMatrix::RectToRect(visible_src, dest.Rect());
-    use_shader = image->ApplyShader(image_flags, local_matrix);
+    use_shader = image->ApplyShader(image_flags, local_matrix, draw_options);
   }
 
   if (use_shader) {
@@ -812,11 +818,6 @@ void GraphicsContext::DrawImageRRect(
     // Clip-based fallback.
     PaintCanvasAutoRestore auto_restore(canvas_, true);
     canvas_->clipRRect(dest, image_flags.isAntiAlias());
-    ImageDrawOptions draw_options;
-    draw_options.sampling_options = sampling;
-    draw_options.respect_orientation = respect_orientation;
-    draw_options.decode_mode = decode_mode;
-    draw_options.apply_dark_mode = auto_dark_mode.enabled;
     image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
   }
 

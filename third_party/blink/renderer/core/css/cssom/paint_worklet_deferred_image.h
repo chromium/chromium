@@ -38,11 +38,11 @@ class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
             const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) override;
+                const ImageDrawOptions&) override;
   sk_sp<cc::PaintShader> CreateShader(const FloatRect& tile_rect,
                                       const SkMatrix* pattern_matrix,
                                       const FloatRect& src_rect,
-                                      RespectImageOrientationEnum) final;
+                                      const ImageDrawOptions&) final;
 
  private:
   PaintWorkletDeferredImage(scoped_refptr<PaintWorkletInput> input,

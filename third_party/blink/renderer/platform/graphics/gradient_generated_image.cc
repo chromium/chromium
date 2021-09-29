@@ -46,25 +46,26 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
   transform.mapRect(&visible_dest_rect, visible_src_rect);
 
   PaintFlags gradient_flags(flags);
-  gradient_->ApplyToFlags(gradient_flags, transform);
+  gradient_->ApplyToFlags(gradient_flags, transform, draw_options);
   canvas->drawRect(visible_dest_rect, gradient_flags);
 }
 
 void GradientGeneratedImage::DrawTile(GraphicsContext& context,
                                       const FloatRect& src_rect,
-                                      RespectImageOrientationEnum) {
+                                      const ImageDrawOptions& draw_options) {
   // TODO(ccameron): This function should not ignore |context|'s color behavior.
   // https://crbug.com/672306
   PaintFlags gradient_flags(context.FillFlags());
-  gradient_->ApplyToFlags(gradient_flags, SkMatrix::I());
+  gradient_->ApplyToFlags(gradient_flags, SkMatrix::I(), draw_options);
 
   context.DrawRect(src_rect, gradient_flags, AutoDarkMode::Disabled());
 }
 
 bool GradientGeneratedImage::ApplyShader(PaintFlags& flags,
-                                         const SkMatrix& local_matrix) {
+                                         const SkMatrix& local_matrix,
+                                         const ImageDrawOptions& draw_options) {
   DCHECK(gradient_);
-  gradient_->ApplyToFlags(flags, local_matrix);
+  gradient_->ApplyToFlags(flags, local_matrix, draw_options);
 
   return true;
 }

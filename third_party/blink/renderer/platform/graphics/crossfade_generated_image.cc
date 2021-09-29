@@ -89,10 +89,9 @@ void CrossfadeGeneratedImage::Draw(cc::PaintCanvas* canvas,
   DrawCrossfade(canvas, flags, draw_options);
 }
 
-void CrossfadeGeneratedImage::DrawTile(
-    GraphicsContext& context,
-    const FloatRect& src_rect,
-    RespectImageOrientationEnum respect_orientation) {
+void CrossfadeGeneratedImage::DrawTile(GraphicsContext& context,
+                                       const FloatRect& src_rect,
+                                       const ImageDrawOptions& options) {
   // Draw nothing if either of the images hasn't loaded yet.
   if (from_image_ == Image::NullImage() || to_image_ == Image::NullImage())
     return;
@@ -102,7 +101,7 @@ void CrossfadeGeneratedImage::DrawTile(
   ImageDrawOptions draw_options;
   draw_options.sampling_options =
       context.ComputeSamplingOptions(this, dest_rect, src_rect);
-  draw_options.respect_orientation = respect_orientation;
+  draw_options.respect_orientation = options.respect_orientation;
   DrawCrossfade(context.Canvas(), flags, draw_options);
 }
 

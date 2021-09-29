@@ -52,9 +52,8 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
                           tiling_info.scale.Height());
   pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
 
-  sk_sp<PaintShader> tile_shader =
-      CreateShader(tile_rect, &pattern_matrix, tiling_info.image_rect,
-                   draw_options.respect_orientation);
+  sk_sp<PaintShader> tile_shader = CreateShader(
+      tile_rect, &pattern_matrix, tiling_info.image_rect, draw_options);
 
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));
@@ -67,12 +66,12 @@ sk_sp<PaintShader> GeneratedImage::CreateShader(
     const FloatRect& tile_rect,
     const SkMatrix* pattern_matrix,
     const FloatRect& src_rect,
-    RespectImageOrientationEnum respect_orientation) {
+    const ImageDrawOptions& draw_options) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   GraphicsContext context(*paint_controller);
   context.BeginRecording(tile_rect);
-  DrawTile(context, src_rect, respect_orientation);
+  DrawTile(context, src_rect, draw_options);
   sk_sp<PaintRecord> record = context.EndRecording();
 
   return PaintShader::MakePaintRecord(std::move(record), tile_rect,

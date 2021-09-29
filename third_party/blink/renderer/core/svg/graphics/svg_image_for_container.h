@@ -74,7 +74,9 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
 
-  bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
+  bool ApplyShader(cc::PaintFlags&,
+                   const SkMatrix& local_matrix,
+                   const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,

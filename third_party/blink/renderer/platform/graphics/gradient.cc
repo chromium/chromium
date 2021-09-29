@@ -30,6 +30,7 @@
 #include <algorithm>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -127,7 +128,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 }
 
 sk_sp<PaintShader> Gradient::CreateShaderInternal(
-    const SkMatrix& local_matrix) const {
+    const SkMatrix& local_matrix) {
   SortStopsIfNecessary();
   DCHECK(stops_sorted_);
 
@@ -153,6 +154,13 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
       break;
   }
 
+  if (is_dark_mode_enabled_) {
+    for (auto& color : colors) {
+      color = EnsureDarkModeFilter().InvertColorIfNeeded(
+          SkColor(color), DarkModeFilter::ElementRole::kBackground);
+    }
+  }
+
   uint32_t flags = color_interpolation_ == ColorInterpolation::kPremultiplied
                        ? SkGradientShader::kInterpolateColorsInPremul_Flag
                        : 0;
@@ -164,7 +172,12 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
 }
 
 void Gradient::ApplyToFlags(PaintFlags& flags,
-                            const SkMatrix& local_matrix) const {
+                            const SkMatrix& local_matrix,
+                            const ImageDrawOptions& draw_options) {
+  if (is_dark_mode_enabled_ != draw_options.apply_dark_mode) {
+    is_dark_mode_enabled_ = draw_options.apply_dark_mode;
+    cached_shader_.reset();
+  }
   if (!cached_shader_ || local_matrix != cached_shader_->GetLocalMatrix() ||
       flags.getColorFilter().get() != color_filter_.get()) {
     color_filter_ = flags.getColorFilter();
@@ -176,6 +189,14 @@ void Gradient::ApplyToFlags(PaintFlags& flags,
 
   // Legacy behavior: gradients are always dithered.
   flags.setDither(true);
+}
+
+DarkModeFilter& Gradient::EnsureDarkModeFilter() {
+  if (!dark_mode_filter_) {
+    dark_mode_filter_ =
+        std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
+  }
+  return *dark_mode_filter_;
 }
 
 namespace {

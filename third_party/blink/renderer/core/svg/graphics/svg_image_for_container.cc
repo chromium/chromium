@@ -52,8 +52,10 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
 }
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
-                                       const SkMatrix& local_matrix) {
-  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_, false);
+                                       const SkMatrix& local_matrix,
+                                       const ImageDrawOptions& draw_options) {
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
+                                     draw_options.apply_dark_mode);
   return image_->ApplyShaderForContainer(draw_info, flags, local_matrix);
 }
 

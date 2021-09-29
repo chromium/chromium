@@ -320,7 +320,9 @@ PaintImageBuilder Image::CreatePaintImageBuilder() {
       .set_is_multipart(is_multipart_);
 }
 
-bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
+bool Image::ApplyShader(PaintFlags& flags,
+                        const SkMatrix& local_matrix,
+                        const ImageDrawOptions&) {
   // Default shader impl: attempt to build a shader based on the current frame
   // SkImage.
   PaintImage image = PaintImageForCurrentFrame();

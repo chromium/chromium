@@ -58,7 +58,7 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
             const ImageDrawOptions& draw_options) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) final;
+                const ImageDrawOptions&) final;
 
   CrossfadeGeneratedImage(scoped_refptr<Image> from_image,
                           scoped_refptr<Image> to_image,

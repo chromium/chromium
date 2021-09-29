@@ -54,10 +54,11 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
                    const FloatRect& dest_rect,
                    const ImageTilingInfo&,
                    const ImageDrawOptions& draw_options) final;
-  virtual sk_sp<cc::PaintShader> CreateShader(const FloatRect& tile_rect,
-                                              const SkMatrix* pattern_matrix,
-                                              const FloatRect& src_rect,
-                                              RespectImageOrientationEnum);
+  virtual sk_sp<cc::PaintShader> CreateShader(
+      const FloatRect& tile_rect,
+      const SkMatrix* pattern_matrix,
+      const FloatRect& src_rect,
+      const ImageDrawOptions& draw_options);
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
 
   virtual void DrawTile(GraphicsContext&,
                         const FloatRect&,
-                        RespectImageOrientationEnum) = 0;
+                        const ImageDrawOptions&) = 0;
 
   FloatSize size_;
 };

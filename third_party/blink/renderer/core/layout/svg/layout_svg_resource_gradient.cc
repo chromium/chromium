@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
@@ -122,8 +123,9 @@ bool LayoutSVGResourceGradient::ApplyShader(
   AffineTransform transform = gradient_data->userspace_transform;
   if (additional_transform)
     transform = *additional_transform * transform;
-  gradient_data->gradient->ApplyToFlags(flags,
-                                        AffineTransformToSkMatrix(transform));
+  ImageDrawOptions draw_options;
+  gradient_data->gradient->ApplyToFlags(
+      flags, AffineTransformToSkMatrix(transform), draw_options);
   return true;
 }
 
