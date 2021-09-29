@@ -55,6 +55,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
@@ -1136,5 +1137,55 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       std::vector<const char*>{"b", "d"}, {false, false});
 }
 
+// Perform a hash change before the initial URL of a frame is navigated. Ensure
+// we don't trip any DCHECKs (crbug.com/1237409) and that filtering works as
+// expected.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+                       SameDocumentBeforeInitialNavigation) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kFrameUrl(
+      GetTestUrl("subresource_filter/frame_with_included_script.html"));
+
+  // Configure to filtering included_script.js
+  {
+    ConfigureAsPhishingURL(kInitialUrl);
+    ASSERT_NO_FATAL_FAILURE(
+        SetRulesetWithRules({testing::CreateSuffixRule("included_script.js")}));
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ALL_SITES);
+    ResetConfiguration(std::move(config));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  content::TestNavigationManager navigation_manager(web_contents(), kFrameUrl);
+
+  // Create an iframe that will navigate to the page with the filtered script.
+  // However, perform a hash change that will cause a same document navigation
+  // which will finish before the iframe `src` navigation.
+  ASSERT_TRUE(ExecJs(web_contents(), content::JsReplace(R"SCRIPT(
+      var i = document.createElement("iframe");
+      i.src = $1;
+      i.onload = () => {window.document.title = "loaded"};
+      document.body.appendChild(i);
+      i.contentWindow.location.hash = 'test';
+    )SCRIPT",
+                                                        kFrameUrl)));
+
+  // Get the child RFH
+  ASSERT_TRUE(navigation_manager.WaitForResponse());
+  auto* child_rfh =
+      navigation_manager.GetNavigationHandle()->GetRenderFrameHost();
+  ASSERT_TRUE(child_rfh);
+  navigation_manager.WaitForNavigationFinished();
+  ASSERT_EQ(child_rfh->GetLastCommittedURL(), kFrameUrl);
+
+  // Wait until the iframe is loaded.
+  content::TitleWatcher title_watcher(web_contents(), u"loaded");
+  EXPECT_EQ(u"loaded", title_watcher.WaitAndGetTitle());
+
+  // Ensure the included_script.js script was filtered.
+  EXPECT_FALSE(WasParsedScriptElementLoaded(child_rfh));
+}
 
 }  // namespace subresource_filter

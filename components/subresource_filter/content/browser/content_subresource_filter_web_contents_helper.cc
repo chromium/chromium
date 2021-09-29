@@ -249,8 +249,8 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
   // If the initial navigation doesn't commit - we'll attach the throttle
   // manager to the existing page in the frame.
   const bool is_initial_navigation =
+      !navigation_handle->IsSameDocument() &&
       navigated_frames_.insert(navigation_handle->GetFrameTreeNodeId()).second;
-  DCHECK(!is_initial_navigation || !navigation_handle->IsSameDocument());
 
   if (WillCreateNewPage(*navigation_handle)) {
     ThrottleManagerInUserDataContainer* container =
