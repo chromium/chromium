@@ -33,7 +33,7 @@ namespace {
 // For ChromeOS, a copy of all members of |kAllowListPrefixesForAllPlatforms|
 // that start with "/Default" is added to the allow list, replacing "/Default"
 // with "/test-user".
-// TODO(http://crbug.com/1234755): Add audit message (or fix the issue) for all
+// TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
 // paths that do not have a comment.
 const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/data_reduction_proxy_leveldb",
@@ -70,6 +70,20 @@ const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 const char* kAllowListPrefixesForPlatform[] = {};
 #endif
 
+// List of directory prefixes that are known to be added as an empty directory
+// during an Incognito session.
+// TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
+// paths that do not have a comment.
+const char* kAllowListEmptyDirectoryPrefixesForAllPlatforms[] = {
+    "/Default/AutofillStrikeDatabase",
+    "/Default/Download Service",
+    "/Default/Feature Engagement Tracker",
+    "/Default/GCM Store/Encryption",
+    "/Default/optimization_guide_hint_cache_store",
+    "/Default/optimization_guide_model_and_features_store",
+    "/Default/shared_proto_db/metadata",
+    "/test-user"};
+
 // Structure that keeps data about a snapshotted file.
 struct FileData {
   base::FilePath full_path;
@@ -79,7 +93,10 @@ struct FileData {
   uint32_t file_hash = 0;
 };
 
-using Snapshot = std::map<std::string, FileData>;
+struct Snapshot {
+  std::unordered_map<std::string, FileData> files;
+  std::unordered_set<std::string> directories;
+};
 
 bool ComputeFileHash(const base::FilePath& file_path, uint32_t* hash_code) {
   std::string content;
@@ -102,19 +119,20 @@ void GetUserDirectorySnapshot(Snapshot& snapshot, bool compute_file_hashes) {
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     // Remove |user_data_dir| part from path.
-    std::string file =
+    std::string reduced_path =
         path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe().substr(
             user_data_dir.AsUTF8Unsafe().length());
 
-    FileData fd;
-    // TODO(http://crbug.com/1234755): Expand to newly added empty directories.
-    if (!enumerator.GetInfo().IsDirectory()) {
+    if (enumerator.GetInfo().IsDirectory()) {
+      snapshot.directories.insert(reduced_path);
+    } else {
+      FileData fd;
       fd.size = enumerator.GetInfo().GetSize();
       fd.last_modified_time = enumerator.GetInfo().GetLastModifiedTime();
       fd.file_hash_is_valid =
           compute_file_hashes ? ComputeFileHash(path, &fd.file_hash) : false;
       fd.full_path = path;
-      snapshot[file] = fd;
+      snapshot.files[reduced_path] = fd;
     }
   }
   return;
@@ -135,21 +153,57 @@ bool IsFileModified(FileData& before, FileData& after) {
   return false;
 }
 
-bool IsDiskStateModified(Snapshot& snapshot_before,
-                         Snapshot& snapshot_after,
-                         std::set<std::string>& allow_list) {
+bool AreDirectoriesModified(Snapshot& snapshot_before,
+                            Snapshot& snapshot_after,
+                            std::set<std::string>& allow_list) {
   bool modified = false;
+
+  // Check for new directories.
+  for (const std::string& directory : snapshot_after.directories) {
+    if (!base::Contains(snapshot_before.directories, directory)) {
+      // If a file/prefix in this directory is allowlisted, ignore directory
+      // addition.
+      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
+                      [&directory](const std::string& prefix) {
+                        return prefix.find(directory) == 0;
+                      })) {
+        continue;
+      }
+
+      // If directory is specifically allow list, ignore.
+      if (std::any_of(
+              std::cbegin(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
+              std::cend(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
+              [&directory](const std::string& allow_listed_directory) {
+                return allow_listed_directory.find(directory) == 0;
+              })) {
+        continue;
+      }
+
+      LOG(ERROR) << "New directory: " << directory;
+      modified = true;
+    }
+  }
+
+  return modified;
+}
+
+bool AreFilesModified(Snapshot& snapshot_before,
+                      Snapshot& snapshot_after,
+                      std::set<std::string>& allow_list) {
+  bool modified = false;
+
   // TODO(http://crbug.com/1234755): Consider deleted files as well. Currently
   // we only look for added and modified files, but file deletion is also
   // modifying disk and is best to be prevented.
-  for (auto& fd : snapshot_after) {
-    auto before = snapshot_before.find(fd.first);
-    bool is_new = (before == snapshot_before.end());
+  for (auto& fd : snapshot_after.files) {
+    auto before = snapshot_before.files.find(fd.first);
+    bool is_new = (before == snapshot_before.files.end());
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
-      if (std::any_of(allow_list.begin(), allow_list.end(),
-                      [&fd](std::string prefix) {
+      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
+                      [&fd](const std::string& prefix) {
                         return fd.first.find(prefix) == 0;
                       })) {
         continue;
@@ -264,7 +318,12 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   Snapshot after_incognito;
   GetUserDirectorySnapshot(after_incognito, /*compute_file_hashes=*/false);
   EXPECT_FALSE(
-      IsDiskStateModified(before_incognito, after_incognito, allow_list_));
+      AreFilesModified(before_incognito, after_incognito, allow_list_));
+
+  // TODO(http://crbug.com/1234755): Change to EXPECT_FALSE.
+  if (AreDirectoriesModified(before_incognito, after_incognito, allow_list_)) {
+    LOG(ERROR) << "Empty directories added.";
+  }
 }
 
 // TODO(http://crbug.com/1234755): Add more complex naviagtions, triggering
