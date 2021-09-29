@@ -1971,6 +1971,7 @@ component("ash") {
     "//chromeos/dbus/hammerd",
     "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/dbus/hermes:hermes_fakes",
+    "//chromeos/dbus/hps",
     "//chromeos/dbus/init",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

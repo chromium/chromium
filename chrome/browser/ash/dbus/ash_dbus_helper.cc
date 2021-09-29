@@ -31,6 +31,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
+#include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/dbus/kerberos/kerberos_client.h"
@@ -163,11 +164,18 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<chromeos::RmadClient>(bus);
   }
   InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
+
+  if (ash::features::IsHpsNotifyEnabled()) {
+    InitializeDBusClient<chromeos::HpsDBusClient>(bus);
+  }
 }
 
 void ShutdownDBus() {
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
+  if (ash::features::IsHpsNotifyEnabled()) {
+    chromeos::HpsDBusClient::Shutdown();
+  }
   chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
