@@ -28,9 +28,8 @@ SVGTextElement::SVGTextElement(Document& doc)
     : SVGTextPositioningElement(svg_names::kTextTag, doc) {}
 
 LayoutObject* SVGTextElement::CreateLayoutObject(const ComputedStyle& style,
-                                                 LegacyLayout) {
-  // It's ok to ignore LegacyLayout::kForce because an SVG is never fragmented.
-  return LayoutObjectFactory::CreateSVGText(*this, style, LegacyLayout::kAuto);
+                                                 LegacyLayout legacy) {
+  return LayoutObjectFactory::CreateSVGText(*this, style, legacy);
 }
 
 }  // namespace blink
