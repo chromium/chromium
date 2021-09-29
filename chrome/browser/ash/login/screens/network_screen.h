@@ -27,7 +27,14 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
  public:
   using TView = NetworkScreenView;
 
-  enum class Result { CONNECTED, OFFLINE_DEMO_SETUP, BACK };
+  enum class Result {
+    CONNECTED_REGULAR,
+    CONNECTED_DEMO,
+    OFFLINE_DEMO_SETUP,
+    BACK_REGULAR,
+    BACK_DEMO,
+    BACK_OS_INSTALL
+  };
 
   static std::string GetResultString(Result result);
 
@@ -87,7 +94,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   void UnsubscribeNetworkNotification();
 
   // Notifies wizard on successful connection.
-  inline void NotifyOnConnection() { exit_callback_.Run(Result::CONNECTED); }
+  void NotifyOnConnection();
 
   // Called by `connection_timer_` when connection to the network timed out.
   void OnConnectionTimeout();

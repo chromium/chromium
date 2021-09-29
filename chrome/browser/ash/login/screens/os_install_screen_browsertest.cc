@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
@@ -22,7 +23,8 @@ namespace ash {
 namespace {
 
 const test::UIPath kWelcomeScreen = {"connect", "welcomeScreen"};
-const test::UIPath kOsInstallButton = {"connect", "welcomeScreen", "osInstall"};
+const test::UIPath kWelcomeGetStarted = {"connect", "welcomeScreen",
+                                         "getStarted"};
 
 const test::UIPath kOsTrialInstallRadioButton = {"os-trial", "installButton"};
 const test::UIPath kOsTrialNextButton = {"os-trial", "nextButton"};
@@ -81,7 +83,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
 
   void AdvanceToOsInstallScreen() {
     OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-    test::OobeJS().TapOnPath(kOsInstallButton);
+    test::OobeJS().TapOnPath(kWelcomeGetStarted);
 
     OobeScreenWaiter(OsTrialScreenView::kScreenId).Wait();
     test::OobeJS().ExpectHasAttribute("checked", kOsTrialInstallRadioButton);
@@ -134,22 +136,24 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
   absl::optional<OsInstallClient::Status> status_ = absl::nullopt;
 };
 
-// If the kAllowOsInstall switch is not set, the welcome screen should
-// not show the OS install button.
+// If the kAllowOsInstall switch is not set, clicking `Get Started` button
+// should show the network screen.
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, InstallButtonHiddenByDefault) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
-  test::OobeJS().ExpectHiddenPath(kOsInstallButton);
+  test::OobeJS().TapOnPath(kWelcomeGetStarted);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
-// If the kAllowOsInstall is set, the welcome screen should show the
-// OS install button.
+// If the kAllowOsInstall is set, clicking `Get Started` button show show the
+// `OS Trial` screen
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, InstallButtonVisibleWithSwitch) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
-  test::OobeJS().ExpectVisiblePath(kOsInstallButton);
+  test::OobeJS().TapOnPath(kWelcomeGetStarted);
+  OobeScreenWaiter(OsTrialScreenView::kScreenId).Wait();
 }
 
 // Check that installation starts after clicking next on the confirm step.

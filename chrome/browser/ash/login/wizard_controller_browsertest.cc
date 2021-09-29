@@ -695,7 +695,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     CheckCurrentScreen(NetworkScreenView::kScreenId);
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
     CheckCurrentScreen(EulaView::kScreenId);
     // Login shelf should still be visible.
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowEulaDeclined) {
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerUpdateAfterCompletedOobeTest,
 
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
 
@@ -1136,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1180,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1496,7 +1496,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     CheckCurrentScreen(NetworkScreenView::kScreenId);
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
     CheckCurrentScreen(EulaView::kScreenId);
     EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1588,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1673,7 +1673,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1712,7 +1712,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1764,7 +1764,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -1816,7 +1816,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -2106,7 +2106,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -2152,7 +2152,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
@@ -2346,7 +2346,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2475,7 +2475,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2556,7 +2556,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, NetworkBackPressed) {
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
 
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::BACK);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::BACK_DEMO);
 
   CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2645,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());

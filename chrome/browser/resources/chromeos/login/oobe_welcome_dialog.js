@@ -49,15 +49,6 @@
         },
         readOnly: true,
       },
-
-      osInstallEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('osInstallEnabled') &&
-              loadTimeData.getBoolean('osInstallEnabled');
-        },
-        readOnly: true,
-      },
     },
 
     onBeforeShow() {
@@ -94,10 +85,6 @@
     onNextClicked_() {
       this.focusedElement_ = 'getStarted';
       this.dispatchEvent(new CustomEvent('next-button-clicked', { bubbles: true, composed: true }));
-    },
-
-    onOsInstallClicked_() {
-      this.dispatchEvent(new CustomEvent('os-install-clicked', { bubbles: true, composed: true }));
     },
 
     onDebuggingLinkClicked_() {

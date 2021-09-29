@@ -78,7 +78,8 @@ class NetworkScreenTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
 
     ASSERT_TRUE(last_screen_result_.has_value());
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
+    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
+              last_screen_result_.value());
   }
 
   void SetDefaultNetworkStateHelperExpectations() {

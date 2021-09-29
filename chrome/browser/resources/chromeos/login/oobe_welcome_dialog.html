@@ -69,13 +69,13 @@
         justify-self: start;
       }
 
-      :host-context([orientation=vertical]) #bottomButtons {
+      :host-context([orientation=vertical]) #getStarted {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 3 / span 1;
         justify-self: center;
       }
-      :host-context([orientation=horizontal]) #bottomButtons {
+      :host-context([orientation=horizontal]) #getStarted {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
@@ -185,17 +185,10 @@
             hidden="[[!debuggingLinkVisible]]">
           </oobe-icon-button>
         </div>
-        <div id="bottomButtons">
-          <oobe-text-button id="osInstall"
-              on-click="onOsInstallClicked_"
-              hidden="[[!osInstallEnabled_]]"
-              text-key="welcomeScreenOsInstall">
-          </oobe-text-button>
-          <oobe-text-button id="getStarted"
-              inverse on-click="onNextClicked_"
-              text-key="welcomeScreenGetStarted">
-          </oobe-text-button>
-        </div>
+        <oobe-text-button id="getStarted"
+            inverse on-click="onNextClicked_"
+            text-key="welcomeScreenGetStarted">
+        </oobe-text-button>
         <div id="welcomeAnimationSlot">
           <cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
               animation-url="welcome_screen_animation.json">

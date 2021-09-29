@@ -147,7 +147,6 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   }
 
   builder->Add("welcomeScreenGetStarted", IDS_LOGIN_GET_STARTED);
-  builder->Add("welcomeScreenOsInstall", IDS_OOBE_WELCOME_START_OS_INSTALL);
 
   // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
@@ -294,9 +293,6 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   dict->SetKey("timezoneList", GetTimezoneList());
   dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
 
-  // This switch is set by the session manager if the OS install
-  // service is enabled and the OS is running from a USB installer.
-  dict->SetKey("osInstallEnabled", base::Value(switches::IsOsInstallAllowed()));
   dict->SetKey("languagePacksEnabled",
                base::Value(base::FeatureList::IsEnabled(
                    ash::features::kLanguagePacksHandwriting)));
