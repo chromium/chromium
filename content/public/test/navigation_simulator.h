@@ -28,6 +28,7 @@ class SSLInfo;
 
 namespace content {
 
+class NavigationController;
 class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
@@ -135,7 +136,7 @@ class NavigationSimulator {
   // LoadURL / Reload / GoToOffset / history.GoBack() scripts, etc. Can be used
   // to drive the navigation to completion.
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
   virtual ~NavigationSimulator() {}
 

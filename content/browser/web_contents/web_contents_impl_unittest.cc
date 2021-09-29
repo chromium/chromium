@@ -1094,7 +1094,8 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   controller().LoadURL(
       url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
-  auto navigation = NavigationSimulator::CreateFromPending(contents());
+  auto navigation =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   navigation->ReadyToCommit();
   EXPECT_FALSE(orig_rfh->is_waiting_for_beforeunload_completion());
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());

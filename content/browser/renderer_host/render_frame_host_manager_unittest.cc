@@ -2633,7 +2633,8 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI1) {
 
   // Starts a reload of the WebUI page.
   contents()->GetController().Reload(ReloadType::NORMAL, true);
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->ReadyToCommit();
 
   // It should be a same-site navigation reusing the same WebUI.
@@ -2683,7 +2684,8 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI2) {
 
   // Starts a reload of the WebUI page.
   contents()->GetController().Reload(ReloadType::NORMAL, true);
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->ReadyToCommit();
 
   // It should be a same-site navigation reusing the same WebUI.
@@ -2729,7 +2731,8 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs1) {
 
   // Starts a reload of the WebUI page.
   contents()->GetController().Reload(ReloadType::NORMAL, true);
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->ReadyToCommit();
 
   // It should be a same-site navigation reusing the same WebUI.
@@ -2783,7 +2786,8 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs2) {
 
   // Starts a reload of the WebUI page.
   contents()->GetController().Reload(ReloadType::NORMAL, true);
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->ReadyToCommit();
 
   // It should be a same-site navigation reusing the same WebUI.

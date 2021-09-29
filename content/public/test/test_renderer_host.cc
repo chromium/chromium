@@ -80,8 +80,7 @@ void RenderFrameHostTester::CommitPendingLoad(
   // (rather than WebContentsImpl directly). It is not trivial to make
   // that change, so for now we have this extra function for
   // non-TestWebContents.
-  auto navigation = NavigationSimulator::CreateFromPending(
-      controller->DeprecatedGetWebContents());
+  auto navigation = NavigationSimulator::CreateFromPending(*controller);
   navigation->Commit();
 }
 

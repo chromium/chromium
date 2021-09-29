@@ -476,7 +476,8 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  auto navigation1 = NavigationSimulator::CreateFromPending(contents());
+  auto navigation1 =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   navigation1->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
@@ -520,7 +521,8 @@ TEST_F(NavigationControllerTest, LoadURL) {
 
   EXPECT_TRUE(controller.GetPendingEntry()->GetTimestamp().is_null());
 
-  auto navigation2 = NavigationSimulator::CreateFromPending(contents());
+  auto navigation2 =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   navigation2->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
@@ -753,7 +755,8 @@ TEST_F(NavigationControllerTest, LoadURL_SamePage) {
   const std::string new_extra_headers("Foo: Bar\nBar: Baz");
   controller.LoadURL(url1, Referrer(), ui::PAGE_TRANSITION_TYPED,
                      new_extra_headers);
-  auto navigation2 = NavigationSimulator::CreateFromPending(contents());
+  auto navigation2 =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
   navigation2->Commit();
@@ -1205,7 +1208,7 @@ TEST_F(NavigationControllerTest, Reload) {
 
   controller.Reload(ReloadType::NORMAL, true);
   navigation = NavigationSimulator::CreateFromPending(
-      RenderViewHostTestHarness::web_contents());
+      RenderViewHostTestHarness::web_contents()->GetController());
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
@@ -1254,7 +1257,8 @@ TEST_F(NavigationControllerTest, Reload_GeneratesNewPage) {
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->Redirect(url2);
   reload->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
@@ -1345,7 +1349,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
 
   // Send that the navigation has proceeded; say it got redirected again.
   navigation = NavigationSimulator::CreateFromPending(
-      RenderViewHostTestHarness::web_contents());
+      RenderViewHostTestHarness::web_contents()->GetController());
   navigation->Redirect(final_url);
   navigation->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
@@ -1464,7 +1468,8 @@ TEST_F(NavigationControllerTest, MAYBE_GoBackWithUserAgentOverrideChange) {
   // NavigationControllerAndroid::SetUseDesktopUserAgent.
   controller.GetVisibleEntry()->SetIsOverridingUserAgent(true);
   controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, true);
-  auto reload = NavigationSimulator::CreateFromPending(contents());
+  auto reload =
+      NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->Commit();
   EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
 
@@ -2351,7 +2356,8 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   EXPECT_EQ(timestamp, our_controller.GetEntryAtIndex(0)->GetTimestamp());
 
   // Say we navigated to that entry.
-  auto navigation = NavigationSimulator::CreateFromPending(raw_our_contents);
+  auto navigation =
+      NavigationSimulator::CreateFromPending(raw_our_contents->GetController());
   navigation->Commit();
 
   // There should be no longer any pending entry and one committed one. This
@@ -2418,7 +2424,7 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   EXPECT_TRUE(our_controller.NeedsReload());
   our_controller.LoadIfNecessary();
   auto restore_navigation =
-      NavigationSimulator::CreateFromPending(raw_our_contents);
+      NavigationSimulator::CreateFromPending(raw_our_contents->GetController());
   restore_navigation->ReadyToCommit();
   EXPECT_EQ(1, our_controller.GetEntryCount());
   EXPECT_EQ(our_controller.GetEntryAtIndex(0),

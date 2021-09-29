@@ -289,7 +289,7 @@ void TestWebContents::CommitPendingNavigation() {
   NavigationEntry* entry = GetController().GetPendingEntry();
   DCHECK(entry);
 
-  auto navigation = NavigationSimulator::CreateFromPending(this);
+  auto navigation = NavigationSimulator::CreateFromPending(GetController());
   navigation->Commit();
 }
 

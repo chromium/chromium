@@ -58,7 +58,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       RenderFrameHost* render_frame_host);
 
   static std::unique_ptr<NavigationSimulatorImpl> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
   // Creates a NavigationSimulator for an already-started navigation happening
   // in |frame_tree_node|. Can be used to drive the navigation to completion.

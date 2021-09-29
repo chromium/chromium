@@ -84,14 +84,14 @@ class NavigationThrottleCallbackRunner : public NavigationThrottle {
 
 int64_t g_unique_identifier = 0;
 
-FrameTreeNode* GetFrameTreeNodeForPendingEntry(WebContentsImpl* contents) {
-  NavigationEntryImpl* pending_entry =
-      contents->GetController().GetPendingEntry();
+FrameTreeNode* GetFrameTreeNodeForPendingEntry(
+    NavigationControllerImpl& controller) {
+  NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
   int frame_tree_node_id = pending_entry->frame_tree_node_id();
-  FrameTree* frame_tree = contents->GetFrameTree();
+  FrameTree& frame_tree = controller.frame_tree();
   if (frame_tree_node_id == FrameTreeNode::kFrameTreeNodeInvalidId)
-    return frame_tree->root();
-  return frame_tree->FindByID(frame_tree_node_id);
+    return frame_tree.root();
+  return frame_tree.FindByID(frame_tree_node_id);
 }
 
 }  // namespace
@@ -272,17 +272,15 @@ NavigationSimulatorImpl::CreateRendererInitiated(
 
 // static
 std::unique_ptr<NavigationSimulator> NavigationSimulator::CreateFromPending(
-    WebContents* contents) {
-  return NavigationSimulatorImpl::CreateFromPending(contents);
+    NavigationController& controller) {
+  return NavigationSimulatorImpl::CreateFromPending(controller);
 }
 
 // static
 std::unique_ptr<NavigationSimulatorImpl>
-NavigationSimulatorImpl::CreateFromPending(WebContents* contents) {
-  WebContentsImpl* contents_impl = static_cast<WebContentsImpl*>(contents);
-
-  FrameTreeNode* frame_tree_node =
-      GetFrameTreeNodeForPendingEntry(contents_impl);
+NavigationSimulatorImpl::CreateFromPending(NavigationController& controller) {
+  FrameTreeNode* frame_tree_node = GetFrameTreeNodeForPendingEntry(
+      static_cast<NavigationControllerImpl&>(controller));
   return NavigationSimulatorImpl::CreateFromPendingInFrame(frame_tree_node);
 }
 
@@ -1089,14 +1087,15 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
     }
   }
 
-  frame_tree_node_ = GetFrameTreeNodeForPendingEntry(web_contents_);
+  auto& controller =
+      static_cast<NavigationControllerImpl&>(web_contents_->GetController());
+  frame_tree_node_ = GetFrameTreeNodeForPendingEntry(controller);
   CHECK(frame_tree_node_);
   render_frame_host_ =
       static_cast<TestRenderFrameHost*>(frame_tree_node_->current_frame_host());
 
   // The navigation url might have been rewritten by the NavigationController.
   // Update it.
-  NavigationController& controller = web_contents_->GetController();
   NavigationEntryImpl* pending_entry =
       static_cast<NavigationEntryImpl*>(controller.GetPendingEntry());
   FrameNavigationEntry* pending_frame_entry =
