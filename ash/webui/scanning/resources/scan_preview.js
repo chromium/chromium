@@ -650,4 +650,20 @@ Polymer({
   showActionToolbarByIndex_(index) {
     return index === this.currentPageIndexInView_ && this.showActionToolbar_;
   },
+
+  /**
+   * Set |currentPageIndexInView_| to the page focused on (via ChromeVox).
+   * @param {!Event} e
+   * @private
+   */
+  onScannedImageInFocus_(e) {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    // |e.model| is populated by the dom-repeat element.
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(scannedImages, e.model.index);
+  },
 });
