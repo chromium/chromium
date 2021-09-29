@@ -295,6 +295,28 @@ bool DrawVideoFrameIntoResourceProvider(
   return true;
 }
 
+void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
+                              cc::PaintCanvas* canvas,
+                              cc::PaintFlags& flags,
+                              bool ignore_video_transformation) {
+  viz::RasterContextProvider* raster_context_provider = nullptr;
+  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+    if (auto* context_provider = wrapper->ContextProvider())
+      raster_context_provider = context_provider->RasterContextProvider();
+  }
+
+  const gfx::RectF dest_rect(frame->natural_size().width(),
+                             frame->natural_size().height());
+
+  media::PaintCanvasVideoRenderer video_renderer;
+  auto transformation =
+      ignore_video_transformation
+          ? media::kNoTransformation
+          : frame->metadata().transformation.value_or(media::kNoTransformation);
+  video_renderer.Paint(frame, canvas, dest_rect, flags, transformation,
+                       raster_context_provider);
+}
+
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     IntSize size,
     viz::RasterContextProvider* raster_context_provider) {

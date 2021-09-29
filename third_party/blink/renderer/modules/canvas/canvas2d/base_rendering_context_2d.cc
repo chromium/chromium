@@ -25,11 +25,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -1794,7 +1796,43 @@ void BaseRenderingContext2D::DrawImageInternal(
     image_flags.setImageFilter(nullptr);
   }
 
-  if (!image_source->IsVideoElement()) {
+  if (image_source->IsVideoElement()) {
+    c->save();
+    c->clipRect(dst_rect);
+    c->translate(dst_rect.X(), dst_rect.Y());
+    c->scale(dst_rect.Width() / src_rect.Width(),
+             dst_rect.Height() / src_rect.Height());
+    c->translate(-src_rect.X(), -src_rect.Y());
+    HTMLVideoElement* video = static_cast<HTMLVideoElement*>(image_source);
+    video->PaintCurrentFrame(
+        c,
+        IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
+        &image_flags);
+  } else if (image_source->IsVideoFrame()) {
+    VideoFrame* frame = static_cast<VideoFrame*>(image_source);
+    auto media_frame = frame->frame();
+    bool ignore_transformation =
+        RespectImageOrientationInternal(image_source) ==
+        kDoNotRespectImageOrientation;
+    FloatRect corrected_src_rect = src_rect;
+
+    if (!ignore_transformation) {
+      auto orientation_enum = VideoTransformationToImageOrientation(
+          media_frame->metadata().transformation.value_or(
+              media::kNoTransformation));
+      if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
+        corrected_src_rect = src_rect.TransposedRect();
+    }
+
+    c->save();
+    c->clipRect(dst_rect);
+    c->translate(dst_rect.X(), dst_rect.Y());
+    c->scale(dst_rect.Width() / corrected_src_rect.Width(),
+             dst_rect.Height() / corrected_src_rect.Height());
+    c->translate(-corrected_src_rect.X(), -corrected_src_rect.Y());
+    DrawVideoFrameIntoCanvas(std::move(media_frame), c, image_flags,
+                             ignore_transformation);
+  } else {
     // We always use the image-orientation property on the canvas element
     // because the alternative would result in complex rules depending on
     // the source of the image.
@@ -1812,19 +1850,7 @@ void BaseRenderingContext2D::DrawImageInternal(
     draw_options.respect_orientation = respect_orientation;
     draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
     image->Draw(c, image_flags, dst_rect, corrected_src_rect, draw_options);
-  } else {
-    c->save();
-    c->clipRect(dst_rect);
-    c->translate(dst_rect.X(), dst_rect.Y());
-    c->scale(dst_rect.Width() / src_rect.Width(),
-             dst_rect.Height() / src_rect.Height());
-    c->translate(-src_rect.X(), -src_rect.Y());
-    HTMLVideoElement* video = static_cast<HTMLVideoElement*>(image_source);
-    video->PaintCurrentFrame(
-        c,
-        IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
-        &image_flags);
-  };
+  }
 
   c->restoreToCount(initial_save_count);
 }

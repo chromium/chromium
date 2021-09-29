@@ -568,7 +568,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
   VideoImageGenerator(scoped_refptr<VideoFrame> frame)
       : cc::PaintImageGenerator(
             SkImageInfo::MakeN32Premul(frame->visible_rect().width(),
-                                       frame->visible_rect().height())),
+                                       frame->visible_rect().height(),
+                                       frame->ColorSpace().ToSkColorSpace())),
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasTextures());
   }
@@ -587,6 +588,13 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(frame_.get(), pixels,
                                                            row_bytes);
+
+    if (!SkColorSpace::Equals(GetSkImageInfo().colorSpace(),
+                              info.colorSpace())) {
+      SkPixmap src(GetSkImageInfo(), pixels, row_bytes);
+      if (!src.readPixels(info, pixels, row_bytes))
+        return false;
+    }
     return true;
   }
 

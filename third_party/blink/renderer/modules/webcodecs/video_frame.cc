@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "v8/include/v8.h"
@@ -168,6 +169,93 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 // static -- defined out of line to satisfy link time requirements.
 const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
+    base::TimeDelta::FromSeconds(10);
+
+class CanvasResourceProviderCache
+    : public GarbageCollected<CanvasResourceProviderCache>,
+      public Supplement<ExecutionContext> {
+ public:
+  static const char kSupplementName[];
+
+  static CanvasResourceProviderCache& From(ExecutionContext& context) {
+    CanvasResourceProviderCache* supplement =
+        Supplement<ExecutionContext>::From<CanvasResourceProviderCache>(
+            context);
+    if (!supplement) {
+      supplement = MakeGarbageCollected<CanvasResourceProviderCache>(context);
+      Supplement<ExecutionContext>::ProvideTo(context, supplement);
+    }
+    return *supplement;
+  }
+
+  explicit CanvasResourceProviderCache(ExecutionContext& context)
+      : Supplement<ExecutionContext>(context),
+        task_runner_(Thread::Current()->GetTaskRunner()) {}
+  virtual ~CanvasResourceProviderCache() = default;
+
+  // Disallow copy and assign.
+  CanvasResourceProviderCache& operator=(const CanvasResourceProviderCache&) =
+      delete;
+  CanvasResourceProviderCache(const CanvasResourceProviderCache&) = delete;
+
+  CanvasResourceProvider* CreateProvider(IntSize size) {
+    if (size_to_provider_.IsEmpty())
+      PostMonitoringTask();
+
+    last_access_time_ = base::TimeTicks::Now();
+
+    FloatSize key(size);
+    auto iter = size_to_provider_.find(key);
+    if (iter != size_to_provider_.end()) {
+      auto* result = iter->value.get();
+      if (result && result->IsValid())
+        return result;
+    }
+
+    if (size_to_provider_.size() >= kMaxSize)
+      size_to_provider_.clear();
+
+    auto provider = CreateResourceProviderForVideoFrame(size, nullptr);
+    auto* result = provider.get();
+    size_to_provider_.Set(key, std::move(provider));
+    return result;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    Supplement<ExecutionContext>::Trace(visitor);
+  }
+
+ private:
+  static constexpr int kMaxSize = 50;
+  static const base::TimeDelta kIdleTimeout;
+
+  void PostMonitoringTask() {
+    DCHECK(!task_handle_.IsActive());
+    task_handle_ = PostDelayedCancellableTask(
+        *task_runner_, FROM_HERE,
+        WTF::Bind(&CanvasResourceProviderCache::PurgeIdleFramePool,
+                  WrapWeakPersistent(this)),
+        kIdleTimeout);
+  }
+
+  void PurgeIdleFramePool() {
+    if (base::TimeTicks::Now() - last_access_time_ > kIdleTimeout) {
+      size_to_provider_.clear();
+      return;
+    }
+    PostMonitoringTask();
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  HashMap<FloatSize, std::unique_ptr<CanvasResourceProvider>> size_to_provider_;
+  base::TimeTicks last_access_time_;
+  TaskHandle task_handle_;
+};
+
+// static -- defined out of line to satisfy link time requirements.
+const char CanvasResourceProviderCache::kSupplementName[] =
+    "CanvasResourceProviderCache";
+const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
     base::TimeDelta::FromSeconds(10);
 
 absl::optional<media::VideoPixelFormat> CopyToFormat(
@@ -896,7 +984,17 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
                                                   orientation_enum);
   }
 
-  const auto image = CreateImageFromVideoFrame(local_handle->frame());
+  auto* execution_context =
+      ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
+  auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
+  auto* resource_provider = provider_cache.CreateProvider(
+      IntSize(local_handle->frame()->natural_size()));
+
+  const auto dest_rect = gfx::Rect(local_handle->frame()->natural_size());
+  auto image = CreateImageFromVideoFrame(local_handle->frame(),
+                                         /*allow_zero_copy_images=*/true,
+                                         resource_provider,
+                                         /*video_renderer=*/nullptr, dest_rect);
   if (!image) {
     *status = kInvalidSourceImageStatus;
     return nullptr;
@@ -925,8 +1023,7 @@ FloatSize VideoFrame::ElementSize(
     const auto orientation_enum = VideoTransformationToImageOrientation(
         local_frame->metadata().transformation.value_or(
             media::kNoTransformation));
-    auto orientation_adjusted_size =
-        FloatSize(local_frame->visible_rect().size());
+    auto orientation_adjusted_size = FloatSize(local_frame->natural_size());
     if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
       return orientation_adjusted_size.TransposedSize();
     return orientation_adjusted_size;
@@ -959,7 +1056,7 @@ IntSize VideoFrame::BitmapSourceSize() const {
     return IntSize();
 
   // ImageBitmaps should always return the size w/o respecting orientation.
-  return IntSize(local_frame->visible_rect().size());
+  return IntSize(local_frame->natural_size());
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
@@ -986,7 +1083,17 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                  exception_state);
   }
 
-  const auto image = CreateImageFromVideoFrame(local_handle->frame());
+  auto* execution_context =
+      ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
+  auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
+  auto* resource_provider = provider_cache.CreateProvider(
+      IntSize(local_handle->frame()->natural_size()));
+
+  const auto dest_rect = gfx::Rect(local_handle->frame()->natural_size());
+  auto image = CreateImageFromVideoFrame(local_handle->frame(),
+                                         /*allow_zero_copy_images=*/true,
+                                         resource_provider,
+                                         /*video_renderer=*/nullptr, dest_rect);
   if (!image) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
