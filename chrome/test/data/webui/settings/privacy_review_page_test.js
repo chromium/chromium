@@ -13,6 +13,9 @@ import {flushTasks, isChildVisible} from '../test_util.js';
 
 // clang-format on
 
+/* Maximum number of steps in the privacy review, excluding the welcome step. */
+const PRIVACY_REVIEW_STEPS = 3;
+
 suite('PrivacyReviewPage', function() {
   /** @type {!SettingsPrivacyReviewPageElement} */
   let page;
@@ -166,7 +169,9 @@ suite('PrivacyReviewPage', function() {
     assertCardComponentsVisible({
       isCompletionFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(opt_isSyncOn ? 3 : 2, opt_isSyncOn ? 4 : 3);
+    assertStepIndicatorModel(
+        opt_isSyncOn ? PRIVACY_REVIEW_STEPS - 1 : PRIVACY_REVIEW_STEPS - 2,
+        opt_isSyncOn ? PRIVACY_REVIEW_STEPS : PRIVACY_REVIEW_STEPS - 1);
   }
 
   /** @param {boolean|undefined} opt_isSyncOn */
@@ -177,7 +182,8 @@ suite('PrivacyReviewPage', function() {
       isSettingFooterVisibleExpected: true,
       isMsbbFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(0, opt_isSyncOn ? 4 : 3);
+    assertStepIndicatorModel(
+        0, opt_isSyncOn ? PRIVACY_REVIEW_STEPS : PRIVACY_REVIEW_STEPS - 1);
   }
 
   /** @param {boolean|undefined} opt_isSyncOn */
@@ -189,7 +195,8 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isClearOnExitFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(1, opt_isSyncOn ? 4 : 3);
+    assertStepIndicatorModel(
+        1, opt_isSyncOn ? PRIVACY_REVIEW_STEPS : PRIVACY_REVIEW_STEPS - 1);
   }
 
   function assertHistorySyncCardVisible() {
@@ -200,7 +207,7 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isHistorySyncFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(2, 4);
+    assertStepIndicatorModel(1, PRIVACY_REVIEW_STEPS);
   }
 
   test('welcomeForwardNavigation', function() {
@@ -217,38 +224,20 @@ suite('PrivacyReviewPage', function() {
     assertMsbbCardVisible(true);
   });
 
-  test('msbbForwardNavigation', function() {
+  test('msbbForwardNavigationSyncOn', function() {
     navigateToStep('msbb');
-    assertMsbbCardVisible();
-
-    page.shadowRoot.querySelector('#nextButton').click();
-    flush();
-    assertClearOnExitCardVisible();
-  });
-
-  test('clearOnExitBackNavigation', function() {
-    navigateToStep('clearOnExit');
-    assertClearOnExitCardVisible();
-
-    page.shadowRoot.querySelector('#backButton').click();
-    flush();
-    assertMsbbCardVisible();
-  });
-
-  test('clearOnExitForwardNavigationSyncOn', function() {
-    navigateToStep('clearOnExit');
     setSyncEnabled(true);
-    assertClearOnExitCardVisible(true);
+    assertMsbbCardVisible(true);
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
     assertHistorySyncCardVisible();
   });
 
-  test('clearOnExitForwardNavigationSyncOff', function() {
-    navigateToStep('clearOnExit');
+  test('msbbForwardNavigationSyncOff', function() {
+    navigateToStep('msbb');
     setSyncEnabled(false);
-    assertClearOnExitCardVisible();
+    assertMsbbCardVisible();
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
@@ -262,7 +251,7 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot.querySelector('#backButton').click();
     flush();
-    assertClearOnExitCardVisible(true);
+    assertMsbbCardVisible(true);
   });
 
   test('historySyncCardForwardNavigation', function() {

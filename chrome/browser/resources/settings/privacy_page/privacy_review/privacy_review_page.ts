@@ -176,7 +176,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onBackNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.MSBB, true);
           },
-          isAvailable: () => true,
+          // TODO(crbug/1215630): Enable the CoE step when it's ready.
+          isAvailable: () => false,
         },
       ],
       [
