@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,10 +50,11 @@ class WEBVIEW_EXPORT WebView : public View,
 
   ~WebView() override;
 
-  // This creates a WebContents if |kBrowserContext| has been set and there is
+  // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
   // return a nullptr.
-  content::WebContents* GetWebContents();
+  content::WebContents* GetWebContents(
+      base::Location creator_location = base::Location::Current());
 
   // WebView does not assume ownership of WebContents set via this method, only
   // those it implicitly creates via GetWebContents() above.
@@ -181,7 +183,8 @@ class WEBVIEW_EXPORT WebView : public View,
   // Create a regular or test web contents (based on whether we're running
   // in a unit test or not).
   std::unique_ptr<content::WebContents> CreateWebContents(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      base::Location creator_location = base::Location::Current());
 
   NativeViewHost* const holder_ =
       AddChildView(std::make_unique<NativeViewHost>());

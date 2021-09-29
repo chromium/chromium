@@ -73,11 +73,11 @@ WebView::~WebView() {
   SetWebContents(nullptr);  // Make sure all necessary tear-down takes place.
 }
 
-content::WebContents* WebView::GetWebContents() {
+content::WebContents* WebView::GetWebContents(base::Location creator_location) {
   if (!web_contents()) {
     if (!browser_context_)
       return nullptr;
-    wc_owner_ = CreateWebContents(browser_context_);
+    wc_owner_ = CreateWebContents(browser_context_, creator_location);
     wc_owner_->SetDelegate(this);
     SetWebContents(wc_owner_.get());
   }
@@ -418,14 +418,16 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    base::Location creator_location) {
   std::unique_ptr<content::WebContents> contents;
   if (*GetCreatorForTesting()) {
     contents = GetCreatorForTesting()->Run(browser_context);
   }
 
   if (!contents) {
-    content::WebContents::CreateParams create_params(browser_context, nullptr);
+    content::WebContents::CreateParams create_params(browser_context, nullptr,
+                                                     creator_location);
     return content::WebContents::Create(create_params);
   }
 
