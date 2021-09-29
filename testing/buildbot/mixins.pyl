@@ -577,13 +577,6 @@
       },
     },
   },
-  'linux-xenial-or-focal': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-16.04|Ubuntu-20.04',
-      },
-    },
-  },
   'linux_amd_rx_5500_xt': {
     'swarming': {
       'dimensions': {
