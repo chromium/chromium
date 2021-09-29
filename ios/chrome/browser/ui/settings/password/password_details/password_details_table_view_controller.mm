@@ -323,7 +323,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
-  if (self.credentialType != CredentialTypeNew) {
+  if (self.credentialType == CredentialTypeNew) {
+    item.textFieldSecureTextEntry = ![self isPasswordShown];
+  } else {
     item.textFieldValue = [self isPasswordShown] || self.tableView.editing
                               ? self.password.password
                               : kMaskedPassword;
@@ -572,7 +574,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  // TODO(crbug.com/1226006): Mask password field during typing.
   BOOL isInputValid = [self checkIfValidSite] & [self checkIfValidUsername] &
                       [self checkIfValidPassword];
   self.navigationItem.rightBarButtonItem.enabled = isInputValid;
@@ -813,13 +814,26 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                                 animated:NO];
   if (self.isPasswordShown) {
     self.passwordShown = NO;
-    self.passwordTextItem.textFieldValue = kMaskedPassword;
+    if (self.credentialType == CredentialTypeNew) {
+      self.passwordTextItem.textFieldSecureTextEntry = YES;
+    } else {
+      self.passwordTextItem.textFieldValue = kMaskedPassword;
+    }
     self.passwordTextItem.identifyingIcon =
         [[UIImage imageNamed:@"infobar_reveal_password_icon"]
             imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   } else {
-    [self attemptToShowPasswordFor:ReauthenticationReasonShow];
+    if (self.credentialType == CredentialTypeNew) {
+      self.passwordTextItem.textFieldSecureTextEntry = NO;
+      self.passwordShown = YES;
+      self.passwordTextItem.identifyingIcon =
+          [[UIImage imageNamed:@"infobar_hide_password_icon"]
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    } else {
+      [self attemptToShowPasswordFor:ReauthenticationReasonShow];
+    }
   }
 }
 

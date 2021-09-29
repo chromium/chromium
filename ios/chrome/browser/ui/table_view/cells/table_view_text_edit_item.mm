@@ -58,6 +58,7 @@ const CGFloat kEditIconLength = 18;
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
   cell.textField.placeholder = self.textFieldPlaceholder;
   cell.textField.text = self.textFieldValue;
+  cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
     cell.textField.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@_textField", self.textFieldName];
@@ -366,6 +367,7 @@ const CGFloat kEditIconLength = 18;
   self.textField.accessibilityIdentifier = nil;
   self.textField.enabled = NO;
   self.textField.delegate = nil;
+  self.textField.secureTextEntry = NO;
   [self.textField removeTarget:nil
                         action:nil
               forControlEvents:UIControlEventAllEvents];
@@ -379,8 +381,12 @@ const CGFloat kEditIconLength = 18;
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@, %@", self.textLabel.text, self.textField.text];
+  // If |textFieldSecureTextEntry| is
+  // YES, the voice over should not read the text value.
+  NSString* textFieldText =
+      self.textField.secureTextEntry ? @"" : self.textField.text;
+  return
+      [NSString stringWithFormat:@"%@, %@", self.textLabel.text, textFieldText];
 }
 
 #pragma mark Private
