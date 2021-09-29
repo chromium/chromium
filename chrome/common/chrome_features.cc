@@ -240,13 +240,7 @@ const base::Feature kDefaultPinnedAppsUpdate2021Q2{
 // Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS,
 // MacOS and Linux.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
-  "DesktopPWAsAppIconShortcutsMenuUI",
-#if defined(OS_MAC) || defined(OS_LINUX)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // API that allows PWAs manually minimizing, maximizing and restoring windows.
