@@ -1769,7 +1769,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticNegotiated"
-    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2021-11-07">
+    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2022-05-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1782,7 +1782,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticRequested"
-    enum="PeerConnectionSdpSemanticRequested" expires_after="2021-12-05">
+    enum="PeerConnectionSdpSemanticRequested" expires_after="2022-05-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
