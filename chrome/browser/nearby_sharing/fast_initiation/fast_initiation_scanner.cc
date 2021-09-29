@@ -15,10 +15,15 @@
 
 namespace {
 
+// The length of time that a device must be in range before it is reported via a
+// "device found" event.
 constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
     base::TimeDelta::FromSeconds(1);
+
+// The length of time that a device must be out of range before this is reported
+// via a "device lost" event.
 constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(3);
+    base::TimeDelta::FromSeconds(7);
 
 }  // namespace
 
@@ -61,11 +66,11 @@ FastInitiationScanner::FastInitiationScanner(
 FastInitiationScanner::~FastInitiationScanner() {}
 
 void FastInitiationScanner::StartScanning(
-    base::RepeatingClosure device_found_callback,
-    base::RepeatingClosure device_lost_callback,
+    base::RepeatingClosure devices_detected_callback,
+    base::RepeatingClosure devices_not_detected_callback,
     base::OnceClosure scanner_invalidated_callback) {
-  device_found_callback_ = std::move(device_found_callback);
-  device_lost_callback_ = std::move(device_lost_callback);
+  devices_detected_callback_ = std::move(devices_detected_callback);
+  devices_not_detected_callback_ = std::move(devices_not_detected_callback);
   scanner_invalidated_callback_ = std::move(scanner_invalidated_callback);
 
   std::vector<uint8_t> pattern_value;
@@ -97,10 +102,6 @@ void FastInitiationScanner::StartScanning(
       std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
 }
 
-bool FastInitiationScanner::AreFastInitiationDevicesDetected() const {
-  return !devices_attempting_to_share_.empty();
-}
-
 void FastInitiationScanner::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
     absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
@@ -118,21 +119,32 @@ void FastInitiationScanner::OnDeviceFound(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
   NS_LOG(VERBOSE) << __func__;
-  devices_attempting_to_share_.insert(device->GetAddress());
-  device_found_callback_.Run();
+  size_t device_count_prev = detected_devices_.size();
+  detected_devices_.insert(device->GetAddress());
+
+  // Invoke the callback when we go from zero devices to more than zero.
+  if (device_count_prev == 0)
+    devices_detected_callback_.Run();
 }
 
 void FastInitiationScanner::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
   NS_LOG(VERBOSE) << __func__;
-  devices_attempting_to_share_.erase(device->GetAddress());
-  device_lost_callback_.Run();
+  size_t device_count_prev = detected_devices_.size();
+  if (detected_devices_.erase(device->GetAddress()) == 0) {
+    NS_LOG(WARNING) << __func__
+                    << ": Received device lost event for device not in list.";
+  }
+
+  // Invoke the callback when we go from more than zero devices to zero.
+  if (device_count_prev > 0 && detected_devices_.empty())
+    devices_not_detected_callback_.Run();
 }
 
 void FastInitiationScanner::OnSessionInvalidated(
     device::BluetoothLowEnergyScanSession* scan_session) {
   NS_LOG(VERBOSE) << __func__;
-  devices_attempting_to_share_.clear();
+  detected_devices_.clear();
   std::move(scanner_invalidated_callback_).Run();
 }

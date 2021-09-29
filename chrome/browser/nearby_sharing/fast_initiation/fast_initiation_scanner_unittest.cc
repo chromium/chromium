@@ -57,7 +57,7 @@ class NearbySharingFastInitiationScannerTest : public testing::Test {
             &NearbySharingFastInitiationScannerTest::OnDevicesDetected,
             weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(
-            &NearbySharingFastInitiationScannerTest::OnNoDevicesDetected,
+            &NearbySharingFastInitiationScannerTest::OnDevicesNotDetected,
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(
             &NearbySharingFastInitiationScannerTest::OnScannerInvalidated,
@@ -70,7 +70,7 @@ class NearbySharingFastInitiationScannerTest : public testing::Test {
 
   void OnDevicesDetected() { devices_detected_call_count_++; }
 
-  void OnNoDevicesDetected() { no_devices_detected_call_count_++; }
+  void OnDevicesNotDetected() { devices_not_detected_call_count_++; }
 
   void OnScannerInvalidated() { scanner_invalidated_call_count_++; }
 
@@ -107,7 +107,7 @@ class NearbySharingFastInitiationScannerTest : public testing::Test {
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate>
       scan_session_delegate_;
   size_t devices_detected_call_count_ = 0u;
-  size_t no_devices_detected_call_count_ = 0u;
+  size_t devices_not_detected_call_count_ = 0u;
   size_t scanner_invalidated_call_count_ = 0u;
 
   base::WeakPtrFactory<NearbySharingFastInitiationScannerTest>
@@ -116,13 +116,13 @@ class NearbySharingFastInitiationScannerTest : public testing::Test {
 
 TEST_F(NearbySharingFastInitiationScannerTest, CreationAndDestruction) {
   EXPECT_EQ(0u, devices_detected_call_count_);
-  EXPECT_EQ(0u, no_devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
   EXPECT_EQ(0u, scanner_invalidated_call_count_);
 
   scanner_.reset();
   EXPECT_FALSE(mock_scan_session_);
   EXPECT_EQ(0u, devices_detected_call_count_);
-  EXPECT_EQ(0u, no_devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
   EXPECT_EQ(0u, scanner_invalidated_call_count_);
 }
 
@@ -154,24 +154,28 @@ TEST_F(NearbySharingFastInitiationScannerTest, SessionInvalidatedAfterStart) {
 TEST_F(NearbySharingFastInitiationScannerTest, AddAndRemoveDevices) {
   scan_session_delegate_->OnSessionStarted(mock_scan_session_,
                                            /*error_code=*/absl::nullopt);
-  EXPECT_FALSE(scanner_->AreFastInitiationDevicesDetected());
 
   auto device_a = CreateMockDevice();
   scan_session_delegate_->OnDeviceFound(mock_scan_session_, device_a.get());
   EXPECT_EQ(1u, devices_detected_call_count_);
-  EXPECT_TRUE(scanner_->AreFastInitiationDevicesDetected());
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
 
   auto device_b = CreateMockDevice();
   scan_session_delegate_->OnDeviceFound(mock_scan_session_, device_b.get());
-  EXPECT_EQ(2u, devices_detected_call_count_);
-  EXPECT_TRUE(scanner_->AreFastInitiationDevicesDetected());
+  EXPECT_EQ(1u, devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
 
   scan_session_delegate_->OnDeviceLost(mock_scan_session_, device_b.get());
-  EXPECT_EQ(1u, no_devices_detected_call_count_);
-  EXPECT_TRUE(scanner_->AreFastInitiationDevicesDetected());
+  EXPECT_EQ(1u, devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
+
   scan_session_delegate_->OnDeviceLost(mock_scan_session_, device_a.get());
-  EXPECT_EQ(2u, no_devices_detected_call_count_);
-  EXPECT_FALSE(scanner_->AreFastInitiationDevicesDetected());
+  EXPECT_EQ(1u, devices_detected_call_count_);
+  EXPECT_EQ(1u, devices_not_detected_call_count_);
+
+  scan_session_delegate_->OnDeviceFound(mock_scan_session_, device_b.get());
+  EXPECT_EQ(2u, devices_detected_call_count_);
+  EXPECT_EQ(1u, devices_not_detected_call_count_);
 }
 
 TEST_F(NearbySharingFastInitiationScannerTest, FilterPattern) {

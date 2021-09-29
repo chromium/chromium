@@ -80,8 +80,8 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   void OnHighVisibilityChanged(bool in_high_visibility) override {}
   void OnNearbyProcessStopped() override;
   void OnShutdown() override {}
-  void OnFastInitiationDeviceFound() override;
-  void OnFastInitiationDeviceLost() override;
+  void OnFastInitiationDevicesDetected() override;
+  void OnFastInitiationDevicesNotDetected() override;
   void OnFastInitiationScanningStopped() override;
 
   // Shows a progress notification of the data being transferred to or from

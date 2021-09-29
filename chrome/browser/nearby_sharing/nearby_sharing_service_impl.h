@@ -134,7 +134,6 @@ class NearbySharingServiceImpl
   NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
-  bool AreFastInitiationDevicesDetected() const override;
 
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnection(const std::string& endpoint_id,
@@ -240,8 +239,8 @@ class NearbySharingServiceImpl
 
   void InvalidateFastInitiationScanning();
   void StartFastInitiationScanning();
-  void OnFastInitiationDeviceFound();
-  void OnFastInitiationDeviceLost();
+  void OnFastInitiationDevicesDetected();
+  void OnFastInitiationDevicesNotDetected();
   void StopFastInitiationScanning();
 
   void ScheduleRotateBackgroundAdvertisementTimer();

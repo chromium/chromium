@@ -187,37 +187,26 @@ class FakeFastInitiationScanner : public FastInitiationScanner {
     std::move(destructor_callback_).Run();
   }
 
-  void StartScanning(base::RepeatingClosure device_found_callback,
-                     base::RepeatingClosure device_lost_callback,
+  void StartScanning(base::RepeatingClosure devices_detected_callback,
+                     base::RepeatingClosure devices_not_detected_callback,
                      base::OnceClosure scanner_invalidated_callback) override {
     ++start_scanning_call_count_;
-    device_found_callback_ = std::move(device_found_callback);
-    device_lost_callback_ = std::move(device_lost_callback);
+    devices_detected_callback_ = std::move(devices_detected_callback);
+    devices_not_detected_callback_ = std::move(devices_not_detected_callback);
     scanner_invalidated_callback_ = std::move(scanner_invalidated_callback);
   }
 
-  bool AreFastInitiationDevicesDetected() const override {
-    return are_fast_initiation_devices_detected_;
-  }
+  void DevicesDetected() { devices_detected_callback_.Run(); }
 
-  void SetAreFastInitiationDevicesDetected(
-      bool are_fast_initiation_devices_detected) {
-    are_fast_initiation_devices_detected_ =
-        are_fast_initiation_devices_detected;
-  }
-
-  void DeviceFound() { device_found_callback_.Run(); }
-
-  void DeviceLost() { device_lost_callback_.Run(); }
+  void DevicesNotDetected() { devices_not_detected_callback_.Run(); }
 
   void ScannerInvalidated() { std::move(scanner_invalidated_callback_).Run(); }
 
  private:
   base::OnceClosure destructor_callback_;
-  base::RepeatingClosure device_found_callback_;
-  base::RepeatingClosure device_lost_callback_;
+  base::RepeatingClosure devices_detected_callback_;
+  base::RepeatingClosure devices_not_detected_callback_;
   base::OnceClosure scanner_invalidated_callback_;
-  bool are_fast_initiation_devices_detected_ = false;
   size_t start_scanning_call_count_ = 0u;
 };
 
@@ -1298,8 +1287,12 @@ class TestObserver : public NearbySharingService::Observer {
     on_start_advertising_failure_called_ = true;
   }
 
-  void OnFastInitiationDeviceFound() override { device_found_called_ = true; }
-  void OnFastInitiationDeviceLost() override { device_lost_called_ = true; }
+  void OnFastInitiationDevicesDetected() override {
+    devices_detected_called_ = true;
+  }
+  void OnFastInitiationDevicesNotDetected() override {
+    devices_not_detected_called_ = true;
+  }
   void OnFastInitiationScanningStopped() override {
     scanning_stopped_called_ = true;
   }
@@ -1313,8 +1306,8 @@ class TestObserver : public NearbySharingService::Observer {
   bool shutdown_called_ = false;
   bool process_stopped_called_ = false;
   bool on_start_advertising_failure_called_ = false;
-  bool device_found_called_ = false;
-  bool device_lost_called_ = false;
+  bool devices_detected_called_ = false;
+  bool devices_not_detected_called_ = false;
   bool scanning_stopped_called_ = false;
   NearbySharingService* service_;
 };
@@ -4717,30 +4710,15 @@ TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_NotifyObservers) {
 
   FakeFastInitiationScanner* scanner =
       fast_initiation_scanner_factory_->last_fake_fast_initiation_scanner();
-  scanner->DeviceFound();
-  EXPECT_TRUE(observer.device_found_called_);
-  scanner->DeviceLost();
-  EXPECT_TRUE(observer.device_lost_called_);
+  scanner->DevicesDetected();
+  EXPECT_TRUE(observer.devices_detected_called_);
+  scanner->DevicesNotDetected();
+  EXPECT_TRUE(observer.devices_not_detected_called_);
   scanner->ScannerInvalidated();
   EXPECT_TRUE(observer.scanning_stopped_called_);
 
   // Remove the observer before it goes out of scope.
   service_->RemoveObserver(&observer);
-}
-
-TEST_F(NearbySharingServiceImplTest,
-       FastInitiationScanning_AreDevicesDetected) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
-  ASSERT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
-
-  FakeFastInitiationScanner* scanner =
-      fast_initiation_scanner_factory_->last_fake_fast_initiation_scanner();
-  scanner->SetAreFastInitiationDevicesDetected(true);
-  EXPECT_EQ(scanner->AreFastInitiationDevicesDetected(),
-            service_->AreFastInitiationDevicesDetected());
-  scanner->SetAreFastInitiationDevicesDetected(false);
-  EXPECT_EQ(scanner->AreFastInitiationDevicesDetected(),
-            service_->AreFastInitiationDevicesDetected());
 }
 
 TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_NoHardwareSupport) {

@@ -763,7 +763,7 @@ TEST_F(
 
 TEST_F(NearbyNotificationManagerTest,
        FastInitiationDeviceFound_ShowsNearbyDeviceTryingToShare) {
-  manager()->OnFastInitiationDeviceFound();
+  manager()->OnFastInitiationDevicesDetected();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -781,27 +781,16 @@ TEST_F(NearbyNotificationManagerTest,
 
 TEST_F(NearbyNotificationManagerTest,
        FastInitiationDeviceLost_ClosesNearbyDeviceTryingToShare) {
-  manager()->OnFastInitiationDeviceFound();
+  manager()->OnFastInitiationDevicesDetected();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
 
-  // The notification should remain visible while there are still Fast
-  // Initiation devices detected.
-  ON_CALL(*nearby_service_, AreFastInitiationDevicesDetected())
-      .WillByDefault(Return(true));
-  manager()->OnFastInitiationDeviceLost();
-  EXPECT_EQ(1u, GetDisplayedNotifications().size());
-
-  // The notification should be dismissed if Fast Initiation devices are no
-  // longer detected.
-  ON_CALL(*nearby_service_, AreFastInitiationDevicesDetected())
-      .WillByDefault(Return(false));
-  manager()->OnFastInitiationDeviceLost();
+  manager()->OnFastInitiationDevicesNotDetected();
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_F(NearbyNotificationManagerTest,
        FastInitiationScanningStopped_ClosesNearbyDeviceTryingToShare) {
-  manager()->OnFastInitiationDeviceFound();
+  manager()->OnFastInitiationDevicesDetected();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
 
   manager()->OnFastInitiationScanningStopped();

@@ -89,7 +89,6 @@ class MockNearbySharingService : public NearbySharingService {
               GetCertificateManager,
               (),
               (override));
-  MOCK_METHOD(bool, AreFastInitiationDevicesDetected, (), (const override));
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_SHARING_SERVICE_H_

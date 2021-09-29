@@ -748,14 +748,12 @@ void NearbyNotificationManager::OnNearbyProcessStopped() {
   last_transfer_status_ = absl::nullopt;
 }
 
-void NearbyNotificationManager::OnFastInitiationDeviceFound() {
+void NearbyNotificationManager::OnFastInitiationDevicesDetected() {
   ShowNearbyDeviceTryingToShare();
 }
 
-void NearbyNotificationManager::OnFastInitiationDeviceLost() {
-  if (!nearby_service_->AreFastInitiationDevicesDetected()) {
-    CloseNearbyDeviceTryingToShare();
-  }
+void NearbyNotificationManager::OnFastInitiationDevicesNotDetected() {
+  CloseNearbyDeviceTryingToShare();
 }
 
 void NearbyNotificationManager::OnFastInitiationScanningStopped() {

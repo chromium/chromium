@@ -991,11 +991,6 @@ NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
 }
 
-bool NearbySharingServiceImpl::AreFastInitiationDevicesDetected() const {
-  return fast_initiation_scanner_ &&
-         fast_initiation_scanner_->AreFastInitiationDevicesDetected();
-}
-
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
     NearbyProcessShutdownReason shutdown_reason) {
   DCHECK(process_reference_);
@@ -2224,25 +2219,26 @@ void NearbySharingServiceImpl::StartFastInitiationScanning() {
       FastInitiationScanner::Factory::Create(bluetooth_adapter_);
   fast_initiation_scanner_->StartScanning(
       base::BindRepeating(
-          &NearbySharingServiceImpl::OnFastInitiationDeviceFound,
+          &NearbySharingServiceImpl::OnFastInitiationDevicesDetected,
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&NearbySharingServiceImpl::OnFastInitiationDeviceLost,
-                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &NearbySharingServiceImpl::OnFastInitiationDevicesNotDetected,
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&NearbySharingServiceImpl::StopFastInitiationScanning,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbySharingServiceImpl::OnFastInitiationDeviceFound() {
+void NearbySharingServiceImpl::OnFastInitiationDevicesDetected() {
   NS_LOG(VERBOSE) << __func__;
   for (auto& observer : observers_) {
-    observer.OnFastInitiationDeviceFound();
+    observer.OnFastInitiationDevicesDetected();
   }
 }
 
-void NearbySharingServiceImpl::OnFastInitiationDeviceLost() {
+void NearbySharingServiceImpl::OnFastInitiationDevicesNotDetected() {
   NS_LOG(VERBOSE) << __func__;
   for (auto& observer : observers_) {
-    observer.OnFastInitiationDeviceLost();
+    observer.OnFastInitiationDevicesNotDetected();
   }
 }
 
