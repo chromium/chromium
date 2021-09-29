@@ -47,7 +47,10 @@ enum AssistantViewID {
   kOverflowIndicator,
 
   // UIs in AssistantOnboardingSuggestionView
-  kAssistantOnboardingSuggestionViewLabel
+  kAssistantOnboardingSuggestionViewLabel,
+
+  // UIs in SuggestionChipView
+  kSuggestionChipViewLabel
 };
 
 }  // namespace ash

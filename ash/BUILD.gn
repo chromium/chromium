@@ -2621,6 +2621,7 @@ test("ash_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//cc:test_support",
     "//chromeos:test_support",
     "//chromeos/components/feature_usage",
     "//chromeos/components/phonehub:test_support",
