@@ -79,34 +79,8 @@ const std::vector<base::Feature> kDisabledFeaturesForVideoEncoderTest = {
 
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
                                  const uint32_t framerate) {
-  constexpr uint32_t Mbps = 1000 * 1000;
-  // Following bitrates are based on the video bitrates recommended by YouTube
-  // for 16:9 SDR 30fps video.
-  // (https://support.google.com/youtube/answer/1722171).
-  // The bitrates don't scale linearly so we use the following lookup table as a
-  // base for computing a reasonable bitrate for the specified resolution and
-  // framerate.
-  constexpr struct {
-    gfx::Size resolution;
-    uint32_t bitrate;
-  } kDefaultTargetBitrates[] = {
-      {gfx::Size(640, 360), 1 * Mbps},    {gfx::Size(854, 480), 5 * Mbps / 2},
-      {gfx::Size(1280, 720), 5 * Mbps},   {gfx::Size(1920, 1080), 8 * Mbps},
-      {gfx::Size(3840, 2160), 18 * Mbps},
-  };
-
-  const auto* it = std::find_if(
-      std::cbegin(kDefaultTargetBitrates), std::cend(kDefaultTargetBitrates),
-      [resolution](const auto& target_bitrate) {
-        return resolution.GetArea() <= target_bitrate.resolution.GetArea();
-      });
-  LOG_ASSERT(it != std::cend(kDefaultTargetBitrates))
-      << "Target bitrate for the resolution is not found, resolution="
-      << resolution.ToString();
-  const double resolution_ratio =
-      (resolution.GetArea() / static_cast<double>(it->resolution.GetArea()));
-  const double framerate_ratio = framerate > 30 ? 1.5 : 1.0;
-  return it->bitrate * resolution_ratio * framerate_ratio;
+  // This calculation is based on tinyurl.com/cros-platform-video-encoding.
+  return resolution.GetArea() * 0.1 * framerate;
 }
 
 std::vector<VideoEncodeAccelerator::Config::SpatialLayer>
