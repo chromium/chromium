@@ -21,7 +21,7 @@ namespace quick_pair {
 
 namespace {
 
-const char kUserReadDevicesUrl[] =
+const char kUserDevicesUrl[] =
     "https://nearbydevices-pa.googleapis.com/v1/user/devices"
     "?key=%s&alt=proto";
 
@@ -33,8 +33,8 @@ const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
       semantics {
           sender: "Fast Pair repository access"
         description:
-            "Retrieves details about bluetooth devices which have been paired "
-            "with a user's account."
+            "Retrieves and updates details about bluetooth devices which have "
+            "been paired with a user's account."
         trigger:
           "This request is sent at the start of a session."
         data: "List of paired devices with metadata."
@@ -52,23 +52,27 @@ std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
       kTrafficAnnotation, GaiaConstants::kCloudPlatformProjectsOAuth2Scope);
 }
 
+GURL GetUserDevicesUrl() {
+  return GURL(
+      base::StringPrintf(kUserDevicesUrl, google_apis::GetAPIKey().c_str()));
+}
+
 }  // namespace
 
 FootprintsFetcher::FootprintsFetcher() = default;
 FootprintsFetcher::~FootprintsFetcher() = default;
 
 void FootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
-  GURL url = GURL(base::StringPrintf(kUserReadDevicesUrl,
-                                     google_apis::GetAPIKey().c_str()));
   auto http_fetcher = CreateHttpFetcher();
   auto* raw_http_fetcher = http_fetcher.get();
   raw_http_fetcher->ExecuteGetRequest(
-      url, base::BindOnce(&FootprintsFetcher::OnFetchComplete,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                          std::move(http_fetcher)));
+      GetUserDevicesUrl(),
+      base::BindOnce(&FootprintsFetcher::OnGetComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(http_fetcher)));
 }
 
-void FootprintsFetcher::OnFetchComplete(
+void FootprintsFetcher::OnGetComplete(
     UserReadDevicesCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body) {
@@ -100,6 +104,33 @@ void FootprintsFetcher::OnFetchComplete(
   }
 
   std::move(callback).Run(devices);
+}
+
+void FootprintsFetcher::AddUserDevice(nearby::fastpair::FastPairInfo info,
+                                      AddDeviceCallback callback) {
+  auto http_fetcher = CreateHttpFetcher();
+  auto* raw_http_fetcher = http_fetcher.get();
+  raw_http_fetcher->ExecutePostRequest(
+      GetUserDevicesUrl(), info.SerializeAsString(),
+      base::BindOnce(&FootprintsFetcher::OnPostComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(http_fetcher)));
+}
+
+void FootprintsFetcher::OnPostComplete(
+    AddDeviceCallback callback,
+    std::unique_ptr<HttpFetcher> http_fetcher,
+    std::unique_ptr<std::string> response_body) {
+  QP_LOG(VERBOSE) << __func__;
+
+  if (!response_body) {
+    QP_LOG(WARNING) << __func__ << ": No response.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__ << ": Successfully saved new footprints data.";
+  std::move(callback).Run(true);
 }
 
 }  // namespace quick_pair

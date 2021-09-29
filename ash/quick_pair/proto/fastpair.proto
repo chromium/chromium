@@ -298,3 +298,11 @@ message UserReadDevicesRequest {
 message UserReadDevicesResponse {
   repeated FastPairInfo fast_pair_info = 1;
 }
+
+// Request to write a new device to a user.
+message UserWriteDeviceRequest {
+  FastPairInfo fast_pair_info = 1;
+}
+
+// Response to writing a new device to a user.
+message UserWriteDeviceResponse {}

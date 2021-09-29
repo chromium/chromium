@@ -25,6 +25,9 @@ class HttpFetcher;
 using UserReadDevicesCallback = base::OnceCallback<void(
     absl::optional<nearby::fastpair::UserReadDevicesResponse>)>;
 
+// Returns whether the AddDevice call was successful.
+using AddDeviceCallback = base::OnceCallback<void(bool)>;
+
 class FootprintsFetcher {
  public:
   FootprintsFetcher();
@@ -34,11 +37,17 @@ class FootprintsFetcher {
   virtual ~FootprintsFetcher();
 
   void GetUserDevices(UserReadDevicesCallback callback);
+  void AddUserDevice(nearby::fastpair::FastPairInfo info,
+                     AddDeviceCallback callback);
 
  private:
-  void OnFetchComplete(UserReadDevicesCallback callback,
-                       std::unique_ptr<HttpFetcher> http_fetcher,
-                       std::unique_ptr<std::string> response_body);
+  void OnGetComplete(UserReadDevicesCallback callback,
+                     std::unique_ptr<HttpFetcher> http_fetcher,
+                     std::unique_ptr<std::string> response_body);
+
+  void OnPostComplete(AddDeviceCallback callback,
+                      std::unique_ptr<HttpFetcher> http_fetcher,
+                      std::unique_ptr<std::string> response_body);
 
   base::WeakPtrFactory<FootprintsFetcher> weak_ptr_factory_{this};
 };
