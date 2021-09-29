@@ -135,7 +135,6 @@
 
       <command id="default-task">
       <command id="open-with" label="$i18n{OPEN_WITH_BUTTON_LABEL}">
-      <command id="more-actions" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
       <command id="invoke-sharesheet" label="$i18n{SHARESHEET_BUTTON_LABEL}">
       <command id="toggle-holding-space">
       <command id="go-to-file-location"
@@ -187,12 +186,8 @@
                   visibleif="full-page" class="hide-on-toolbar" hidden></cr-menu-item>
         <cr-menu-item command="#open-with"
                   visibleif="full-page" class="hide-on-toolbar" sub-menu="#tasks-menu" hidden></cr-menu-item>
-        <cr-menu-item command="#more-actions"
-                  visibleif="full-page" class="hide-on-toolbar" hidden></cr-menu-item>
         <cr-menu-item command="#invoke-sharesheet"
-                  visibleif="full-page" class="hide-on-toolbar">
-                    $i18n{SHARE_BUTTON_TOOLTIP}
-                  </cr-menu-item>
+                  visibleif="full-page" class="hide-on-toolbar">$i18n{SHARESHEET_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#go-to-file-location"
                   visibleif="full-page" class="hide-on-toolbar" hidden></cr-menu-item>
         <hr id="tasks-separator" visibleif="full-page" class="hide-on-toolbar" hidden>

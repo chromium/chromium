@@ -1773,35 +1773,6 @@ CommandHandler.COMMANDS_['open-with'] = new class extends FilesCommand {
 };
 
 /**
- * Displays "More actions" dialog for current selection.
- */
-CommandHandler.COMMANDS_['more-actions'] = new class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.taskController.getFileTasks()
-        .then(tasks => {
-          tasks.showTaskPicker(
-              fileManager.ui.defaultTaskPicker,
-              str('MORE_ACTIONS_BUTTON_LABEL'), '', task => {
-                tasks.execute(task);
-              }, FileTasks.TaskPickerType.MoreActions);
-        })
-        .catch(error => {
-          if (error) {
-            console.error(error.stack || error);
-          }
-        });
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    // TODO(crbug.com/1251866) : Removing more-action dialog in progress.
-    const canExecute = false;
-    event.canExecute = canExecute;
-    event.command.setHidden(!canExecute);
-  }
-};
-
-/**
  * Invoke Sharesheet.
  */
 CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {

@@ -78,7 +78,6 @@ export function setUp() {
   document.body.innerHTML = [
     '<command id="default-task">',
     '<command id="open-with">',
-    '<command id="more-actions">',
   ].join('');
 
   // Initialize Command with the <command>s.

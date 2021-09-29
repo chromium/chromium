@@ -139,15 +139,6 @@ export class TaskController {
         assertInstanceof(document.querySelector('#open-with'), Command);
 
     /**
-     * More actions command that uses #open-with as selector due to the
-     * open-with command used previously for the same task.
-     * @private {!Command}
-     * @const
-     */
-    this.moreActionsCommand_ =
-        assertInstanceof(document.querySelector('#more-actions'), Command);
-
-    /**
      * @private {Promise<!FileTasks>}
      */
     this.tasks_ = null;
@@ -357,11 +348,11 @@ export class TaskController {
       // Compare entries while ignoring changes inside directories.
       if (!util.isSameEntries(this.lastSelectedEntries_, selection.entries)) {
         // Update the context menu if selection changed.
-        this.updateContextMenuTaskItems_([], []);
+        this.updateContextMenuTaskItems_([]);
       }
     } else {
       // Update context menu.
-      this.updateContextMenuTaskItems_([], []);
+      this.updateContextMenuTaskItems_([]);
     }
     this.lastSelectedEntries_ = selection.entries;
   }
@@ -377,8 +368,7 @@ export class TaskController {
       this.getFileTasks()
           .then(tasks => {
             tasks.display(this.ui_.taskMenuButton);
-            this.updateContextMenuTaskItems_(
-                tasks.getOpenTaskItems(), tasks.getNonOpenTaskItems());
+            this.updateContextMenuTaskItems_(tasks.getOpenTaskItems());
           })
           .catch(error => {
             if (error) {
@@ -448,11 +438,9 @@ export class TaskController {
    *
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} openTasks List of OPEN
    *     tasks.
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} nonOpenTasks List of
-   *     non-OPEN tasks.
    * @private
    */
-  updateContextMenuTaskItems_(openTasks, nonOpenTasks) {
+  updateContextMenuTaskItems_(openTasks) {
     const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
     if (defaultTask) {
       this.ui_.defaultTaskMenuItem.removeAttribute('file-type-icon');
@@ -482,10 +470,7 @@ export class TaskController {
     this.canExecuteOpenActions_ = openTasks.length > 1;
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
-    this.moreActionsCommand_.canExecuteChange(this.ui_.listContainer.element);
-
-    this.ui_.tasksSeparator.hidden =
-        openTasks.length === 0 && nonOpenTasks.length == 0;
+    this.ui_.tasksSeparator.hidden = openTasks.length === 0;
   }
 
   /**

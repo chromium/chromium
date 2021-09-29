@@ -184,14 +184,6 @@ export class FileTasks {
   }
 
   /**
-   * Gets tasks which are not categorized as OPEN tasks.
-   * @return {!Array<!chrome.fileManagerPrivate.FileTask>}
-   */
-  getNonOpenTaskItems() {
-    return this.tasks_.filter(task => !FileTasks.isOpenTask(task));
-  }
-
-  /**
    * Returns whether the system is currently offline.
    *
    * @param {!VolumeManager} volumeManager
@@ -630,7 +622,7 @@ export class FileTasks {
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
     if (FileTasks.isShareTask(task)) {
       FileTasks.recordSharingActionUMA_(
-          FileTasks.SharingActionSourceForUMA.SHARE_BUTTON, this.entries_);
+          FileTasks.SharingActionSourceForUMA.SHARE_SHEET, this.entries_);
     }
     this.executeInternal_(task);
   }
@@ -975,12 +967,9 @@ export class FileTasks {
    */
   display(openCombobutton) {
     const openTasks = [];
-    const otherTasks = [];
     for (const task of this.tasks_) {
       if (FileTasks.isOpenTask(task)) {
         openTasks.push(task);
-      } else {
-        otherTasks.push(task);
       }
     }
     this.updateOpenComboButton_(openCombobutton, openTasks);
@@ -1117,10 +1106,7 @@ export class FileTasks {
    * @param {FileTasks.TaskPickerType} pickerType Task picker type.
    */
   showTaskPicker(taskDialog, title, message, onSuccess, pickerType) {
-    const tasks = pickerType == FileTasks.TaskPickerType.MoreActions ?
-        this.getNonOpenTaskItems() :
-        this.getOpenTaskItems();
-    let items = this.createItems_(tasks);
+    let items = this.createItems_(this.getOpenTaskItems());
     if (pickerType == FileTasks.TaskPickerType.ChangeDefault) {
       items = items.filter(item => !item.isGenericFileHandler);
     }
@@ -1226,7 +1212,6 @@ FileTasks.TaskMenuButtonItemType = {
 FileTasks.TaskPickerType = {
   ChangeDefault: 'ChangeDefault',
   OpenWith: 'OpenWith',
-  MoreActions: 'MoreActions'
 };
 
 /**
@@ -1276,7 +1261,6 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
 FileTasks.SharingActionSourceForUMA = {
   UNKNOWN: 'Unknown',
   CONTEXT_MENU: 'Context Menu',
-  SHARE_BUTTON: 'Share Button',
   SHARE_SHEET: 'Share Sheet',
 };
 
@@ -1287,13 +1271,12 @@ FileTasks.SharingActionSourceForUMA = {
 FileTasks.ValidSharingActionSource = Object.freeze([
   FileTasks.SharingActionSourceForUMA.UNKNOWN,
   FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
-  FileTasks.SharingActionSourceForUMA.SHARE_BUTTON,
+  null,  // SHARE_BUTTON replaced by share sheet.
   FileTasks.SharingActionSourceForUMA.SHARE_SHEET,
 ]);
 
 /**
- * The number of menu-item entries in the top level menu
- * before we split and show the 'More actions' option
+ * The number of menu-item entries in the top level menu.
  * @const {number}
  */
 const NUM_TOP_LEVEL_ENTRIES = 6;
