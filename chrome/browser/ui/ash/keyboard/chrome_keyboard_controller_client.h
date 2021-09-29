@@ -14,6 +14,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -190,7 +191,7 @@ class ChromeKeyboardControllerClient
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  ash::KeyboardController* keyboard_controller_ = nullptr;
+  raw_ptr<ash::KeyboardController> keyboard_controller_ = nullptr;
 
   // Set when the WS is used and OnLoadKeyboardContentsRequested is called.
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
@@ -212,7 +213,7 @@ class ChromeKeyboardControllerClient
 
   base::ObserverList<Observer> observers_;
 
-  Profile* profile_for_test_ = nullptr;
+  raw_ptr<Profile> profile_for_test_ = nullptr;
   GURL virtual_keyboard_url_for_test_;
 
   base::WeakPtrFactory<ChromeKeyboardControllerClient> weak_ptr_factory_{this};

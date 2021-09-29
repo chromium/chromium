@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -118,8 +119,8 @@ class AX_EXPORT AXTableInfo {
   AXNode* CreateExtraMacTableHeaderNode();
   void UpdateExtraMacColumnNodeAttributes(size_t col_index);
 
-  AXTree* tree_ = nullptr;
-  AXNode* table_node_ = nullptr;
+  raw_ptr<AXTree> tree_ = nullptr;
+  raw_ptr<AXNode> table_node_ = nullptr;
   bool valid_ = false;
   std::map<int, std::map<int, CellData>> incremental_row_col_map_;
 };

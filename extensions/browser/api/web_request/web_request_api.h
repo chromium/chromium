@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -276,7 +277,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // permissions.
   int web_request_extension_count_ = 0;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   RequestIDGenerator request_id_generator_;
   std::unique_ptr<ProxySet> proxies_;
@@ -578,7 +579,7 @@ class ExtensionWebRequestEventRouter {
 
       bool operator==(const ID& that) const;
 
-      content::BrowserContext* browser_context;
+      raw_ptr<content::BrowserContext> browser_context;
       std::string extension_id;
       std::string sub_event_name;
       // In the case of a webview, this is the process ID of the embedder.

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
@@ -54,7 +55,7 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
     parent_->ThumbnailUpdated(web_contents(), image);
   }
 
-  ThumbnailTracker* parent_;
+  raw_ptr<ThumbnailTracker> parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
   std::unique_ptr<ThumbnailImage::Subscription> subscription_;
 };

@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -130,7 +131,7 @@ class ResourceBundleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  ResourceBundle* resource_bundle_;
+  raw_ptr<ResourceBundle> resource_bundle_;
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {

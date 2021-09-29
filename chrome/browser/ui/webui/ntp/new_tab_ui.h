@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -75,7 +76,7 @@ class NewTabUI : public content::WebUIController {
 
    private:
     // Pointer back to the original profile.
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
   };
 
   void OnShowBookmarkBarChanged();

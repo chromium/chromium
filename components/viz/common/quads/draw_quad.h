@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -72,7 +73,7 @@ class VIZ_COMMON_EXPORT DrawQuad {
   // Stores state common to a large bundle of quads; kept separate for memory
   // efficiency. There is special treatment to reconstruct these pointers
   // during serialization.
-  const SharedQuadState* shared_quad_state;
+  raw_ptr<const SharedQuadState> shared_quad_state;
 
   bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 

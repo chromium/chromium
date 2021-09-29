@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -54,7 +55,7 @@ class FeatureSwitch {
 
     ~ScopedOverride();
    private:
-    FeatureSwitch* feature_;
+    raw_ptr<FeatureSwitch> feature_;
     FeatureSwitch::OverrideValue previous_value_;
   };
 
@@ -81,7 +82,7 @@ class FeatureSwitch {
   std::string GetLegacyDisableFlag() const;
   bool ComputeValue() const;
 
-  const base::CommandLine* command_line_;
+  raw_ptr<const base::CommandLine> command_line_;
   const char* switch_name_;
   bool default_value_;
   OverrideValue override_value_;

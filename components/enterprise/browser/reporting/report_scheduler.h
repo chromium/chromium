@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -149,7 +150,7 @@ class ReportScheduler {
   // Policy value watcher
   PrefChangeRegistrar pref_change_registrar_;
 
-  policy::CloudPolicyClient* cloud_policy_client_;
+  raw_ptr<policy::CloudPolicyClient> cloud_policy_client_;
 
   base::WallClockTimer request_timer_;
 

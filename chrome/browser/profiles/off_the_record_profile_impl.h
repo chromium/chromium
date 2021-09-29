@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -148,7 +149,7 @@ class OffTheRecordProfileImpl : public Profile {
 #endif  // !defined(OS_ANDROID)
 
   // The real underlying profile.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // Prevent |profile_| from being destroyed first.
   ScopedProfileKeepAlive profile_keep_alive_;
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,7 +59,7 @@ class ReaderModeIconView : public PageActionIconView,
   void OnResult(const dom_distiller::DistillabilityResult& result) override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_READER_MODE_READER_MODE_ICON_VIEW_H_

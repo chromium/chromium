@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "google_apis/common/api_error_codes.h"
@@ -52,7 +53,7 @@ class ListChangesTask : public SyncTask {
   MetadataDatabase* metadata_database();
   drive::DriveServiceInterface* drive_service();
 
-  SyncEngineContext* sync_context_;
+  raw_ptr<SyncEngineContext> sync_context_;
   std::vector<std::unique_ptr<google_apis::ChangeResource>> change_list_;
 
   std::vector<std::string> file_ids_;

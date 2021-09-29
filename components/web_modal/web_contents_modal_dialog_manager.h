@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/web_modal_export.h"
@@ -64,7 +65,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
     }
 
    private:
-    WebContentsModalDialogManager* manager_;
+    raw_ptr<WebContentsModalDialogManager> manager_;
 
     DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
@@ -99,7 +100,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   void WebContentsDestroyed() override;
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  WebContentsModalDialogManagerDelegate* delegate_;
+  raw_ptr<WebContentsModalDialogManagerDelegate> delegate_;
 
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;

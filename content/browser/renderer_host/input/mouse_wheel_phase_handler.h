@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_PHASE_HANDLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_PHASE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/common/content_export.h"
@@ -108,7 +109,7 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   bool ShouldBreakLatchingDueToDirectionChange(
       const blink::WebMouseWheelEvent& wheel_event) const;
 
-  RenderWidgetHostViewBase* const host_view_;
+  const raw_ptr<RenderWidgetHostViewBase> host_view_;
   base::OneShotTimer mouse_wheel_end_dispatch_timer_;
   base::TimeDelta mouse_wheel_end_dispatch_timeout_;
   blink::WebMouseWheelEvent last_mouse_wheel_event_;

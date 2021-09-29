@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -101,7 +102,7 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   // Init() and cleared by Shutdown() and needs to be false in the destructor.
   bool initialized_;
 
-  SchemaRegistry* schema_registry_;
+  raw_ptr<SchemaRegistry> schema_registry_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 };

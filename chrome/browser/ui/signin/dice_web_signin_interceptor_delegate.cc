@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -92,7 +93,7 @@ class ForcedEnterpriseSigninInterceptionHandle
                                  ? SigninInterceptionResult::kAccepted
                                  : SigninInterceptionResult::kDeclined);
   }
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
 };
 

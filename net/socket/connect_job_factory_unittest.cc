@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
@@ -216,11 +217,11 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*websocket_endpoint_lock_manager=*/nullptr};
   TestConnectJobDelegate delegate_;
 
-  TestHttpProxyConnectJobFactory* http_proxy_job_factory_;
-  TestSocksConnectJobFactory* socks_job_factory_;
-  TestSslConnectJobFactory* ssl_job_factory_;
-  TestTransportConnectJobFactory* transport_job_factory_;
-  TestWebsocketConnectJobFactory* websocket_job_factory_;
+  raw_ptr<TestHttpProxyConnectJobFactory> http_proxy_job_factory_;
+  raw_ptr<TestSocksConnectJobFactory> socks_job_factory_;
+  raw_ptr<TestSslConnectJobFactory> ssl_job_factory_;
+  raw_ptr<TestTransportConnectJobFactory> transport_job_factory_;
+  raw_ptr<TestWebsocketConnectJobFactory> websocket_job_factory_;
 
   std::unique_ptr<ConnectJobFactory> factory_;
 };

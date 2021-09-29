@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -60,8 +61,8 @@ class SignInTestObserver : public IdentityManager::Observer,
   explicit SignInTestObserver(IdentityManager* identity_manager,
                               AccountReconcilor* reconcilor)
       : identity_manager_(identity_manager), reconcilor_(reconcilor) {
-    identity_manager_observation_.Observe(identity_manager_);
-    account_reconcilor_observation_.Observe(reconcilor_);
+    identity_manager_observation_.Observe(identity_manager_.get());
+    account_reconcilor_observation_.Observe(reconcilor_.get());
   }
   ~SignInTestObserver() override = default;
 
@@ -171,8 +172,8 @@ class SignInTestObserver : public IdentityManager::Observer,
         primary_account_id);
   }
 
-  signin::IdentityManager* const identity_manager_;
-  AccountReconcilor* const reconcilor_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<AccountReconcilor> reconcilor_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
@@ -204,7 +205,8 @@ class AccountCapabilitiesObserver : public IdentityManager::Observer {
 
   // This should be called only once per AccountCapabilitiesObserver instance.
   void WaitForAllCapabilitiesToBeKnown(CoreAccountId account_id) {
-    DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
+    DCHECK(identity_manager_observation_.IsObservingSource(
+        identity_manager_.get()));
     AccountInfo info =
         identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
     if (info.capabilities.AreAllCapabilitiesKnown())
@@ -216,7 +218,7 @@ class AccountCapabilitiesObserver : public IdentityManager::Observer {
   }
 
  private:
-  IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<IdentityManager> identity_manager_ = nullptr;
   CoreAccountId account_id_;
   base::RunLoop run_loop_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -439,7 +440,7 @@ class DownloadDeepScanningBrowserTestBase
   bool is_consumer_;
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
-  FakeBinaryFCMService* binary_fcm_service_;
+  raw_ptr<FakeBinaryFCMService> binary_fcm_service_;
 
   enterprise_connectors::ContentAnalysisRequest last_request_;
 
@@ -1323,7 +1324,7 @@ class WaitForModalObserver : public DeepScanningRequest::Observer {
   }
 
  private:
-  DeepScanningRequest* request_;
+  raw_ptr<DeepScanningRequest> request_;
   base::RunLoop run_loop_;
 };
 
@@ -1349,7 +1350,7 @@ class WaitForFinishObserver : public DeepScanningRequest::Observer {
   }
 
  private:
-  DeepScanningRequest* request_;
+  raw_ptr<DeepScanningRequest> request_;
   base::RunLoop run_loop_;
 };
 

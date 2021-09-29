@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "extensions/browser/pref_names.h"
@@ -153,7 +154,7 @@ class ExtensionManagementPrefUpdater
   }
 
  private:
-  TestingPrefService* service_;
+  raw_ptr<TestingPrefService> service_;
 };
 
 // A helper class to manipulate the extension management policy in browser
@@ -172,7 +173,7 @@ class ExtensionManagementPolicyUpdater
   ~ExtensionManagementPolicyUpdater() override;
 
  private:
-  policy::MockConfigurationPolicyProvider* provider_;
+  raw_ptr<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<policy::PolicyBundle> policies_;
 };
 

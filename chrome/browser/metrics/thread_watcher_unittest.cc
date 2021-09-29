@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -301,9 +302,9 @@ class ThreadWatcherTest : public ::testing::Test {
   static constexpr char kCrashOnHangThreadNames[] = "UI,IO";
   static constexpr char kCrashOnHangThreadData[] = "UI:12,IO:12";
 
-  CustomThreadWatcher* io_watcher_;
-  CustomThreadWatcher* ui_watcher_;
-  ThreadWatcherList* thread_watcher_list_;
+  raw_ptr<CustomThreadWatcher> io_watcher_;
+  raw_ptr<CustomThreadWatcher> ui_watcher_;
+  raw_ptr<ThreadWatcherList> thread_watcher_list_;
 
   template <typename... TaskEnvironmentTraits>
   ThreadWatcherTest(base::test::TaskEnvironment::TimeSource time_source =
@@ -622,9 +623,9 @@ class ThreadWatcherTestThreadNotResponding
     // It is safe to use base::Unretained because test is waiting for the method
     // to finish.
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
-                       base::Unretained(io_watcher_), kUnresponsiveTime * 10));
+        FROM_HERE, base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
+                                  base::Unretained(io_watcher_.get()),
+                                  kUnresponsiveTime * 10));
 
     // Activate thread watching.
     io_watcher_->ActivateThreadWatching();
@@ -696,9 +697,9 @@ class ThreadWatcherTestMultipleThreadsNotResponding
     // It is safe to use base::Unretained because test is waiting for the method
     // to finish.
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
-                       base::Unretained(io_watcher_), kUnresponsiveTime * 10));
+        FROM_HERE, base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
+                                  base::Unretained(io_watcher_.get()),
+                                  kUnresponsiveTime * 10));
 
     // Activate watching of UI thread.
     ui_watcher_->ActivateThreadWatching();

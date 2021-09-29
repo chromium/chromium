@@ -12,6 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -163,7 +164,7 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   void SaveTraceFinished(bool success);
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  content::WebUI* web_ui_;  // The WebUI that owns us.
+  raw_ptr<content::WebUI> web_ui_;  // The WebUI that owns us.
 
   base::WeakPtrFactory<MemoryInternalsDOMHandler> weak_factory_{this};
 };

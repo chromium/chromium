@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -195,7 +196,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
   int SetTimer(const base::TimeDelta& delay, TimerCallback timer_func);
   void KillTimer(int timer_id);
 
-  PDFiumEngine* const engine_;
+  const raw_ptr<PDFiumEngine> engine_;
   const ScriptOption script_option_;
   std::map<int, std::unique_ptr<base::RepeatingTimer>> timers_;
 };

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/views_export.h"
 
@@ -42,7 +43,7 @@ class VIEWS_EXPORT AnimationAbortHandle {
 
   AnimationState animation_state() const { return animation_state_; }
 
-  AnimationBuilder::Observer* observer_;
+  raw_ptr<AnimationBuilder::Observer> observer_;
   std::set<ui::Layer*> layers_;
   AnimationState animation_state_ = AnimationState::kNotStarted;
 };

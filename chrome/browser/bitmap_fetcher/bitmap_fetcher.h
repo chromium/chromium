@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
@@ -75,7 +76,7 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   const GURL url_;
-  BitmapFetcherDelegate* const delegate_;
+  const raw_ptr<BitmapFetcherDelegate> delegate_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   // Used to measure UMA histograms for fetching and decoding. Will be reset

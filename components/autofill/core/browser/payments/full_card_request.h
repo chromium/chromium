@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -200,13 +201,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
   void Reset();
 
   // Used to fetch risk data for this request.
-  RiskDataLoader* const risk_data_loader_;
+  const raw_ptr<RiskDataLoader> risk_data_loader_;
 
   // Responsible for unmasking a masked server card.
-  payments::PaymentsClient* const payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Responsible for updating the server card on disk after it's been unmasked.
-  PersonalDataManager* const personal_data_manager_;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Receiver of the full PAN and CVC.
   base::WeakPtr<ResultDelegate> result_delegate_;

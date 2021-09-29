@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -77,8 +78,8 @@ class DeviceTrustServiceTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
-  MockAttestationService* mock_attestation_service_;
-  MockSignalsService* mock_signals_service_;
+  raw_ptr<MockAttestationService> mock_attestation_service_;
+  raw_ptr<MockSignalsService> mock_signals_service_;
 };
 
 // Tests that IsEnabled returns the right value when the policy has some URLs.

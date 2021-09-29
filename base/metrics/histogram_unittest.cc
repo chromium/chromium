@@ -15,6 +15,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -113,7 +114,7 @@ class HistogramTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
-  PersistentMemoryAllocator* allocator_ = nullptr;
+  raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HistogramTest);

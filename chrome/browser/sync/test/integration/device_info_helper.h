@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +39,7 @@ class ServerDeviceInfoMatchChecker : public StatusChangeChecker,
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const Matcher matcher_;
 };
 

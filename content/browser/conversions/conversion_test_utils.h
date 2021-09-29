@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -159,7 +160,7 @@ class TestManagerProvider : public ConversionManager::Provider {
   ConversionManager* GetManager(WebContents* web_contents) const override;
 
  private:
-  ConversionManager* manager_ = nullptr;
+  raw_ptr<ConversionManager> manager_ = nullptr;
 };
 
 // Test ConversionManager which can be injected into tests to monitor calls to a

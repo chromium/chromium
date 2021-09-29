@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -40,7 +41,7 @@ class CountingAutofillDriver : public TestAutofillDriver {
   ~CountingAutofillDriver() override { --*instance_counter_; }
 
  private:
-  int* const instance_counter_;
+  const raw_ptr<int> instance_counter_;
 };
 
 // Code-wise this class is identitcal to AutofillDriverFactory, but exposes the

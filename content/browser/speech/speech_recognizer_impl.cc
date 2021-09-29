@@ -874,7 +874,8 @@ void SpeechRecognizerImpl::SetAudioEnvironmentForTesting(
 }
 
 media::AudioSystem* SpeechRecognizerImpl::GetAudioSystem() {
-  return audio_system_for_tests_ ? audio_system_for_tests_ : audio_system_;
+  return audio_system_for_tests_ ? audio_system_for_tests_
+                                 : audio_system_.get();
 }
 
 void SpeechRecognizerImpl::CreateAudioCapturerSource() {

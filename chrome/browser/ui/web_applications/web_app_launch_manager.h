@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,8 +68,8 @@ class WebAppLaunchManager {
                               apps::mojom::LaunchContainer container)>
           callback);
 
-  Profile* const profile_;
-  WebAppProvider* const provider_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<WebAppProvider> provider_;
 
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
 };

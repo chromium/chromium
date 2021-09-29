@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -304,14 +305,14 @@ class MockHostResolverBase
   // RemoveCancelledListener().
   RequestMap requests_;
   size_t next_request_id_;
-  ProbeRequestImpl* doh_probe_request_ = nullptr;
+  raw_ptr<ProbeRequestImpl> doh_probe_request_ = nullptr;
   std::set<MdnsListenerImpl*> listeners_;
 
   size_t num_resolve_;
   size_t num_resolve_from_cache_;
   size_t num_non_local_resolves_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
 };

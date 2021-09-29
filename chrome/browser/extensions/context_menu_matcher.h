@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -112,9 +113,9 @@ class ContextMenuMatcher {
   // This will set the icon on the most recently-added item in the menu_model_.
   void SetExtensionIcon(const std::string& extension_id);
 
-  content::BrowserContext* browser_context_;
-  ui::SimpleMenuModel* menu_model_;
-  ui::SimpleMenuModel::Delegate* delegate_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<ui::SimpleMenuModel> menu_model_;
+  raw_ptr<ui::SimpleMenuModel::Delegate> delegate_;
 
   base::RepeatingCallback<bool(const MenuItem*)> filter_;
 

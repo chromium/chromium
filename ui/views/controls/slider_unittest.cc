@@ -11,6 +11,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -73,9 +74,9 @@ class TestSliderListener : public views::SliderListener {
   // The epoch of the last time SliderDragEnded was called.
   int last_drag_ended_epoch_ = -1;
   // The sender from the last SliderDragStarted call.
-  views::Slider* last_drag_started_sender_ = nullptr;
+  raw_ptr<views::Slider> last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
-  views::Slider* last_drag_ended_sender_ = nullptr;
+  raw_ptr<views::Slider> last_drag_ended_sender_ = nullptr;
 };
 
 TestSliderListener::TestSliderListener() = default;
@@ -159,7 +160,7 @@ class SliderTest : public views::ViewsTestBase,
 
  private:
   // The Slider to be tested.
-  Slider* slider_ = nullptr;
+  raw_ptr<Slider> slider_ = nullptr;
 
   // Populated values for discrete slider.
   base::flat_set<float> values_;

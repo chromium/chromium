@@ -376,7 +376,7 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
 
 jlong SyncServiceAndroidBridge::GetNativeSyncServiceImplForTest(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return reinterpret_cast<intptr_t>(native_sync_service_);
+  return reinterpret_cast<intptr_t>(native_sync_service_.get());
 }
 
 static jlong JNI_SyncServiceImpl_Init(

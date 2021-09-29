@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -189,7 +190,7 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   test::FakeClock clock_;
   SchedulerConfig config_;
   std::unique_ptr<ImpressionHistoryTracker> impression_trakcer_;
-  MockImpressionStore* store_;
+  raw_ptr<MockImpressionStore> store_;
   std::unique_ptr<MockDelegate> delegate_;
 };
 

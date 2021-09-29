@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_MEMORY_BUFFER_MANAGER_SINGLETON_H_
 #define CONTENT_BROWSER_GPU_GPU_MEMORY_BUFFER_MANAGER_SINGLETON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/host/host_gpu_memory_buffer_manager.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 
@@ -36,7 +37,7 @@ class GpuMemoryBufferManagerSingleton : public viz::HostGpuMemoryBufferManager,
   // GpuDataManagerObserver:
   void OnGpuExtraInfoUpdate() override;
 
-  GpuDataManagerImpl* gpu_data_manager_impl_ = nullptr;
+  raw_ptr<GpuDataManagerImpl> gpu_data_manager_impl_ = nullptr;
 };
 
 }  // namespace content

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_CONTENT_INDEX_CONTENT_INDEX_CONTEXT_IMPL_H_
 #define CONTENT_BROWSER_CONTENT_INDEX_CONTENT_INDEX_CONTEXT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/content_index/content_index_database.h"
 #include "content/common/content_export.h"
@@ -55,7 +56,7 @@ class CONTENT_EXPORT ContentIndexContextImpl
 
   ~ContentIndexContextImpl() override;
 
-  ContentIndexProvider* provider_;
+  raw_ptr<ContentIndexProvider> provider_;
   ContentIndexDatabase content_index_database_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentIndexContextImpl);

@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -241,8 +242,9 @@ class TestSender {
     remote_->Send(value);
 
     next_sender_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&TestSender::Send,
-                                  base::Unretained(next_sender_), ++value));
+        FROM_HERE,
+        base::BindOnce(&TestSender::Send, base::Unretained(next_sender_.get()),
+                       ++value));
   }
 
   void TearDown() {
@@ -255,7 +257,7 @@ class TestSender {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  TestSender* next_sender_;
+  raw_ptr<TestSender> next_sender_;
   int32_t max_value_to_send_;
 
   AssociatedRemote<IntegerSender> remote_;

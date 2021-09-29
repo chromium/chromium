@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -127,7 +128,7 @@ class UrlFilterParser {
   const std::string url_filter_;
   const size_t url_filter_len_;
   size_t index_;
-  IndexedRule* indexed_rule_;  // Must outlive this instance.
+  raw_ptr<IndexedRule> indexed_rule_;  // Must outlive this instance.
 };
 
 bool IsCaseSensitive(const dnr_api::Rule& parsed_rule) {

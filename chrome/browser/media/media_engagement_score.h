@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
@@ -134,14 +135,14 @@ class MediaEngagementScore final {
   url::Origin origin_;
 
   // A clock that can be used for testing, owned by the service.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // The dictionary that represents this engagement score.
   std::unique_ptr<base::DictionaryValue> score_dict_;
 
   // The content settings map that will persist the score,
   // has a lifetime of the Profile like the service which owns |this|.
-  HostContentSettingsMap* settings_map_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SCORE_H_

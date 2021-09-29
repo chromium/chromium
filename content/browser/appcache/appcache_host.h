@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -369,11 +370,11 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
 
   // The frontend to deliver notifications to the child process.
   mojo::Remote<blink::mojom::AppCacheFrontend> frontend_remote_;
-  blink::mojom::AppCacheFrontend* frontend_;
+  raw_ptr<blink::mojom::AppCacheFrontend> frontend_;
   int render_frame_id_;
 
   // Our central service object.
-  AppCacheServiceImpl* service_;
+  raw_ptr<AppCacheServiceImpl> service_;
 
   // And the equally central storage object, with a twist. In some error
   // conditions the storage object gets recreated and reinitialized. The
@@ -382,7 +383,7 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
   // circumstances, disabled_storage_reference_ is expected to be NULL.
   // When non-NULL both storage_ and disabled_storage_reference_ refer to the
   // same instance.
-  AppCacheStorage* storage_;
+  raw_ptr<AppCacheStorage> storage_;
 
   // Since these are synchronous scriptable API calls in the client, there can
   // only be one type of callback pending. Also, we have to wait until we have a

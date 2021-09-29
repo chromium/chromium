@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // entire ancestor chain. |origin| is the origin of the frame being checked.
   bool IsSameOriginWithAncestors(const url::Origin& origin);
 
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

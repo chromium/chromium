@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -78,7 +79,7 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  ImageButton* button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<ImageButton> button_ = nullptr;  // owned by |widget_|.
 };
 
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {

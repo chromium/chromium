@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -74,7 +75,7 @@ class ExtensionAPI {
     ~OverrideSharedInstanceForTest();
 
    private:
-    ExtensionAPI* original_api_;
+    raw_ptr<ExtensionAPI> original_api_;
   };
 
   // Creates a completely clean instance. Configure using

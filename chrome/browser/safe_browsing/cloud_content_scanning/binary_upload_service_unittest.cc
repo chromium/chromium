@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -234,7 +235,7 @@ class BinaryUploadServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BinaryUploadService> service_;
-  MockBinaryFCMService* fcm_service_;
+  raw_ptr<MockBinaryFCMService> fcm_service_;
   FakeMultipartUploadRequestFactory fake_factory_;
 };
 

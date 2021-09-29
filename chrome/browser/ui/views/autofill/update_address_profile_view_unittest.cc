@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -80,7 +81,7 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  UpdateAddressProfileView* view_;
+  raw_ptr<UpdateAddressProfileView> view_;
   testing::NiceMock<MockSaveUpdateAddressProfileBubbleController>
       mock_controller_;
 };

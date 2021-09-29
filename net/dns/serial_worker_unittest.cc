@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -36,7 +37,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
     }
    private:
     ~TestSerialWorker() override = default;
-    SerialWorkerTest* test_;
+    raw_ptr<SerialWorkerTest> test_;
   };
 
   // Mocks
@@ -146,7 +147,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   scoped_refptr<TestSerialWorker> worker_;
 
   std::string breakpoint_;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SerialWorkerTest);
 };

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
@@ -45,8 +46,8 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
   void OnStoreError(CloudPolicyStore* store) override;
 
  private:
-  CloudPolicyCore* core_;
-  MachineLevelUserCloudPolicyContext* context_;
+  raw_ptr<CloudPolicyCore> core_;
+  raw_ptr<MachineLevelUserCloudPolicyContext> context_;
 };
 
 }  // namespace policy

@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -123,11 +124,11 @@ class BidirectionalStreamAdapter
   void DestroyOnNetworkThread();
 
   // None of these objects are owned by |this|.
-  net::URLRequestContextGetter* request_context_getter_;
-  grpc_support::BidirectionalStream* bidirectional_stream_;
+  raw_ptr<net::URLRequestContextGetter> request_context_getter_;
+  raw_ptr<grpc_support::BidirectionalStream> bidirectional_stream_;
   // C side
   std::unique_ptr<bidirectional_stream> c_stream_;
-  bidirectional_stream_callback* c_callback_;
+  raw_ptr<bidirectional_stream_callback> c_callback_;
 };
 
 BidirectionalStreamAdapter::BidirectionalStreamAdapter(

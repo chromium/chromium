@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
@@ -79,10 +80,10 @@ class RealboxHandler : public realbox::mojom::PageHandler,
                                const gfx::Image& favicon);
 
  private:
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
-  BitmapFetcherService* bitmap_fetcher_service_;
+  raw_ptr<BitmapFetcherService> bitmap_fetcher_service_;
   std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
   FaviconCache favicon_cache_;
   base::TimeTicks time_user_first_modified_realbox_;

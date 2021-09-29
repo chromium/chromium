@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -268,7 +269,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
       // later versions.
       bitrate = OPUS_AUTO;
     }
-    CHECK_EQ(opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)),
+    CHECK_EQ(opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_BITRATE(bitrate)),
              OPUS_OK);
   }
 
@@ -314,7 +315,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
   }
 
   const std::unique_ptr<uint8_t[]> encoder_memory_;
-  OpusEncoder* const opus_encoder_;
+  const raw_ptr<OpusEncoder> opus_encoder_;
   const std::unique_ptr<float[]> buffer_;
 
   // This is the recommended value, according to documentation in

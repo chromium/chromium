@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
@@ -182,7 +183,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
   PictureInPictureTestBrowserClient browser_client_;
   PictureInPictureDelegate delegate_;
   // Will be deleted when the frame is destroyed.
-  PictureInPictureServiceImpl* service_impl_;
+  raw_ptr<PictureInPictureServiceImpl> service_impl_;
   // Required to pass a valid PendingRemote to StartSession() in the tests.
   PictureInPictureMediaPlayerReceiver media_player_receiver_;
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -58,7 +59,7 @@ class FakeThemeService : public ThemeService {
   }
 
  private:
-  ThemeSyncableService* theme_syncable_service_ = nullptr;
+  raw_ptr<ThemeSyncableService> theme_syncable_service_ = nullptr;
   bool using_default_theme_ = true;
   SkColor color_ = 0;
 };
@@ -119,7 +120,7 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  Profile* testing_profile_ = nullptr;
+  raw_ptr<Profile> testing_profile_ = nullptr;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<views::View> testing_view_;
   FakeThemeService fake_theme_service_;

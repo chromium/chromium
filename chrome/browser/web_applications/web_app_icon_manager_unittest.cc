@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -253,7 +254,7 @@ class WebAppIconManagerTest : public WebAppTest {
   std::unique_ptr<WebAppIconManager> icon_manager_;
 
   // Owned by icon_manager_:
-  TestFileUtils* file_utils_ = nullptr;
+  raw_ptr<TestFileUtils> file_utils_ = nullptr;
 };
 
 TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {

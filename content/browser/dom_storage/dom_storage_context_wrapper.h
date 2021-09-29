@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -176,7 +177,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Unowned reference to our owning partition. This is always valid until it's
   // reset to null if/when the partition is destroyed. May also be null in
   // tests.
-  StoragePartitionImpl* partition_;
+  raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;

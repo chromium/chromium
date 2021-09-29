@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -75,7 +76,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   // Contains the most recent text passed by the popup model to the edit model.
   std::u16string text_;
   bool is_temporary_text_ = false;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace

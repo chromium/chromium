@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "extensions/browser/api_test_utils.h"
@@ -137,7 +138,7 @@ class FakeWakeLockManager {
     is_active_ = false;
   }
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   device::mojom::WakeLockType type_;
   bool is_active_;

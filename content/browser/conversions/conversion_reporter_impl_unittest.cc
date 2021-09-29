@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -109,7 +110,7 @@ class ConversionReporterImplTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
 
   std::unique_ptr<ConversionReporterImpl> reporter_;
-  MockNetworkSender* sender_;
+  raw_ptr<MockNetworkSender> sender_;
 
  private:
   absl::optional<SentReportInfo> last_sent_report_info_;

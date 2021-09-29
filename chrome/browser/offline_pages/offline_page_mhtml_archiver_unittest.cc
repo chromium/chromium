@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -71,7 +72,7 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   const GURL url_;
   const TestScenario test_scenario_;
   // Not owned.
-  TestScopedOfflineClock* clock_;
+  raw_ptr<TestScopedOfflineClock> clock_;
 };
 
 TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,

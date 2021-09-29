@@ -21,6 +21,7 @@
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -730,7 +731,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  const DescriptionPair* descriptions_;
+  raw_ptr<const DescriptionPair> descriptions_;
 
   DISALLOW_COPY_AND_ASSIGN(Factory);
 };
@@ -1113,7 +1114,7 @@ class CustomHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  const std::vector<Sample>* custom_ranges_;
+  raw_ptr<const std::vector<Sample>> custom_ranges_;
 
   DISALLOW_COPY_AND_ASSIGN(Factory);
 };

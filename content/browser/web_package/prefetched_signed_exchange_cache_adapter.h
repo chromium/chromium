@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_PREFETCHED_SIGNED_EXCHANGE_CACHE_ADAPTER_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_PREFETCHED_SIGNED_EXCHANGE_CACHE_ADAPTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -87,7 +88,7 @@ class PrefetchedSignedExchangeCacheAdapter {
   bool blob_is_streaming_ = false;
 
   // |prefetch_url_loader_| owns |this|.
-  PrefetchURLLoader* prefetch_url_loader_;
+  raw_ptr<PrefetchURLLoader> prefetch_url_loader_;
 
   base::WeakPtrFactory<PrefetchedSignedExchangeCacheAdapter> weak_factory_{
       this};

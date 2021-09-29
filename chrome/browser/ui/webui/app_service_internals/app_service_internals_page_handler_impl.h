@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_SERVICE_INTERNALS_APP_SERVICE_INTERNALS_PAGE_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_SERVICE_INTERNALS_APP_SERVICE_INTERNALS_PAGE_HANDLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 
@@ -23,7 +24,7 @@ class AppServiceInternalsPageHandlerImpl
   void GetPreferredApps(GetPreferredAppsCallback callback) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_SERVICE_INTERNALS_APP_SERVICE_INTERNALS_PAGE_HANDLER_IMPL_H_

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -39,7 +40,7 @@ class DevToolsEventsLogger : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  Log* log_;  // The log where to create entries.
+  raw_ptr<Log> log_;  // The log where to create entries.
 
   const base::Value& prefs_;
   std::unordered_set<std::string> events_;

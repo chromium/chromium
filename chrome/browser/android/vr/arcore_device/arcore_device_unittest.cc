@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
@@ -282,7 +283,7 @@ class ArCoreDeviceTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  StubArCoreSessionUtils* session_utils;
+  raw_ptr<StubArCoreSessionUtils> session_utils;
   mojo::Remote<mojom::XRFrameDataProvider> frame_provider;
   mojo::AssociatedRemote<mojom::XREnvironmentIntegrationProvider>
       environment_provider;

@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
@@ -172,7 +173,7 @@ class WebSocket::WebSocketEventHandler final
       absl::optional<net::AuthCredentials>* credentials) override;
 
  private:
-  WebSocket* const impl_;
+  const raw_ptr<WebSocket> impl_;
 };
 
 WebSocket::WebSocketEventHandler::WebSocketEventHandler(WebSocket* impl)
@@ -228,7 +229,8 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
   const MojoResult mojo_result = impl_->writable_watcher_.Watch(
       impl_->writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
-      base::BindRepeating(&WebSocket::OnWritable, base::Unretained(impl_)));
+      base::BindRepeating(&WebSocket::OnWritable,
+                          base::Unretained(impl_.get())));
   DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -242,7 +244,8 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
   const MojoResult mojo_readable_result = impl_->readable_watcher_.Watch(
       impl_->readable_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
-      base::BindRepeating(&WebSocket::OnReadable, base::Unretained(impl_)));
+      base::BindRepeating(&WebSocket::OnReadable,
+                          base::Unretained(impl_.get())));
   DCHECK_EQ(mojo_readable_result, MOJO_RESULT_OK);
 
   mojom::WebSocketHandshakeResponsePtr mojo_response =
@@ -254,12 +257,12 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
       impl_->client_.BindNewPipeAndPassReceiver(), std::move(mojo_response),
       std::move(readable), std::move(writable));
   impl_->receiver_.set_disconnect_handler(base::BindOnce(
-      &WebSocket::OnConnectionError, base::Unretained(impl_), FROM_HERE));
+      &WebSocket::OnConnectionError, base::Unretained(impl_.get()), FROM_HERE));
   impl_->handshake_client_.reset();
   impl_->auth_handler_.reset();
   impl_->header_client_.reset();
   impl_->client_.set_disconnect_handler(base::BindOnce(
-      &WebSocket::OnConnectionError, base::Unretained(impl_), FROM_HERE));
+      &WebSocket::OnConnectionError, base::Unretained(impl_.get()), FROM_HERE));
 }
 
 void WebSocket::WebSocketEventHandler::OnDataFrame(

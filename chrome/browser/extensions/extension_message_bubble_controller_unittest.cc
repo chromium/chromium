@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -188,7 +189,7 @@ class FakeExtensionMessageBubble {
 
   bool is_closed_;
   ExtensionBubbleAction action_;
-  ExtensionMessageBubbleController* controller_;
+  raw_ptr<ExtensionMessageBubbleController> controller_;
 };
 
 class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
@@ -436,7 +437,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  ExtensionService* service_;
+  raw_ptr<ExtensionService> service_;
 
  private:
   std::unique_ptr<base::CommandLine> command_line_;

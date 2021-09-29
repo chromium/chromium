@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
@@ -71,7 +72,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
 
   const std::string descriptor_id_;
   const device::BluetoothUUID descriptor_uuid_;
-  device::BluetoothRemoteGattCharacteristic* characteristic_;
+  raw_ptr<device::BluetoothRemoteGattCharacteristic> characteristic_;
   std::vector<uint8_t> value_;
 
   // Last successfully written value to the descriptor.

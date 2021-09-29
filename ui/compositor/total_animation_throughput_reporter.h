@@ -6,6 +6,7 @@
 #define UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,7 +74,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   void Report(const cc::FrameSequenceMetrics::CustomReportData& data);
 
-  Compositor* compositor_;
+  raw_ptr<Compositor> compositor_;
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;

@@ -49,6 +49,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -252,20 +253,20 @@ class ThreadWatcher {
   int ping_count_;
 
   // Histogram that keeps track of response times for the watched thread.
-  base::HistogramBase* response_time_histogram_;
+  raw_ptr<base::HistogramBase> response_time_histogram_;
 
   // Histogram that keeps track of unresponsive time since the last pong message
   // when we got no response (GotNoResponse()) from the watched thread.
-  base::HistogramBase* unresponsive_time_histogram_;
+  raw_ptr<base::HistogramBase> unresponsive_time_histogram_;
 
   // Histogram that keeps track of how many threads are responding when we got
   // no response (GotNoResponse()) from the watched thread.
-  base::HistogramBase* responsive_count_histogram_;
+  raw_ptr<base::HistogramBase> responsive_count_histogram_;
 
   // Histogram that keeps track of how many threads are not responding when we
   // got no response (GotNoResponse()) from the watched thread. Count includes
   // the thread that got no response.
-  base::HistogramBase* unresponsive_count_histogram_;
+  raw_ptr<base::HistogramBase> unresponsive_count_histogram_;
 
   // This counter tracks the unresponsiveness of watched thread. If this value
   // is zero then watched thread has responded with a pong message. This is

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
@@ -77,8 +78,8 @@ class VideoEncoderFallbackTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  MockVideoEncoder* main_video_encoder_;
-  MockVideoEncoder* secondary_video_encoder_;
+  raw_ptr<MockVideoEncoder> main_video_encoder_;
+  raw_ptr<MockVideoEncoder> secondary_video_encoder_;
   std::unique_ptr<MockVideoEncoder> secondary_video_encoder_holder_;
   std::unique_ptr<VideoEncoderFallback> fallback_encoder_;
 };

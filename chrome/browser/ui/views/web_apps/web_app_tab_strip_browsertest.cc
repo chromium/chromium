@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -53,9 +54,9 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
 
   struct App {
     AppId id;
-    Browser* browser;
-    BrowserView* browser_view;
-    content::WebContents* web_contents;
+    raw_ptr<Browser> browser;
+    raw_ptr<BrowserView> browser_view;
+    raw_ptr<content::WebContents> web_contents;
   };
 
   App InstallAndLaunch() {

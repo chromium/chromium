@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/feature_engagement/internal/tracker_impl.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -125,7 +126,7 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   FeatureMap features_;
 
   // The Tracker this is a JNI bridge for.
-  Tracker* tracker_;
+  raw_ptr<Tracker> tracker_;
 
   // The Java-side of this JNI bridge.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;

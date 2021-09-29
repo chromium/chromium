@@ -7,6 +7,7 @@
 #include <memory>
 #include <queue>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,9 +89,9 @@ class MessagePortTlsConnectionTest : public testing::Test {
 
  protected:
   std::unique_ptr<MessagePortTlsConnection> connection_;
-  cast_api_bindings::MessagePort::Receiver* connection_as_receiver_;
+  raw_ptr<cast_api_bindings::MessagePort::Receiver> connection_as_receiver_;
 
-  MockMessagePort* message_port_;
+  raw_ptr<MockMessagePort> message_port_;
   StrictMock<MockTlsConnectionClient> client_;
   StrictMock<MockTaskRunner> task_runner_;
 };

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
@@ -1282,7 +1283,7 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
     }
 
    private:
-    int* num_calls_;
+    raw_ptr<int> num_calls_;
     const char* arg_value_;
   };
 

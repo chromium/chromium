@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -495,7 +496,7 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
   // and ensure that it returns |expected_value|
   const struct {
     const char* url;
-    Origin* origin;
+    raw_ptr<Origin> origin;
     bool expected_value;
   } kTestCases[] = {
       {"https://a.com", &regular_origin, true},

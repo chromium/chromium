@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
@@ -69,7 +70,7 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<views::Widget> anchor_widget_;
   std::unique_ptr<SendTabToSelfBubbleControllerMock> controller_;
-  SendTabToSelfBubbleViewImpl* bubble_;
+  raw_ptr<SendTabToSelfBubbleViewImpl> bubble_;
 };
 
 TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {

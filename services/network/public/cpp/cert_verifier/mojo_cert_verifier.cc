@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
@@ -62,7 +63,7 @@ class CertVerifierRequestImpl : public mojom::CertVerifierRequest,
   // Certificate being verified.
   scoped_refptr<net::X509Certificate> cert_;
   // Out parameter for the result.
-  net::CertVerifyResult* cert_verify_result_;
+  raw_ptr<net::CertVerifyResult> cert_verify_result_;
   // Callback to call once the result is available.
   net::CompletionOnceCallback completion_callback_;
 

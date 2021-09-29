@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_type.h"
@@ -315,18 +316,18 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   View* contents_ = nullptr;
-  View* contents_viewport_ = nullptr;
+  raw_ptr<View> contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
   View* header_ = nullptr;
-  View* header_viewport_ = nullptr;
+  raw_ptr<View> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  ScrollBar* horiz_sb_;
+  raw_ptr<ScrollBar> horiz_sb_;
 
   // Vertical scrollbar.
-  ScrollBar* vert_sb_;
+  raw_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;
@@ -451,7 +452,7 @@ class VariableRowHeightScrollHelper {
   virtual RowInfo GetRowInfo(int y);
 
  private:
-  Controller* controller_;
+  raw_ptr<Controller> controller_;
 };
 
 // FixedRowHeightScrollHelper is intended for views that contain fixed height

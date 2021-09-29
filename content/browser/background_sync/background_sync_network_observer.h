@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/background_sync/background_sync.pb.h"
@@ -64,7 +65,7 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
 
   // NetworkConnectionTracker is a global singleton which will outlive this
   // object.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   network::mojom::ConnectionType connection_type_;
 

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -146,8 +147,8 @@ class TabManagerStatsCollectorTabSwitchTest
   }
 
  private:
-  WebContents* foreground_tab_;
-  WebContents* background_tab_;
+  raw_ptr<WebContents> foreground_tab_;
+  raw_ptr<WebContents> background_tab_;
 
   DISALLOW_COPY_AND_ASSIGN(TabManagerStatsCollectorTabSwitchTest);
 };

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -64,10 +65,10 @@ class ProfileInteractionManager
   // ContentSubresourceFilterThrottleManager is associated with. This will be
   // nullptr initially until the main frame navigation commits and a Page is
   // created, at which point the throttle manager will set this member.
-  content::Page* page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // Unowned and must outlive this object.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  raw_ptr<SubresourceFilterProfileContext> profile_context_ = nullptr;
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
 };

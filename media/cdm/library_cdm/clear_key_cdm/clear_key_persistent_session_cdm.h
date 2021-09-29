@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
@@ -107,7 +108,7 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
                         const std::vector<uint8_t>& message);
 
   scoped_refptr<AesDecryptor> cdm_;
-  CdmHostProxy* const cdm_host_proxy_ = nullptr;
+  const raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 
   // Callbacks for firing session events. Other events aren't intercepted.
   SessionMessageCB session_message_cb_;

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -56,7 +57,7 @@ class TestTarget : public EventTarget,
 
   EventTargeter* GetEventTargeter() override { return nullptr; }
 
-  TestTarget* parent_;
+  raw_ptr<TestTarget> parent_;
   std::vector<int> handler_list_;
   bool valid_;
 };
@@ -114,7 +115,7 @@ class TestEventHandler : public EventHandler {
   bool expect_pre_target_ = false;
   bool expect_post_target_ = false;
   bool received_pre_target_ = false;
-  EventTarget* pre_target_ = nullptr;
+  raw_ptr<EventTarget> pre_target_ = nullptr;
 };
 
 typedef CancelModeEvent NonCancelableEvent;
@@ -141,7 +142,7 @@ class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
     delete dispatcher_delegate_;
   }
 
-  EventDispatcherDelegate* dispatcher_delegate_;
+  raw_ptr<EventDispatcherDelegate> dispatcher_delegate_;
 };
 
 // Invalidates the target when it receives any event.
@@ -193,8 +194,8 @@ class EventHandlerDestroyer : public TestEventHandler {
     }
   }
 
-  EventHandler* to_destroy_;
-  EventDispatcherDelegate* dispatcher_delegate_;
+  raw_ptr<EventHandler> to_destroy_;
+  raw_ptr<EventDispatcherDelegate> dispatcher_delegate_;
 };
 
 class TestEventDispatcher : public EventDispatcherDelegate {

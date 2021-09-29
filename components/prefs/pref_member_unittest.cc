@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -97,7 +98,7 @@ class PrefMemberTestClass {
   int observe_cnt_;
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // anonymous namespace

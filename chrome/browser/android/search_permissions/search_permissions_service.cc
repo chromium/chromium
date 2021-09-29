@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -92,10 +93,10 @@ class SearchEngineDelegateImpl
   void OnTemplateURLServiceChanged() override { dse_changed_callback_.Run(); }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Will be null in unittests.
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   base::RepeatingClosure dse_changed_callback_;
 };

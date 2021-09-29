@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -105,7 +106,7 @@ class CloudPrintProxyBackend {
 
   // The frontend which is responsible for displaying UI and updating Prefs.
   // Outlives this backend.
-  CloudPrintProxyFrontend* const frontend_;
+  const raw_ptr<CloudPrintProxyFrontend> frontend_;
 
   friend class base::RefCountedThreadSafe<CloudPrintProxyBackend::Core>;
 };

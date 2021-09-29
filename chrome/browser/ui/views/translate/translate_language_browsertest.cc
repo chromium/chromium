@@ -1,3 +1,5 @@
+#include "base/memory/raw_ptr.h"
+
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -201,7 +203,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   void SimulateURLFetch() {
     controllable_http_response_->WaitForRequest();

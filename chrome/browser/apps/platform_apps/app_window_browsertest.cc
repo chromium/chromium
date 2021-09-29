@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,7 +73,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
   }
 
  private:
-  AppWindowGeometryCache* cache_;
+  raw_ptr<AppWindowGeometryCache> cache_;
   std::string extension_id_;
   std::string window_id_;
   gfx::Rect bounds_;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -29,7 +30,7 @@ class WebAppInternalsSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_

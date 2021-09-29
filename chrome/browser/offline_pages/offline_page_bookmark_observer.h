@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_BOOKMARK_OBSERVER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_BOOKMARK_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -44,9 +45,9 @@ class OfflinePageBookmarkObserver
   // Callback for deleting removed bookmark pages.
   void OnDeleteRemovedBookmarkPagesDone(DeletePageResult result);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
-  OfflinePageModel* offline_page_model_;
+  raw_ptr<OfflinePageModel> offline_page_model_;
 
   base::WeakPtrFactory<OfflinePageBookmarkObserver> weak_ptr_factory_{this};
 };

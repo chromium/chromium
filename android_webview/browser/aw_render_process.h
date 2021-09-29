@@ -7,6 +7,7 @@
 
 #include "android_webview/common/mojom/renderer.mojom.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -56,7 +57,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
-  content::RenderProcessHost* render_process_host_;
+  raw_ptr<content::RenderProcessHost> render_process_host_;
 
   mojo::AssociatedRemote<mojom::Renderer> renderer_remote_;
 

@@ -5,6 +5,7 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -216,14 +217,14 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   // Note that this field may be reset at any time by the owning GpuChannel's
   // thread, so it must be accessed under lock and must be tested for null
   // before dereferencing.
-  gpu::GpuChannel* gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
+  raw_ptr<gpu::GpuChannel> gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
 
   // A token which can be retrieved by GetChannelToken to uniquely identify this
   // channel. Assigned at construction time by the GpuChannelManager, where the
   // token-to-GpuChannel mapping lives.
   const base::UnguessableToken channel_token_;
 
-  Scheduler* scheduler_;
+  raw_ptr<Scheduler> scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;

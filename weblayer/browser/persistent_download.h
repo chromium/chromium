@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_PERSISTENT_DOWNLOAD_H_
 #define WEBLAYER_BROWSER_PERSISTENT_DOWNLOAD_H_
 
+#include "base/memory/raw_ptr.h"
 #include "weblayer/browser/download_impl.h"
 
 namespace download {
@@ -51,7 +52,7 @@ class PersistentDownload : public DownloadImpl {
   void ResumeInternal();
   void CancelInternal();
 
-  download::DownloadItem* item_;
+  raw_ptr<download::DownloadItem> item_;
 
   bool pause_pending_ = false;
   bool resume_pending_ = false;

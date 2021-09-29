@@ -58,7 +58,7 @@ void TracingService::AddClient(mojom::ClientInfoPtr client) {
   // service receiver is bound to it in OnProcessConnected().
   process.set_disconnect_handler(
       base::BindOnce(&OnProcessConnectFailed,
-                     base::Unretained(perfetto_service_), client->pid));
+                     base::Unretained(perfetto_service_.get()), client->pid));
 
   auto new_connection_request = mojom::ConnectToTracingRequest::New();
   auto service_receiver =
@@ -67,9 +67,9 @@ void TracingService::AddClient(mojom::ClientInfoPtr client) {
   mojom::TracedProcess* raw_process = process.get();
   raw_process->ConnectToTracingService(
       std::move(new_connection_request),
-      base::BindOnce(&OnProcessConnected, base::Unretained(perfetto_service_),
-                     std::move(process), client->pid,
-                     std::move(service_receiver)));
+      base::BindOnce(
+          &OnProcessConnected, base::Unretained(perfetto_service_.get()),
+          std::move(process), client->pid, std::move(service_receiver)));
 }
 
 #if !defined(OS_NACL) && !defined(OS_IOS)

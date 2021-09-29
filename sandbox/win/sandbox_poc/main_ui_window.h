@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace sandbox {
 class BrokerServices;
@@ -158,7 +159,7 @@ class MainUIWindow {
 
   // The BrokerServices will be used to spawn an EXE in a sandbox and ask
   // it to load a DLL.
-  sandbox::BrokerServices* broker_;
+  raw_ptr<sandbox::BrokerServices> broker_;
 
   // Contains the information about the running target.
   PROCESS_INFORMATION target_;

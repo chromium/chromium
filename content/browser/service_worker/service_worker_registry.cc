@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -137,7 +138,7 @@ class InflightCallWithInvoker final
   }
 
   // `registry_` owns `this`
-  ServiceWorkerRegistry* const registry_;
+  const raw_ptr<ServiceWorkerRegistry> registry_;
   const base::RepeatingCallback<void(InflightCallWithInvoker*, ReplyCallback)>
       invoker_;
   base::OnceCallback<void(ReplyArgs...)> reply_callback_;

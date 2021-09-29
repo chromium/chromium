@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -80,7 +81,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
 
-  UserPolicySigninServiceTest* test_fixture_;
+  raw_ptr<UserPolicySigninServiceTest> test_fixture_;
 };
 
 std::string GetTestPolicy() {

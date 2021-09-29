@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "ui/base/models/table_model.h"
@@ -122,7 +123,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // The delegate that will be used to communicate with the platform-specific
   // TableView.
-  TableViewDelegate* table_view_delegate_;
+  raw_ptr<TableViewDelegate> table_view_delegate_;
 
   // Contains either the column settings retrieved from user preferences if it
   // exists, or the default column settings.
@@ -132,7 +133,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // The table model observer that will be set by the table view of the task
   // manager.
-  ui::TableModelObserver* table_model_observer_;
+  raw_ptr<ui::TableModelObserver> table_model_observer_;
 
   // The sorted list of task IDs by process ID then by task ID.
   std::vector<TaskId> tasks_;

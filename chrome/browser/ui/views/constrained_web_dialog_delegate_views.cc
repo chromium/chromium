@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -180,8 +181,8 @@ class WebDialogWebContentsDelegateViews
   }
 
  private:
-  InitiatorWebContentsObserver* const initiator_observer_;
-  ConstrainedDialogWebView* web_view_;
+  const raw_ptr<InitiatorWebContentsObserver> initiator_observer_;
+  raw_ptr<ConstrainedDialogWebView> web_view_;
 };
 
 // Views implementation of ConstrainedWebDialogDelegate.
@@ -253,14 +254,14 @@ class ConstrainedWebDialogDelegateViews
   // Pointer to the WebContents in |web_contents_holder_| for the lifetime of
   // that object, even if ReleaseWebContents() gets called. If the WebContents
   // gets destroyed, |web_contents_| will be set to a nullptr.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Was the dialog closed from WebUI (in which case |web_dialog_delegate_|'s
   // OnDialogClosed() method has already been called)?
   bool closed_via_webui_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-  views::WebView* view_;
+  raw_ptr<views::WebView> view_;
 
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
 };

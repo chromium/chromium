@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -448,7 +449,7 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
 
  private:
   // The first profile.
-  Profile* profile_1_;
+  raw_ptr<Profile> profile_1_;
   // The second profile. Only valid after CreateSecondProfile() has been called.
   Profile* profile_2_;
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -88,7 +89,7 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // Tracks the number of manifest script loads currently in progress.
   int pending_manifest_load_count_ = 0;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

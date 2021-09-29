@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -627,7 +628,7 @@ class SurfaceAggregatorValidSurfaceTest : public SurfaceAggregatorTest {
   }
 
  protected:
-  Surface* root_surface_;
+  raw_ptr<Surface> root_surface_;
   std::unique_ptr<CompositorFrameSinkSupport> child_sink_;
   TestSurfaceIdAllocator root_surface_id_;
 };
@@ -1063,8 +1064,8 @@ class TestVizClient {
   }
 
  private:
-  SurfaceAggregatorValidSurfaceTest* const test_;
-  FrameSinkManagerImpl* const manager_;
+  const raw_ptr<SurfaceAggregatorValidSurfaceTest> test_;
+  const raw_ptr<FrameSinkManagerImpl> manager_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
   const FrameSinkId frame_sink_id_;
   const gfx::Rect bounds_;

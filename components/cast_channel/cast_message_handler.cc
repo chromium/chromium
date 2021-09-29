@@ -77,7 +77,7 @@ CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
   DETACH_FROM_SEQUENCE(sequence_checker_);
   socket_service_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CastSocketService::AddObserver,
-                                base::Unretained(socket_service_),
+                                base::Unretained(socket_service_.get()),
                                 base::Unretained(this)));
 }
 

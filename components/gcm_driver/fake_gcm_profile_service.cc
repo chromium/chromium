@@ -10,6 +10,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -81,7 +82,7 @@ class FakeGCMProfileService::CustomFakeGCMDriver
               const std::string& receiver_id,
               const OutgoingMessage& message);
 
-  FakeGCMProfileService* service_;
+  raw_ptr<FakeGCMProfileService> service_;
 
   // Used to give each registration a unique registration id. Does not decrease
   // when unregister is called.

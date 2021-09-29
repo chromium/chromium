@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -72,9 +73,9 @@ class SecurityStatePageLoadMetricsObserver
 
  private:
   // If the SiteEngagementService does not exist, this will be null.
-  site_engagement::SiteEngagementService* engagement_service_ = nullptr;
+  raw_ptr<site_engagement::SiteEngagementService> engagement_service_ = nullptr;
 
-  SecurityStateTabHelper* security_state_tab_helper_ = nullptr;
+  raw_ptr<SecurityStateTabHelper> security_state_tab_helper_ = nullptr;
   double initial_engagement_score_ = 0.0;
   security_state::SecurityLevel initial_security_level_ = security_state::NONE;
   security_state::SecurityLevel current_security_level_ = security_state::NONE;

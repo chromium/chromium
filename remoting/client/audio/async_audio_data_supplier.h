@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 namespace remoting {
 
 // This interface allows caller to asynchronously request for audio data.
@@ -25,7 +27,7 @@ class AsyncAudioDataSupplier {
     // undefined behavior. Consider posting a task when necessary.
     virtual void OnDataFilled() = 0;
 
-    void* const data;
+    const raw_ptr<void> data;
     const size_t bytes_needed;
 
     size_t bytes_extracted = 0;

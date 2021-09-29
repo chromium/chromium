@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -128,13 +129,13 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
                                    offline_pages::AddRequestResult result);
 
   // Offline page model to call methods on.
-  offline_pages::OfflinePageModel* offline_page_model_;
+  raw_ptr<offline_pages::OfflinePageModel> offline_page_model_;
 
   // Request coordinator for background offline actions.
-  offline_pages::RequestCoordinator* request_coordinator_;
+  raw_ptr<offline_pages::RequestCoordinator> request_coordinator_;
 
   // Prefetch service for prefetching service logs and actions.
-  offline_pages::PrefetchService* prefetch_service_;
+  raw_ptr<offline_pages::PrefetchService> prefetch_service_;
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<OfflineInternalsUIMessageHandler> weak_ptr_factory_{

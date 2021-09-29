@@ -582,7 +582,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      encryption_enabled_ ? cryptographer_ : nullptr, passphrase_type_,
+      encryption_enabled_ ? cryptographer_.get() : nullptr, passphrase_type_,
       CommitOnlyTypes().Has(type_));
 }
 

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -221,7 +222,7 @@ class LocalFileSyncService
   LocalChangeProcessor* GetLocalChangeProcessor(
       const storage::FileSystemURL& url);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
@@ -236,7 +237,7 @@ class LocalFileSyncService
 
   OriginChangeMap origin_change_map_;
 
-  LocalChangeProcessor* local_change_processor_;
+  raw_ptr<LocalChangeProcessor> local_change_processor_;
   GetLocalChangeProcessorCallback get_local_change_processor_;
 
   base::ObserverList<Observer>::Unchecked change_observers_;

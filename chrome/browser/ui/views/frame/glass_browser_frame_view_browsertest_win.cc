@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,10 +81,10 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {
@@ -309,8 +310,8 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
   }
 
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

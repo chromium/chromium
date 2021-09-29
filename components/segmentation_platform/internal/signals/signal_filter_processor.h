@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_SIGNAL_FILTER_PROCESSOR_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_SIGNAL_FILTER_PROCESSOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -50,9 +51,9 @@ class SignalFilterProcessor {
       std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
           segment_infos);
 
-  SegmentInfoDatabase* segment_database_;
-  UserActionSignalHandler* user_action_signal_handler_;
-  HistogramSignalHandler* histogram_signal_handler_;
+  raw_ptr<SegmentInfoDatabase> segment_database_;
+  raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
+  raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};
 };

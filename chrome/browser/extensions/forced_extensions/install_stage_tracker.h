@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
@@ -471,7 +472,7 @@ class InstallStageTracker : public KeyedService {
                                 FailureReason reason,
                                 const InstallationData& data);
 
-  const content::BrowserContext* browser_context_;
+  raw_ptr<const content::BrowserContext> browser_context_;
 
   std::map<ExtensionId, InstallationData> installation_data_map_;
 
