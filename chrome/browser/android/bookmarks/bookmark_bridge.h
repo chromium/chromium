@@ -154,13 +154,14 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                       jint type,
                       const base::android::JavaParamRef<jobject>& url);
 
-  void SetPowerBookmarkMeta(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
-                            jlong id,
-                            jint type,
-                            const base::android::JavaParamRef<jstring>& bytes);
+  void SetPowerBookmarkMeta(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jlong id,
+      jint type,
+      const base::android::JavaParamRef<jbyteArray>& bytes);
 
-  base::android::ScopedJavaLocalRef<jstring> GetPowerBookmarkMeta(
+  base::android::ScopedJavaLocalRef<jbyteArray> GetPowerBookmarkMeta(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jlong id,

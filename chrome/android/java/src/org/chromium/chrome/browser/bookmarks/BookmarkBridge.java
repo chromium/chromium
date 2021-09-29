@@ -30,7 +30,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -641,13 +640,13 @@ public class BookmarkBridge {
      * @return The meta or null if none exists.
      */
     public PowerBookmarkMeta getPowerBookmarkMeta(BookmarkId id) {
-        String protoBytes = BookmarkBridgeJni.get().getPowerBookmarkMeta(
+        byte[] protoBytes = BookmarkBridgeJni.get().getPowerBookmarkMeta(
                 mNativeBookmarkBridge, this, id.getId(), id.getType());
 
-        if (TextUtils.isEmpty(protoBytes)) return null;
+        if (protoBytes == null) return null;
 
         try {
-            return PowerBookmarkMeta.parseFrom(protoBytes.getBytes(StandardCharsets.UTF_8));
+            return PowerBookmarkMeta.parseFrom(protoBytes);
         } catch (InvalidProtocolBufferException ex) {
             deletePowerBookmarkMeta(id);
             return null;
@@ -661,10 +660,9 @@ public class BookmarkBridge {
      * @param meta The meta to store.
      */
     public void setPowerBookmarkMeta(BookmarkId id, PowerBookmarkMeta meta) {
-        String protoBytes =
-                meta != null ? new String(meta.toByteArray(), StandardCharsets.UTF_8) : null;
-        BookmarkBridgeJni.get().setPowerBookmarkMeta(
-                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), protoBytes);
+        if (meta == null) return;
+        BookmarkBridgeJni.get().setPowerBookmarkMeta(mNativeBookmarkBridge, BookmarkBridge.this,
+                id.getId(), id.getType(), meta.toByteArray());
     }
 
     /**
@@ -1177,10 +1175,10 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String title);
         void setBookmarkUrl(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, GURL url);
-        String getPowerBookmarkMeta(
+        byte[] getPowerBookmarkMeta(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         void setPowerBookmarkMeta(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String meta);
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, byte[] meta);
         void deletePowerBookmarkMeta(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         boolean doesBookmarkExist(

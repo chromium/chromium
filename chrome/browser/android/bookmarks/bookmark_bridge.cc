@@ -577,24 +577,29 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
                           *url::GURLAndroid::ToNativeGURL(env, url));
 }
 
-void BookmarkBridge::SetPowerBookmarkMeta(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj,
-                                          jlong id,
-                                          jint type,
-                                          const JavaParamRef<jstring>& bytes) {
+void BookmarkBridge::SetPowerBookmarkMeta(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jlong id,
+    jint type,
+    const JavaParamRef<jbyteArray>& bytes) {
   const BookmarkNode* node = GetNodeByID(id, type);
   if (!node || bytes.is_null())
     return;
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-  if (meta->ParseFromString(ConvertJavaStringToUTF8(env, bytes))) {
+  std::vector<uint8_t> byte_vec;
+  base::android::JavaByteArrayToByteVector(env, bytes, &byte_vec);
+  if (meta->ParseFromArray(byte_vec.data(), byte_vec.size())) {
     power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, node,
                                               std::move(meta));
+  } else {
+    DCHECK(false) << "Failed to parse bytes from java into PowerBookmarkMeta!";
   }
 }
 
-ScopedJavaLocalRef<jstring> BookmarkBridge::GetPowerBookmarkMeta(
+ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong id,
@@ -603,11 +608,17 @@ ScopedJavaLocalRef<jstring> BookmarkBridge::GetPowerBookmarkMeta(
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
 
-  std::string proto_bytes;
-  if (meta)
-    meta->SerializeToString(&proto_bytes);
+  if (!meta)
+    return ScopedJavaLocalRef<jbyteArray>(nullptr);
 
-  return ConvertUTF8ToJavaString(env, proto_bytes);
+  int size = meta->ByteSize();
+  std::string proto_bytes;
+  meta->SerializeToString(&proto_bytes);
+  std::vector<uint8_t> data;
+  data.resize(size);
+  meta->SerializeToArray(data.data(), size);
+
+  return base::android::ToJavaByteArray(env, data.data(), size);
 }
 
 void BookmarkBridge::DeletePowerBookmarkMeta(
