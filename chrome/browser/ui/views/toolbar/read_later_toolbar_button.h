@@ -72,7 +72,6 @@ class ReadLaterToolbarButton : public ToolbarButton,
       reading_list_model_scoped_observation_{this};
 
   views::View* side_panel_webview_ = nullptr;
-  std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_

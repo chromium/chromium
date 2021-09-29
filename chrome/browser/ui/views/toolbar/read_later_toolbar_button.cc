@@ -172,14 +172,7 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
       dot_bounds_updater_(
           std::make_unique<DotBoundsUpdater>(dot_indicator_, image())),
       reading_list_model_(
-          ReadingListModelFactory::GetForBrowserContext(browser_->profile())),
-      contents_wrapper_(std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
-          GURL(chrome::kChromeUIReadLaterURL),
-          browser_->profile(),
-          IDS_READ_LATER_TITLE,
-          true)) {
-  contents_wrapper_->ReloadWebContents();
-
+          ReadingListModelFactory::GetForBrowserContext(browser_->profile())) {
   SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   button_controller()->set_notify_action(
