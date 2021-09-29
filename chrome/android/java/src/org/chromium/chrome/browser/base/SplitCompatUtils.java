@@ -123,7 +123,7 @@ public class SplitCompatUtils {
         };
     }
 
-    private static boolean canLoadClass(ClassLoader classLoader, String className) {
+    static boolean canLoadClass(ClassLoader classLoader, String className) {
         try {
             Class.forName(className, false, classLoader);
             return true;
