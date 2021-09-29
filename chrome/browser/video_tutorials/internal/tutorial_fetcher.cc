@@ -79,6 +79,10 @@ class TutorialFetcherImpl : public TutorialFetcher {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void OnAcceptLanguagesChanged(const std::string& accept_languages) override {
+    accept_languages_ = accept_languages;
+  }
+
   // Build the request to get tutorial info.
   std::unique_ptr<network::ResourceRequest> BuildGetRequest() {
     if (url_.is_empty() && g_override_url_for_testing.Get().is_empty())

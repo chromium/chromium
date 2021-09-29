@@ -30,6 +30,8 @@ class TutorialManagerImpl : public TutorialManager {
 
  private:
   // TutorialManager implementation.
+  void Initialize(SuccessCallback callback) override;
+  bool IsInitialized() override;
   void GetTutorials(MultipleItemCallback callback) override;
   void GetTutorial(FeatureType feature_type,
                    SingleItemCallback callback) override;
@@ -38,9 +40,10 @@ class TutorialManagerImpl : public TutorialManager {
       FeatureType feature_type) override;
   absl::optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
+  std::string GetTextLocale() override;
   void SaveGroups(std::unique_ptr<proto::VideoTutorialGroups> groups) override;
 
-  void OnDataLoaded(MultipleItemCallback callback,
+  void OnDataLoaded(SuccessCallback callback,
                     bool success,
                     std::unique_ptr<proto::VideoTutorialGroups> loaded_groups);
   void OnGroupsSaved(bool success);
@@ -55,7 +58,7 @@ class TutorialManagerImpl : public TutorialManager {
   std::unique_ptr<proto::VideoTutorialGroups> tutorial_groups_;
 
   // The initialization status of the database.
-  absl::optional<bool> init_success_;
+  bool initialized_{false};
 
   base::WeakPtrFactory<TutorialManagerImpl> weak_ptr_factory_{this};
 };

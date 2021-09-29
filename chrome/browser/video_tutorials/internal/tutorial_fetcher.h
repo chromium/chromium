@@ -43,6 +43,10 @@ class TutorialFetcher {
   // Start the fetch to download tutorials.
   virtual void StartFetchForTutorials(FinishedCallback callback) = 0;
 
+  // Called when accept languages are changed.
+  virtual void OnAcceptLanguagesChanged(
+      const std::string& accept_languages) = 0;
+
   virtual ~TutorialFetcher();
 
   TutorialFetcher(const TutorialFetcher& other) = delete;
