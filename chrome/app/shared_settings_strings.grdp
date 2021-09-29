@@ -361,18 +361,16 @@
     You can turn on sync anytime in settings
   </message>
     <if expr="chromeos">
-    <!-- TODO(crbug.com/1221498): Remove "translateable=false" once definitive string is available, and update description. -->
     <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
-    <message translateable="false" name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
-      Changes you make here apply only to Chrome. To make changes to your Lacros settings, open Lacros and go to settings.
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.
     </message>
   </if>
 
   <if expr="lacros">
-    <!-- TODO(crbug.com/1221498): Remove "translateable=false" once definitive string is available, and update description. -->
     <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
-    <message translateable="false" name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
-      Changes you make here apply only to Lacros. To make changes to your Chrome settings, open Chrome and go to settings.
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.
     </message>
   </if>
 

@@ -97,7 +97,7 @@ const base::Feature kSyncTrustedVaultPassphrasePromo{
 // side-by-side mode is enabled.
 const base::Feature kSyncSettingsShowLacrosSideBySideWarning{
     "SyncSettingsShowLacrosSideBySideWarning",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS)
 
 }  // namespace switches
