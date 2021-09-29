@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -506,6 +507,14 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   set_color(background_color);
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+
+#if defined(OS_MAC)
+  // On Mac, by default an IPH bubble will render above the omnibox text but
+  // below the omnibox popover, which looks glitched. We'll raise the Z-priority
+  // of the IPH bubble so it renders over the omnibox popover by default.
+  //  See crbug.com/1225046 for details.
+  widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#endif
 
   auto* const frame_view = GetBubbleFrameView();
   frame_view->SetCornerRadius(
