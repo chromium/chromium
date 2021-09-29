@@ -61,8 +61,10 @@ INSTANTIATE_PAINT_TEST_SUITE_P(DisplayItemRasterInvalidatorTest);
 
 TEST_P(DisplayItemRasterInvalidatorTest,
        FullInvalidationWithoutGeometryChange) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
 
   {
@@ -93,8 +95,10 @@ TEST_P(DisplayItemRasterInvalidatorTest,
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, FullInvalidationWithGeometryChange) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
 
   {
@@ -129,8 +133,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, FullInvalidationWithGeometryChange) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, RemoveItemInMiddle) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
 
   {
@@ -159,9 +165,12 @@ TEST_P(DisplayItemRasterInvalidatorTest, RemoveItemInMiddle) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrder) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
 
   {
@@ -197,9 +206,12 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrder) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateFirst) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
 
   {
@@ -230,9 +242,12 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateFirst) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateSecond) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
 
   {
@@ -263,9 +278,12 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateSecond) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithIncrementalInvalidation) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
 
   {
@@ -297,9 +315,12 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithIncrementalInvalidation) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient third("third");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& third =
+      *MakeGarbageCollected<FakeDisplayItemClient>("third");
   GraphicsContext context(GetPaintController());
 
   {
@@ -396,9 +417,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, AddRemoveFirstAndInvalidateSecond) {
-  FakeDisplayItemClient chunk("chunk");
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
 
   {
@@ -453,8 +475,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, AddRemoveFirstAndInvalidateSecond) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, InvalidateFirstAndAddRemoveSecond) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
 
   {
@@ -511,10 +535,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, InvalidateFirstAndAddRemoveSecond) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildren) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   {
@@ -560,10 +588,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildren) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildrenAndInvalidation) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   {
@@ -613,10 +645,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildrenAndInvalidation) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderCrossingChunks) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   auto container1_effect = CreateOpacityEffect(e0(), 0.5);
@@ -669,8 +705,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderCrossingChunks) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, SkipCache) {
-  FakeDisplayItemClient multicol("multicol");
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& multicol =
+      *MakeGarbageCollected<FakeDisplayItemClient>("multicol");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
   IntRect rect1(100, 100, 50, 50);
   IntRect rect2(150, 100, 50, 50);
@@ -740,7 +778,8 @@ TEST_P(DisplayItemRasterInvalidatorTest, SkipCache) {
 }
 
 TEST_P(DisplayItemRasterInvalidatorTest, PartialSkipCache) {
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   IntRect rect1(100, 100, 50, 50);

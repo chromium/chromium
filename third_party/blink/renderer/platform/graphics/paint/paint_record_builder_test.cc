@@ -19,7 +19,8 @@ using PaintRecordBuilderTest = PaintControllerTestBase;
 TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   auto& context = builder->Context();
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
   DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
@@ -36,7 +37,8 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
 }
 
 TEST_F(PaintRecordBuilderTest, LastingPaintController) {
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   auto* builder =
       MakeGarbageCollected<PaintRecordBuilder>(GetPaintController());
   auto& context = builder->Context();
@@ -80,7 +82,8 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
 
 TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
   GraphicsContext context(GetPaintController());
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   {
     PaintController::CycleScope cycle_scope(GetPaintController());

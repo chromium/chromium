@@ -12,7 +12,8 @@ namespace blink {
 
 TEST(PaintChunkTest, MatchesSame) {
   auto properties = PropertyTreeState::Root();
-  FakeDisplayItemClient client;
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client.Validate();
   DisplayItem::Id id(client.Id(), DisplayItem::kDrawingFirst);
   EXPECT_TRUE(PaintChunk(0, 1, client, id, properties)
@@ -21,7 +22,8 @@ TEST(PaintChunkTest, MatchesSame) {
 
 TEST(PaintChunkTest, MatchesEqual) {
   auto properties = PropertyTreeState::Root();
-  FakeDisplayItemClient client;
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client.Validate();
   DisplayItem::Id id(client.Id(), DisplayItem::kDrawingFirst);
   DisplayItem::Id id_equal = id;
@@ -33,11 +35,13 @@ TEST(PaintChunkTest, MatchesEqual) {
 
 TEST(PaintChunkTest, IdNotMatches) {
   auto properties = PropertyTreeState::Root();
-  FakeDisplayItemClient client1;
+  FakeDisplayItemClient& client1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client1.Validate();
   DisplayItem::Id id1(client1.Id(), DisplayItem::kDrawingFirst);
 
-  FakeDisplayItemClient client2;
+  FakeDisplayItemClient& client2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client2.Validate();
   DisplayItem::Id id2(client2.Id(), DisplayItem::kDrawingFirst);
   EXPECT_FALSE(PaintChunk(0, 1, client2, id2, properties)
@@ -46,7 +50,8 @@ TEST(PaintChunkTest, IdNotMatches) {
 
 TEST(PaintChunkTest, IdNotMatchesUncacheable) {
   auto properties = PropertyTreeState::Root();
-  FakeDisplayItemClient client;
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client.Invalidate(PaintInvalidationReason::kUncacheable);
   DisplayItem::Id id(client.Id(), DisplayItem::kDrawingFirst);
   EXPECT_FALSE(PaintChunk(0, 1, client, id, properties)

@@ -322,11 +322,14 @@ TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
   // require it.
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
-  FakeDisplayItemClient client1;
+  FakeDisplayItemClient& client1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   TestDisplayItemRequiringSeparateChunk i1(client1.Id());
-  FakeDisplayItemClient client2;
+  FakeDisplayItemClient& client2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   TestDisplayItemRequiringSeparateChunk i2(client2.Id());
-  FakeDisplayItemClient client3;
+  FakeDisplayItemClient& client3 =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   TestDisplayItemRequiringSeparateChunk i3(client3.Id());
 
   PaintChunk::Id id0(client_->Id(), DisplayItemType(0));
@@ -512,7 +515,8 @@ TEST_F(PaintChunkerTest, NoNewChunkForSamePropertyDifferentIds) {
 TEST_F(PaintChunkerTest, ChunksFollowingForcedChunk) {
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
-  FakeDisplayItemClient client;
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   TestChunkerDisplayItem before_forced1(client.Id(), DisplayItemType(1));
   TestChunkerDisplayItem before_forced2(client.Id(), DisplayItemType(2));
   TestDisplayItemRequiringSeparateChunk forced(client.Id());
@@ -558,7 +562,8 @@ TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
   auto simple_transform = DefaultPaintChunkProperties();
   simple_transform.SetTransform(*simple_transform_node);
 
-  FakeDisplayItemClient uncacheable_client;
+  FakeDisplayItemClient& uncacheable_client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   uncacheable_client.Invalidate(PaintInvalidationReason::kUncacheable);
   PaintChunk::Id id2(uncacheable_client.Id(), DisplayItemType(2));
   chunker.UpdateCurrentPaintChunkProperties(id2, uncacheable_client,
@@ -725,9 +730,12 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
   ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
-  FakeDisplayItemClient client1("client1");
-  FakeDisplayItemClient client2("client2");
-  FakeDisplayItemClient client3("client3");
+  FakeDisplayItemClient& client1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client1");
+  FakeDisplayItemClient& client2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client2");
+  FakeDisplayItemClient& client3 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client3");
 
   auto properties = DefaultPaintChunkProperties();
   chunker.UpdateCurrentPaintChunkProperties(properties);
@@ -772,9 +780,8 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
   ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
-  FakeDisplayItemClient client1("client1");
-  FakeDisplayItemClient client2("client2");
-  FakeDisplayItemClient client3("client3");
+  FakeDisplayItemClient& client1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client1");
 
   auto properties = DefaultPaintChunkProperties();
   chunker.UpdateCurrentPaintChunkProperties(properties);
@@ -832,8 +839,10 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
   ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
-  FakeDisplayItemClient client1("client1");
-  FakeDisplayItemClient client2("client2");
+  FakeDisplayItemClient& client1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client1");
+  FakeDisplayItemClient& client2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client2");
   IntRect visual_rect1(0, 0, 100, 100);
   IntRect visual_rect2(50, 50, 50, 50);
 

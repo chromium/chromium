@@ -4324,8 +4324,8 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   TransformPaintPropertyNode::State t2_state{TransformationMatrix().Rotate(45)};
   t2_state.direct_compositing_reasons = CompositingReason::k3DTransform;
   auto t2 = TransformPaintPropertyNode::Create(*t1, std::move(t2_state));
-
-  FakeDisplayItemClient client;
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>();
   client.Validate();
   Update(TestPaintArtifact()
              .Chunk(1)

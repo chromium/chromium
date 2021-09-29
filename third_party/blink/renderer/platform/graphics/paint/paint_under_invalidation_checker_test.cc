@@ -26,7 +26,8 @@ class PaintControllerUnderInvalidationTest
 
 TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawing) {
   auto test = [&]() {
-    FakeDisplayItemClient first("first");
+    FakeDisplayItemClient& first =
+        *MakeGarbageCollected<FakeDisplayItemClient>("first");
     GraphicsContext context(GetPaintController());
 
     {
@@ -56,7 +57,8 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawing) {
 TEST_F(PaintControllerUnderInvalidationTest, MoreDrawing) {
   // We don't detect under-invalidation in this case, and PaintController can
   // also handle the case gracefully.
-  FakeDisplayItemClient first("first");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
   GraphicsContext context(GetPaintController());
 
   {
@@ -76,7 +78,8 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawing) {
 TEST_F(PaintControllerUnderInvalidationTest, LessDrawing) {
   // We don't detect under-invalidation in this case, and PaintController can
   // also handle the case gracefully.
-  FakeDisplayItemClient first("first");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
   GraphicsContext context(GetPaintController());
 
   {
@@ -95,7 +98,8 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawing) {
 
 TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
   auto test = [&]() {
-    FakeDisplayItemClient first("first");
+    FakeDisplayItemClient& first =
+        *MakeGarbageCollected<FakeDisplayItemClient>("first");
     GraphicsContext context(GetPaintController());
     {
       CommitCycleScope cycle_scope(GetPaintController());
@@ -132,7 +136,8 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
 
 TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
   auto test = [&]() {
-    FakeDisplayItemClient first("first");
+    FakeDisplayItemClient& first =
+        *MakeGarbageCollected<FakeDisplayItemClient>("first");
     GraphicsContext context(GetPaintController());
 
     {
@@ -168,7 +173,8 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
 
 TEST_F(PaintControllerUnderInvalidationTest, LessDrawingInSubsequence) {
   auto test = [&]() {
-    FakeDisplayItemClient first("first");
+    FakeDisplayItemClient& first =
+        *MakeGarbageCollected<FakeDisplayItemClient>("first");
     GraphicsContext context(GetPaintController());
 
     {
@@ -202,8 +208,10 @@ TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
   // We allow invalidated display item clients as long as they would produce the
   // same display items. The cases of changed display items are tested by other
   // test cases.
-  FakeDisplayItemClient container("container");
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   {
@@ -231,7 +239,8 @@ TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
 
 TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
   auto test = [&]() {
-    FakeDisplayItemClient target("target");
+    FakeDisplayItemClient& target =
+        *MakeGarbageCollected<FakeDisplayItemClient>("target");
     GraphicsContext context(GetPaintController());
 
     {
@@ -260,8 +269,10 @@ TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
-  FakeDisplayItemClient container("container");
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   {
@@ -295,8 +306,10 @@ TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
 
 TEST_F(PaintControllerUnderInvalidationTest,
        EmptySubsequenceInCachedSubsequence) {
-  FakeDisplayItemClient container("container");
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   {

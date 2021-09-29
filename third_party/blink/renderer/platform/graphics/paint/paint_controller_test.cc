@@ -40,7 +40,8 @@ INSTANTIATE_TEST_SUITE_P(
                     kCompositeAfterPaint | kUnderInvalidationChecking));
 TEST_P(PaintControllerTest, NestedRecorders) {
   GraphicsContext context(GetPaintController());
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   {
     CommitCycleScope cycle_scope(GetPaintController());
     InitRootChunk();
@@ -54,8 +55,10 @@ TEST_P(PaintControllerTest, NestedRecorders) {
 }
 
 TEST_P(PaintControllerTest, UpdateBasic) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -97,9 +100,12 @@ TEST_P(PaintControllerTest, UpdateBasic) {
 }
 
 TEST_P(PaintControllerTest, UpdateSwapOrder) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -152,9 +158,12 @@ TEST_P(PaintControllerTest, UpdateSwapOrder) {
 }
 
 TEST_P(PaintControllerTest, UpdateSwapOrderWithInvalidation) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient unaffected("unaffected");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& unaffected =
+      *MakeGarbageCollected<FakeDisplayItemClient>("unaffected");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -207,9 +216,12 @@ TEST_P(PaintControllerTest, UpdateSwapOrderWithInvalidation) {
 }
 
 TEST_P(PaintControllerTest, UpdateNewItemInMiddle) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient third("third");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& third =
+      *MakeGarbageCollected<FakeDisplayItemClient>("third");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -248,9 +260,12 @@ TEST_P(PaintControllerTest, UpdateNewItemInMiddle) {
 }
 
 TEST_P(PaintControllerTest, UpdateInvalidationWithPhases) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient third("third");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& third =
+      *MakeGarbageCollected<FakeDisplayItemClient>("third");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -304,8 +319,10 @@ TEST_P(PaintControllerTest, UpdateInvalidationWithPhases) {
 }
 
 TEST_P(PaintControllerTest, UpdateAddFirstOverlap) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -362,8 +379,10 @@ TEST_P(PaintControllerTest, UpdateAddFirstOverlap) {
 }
 
 TEST_P(PaintControllerTest, UpdateAddLastOverlap) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -416,8 +435,10 @@ TEST_P(PaintControllerTest, UpdateAddLastOverlap) {
 }
 
 TEST_P(PaintControllerTest, CachedDisplayItems) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -473,10 +494,14 @@ TEST_P(PaintControllerTest, CachedDisplayItems) {
 }
 
 TEST_P(PaintControllerTest, UpdateSwapOrderWithChildren) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -531,10 +556,14 @@ TEST_P(PaintControllerTest, UpdateSwapOrderWithChildren) {
 }
 
 TEST_P(PaintControllerTest, UpdateSwapOrderWithChildrenAndInvalidation) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
   GraphicsContext context(GetPaintController());
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -593,10 +622,12 @@ TEST_P(PaintControllerTest, CachedSubsequenceForcePaintChunk) {
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     return;
 
-  FakeDisplayItemClient root("root");
+  FakeDisplayItemClient& root =
+      *MakeGarbageCollected<FakeDisplayItemClient>("root");
   auto root_properties = DefaultPaintChunkProperties();
   PaintChunk::Id root_id(root.Id(), DisplayItem::kCaret);
-  FakeDisplayItemClient container("container");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
   auto container_properties = DefaultPaintChunkProperties();
   PaintChunk::Id container_id(container.Id(), DisplayItem::kCaret);
   GraphicsContext context(GetPaintController());
@@ -650,10 +681,14 @@ TEST_P(PaintControllerTest, CachedSubsequenceForcePaintChunk) {
 }
 
 TEST_P(PaintControllerTest, CachedSubsequenceSwapOrder) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_id(container1.Id(), kBackgroundType);
@@ -794,9 +829,12 @@ TEST_P(PaintControllerTest, CachedSubsequenceSwapOrder) {
 }
 
 TEST_P(PaintControllerTest, CachedSubsequenceAndDisplayItemsSwapOrder) {
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id content1_id(content1.Id(), kBackgroundType);
@@ -906,10 +944,14 @@ TEST_P(PaintControllerTest, CachedSubsequenceAndDisplayItemsSwapOrder) {
 }
 
 TEST_P(PaintControllerTest, DisplayItemSwapOrderBeforeCachedSubsequence) {
-  FakeDisplayItemClient content1a("content1a");
-  FakeDisplayItemClient content1b("content1b");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content3("content3");
+  FakeDisplayItemClient& content1a =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1a");
+  FakeDisplayItemClient& content1b =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1b");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content3 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content3");
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id content1a_id(content1a.Id(), kBackgroundType);
@@ -989,9 +1031,11 @@ TEST_P(PaintControllerTest, DisplayItemSwapOrderBeforeCachedSubsequence) {
 
 TEST_P(PaintControllerTest, CachedSubsequenceContainingFragments) {
   GraphicsContext context(GetPaintController());
-  FakeDisplayItemClient root("root");
+  FakeDisplayItemClient& root =
+      *MakeGarbageCollected<FakeDisplayItemClient>("root");
   constexpr wtf_size_t kFragmentCount = 3;
-  FakeDisplayItemClient container("container");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
 
   auto paint_container = [this, &context, &container]() {
     SubsequenceRecorder r(context, container);
@@ -1056,10 +1100,14 @@ TEST_P(PaintControllerTest, CachedSubsequenceContainingFragments) {
 }
 
 TEST_P(PaintControllerTest, UpdateSwapOrderCrossingChunks) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_id(container1.Id(), kBackgroundType);
@@ -1129,7 +1177,8 @@ TEST_P(PaintControllerTest, UpdateSwapOrderCrossingChunks) {
 }
 
 TEST_P(PaintControllerTest, OutOfOrderNoCrash) {
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   GraphicsContext context(GetPaintController());
 
   const DisplayItem::Type kType1 = DisplayItem::kDrawingFirst;
@@ -1160,10 +1209,14 @@ TEST_P(PaintControllerTest, OutOfOrderNoCrash) {
 }
 
 TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
-  FakeDisplayItemClient container1("container1");
-  FakeDisplayItemClient content1("content1");
-  FakeDisplayItemClient container2("container2");
-  FakeDisplayItemClient content2("content2");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
+  FakeDisplayItemClient& content1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
+  FakeDisplayItemClient& content2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2");
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_background_id(container1.Id(), kBackgroundType);
@@ -1335,22 +1388,29 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     return;
 
-  FakeDisplayItemClient root("root");
+  FakeDisplayItemClient& root =
+      *MakeGarbageCollected<FakeDisplayItemClient>("root");
   auto properties = DefaultPaintChunkProperties();
   GraphicsContext context(GetPaintController());
   PaintChunk::Id root_id(root.Id(), DisplayItem::kLayerChunk);
-  FakeDisplayItemClient container1("container1");
+  FakeDisplayItemClient& container1 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container1");
   PaintChunk::Id container1_bg_id(container1.Id(), kBackgroundType);
   PaintChunk::Id container1_fg_id(container1.Id(), kForegroundType);
-  FakeDisplayItemClient content1a("content1a");
+  FakeDisplayItemClient& content1a =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1a");
   PaintChunk::Id content1a_id(content1a.Id(), kBackgroundType);
-  FakeDisplayItemClient content1b("content1b");
+  FakeDisplayItemClient& content1b =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content1b");
   PaintChunk::Id content1b_id(content1b.Id(), kForegroundType);
-  FakeDisplayItemClient container2("container2");
+  FakeDisplayItemClient& container2 =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container2");
   PaintChunk::Id container2_id(container2.Id(), kBackgroundType);
-  FakeDisplayItemClient content2a("content2a");
+  FakeDisplayItemClient& content2a =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2a");
   PaintChunk::Id content2a_id(content2a.Id(), kBackgroundType);
-  FakeDisplayItemClient content2b("content2b");
+  FakeDisplayItemClient& content2b =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content2b");
   PaintChunk::Id content2b_id(content2b.Id(), kForegroundType);
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -1496,8 +1556,10 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
 }
 
 TEST_P(PaintControllerTest, SkipCache) {
-  FakeDisplayItemClient multicol("multicol");
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& multicol =
+      *MakeGarbageCollected<FakeDisplayItemClient>("multicol");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
   IntRect rect1(100, 100, 50, 50);
   IntRect rect2(150, 100, 50, 50);
@@ -1591,7 +1653,8 @@ TEST_P(PaintControllerTest, SkipCache) {
 }
 
 TEST_P(PaintControllerTest, PartialSkipCache) {
-  FakeDisplayItemClient content("content");
+  FakeDisplayItemClient& content =
+      *MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   IntRect rect1(100, 100, 50, 50);
@@ -1663,8 +1726,10 @@ TEST_P(PaintControllerTest, PartialSkipCache) {
 }
 
 TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
-  FakeDisplayItemClient chunk_client("chunk client");
-  FakeDisplayItemClient item_client("item client");
+  FakeDisplayItemClient& chunk_client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("chunk client");
+  FakeDisplayItemClient& item_client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("item client");
   auto properties = DefaultPaintChunkProperties();
   PaintChunk::Id chunk_id(chunk_client.Id(), DisplayItem::kLayerChunk);
   auto& paint_controller = GetPaintController();
@@ -1698,7 +1763,8 @@ TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
 }
 
 TEST_P(PaintControllerTest, SmallPaintControllerHasOnePaintChunk) {
-  FakeDisplayItemClient client("test client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("test client");
 
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -1775,10 +1841,14 @@ TEST_P(PaintControllerTest, BeginAndEndFrame) {
 }
 
 TEST_P(PaintControllerTest, InsertValidItemInFront) {
-  FakeDisplayItemClient first("first");
-  FakeDisplayItemClient second("second");
-  FakeDisplayItemClient third("third");
-  FakeDisplayItemClient fourth("fourth");
+  FakeDisplayItemClient& first =
+      *MakeGarbageCollected<FakeDisplayItemClient>("first");
+  FakeDisplayItemClient& second =
+      *MakeGarbageCollected<FakeDisplayItemClient>("second");
+  FakeDisplayItemClient& third =
+      *MakeGarbageCollected<FakeDisplayItemClient>("third");
+  FakeDisplayItemClient& fourth =
+      *MakeGarbageCollected<FakeDisplayItemClient>("fourth");
   GraphicsContext context(GetPaintController());
 
   {
@@ -1860,7 +1930,8 @@ TEST_P(PaintControllerTest, TransientPaintControllerIncompleteCycle) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   GraphicsContext context(*paint_controller);
-  FakeDisplayItemClient client("client");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
   InitRootChunk(*paint_controller);
   DrawRect(context, client, kBackgroundType, IntRect(100, 100, 50, 50));
   // The client of a transient paint controller can abort without
@@ -1873,8 +1944,10 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
     return;
 
   IntRect r(100, 100, 300, 300);
-  FakeDisplayItemClient cacheable("cacheable");
-  FakeDisplayItemClient uncacheable("uncacheable");
+  FakeDisplayItemClient& cacheable =
+      *MakeGarbageCollected<FakeDisplayItemClient>("cacheable");
+  FakeDisplayItemClient& uncacheable =
+      *MakeGarbageCollected<FakeDisplayItemClient>("uncacheable");
   GraphicsContext context(GetPaintController());
 
   uncacheable.Invalidate(PaintInvalidationReason::kUncacheable);
@@ -1914,7 +1987,8 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
 TEST_P(PaintControllerTest, DuplicatedSubsequences) {
-  FakeDisplayItemClient client("test");
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("test");
   PaintController& controller = GetPaintController();
   GraphicsContext context(controller);
 
@@ -1964,7 +2038,8 @@ TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     return;
 
-  FakeDisplayItemClient container("container");
+  FakeDisplayItemClient& container =
+      *MakeGarbageCollected<FakeDisplayItemClient>("container");
   auto* content = MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
