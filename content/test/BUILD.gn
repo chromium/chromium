@@ -1489,7 +1489,7 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
-  data = []
+  data = [ "data/" ]
 
   data_deps = [
     "//content/shell:pak",
@@ -1526,7 +1526,6 @@ test("content_browsertests") {
 
     data += [
       "$root_out_dir/content_shell.pak",
-      "data/",
       "//media/test/data/",
     ]
   }
