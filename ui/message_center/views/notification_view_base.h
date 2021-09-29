@@ -335,8 +335,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Describes whether the view should display a hand pointer or not.
   bool clickable_;
 
-  // Describes if the view should display an expand button in the header view.
-  bool has_expand_button_in_header_view_ = true;
+  // Describes whether the header view is used in an ash notification (ash
+  // notification uses a customized header view).
+  bool header_view_in_ash_notification_ = true;
 
   // Describes whether the view can display inline settings or not.
   bool inline_settings_enabled_ = false;

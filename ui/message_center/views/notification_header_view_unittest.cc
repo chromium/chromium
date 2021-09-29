@@ -217,11 +217,13 @@ TEST_F(NotificationHeaderViewTest, DefaultFocusBehavior) {
             notification_header_view_->GetFocusBehavior());
 }
 
-TEST_F(NotificationHeaderViewTest, ExpandButtonCreation) {
-  // Make sure that expand button is not created when specified.
+TEST_F(NotificationHeaderViewTest, AppIconAndExpandButtonCreation) {
+  // Make sure that app icon and expand button is not created if used for an ash
+  // notification.
   auto notification_header_view = std::make_unique<NotificationHeaderView>(
-      views::Button::PressedCallback(), false /* has_expand_button */);
+      views::Button::PressedCallback(), /*for_ash_notification=*/true);
 
+  EXPECT_FALSE(notification_header_view->app_icon_view_for_testing());
   EXPECT_FALSE(notification_header_view->expand_button());
 }
 

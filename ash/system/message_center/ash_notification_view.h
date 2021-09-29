@@ -139,6 +139,7 @@ class ASH_EXPORT AshNotificationView
   void UpdateBackground(int top_radius, int bottom_radius);
 
   // Owned by views hierarchy.
+  views::ImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
   views::View* left_content_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;

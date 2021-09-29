@@ -20,12 +20,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
@@ -257,7 +259,8 @@ AshNotificationView::AshNotificationView(
           &AshNotificationView::ToggleExpand, base::Unretained(this))));
 
   // TODO(crbug/1241990): add an icon view here.
-  auto icon_view = std::make_unique<views::View>();
+  auto app_icon_view = std::make_unique<views::ImageView>();
+  app_icon_view->SetImageSize(gfx::Size(kAppIconViewSize, kAppIconViewSize));
 
   // Main right view contains all the views besides control buttons and icon.
   auto main_right_view = std::make_unique<views::View>();
@@ -271,9 +274,12 @@ AshNotificationView::AshNotificationView(
 
   // Main view contains all the views besides control buttons.
   auto main_view = std::make_unique<views::View>();
-  main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kHorizontal, gfx::Insets(), 0));
-  main_view->AddChildView(std::move(icon_view));
+  auto* main_view_layout =
+      main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          Orientation::kHorizontal, gfx::Insets(), 0));
+  main_view_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  app_icon_view_ = main_view->AddChildView(std::move(app_icon_view));
   main_view->AddChildView(std::move(main_right_view));
   main_view_ = AddChildView(std::move(main_view));
 
@@ -421,6 +427,9 @@ void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
+  app_icon_view_->SetBorder(views::CreateEmptyBorder(
+      expanded ? kAppIconViewExpandedPadding : kAppIconViewCollapsedPadding));
+
   bool is_single_expanded_notification =
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
   header_row()->SetVisible(is_grouped_parent_view_ ||
@@ -502,7 +511,27 @@ void AshNotificationView::CreateOrUpdateTitleView(
 
 void AshNotificationView::CreateOrUpdateSmallIconView(
     const message_center::Notification& notification) {
-  // TODO(crbug/1241990): Finish icon view here.
+  // TODO(crbug/1241990): Since we haven't decided which color we will use for
+  // app icon, we will need to change this part later.
+  SkColor icon_color = notification.accent_color().value_or(
+      AshColorProvider::Get()->GetContentLayerColor(
+          ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // cache images if so.
+  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
+      kAppIconViewSize, icon_color,
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      AshColorProvider::Get()->GetContentLayerColor(
+          ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  if (masked_small_icon.IsEmpty()) {
+    app_icon_view_->SetImage(gfx::CreateVectorIcon(
+        message_center::kProductIcon, kAppIconViewSize, SK_ColorWHITE));
+  } else {
+    app_icon_view_->SetImage(masked_small_icon.AsImageSkia());
+  }
 }
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {

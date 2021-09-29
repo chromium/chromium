@@ -26,7 +26,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   METADATA_HEADER(NotificationHeaderView);
 
   explicit NotificationHeaderView(PressedCallback callback,
-                                  bool has_expand_button = true);
+                                  bool is_in_ash_notification = false);
   NotificationHeaderView(const NotificationHeaderView&) = delete;
   NotificationHeaderView& operator=(const NotificationHeaderView&) = delete;
   ~NotificationHeaderView() override;

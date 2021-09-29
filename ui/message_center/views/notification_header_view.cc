@@ -164,7 +164,7 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
 }  // namespace
 
 NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
-                                               bool has_expand_button)
+                                               bool is_in_ash_notification)
     : views::Button(std::move(callback)) {
   const views::FlexSpecification kAppNameFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -184,14 +184,18 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
   // Also, consider using views::Builder<T>.
 
-  // App icon view
-  app_icon_view_ = new views::ImageView();
-  app_icon_view_->SetImageSize(gfx::Size(kSmallImageSizeMD, kSmallImageSizeMD));
-  app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
-  app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
-  AddChildView(app_icon_view_);
+  if (!is_in_ash_notification) {
+    // App icon view
+    app_icon_view_ = new views::ImageView();
+    app_icon_view_->SetImageSize(
+        gfx::Size(kSmallImageSizeMD, kSmallImageSizeMD));
+    app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
+    app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+    app_icon_view_->SetHorizontalAlignment(
+        views::ImageView::Alignment::kLeading);
+    DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
+    AddChildView(app_icon_view_);
+  }
 
   // Font list for text views.
   gfx::FontList font_list = GetHeaderTextFontList();
@@ -247,7 +251,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   timestamp_view_->SetVisible(false);
   detail_views_->AddChildView(timestamp_view_);
 
-  if (has_expand_button) {
+  if (!is_in_ash_notification) {
     expand_button_ = new ExpandButton();
     expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
     expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -440,7 +444,7 @@ void NotificationHeaderView::UpdateColors() {
                               kExpandIconSize, actual_color));
   }
 
-  if (using_default_app_icon_) {
+  if (using_default_app_icon_ && app_icon_view_) {
     app_icon_view_->SetImage(
         gfx::CreateVectorIcon(kProductIcon, kSmallImageSizeMD, actual_color));
   }

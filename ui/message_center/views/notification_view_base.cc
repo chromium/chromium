@@ -619,11 +619,10 @@ NotificationViewBase::CreateControlButtonsView() {
 std::unique_ptr<NotificationHeaderView>
 NotificationViewBase::CreateHeaderRow() {
   DCHECK(!header_row_);
-  has_expand_button_in_header_view_ = true;
+  header_view_in_ash_notification_ = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Not create expand button on chromeOS since it has a customized button.
   if (ash::features::IsNotificationsRefreshEnabled())
-    has_expand_button_in_header_view_ = false;
+    header_view_in_ash_notification_ = true;
 #endif
 
   // TODO(crbug/1241602): Consider using views::Builder<T>.
@@ -631,7 +630,7 @@ NotificationViewBase::CreateHeaderRow() {
   auto header_row = std::make_unique<NotificationHeaderView>(
       base::BindRepeating(&NotificationViewBase::HeaderRowPressed,
                           base::Unretained(this)),
-      has_expand_button_in_header_view_);
+      header_view_in_ash_notification_);
   header_row->SetPreferredSize(header_row->GetPreferredSize() -
                                gfx::Size(GetInsets().width(), 0));
   header_row->SetID(kHeaderRow);
@@ -1109,7 +1108,7 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
 }
 
 void NotificationViewBase::SetExpandButtonEnabled(bool enabled) {
-  if (has_expand_button_in_header_view_)
+  if (!header_view_in_ash_notification_)
     header_row_->SetExpandButtonEnabled(enabled);
 }
 
@@ -1147,7 +1146,7 @@ void NotificationViewBase::ToggleExpanded() {
 }
 
 void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
-  if (has_expand_button_in_header_view_)
+  if (!header_view_in_ash_notification_)
     header_row_->SetExpanded(expanded);
   if (message_view_) {
     message_view_->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
@@ -1170,7 +1169,7 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
     status_view_->SetVisible(expanded);
 
   int max_items = expanded ? item_views_.size() : kMaxLinesForMessageView;
-  if (has_expand_button_in_header_view_ && list_items_count_ > max_items)
+  if (!header_view_in_ash_notification_ && list_items_count_ > max_items)
     header_row_->SetOverflowIndicator(list_items_count_ - max_items);
   else if (!item_views_.empty())
     header_row_->SetSummaryText(std::u16string());

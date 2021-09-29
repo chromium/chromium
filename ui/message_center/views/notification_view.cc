@@ -106,7 +106,8 @@ void NotificationView::CreateOrUpdateSmallIconView(
     const Notification& notification) {
   // This is called when the notification view is inserted into a Widget
   // hierarchy and when the Widget's theme has changed. If not currently in a
-  // Widget hierarchy defer updating the small icon view.
+  // Widget hierarchy, defer updating the small icon view since
+  // GetColorProvider() depends on the widget.
   if (!GetWidget())
     return;
   const auto* color_provider = GetColorProvider();
