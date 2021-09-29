@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +49,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowsingDataType;
 import org.chromium.weblayer.ContextMenuParams;
@@ -571,9 +571,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
         // when the shell is rotated in the foreground).
         fragment.setRetainInstance(true);
         mBrowser = Browser.fromFragment(fragment);
-        Display display = getDefaultDisplay();
-        Point point = new Point();
-        display.getRealSize(point);
+        Point point = getDisplaySize();
         mBrowser.setMinimumSurfaceSize(point.x, point.y);
         mProfile = mBrowser.getProfile();
         mProfile.setUserIdentityCallback(new UserIdentityCallback() {
@@ -936,11 +934,16 @@ public class WebLayerShellActivity extends AppCompatActivity {
         }
     }
 
-    private Display getDefaultDisplay() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return ApiHelperForR.getDisplay(this);
-        }
+    private Point getDisplaySize() {
+        Point point = new Point();
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        return windowManager.getDefaultDisplay();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect rect = windowManager.getMaximumWindowMetrics().getBounds();
+            point.set(rect.width(), rect.height());
+        } else {
+            Display display = windowManager.getDefaultDisplay();
+            display.getRealSize(point);
+        }
+        return point;
     }
 }
