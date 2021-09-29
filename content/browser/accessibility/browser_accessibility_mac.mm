@@ -69,14 +69,14 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
     return;
   }
 
-  // Re-create native wrapper and also take ownership of that wrapper in
-  // `platform_node_` relinquishing the ownership of the old wrapper.
-  BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
-
   // Replace child in parent.
   BrowserAccessibility* parent = PlatformGetParent();
   if (!parent)
     return;
+
+  // Re-create native wrapper and also take ownership of that wrapper in
+  // `platform_node_` relinquishing the ownership of the old wrapper.
+  BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
 
   base::scoped_nsobject<NSMutableArray> new_children;
   NSArray* old_children = [ToBrowserAccessibilityCocoa(parent) children];
