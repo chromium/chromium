@@ -41,10 +41,25 @@ struct HttpVersion {
 struct HostPortPair;
 
 [Native]
-struct X509Certificate;
+struct ProxyServer;
+
+// Host resolution error info.
+struct ResolveErrorInfo {
+  // Underlying network error code. See net/base/net_error_list.h for error
+  // descriptions.
+  int32 error;
+
+  // Whether |error| came from a DNS-over-HTTPS lookup. This will be false if
+  // the answer was obtained from the cache or if |error| is net::OK since this
+  // field is intended to identify secure DNS *network* failures.
+  bool is_secure_network_error = false;
+};
 
 [Native]
 struct SSLCertRequestInfo;
 
 [Native]
 struct SSLInfo;
+
+[Native]
+struct X509Certificate;

@@ -337,6 +337,15 @@ mojom("url_loader_base") {
     {
       types = [
         {
+          mojom = "network.mojom.URLLoaderCompletionStatus"
+          cpp = "::network::URLLoaderCompletionStatus"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/url_loader_completion_status_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.CrossOriginOpenerPolicy"
           cpp = "::network::CrossOriginOpenerPolicy"
         },
@@ -482,12 +491,19 @@ mojom("url_loader_base") {
     {
       types = [
         {
-          mojom = "network.mojom.CTPolicyCompliance"
-          cpp = "::net::ct::CTPolicyCompliance"
-        },
-        {
           mojom = "network.mojom.CorsErrorStatus"
           cpp = "::network::CorsErrorStatus"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/cors/cors_mojom_traits.h" ]
+      traits_public_deps = [ "//base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.CTPolicyCompliance"
+          cpp = "::net::ct::CTPolicyCompliance"
         },
         {
           mojom = "network.mojom.EffectiveConnectionType"
@@ -496,10 +512,6 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.OriginPolicy"
           cpp = "::network::OriginPolicy"
-        },
-        {
-          mojom = "network.mojom.URLLoaderCompletionStatus"
-          cpp = "::network::URLLoaderCompletionStatus"
         },
         {
           mojom = "network.mojom.URLRequestRedirectInfo"
@@ -639,6 +651,14 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.HttpVersion"
           cpp = "::net::HttpVersion"
+        },
+        {
+          mojom = "network.mojom.ProxyServer"
+          cpp = "::net::ProxyServer"
+        },
+        {
+          mojom = "network.mojom.ResolveErrorInfo"
+          cpp = "::net::ResolveErrorInfo"
         },
         {
           mojom = "network.mojom.SSLCertRequestInfo"
@@ -915,10 +935,6 @@ mojom("mojom") {
         {
           mojom = "network.mojom.DnsQueryType"
           cpp = "::net::DnsQueryType"
-        },
-        {
-          mojom = "network.mojom.ResolveErrorInfo"
-          cpp = "::net::ResolveErrorInfo"
         },
         {
           mojom = "network.mojom.ResolveHostParameters.Source"

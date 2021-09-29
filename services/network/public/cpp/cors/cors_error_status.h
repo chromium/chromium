@@ -17,8 +17,7 @@
 
 namespace network {
 
-// WARNING: When adding fields to this truct, do not forget to add them in
-// services/network/public/cpp/network_ipc_param_traits.h too.
+// Type-mapped to `network::mojom::CorsErrorStatus`.
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   // This constructor is used by generated IPC serialization code.
   // Should not use this explicitly.
@@ -47,29 +46,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   bool operator!=(const CorsErrorStatus& rhs) const { return !(*this == rhs); }
 
   // NOTE: This value is meaningless and should be overridden immediately either
-  // by a constructor or by IPC deserialization code.
+  // by a constructor or by Mojo deserialization code.
   mojom::CorsError cors_error = mojom::CorsError::kMaxValue;
 
-  // Contains request method name, or header name that didn't pass a CORS check.
   std::string failed_parameter;
-
-  // The target IP address space set on the URL request.
-  // See `ResourceRequest::target_ip_address_space`.
-  // Set if (but not only if) `cors_error == kInvalidPrivateNetworkAccess`.
   mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
-
-  // The address space of the requested resource.
-  // Set iff `cors_error` is one of:
-  //
-  // - `kInvalidPrivateNetworkAccess`
-  // - `kInsecurePrivateNetwork`
-  //
   mojom::IPAddressSpace resource_address_space =
       mojom::IPAddressSpace::kUnknown;
-
-  // True when there is an "authorization" header on the request and it is
-  // covered by the wildcard in the preflight response.
-  // TODO(crbug.com/1176753): Remove this once the investigation is done.
   bool has_authorization_covered_by_wildcard_on_preflight = false;
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
 };

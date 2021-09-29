@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

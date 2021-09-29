@@ -38,6 +38,7 @@ class X509Certificate;
 }  // namespace net
 
 namespace network {
+struct CorsErrorStatus;
 struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 namespace mojom {

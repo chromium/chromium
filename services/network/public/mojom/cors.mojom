@@ -4,6 +4,9 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
+
 // A policy to decide if CORS-preflight fetch should be performed.
 enum CorsPreflightPolicy {
   kConsiderPreflight,
@@ -109,5 +112,34 @@ enum CorsError {
   kInvalidPrivateNetworkAccess,
 };
 
-[Native]
-struct CorsErrorStatus;
+// Contains additional details about a CORS-related error.
+//
+// Used to pass extra error details to `URLLoaderClient`s via
+// `URLLoaderCompletionStatus`.
+struct CorsErrorStatus {
+  // The error itself.
+  CorsError cors_error;
+
+  // Contains request method name, or header name that didn't pass a CORS check.
+  string failed_parameter;
+
+  // The target IP address space set on the URL request.
+  // See `ResourceRequest::target_ip_address_space`.
+  // Set if (but not only if) `cors_error == kInvalidPrivateNetworkAccess`.
+  IPAddressSpace target_address_space = IPAddressSpace.kUnknown;
+
+  // The address space of the requested resource.
+  // Set iff `cors_error` is one of:
+  //
+  // - `kInvalidPrivateNetworkAccess`
+  // - `kInsecurePrivateNetwork`
+  //
+  IPAddressSpace resource_address_space = IPAddressSpace.kUnknown;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight = false;
+
+  mojo_base.mojom.UnguessableToken issue_id;
+};
