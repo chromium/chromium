@@ -6963,6 +6963,8 @@ crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/fast/css/text-o
 crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/storage/indexeddb/keypath-arrays.html [ Timeout ]
 crbug.com/1250457 [ Mac ] external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html [ Failure ]
 
+crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-images.html [ Failure ]
+
 # FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-rename-manual.https.html [ Failure ]

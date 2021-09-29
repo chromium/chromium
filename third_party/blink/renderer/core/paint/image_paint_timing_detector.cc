@@ -237,8 +237,17 @@ void ImagePaintTimingDetector::RecordImage(
     return;
 
   RecordId record_id = std::make_pair(&object, &cached_image);
-  if (records_manager_.IsRecordedInvisibleImage(record_id))
+
+  if (!base::FeatureList::IsEnabled(
+          features::kIncludeInitiallyInvisibleImagesInLCP) &&
+      records_manager_.IsRecordedInvisibleImage(record_id)) {
+    // Ignore images that are initially invisible, even if they later become
+    // visible. This is done as an optimization, to reduce LCP calculation
+    // costs.
+    // Note that this results in correctness issues:
+    // https://crbug.com/1249622
     return;
+  }
   bool is_recorded_visible_image =
       records_manager_.IsRecordedVisibleImage(record_id);
 

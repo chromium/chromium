@@ -1126,6 +1126,11 @@
     ]
   },
   {
+    "prefix": "initially-invisible-images-lcp",
+    "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],
+    "args": [ "--enable-features=IncludeInitiallyInvisibleImagesInLCP"]
+  },
+  {
     "prefix": "css-highlight-inheritance",
     "bases": ["external/wpt/css/css-pseudo"],
     "args": ["--enable-blink-features=HighlightInheritance"]

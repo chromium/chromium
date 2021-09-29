@@ -1022,6 +1022,9 @@ const base::Feature kDelayLowPriorityRequestsAccordingToNetworkState{
     "DelayLowPriorityRequestsAccordingToNetworkState",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIncludeInitiallyInvisibleImagesInLCP{
+    "IncludeInitiallyInvisibleImagesInLCP", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "MaxNumOfThrottleableRequestsInTightMode", 5};
