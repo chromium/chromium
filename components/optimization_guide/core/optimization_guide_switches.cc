@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -200,10 +199,7 @@ bool ShouldValidateModel() {
   return command_line->HasSwitch(kModelValidate);
 }
 
-absl::optional<
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
-GetModelOverrideForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
+absl::optional<std::string> GetModelOverride() {
 #if defined(OS_WIN)
   // TODO(crbug/1227996): The parsing below is not supported on Windows because
   // ':' is used as a delimiter, but this must be used in the absolute file path
@@ -215,58 +211,7 @@ GetModelOverrideForOptimizationTarget(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kModelOverride))
     return absl::nullopt;
-
-  std::string model_override_switch_value =
-      command_line->GetSwitchValueASCII(kModelOverride);
-  std::vector<std::string> model_overrides =
-      base::SplitString(model_override_switch_value, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& model_override : model_overrides) {
-    std::vector<std::string> override_parts = base::SplitString(
-        model_override, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (override_parts.size() != 2 && override_parts.size() != 3) {
-      // Input is malformed.
-      DLOG(ERROR) << "Invalid string format provided to the Model Override";
-      return absl::nullopt;
-    }
-
-    optimization_guide::proto::OptimizationTarget recv_optimization_target;
-    if (!optimization_guide::proto::OptimizationTarget_Parse(
-            override_parts[0], &recv_optimization_target)) {
-      // Optimization target is invalid.
-      DLOG(ERROR)
-          << "Invalid optimization target provided to the Model Override";
-      return absl::nullopt;
-    }
-    if (optimization_target != recv_optimization_target)
-      continue;
-
-    std::string file_name = override_parts[1];
-    if (!base::FilePath(file_name).IsAbsolute()) {
-      DLOG(ERROR) << "Provided model file path must be absolute " << file_name;
-      return absl::nullopt;
-    }
-
-    if (override_parts.size() == 2) {
-      std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
-          file_path_and_metadata = std::make_pair(file_name, absl::nullopt);
-      return file_path_and_metadata;
-    }
-    std::string binary_pb;
-    if (!base::Base64Decode(override_parts[2], &binary_pb)) {
-      DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
-      return absl::nullopt;
-    }
-    optimization_guide::proto::Any model_metadata;
-    if (!model_metadata.ParseFromString(binary_pb)) {
-      DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
-      return absl::nullopt;
-    }
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
-        file_path_and_metadata = std::make_pair(file_name, model_metadata);
-    return file_path_and_metadata;
-  }
-  return absl::nullopt;
+  return command_line->GetSwitchValueASCII(kModelOverride);
 #endif
 }
 

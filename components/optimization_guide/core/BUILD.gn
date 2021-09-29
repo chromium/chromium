@@ -182,6 +182,26 @@ static_library("test_support") {
   ]
 }
 
+if (is_ios) {
+  source_set("eg_test_support+eg2") {
+    testonly = true
+    sources = [
+      "optimization_guide_constants.cc",
+      "optimization_guide_constants.h",
+      "optimization_guide_enums.h",
+      "optimization_guide_switches.cc",
+      "optimization_guide_switches.h",
+      "optimization_guide_test_util.cc",
+      "optimization_guide_test_util.h",
+    ]
+    deps = [
+      "//base",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//url",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

@@ -28,6 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OptimizationGuideNavigationData;
+class OptimizationGuideTestAppInterfaceWrapper;
 class PrefService;
 
 namespace network {
@@ -186,6 +187,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const absl::optional<optimization_guide::OptimizationMetadata>& metadata);
 
  private:
+  friend class ::OptimizationGuideTestAppInterfaceWrapper;
+
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
       const google::protobuf::RepeatedPtrField<
@@ -328,6 +331,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   bool HasAllInformationForDecisionAvailable(
       const GURL& navigation_url,
       optimization_guide::proto::OptimizationType optimization_type);
+
+  optimization_guide::HintsFetcherFactory* GetHintsFetcherFactory();
 
   // The information of the latest component delivered by
   // |optimization_guide_service_|.
