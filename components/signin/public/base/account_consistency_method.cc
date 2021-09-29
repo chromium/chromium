@@ -14,7 +14,7 @@ namespace signin {
 const base::Feature kMobileIdentityConsistencyFRE{
     "MobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kMobileIdentityConsistencyPromos{
-    "MobileIdentityConsistencyPromos", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MobileIdentityConsistencyPromos", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_IOS)
