@@ -7,11 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
+#include "content/public/browser/download_manager.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
@@ -118,11 +120,19 @@ void ProjectorClientImpl::OnSodaInstalled() {
 
 bool ProjectorClientImpl::GetDriveFsMountPointPath(
     base::FilePath* result) const {
-  // TODO(b/197164300) Implement persisting screencasts in this mode by
-  // creating a temp folder for testing purposes
-
   if (!IsDriveFsMounted())
     return false;
+
+  if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
+    auto* profile = ProfileManager::GetActiveUserProfile();
+    DCHECK(profile);
+
+    DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(
+        ProfileManager::GetActiveUserProfile());
+    *result = download_prefs->GetDefaultDownloadDirectoryForProfile();
+    return true;
+  }
+
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
@@ -133,6 +143,13 @@ bool ProjectorClientImpl::GetDriveFsMountPointPath(
 bool ProjectorClientImpl::IsDriveFsMounted() const {
   if (!chromeos::LoginState::Get()->IsUserLoggedIn())
     return false;
+
+  if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
+    // Return true when extended projector features are disabled. Use download
+    // folder for Projector storage.
+    return true;
+  }
+
   auto* profile = ProfileManager::GetActiveUserProfile();
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
