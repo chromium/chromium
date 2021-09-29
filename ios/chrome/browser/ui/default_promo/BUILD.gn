@@ -11,6 +11,7 @@ source_set("utils") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/first_run:field_trial",
   ]
   frameworks = [ "Foundation.framework" ]
 }

@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#include "ios/chrome/browser/ui/first_run/default_browser_promo_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
@@ -999,11 +1000,9 @@ bool IsSigninForcedByPolicy() {
   [self maybeShowDefaultBrowserPromo];
 }
 
-- (void)maybeShowDefaultBrowserPromo {
-  if (self.sceneState.appState.startupInformation.isFirstRun) {
-    return;
-  }
-
+// |YES| if Chrome is not the default browser, the app did not crash recently,
+// the user never saw the promo UI and is in the correct experiment groups.
+- (BOOL)potentiallyInterestedUser {
   // If skipping first run, not in Safe Mode, no post opening action and the
   // launch is not after a crash, consider showing the default browser promo.
   NTPTabOpeningPostOpeningAction postOpeningAction =
@@ -1011,9 +1010,20 @@ bool IsSigninForcedByPolicy() {
   if (self.startupParameters) {
     postOpeningAction = self.startupParameters.postOpeningAction;
   }
-  if (postOpeningAction == NO_ACTION &&
-      !self.sceneState.appState.postCrashLaunch &&
-      !IsChromeLikelyDefaultBrowser()) {
+  return postOpeningAction == NO_ACTION &&
+         !self.sceneState.appState.postCrashLaunch &&
+         !IsChromeLikelyDefaultBrowser() &&
+         !HasUserOpenedSettingsFromFirstRunPromo() &&
+         !fre_default_browser_promo_field_trial::
+             IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
+}
+
+- (void)maybeShowDefaultBrowserPromo {
+  if (self.sceneState.appState.startupInformation.isFirstRun) {
+    return;
+  }
+
+  if ([self potentiallyInterestedUser]) {
     // Show the Default Browser promo UI if the user's past behavior fits
     // the categorization of potentially interested users or if the user is
     // signed in. Do not show if it is determined that Chrome is already the

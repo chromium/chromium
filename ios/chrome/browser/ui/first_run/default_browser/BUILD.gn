@@ -13,6 +13,7 @@ source_set("default_browser") {
     "//base",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
   ]
   frameworks = [ "UIKit.framework" ]

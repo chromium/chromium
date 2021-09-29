@@ -75,6 +75,9 @@ bool HasUserInteractedWithFullscreenPromoBefore();
 // previously. Returns false otherwise.
 bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 
+// Returns YES if the user taps on open settings button from first run promo.
+BOOL HasUserOpenedSettingsFromFirstRunPromo();
+
 // Returns the number of times the user has seen and interacted with the
 // non-modal promo before.
 int UserInteractionWithNonModalPromoCount();
@@ -87,6 +90,9 @@ void LogUserInteractionWithTailoredFullscreenPromo();
 
 // Logs that the user has interacted with a Non-Modals Promo.
 void LogUserInteractionWithNonModalPromo();
+
+// Logs that the user has interacted with the first run promo.
+void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
