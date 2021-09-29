@@ -99,6 +99,13 @@ export class ToolbarController {
      * @private {!HTMLElement}
      * @const
      */
+    this.sharesheetButton_ =
+        queryRequiredElement('#sharesheet-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
     this.readOnlyIndicator_ =
         queryRequiredElement('#read-only-indicator', this.toolbar_);
 
@@ -263,6 +270,9 @@ export class ToolbarController {
 
     this.emptyTrashButton_.addEventListener(
         'click', this.onEmptyTrashButtonClicked_.bind(this));
+
+    this.sharesheetButton_.addEventListener(
+        'click', this.onSharesheetButtonClicked_.bind(this));
 
     this.togglePinnedCommand_.addEventListener(
         'checkedChange', this.updatePinnedToggle_.bind(this));
@@ -444,6 +454,17 @@ export class ToolbarController {
   onEmptyTrashButtonClicked_() {
     this.emptyTrashCommand_.canExecuteChange(this.listContainer_.currentList);
     this.emptyTrashCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
+   * Handles click event for sharesheet button to set button background color.
+   * @private
+   */
+  onSharesheetButtonClicked_() {
+    this.sharesheetButton_.setAttribute('menu-shown', '');
+    this.toolbar_.ownerDocument.body.addEventListener('focusin', (e) => {
+      this.sharesheetButton_.removeAttribute('menu-shown');
+    }, {once: true});
   }
 
   /**

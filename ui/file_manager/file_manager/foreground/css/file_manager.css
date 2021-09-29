@@ -538,7 +538,7 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
   width: 48px;
 }
 
-.dialog-header.files-ng button[menu-shown] {
+.dialog-header.files-ng *[menu-shown] {
   background-color: rgba(0, 0, 0, 12%);
 }
 
