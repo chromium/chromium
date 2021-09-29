@@ -596,7 +596,7 @@ class string_view {
   }
 
  private:
-  // The constructor from std::string delegates to this constuctor.
+  // The constructor from std::string delegates to this constructor.
   // See the comment on that constructor for the rationale.
   struct SkipCheckLengthTag {};
   string_view(const char* data, size_type len, SkipCheckLengthTag) noexcept

@@ -346,7 +346,7 @@ inline StatusToStringMode& operator^=(StatusToStringMode& lhs,
 // API developers should construct their functions to return `absl::OkStatus()`
 // upon success, or an `absl::StatusCode` upon another type of error (e.g
 // an `absl::StatusCode::kInvalidArgument` error). The API provides convenience
-// functions to constuct each status code.
+// functions to construct each status code.
 //
 // Example:
 //
