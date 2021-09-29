@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">El nom ja existeix</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botó <ph name="LINK_NAME" />)</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
+<translation id="200114059308480249">Vols incloure el text que envolta la paraula a les cerques de Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
@@ -243,6 +244,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2518590038762162553">En el mode bàsic, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades. Per optimitzar les pàgines que visites, Chrome envia el teu trànsit web a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envia a Google els URL de les pàgines que visites</translation>
+<translation id="2527209463677295330">Si inclous més text d'una pàgina, pots obtenir millors resultats</translation>
 <translation id="2527497042232966453">S'ha canviat a pestanyes d'incògnit</translation>
 <translation id="2527779675047087889">Amaga els continguts del porta-retalls</translation>
 <translation id="2532336938189706096">Visualització web</translation>
@@ -319,6 +321,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2979448359891869301">No es pot ampliar la captura de pantalla. Torna-ho a provar quan el telèfon disposi de més recursos.</translation>
 <translation id="2979639724566107830">Obre-ho en una finestra nova</translation>
 <translation id="2981364137500752533">Pots tenir fins a 5 finestres.</translation>
+<translation id="2984978667043170458">Inclou el text que envolta la paraula a les cerques de Google</translation>
 <translation id="2987620471460279764">Text compartit d'un altre dispositiu</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
 <translation id="2992473221983447149">Descripcions d'imatges</translation>
@@ -378,7 +381,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3295530008794733555">Navega més de pressa. Utilitza menys dades.</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
-<translation id="3332570638882314953">Obtén informació més rellevant</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341058695485821946">Consulta la quantitat de dades que has estalviat</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
@@ -848,7 +850,6 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="6203593061661911168">La baixada començarà quan hi hagi connexió Wi‑Fi</translation>
 <translation id="6210748933810148297">No ets <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Es previsualitza aquesta pàgina</translation>
-<translation id="6212786426849242805">Permet que Google també consideri part del text de la pàgina</translation>
 <translation id="6221633008163990886">Desbloqueja per exportar les contrasenyes</translation>
 <translation id="6232535412751077445">Si actives l'opció No segueixis, s'inclourà una sol·licitud al trànsit de navegació. Que s'apliqui o no dependrà de si algun lloc web respon a la sol·licitud i de com s'interpreta.
 
@@ -975,12 +976,10 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6883204995689174413">Comparteix</translation>
 <translation id="688738109438487280">Afegeix les dades existents a <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Permet que Google tingui en compte part del text de la pàgina per veure millors resultats per a les paraules que marquis. Pots canviar la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment.</translation>
 <translation id="6891726759199484455">Desbloqueja la pantalla per copiar la contrasenya</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protecció millorada</translation>
 <translation id="6903907808598579934">Activa la sincronització</translation>
-<translation id="6924672435311694692">Mostra millors resultats</translation>
 <translation id="6929699136511445623">Activa la sincronització del sistema Android</translation>
 <translation id="6942665639005891494">Canvia la ubicació predeterminada de baixada en qualsevol moment amb l'opció del menú Configuració</translation>
 <translation id="694267552845942083">Estàs personalitzant la configuració de la sincronització. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha a la part inferior de la pantalla. Navega cap amunt.</translation>
@@ -1048,6 +1047,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparteix 1 element seleccionat}other{Comparteix # elements seleccionats}}</translation>
 <translation id="7359002509206457351">Accedeix a les formes de pagament</translation>
 <translation id="7375125077091615385">Tipus:</translation>
+<translation id="7376560087009844242">Si inclous més text d'una pàgina, pots obtenir millors resultats quan utilitzis Toca per cercar. Pots visitar la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per canviar-ho.</translation>
 <translation id="7386842512861524348">La connexió del lloc web és segura tret que Chrome t'indiqui el contrari.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" /></translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7444811645081526538">Més categories</translation>
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
 <translation id="7454641608352164238">No hi ha prou espai</translation>
+<translation id="7474822150871987353">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. Selecciona una o més paraules de la pàgina per cercar-les.</translation>
 <translation id="7475192538862203634">Si això passa sovint, prova aquests <ph name="BEGIN_LINK" />suggeriments<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">La targeta SD no s'ha trobat. Pot ser que faltin alguns fitxers.</translation>
 <translation id="7479104141328977413">Gestió de pestanyes</translation>
@@ -1218,7 +1219,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="829672787777123339">S'està connectant amb el dispositiu…</translation>
 <translation id="8310344678080805313">Pestanyes estàndard</translation>
 <translation id="831192587911042850">Afegeix el lloc web actual a la llista de llocs web que segueixes.</translation>
-<translation id="8319544457245040955">Obtén informació sobre un tema sense sortir de la pàgina. Selecciona una o més paraules de la pàgina per cercar-les. Per editar la cerca, mira els resultats i obre'ls en una pestanya nova.</translation>
 <translation id="8327155640814342956">Per gaudir de la millor experiència de navegació, obre Chrome per actualitzar-lo</translation>
 <translation id="834313815369870491">No tradueixis mai els llocs web</translation>
 <translation id="8349013245300336738">Ordena per quantitat de dades utilitzades</translation>
@@ -1229,6 +1229,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8410695015584479363">Fes un seguiment dels preus</translation>
 <translation id="8413126021676339697">Mostra l'historial complet</translation>
+<translation id="8419244640277402268">Inclou</translation>
 <translation id="8424781820952413435">S'ha enviat la pàgina. Per veure-la, obre Chrome al teu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">La pestanya de previsualització està oberta fins a la meitat</translation>
 <translation id="8428213095426709021">Configuració</translation>

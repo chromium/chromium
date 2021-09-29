@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Il nome esiste già</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> pulsante <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
+<translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
@@ -243,6 +244,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2518590038762162553">Nella modalità Lite, Chrome carica le pagine più rapidamente e utilizza fino al 60% di dati in meno. Per ottimizzare le pagine che visiti, Chrome invia il tuo traffico web a Google. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Invia a Google gli URL delle pagine che visiti</translation>
+<translation id="2527209463677295330">Se includi più testo di una pagina, potresti vedere risultati migliori</translation>
 <translation id="2527497042232966453">Schede di navigazione in incognito attivate</translation>
 <translation id="2527779675047087889">Nascondi contenuti degli appunti</translation>
 <translation id="2532336938189706096">Visualizzazione web</translation>
@@ -319,6 +321,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2979448359891869301">Non puoi estendere lo screenshot. Riprova quando ci sono meno processi in esecuzione sul telefono.</translation>
 <translation id="2979639724566107830">Apri in un'altra finestra</translation>
 <translation id="2981364137500752533">Puoi avere fino a 5 finestre.</translation>
+<translation id="2984978667043170458">Includi il testo circostante nelle ricerche Google</translation>
 <translation id="2987620471460279764">Testo condiviso da un altro dispositivo</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2992473221983447149">Descrizioni delle immagini</translation>
@@ -378,7 +381,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3295530008794733555">Naviga più velocemente. Consuma meno dati.</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
-<translation id="3332570638882314953">Ricevi informazioni più pertinenti</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341058695485821946">Scopri la quantità di dati risparmiata</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
@@ -848,7 +850,6 @@ Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono dispon
 <translation id="6203593061661911168">Il download inizierà quando è attiva la connessione Wi-Fi</translation>
 <translation id="6210748933810148297">Non sei <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizzazione dell'anteprima della pagina</translation>
-<translation id="6212786426849242805">Chiedi a Google di considerare anche parte del testo della pagina</translation>
 <translation id="6221633008163990886">Sblocca per esportare le tue password</translation>
 <translation id="6232535412751077445">Se attivi l'opzione "Non tenere traccia", verrà inclusa una richiesta nel tuo traffico di navigazione. Gli effetti dipendono dall'eventuale risposta dei siti web alla richiesta e dall'interpretazione di quest'ultima.
 
@@ -975,12 +976,10 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6883204995689174413">Condividi</translation>
 <translation id="688738109438487280">Aggiungi i dati esistenti a <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Ricevi risultati migliori relativi alle parole che evidenzi consentendo a Google di prendere in considerazione parte del testo della pagina. Puoi cambiare in qualsiasi momento le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Sblocca per copiare la password</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
-<translation id="6924672435311694692">Visualizza risultati migliori</translation>
 <translation id="6929699136511445623">Attiva sincronizzazione del sistema Android</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
 <translation id="694267552845942083">Stai personalizzando le impostazioni di sincronizzazione. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
@@ -1048,6 +1047,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Condividi 1 elemento selezionato}other{Condividi # elementi selezionati}}</translation>
 <translation id="7359002509206457351">Accedi ai metodi di pagamento</translation>
 <translation id="7375125077091615385">Tipo:</translation>
+<translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
 <translation id="7386842512861524348">La connessione del sito è sicura, a meno che non ti venga data una comunicazione diversa in Chrome.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7444811645081526538">Altre categorie</translation>
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7454641608352164238">Spazio insufficiente</translation>
+<translation id="7474822150871987353">Scopri gli argomenti dei siti web senza lasciare la pagina. Seleziona una o più parole nella pagina per cercarle.</translation>
 <translation id="7475192538862203634">Se il problema si verifica di frequente, prova questi <ph name="BEGIN_LINK" />suggerimenti<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Scheda SD non trovata. Potrebbero mancare alcuni dei tuoi file.</translation>
 <translation id="7479104141328977413">Gestione schede</translation>
@@ -1218,7 +1219,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="829672787777123339">Collegamento al dispositivo in corso…</translation>
 <translation id="8310344678080805313">Schede standard</translation>
 <translation id="831192587911042850">Consente di aggiungere il sito web corrente all'elenco di siti web che segui.</translation>
-<translation id="8319544457245040955">Scopri di più su un argomento senza uscire dalla pagina. Seleziona una o più parole nella pagina per cercarle. Per modificare la ricerca, guarda i risultati e aprili in una nuova scheda.</translation>
 <translation id="8327155640814342956">Per un'esperienza di navigazione ottimale, apri per aggiornare Chrome</translation>
 <translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8349013245300336738">Ordina per quantità di dati utilizzati</translation>
@@ -1229,6 +1229,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8410695015584479363">Monitora prezzi</translation>
 <translation id="8413126021676339697">Mostra cronologia completa</translation>
+<translation id="8419244640277402268">Includi</translation>
 <translation id="8424781820952413435">Pagina inviata. Per visualizzarla, apri Chrome sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>
 <translation id="8428213095426709021">Impostazioni</translation>

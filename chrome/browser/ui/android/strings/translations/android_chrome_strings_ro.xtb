@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Numele există deja</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Butonul <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
+<translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
 <translation id="2038563949887743358">Activează opțiunea Versiune site pentru desktop</translation>
@@ -243,6 +244,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2518590038762162553">În modul Lite, Chrome încarcă mai repede paginile și folosește cu până la 60 % mai puține date. Pentru a optimiza paginile pe care le accesezi, Chrome trimite traficul tău web la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Trimite la Google adresele URL ale paginilor pe care le accesezi</translation>
+<translation id="2527209463677295330">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune</translation>
 <translation id="2527497042232966453">Ai comutat la filele incognito</translation>
 <translation id="2527779675047087889">Ascunde conținutul clipboardului</translation>
 <translation id="2532336938189706096">Vizualizare pe web</translation>
@@ -319,6 +321,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2979448359891869301">Nu se poate extinde captura de ecran. Încearcă din nou atunci când telefonul nu este ocupat cu alte operațiuni.</translation>
 <translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
 <translation id="2981364137500752533">Poți deschide maximum cinci ferestre.</translation>
+<translation id="2984978667043170458">Include text din jur în căutările de pe Google</translation>
 <translation id="2987620471460279764">Text trimis de pe alt dispozitiv</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
 <translation id="2992473221983447149">Descrierile imaginilor</translation>
@@ -378,7 +381,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3295530008794733555">Navighează mai rapid. Folosește mai puține date.</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
-<translation id="3332570638882314953">Primește informații mai relevante</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341058695485821946">Vezi ce volum de date ai economisit</translation>
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
@@ -848,7 +850,6 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="6203593061661911168">Descărcarea va începe după conectarea la Wi-Fi</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previzualizare a paginii</translation>
-<translation id="6212786426849242805">Permite ca Google să țină cont și de o parte din textul paginii</translation>
 <translation id="6221633008163990886">Deblochează pentru a-ți exporta parolele.</translation>
 <translation id="6232535412751077445">Dacă activezi opțiunea „Nu urmări”, o solicitare va fi inclusă împreună cu traficul de navigare. Efectul variază în funcție de răspunsul site-ului la solicitare și în funcție de modul în care este interpretată solicitarea.
 
@@ -975,12 +976,10 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6883204995689174413">Trimite</translation>
 <translation id="688738109438487280">Adaugă datele existente în <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Primește rezultate mai bune pentru cuvintele evidențiate permițând ca Google să țină cont de o parte din textul paginii. Poți să modifici <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> oricând.</translation>
 <translation id="6891726759199484455">Deblochează pentru a copia parola</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6900532703269623216">Protecție îmbunătățită</translation>
 <translation id="6903907808598579934">Activează sincronizarea</translation>
-<translation id="6924672435311694692">Primește rezultate mai bune</translation>
 <translation id="6929699136511445623">Activează sincronizarea sistemului Android</translation>
 <translation id="6942665639005891494">Schimbă oricând locația de descărcare prestabilită folosind opțiunea din meniul Setări</translation>
 <translation id="694267552845942083">Personalizezi setările de sincronizare. Pentru a finaliza activarea sincronizării, atinge butonul Confirmă din partea de jos a ecranului. Navighează în sus</translation>
@@ -1048,6 +1047,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Trimite un element selectat}few{Trimite # elemente selectate}other{Trimite # de elemente selectate}}</translation>
 <translation id="7359002509206457351">Acces la metodele de plată</translation>
 <translation id="7375125077091615385">Tip:</translation>
+<translation id="7376560087009844242">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune când folosești Atinge pentru a căuta. Poți accesa oricând <ph name="BEGIN_LINK" />setările<ph name="END_LINK" /> pentru a modifica opțiunea.</translation>
 <translation id="7386842512861524348">Conexiunea site-ului este sigură dacă Chrome nu anunță contrariul.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
@@ -1062,6 +1062,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7444811645081526538">Mai multe categorii</translation>
 <translation id="7453467225369441013">Te deconectează de pe majoritatea site-urilor. Nu te va deconecta de la Contul Google.</translation>
 <translation id="7454641608352164238">Spațiu insuficient</translation>
+<translation id="7474822150871987353">Află despre subiectele de pe site-uri fără să părăsești pagina. Selectează unul sau mai multe cuvinte din pagină ca să le cauți.</translation>
 <translation id="7475192538862203634">Dacă acest mesaj apare frecvent, încearcă următoarele <ph name="BEGIN_LINK" />sugestii<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Nu s-a găsit cardul SD. Este posibil ca unele fișiere să lipsească.</translation>
 <translation id="7479104141328977413">Gestionarea filelor</translation>
@@ -1218,7 +1219,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="829672787777123339">Se conectează la dispozitiv…</translation>
 <translation id="8310344678080805313">File standard</translation>
 <translation id="831192587911042850">Adaugă site-ul actual la lista de site-uri pe care le urmărești.</translation>
-<translation id="8319544457245040955">Află despre un subiect fără să părăsești pagina. Selectează unul sau mai multe cuvinte din pagină ca să le cauți. Pentru a edita căutarea, examinează rezultatele și deschide-le într-o filă nouă.</translation>
 <translation id="8327155640814342956">Pentru o experiență de navigare mai bună, deschide pentru a actualiza Chrome</translation>
 <translation id="834313815369870491">Nu traduce niciodată site-uri</translation>
 <translation id="8349013245300336738">Sortează după volumul de date folosite</translation>
@@ -1229,6 +1229,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8410695015584479363">Urmărește prețurile</translation>
 <translation id="8413126021676339697">Afișează întregul istoric</translation>
+<translation id="8419244640277402268">Include</translation>
 <translation id="8424781820952413435">Pagina a fost trimisă. Ca să o vezi, deschide Chrome pe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Fila de previzualizare este pe jumătate deschisă</translation>
 <translation id="8428213095426709021">Setări</translation>

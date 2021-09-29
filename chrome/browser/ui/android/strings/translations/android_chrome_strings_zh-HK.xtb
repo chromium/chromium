@@ -378,7 +378,6 @@
 <translation id="3295530008794733555">瀏覽速度更快。使用較少流動數據。</translation>
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
-<translation id="3332570638882314953">取得更多相關資料</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
 <translation id="3341058695485821946">查看已節省的數據用量</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
@@ -848,7 +847,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6203593061661911168">使用 Wi-Fi 時將開始下載</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
-<translation id="6212786426849242805">讓 Google 同時考慮部分網頁的文字</translation>
 <translation id="6221633008163990886">解鎖即可匯出您的密碼</translation>
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
@@ -975,12 +973,10 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6883204995689174413">分享</translation>
 <translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
-<translation id="6889847736310813892">讓 Google 分析頁面上的部分文字，以查看突顯文字的更佳結果。您可以隨時變更這項<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製您的密碼</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
-<translation id="6924672435311694692">查看更佳結果</translation>
 <translation id="6929699136511445623">啟用 Android 系統同步</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
@@ -1218,7 +1214,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="829672787777123339">正在連接您的裝置…</translation>
 <translation id="8310344678080805313">標準分頁</translation>
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>
-<translation id="8319544457245040955">無需離開網頁即可瞭解主題。選取網頁上的一個或多個字詞，即可進行搜尋。如要編輯搜尋，請查看搜尋結果，並在新分頁中開啟結果。</translation>
 <translation id="8327155640814342956">為獲得最佳瀏覽體驗，請開啟 Chrome 進行更新</translation>
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>

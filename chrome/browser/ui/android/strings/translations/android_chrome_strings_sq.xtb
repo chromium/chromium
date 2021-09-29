@@ -378,7 +378,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3295530008794733555">Shfleto më shpejt. Përdor më pak të dhëna.</translation>
 <translation id="3297344142967351106">Ndihma zanore</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
-<translation id="3332570638882314953">Merr informacion më të përshtatshëm</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
 <translation id="3341058695485821946">Shiko se sa të dhëna kurseve</translation>
 <translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
@@ -848,7 +847,6 @@ Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone
 <translation id="6203593061661911168">Shkarkimi do të fillojë kur të jesh në Wi-Fi</translation>
 <translation id="6210748933810148297">Nuk je <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>
-<translation id="6212786426849242805">Lejo që Google të marrë parasysh edhe disa tekste të faqes</translation>
 <translation id="6221633008163990886">Shkyç për të eksportuar fjalëkalimet e tua</translation>
 <translation id="6232535412751077445">Aktivizimi i funksionit "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një sajt uebi i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
@@ -975,12 +973,10 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="6883204995689174413">Ndaj</translation>
 <translation id="688738109438487280">Shto të dhënat ekzistuese te <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Shiko rezultate më të mira për fjalët që thekson duke i lejuar Google të vlerësojë një pjesë të tekstit të faqes. Mund ta ndryshosh këtë gjithnjë te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> e tua.</translation>
 <translation id="6891726759199484455">Shkyçe për të kopjuar fjalëkalimin</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
-<translation id="6924672435311694692">Shiko rezultate më të mira</translation>
 <translation id="6929699136511445623">Aktivizo sinkronizimin e sistemit Android</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
 <translation id="694267552845942083">Aktualisht po personalizon cilësimet e "Sinkronizimit". Për të përfunduar aktivizimin e sinkronizimit, trokit butonin "Konfirmo" pranë fundit të ekranit. Ngjitu lart</translation>
@@ -1218,7 +1214,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="829672787777123339">Po lidhet me pajisjen tënde…</translation>
 <translation id="8310344678080805313">Skedat standarde</translation>
 <translation id="831192587911042850">Shton sajtin aktual të uebit në listën e sajteve të uebit që po ndjek ti.</translation>
-<translation id="8319544457245040955">Mëso për një temë pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to. Për të redaktuar kërkimin tënd, shiko rezultatet dhe hapi në një skedë të re.</translation>
 <translation id="8327155640814342956">Për një përvojë më të mirë shfletimi, hape për të përditësuar Chrome</translation>
 <translation id="834313815369870491">Mos i përkthe asnjëherë sajtet</translation>
 <translation id="8349013245300336738">Rendit sipas sasisë së të dhënave të përdorura</translation>

@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">O nome xa existe</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botón <ph name="LINK_NAME" />)</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
+<translation id="200114059308480249">Queres incluír o texto circundante nas buscas de Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
@@ -243,6 +244,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2518590038762162553">No modo básico, Chrome carga as páxinas máis rápido e usa un 60 % menos de datos. Para optimizar as páxinas que visitas, Chrome envíalle o teu tráfico web a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envía a Google os URL das páxinas que visitas</translation>
+<translation id="2527209463677295330">Se inclúes máis texto dunha páxina, poderías obter mellores resultados</translation>
 <translation id="2527497042232966453">Cambiouse ás pestanas do modo de incógnito</translation>
 <translation id="2527779675047087889">Ocultar contido do portapapeis</translation>
 <translation id="2532336938189706096">Vista web</translation>
@@ -319,6 +321,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2979448359891869301">Non se pode ampliar a captura de pantalla. Proba de novo cando o teléfono non estea ocupado.</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
 <translation id="2981364137500752533">Podes ter ata 5 ventás.</translation>
+<translation id="2984978667043170458">Incluír texto circundante nas buscas de Google</translation>
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2992473221983447149">Descricións de imaxes</translation>
@@ -378,7 +381,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3295530008794733555">Navega máis rápido. Usa menos datos.</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
-<translation id="3332570638882314953">Obtén información máis relevante</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="3341058695485821946">Comproba a cantidade de datos que aforraches</translation>
 <translation id="3341262203274374114">Non se puido deixar de seguir o feed. Produciuse un erro.</translation>
@@ -848,7 +850,6 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="6203593061661911168">A descarga iniciarase cando se estableza conexión cunha rede wifi.</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
-<translation id="6212786426849242805">Deixar que Google tamén teña en conta parte do texto da páxina</translation>
 <translation id="6221633008163990886">Desbloquea a pantalla para exportar os teus contrasinais</translation>
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
 
@@ -975,12 +976,10 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="6883204995689174413">Compartir</translation>
 <translation id="688738109438487280">Engade os datos existentes a <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Deixa que Google teña en conta parte do texto da páxina para ofrecerche mellores resultados das palabras que destaques. Sempre podes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Desbloquea a pantalla para copiar o teu contrasinal</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
-<translation id="6924672435311694692">Ver mellores resultados</translation>
 <translation id="6929699136511445623">Activar sincronización do sistema Android</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando a configuración da sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Desprazarse cara arriba</translation>
@@ -1048,6 +1047,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
 <translation id="7359002509206457351">Acceso a métodos de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
+<translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
 <translation id="7386842512861524348">A menos que Chrome indique o contrario, a conexión deste sitio é segura.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7444811645081526538">Máis categorías</translation>
 <translation id="7453467225369441013">Pecha a túa sesión na maioría dos sitios. Non se pechará a sesión na túa conta de Google.</translation>
 <translation id="7454641608352164238">Non hai espazo suficiente</translation>
+<translation id="7474822150871987353">Obtén información sobre os temas en sitios web sen saír da páxina. Selecciona unha ou varias palabras na páxina para buscalas.</translation>
 <translation id="7475192538862203634">Se esta mensaxe aparece frecuentemente, proba estas <ph name="BEGIN_LINK" />suxestións<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Non se atopou a tarxeta SD. É posible que falten algúns dos teus ficheiros.</translation>
 <translation id="7479104141328977413">Xestión de pestanas</translation>
@@ -1218,7 +1219,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="829672787777123339">Conectando co teu dispositivo…</translation>
 <translation id="8310344678080805313">Pestanas estándar</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
-<translation id="8319544457245040955">Obtén información sobre un tema sen saír da páxina. Selecciona unha ou varias palabras na páxina para buscalas. Se queres modificar a busca, consulta os resultados e ábreos nunha pestana nova.</translation>
 <translation id="8327155640814342956">Para desfrutar da mellor experiencia de navegación, actualiza Chrome</translation>
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
 <translation id="8349013245300336738">Ordenar por cantidade de datos usados</translation>
@@ -1229,6 +1229,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8410695015584479363">Facer seguimento de prezos</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
+<translation id="8419244640277402268">Incluír</translation>
 <translation id="8424781820952413435">Enviouse a páxina. Para vela, abre Chrome no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A pestana de vista previa abriuse ata a metade</translation>
 <translation id="8428213095426709021">Configuración</translation>

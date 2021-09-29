@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Toks pavadinimas jau yra</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> mygtukas</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
+<translation id="200114059308480249">Įtraukti aplinkinį tekstą į „Google“ paieškas?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
@@ -243,6 +244,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2518590038762162553">Kai įjungtas supaprastintasis režimas, „Chrome“ sparčiau įkelia puslapius ir sunaudoja iki 60 proc. mažiau duomenų. „Chrome“ siunčia žiniatinklio srauto duomenis sistemai „Google“, kad optimizuotų puslapius, kuriuose lankotės. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Siunčiami „Google“ puslapių, kuriuose lankotės, URL</translation>
+<translation id="2527209463677295330">Įtraukus daugiau puslapio teksto, gali būti rodomi geresni rezultatai</translation>
 <translation id="2527497042232966453">Perjungta į inkognito skirtukus</translation>
 <translation id="2527779675047087889">Slėpti iškarpinės turinį</translation>
 <translation id="2532336938189706096">Žiniatinklio rodinys</translation>
@@ -319,6 +321,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2979448359891869301">Nepavyko išplėsti ekrano kopijos. Bandykite dar kartą, kai telefonas nėra užimtas.</translation>
 <translation id="2979639724566107830">Atidaryti naujame lange</translation>
 <translation id="2981364137500752533">Gali būti iki penkių langų.</translation>
+<translation id="2984978667043170458">Aplinkinio teksto įtraukimas „Google“ paieškose</translation>
 <translation id="2987620471460279764">Tekstas, bendrinamas iš kito įrenginio</translation>
 <translation id="2989523299700148168">Neseniai lankyta</translation>
 <translation id="2992473221983447149">Vaizdų aprašai</translation>
@@ -378,7 +381,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3295530008794733555">Naršykite greičiau. Naudokite mažiau duomenų.</translation>
 <translation id="3297344142967351106">Pagalba balsu</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
-<translation id="3332570638882314953">Aktualesnės informacijos gavimas</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
 <translation id="3341058695485821946">Žr., kiek duomenų sutaupėte</translation>
 <translation id="3341262203274374114">Negalima nebestebėti. Kažkas ne taip.</translation>
@@ -848,7 +850,6 @@ Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyv
 <translation id="6203593061661911168">Atsisiuntimas bus pradėtas prisijungus prie „Wi-Fi“</translation>
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
-<translation id="6212786426849242805">Leiskite „Google“ taip pat atsižvelgti į tam tikrą puslapio tekstą</translation>
 <translation id="6221633008163990886">Atrakinkite, kad galėtumėte eksportuoti slaptažodžius</translation>
 <translation id="6232535412751077445">Įgalinus funkciją „Nestebėti“, užklausa bus įtraukta į naršymo srautą. Poveikis priklauso nuo to, ar svetainė atsako į užklausą ir kaip užklausa interpretuojama.
 
@@ -975,12 +976,10 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6883204995689174413">Bendrinti</translation>
 <translation id="688738109438487280">Pridėti esamus duomenis prie <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Matykite geresnius paryškintų žodžių rezultatus leisdami „Google“ atsižvelgti į tam tikrą puslapio tekstą. Galite bet kada pakeisti <ph name="BEGIN_LINK" />nustatymus<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Atrakinkite, kad galėtumėte kopijuoti slaptažodį</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6900532703269623216">Sustiprinta apsauga</translation>
 <translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
-<translation id="6924672435311694692">Matyti geresnius rezultatus</translation>
 <translation id="6929699136511445623">Įgalinti „Android“ sistemos sinchronizavimą</translation>
 <translation id="6942665639005891494">Numatytąją atsisiuntimo vietą galite bet kada pakeisti naudodami nustatymų meniu parinktį</translation>
 <translation id="694267552845942083">Šiuo metu tinkinate savo sinchronizavimo nustatymus. Jei norite užbaigti sinchronizavimo įjungimo procesą, palieskite mygtuką „Patvirtinti“ netoli ekrano apačios. Eiti į viršų</translation>
@@ -1048,6 +1047,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bendrinti 1 pasirinktą elementą}one{Bendrinti # pasirinktą elementą}few{Bendrinti # pasirinktus elementus}many{Bendrinti # pasirinkto elemento}other{Bendrinti # pasirinktų elementų}}</translation>
 <translation id="7359002509206457351">Prieiga prie mokėjimo metodų</translation>
 <translation id="7375125077091615385">Tipas:</translation>
+<translation id="7376560087009844242">Įtraukus daugiau puslapio teksto, gali būti rodomi geresni rezultatai, naudojant Paiešką palietus. Galite bet kada apsilankyti <ph name="BEGIN_LINK" />„Nustatymų“<ph name="END_LINK" /> skiltyje ir tai pakeisti.</translation>
 <translation id="7386842512861524348">Svetainės ryšys yra saugus, nebent „Chrome“ nurodo kitaip.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL adresas</translation>
@@ -1062,6 +1062,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7444811645081526538">Daugiau kategorijų</translation>
 <translation id="7453467225369441013">Būsite atjungti nuo daugelio svetainių. Nebūsite atjungti nuo „Google“ paskyros.</translation>
 <translation id="7454641608352164238">Nepakanka vietos</translation>
+<translation id="7474822150871987353">Sužinokite apie temas svetainėse neišėję iš puslapio. Pasirinkite bent vieną žodį puslapyje, kurio norite ieškoti.</translation>
 <translation id="7475192538862203634">Jei tai rodoma dažnai, peržiūrėkite šiuos <ph name="BEGIN_LINK" />pasiūlymus<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD kortelė nerasta. Gali trūkti kai kurių failų.</translation>
 <translation id="7479104141328977413">Skirtuko valdymas</translation>
@@ -1218,7 +1219,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="829672787777123339">Prisijungiama prie įrenginio…</translation>
 <translation id="8310344678080805313">Įprasti skirtukai</translation>
 <translation id="831192587911042850">Dabartinė svetainė pridedama prie stebimų svetainių sąrašo.</translation>
-<translation id="8319544457245040955">Sužinokite apie temą neišėję iš puslapio. Pasirinkite bent vieną žodį puslapyje, kurio norite ieškoti. Jei norite redaguoti paiešką, peržiūrėkite rezultatus ir atidarykite juos naujame skirtuke.</translation>
 <translation id="8327155640814342956">Kad būtų teikiamos geriausios naršymo funkcijos, atidarykite ir atnaujinkite „Chrome“</translation>
 <translation id="834313815369870491">Niekada neversti svetainių</translation>
 <translation id="8349013245300336738">Rūšiuoti pagal naudojamų duomenų kiekį</translation>
@@ -1229,6 +1229,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
 <translation id="8410695015584479363">Stebėti kainas</translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
+<translation id="8419244640277402268">Įtraukti</translation>
 <translation id="8424781820952413435">Puslapis išsiųstas. Norėdami jį peržiūrėti, atidarykite „Chrome“ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Peržiūros skirtukas atidarytas iki pusės ekrano</translation>
 <translation id="8428213095426709021">Nustatymai</translation>

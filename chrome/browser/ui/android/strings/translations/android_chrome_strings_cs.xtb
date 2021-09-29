@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Název již existuje</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> tlačítko <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Odesílá soubory cookie a vyhledávací dotazy z adresního řádku a vyhledávacího pole a několik souborů cookie vašemu výchozímu vyhledávači</translation>
+<translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
@@ -243,6 +244,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2518590038762162553">Ve zjednodušeném režimu načítá Chrome stránky rychleji a používá až o 60 procent méně dat. Kvůli optimalizaci navštěvovaných stránek přijímá Chrome váš webový provoz přes Google. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
+<translation id="2527209463677295330">Zahrnutím většího množství textu ze stránky můžete získat lepší výsledky</translation>
 <translation id="2527497042232966453">Přepnuto na anonymní karty</translation>
 <translation id="2527779675047087889">Skrýt obsah schránky</translation>
 <translation id="2532336938189706096">Webové zobrazení</translation>
@@ -319,6 +321,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2979448359891869301">Snímek obrazovky nelze roztáhnout. Zkuste to znovu, až telefon nebude zaneprázdněný.</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2981364137500752533">Můžete mít až 5 oken.</translation>
+<translation id="2984978667043170458">Při vyhledávání na Googlu zahrnovat okolní text</translation>
 <translation id="2987620471460279764">Text sdílený z jiného zařízení</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2992473221983447149">Popisy obrázků</translation>
@@ -378,7 +381,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3295530008794733555">Prohlížejte si internet rychleji. Využívejte méně dat.</translation>
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
-<translation id="3332570638882314953">Dostávejte relevantnější informace</translation>
 <translation id="3334729583274622784">Změnit příponu souboru?</translation>
 <translation id="3341058695485821946">Podívejte se, kolik dat jste ušetřili</translation>
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
@@ -848,7 +850,6 @@ Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou do
 <translation id="6203593061661911168">Stahování bude zahájeno při připojení k Wi-Fi</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
-<translation id="6212786426849242805">Povolit Googlu přihlížet také k textu na stránce</translation>
 <translation id="6221633008163990886">Chcete-li exportovat hesla, odemkněte zařízení</translation>
 <translation id="6232535412751077445">Pokud povolíte požadavek Do Not Track, bude připojován k datům provozu prohlížení. Účinek tohoto požadavku závisí na tom, zda na něj budou webové stránky reagovat a jak jej budou interpretovat.
 
@@ -975,12 +976,10 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6882836635272038266">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné.</translation>
 <translation id="6883204995689174413">Sdílení</translation>
 <translation id="688738109438487280">Přidat existující data do účtu <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Povolte Googlu brát v úvahu určitý text na stránce, aby se vám mohly zobrazovat výsledky pro slova, která zvýrazníte. <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> můžete kdykoli změnit.</translation>
 <translation id="6891726759199484455">Chcete-li zkopírovat heslo, odemkněte zařízení</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6900532703269623216">Vylepšená ochrana</translation>
 <translation id="6903907808598579934">Zapnout synchronizaci</translation>
-<translation id="6924672435311694692">Zobrazit lepší výsledky</translation>
 <translation id="6929699136511445623">Zapnout synchronizaci systému Android</translation>
 <translation id="6942665639005891494">Výchozí umístění pro stažené soubory můžete kdykoliv změnit pomocí možnosti v nabídce Nastavení.</translation>
 <translation id="694267552845942083">Momentálně upravujete nastavení synchronizace. Zapnutí synchronizace dokončíte klepnutím na tlačítko Potvrdit, které se nachází u dolního okraje obrazovky. Přejít nahoru</translation>
@@ -1048,6 +1047,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Sdílet 1 vybranou položku}few{Sdílet # vybrané položky}many{Sdílet # vybrané položky}other{Sdílet # vybraných položek}}</translation>
 <translation id="7359002509206457351">Poskytnout přístup k platební metodám</translation>
 <translation id="7375125077091615385">Typ:</translation>
+<translation id="7376560087009844242">Zahrnutím většího množství textu ze stránky můžete pomocí Vyhledání klepnutím získat lepší výsledky. Tuto možnost můžete v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> kdykoliv změnit.</translation>
 <translation id="7386842512861524348">Pokud vás Chrome neinformuje o opaku, je připojení k webu bezpečné.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
@@ -1062,6 +1062,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7444811645081526538">Další kategorie</translation>
 <translation id="7453467225369441013">Odhlásí vás z většiny webů. Z účtu Google odhlášeni nebudete.</translation>
 <translation id="7454641608352164238">Nedostatek místa</translation>
+<translation id="7474822150871987353">Vyhledávejte informace o tématech zmíněných na stránce, aniž byste stránku museli opustit. Slova na stránce můžete vyhledat jednoduše tím, že je vyberete.</translation>
 <translation id="7475192538862203634">Pokud se vám tato stránka zobrazuje často, vyzkoušejte tyto <ph name="BEGIN_LINK" />návrhy<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD karta nebyla nalezena. Některé vaše soubory mohou chybět.</translation>
 <translation id="7479104141328977413">Správa karet</translation>
@@ -1218,7 +1219,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="829672787777123339">Připojování k vašemu zařízení…</translation>
 <translation id="8310344678080805313">Standardní karty</translation>
 <translation id="831192587911042850">Tento web bude přidán na seznam sledovaných.</translation>
-<translation id="8319544457245040955">Vyhledávejte informace o tématu, aniž byste stránku museli opustit. Slova na stránce můžete vyhledat jednoduše tím, že je vyberete. Pokud vyhledávání chcete upravit, projděte si výsledky a otevřete je na nové kartě.</translation>
 <translation id="8327155640814342956">Chcete-li mít při procházení nejlepší prostředí a funkce, aktualizujte Chrome</translation>
 <translation id="834313815369870491">Weby nikdy nepřekládat</translation>
 <translation id="8349013245300336738">Seřadit podle množství využitých dat</translation>
@@ -1229,6 +1229,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8410695015584479363">Sledovat ceny</translation>
 <translation id="8413126021676339697">Zobrazit celou historii</translation>
+<translation id="8419244640277402268">Zahrnout</translation>
 <translation id="8424781820952413435">Stránka byla odeslána. Zobrazte ji v Chromu v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Karta náhledu je otevřená na půlce</translation>
 <translation id="8428213095426709021">Nastavení</translation>

@@ -378,7 +378,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
-<translation id="3332570638882314953">Nhận thêm thông tin liên quan</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341058695485821946">Xem lượng dữ liệu bạn đã tiết kiệm được</translation>
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
@@ -848,7 +847,6 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="6203593061661911168">Quá trình tải xuống sẽ bắt đầu khi có Wi-Fi</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>
-<translation id="6212786426849242805">Bạn cũng có thể cho phép Google xem xét một số văn bản của trang</translation>
 <translation id="6221633008163990886">Mở khóa để xuất mật khẩu của bạn</translation>
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 
@@ -975,12 +973,10 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="6883204995689174413">Chia sẻ</translation>
 <translation id="688738109438487280">Thêm dữ liệu hiện có vào <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Xem kết quả phù hợp hơn cho các từ bạn đánh dấu bằng cách cho phép Google xem xét một số văn bản của trang. Bạn có thể thay đổi chế độ <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> bất cứ lúc nào.</translation>
 <translation id="6891726759199484455">Mở khóa để sao chép mật khẩu của bạn</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
-<translation id="6924672435311694692">Xem kết quả phù hợp hơn</translation>
 <translation id="6929699136511445623">Bật tính năng đồng bộ hóa hệ thống Android</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="694267552845942083">Bạn hiện đang tùy chỉnh các chế độ cài đặt Đồng bộ hóa của mình. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
@@ -1218,7 +1214,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>
 <translation id="8310344678080805313">Thẻ chuẩn</translation>
 <translation id="831192587911042850">Thêm trang web hiện tại vào danh sách các trang web bạn đang theo dõi.</translation>
-<translation id="8319544457245040955">Tìm hiểu về một chủ đề mà không cần rời khỏi trang. Bạn có thể tìm kiếm bằng cách chọn một hoặc nhiều từ trên trang. Để chỉnh sửa nội dung tìm kiếm của bạn, hãy xem và mở kết quả đó trong một thẻ mới.</translation>
 <translation id="8327155640814342956">Để có trải nghiệm duyệt web tuyệt vời nhất, hãy mở để cập nhật Chrome</translation>
 <translation id="834313815369870491">Không bao giờ dịch các trang web</translation>
 <translation id="8349013245300336738">Sắp xếp theo lượng dữ liệu đã dùng</translation>

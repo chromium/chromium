@@ -378,7 +378,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3295530008794733555">Navega más rápido. Usa menos datos.</translation>
 <translation id="3297344142967351106">Asistente de voz</translation>
 <translation id="3303414029551471755">¿Quieres continuar para descargar el contenido?</translation>
-<translation id="3332570638882314953">Obtén información más relevante</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
 <translation id="3341058695485821946">Consulta la cantidad de datos que has ahorrado</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se ha producido un error.</translation>
@@ -848,7 +847,6 @@ Las pruebas de Privacy Sandbox aún se encuentran en desarrollo y solo están di
 <translation id="6203593061661911168">La descarga comenzará cuando haya conexión Wi‑Fi.</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando vista previa de esta página</translation>
-<translation id="6212786426849242805">Permite que Google también considere parte del texto de la página</translation>
 <translation id="6221633008163990886">Desbloquea el dispositivo para exportar las contraseñas</translation>
 <translation id="6232535412751077445">Al habilitar la opción No hacer seguimiento, se incluirá una solicitud con el tráfico de navegación. El efecto dependerá de si algún sitio web responde a la solicitud y de cómo se interpreta.
 
@@ -975,12 +973,10 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
 <translation id="6883204995689174413">Compartir</translation>
 <translation id="688738109438487280">Añade los datos actuales a <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Obtén mejores resultados para las palabras que destaques permitiendo que Google tenga en cuenta parte del texto de la página. Puedes cambiar los <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> en cualquier momento.</translation>
 <translation id="6891726759199484455">Desbloquea la pantalla para copiar tu contraseña</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
-<translation id="6924672435311694692">Ver mejores resultados</translation>
 <translation id="6929699136511445623">Habilitar sincronización del sistema Android</translation>
 <translation id="6942665639005891494">Cambia la ubicación predeterminada de las descargas en cualquier momento con la opción del menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando tus ajustes de sincronización. Para terminar de activar la sincronización, toca el botón Confirmar, que se encuentra casi al final de la pantalla. Desplazarse hacia arriba</translation>
@@ -1218,7 +1214,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="829672787777123339">Conectando con tu dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
 <translation id="831192587911042850">Añade el sitio web actual a la lista de sitios que sigues.</translation>
-<translation id="8319544457245040955">Aprende sobre un tema sin salir de la página. Selecciona una o más palabras de la página para buscarlas. Para editar tu búsqueda, mira los resultados y ábrelos en una pestaña nueva.</translation>
 <translation id="8327155640814342956">Para disfrutar de la mejor experiencia de navegación posible, abre Chrome para actualizarlo.</translation>
 <translation id="834313815369870491">No traducir sitios nunca</translation>
 <translation id="8349013245300336738">Ordenar por cantidad de datos usados</translation>

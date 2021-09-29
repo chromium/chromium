@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Esse nome já existe</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> botão <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para seu mecanismo de pesquisa padrão.</translation>
+<translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
@@ -243,6 +244,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2518590038762162553">Com o Modo Lite, as páginas são carregadas mais rapidamente no Chrome, e há uma economia de dados de até 60%. Para otimizar as páginas visitadas, o Chrome envia seu tráfego da Web para o Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envia URLs das páginas que você visita para o Google</translation>
+<translation id="2527209463677295330">Ao incluir mais texto de uma página, você poderá ver resultados melhores</translation>
 <translation id="2527497042232966453">Guias anônimas selecionadas</translation>
 <translation id="2527779675047087889">Ocultar conteúdo da área de transferência</translation>
 <translation id="2532336938189706096">Visualização na Web</translation>
@@ -319,6 +321,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2979448359891869301">Não é possível alongar a captura de tela. Tente novamente quando o smartphone não estiver usando muitos recursos.</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
 <translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
+<translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
 <translation id="2987620471460279764">Texto compartilhado de outro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2992473221983447149">Descrições de imagens</translation>
@@ -378,7 +381,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3295530008794733555">Navegue com mais rapidez. Use menos dados.</translation>
 <translation id="3297344142967351106">Assistente por voz</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
-<translation id="3332570638882314953">Veja informações mais relevantes</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
 <translation id="3341058695485821946">Veja o volume de dados que você economizou</translation>
 <translation id="3341262203274374114">Não foi possível parar de seguir. Algo deu errado.</translation>
@@ -849,7 +851,6 @@ Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão dispon
 <translation id="6203593061661911168">O download será iniciado quando houver uma conexão Wi-Fi</translation>
 <translation id="6210748933810148297">Não é <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizando esta página</translation>
-<translation id="6212786426849242805">Permitir que o Google considere também parte do texto da página</translation>
 <translation id="6221633008163990886">Desbloqueie para exportar suas senhas</translation>
 <translation id="6232535412751077445">Ao ativar o recurso "Não rastrear" uma solicitação é incluída no tráfego de navegação. O resultado depende da resposta de um site à solicitação e de como a solicitação é interpretada.
 
@@ -976,12 +977,10 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6882836635272038266">Proteção padrão contra sites, downloads e extensões perigosos.</translation>
 <translation id="6883204995689174413">Compartilhar</translation>
 <translation id="688738109438487280">Adicionar os dados disponíveis à conta <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Deixe que o Google considere parte do texto da página para encontrar resultados melhores para as palavras destacadas. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Desbloqueie para copiar sua senha</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Proteção reforçada</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
-<translation id="6924672435311694692">Ver resultados melhores</translation>
 <translation id="6929699136511445623">Ativar o sistema de sincronização do Android</translation>
 <translation id="6942665639005891494">Altere o local padrão de download a qualquer momento usando a opção do menu "Configurações"</translation>
 <translation id="694267552845942083">No momento, você está personalizando suas configurações de sincronização. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
@@ -1049,6 +1048,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartilhar 1 item selecionado}one{Compartilhar # item selecionado}other{Compartilhar # itens selecionados}}</translation>
 <translation id="7359002509206457351">Acessar formas de pagamento</translation>
 <translation id="7375125077091615385">Tipo:</translation>
+<translation id="7376560087009844242">Ao incluir mais texto de uma página, você poderá ver resultados melhores ao usar a Pesquisa por toque. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> quando quiser.</translation>
 <translation id="7386842512861524348">A conexão do site é segura, a menos que o Chrome informe o contrário.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1063,6 +1063,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7444811645081526538">Mais categorias</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
+<translation id="7474822150871987353">Saiba mais sobre assuntos específicos em sites sem sair da página. Selecione uma ou mais palavras na página para fazer uma pesquisa.</translation>
 <translation id="7475192538862203634">Se estiver vendo isso com frequência, tente estas <ph name="BEGIN_LINK" />sugestões<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Cartão SD não encontrado. Alguns arquivos podem estar faltando.</translation>
 <translation id="7479104141328977413">Gerenciamento de guias</translation>
@@ -1219,7 +1220,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="829672787777123339">Conectando ao seu dispositivo…</translation>
 <translation id="8310344678080805313">Guias padrão</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
-<translation id="8319544457245040955">Saiba mais sobre um tema sem sair da página. Selecione uma ou mais palavras na página para fazer uma pesquisa. Para editar sua pesquisa, abra os resultados em uma nova guia.</translation>
 <translation id="8327155640814342956">Para ter a melhor experiência de navegação, abra para atualizar o Chrome</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>
 <translation id="8349013245300336738">Classificar por quantidade de dados usados</translation>
@@ -1230,6 +1230,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8410695015584479363">Monitorar preços</translation>
 <translation id="8413126021676339697">Mostrar histórico completo</translation>
+<translation id="8419244640277402268">Incluir</translation>
 <translation id="8424781820952413435">Página enviada. Para vê-la, abra o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A guia "Visualizar" está parcialmente aberta</translation>
 <translation id="8428213095426709021">Configurações</translation>

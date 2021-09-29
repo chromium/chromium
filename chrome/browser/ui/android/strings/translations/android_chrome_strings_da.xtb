@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Navnet findes allerede</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knap</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
+<translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}one{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
@@ -243,6 +244,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518590038762162553">Chrome indlæser sider hurtigere og bruger op til 60 procent mindre data i Lite-tilstand. Chrome sender din webtrafik til Google for at optimere de sider, du besøger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Sender webadresser på de sider, du besøger, til Google</translation>
+<translation id="2527209463677295330">Medtag mere af sideteksten for at se bedre resultater</translation>
 <translation id="2527497042232966453">Der er skiftet til inkognitofaner</translation>
 <translation id="2527779675047087889">Skjul indhold i udklipsholderen</translation>
 <translation id="2532336938189706096">Webvisning</translation>
@@ -319,6 +321,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2979448359891869301">Screenshottet kan ikke udvides. Prøv igen, når din telefon ikke er optaget.</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2981364137500752533">Du kan have op til 5 vinduer.</translation>
+<translation id="2984978667043170458">Medtag omgivende tekst i Google-søgninger</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
 <translation id="2992473221983447149">Billedbeskrivelser</translation>
@@ -378,7 +381,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3295530008794733555">Få hurtigere browsing. Brug mindre data.</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
-<translation id="3332570638882314953">Få mere relevant info</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
 <translation id="3341058695485821946">Se, hvor meget data du har sparet</translation>
 <translation id="3341262203274374114">"Følg ikke" kan ikke udføres. Der opstod en fejl.</translation>
@@ -848,7 +850,6 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 <translation id="6203593061661911168">Downloaden starter, så snart der er Wi-Fi-forbindelse</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsvisning af denne side</translation>
-<translation id="6212786426849242805">Lad også Google vurdere noget af teksten på siden</translation>
 <translation id="6221633008163990886">Lås op for at eksportere dine adgangskoder</translation>
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
 
@@ -975,12 +976,10 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6883204995689174413">Del</translation>
 <translation id="688738109438487280">Føj eksisterende data til <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Få bedre resultater til de ord, du fremhæver, ved at lade Google vurdere noget af teksten på siden. Du kan altid ændre dette under <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Lås op for at kopiere din adgangskode</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
-<translation id="6924672435311694692">Se bedre resultater</translation>
 <translation id="6929699136511445623">Aktivér synkronisering af Android-system</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
@@ -1048,6 +1047,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Del 1 valgt element}one{Del # valgt element}other{Del # valgte elementer}}</translation>
 <translation id="7359002509206457351">Adgang til betalingsmetoder</translation>
 <translation id="7375125077091615385">Type:</translation>
+<translation id="7376560087009844242">Medtag mere af sideteksten for at se bedre resultater, når du bruger Tryk for at søge. Du kan altid gå til <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" /> for at ændre dette.</translation>
 <translation id="7386842512861524348">Websitets forbindelse er sikker, medmindre Chrome angiver andet.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Webadresse</translation>
@@ -1062,6 +1062,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7444811645081526538">Flere kategorier</translation>
 <translation id="7453467225369441013">Logger dig ud af de fleste websites. Du bliver ikke logget ud af din Google-konto.</translation>
 <translation id="7454641608352164238">Der er ikke nok plads</translation>
+<translation id="7474822150871987353">Læs om emner på websites uden at forlade siden. Vælg ét eller flere ord på siden for at søge efter dem.</translation>
 <translation id="7475192538862203634">Hvis du ser dette jævnligt, kan du prøve disse <ph name="BEGIN_LINK" />forslag<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kortet blev fundet. Nogle af dine filer mangler muligvis.</translation>
 <translation id="7479104141328977413">Faneadministration</translation>
@@ -1218,7 +1219,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="829672787777123339">Opretter forbindelse til din enhed…</translation>
 <translation id="8310344678080805313">Standardfaner</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
-<translation id="8319544457245040955">Få oplysninger om et emne uden at forlade siden. Vælg ét eller flere ord på siden for at søge efter dem. Du kan redigere din søgning ved at se på resultaterne og åbne dem på en ny fane.</translation>
 <translation id="8327155640814342956">Opdater Chrome for at få den bedste browseroplevelse</translation>
 <translation id="834313815369870491">Oversæt aldrig websites</translation>
 <translation id="8349013245300336738">Sortér efter mængden af data, der er brugt</translation>
@@ -1229,6 +1229,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8410695015584479363">Følg prisudvikling</translation>
 <translation id="8413126021676339697">Vis hele historikken</translation>
+<translation id="8419244640277402268">Medtag</translation>
 <translation id="8424781820952413435">Siden er sendt. Åbn Chrome på din <ph name="DEVICE_TYPE" /> for at se den</translation>
 <translation id="8427875596167638501">Fanen forhåndsvisning er åbnet halvt</translation>
 <translation id="8428213095426709021">Indstillinger</translation>

@@ -378,7 +378,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3295530008794733555">Browsing lebih cepat. Gunakan lebih sedikit kuota.</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
-<translation id="3332570638882314953">Dapatkan info relevan lainnya</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341058695485821946">Lihat banyaknya kuota yang Anda hemat</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
@@ -848,7 +847,6 @@ Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wi
 <translation id="6203593061661911168">Download akan dimulai saat terhubung ke Wi-Fi</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Melihat pratinjau halaman ini</translation>
-<translation id="6212786426849242805">Izinkan Google mempertimbangkan beberapa teks halaman juga</translation>
 <translation id="6221633008163990886">Buka kunci untuk mengekspor sandi</translation>
 <translation id="6232535412751077445">Jika “Jangan Lacak” diaktifkan, permintaan akan disertakan bersama traffic penjelajahan Anda. Dampaknya tergantung pada apakah situs web menanggapi permintaan itu, dan bagaimana permintaan itu diinterpretasikan.
 
@@ -975,12 +973,10 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
 <translation id="6883204995689174413">Bagikan</translation>
 <translation id="688738109438487280">Menambahkan data yang sudah ada ke <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Lihat hasil yang lebih baik untuk kata yang Anda tandai dengan mengizinkan Google mempertimbangkan beberapa teks halaman. Anda dapat mengubah <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin sandi Anda</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
-<translation id="6924672435311694692">Lihat hasil yang lebih baik</translation>
 <translation id="6929699136511445623">Aktifkan sinkronisasi sistem Android</translation>
 <translation id="6942665639005891494">Ubah lokasi download default kapan saja menggunakan opsi menu Setelan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan setelan Sinkronisasi. Untuk menyelesaikan pengaktifan sinkronisasi, ketuk tombol Konfirmasi di dekat bagian bawah layar. Kembali ke atas</translation>
@@ -1218,7 +1214,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="829672787777123339">Menghubungkan ke perangkat …</translation>
 <translation id="8310344678080805313">Tab standar</translation>
 <translation id="831192587911042850">Menambahkan situs saat ini ke daftar situs yang Anda ikuti.</translation>
-<translation id="8319544457245040955">Pelajari topik tanpa meninggalkan halaman. Pilih satu atau beberapa kata di halaman untuk menelusurinya. Untuk mengedit penelusuran, lihat hasilnya dan buka di tab baru.</translation>
 <translation id="8327155640814342956">Untuk mendapatkan pengalaman penjelajahan terbaik, buka untuk mengupdate Chrome</translation>
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
 <translation id="8349013245300336738">Urutkan menurut jumlah kuota yang digunakan</translation>

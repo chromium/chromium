@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Nimi on juba olemas</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – nupp <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Saadab teie vaikeotsingumootorile mõned küpsisefailid ja otsingud teie aadressiribalt ning otsingukastist</translation>
+<translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fail}other{# faili}}</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
@@ -243,6 +244,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2518590038762162553">Lihtsustatud režiimis laadib Chrome lehti kiiremini ja kasutab kuni 60% vähem andmemahtu. Külastatud lehtede optimeerimiseks saadab Chrome teie veebiliikluse Google’ile. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Saadab Google'ile teie külastatud lehtede URL-id</translation>
+<translation id="2527209463677295330">Kaasates rohkem lehe teksti võite näha paremaid tulemusi</translation>
 <translation id="2527497042232966453">Inkognito vahelehed on aktiveeritud</translation>
 <translation id="2527779675047087889">Peida lõikelaua sisu</translation>
 <translation id="2532336938189706096">Veebi kuva</translation>
@@ -319,6 +321,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2979448359891869301">Ekraanipilti ei saa laiendada. Proovige uuesti, kui telefon pole hõivatud.</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
 <translation id="2981364137500752533">Teil võib olla kuni viis akent.</translation>
+<translation id="2984978667043170458">Kaasa ümbritsev tekst Google'i otsingutesse</translation>
 <translation id="2987620471460279764">Muust seadmest jagatud tekst</translation>
 <translation id="2989523299700148168">Hiljuti külastatud</translation>
 <translation id="2992473221983447149">Piltide kirjeldused</translation>
@@ -378,7 +381,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3295530008794733555">Sirvige kiiremini. Kasutage vähem andmemahtu.</translation>
 <translation id="3297344142967351106">Häälabi</translation>
 <translation id="3303414029551471755">Kas soovite jätkata sisu allalaadimist?</translation>
-<translation id="3332570638882314953">Asjakohasema teabe hankimine</translation>
 <translation id="3334729583274622784">Kas muuta faililaiendit?</translation>
 <translation id="3341058695485821946">Vaadake, kui palju andmemahtu olete säästnud</translation>
 <translation id="3341262203274374114">Ei saanud jälgimist lõpetada. Midagi läks valesti.</translation>
@@ -848,7 +850,6 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="6203593061661911168">Allalaadimine algab, kui loodud on WiFi-ühendus</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
-<translation id="6212786426849242805">Google võtab arvesse ka osa lehe tekstist</translation>
 <translation id="6221633008163990886">Paroolide eksportimiseks avage seade</translation>
 <translation id="6232535412751077445">Kui lubate funktsiooni „Ära jälgi”, kaasatakse see taotlus teie sirvimisliiklusesse. Mõju oleneb sellest, kas veebisait reageerib taotlusele ja kuidas seda tõlgendatakse.
 
@@ -975,12 +976,10 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6882836635272038266">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu.</translation>
 <translation id="6883204995689174413">Jaga</translation>
 <translation id="688738109438487280">Lisab olemasolevad andmed kontole <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Hankige paremaid tulemusi sõnade kohta, mille esile tõstsite, lubades Google'il võtta arvesse lehe teatud teksti. Saate oma <ph name="BEGIN_LINK" />seadeid<ph name="END_LINK" /> alati muuta.</translation>
 <translation id="6891726759199484455">Avage oma parooli kopeerimiseks</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6900532703269623216">Parem kaitse</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
-<translation id="6924672435311694692">Paremate tulemuste kuvamine</translation>
 <translation id="6929699136511445623">Luba Androidi süsteemi sünkroonimine</translation>
 <translation id="6942665639005891494">Allalaadimise vaikeasukohta saab menüü Seaded valikuga alati muuta</translation>
 <translation id="694267552845942083">Kohandate praegu oma sünkroonimisseadeid. Sünkroonimise sisselülitamiseks puudutage ekraani alaosas nuppu Kinnita. Navigeeri üles</translation>
@@ -1048,6 +1047,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Jaga 1 valitud üksust}other{Jaga # valitud üksust}}</translation>
 <translation id="7359002509206457351">Makseviisidele juurdepääsemine</translation>
 <translation id="7375125077091615385">Tüüp:</translation>
+<translation id="7376560087009844242">Kaasates rohkem lehe teksti võite näha paremaid tulemusi, kui kasutate otsimiseks puudutamist. Selle muutmiseks võite alati avada <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
 <translation id="7386842512861524348">Teie ühendus saidiga on turvaline, kui Chrome teisiti ei väida.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7444811645081526538">Rohkem kategooriaid</translation>
 <translation id="7453467225369441013">Logib teid enamikult saitidelt välja. Google'i kontolt teid välja ei logita.</translation>
 <translation id="7454641608352164238">Pole piisavalt ruumi</translation>
+<translation id="7474822150871987353">Vaadake lisateavet veebisaitide teemade kohta ilma lehelt lahkumata. Valige lehel üks või mitu sõna, et neid otsida.</translation>
 <translation id="7475192538862203634">Kui näete seda sageli, proovige neid <ph name="BEGIN_LINK" />soovitusi<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kaarti ei leitud. Mõned failid võivad puududa.</translation>
 <translation id="7479104141328977413">Vahelehtede haldamine</translation>
@@ -1218,7 +1219,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="829672787777123339">Teie seadmega ühendamine …</translation>
 <translation id="8310344678080805313">Tavapärased vahekaardid</translation>
 <translation id="831192587911042850">Lisab praeguse veebisaidi teie jälgitavate veebisaitide loendisse.</translation>
-<translation id="8319544457245040955">Vaadake teema kohta teavet lehelt lahkumata. Valige lehel üks või mitu sõna, et neid otsida. Oma otsingu muutmiseks vaadake tulemusi ja avage need uuel vahelehel.</translation>
 <translation id="8327155640814342956">Parima sirvimiskogemuse tagamiseks avage Chrome, et seda värskendada</translation>
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8349013245300336738">Sordi kasutatud andmemahu alusel</translation>
@@ -1229,6 +1229,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8410695015584479363">Jälgi hindu</translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
+<translation id="8419244640277402268">Kaasa</translation>
 <translation id="8424781820952413435">Leht saadetud. Selle vaatamiseks avage Chrome oma <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Eelvaate vaheleht on pooleldi avatud</translation>
 <translation id="8428213095426709021">Seaded</translation>

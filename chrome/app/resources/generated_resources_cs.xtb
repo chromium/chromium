@@ -2944,6 +2944,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4066207411788646768">Chcete-li zobrazit dostupné tiskárny v síti, zkontrolujte připojení</translation>
 <translation id="4068776064906523561">Uložené otisky prstu</translation>
 <translation id="407173827865827707">Při kliknutí</translation>
+<translation id="4072701974556190758">Heslo se uloží do vašeho účtu Google (<ph name="ACCOUNT" />). Nebudete si ho muset pamatovat.</translation>
 <translation id="4074900173531346617">Certifikát autora podpisu e-mailu</translation>
 <translation id="407520071244661467">Měřítko</translation>
 <translation id="407543464472585404">Profil uživatele <ph name="NAME" /> je propojen s e-mailem <ph name="EMAIL" /></translation>

@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Nazwa już istnieje</translation>
 <translation id="1987739130650180037">Przycisk <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
+<translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
@@ -243,6 +244,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2518590038762162553">W wersji uproszczonej Chrome szybciej ładuje strony, używając nawet o 60% mniej danych. Aby optymalizować strony, które odwiedzasz, Chrome przesyła informacje o historii przeglądania do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Adresy URL odwiedzanych stron będą wysyłane do Google</translation>
+<translation id="2527209463677295330">Jeśli dołączysz więcej tekstu ze strony, możesz zobaczyć lepsze wyniki</translation>
 <translation id="2527497042232966453">Przełączono na karty incognito</translation>
 <translation id="2527779675047087889">Ukryj zawartość schowka</translation>
 <translation id="2532336938189706096">Widok sieci</translation>
@@ -319,6 +321,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2979448359891869301">Nie można rozszerzyć zrzutu ekranu. Spróbuj ponownie, gdy Twój telefon nie będzie zajęty.</translation>
 <translation id="2979639724566107830">Otwórz w nowym oknie</translation>
 <translation id="2981364137500752533">Możesz mieć maksymalnie 5 okien.</translation>
+<translation id="2984978667043170458">Podczas wyszukiwania słów w Google uwzględniaj otaczający je tekst</translation>
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
 <translation id="2992473221983447149">Opisy obrazów</translation>
@@ -378,7 +381,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3295530008794733555">Szybsze przeglądanie. Mniejsze zużycie danych.</translation>
 <translation id="3297344142967351106">Pomoc głosowa</translation>
 <translation id="3303414029551471755">Przejść do pobrania treści?</translation>
-<translation id="3332570638882314953">Otrzymuj więcej powiązanych informacji</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
 <translation id="3341058695485821946">Sprawdź ilość zaoszczędzonych danych</translation>
 <translation id="3341262203274374114">Nie udało się przestać obserwować. Coś poszło nie tak.</translation>
@@ -848,7 +850,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbn
 <translation id="6203593061661911168">Pobieranie rozpocznie się po połączeniu z siecią Wi-Fi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
-<translation id="6212786426849242805">Niech Google bierze też pod uwagę fragmenty tekstu na stronie</translation>
 <translation id="6221633008163990886">Odblokuj, by wyeksportować hasła</translation>
 <translation id="6232535412751077445">Włączenie opcji „Bez śledzenia” oznacza, że podczas przeglądania będzie wysyłane żądanie. Jego wynik zależy od tego, czy strona na nie odpowie oraz jak zostanie ono zinterpretowane.
 
@@ -975,12 +976,10 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="6883204995689174413">Udostępnij</translation>
 <translation id="688738109438487280">Dodaj istniejące dane do konta <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Aby otrzymywać dokładniejsze wyniki dotyczące podświetlonych słów, pozwól Google na sprawdzanie fragmentów tekstu na stronie. Zawsze możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Odblokuj, by skopiować hasło</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6900532703269623216">Silniejsza ochrona</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
-<translation id="6924672435311694692">Lepsze wyniki wyszukiwania</translation>
 <translation id="6929699136511445623">Włącz synchronizację systemu Android</translation>
 <translation id="6942665639005891494">W dowolnej chwili w Ustawieniach możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="694267552845942083">W tej chwili dostosowujesz ustawienia synchronizacji. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
@@ -1048,6 +1047,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Udostępnij 1 wybrany element}few{Udostępnij # wybrane elementy}many{Udostępnij # wybranych elementów}other{Udostępnij # wybranego elementu}}</translation>
 <translation id="7359002509206457351">Dostęp do form płatności</translation>
 <translation id="7375125077091615385">Typ:</translation>
+<translation id="7376560087009844242">Jeśli podczas korzystania z funkcji Dotknij, by wyszukać dołączysz więcej tekstu ze strony, możesz zobaczyć lepsze wyniki. Zawsze możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="7386842512861524348">Połączenie z witryną jest bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Adres URL</translation>
@@ -1062,6 +1062,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7444811645081526538">Więcej kategorii</translation>
 <translation id="7453467225369441013">Wylogowuje z większości stron internetowych. Nie wyloguje Cię z konta Google.</translation>
 <translation id="7454641608352164238">Za mało miejsca</translation>
+<translation id="7474822150871987353">Poznaj tematy omawiane w witrynach, nie opuszczając strony. Zaznacz na stronie co najmniej 1 słowo, aby je wyszukać.</translation>
 <translation id="7475192538862203634">Jeśli często widzisz ten komunikat, przeczytaj te <ph name="BEGIN_LINK" />wskazówki<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Nie znaleziono karty SD. Może brakować niektórych Twoich plików.</translation>
 <translation id="7479104141328977413">Zarządzanie kartami</translation>
@@ -1218,7 +1219,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="829672787777123339">Łączę z Twoim urządzeniem…</translation>
 <translation id="8310344678080805313">Karty standardowe</translation>
 <translation id="831192587911042850">Dodaje otwartą witrynę do listy obserwowanych.</translation>
-<translation id="8319544457245040955">Poznaj temat, nie opuszczając strony. Zaznacz na stronie co najmniej 1 słowo, aby je wyszukać. Aby edytować wyszukiwanie, otwórz wyświetlone wyniki w nowej karcie.</translation>
 <translation id="8327155640814342956">Aby komfortowo przeglądać internet, otwórz tę stronę i zaktualizuj Chrome</translation>
 <translation id="834313815369870491">Nigdy nie tłumacz stron</translation>
 <translation id="8349013245300336738">Sortuj według ilości wykorzystanych danych</translation>
@@ -1229,6 +1229,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8410695015584479363">Monitoruj ceny</translation>
 <translation id="8413126021676339697">Wyświetl całą historię</translation>
+<translation id="8419244640277402268">Uwzględniaj</translation>
 <translation id="8424781820952413435">Strona została wysłana. Aby ją zobaczyć, otwórz Chrome na swoim <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Karta podglądu jest otwarta w połowie</translation>
 <translation id="8428213095426709021">Ustawienia</translation>

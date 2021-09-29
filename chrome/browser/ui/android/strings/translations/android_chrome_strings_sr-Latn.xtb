@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Naziv već postoji</translation>
 <translation id="1987739130650180037">Dugme <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Podrazumevanom pretraživaču šalje neke kolačiće i pretrage iz trake za adresu i okvira za pretragu</translation>
+<translation id="200114059308480249">Želite da uvrstite okolni tekst u Google pretrage?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="2021896219286479412">Kontrole sajta na celom ekranu</translation>
 <translation id="2038563949887743358">Uključi zahtevanje verzije sajta za računare</translation>
@@ -243,6 +244,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2518590038762162553">U Lite režimu Chrome učitava stranice brže i koristi i do 60 procenata manje podataka. Da bi optimizovao stranice koje posećujete, Chrome šalje Google-u vaš saobraćaj na vebu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">URL-ovi stranica koje posećujete se šalju Google-u</translation>
+<translation id="2527209463677295330">Ako uvrstite veći deo teksta stranice, možete da dobijete bolje rezultate</translation>
 <translation id="2527497042232966453">Prebacili ste na kartice bez arhiviranja</translation>
 <translation id="2527779675047087889">Sakrij sadržaj privremene memorije</translation>
 <translation id="2532336938189706096">Veb-prikaz</translation>
@@ -319,6 +321,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2979448359891869301">Ne možete da produžite snimak ekrana. Probajte ponovo kada telefon nije zauzet.</translation>
 <translation id="2979639724566107830">Otvorite u novom prozoru</translation>
 <translation id="2981364137500752533">Možete da imate najviše 5 prozora.</translation>
+<translation id="2984978667043170458">Uvrsti okolni tekst u Google pretrage</translation>
 <translation id="2987620471460279764">Tekst koji se deli sa drugog uređaja</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
 <translation id="2992473221983447149">Opisi slika</translation>
@@ -378,7 +381,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3295530008794733555">Pregledajte brže. Koristite manje podataka.</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li da nastavite sa preuzimanjem sadržaja?</translation>
-<translation id="3332570638882314953">Dobijajte relevantnije informacije</translation>
 <translation id="3334729583274622784">Želite da promenite ekstenziju datoteke?</translation>
 <translation id="3341058695485821946">Pogledajte koliko ste podataka uštedeli</translation>
 <translation id="3341262203274374114">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
@@ -848,7 +850,6 @@ Aktivno programiranje proba Zaštićenog okruženja privatnosti je još uvek u 
 <translation id="6203593061661911168">Preuzimanje će početi preko WiFi mreže</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregled ove stranice</translation>
-<translation id="6212786426849242805">Dozvolite da Google uzme u obzir i deo teksta sa stranice</translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli lozinke</translation>
 <translation id="6232535412751077445">Ako omogućite funkciju „Ne prati“, zahtev će biti obuhvaćen saobraćajem pregledanja. Posledica te radnje zavisi od toga da li veb-sajt odgovara na zahtev i kako se zahtev tumači.
 
@@ -975,12 +976,10 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6882836635272038266">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni.</translation>
 <translation id="6883204995689174413">Delite</translation>
 <translation id="688738109438487280">Dodavanje postojećih podataka na <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Dobijajte relevantnije rezultate za reči koje istaknete tako što ćete dozvolite da Google razmatra deo teksta sa stranice. Uvek možete da promenite <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Otključajte da biste kopirali lozinku</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6900532703269623216">Napredna zaštita</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
-<translation id="6924672435311694692">Dobijajte bolje rezultate</translation>
 <translation id="6929699136511445623">Omogući sinhronizaciju Android sistema</translation>
 <translation id="6942665639005891494">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku pomoći opcije u meniju Podešavanja</translation>
 <translation id="694267552845942083">Trenutno prilagođavate podešavanja sinhronizacije. Da biste dovršili uključivanje sinhronizacije, dodirnite dugme Potvrdi u dnu ekrana. Idi nagore</translation>
@@ -1048,6 +1047,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Deli 1 izabranu stavku}one{Deli # izabranu stavku}few{Deli # izabrane stavke}other{Deli # izabranih stavki}}</translation>
 <translation id="7359002509206457351">Pristup načinima plaćanja</translation>
 <translation id="7375125077091615385">Tip:</translation>
+<translation id="7376560087009844242">Ako uvrstite veći deo teksta stranice, možete da dobijete bolje rezultate kada koristite Dodirnuti za pretragu. Uvek možete da posetite <ph name="BEGIN_LINK" />podešavanja<ph name="END_LINK" /> da to promenite.</translation>
 <translation id="7386842512861524348">Veza sajta je bezbedna ako vam Chrome ne kaže drugačije.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL adresa</translation>
@@ -1062,6 +1062,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7444811645081526538">Još kategorija</translation>
 <translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
+<translation id="7474822150871987353">Saznajte više o temama na veb-sajtovima bez napuštanja stranice. Izaberite jednu reč ili više njih na stranici da biste ih potražili.</translation>
 <translation id="7475192538862203634">Ako vam se ovo često prikazuje, isprobajte ove <ph name="BEGIN_LINK" />predloge<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD kartica nije pronađena. Neke datoteke možda nedostaju.</translation>
 <translation id="7479104141328977413">Upravljanje karticama</translation>
@@ -1218,7 +1219,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="829672787777123339">Povezuje se sa uređajem…</translation>
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="831192587911042850">Dodaje aktuelni veb-sajt na listu veb-sajtova koje pratite.</translation>
-<translation id="8319544457245040955">Saznajte više o temi bez napuštanja stranice. Izaberite jednu reč ili više njih na stranici da biste ih potražili. Da biste izmenili pretragu, pogledajte rezultate i otvorite ih u novoj kartici.</translation>
 <translation id="8327155640814342956">Ako želite najbolji doživljaj pregledanja, otvorite Chrome da biste ga ažurirali</translation>
 <translation id="834313815369870491">Nikad ne prevodi sajtove</translation>
 <translation id="8349013245300336738">Sortiraj po količini iskorišćenih podataka</translation>
@@ -1229,6 +1229,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8410695015584479363">Pratite cene</translation>
 <translation id="8413126021676339697">Prikaži svu istoriju</translation>
+<translation id="8419244640277402268">Uvrsti</translation>
 <translation id="8424781820952413435">Stranica je poslata. Da biste je videli, otvorite Chrome na <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Kartica za pregled je poluotvorena</translation>
 <translation id="8428213095426709021">Podešavanja</translation>

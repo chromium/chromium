@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Naam bestaat al</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knop</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
+<translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
 <translation id="2038563949887743358">'Desktopsite aanvragen' aanzetten</translation>
@@ -243,6 +244,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2518590038762162553">In de Lite-versie van Chrome worden pagina's sneller geladen en wordt tot wel 60 procent minder data verbruikt. Chrome stuurt je webverkeer naar Google om de pagina's te optimaliseren die je bezoekt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Hiermee worden de URL's van pagina's die je bezoekt, verzonden naar Google</translation>
+<translation id="2527209463677295330">Door meer tekst van een pagina op te nemen, krijg je misschien betere resultaten</translation>
 <translation id="2527497042232966453">Overgeschakeld naar incognitotabbladen</translation>
 <translation id="2527779675047087889">Content op het klembord verbergen</translation>
 <translation id="2532336938189706096">Webweergave</translation>
@@ -319,6 +321,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2979448359891869301">Kan screenshot niet verlengen. Probeer het opnieuw als je telefoon niet bezet is.</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2981364137500752533">Je kunt maximaal 5 vensters hebben.</translation>
+<translation id="2984978667043170458">Omringende tekst opnemen in Google-zoekopdrachten</translation>
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
 <translation id="2989523299700148168">Onlangs bezocht</translation>
 <translation id="2992473221983447149">Afbeeldingsbeschrijvingen</translation>
@@ -378,7 +381,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3295530008794733555">Surf sneller en verbruik minder data</translation>
 <translation id="3297344142967351106">Spraakassistent</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
-<translation id="3332570638882314953">Krijg relevantere informatie</translation>
 <translation id="3334729583274622784">Bestandsextensie wijzigen?</translation>
 <translation id="3341058695485821946">Bekijk hoeveel data je hebt bespaard</translation>
 <translation id="3341262203274374114">Niet meer volgen is mislukt. Er is iets misgegaan.</translation>
@@ -848,7 +850,6 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="6203593061661911168">Download wordt gestart zodra je wifi hebt</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
-<translation id="6212786426849242805">Een deel van de paginatekst ook door Google laten checken</translation>
 <translation id="6221633008163990886">Ontgrendel het apparaat om je wachtwoorden te exporteren</translation>
 <translation id="6232535412751077445">Als je Niet bijhouden aanzet, wordt hiervoor een verzoek opgenomen in je browseverkeer. Het resultaat daarvan hangt af van of een website reageert op het verzoek en hoe het verzoek wordt geïnterpreteerd.
 
@@ -975,12 +976,10 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6882836635272038266">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld.</translation>
 <translation id="6883204995689174413">Delen</translation>
 <translation id="688738109438487280">Bestaande gegevens toevoegen aan <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Krijg betere resultaten voor de woorden die je markeert door Google rekening te laten houden met een deel van de tekst op de pagina. Je kunt je <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> altijd wijzigen.</translation>
 <translation id="6891726759199484455">Ontgrendelen om je wachtwoord te kopiëren</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
-<translation id="6924672435311694692">Betere resultaten krijgen</translation>
 <translation id="6929699136511445623">Synchronisatie van Android-systeem aanzetten</translation>
 <translation id="6942665639005891494">Je kunt via de menuoptie Instellingen op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
 <translation id="694267552845942083">Je past momenteel je synchronisatie-instellingen aan. Als je synchronisatie wilt aanzetten, tik je onderaan het scherm op Bevestigen. Omhoog navigeren</translation>
@@ -1048,6 +1047,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 geselecteerd item delen}other{# geselecteerde items delen}}</translation>
 <translation id="7359002509206457351">Toegang tot betaalmethoden</translation>
 <translation id="7375125077091615385">Type:</translation>
+<translation id="7376560087009844242">Door meer tekst van een pagina op te nemen, krijg je misschien betere resultaten als je Tikken om te zoeken gebruikt. Je kunt dit altijd wijzigen in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" />.</translation>
 <translation id="7386842512861524348">De verbinding met de site is beveiligd, tenzij Chrome iets anders aangeeft.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="7444811645081526538">Meer categorieën</translation>
 <translation id="7453467225369441013">Hiermee word je uitgelogd van de meeste sites. Je wordt niet uitgelogd van je Google-account.</translation>
 <translation id="7454641608352164238">Onvoldoende ruimte</translation>
+<translation id="7474822150871987353">Bekijk informatie over onderwerpen op websites zonder de pagina te verlaten. Selecteer een of meer woorden op de pagina om hiernaar te zoeken.</translation>
 <translation id="7475192538862203634">Als je deze melding vaker ziet, kun je deze <ph name="BEGIN_LINK" />suggesties<ph name="END_LINK" /> proberen.</translation>
 <translation id="7475688122056506577">SD-kaart niet gevonden. Sommige van je bestanden kunnen ontbreken.</translation>
 <translation id="7479104141328977413">Tabbladbeheer</translation>
@@ -1218,7 +1219,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="829672787777123339">Verbinding maken met je apparaat…</translation>
 <translation id="8310344678080805313">Standaardtabbladen</translation>
 <translation id="831192587911042850">Hiermee voeg je de huidige website toe aan de lijst met websites die je volgt.</translation>
-<translation id="8319544457245040955">Bekijk informatie over een onderwerp zonder de pagina te verlaten. Selecteer een of meer woorden op de pagina om hiernaar te zoeken. Als je je zoekopdracht wilt aanpassen, bekijk je de resultaten en open je ze op een nieuw tabblad.</translation>
 <translation id="8327155640814342956">Update Chrome om optimaal te kunnen browsen op internet</translation>
 <translation id="834313815369870491">Sites nooit vertalen</translation>
 <translation id="8349013245300336738">Sorteren op hoeveelheid gebruikte data</translation>
@@ -1229,6 +1229,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8410695015584479363">Prijzen volgen</translation>
 <translation id="8413126021676339697">Hele geschiedenis bekijken</translation>
+<translation id="8419244640277402268">Opnemen</translation>
 <translation id="8424781820952413435">Pagina gestuurd. Als je deze wilt bekijken, open je Chrome op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Voorbeeldtabblad is half geopend</translation>
 <translation id="8428213095426709021">Instellingen</translation>

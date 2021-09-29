@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
 <translation id="1987739130650180037">Button ng <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
+<translation id="200114059308480249">Magsama ng kalapit na text sa mga paghahanap sa Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}one{# File}other{# na File}}</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
 <translation id="2038563949887743358">I-on ang Hilingin ang site sa desktop</translation>
@@ -243,6 +244,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2518590038762162553">Sa Lite mode, mas mabilis na naglo-load ng mga page ang Chrome at gumagamit ito ng hanggang 60 porsyentong mas kaunting data. Para i-optimize ang mga page na binibisita mo, ipinapadala ng Chrome ang iyong trapiko sa web sa Google. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Ipinapadala sa Google ang mga URL ng mga page na binibisita mo</translation>
+<translation id="2527209463677295330">Kapag nagsama ka ng higit pang text ng isang page, posibleng makakita ka ng mas magagandang resulta</translation>
 <translation id="2527497042232966453">Lumipat sa mga tab na Incognito</translation>
 <translation id="2527779675047087889">Itago ang mga content ng clipboard</translation>
 <translation id="2532336938189706096">View ng Web</translation>
@@ -319,6 +321,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2979448359891869301">Hindi na mapahaba ang screenshot. Subukan ulit kapag hindi na busy ang iyong telepono.</translation>
 <translation id="2979639724566107830">Buksan ng bagong window</translation>
 <translation id="2981364137500752533">Puwede kang magkaroon ng hanggang 5 window.</translation>
+<translation id="2984978667043170458">Magsama ng kalapit na text sa mga paghahanap sa Google</translation>
 <translation id="2987620471460279764">Ibinahaging text mula sa ibang device</translation>
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
 <translation id="2992473221983447149">Mga paglalarawan ng larawan</translation>
@@ -378,7 +381,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3295530008794733555">Mag-browse nang mas mabilis. Gumamit ng mas kaunting data.</translation>
 <translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
-<translation id="3332570638882314953">Makakuha ng mas nauugnay na impormasyon</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341058695485821946">Tingnan kung gaano karaming data ang iyong natipid</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
@@ -848,7 +850,6 @@ Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available a
 <translation id="6203593061661911168">Magsisimula ang pag-download kapag nakakonekta sa Wi-Fi</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
-<translation id="6212786426849242805">Hayaang isaalang-alang din ng Google ang ilan sa text ng page</translation>
 <translation id="6221633008163990886">I-unlock upang i-export ang iyong mga password</translation>
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
@@ -975,12 +976,10 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
 <translation id="6883204995689174413">Ibahagi</translation>
 <translation id="688738109438487280">Idagdag ang kasalukuyang data sa <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Makakita ng mas mahuhusay na resulta para sa mga salitang iha-highlight mo sa pamamagitan ng pagpayag sa Google na isaalang-alang ang ilan sa text ng page. Puwede mong baguhin ang iyong <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /> anumang oras.</translation>
 <translation id="6891726759199484455">I-unlock upang kopyahin ang iyong password</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6903907808598579934">I-on ang pag-sync</translation>
-<translation id="6924672435311694692">Makakita ng mas magagandang resulta</translation>
 <translation id="6929699136511445623">I-enable ang pag-sync ng Android system</translation>
 <translation id="6942665639005891494">Baguhin ang default na lokasyon ng pag-download anumang oras gamit ang opsyong menu ng Mga Setting</translation>
 <translation id="694267552845942083">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
@@ -1048,6 +1047,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Ibahagi ang 1 piniling item}one{Ibahagi ang # piniling item}other{Ibahagi ang # na piniling item}}</translation>
 <translation id="7359002509206457351">I-access ang mga paraan ng pagbabayad</translation>
 <translation id="7375125077091615385">Uri:</translation>
+<translation id="7376560087009844242">Kapag nagsama ka ng higit pang text ng isang page, posibleng makakita ka ng mas magagandang resulta kapag ginagamit mo ang Pindutin para Maghanap. Puwede mong bisitahin ang <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" /> anumang oras para baguhin ito.</translation>
 <translation id="7386842512861524348">Secure ang koneksyon ng site maliban na lang kung sabihin sa iyo ng Chrome na hindi.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1062,6 +1062,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7444811645081526538">Higit pang kategorya</translation>
 <translation id="7453467225369441013">Isa-sign out ka sa karamihan ng mga site. Hindi ka masa-sign out sa iyong Google Account.</translation>
 <translation id="7454641608352164238">Walang sapat na espasyo</translation>
+<translation id="7474822150871987353">Matuto tungkol sa mga paksa sa mga website nang hindi umaalis sa page. Pumili ng isa o higit pang salita sa page para hanapin ang mga ito.</translation>
 <translation id="7475192538862203634">Kung madalas mo itong makita, subukan ang <ph name="BEGIN_LINK" />mga suhestyon<ph name="END_LINK" /> na ito.</translation>
 <translation id="7475688122056506577">Hindi nakita ang SD card. Maaaring nawawala ang ilan sa iyong mga file.</translation>
 <translation id="7479104141328977413">Pamamahala sa tab</translation>
@@ -1218,7 +1219,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="829672787777123339">Kumokonekta sa iyong device…</translation>
 <translation id="8310344678080805313">Mga karaniwang tab</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
-<translation id="8319544457245040955">Matuto tungkol sa isang paksa nang hindi umaalis sa page. Pumili ng isa o higit pang salita sa page para hanapin ang mga ito. Para i-edit ang iyong paghahanap, tingnan ang mga resulta at buksan ang mga ito sa isang bagong tab.</translation>
 <translation id="8327155640814342956">Para sa pinakamagandang karanasan sa pag-browse, buksan para i-update ang Chrome</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8349013245300336738">Pagbukud-bukurin ayon sa dami ng data na nagamit</translation>
@@ -1229,6 +1229,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8410695015584479363">I-track ang mga presyo</translation>
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
+<translation id="8419244640277402268">Magsama</translation>
 <translation id="8424781820952413435">Naipadala na ang page. Para makita ito, buksan ang Chrome sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Nakabukas nang kalahati ang tab na preview</translation>
 <translation id="8428213095426709021">Mga Setting</translation>

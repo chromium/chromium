@@ -378,7 +378,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3295530008794733555">Schneller surfen. Weniger Daten verbrauchen.</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
-<translation id="3332570638882314953">Weitere relevante Informationen erhalten</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341058695485821946">Erfahren Sie, wie viel Datenvolumen Sie eingespart haben</translation>
 <translation id="3341262203274374114">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
@@ -848,7 +847,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6203593061661911168">Der Download beginnt bei Verbindung mit einem WLAN</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht Ihre E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
-<translation id="6212786426849242805">Google erlauben, zusätzlich Text auf der Seite zu berücksichtigen</translation>
 <translation id="6221633008163990886">Zum Exportieren Ihrer Passwörter entsperren</translation>
 <translation id="6232535412751077445">Wenn Sie das Kästchen „Do Not Track“ anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
@@ -975,12 +973,10 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6883204995689174413">Teilen</translation>
 <translation id="688738109438487280">Vorhandene Daten werden zu <ph name="TO_ACCOUNT" /> hinzugefügt</translation>
-<translation id="6889847736310813892">Sie können bessere Ergebnisse für markierte Wörter erhalten. Lassen Sie Google dazu den Text der Seite berücksichtigen. Ihre <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> können Sie jederzeit ändern.</translation>
 <translation id="6891726759199484455">Entsperren, um Ihr Passwort zu kopieren</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
-<translation id="6924672435311694692">Bessere Ergebnisse erhalten</translation>
 <translation id="6929699136511445623">Android-Systemsynchronisierung aktivieren</translation>
 <translation id="6942665639005891494">Sie können den Standard-Downloadpfad jederzeit über die Option im Menü "Einstellungen" ändern</translation>
 <translation id="694267552845942083">Sie passen gerade die Synchronisierungseinstellungen an. Wenn Sie die Aktivierung der Synchronisierung abschließen möchten, tippen Sie unten auf dem Bildschirm auf „Bestätigen“. Nach oben</translation>
@@ -1218,7 +1214,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="829672787777123339">Verbindung zu Ihrem Gerät wird hergestellt…</translation>
 <translation id="8310344678080805313">Standard-Tabs</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen Sie folgen.</translation>
-<translation id="8319544457245040955">Sie erfahren mehr über ein Thema, ohne die Seite zu verlassen. Wählen Sie mindestens ein Wort auf der Seite aus, um dazu Suchergebnisse zu erhalten. Wenn Sie die Suchanfrage bearbeiten möchten, sehen Sie sich die Ergebnisse an und öffnen Sie sie in einem neuen Tab.</translation>
 <translation id="8327155640814342956">Noch besser und komfortabler surfen – jetzt Chrome öffnen und aktualisieren</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8349013245300336738">Nach Menge der verwendeten Daten sortieren</translation>

@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> לחצן <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
+<translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
@@ -243,6 +244,7 @@
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2518590038762162553">‏במצב טעינה מהירה, Chrome טוען דפים מהר יותר ומפחית את השימוש בנתונים בשיעור של עד 60 אחוזים. כדי לבצע אופטימיזציה לדפים שהמשתמש נכנס אליהם, Chrome שולח אל Google את התנועה שלו באינטרנט. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">‏שליחת כתובות אתרים של דפים שבהם ביקרת ל-Google</translation>
+<translation id="2527209463677295330">רוצה לראות תוצאות טובות יותר? כדאי לכלול כמה שיותר טקסט מהדף</translation>
 <translation id="2527497042232966453">בוצעה החלפה לכרטיסיות מצב אנונימי</translation>
 <translation id="2527779675047087889">הסתרת התוכן שבלוח</translation>
 <translation id="2532336938189706096">תצוגת אינטרנט</translation>
@@ -319,6 +321,7 @@
 <translation id="2979448359891869301">לא ניתן להרחיב את צילום המסך. יש לנסות שוב כשיהיה יותר מקום בזיכרון הטלפון.</translation>
 <translation id="2979639724566107830">פתיחה בחלון חדש</translation>
 <translation id="2981364137500752533">ניתן לפתוח עד 5 חלונות.</translation>
+<translation id="2984978667043170458">‏הכללת הטקסט שמסביב בחיפושים ב-Google</translation>
 <translation id="2987620471460279764">טקסט ששותף ממכשיר אחר</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2992473221983447149">תיאורי תמונות</translation>
@@ -378,7 +381,6 @@
 <translation id="3295530008794733555">יותר מהירות. פחות נתונים.</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
-<translation id="3332570638882314953">קבלת מידע רלוונטי יותר</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341058695485821946">בדיקת החיסכון בצריכת נתונים</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
@@ -848,7 +850,6 @@
 <translation id="6203593061661911168">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
-<translation id="6212786426849242805">‏החיפוש של Google יתבצע גם בחלק מהטקסט שמופיע בדף</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 
@@ -975,12 +976,10 @@
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="6883204995689174413">שיתוף</translation>
 <translation id="688738109438487280">הוספת נתונים קיימים אל <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">‏אם מתירים ל-Google להתייחס לחלק מהטקסט בדף, מתקבלות תוצאות טובות יותר למילים שמדגישים. תמיד ניתן לשנות זאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">ביטול הנעילה יאפשר להעתיק את הסיסמה</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6900532703269623216">הגנה משופרת</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
-<translation id="6924672435311694692">חיפוש יסודי יותר</translation>
 <translation id="6929699136511445623">‏הפעלת סנכרון של מערכת Android</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
@@ -1048,6 +1047,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}two{שיתוף # פריטים שנבחרו}many{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
 <translation id="7359002509206457351">גישה לאמצעי תשלום</translation>
 <translation id="7375125077091615385">סוג:</translation>
+<translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7386842512861524348">‏חיבור האתר מאובטח אלא אם תתקבל הודעה שונה מ-Chrome</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
@@ -1062,6 +1062,7 @@
 <translation id="7444811645081526538">קטגוריות נוספות</translation>
 <translation id="7453467225369441013">‏הפעולה תוציא אותך מרוב האתרים אבל לא מחשבון Google שלך.</translation>
 <translation id="7454641608352164238">אין מספיק מקום</translation>
+<translation id="7474822150871987353">לומדים על נושאים שמופיעים באתרים בלי לצאת מהדף. בוחרים מילה אחת או יותר בדף כדי לבצע חיפוש.</translation>
 <translation id="7475192538862203634">אם נתקלת בזה לעתים קרובות, כדאי לנסות את <ph name="BEGIN_LINK" />ההצעות<ph name="END_LINK" /> האלה.</translation>
 <translation id="7475688122056506577">‏לא נמצא כרטיס SD. ייתכן שחלק מהקבצים שלך חסרים.</translation>
 <translation id="7479104141328977413">ניהול כרטיסיות</translation>
@@ -1218,7 +1219,6 @@
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
-<translation id="8319544457245040955">ניתן לקבל מידע על נושא מסוים מבלי לצאת מהדף. בוחרים מילה אחת או יותר בדף כדי לבצע חיפוש. כדי לערוך את החיפוש, מעיינים בתוצאות ופותחים אותן בכרטיסייה חדשה.</translation>
 <translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
@@ -1229,6 +1229,7 @@
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8410695015584479363">מעקב אחר מחירים</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
+<translation id="8419244640277402268">הוספה</translation>
 <translation id="8424781820952413435">‏הדף נשלח. כדי לראות אותו, פותחים את דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>
 <translation id="8428213095426709021">הגדרות</translation>

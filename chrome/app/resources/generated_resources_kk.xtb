@@ -441,7 +441,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Жаңа топқа қойынды қосу}other{Жаңа топқа қойындылар қосу}}</translation>
 <translation id="1470350905258700113">Осы құрылғыны пайдалану</translation>
 <translation id="1470946456740188591">Перне арқылы қозғалу функциясын қосу немесе өшіру үшін Ctrl+Search+7 пернелер тіркесімін пайдаланыңыз.</translation>
-<translation id="1472675084647422956">Толығырақ көрсету</translation>
+<translation id="1472675084647422956">Толық көрсету</translation>
 <translation id="1474785664565228650">Микрофонның параметріне өзгеріс енгізілгендіктен, Parallels Desktop қайта іске қосылуы қажет. Жалғастыру үшін Parallels Desktop қолданбасын қайта іске қосыңыз.</translation>
 <translation id="1475502736924165259">Файлда басқа ешбір санатқа сәйкес келмейтін сертификаттар бар</translation>
 <translation id="1476088332184200792">Құрылғыға көшіру</translation>
@@ -2940,6 +2940,7 @@
 <translation id="4066207411788646768">Желідегі қолжетімді принтерлерді көру үшін байланысты тексеріңіз.</translation>
 <translation id="4068776064906523561">Сақталған саусақ іздері</translation>
 <translation id="407173827865827707">Түрту арқылы</translation>
+<translation id="4072701974556190758">Құпия сөз Google аккаунтында (<ph name="ACCOUNT" />) сақталады. Оны еске сақтаудың қажеті жоқ.</translation>
 <translation id="4074900173531346617">Электрондық пошта қол қоюшы сертификаты</translation>
 <translation id="407520071244661467">Масштаб</translation>
 <translation id="407543464472585404"><ph name="NAME" /> профилі <ph name="EMAIL" /> поштасына байланыстырылған.</translation>

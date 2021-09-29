@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Namnet finns redan</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – knapp för <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
+<translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
@@ -243,6 +244,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2518590038762162553">I begränsat läge läses sidorna in snabbare och dataförbrukningen minskar med upp till 60 procent. Webbtrafiken skickas till Google från Chrome för att optimera sidorna du besöker. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
+<translation id="2527209463677295330">Om du tar med mer av sidans text kanske du får bättre resultat</translation>
 <translation id="2527497042232966453">Byter till inkognitoflikar</translation>
 <translation id="2527779675047087889">Dölj innehållet i Urklipp</translation>
 <translation id="2532336938189706096">Webbvy</translation>
@@ -319,6 +321,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2979448359891869301">Det går inte att ta en utökad skärmdump. Testa igen senare när telefonen är mindre hårt belastad.</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981364137500752533">Du kan ha upp till fem fönster.</translation>
+<translation id="2984978667043170458">Inkludera omgivande text i sökningar på Google</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2992473221983447149">Bildbeskrivningar</translation>
@@ -378,7 +381,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3295530008794733555">Surfa snabbare. Förbruka mindre data.</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
-<translation id="3332570638882314953">Få relevantare information</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341058695485821946">Se hur mycket data du har sparat</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
@@ -849,7 +851,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6203593061661911168">Nedladdningen påbörjas när du ansluter till wifi</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
-<translation id="6212786426849242805">Tillåt att Google tar hänsyn till en del av sidans text</translation>
 <translation id="6221633008163990886">Lås upp om du vill exportera dina lösenord</translation>
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
@@ -976,12 +977,10 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="6883204995689174413">Dela</translation>
 <translation id="688738109438487280">Lägg till befintlig data i <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Se bättre resultat för de ord du markerar genom att låta Google ta hänsyn till en del av sidans text. Du kan ändra <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> när du vill.</translation>
 <translation id="6891726759199484455">Lås upp om du vill kopiera lösenordet</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
-<translation id="6924672435311694692">Se bättre förslag</translation>
 <translation id="6929699136511445623">Aktivera synkronisering av Android-systemet</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
@@ -1049,6 +1048,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Dela 1 markerat objekt}other{Dela # markerade objekt}}</translation>
 <translation id="7359002509206457351">Åtkomst till betalningsmetoder</translation>
 <translation id="7375125077091615385">Typ:</translation>
+<translation id="7376560087009844242">Om du tar med mer av sidans text kanske du får bättre resultat när du använder Tryck för att söka. Du kan alltid öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill ändra detta.</translation>
 <translation id="7386842512861524348">Webbplatsens anslutning är alltid säker så länge det inte visas en varning i Chrome.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Webbadress</translation>
@@ -1063,6 +1063,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7444811645081526538">Fler kategorier</translation>
 <translation id="7453467225369441013">Du loggas ut från de flesta webbplatser. Du loggas inte ut från Google-kontot.</translation>
 <translation id="7454641608352164238">Utrymmet räcker inte</translation>
+<translation id="7474822150871987353">Läs om olika ämnen på webbplatser utan att lämna sidan. Välj ett eller flera ord på sidan som du vill söka efter.</translation>
 <translation id="7475192538862203634">Om du ser detta ofta provar du de här <ph name="BEGIN_LINK" />förslagen<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Det gick inte att hitta SD-kortet. Det kan saknas filer.</translation>
 <translation id="7479104141328977413">Flikhantering</translation>
@@ -1219,7 +1220,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="829672787777123339">Ansluter till enheten …</translation>
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
-<translation id="8319544457245040955">Läs om ett ämne utan att lämna sidan. Välj ett eller flera ord på sidan som du vill söka efter. Redigera sökningen, titta på resultaten och öppna dem på en ny flik.</translation>
 <translation id="8327155640814342956">Uppdatera Chrome så att du får bästa möjliga surfupplevelse</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
@@ -1230,6 +1230,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8410695015584479363">Bevaka priser</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
+<translation id="8419244640277402268">Inkludera</translation>
 <translation id="8424781820952413435">Sidan har skickats. Öppna Chrome på <ph name="DEVICE_TYPE" /> för att se den</translation>
 <translation id="8427875596167638501">Fliken Förhandsgranskning visas på halva skärmen</translation>
 <translation id="8428213095426709021">Inställningar</translation>

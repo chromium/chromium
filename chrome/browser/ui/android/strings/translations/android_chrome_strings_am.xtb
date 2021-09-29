@@ -378,7 +378,6 @@
 <translation id="3295530008794733555">በበለጠ ፍጥነት ያስሱ። ያነሰ ውሂብን ይጠቀሙ።</translation>
 <translation id="3297344142967351106">የድምጽ እርዳታ</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
-<translation id="3332570638882314953">ይበልጥ ተዛማጅ መረጃ ያግኙ</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
 <translation id="3341058695485821946">ምን ያህል ውሂብ እንዳስቀመጡ ይመልከቱ</translation>
 <translation id="3341262203274374114">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
@@ -848,7 +847,6 @@
 <translation id="6203593061661911168">ውርድ በWi-Fi ላይ ሲሆን ይጀመራል።</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>
 <translation id="6211386937064921208">ይህን ገጽ በቅድመ-ዕይታ በማሳየት ላይ</translation>
-<translation id="6212786426849242805">Google እንዲሁም አንዳንድ የገጹን ጽሑፍ ግምት ውስጥ እንዲያስገባ ይፍቀዱለት</translation>
 <translation id="6221633008163990886">የይለፍ ቃላትዎን ወደ ውጭ ለመላክ ይክፈቱ</translation>
 <translation id="6232535412751077445">«አትከታተል»ን ማንቃት ማለት አንድ ጥያቄ በአሰሳ ትራፊክዎ ላይ ይካተታል ማለት ነው። ማንኛውም ውጤት አንድ ድር ጣቢያ ለጥያቄው ምላሽ ከሰጠና ጥያቄውን በሚተረጎምበት መንገድ ላይ የሚወሰን ነው።
 
@@ -975,12 +973,10 @@
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
 <translation id="6883204995689174413">አጋራ</translation>
 <translation id="688738109438487280">ነባሩን ውሂብ ወደ <ph name="TO_ACCOUNT" /> ያክሉ።</translation>
-<translation id="6889847736310813892">Google አንዳንድ የገጹን ጽሑፍ ከግምት እንዲያስገባ በመፍቀድ ለሚያደምቋቸው ቃላት የተሻለ ውጤት ይመልከቱ። ሁልጊዜ የእርስዎን <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> መቀየር ይችላሉ።</translation>
 <translation id="6891726759199484455">የይለፍ ቃልዎን ለመቅዳት ይክፈቱ</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6903907808598579934">ስምረትን አብራ</translation>
-<translation id="6924672435311694692">የተሻሉ ውጤቶችን ይመልከቱ</translation>
 <translation id="6929699136511445623">የAndroid ስርዓት ስምረትን አንቃ</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
@@ -1218,7 +1214,6 @@
 <translation id="829672787777123339">ከእርስዎ መሣሪያ ጋር በመገናኘት ላይ…</translation>
 <translation id="8310344678080805313">መደበኛ ትሮች</translation>
 <translation id="831192587911042850">የአሁኑን ድር ጣቢያ እርስዎ በሚከተሏቸው የድር ጣቢያዎች ዝርዝር ውስጥ ያክላል።</translation>
-<translation id="8319544457245040955">ገጹን ሳይለቅቁ ስለአንድ ርዕስ ይወቁ። እነሱን ለመፈለግ በገጹ ላይ አንድ ወይም ከዚያ በላይ ቃላትን ይምረጡ። ፍለጋዎን ለማርትዕ ውጤቶቹን ይመልከቱ እና በአዲስ ትር ውስጥ ይክፈቱ።</translation>
 <translation id="8327155640814342956">ለምርጥ የአሰሳ ተሞክሮ ለማግኘት Chromeን ለማዘመን ይክፈቱ</translation>
 <translation id="834313815369870491">ጣቢያዎችን በጭራሽ አይተርጉሙ</translation>
 <translation id="8349013245300336738">ጥቅም ላይ በዋለው የውሂብ መጠን ደርድር</translation>

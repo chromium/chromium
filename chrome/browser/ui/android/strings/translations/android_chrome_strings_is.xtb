@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Þetta nafn er þegar til</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> hnappur</translation>
 <translation id="2000419248597011803">Sendir sum fótspor og sumar leitir úr veffangastikunni og leitarreitnum í sjálfgefnu leitarvélina þína</translation>
+<translation id="200114059308480249">Taka með texta umhverfis í Google leitum?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
 <translation id="2038563949887743358">Kveikja á beiðni um vefsvæði fyrir tölvur</translation>
@@ -243,6 +244,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2518590038762162553">Í léttútgáfu hleður Chrome síðum hraðar og notar allt að 60% minna gagnamagn. Chrome sendir vefumferð þína til Google til þess að geta fínstillt síðurnar sem þú opnar. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Sendir vefslóðir síðna sem þú skoðar til Google</translation>
+<translation id="2527209463677295330">Hægt er að fá betri niðurstöður með því að setja inn meira af texta síðunnar</translation>
 <translation id="2527497042232966453">Skipt yfir í huliðsflipa</translation>
 <translation id="2527779675047087889">Fela innihald klippiborðs</translation>
 <translation id="2532336938189706096">Vefyfirlit</translation>
@@ -319,6 +321,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2979448359891869301">Ekki er hægt að lengja skjáskot. Prófaðu aftur þegar síminn er ekki upptekinn.</translation>
 <translation id="2979639724566107830">Opna í nýjum glugga</translation>
 <translation id="2981364137500752533">Þú getur opnað allt að fimm glugga.</translation>
+<translation id="2984978667043170458">Taka með texta umhverfis í Google leitum</translation>
 <translation id="2987620471460279764">Texta deilt úr öðru tæki</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2992473221983447149">Myndalýsingar</translation>
@@ -378,7 +381,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3295530008794733555">Vafraðu hraðar. Með minna gagnamagni.</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
-<translation id="3332570638882314953">Fáðu gagnlegri upplýsingar</translation>
 <translation id="3334729583274622784">Breyta skráarendingu?</translation>
 <translation id="3341058695485821946">Skoða hversu mikið af gagnamagni þú hefur sparað</translation>
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
@@ -848,7 +850,6 @@ Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum sv�
 <translation id="6203593061661911168">Niðurhal hefst þegar Wi-Fi er tengt</translation>
 <translation id="6210748933810148297">Ekki <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forskoðun á þessari síðu.</translation>
-<translation id="6212786426849242805">Leyfðu Google einnig að nota hluta af texta síðunnar til hliðsjónar</translation>
 <translation id="6221633008163990886">Opnaðu til að flytja aðgangsorðin þín út</translation>
 <translation id="6232535412751077445">Ef kveikt er á „Ekki rekja“ er beiðni látin fylgja með vefumferðinni þinni. Áhrifin velta á því hvort vefsvæði verður við beiðninni og hvernig beiðnin er túlkuð.
 
@@ -975,12 +976,10 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
 <translation id="6883204995689174413">Deila</translation>
 <translation id="688738109438487280">Bæta fyrirliggjandi gögnum við <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Fáðu gagnlegri niðurstöður fyrir orðin sem þú yfirstrikar með því að leyfa Google að hafa tiltekinn hluta textans á síðunni til hliðsjónar. Þú getur alltaf breytt <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Opnaðu til að afrita aðgangsorðið þitt</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
-<translation id="6924672435311694692">Fáðu betri niðurstöður</translation>
 <translation id="6929699136511445623">Virkja samstillingu Android kerfis</translation>
 <translation id="6942665639005891494">Þú getur breytt staðsetningu niðurhals hvenær sem er með því að nota valkostinn í stillingavalmyndinni</translation>
 <translation id="694267552845942083">Þú ert að sérstilla samstillingu. Til að ljúka við að kveikja á samstillingu skaltu ýta á hnappinn „Staðfesta“ neðarlega á skjánum. Fara upp</translation>
@@ -1048,6 +1047,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Deila 1 völdu atriði}one{Deila # völdu atriði}other{Deila # völdum atriðum}}</translation>
 <translation id="7359002509206457351">Fá aðgang að greiðslumátum</translation>
 <translation id="7375125077091615385">Gerð:</translation>
+<translation id="7376560087009844242">Þú gætir fengið betri niðurstöður ef þú setur inn meira af texta síðunnar þegar þú notar snertileit. Þú getur alltaf opnað <ph name="BEGIN_LINK" />stillingar<ph name="END_LINK" /> til að breyta þessu.</translation>
 <translation id="7386842512861524348">Tenging vefsvæðisins er örugg nema Chrome taki annað fram.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
@@ -1062,6 +1062,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7444811645081526538">Fleiri flokkar</translation>
 <translation id="7453467225369441013">Skráir þig út af flestum vefsvæðum. Þú verður ekki skráð(ur) út af Google reikningnum þínum.</translation>
 <translation id="7454641608352164238">Ekki nægt pláss</translation>
+<translation id="7474822150871987353">Fáðu frekari upplýsingar um efnisatriði á vefsvæðum án þess að yfirgefa síðuna. Veldu eitt eða fleiri orð á síðunni til að leita að þeim.</translation>
 <translation id="7475192538862203634">Ef þú sérð þetta oft skaltu prófa þessar <ph name="BEGIN_LINK" />tillögur<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD-kort fannst ekki. Sumar skrár vantar ef til vill.</translation>
 <translation id="7479104141328977413">Stjórnun flipa</translation>
@@ -1218,7 +1219,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="829672787777123339">Tengist tækinu…</translation>
 <translation id="8310344678080805313">Staðlaðir flipar</translation>
 <translation id="831192587911042850">Bætir núverandi vefsvæði á lista yfir vefsvæði sem þú fylgir.</translation>
-<translation id="8319544457245040955">Kynntu þér umfjöllunarefni án þess að yfirgefa síðuna. Veldu eitt eða fleiri orð á síðunni til að leita að þeim. Skoðaðu leitarniðurstöðurnar og opnaðu þær í nýjum flipa til að breyta leitinni.</translation>
 <translation id="8327155640814342956">Til að hámarka upplifunina skaltu opna til að uppfæra Chrome</translation>
 <translation id="834313815369870491">Aldrei þýða vefsvæði</translation>
 <translation id="8349013245300336738">Raða eftir gagnanotkun</translation>
@@ -1229,6 +1229,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8410695015584479363">Vakta verð</translation>
 <translation id="8413126021676339697">Sýna allan feril</translation>
+<translation id="8419244640277402268">Taka með</translation>
 <translation id="8424781820952413435">Síða send. Opnaðu Chrome í <ph name="DEVICE_TYPE" /> til að sjá hana.</translation>
 <translation id="8427875596167638501">Forskoðunarflipinn er hálfopinn</translation>
 <translation id="8428213095426709021">Stillingar</translation>

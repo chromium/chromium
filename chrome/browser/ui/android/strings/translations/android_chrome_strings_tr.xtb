@@ -378,7 +378,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3295530008794733555">Daha hızlı tarayın. Daha az veri kullanın.</translation>
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
-<translation id="3332570638882314953">Daha alakalı bilgiler alın</translation>
 <translation id="3334729583274622784">Dosya uzantısı değiştirilsin mi?</translation>
 <translation id="3341058695485821946">Ne kadar veri tasarrufu sağladığınıza bakın</translation>
 <translation id="3341262203274374114">Takip bırakılamıyor. Bir sorun oldu.</translation>
@@ -848,7 +847,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6203593061661911168">İndirme kablosuz bağlantı üzerinden başlatılacak</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
-<translation id="6212786426849242805">Google'ın sayfadaki metni de değerlendirmesine izin verin</translation>
 <translation id="6221633008163990886">Şifrelerinizi dışa aktarmak için kilit açılamadı</translation>
 <translation id="6232535412751077445">"Do Not Track" seçeneği etkinleştirildiğinde, göz atma trafiğinize bir istek eklenir. Her türlü etki, bir web sitesinin isteğe cevap verip vermemesine ve isteğin nasıl yorumlandığına bağlıdır.
 
@@ -975,12 +973,10 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6882836635272038266">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı standart koruma.</translation>
 <translation id="6883204995689174413">Paylaş</translation>
 <translation id="688738109438487280">Mevcut veriler <ph name="TO_ACCOUNT" /> hesabına eklenir.</translation>
-<translation id="6889847736310813892">Google'ın, sayfadaki metnin bir kısmını dikkate almasına izin vererek vurguladığınız kelimelerle ilgili daha iyi sonuçlar görün. <ph name="BEGIN_LINK" />Ayarlarınızı<ph name="END_LINK" /> istediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="6891726759199484455">Şifrenizi kopyalamak için kilidi açın</translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6900532703269623216">Gelişmiş koruma</translation>
 <translation id="6903907808598579934">Senkronizasyonu aç</translation>
-<translation id="6924672435311694692">Daha iyi sonuçlar alın</translation>
 <translation id="6929699136511445623">Android sistem senkronizasyonunu etkinleştir</translation>
 <translation id="6942665639005891494">Dosyaların indirileceği varsayılan konumu istediğiniz zaman Ayarlar menü seçeneğini kullanarak değiştirebilirsiniz</translation>
 <translation id="694267552845942083">Şu anda Senkronizasyon ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
@@ -1218,7 +1214,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="829672787777123339">Cihazınıza bağlanılıyor…</translation>
 <translation id="8310344678080805313">Standart sekmeler</translation>
 <translation id="831192587911042850">Mevcut web sitesini, takip ettiğiniz web sitelerinin listesine ekler.</translation>
-<translation id="8319544457245040955">Sayfadan ayrılmadan bir konu hakkında bilgi edinin. Sayfadan bir veya daha fazla kelime seçerek arama yapın. Aramanızı düzenlemek için sonuçlara bakıp bunları yeni sekmede açın.</translation>
 <translation id="8327155640814342956">Web'e en iyi göz atma deneyimi için Chrome'u açıp güncelleyin</translation>
 <translation id="834313815369870491">Siteleri asla çevirme</translation>
 <translation id="8349013245300336738">Kullanılan veri miktarına göre sırala</translation>

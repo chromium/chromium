@@ -340,7 +340,7 @@
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2085876078937250610">Зберегти…</translation>
 <translation id="2088086323192747268">Кнопка "Керувати синхронізацією"; натисніть Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
-<translation id="2091887806945687916">Сигнал</translation>
+<translation id="2091887806945687916">Звук</translation>
 <translation id="2094505752054353250">Невідповідність домену</translation>
 <translation id="2096368010154057602">Департамент</translation>
 <translation id="2099652385553570808">Скріпити тричі ліворуч</translation>
@@ -1046,7 +1046,7 @@
 <translation id="4432688616882109544">Хост <ph name="HOST_NAME" /> не прийняв ваш сертифікат входу або ви не надали цей сертифікат.</translation>
 <translation id="4432792777822557199">Надалі сторінки цією мовою (<ph name="SOURCE_LANGUAGE" />) перекладатимуться такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Ігнорується, оскільки користувач не зв’язаний із керуванням машиною або цією машиною взагалі не керують.</translation>
-<translation id="4434045419905280838">Спливаючі вікна й переадресація</translation>
+<translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
 <translation id="4435702339979719576">Листівка)</translation>
 <translation id="443673843213245140">Використання проксі-сервера вимкнено, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="4448463448776780262">Кнопка "Керувати темами Chrome"; натисніть Enter, щоб налаштувати вигляд веб-переглядача.</translation>

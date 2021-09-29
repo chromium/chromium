@@ -378,7 +378,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3295530008794733555">Naviguez plus rapidement en consommant moins de données</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
-<translation id="3332570638882314953">Obtenez des infos plus pertinentes</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="3341058695485821946">Découvrez la quantité de données économisées</translation>
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
@@ -848,7 +847,6 @@ Les essais Privacy Sandbox sont encore en développement et ne sont disponibles
 <translation id="6203593061661911168">Le téléchargement commencera lorsque vous serez connecté au Wi-Fi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
-<translation id="6212786426849242805">Autoriser Google à aussi tenir compte d'une partie du texte de la page</translation>
 <translation id="6221633008163990886">Déverrouiller pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
@@ -975,12 +973,10 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="6883204995689174413">Partager</translation>
 <translation id="688738109438487280">Ajoutez les données existantes au compte <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Obtenez de meilleurs résultats pour les mots mis en surbrillance en autorisant Google à prendre en compte une partie du texte de la page. Vous pourrez toujours modifier vos <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Déverrouillez pour copier votre mot de passe</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
-<translation id="6924672435311694692">Voir de meilleurs résultats</translation>
 <translation id="6929699136511445623">Activer la synchronisation du système Android</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
@@ -1218,7 +1214,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="829672787777123339">Connexion à votre appareil…</translation>
 <translation id="8310344678080805313">Onglets standards</translation>
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
-<translation id="8319544457245040955">Obtenez plus d'infos sur un sujet sans quitter la page. Sélectionnez un ou plusieurs mots sur celle-ci pour lancer une recherche. Pour modifier votre recherche, consultez les résultats et affichez-les dans un nouvel onglet.</translation>
 <translation id="8327155640814342956">Pour une expérience de navigation optimale, ouvrez pour mettre à jour Chrome</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8349013245300336738">Trier en fonction de la quantité de données utilisées</translation>

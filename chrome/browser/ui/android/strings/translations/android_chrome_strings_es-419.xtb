@@ -378,7 +378,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3295530008794733555">Navega más rápido; usa menos datos</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
-<translation id="3332570638882314953">Obtén información más relevante</translation>
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341058695485821946">Consulta cuántos datos redujiste</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
@@ -848,7 +847,6 @@ Las pruebas de Privacy Sandbox siguen en desarrollo y están disponibles en cie
 <translation id="6203593061661911168">Se iniciará la descarga cuando el dispositivo se conecte a Wi-Fi.</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Vista previa de esta página</translation>
-<translation id="6212786426849242805">Permite que Google también considere parte del texto de la página.</translation>
 <translation id="6221633008163990886">Desbloquea la pantalla para exportar tus contraseñas</translation>
 <translation id="6232535412751077445">Si se habilita la opción de "No realizar seguimiento", se incluirá una solicitud con tu tráfico de navegación. Los efectos dependerán de si hay algún sitio web que responda a la solicitud y de cómo se interprete.
 
@@ -975,12 +973,10 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
 <translation id="6883204995689174413">Compartir</translation>
 <translation id="688738109438487280">Agrega los datos existentes a <ph name="TO_ACCOUNT" />.</translation>
-<translation id="6889847736310813892">Si quieres obtener más resultados para las palabras que destacas, permite que Google tenga en cuenta parte del texto de la página. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> cuando quieras.</translation>
 <translation id="6891726759199484455">Desbloquea la pantalla para copiar tu contraseña</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
-<translation id="6924672435311694692">Ver mejores resultados</translation>
 <translation id="6929699136511445623">Habilitar la sincronización del sistema Android</translation>
 <translation id="6942665639005891494">Cambia la ubicación predeterminada de las descargas en cualquier momento en la opción de menú de Configuración</translation>
 <translation id="694267552845942083">Estás personalizando la configuración de sincronización. Para activar la sincronización, presiona el botón Confirmar que se encuentra cerca de la parte inferior de la pantalla. Subir</translation>
@@ -1218,7 +1214,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="829672787777123339">Estableciendo conexión con el dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
 <translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
-<translation id="8319544457245040955">Obtén más información sobre un tema sin abandonar la página. Selecciona una o más palabras en la página para buscarlas. Para editar tu búsqueda, analiza los resultados y ábrelos en una nueva pestaña.</translation>
 <translation id="8327155640814342956">A fin de obtener la mejor experiencia de navegación, abre Chrome para actualizarlo</translation>
 <translation id="834313815369870491">Nunca traducir sitios</translation>
 <translation id="8349013245300336738">Ordenar por cantidad de datos utilizados</translation>
