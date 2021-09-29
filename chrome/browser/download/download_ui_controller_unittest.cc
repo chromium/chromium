@@ -305,6 +305,32 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic_Interrupted) {
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
 }
 
+// A download that's blocked by local policies should also be displayed even
+// when the destination hasn't been determined yet, except for silently blocked
+// mixed content downloads.
+TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic_FileBlocked) {
+  std::unique_ptr<MockDownloadItem> item = CreateMockInProgressDownload();
+  DownloadUIController controller(manager(), GetTestDelegate());
+  EXPECT_CALL(*item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
+  EXPECT_CALL(*item, GetLastReason())
+      .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED));
+
+  // If the download is a silently blocked mixed content download, don't notify.
+  EXPECT_CALL(*item, GetMixedContentStatus())
+      .WillRepeatedly(
+          Return(download::DownloadItem::MixedContentStatus::SILENT_BLOCK));
+  ASSERT_TRUE(manager_observer());
+  manager_observer()->OnDownloadCreated(manager(), item.get());
+  EXPECT_FALSE(notified_item());
+
+  // Notify even though the destination hasn't been determined yet.
+  EXPECT_CALL(*item, GetMixedContentStatus())
+      .WillRepeatedly(Return(download::DownloadItem::MixedContentStatus::SAFE));
+  item->NotifyObserversDownloadUpdated();
+  EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+}
+
 // Downloads that have a target path on creation and are in the IN_PROGRESS
 // state should be displayed in the UI immediately without requiring an
 // additional OnDownloadUpdated() notification.

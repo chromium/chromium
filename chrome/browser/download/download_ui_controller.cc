@@ -183,10 +183,19 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
   if (item_model.WasUINotified() || !item_model.ShouldNotifyUI())
     return;
 
+  // Downloads blocked by local policies should be notified, otherwise users
+  // won't get any feedback that the download has failed.
+  bool should_notify =
+      item->GetLastReason() ==
+          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
+      item->GetMixedContentStatus() !=
+          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
+
   // Wait until the target path is determined or the download is canceled.
   if (item->GetTargetFilePath().empty() &&
-      item->GetState() != download::DownloadItem::CANCELLED)
+      item->GetState() != download::DownloadItem::CANCELLED && !should_notify) {
     return;
+  }
 
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
