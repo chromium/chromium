@@ -173,6 +173,8 @@ void BackgroundFetchJobController::DidStartRequest(
   // TODO(crbug.com/884672): Stop the fetch if the cross origin filter fails.
   BackgroundFetchCrossOriginFilter filter(registration_id_.origin(), *request);
   request->set_can_populate_body(filter.CanPopulateBody());
+  if (!request->can_populate_body())
+    has_failed_cors_request_ = true;
 }
 
 void BackgroundFetchJobController::DidUpdateRequest(const std::string& guid,
@@ -253,7 +255,14 @@ uint64_t BackgroundFetchJobController::GetInProgressUploadedBytes() {
 
 void BackgroundFetchJobController::AbortFromDelegate(
     BackgroundFetchFailureReason failure_reason) {
-  failure_reason_ = failure_reason;
+  if (failure_reason == BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED &&
+      has_failed_cors_request_) {
+    // Don't expose that the download total has been exceeded. Use a less
+    // specific error.
+    failure_reason_ = BackgroundFetchFailureReason::FETCH_ERROR;
+  } else {
+    failure_reason_ = failure_reason;
+  }
 
   Finish(failure_reason_, base::DoNothing());
 }

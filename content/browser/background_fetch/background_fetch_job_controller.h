@@ -210,6 +210,10 @@ class CONTENT_EXPORT BackgroundFetchJobController
   blink::mojom::BackgroundFetchFailureReason failure_reason_ =
       blink::mojom::BackgroundFetchFailureReason::NONE;
 
+  // Whether one of the requests handled by the controller failed
+  // the CORS checks and should not have its response exposed.
+  bool has_failed_cors_request_ = false;
+
   // Custom callback that runs after the controller is finished.
   FinishedCallback finished_callback_;
 
