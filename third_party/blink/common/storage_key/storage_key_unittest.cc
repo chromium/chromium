@@ -466,4 +466,45 @@ TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   EXPECT_EQ(net::SchemefulSite(origin2), key_origin1_site2.top_level_site());
 }
 
+TEST(StorageKeyTest, IsThirdPartyContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.com"));
+  const url::Origin kInsecureOrigin =
+      url::Origin::Create(GURL("http://www.foo.com"));
+  const url::Origin kSubdomainOrigin =
+      url::Origin::Create(GURL("https://bar.foo.com"));
+  const url::Origin kDifferentSite =
+      url::Origin::Create(GURL("https://www.bar.com"));
+
+  struct TestCase {
+    const url::Origin origin;
+    const url::Origin top_level_origin;
+    const bool expected;
+    const bool has_nonce = false;
+  } test_cases[] = {
+      {kOrigin, kOrigin, false},          {kOrigin, kInsecureOrigin, true},
+      {kOrigin, kSubdomainOrigin, false}, {kOrigin, kDifferentSite, true},
+      {kOrigin, kOrigin, true, true},
+  };
+  for (const auto& test_case : test_cases) {
+    if (test_case.has_nonce) {
+      StorageKey key = StorageKey::CreateWithNonce(
+          test_case.origin, base::UnguessableToken::Create());
+      EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
+      EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
+      continue;
+    }
+    StorageKey key(test_case.origin, test_case.top_level_origin);
+    EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
+    EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
+    // IsThirdPartyContext should not depend on the order of the arguments.
+    key = StorageKey(test_case.top_level_origin, test_case.origin);
+    EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
+    EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
+  }
+}
+
 }  // namespace blink

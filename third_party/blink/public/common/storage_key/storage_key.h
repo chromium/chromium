@@ -13,6 +13,7 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
@@ -108,6 +109,19 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Serializes the `StorageKey` into the format used for ServiceWorkerDatabase.
   // Do not call if `this` is opaque.
   std::string SerializeForServiceWorker() const;
+
+  // `IsThirdPartyContext` returns true if the StorageKey is for a context that
+  // is "third-party", i.e. the StorageKey's top-level site and origin have
+  // different schemes and/or domains.
+  //
+  // `IsThirdPartyContext` returns true if the StorageKey was created with a
+  // nonce.
+  //
+  // If storage partitioning is disabled, this always returns false.
+  bool IsThirdPartyContext() const {
+    return nonce_ || net::SchemefulSite(origin_) != top_level_site_;
+  }
+  bool IsFirstPartyContext() const { return !IsThirdPartyContext(); }
 
   const url::Origin& origin() const { return origin_; }
 
