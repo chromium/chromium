@@ -14,6 +14,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.util.Size;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,23 +85,38 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     }
 
     private void displayInitialScreenshot() {
-        // TODO(skare): If testing does not hit memory limits, simplify EntryManager.
-        LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
-        entry.setListener(new LongScreenshotsEntry.EntryListener() {
+        mEntryManager.addBitmapGeneratorObserver(new EntryManager.BitmapGeneratorObserver() {
             @Override
-            public void onResult(@EntryStatus int status) {
-                if (status == EntryStatus.BITMAP_GENERATED) {
-                    showAreaSelectionDialog(entry.getBitmap());
-                    return;
-                }
+            public void onStatusChange(int status) {
+                if (status == EntryStatus.CAPTURE_IN_PROGRESS) return;
 
-                if (status == EntryStatus.BITMAP_GENERATION_IN_PROGRESS) {
-                    return;
+                if (status != EntryStatus.CAPTURE_COMPLETE) {
+                    mEntryManager.removeBitmapGeneratorObserver(this);
                 }
+            }
 
-                Toast.makeText(mActivity, R.string.sharing_long_screenshot_unknown_error,
-                             Toast.LENGTH_LONG)
-                        .show();
+            @Override
+            public void onCompositorReady(Size size, Point offset) {
+                mEntryManager.removeBitmapGeneratorObserver(this);
+                // TODO(skare): If testing does not hit memory limits, simplify EntryManager.
+                LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
+                entry.setListener(new LongScreenshotsEntry.EntryListener() {
+                    @Override
+                    public void onResult(@EntryStatus int status) {
+                        if (status == EntryStatus.BITMAP_GENERATED) {
+                            showAreaSelectionDialog(entry.getBitmap());
+                            return;
+                        }
+
+                        if (status == EntryStatus.BITMAP_GENERATION_IN_PROGRESS) {
+                            return;
+                        }
+
+                        Toast.makeText(mActivity, R.string.sharing_long_screenshot_unknown_error,
+                                     Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
             }
         });
     }

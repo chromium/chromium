@@ -74,7 +74,7 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
 
         LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
                 tab.getId(), tab.getUrl(), tab.getWebContents(), clipRect.left, clipRect.top,
-                clipRect.right, clipRect.height(), inMemory);
+                clipRect.width(), clipRect.height(), inMemory);
     }
 
     public void longScreenshotsClosed() {

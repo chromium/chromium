@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
@@ -27,7 +28,7 @@ public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
     private Callback<Integer> mCompositorCallback;
     private Size mContentSize;
-    private Size mScrollOffset;
+    private Point mScrollOffset;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -68,7 +69,8 @@ public class LongScreenshotsCompositor {
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
         mContentSize = getMainFrameValues(frameContentSize);
-        mScrollOffset = getMainFrameValues(scrollOffsets);
+        Size offsetSize = getMainFrameValues(scrollOffsets);
+        mScrollOffset = new Point(offsetSize.getWidth(), offsetSize.getHeight());
         mCompositorCallback.onResult(CompositorStatus.OK);
     }
 
@@ -129,7 +131,7 @@ public class LongScreenshotsCompositor {
         return mContentSize;
     }
 
-    public Size getScrollOffset() {
+    public Point getScrollOffset() {
         return mScrollOffset;
     }
 

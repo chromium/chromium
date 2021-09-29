@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.scroll_capture;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
@@ -13,6 +14,7 @@ import android.os.SystemClock;
 import android.util.Size;
 import android.view.ScrollCaptureCallback;
 import android.view.ScrollCaptureSession;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -87,14 +89,19 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             @NonNull CancellationSignal cancellationSignal, @NonNull Consumer<Rect> onReady) {
         assert mCurrentTab != null;
         WebContents webContents = mCurrentTab.getWebContents();
-        if (webContents == null || mCurrentTab.isFrozen()) {
+        View view = mCurrentTab.getView();
+        if (view == null || webContents == null || mCurrentTab.isFrozen()) {
             onReady.accept(new Rect());
             return;
         }
 
         RenderCoordinates renderCoordinates = RenderCoordinates.fromWebContents(webContents);
-        mViewportRect = new Rect(0, 0, renderCoordinates.getLastFrameViewportWidthPixInt(),
-                renderCoordinates.getLastFrameViewportHeightPixInt());
+        // Take the view display pixels and divide by the min page scale factor to transform those
+        // dimensions into the renderer physical coordinate space which is the coordinate space in
+        // which the clip is applied to the capture.
+        mViewportRect = new Rect(0, 0,
+                (int) Math.floor(view.getWidth() / renderCoordinates.getMinPageScaleFactor()),
+                (int) Math.floor(view.getHeight() / renderCoordinates.getMinPageScaleFactor()));
         onReady.accept(mViewportRect);
     }
 
@@ -128,7 +135,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             }
 
             @Override
-            public void onCompositorReady(Size contentSize, Size scrollOffset) {
+            public void onCompositorReady(Size contentSize, Point scrollOffset) {
                 mEntryManager.removeBitmapGeneratorObserver(this);
                 if (contentSize.getWidth() == 0 || contentSize.getHeight() == 0) {
                     mEntryManager.destroy();
@@ -140,7 +147,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
                 mContentArea = new Rect(0, 0, contentSize.getWidth(), contentSize.getHeight());
                 // Offset the viewport rect with the offset height to get the initial rect.
                 mInitialRect = new Rect(mViewportRect);
-                mInitialRect.offsetTo(0, scrollOffset.getHeight());
+                mInitialRect.offsetTo(0, scrollOffset.y);
                 logBitmapGeneratorStatus(BitmapGeneratorStatus.CAPTURE_COMPLETE);
                 onReady.run();
             }
@@ -162,7 +169,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             return;
         }
 
-        LongScreenshotsEntry entry = mEntryManager.generateEntry(captureArea, true);
+        LongScreenshotsEntry entry = mEntryManager.generateEntry(captureArea);
         entry.setListener(status -> {
             if (status == EntryStatus.BITMAP_GENERATION_IN_PROGRESS) return;
 

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.scroll_capture;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -16,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
@@ -156,15 +156,15 @@ public class ScrollCaptureCallbackImplTest {
         observer.onStatusChange(EntryStatus.CAPTURE_COMPLETE);
         inOrder.verify(onReady, times(0)).run();
 
-        observer.onCompositorReady(new Size(0, 0), new Size(0, 0));
+        observer.onCompositorReady(new Size(0, 0), new Point(0, 0));
         inOrder.verify(onReady, times(0)).run();
-        observer.onCompositorReady(new Size(100, 100), new Size(0, 0));
+        observer.onCompositorReady(new Size(100, 100), new Point(0, 0));
         inOrder.verify(onReady).run();
 
         // Test contentArea and initialRect assignment
         int contentWidth = 200;
         int contentHeight = 2000;
-        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Size(0, 0));
+        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, 0));
         Assert.assertEquals(new Rect(0, 0, contentWidth, contentHeight),
                 scrollCaptureCallback.getContentAreaForTesting());
         Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
@@ -172,7 +172,7 @@ public class ScrollCaptureCallbackImplTest {
 
         // Test non-zero Y offset
         int scrollY = 300;
-        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Size(0, scrollY));
+        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
         scrollCaptureCallback.onScrollCaptureStart(session, signal, onReady);
         Assert.assertEquals(new Rect(0, scrollY, viewportWidth, scrollY + viewportHeight),
                 scrollCaptureCallback.getInitialRectForTesting());
@@ -213,7 +213,7 @@ public class ScrollCaptureCallbackImplTest {
                 ArgumentCaptor.forClass(BitmapGeneratorObserver.class);
         inOrder.verify(mEntryManager).addBitmapGeneratorObserver(observerArgumentCaptor.capture());
         BitmapGeneratorObserver observer = observerArgumentCaptor.getValue();
-        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Size(0, scrollY));
+        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
 
         // Test capture area outside the content area.
         Rect captureArea = new Rect(0, -2000, 500, -1000);
@@ -234,12 +234,12 @@ public class ScrollCaptureCallbackImplTest {
         })
                 .when(mEntry)
                 .setListener(any(EntryListener.class));
-        when(mEntryManager.generateEntry(any(), anyBoolean())).thenReturn(mEntry);
+        when(mEntryManager.generateEntry(any())).thenReturn(mEntry);
         // Test empty bitmap.
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
                 session, signal, captureArea, mRectConsumer);
-        inOrder.verify(mEntryManager).generateEntry(any(), anyBoolean());
+        inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
         inOrder.verify(mRectConsumer).accept(eq(new Rect()));
@@ -249,7 +249,7 @@ public class ScrollCaptureCallbackImplTest {
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
                 session, signal, captureArea, mRectConsumer);
-        inOrder.verify(mEntryManager).generateEntry(any(), anyBoolean());
+        inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
         inOrder.verify(surface).lockCanvas(any());

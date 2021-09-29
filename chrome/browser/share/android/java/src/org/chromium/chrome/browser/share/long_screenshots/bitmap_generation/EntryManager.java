@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
@@ -55,7 +56,7 @@ public class EntryManager {
          * @param contentSize size of the main frame.
          * @param scrollOffset the offset of the viewport rect relative to the main frame.
          */
-        void onCompositorReady(Size contentSize, Size scrollOffset);
+        void onCompositorReady(Size contentSize, Point scrollOffset);
     }
 
     /**
@@ -180,9 +181,8 @@ public class EntryManager {
      * @param updateMemoryUsage The callback to be notified of the bitmap memory usage.
      * @return The new entry that generates the bitmap.
      */
-    public LongScreenshotsEntry generateEntry(Rect bounds, boolean boundsRelativeToCapture) {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(
-                mGenerator, bounds, (bytes) -> {}, boundsRelativeToCapture);
+    public LongScreenshotsEntry generateEntry(Rect bounds) {
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(mGenerator, bounds, (bytes) -> {});
         processEntry(entry, true, false);
         return entry;
     }
@@ -271,7 +271,7 @@ public class EntryManager {
                                     .GENERATOR_COMPOSITOR_CAPTURE_COMPLETE);
 
                     Size contentSize = mGenerator.getContentSize();
-                    Size scrollOffset = mGenerator.getScrollOffset();
+                    Point scrollOffset = mGenerator.getScrollOffset();
                     for (BitmapGeneratorObserver observer : mGeneratorObservers) {
                         observer.onCompositorReady(contentSize, scrollOffset);
                     }

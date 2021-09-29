@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
@@ -99,21 +100,16 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
      * @param rect The bounds of the webpage (not capture) to composite into bitmap.
      * @param errorCallback Callback for when an error is encountered
      * @param onBitmapGenerated Called with the generated bitmap.
-     * @param boundsRelativeToCapture Whether the passed bounds are relative to capture to the page.
      * @return id of the request.
      */
-    public int compositeBitmap(Rect rect, Runnable errorCallback,
-            Callback<Bitmap> onBitmapGenerated, boolean boundsRelativeToCapture) {
+    public int compositeBitmap(
+            Rect rect, Runnable errorCallback, Callback<Bitmap> onBitmapGenerated) {
         // Check if the compositor is ready and whether the rect is within the bounds of the
         // the capture.
         if (mScaleFactor == 0f) {
-            mScaleFactor = mBoundsManager.getBitmapScaleFactorFromCompositedWidth(
-                    getContentSize().getWidth());
+            mScaleFactor = mBoundsManager.getBitmapScaleFactor();
         }
-        return mCompositor.requestBitmap(boundsRelativeToCapture
-                        ? rect
-                        : mBoundsManager.calculateBoundsRelativeToCapture(rect),
-                mScaleFactor, errorCallback, onBitmapGenerated);
+        return mCompositor.requestBitmap(rect, mScaleFactor, errorCallback, onBitmapGenerated);
     }
 
     /**
@@ -133,7 +129,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         return mCompositor.getContentSize();
     }
 
-    public Size getScrollOffset() {
+    public Point getScrollOffset() {
         return mCompositor.getScrollOffset();
     }
 
@@ -145,6 +141,10 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
     }
 
     private void onCompositorResult(@CompositorStatus int status) {
+        if (status == CompositorStatus.OK) {
+            mBoundsManager.setCompositedSize(mCompositor.getContentSize());
+            mBoundsManager.setCompositedScrollOffset(mCompositor.getScrollOffset());
+        }
         mGeneratorCallBack.onCompositorResult(status);
     }
 

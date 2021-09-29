@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -86,8 +85,8 @@ public class LongScreenshotsEntryTest {
         }
 
         @Override
-        public int compositeBitmap(Rect rect, Runnable errorCallback,
-                Callback<Bitmap> onBitmapGenerated, boolean boundsRelativeToCapture) {
+        public int compositeBitmap(
+                Rect rect, Runnable errorCallback, Callback<Bitmap> onBitmapGenerated) {
             if (mThrowErrorOnComposite) {
                 errorCallback.run();
                 return -1;
@@ -101,9 +100,7 @@ public class LongScreenshotsEntryTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, 100, 0, 1000));
-        when(mBoundsManager.calculateBoundsRelativeToCapture(any(Rect.class)))
-                .thenReturn(new Rect(0, 100, 0, 500));
+        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, -1, 0, 1000));
     }
 
     @Test
