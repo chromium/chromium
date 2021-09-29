@@ -800,9 +800,10 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
   blink::NavigationDownloadPolicy download_policy;
   if (IsViewSourceMode())
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
-
-  // TODO(https://crbug.com/1223394): Stop setting `base_url_for_data_url` and
-  // `history_url_for_data_url` for subframe history navigations.
+  // `base_url_for_data_url` is saved in NavigationEntry but should only be used
+  // by main frames, because loadData* navigations can only happen on the main
+  // frame.
+  bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
   return blink::mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
       GetTransitionType(), navigation_type, download_policy,
@@ -810,7 +811,8 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       // replace an entry on session history / reload / restore navigation. New
       // navigation that may use replacement create their CommonNavigationParams
       // via NavigationRequest, for example, instead of via NavigationEntry.
-      false /* should_replace_entry */, GetBaseURLForDataURL(), previews_state,
+      false /* should_replace_entry */,
+      is_for_main_frame ? GetBaseURLForDataURL() : GURL(), previews_state,
       navigation_start, frame_entry.method(),
       post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
       has_started_from_context_menu(), has_user_gesture(),
@@ -893,7 +895,12 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
           std::vector<GURL>() /* early_hints_preloaded_resources */);
 #if defined(OS_ANDROID)
-  if (NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
+  // `data_url_as_string` is saved in NavigationEntry but should only be used by
+  // main frames, because loadData* navigations can only happen on the main
+  // frame.
+  bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
+  if (is_for_main_frame &&
+      NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
     commit_params->data_url_as_string = GetDataURLAsString()->data();
   }
 #endif

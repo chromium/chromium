@@ -1318,6 +1318,10 @@ NavigationRequest::NavigationRequest(
   // Navigations can't be a replacement and a reload at the same time.
   DCHECK(!common_params_->should_replace_current_entry ||
          !NavigationTypeUtils::IsReload(common_params_->navigation_type));
+  DCHECK(IsInMainFrame() || common_params_->base_url_for_data_url.is_empty());
+#if defined(OS_ANDROID)
+  DCHECK(IsInMainFrame() || commit_params_->data_url_as_string.empty());
+#endif
   ScopedCrashKeys crash_keys(*this);
 
   // There should be no navigations to about:newtab, about:version or other
