@@ -539,7 +539,7 @@ void OsIntegrationManager::DeleteShortcuts(
                                        std::move(shortcut_info),
                                        std::move(shortcuts_callback));
   } else {
-    std::move(callback).Run(false);
+    std::move(callback).Run(true);
   }
 }
 

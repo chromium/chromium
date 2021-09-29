@@ -184,6 +184,8 @@ void RegisterShortcutsMenuWithOs(
 
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
                                    const base::FilePath& profile_path) {
+  if (!JumpListUpdater::IsEnabled())
+    return true;
   return JumpListUpdater::DeleteJumpList(
       GenerateAppUserModelId(profile_path, app_id));
 }

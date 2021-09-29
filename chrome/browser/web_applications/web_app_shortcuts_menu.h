@@ -30,7 +30,7 @@ void RegisterShortcutsMenuWithOs(
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps);
 
 // Deletes the ShortcutsMenu from the OS. This should be called during the
-// uninstallation process. Returns true on successful deletion.
+// uninstallation process. Returns true if there were no errors.
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
                                    const base::FilePath& profile_path);
 

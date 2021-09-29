@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
@@ -545,6 +546,7 @@ void WebAppSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
   if (!success)
     DLOG(ERROR) << "WebAppSyncBridge commit failed";
 
+  base::UmaHistogramBoolean("WebApp.Database.WriteResult", success);
   std::move(callback).Run(success);
 }
 
@@ -723,7 +725,9 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
   MergeLocalAppsToSync(entity_data, metadata_change_list.get());
 
   database_->Write(*update_local_data, std::move(metadata_change_list),
-                   base::DoNothing());
+                   base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  base::DoNothing::Once<bool>()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
   return absl::nullopt;
@@ -741,7 +745,9 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
     ApplySyncDataChange(*change, update_local_data.get());
 
   database_->Write(*update_local_data, std::move(metadata_change_list),
-                   base::DoNothing());
+                   base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  base::DoNothing::Once<bool>()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
   return absl::nullopt;

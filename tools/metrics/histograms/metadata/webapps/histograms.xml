@@ -65,6 +65,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Database.WriteResult" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if modifying data in the web app database was successful. Recorded
+    whenever the database is written to, which can happen on large events like
+    installing a web app, as well as small events like changing a the user
+    display preference for a web app.
+  </summary>
+</histogram>
+
 <histogram base="true" name="WebApp.Engagement"
     enum="SiteEngagementServiceEngagementType" expires_after="2022-01-16">
   <owner>calamity@chromium.org</owner>
@@ -390,6 +402,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     all the installation results. This intentionally excludes the scenario where
     we don't request to install all the apps for consistency. Recorded in
     milliseconds, from 1 millisecond to 3 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.IconDataSuccess" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if removing icon data from disk was successful during non-sync
+    webapp uninstall, before the webapp is removed from the database. Uninstall
+    can occur from the user, enterprise policy, device policy (but not or chrome
+    sync).
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.OsHookSuccess" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if uninstalling OS hooks was successful during non-sync webapp
+    uninstall, before the webapp is removed from the database. Uninstall can
+    occur from the user, enterprise policy, device policy (but not or chrome
+    sync).
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.Result" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if non-sync uninstallation was successful. Uninstall can occur from
+    the user, enterprise policy, device policy (but not or chrome sync).
   </summary>
 </histogram>
 

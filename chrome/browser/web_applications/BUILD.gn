@@ -161,6 +161,8 @@ source_set("web_applications") {
     "web_app_tab_helper.cc",
     "web_app_tab_helper.h",
     "web_app_ui_manager.h",
+    "web_app_uninstall_commit_task.cc",
+    "web_app_uninstall_commit_task.h",
     "web_app_uninstallation_via_os_settings_registration.cc",
     "web_app_uninstallation_via_os_settings_registration.h",
     "web_app_url_loader.cc",

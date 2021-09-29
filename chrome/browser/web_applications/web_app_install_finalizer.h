@@ -34,6 +34,8 @@ class WebApp;
 class WebAppIconManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
+class WebAppUninstallCommitTask;
+enum class WebAppUninstallCommitTaskResult;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebApplicationInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -167,6 +169,11 @@ class WebAppInstallFinalizer {
   // (OnSyncUninstallOsHooksUninstall) and app data is deleted
   // (OnSyncUninstallAppDataDeleted).
   void MaybeFinishSyncUninstall(AppId app_id);
+  void OnNonSyncUninstallComplete(
+      AppId app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallWebAppCallback callback,
+      WebAppUninstallCommitTaskResult result);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebApplicationInfo& web_app_info,
@@ -178,11 +185,6 @@ class WebAppInstallFinalizer {
       std::unique_ptr<WebApp> web_app,
       bool success);
 
-  void OnIconsDataDeletedAndWebAppUninstalled(
-      const AppId& app_id,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback,
-      bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
@@ -197,11 +199,6 @@ class WebAppInstallFinalizer {
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info,
       bool success);
-
-  void OnUninstallOsHooks(const AppId& app_id,
-                          webapps::WebappUninstallSource uninstall_source,
-                          UninstallWebAppCallback callback,
-                          OsHooksErrors errors);
 
   WebAppRegistrar* registrar_ = nullptr;
   WebAppSyncBridge* sync_bridge_ = nullptr;
@@ -224,6 +221,9 @@ class WebAppInstallFinalizer {
   };
   base::flat_map<AppId, std::unique_ptr<SyncUninstallState>>
       pending_sync_uninstalls_;
+
+  base::flat_map<AppId, std::unique_ptr<WebAppUninstallCommitTask>>
+      pending_non_sync_uninstalls_;
 
   base::RepeatingCallback<void(const AppId& app_id)>
       install_source_removed_callback_for_testing_;
