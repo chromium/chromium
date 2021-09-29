@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADING_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADING_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_
 
 #include <map>
 #include <string>
@@ -43,26 +43,26 @@ class WebAppIconManager;
 
 namespace apps {
 
-// This pipeline is meant to:
+// This class is meant to:
 // * Simplify loading icons, as things like effects and type are common
 //   to all loading.
 // * Allow the caller to halt the process by destructing the loader at any time,
-// * Allow easy additions to the pipeline if necessary (like new effects or
+// * Allow easy additions to the icon loader if necessary (like new effects or
 // backups).
 // Must be created & run from the UI thread.
-class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
+class AppIconLoader : public base::RefCounted<AppIconLoader> {
  public:
   static const int kFaviconFallbackImagePx =
       extension_misc::EXTENSION_ICON_BITTY;
 
-  IconLoadingPipeline(apps::mojom::IconType icon_type,
-                      int size_hint_in_dip,
-                      bool is_placeholder_icon,
-                      apps::IconEffects icon_effects,
-                      int fallback_icon_resource,
-                      apps::mojom::Publisher::LoadIconCallback callback);
+  AppIconLoader(apps::mojom::IconType icon_type,
+                int size_hint_in_dip,
+                bool is_placeholder_icon,
+                apps::IconEffects icon_effects,
+                int fallback_icon_resource,
+                apps::mojom::Publisher::LoadIconCallback callback);
 
-  IconLoadingPipeline(
+  AppIconLoader(
       apps::mojom::IconType icon_type,
       int size_hint_in_dip,
       bool is_placeholder_icon,
@@ -72,16 +72,15 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
           fallback,
       apps::mojom::Publisher::LoadIconCallback callback);
 
-  IconLoadingPipeline(
-      int size_hint_in_dip,
-      base::OnceCallback<void(const gfx::ImageSkia& icon)> callback);
+  AppIconLoader(int size_hint_in_dip,
+                base::OnceCallback<void(const gfx::ImageSkia& icon)> callback);
 
-  explicit IconLoadingPipeline(
+  explicit AppIconLoader(
       base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)>
           callback);
 
-  IconLoadingPipeline(int size_hint_in_dip,
-                      apps::mojom::Publisher::LoadIconCallback callback);
+  AppIconLoader(int size_hint_in_dip,
+                apps::mojom::Publisher::LoadIconCallback callback);
 
   void ApplyIconEffects(apps::IconEffects icon_effects,
                         apps::mojom::IconValuePtr iv);
@@ -119,9 +118,9 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
-  friend class base::RefCounted<IconLoadingPipeline>;
+  friend class base::RefCounted<AppIconLoader>;
 
-  ~IconLoadingPipeline();
+  ~AppIconLoader();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<arc::IconDecodeRequest> CreateArcIconDecodeRequest(
@@ -206,4 +205,4 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADING_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_

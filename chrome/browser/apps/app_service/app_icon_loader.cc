@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_icon_loading.h"
+#include "chrome/browser/apps/app_service/app_icon_loader.h"
 
 #include <memory>
 #include <utility>
@@ -233,14 +233,13 @@ apps::mojom::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
 
 namespace apps {
 
-IconLoadingPipeline::IconLoadingPipeline(
-    apps::mojom::IconType icon_type,
-    int size_hint_in_dip,
-    bool is_placeholder_icon,
-    apps::IconEffects icon_effects,
-    int fallback_icon_resource,
-    apps::mojom::Publisher::LoadIconCallback callback)
-    : IconLoadingPipeline(
+AppIconLoader::AppIconLoader(apps::mojom::IconType icon_type,
+                             int size_hint_in_dip,
+                             bool is_placeholder_icon,
+                             apps::IconEffects icon_effects,
+                             int fallback_icon_resource,
+                             apps::mojom::Publisher::LoadIconCallback callback)
+    : AppIconLoader(
           icon_type,
           size_hint_in_dip,
           is_placeholder_icon,
@@ -249,7 +248,7 @@ IconLoadingPipeline::IconLoadingPipeline(
           base::OnceCallback<void(apps::mojom::Publisher::LoadIconCallback)>(),
           std::move(callback)) {}
 
-IconLoadingPipeline::IconLoadingPipeline(
+AppIconLoader::AppIconLoader(
     apps::mojom::IconType icon_type,
     int size_hint_in_dip,
     bool is_placeholder_icon,
@@ -270,22 +269,21 @@ IconLoadingPipeline::IconLoadingPipeline(
   icon_scale_ = static_cast<float>(icon_size_in_px_) / size_hint_in_dip;
 }
 
-IconLoadingPipeline::IconLoadingPipeline(
+AppIconLoader::AppIconLoader(
     int size_hint_in_dip,
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback)
     : size_hint_in_dip_(size_hint_in_dip),
       image_skia_callback_(std::move(callback)) {}
 
-IconLoadingPipeline::IconLoadingPipeline(
+AppIconLoader::AppIconLoader(
     base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)> callback)
     : arc_activity_icons_callback_(std::move(callback)) {}
 
-IconLoadingPipeline::IconLoadingPipeline(
-    int size_hint_in_dip,
-    apps::mojom::Publisher::LoadIconCallback callback)
+AppIconLoader::AppIconLoader(int size_hint_in_dip,
+                             apps::mojom::Publisher::LoadIconCallback callback)
     : size_hint_in_dip_(size_hint_in_dip), callback_(std::move(callback)) {}
 
-IconLoadingPipeline::~IconLoadingPipeline() {
+AppIconLoader::~AppIconLoader() {
   if (!callback_.is_null()) {
     std::move(callback_).Run(apps::mojom::IconValue::New());
   }
@@ -297,8 +295,8 @@ IconLoadingPipeline::~IconLoadingPipeline() {
   }
 }
 
-void IconLoadingPipeline::ApplyIconEffects(apps::IconEffects icon_effects,
-                                           apps::mojom::IconValuePtr iv) {
+void AppIconLoader::ApplyIconEffects(apps::IconEffects icon_effects,
+                                     apps::mojom::IconValuePtr iv) {
   if (!iv || iv->uncompressed.isNull())
     return;
 
@@ -321,15 +319,15 @@ void IconLoadingPipeline::ApplyIconEffects(apps::IconEffects icon_effects,
       standard_icon_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ApplyEffects, icon_effects, size_hint_in_dip_,
                      std::move(iv), mask_image),
-      base::BindOnce(&IconLoadingPipeline::ApplyBadges,
-                     base::WrapRefCounted(this), icon_effects));
+      base::BindOnce(&AppIconLoader::ApplyBadges, base::WrapRefCounted(this),
+                     icon_effects));
 #else
   ApplyBadges(icon_effects, std::move(iv));
 #endif
 }
 
-void IconLoadingPipeline::ApplyBadges(apps::IconEffects icon_effects,
-                                      apps::mojom::IconValuePtr iv) {
+void AppIconLoader::ApplyBadges(apps::IconEffects icon_effects,
+                                apps::mojom::IconValuePtr iv) {
   const bool from_bookmark = icon_effects & apps::IconEffects::kRoundCorners;
 
   bool app_launchable = true;
@@ -356,7 +354,7 @@ void IconLoadingPipeline::ApplyBadges(apps::IconEffects icon_effects,
   std::move(callback_).Run(std::move(iv));
 }
 
-void IconLoadingPipeline::LoadWebAppIcon(
+void AppIconLoader::LoadWebAppIcon(
     const std::string& web_app_id,
     const GURL& launch_url,
     const web_app::WebAppIconManager& icon_manager,
@@ -368,10 +366,10 @@ void IconLoadingPipeline::LoadWebAppIcon(
 
   // In all other callpaths MaybeApplyEffectsAndComplete() uses
   // |icon_scale_for_compressed_response_| to apps::EncodeImageToPngBytes(). In
-  // most cases IconLoadingPipeline always uses the 1.0 intended icon scale
+  // most cases AppIconLoader always uses the 1.0 intended icon scale
   // factor as an intermediate representation to be compressed and returned.
   // TODO(crbug.com/1112737): Investigate how to unify it and set
-  // |icon_scale_for_compressed_response_| value in IconLoadingPipeline()
+  // |icon_scale_for_compressed_response_| value in AppIconLoader()
   // constructor.
   icon_scale_for_compressed_response_ = icon_scale_;
 
@@ -401,7 +399,7 @@ void IconLoadingPipeline::LoadWebAppIcon(
         // need to be uncompressed to apply icon effects.
         icon_manager.ReadSmallestCompressedIconAny(
             web_app_id, icon_size_in_px_,
-            base::BindOnce(&IconLoadingPipeline::CompleteWithCompressed,
+            base::BindOnce(&AppIconLoader::CompleteWithCompressed,
                            base::WrapRefCounted(this)));
         return;
       }
@@ -436,10 +434,10 @@ void IconLoadingPipeline::LoadWebAppIcon(
       }
       DCHECK(!icon_pixel_sizes.empty());
 
-      icon_manager.ReadIcons(
-          web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
-          base::BindOnce(&IconLoadingPipeline::OnReadWebAppIcon,
-                         base::WrapRefCounted(this)));
+      icon_manager.ReadIcons(web_app_id, *icon_purpose_to_read,
+                             icon_pixel_sizes,
+                             base::BindOnce(&AppIconLoader::OnReadWebAppIcon,
+                                            base::WrapRefCounted(this)));
 
       return;
     }
@@ -450,9 +448,8 @@ void IconLoadingPipeline::LoadWebAppIcon(
   NOTREACHED();
 }
 
-void IconLoadingPipeline::LoadExtensionIcon(
-    const extensions::Extension* extension,
-    content::BrowserContext* context) {
+void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
+                                      content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!extension) {
@@ -476,7 +473,7 @@ void IconLoadingPipeline::LoadExtensionIcon(
         // (i.e. a gfx::ImageSkia).
         LoadCompressedDataFromExtension(
             extension, icon_size_in_px_,
-            base::BindOnce(&IconLoadingPipeline::CompleteWithCompressed,
+            base::BindOnce(&AppIconLoader::CompleteWithCompressed,
                            base::WrapRefCounted(this)));
         return;
       }
@@ -490,7 +487,7 @@ void IconLoadingPipeline::LoadExtensionIcon(
       extensions::ImageLoader::Get(context)->LoadImageAtEveryScaleFactorAsync(
           extension, gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
           ImageToImageSkia(
-              base::BindOnce(&IconLoadingPipeline::MaybeApplyEffectsAndComplete,
+              base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
                              base::WrapRefCounted(this))));
       return;
     case apps::mojom::IconType::kUnknown:
@@ -500,8 +497,7 @@ void IconLoadingPipeline::LoadExtensionIcon(
   MaybeLoadFallbackOrCompleteEmpty();
 }
 
-void IconLoadingPipeline::LoadCompressedIconFromFile(
-    const base::FilePath& path) {
+void AppIconLoader::LoadCompressedIconFromFile(const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // For the compressed icon, MaybeApplyEffectsAndComplete() uses
@@ -514,12 +510,12 @@ void IconLoadingPipeline::LoadCompressedIconFromFile(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadFileAsCompressedData, path),
       apps::CompressedDataToImageSkiaCallback(
-          base::BindOnce(&IconLoadingPipeline::MaybeApplyEffectsAndComplete,
+          base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
                          base::WrapRefCounted(this)),
           icon_scale_));
 }
 
-void IconLoadingPipeline::LoadIconFromCompressedData(
+void AppIconLoader::LoadIconFromCompressedData(
     const std::string& compressed_icon_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -532,13 +528,13 @@ void IconLoadingPipeline::LoadIconFromCompressedData(
   std::vector<uint8_t> data(compressed_icon_data.begin(),
                             compressed_icon_data.end());
   apps::CompressedDataToImageSkiaCallback(
-      base::BindOnce(&IconLoadingPipeline::MaybeApplyEffectsAndComplete,
+      base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
                      base::WrapRefCounted(this)),
       icon_scale_)
       .Run(std::move(data));
 }
 
-void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
+void AppIconLoader::LoadIconFromResource(int icon_resource) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -609,29 +605,29 @@ void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void IconLoadingPipeline::LoadArcIconPngData(
+void AppIconLoader::LoadArcIconPngData(
     const std::vector<uint8_t>& icon_png_data) {
   arc_icon_decode_request_ = CreateArcIconDecodeRequest(
-      base::BindOnce(&IconLoadingPipeline::ApplyBackgroundAndMask,
+      base::BindOnce(&AppIconLoader::ApplyBackgroundAndMask,
                      base::WrapRefCounted(this)),
       icon_png_data);
 }
 
-void IconLoadingPipeline::LoadCompositeImages(
+void AppIconLoader::LoadCompositeImages(
     const std::vector<uint8_t>& foreground_data,
     const std::vector<uint8_t>& background_data) {
   arc_foreground_icon_decode_request_ = CreateArcIconDecodeRequest(
-      base::BindOnce(&IconLoadingPipeline::CompositeImagesAndApplyMask,
+      base::BindOnce(&AppIconLoader::CompositeImagesAndApplyMask,
                      base::WrapRefCounted(this), true /* is_foreground */),
       foreground_data);
 
   arc_background_icon_decode_request_ = CreateArcIconDecodeRequest(
-      base::BindOnce(&IconLoadingPipeline::CompositeImagesAndApplyMask,
+      base::BindOnce(&AppIconLoader::CompositeImagesAndApplyMask,
                      base::WrapRefCounted(this), false /* is_foreground */),
       background_data);
 }
 
-void IconLoadingPipeline::LoadArcActivityIcons(
+void AppIconLoader::LoadArcActivityIcons(
     const std::vector<arc::mojom::ActivityIconPtr>& icons) {
   arc_activity_icons_.resize(icons.size());
   DCHECK_EQ(0U, count_);
@@ -651,7 +647,7 @@ void IconLoadingPipeline::LoadArcActivityIcons(
 
     apps::ArcRawIconPngDataToImageSkia(
         std::move(icons[i]->icon_png_data), icons[i]->width,
-        base::BindOnce(&IconLoadingPipeline::OnArcActivityIconLoaded,
+        base::BindOnce(&AppIconLoader::OnArcActivityIconLoaded,
                        base::WrapRefCounted(this), &arc_activity_icons_[i]));
   }
 
@@ -661,7 +657,7 @@ void IconLoadingPipeline::LoadArcActivityIcons(
 }
 
 std::unique_ptr<arc::IconDecodeRequest>
-IconLoadingPipeline::CreateArcIconDecodeRequest(
+AppIconLoader::CreateArcIconDecodeRequest(
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
     const std::vector<uint8_t>& icon_png_data) {
   std::unique_ptr<arc::IconDecodeRequest> arc_icon_decode_request =
@@ -671,7 +667,7 @@ IconLoadingPipeline::CreateArcIconDecodeRequest(
   return arc_icon_decode_request;
 }
 
-void IconLoadingPipeline::ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
+void AppIconLoader::ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
   std::move(image_skia_callback_)
       .Run(gfx::ImageSkiaOperations::CreateResizedImage(
           apps::ApplyBackgroundAndMask(image),
@@ -679,9 +675,8 @@ void IconLoadingPipeline::ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
           gfx::Size(size_hint_in_dip_, size_hint_in_dip_)));
 }
 
-void IconLoadingPipeline::CompositeImagesAndApplyMask(
-    bool is_foreground,
-    const gfx::ImageSkia& image) {
+void AppIconLoader::CompositeImagesAndApplyMask(bool is_foreground,
+                                                const gfx::ImageSkia& image) {
   if (is_foreground) {
     foreground_is_set_ = true;
     foreground_image_ = image;
@@ -708,9 +703,8 @@ void IconLoadingPipeline::CompositeImagesAndApplyMask(
           gfx::Size(size_hint_in_dip_, size_hint_in_dip_)));
 }
 
-void IconLoadingPipeline::OnArcActivityIconLoaded(
-    gfx::ImageSkia* arc_activity_icon,
-    const gfx::ImageSkia& icon) {
+void AppIconLoader::OnArcActivityIconLoaded(gfx::ImageSkia* arc_activity_icon,
+                                            const gfx::ImageSkia& icon) {
   DCHECK(arc_activity_icon);
   ++count_;
   *arc_activity_icon = icon;
@@ -723,8 +717,7 @@ void IconLoadingPipeline::OnArcActivityIconLoaded(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void IconLoadingPipeline::MaybeApplyEffectsAndComplete(
-    const gfx::ImageSkia image) {
+void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
   if (image.isNull()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -739,17 +732,16 @@ void IconLoadingPipeline::MaybeApplyEffectsAndComplete(
   // an uncompressed icon, return the uncompressed result; otherwise, encode
   // the icon to a compressed icon, return the compressed result.
   if (icon_effects_) {
-    apps::ApplyIconEffects(
-        icon_effects_, size_hint_in_dip_, std::move(iv),
-        base::BindOnce(&IconLoadingPipeline::CompleteWithIconValue,
-                       base::WrapRefCounted(this)));
+    apps::ApplyIconEffects(icon_effects_, size_hint_in_dip_, std::move(iv),
+                           base::BindOnce(&AppIconLoader::CompleteWithIconValue,
+                                          base::WrapRefCounted(this)));
     return;
   }
 
   CompleteWithIconValue(std::move(iv));
 }
 
-void IconLoadingPipeline::CompleteWithCompressed(std::vector<uint8_t> data) {
+void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
   DCHECK_EQ(icon_type_, apps::mojom::IconType::kCompressed);
   if (data.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();
@@ -762,8 +754,7 @@ void IconLoadingPipeline::CompleteWithCompressed(std::vector<uint8_t> data) {
   std::move(callback_).Run(std::move(iv));
 }
 
-void IconLoadingPipeline::CompleteWithUncompressed(
-    apps::mojom::IconValuePtr iv) {
+void AppIconLoader::CompleteWithUncompressed(apps::mojom::IconValuePtr iv) {
   DCHECK_NE(icon_type_, apps::mojom::IconType::kCompressed);
   DCHECK_NE(icon_type_, apps::mojom::IconType::kUnknown);
   if (iv->uncompressed.isNull()) {
@@ -773,7 +764,7 @@ void IconLoadingPipeline::CompleteWithUncompressed(
   std::move(callback_).Run(std::move(iv));
 }
 
-void IconLoadingPipeline::CompleteWithIconValue(apps::mojom::IconValuePtr iv) {
+void AppIconLoader::CompleteWithIconValue(apps::mojom::IconValuePtr iv) {
   if (icon_type_ == apps::mojom::IconType::kUncompressed ||
       icon_type_ == apps::mojom::IconType::kStandard) {
     CompleteWithUncompressed(std::move(iv));
@@ -795,13 +786,12 @@ void IconLoadingPipeline::CompleteWithIconValue(apps::mojom::IconValuePtr iv) {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
                      icon_scale_for_compressed_response_),
-      base::BindOnce(&IconLoadingPipeline::CompleteWithCompressed,
+      base::BindOnce(&AppIconLoader::CompleteWithCompressed,
                      base::WrapRefCounted(this)));
 }
 
 // Callback for reading uncompressed web app icons.
-void IconLoadingPipeline::OnReadWebAppIcon(
-    std::map<int, SkBitmap> icon_bitmaps) {
+void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
   if (icon_bitmaps.empty()) {
     MaybeApplyEffectsAndComplete(gfx::ImageSkia());
     return;
@@ -841,7 +831,7 @@ void IconLoadingPipeline::OnReadWebAppIcon(
   MaybeApplyEffectsAndComplete(image_skia);
 }
 
-void IconLoadingPipeline::MaybeLoadFallbackOrCompleteEmpty() {
+void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {
   if (fallback_favicon_url_.is_valid() &&
       icon_size_in_px_ == kFaviconFallbackImagePx) {
     GURL favicon_url = fallback_favicon_url_;
@@ -855,7 +845,7 @@ void IconLoadingPipeline::MaybeLoadFallbackOrCompleteEmpty() {
           favicon_url, {favicon_base::IconType::kFavicon}, gfx::kFaviconSize,
           /*fallback_to_host=*/false,
           FaviconResultToImageSkia(
-              base::BindOnce(&IconLoadingPipeline::MaybeApplyEffectsAndComplete,
+              base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
                              base::WrapRefCounted(this)),
               icon_scale_),
           &cancelable_task_tracker_);
@@ -868,12 +858,12 @@ void IconLoadingPipeline::MaybeLoadFallbackOrCompleteEmpty() {
     // passing it to |callback_| directly so we can catch failures and try other
     // things.
     apps::mojom::Publisher::LoadIconCallback fallback_adaptor = base::BindOnce(
-        [](scoped_refptr<IconLoadingPipeline> pipeline,
+        [](scoped_refptr<AppIconLoader> icon_loader,
            apps::mojom::IconValuePtr ptr) {
           if (!ptr.is_null()) {
-            std::move(pipeline->callback_).Run(std::move(ptr));
+            std::move(icon_loader->callback_).Run(std::move(ptr));
           } else {
-            pipeline->MaybeLoadFallbackOrCompleteEmpty();
+            icon_loader->MaybeLoadFallbackOrCompleteEmpty();
           }
         },
         base::WrapRefCounted(this));

@@ -21,7 +21,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon_loading.h"
+#include "chrome/browser/apps/app_service/app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/browser/browser_thread.h"
@@ -305,9 +305,9 @@ void ArcRawIconPngDataToImageSkia(
       return;
     }
 
-    scoped_refptr<IconLoadingPipeline> icon_loader =
-        base::MakeRefCounted<IconLoadingPipeline>(size_hint_in_dip,
-                                                  std::move(callback));
+    scoped_refptr<AppIconLoader> icon_loader =
+        base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,
+                                            std::move(callback));
     icon_loader->LoadArcIconPngData(icon->icon_png_data.value());
     return;
   }
@@ -324,9 +324,9 @@ void ArcRawIconPngDataToImageSkia(
 
   // For adaptive icons, composite the background and the foreground images
   // together, then applying the mask
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(size_hint_in_dip,
-                                                std::move(callback));
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,
+                                          std::move(callback));
   icon_loader->LoadCompositeImages(
       std::move(icon->foreground_icon_png_data.value()),
       std::move(icon->background_icon_png_data.value()));
@@ -341,8 +341,8 @@ void ArcActivityIconsToImageSkias(
     return;
   }
 
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(std::move(callback));
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(std::move(callback));
   icon_loader->LoadArcActivityIcons(icons);
 }
 
@@ -420,9 +420,9 @@ void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
                       apps::mojom::IconValuePtr iv,
                       apps::mojom::Publisher::LoadIconCallback callback) {
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(size_hint_in_dip,
-                                                std::move(callback));
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,
+                                          std::move(callback));
   icon_loader->ApplyIconEffects(icon_effects, std::move(iv));
 }
 
@@ -435,8 +435,8 @@ void LoadIconFromExtension(apps::mojom::IconType icon_type,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   constexpr bool is_placeholder_icon = false;
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           IDR_APP_DEFAULT_ICON, std::move(callback));
   icon_loader->LoadExtensionIcon(
@@ -459,8 +459,8 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 
   DCHECK(web_app_provider);
   constexpr bool is_placeholder_icon = false;
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           IDR_APP_DEFAULT_ICON, std::move(callback));
   icon_loader->LoadWebAppIcon(
@@ -479,8 +479,8 @@ void LoadIconFromFileWithFallback(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   constexpr bool is_placeholder_icon = false;
 
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           kInvalidIconResource, std::move(fallback), std::move(callback));
   icon_loader->LoadCompressedIconFromFile(path);
@@ -495,8 +495,8 @@ void LoadIconFromCompressedData(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   constexpr bool is_placeholder_icon = false;
 
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           kInvalidIconResource, std::move(callback));
   icon_loader->LoadIconFromCompressedData(compressed_icon_data);
@@ -512,8 +512,8 @@ void LoadIconFromResource(apps::mojom::IconType icon_type,
   // There is no fallback icon for a resource.
   constexpr int fallback_icon_resource = 0;
 
-  scoped_refptr<IconLoadingPipeline> icon_loader =
-      base::MakeRefCounted<IconLoadingPipeline>(
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           fallback_icon_resource, std::move(callback));
   icon_loader->LoadIconFromResource(resource_id);
