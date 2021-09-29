@@ -1338,7 +1338,7 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
                        is_placeholder_icon, icon_effects, std::move(callback));
 }
 
-apps::mojom::InstallReason GetInstallSource(
+apps::mojom::InstallReason GetInstallReason(
     const ArcAppListPrefs* prefs,
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
@@ -1367,11 +1367,12 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
                                      const std::string& app_id,
                                      const ArcAppListPrefs::AppInfo& app_info,
                                      bool update_icon) {
+  auto install_reason = GetInstallReason(prefs, app_id, app_info);
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kArc, app_id,
       app_info.suspended ? apps::mojom::Readiness::kDisabledByPolicy
                          : apps::mojom::Readiness::kReady,
-      app_info.name, GetInstallSource(prefs, app_id, app_info));
+      app_info.name, install_reason);
 
   app->publisher_id = app_info.package_name;
 
@@ -1386,6 +1387,9 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
 
   app->last_launch_time = app_info.last_launch_time;
   app->install_time = app_info.install_time;
+  app->install_source = install_reason == apps::mojom::InstallReason::kSystem
+                            ? apps::mojom::InstallSource::kSystem
+                            : apps::mojom::InstallSource::kPlayStore;
 
   auto show = ShouldShow(app_info) ? apps::mojom::OptionalBool::kTrue
                                    : apps::mojom::OptionalBool::kFalse;

@@ -113,7 +113,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(
   }
 }
 
-apps::mojom::InstallReason GetInstallSource(
+apps::mojom::InstallReason GetInstallReason(
     const Profile* profile,
     const extensions::Extension* extension) {
   if (extensions::Manifest::IsComponentLocation(extension->location())) {
@@ -194,9 +194,10 @@ void ExtensionAppsBase::SetShowInFields(
 apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
     const extensions::Extension* extension,
     apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      apps::mojom::AppType::kExtension, extension->id(), readiness,
-      extension->name(), GetInstallSource(profile_, extension));
+  auto install_reason = GetInstallReason(profile_, extension);
+  apps::mojom::AppPtr app =
+      PublisherBase::MakeApp(apps::mojom::AppType::kExtension, extension->id(),
+                             readiness, extension->name(), install_reason);
 
   app->short_name = extension->short_name();
   app->description = extension->description();
@@ -209,6 +210,9 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
       app->install_time = prefs->GetInstallTime(extension->id());
     }
   }
+  app->install_source = install_reason == apps::mojom::InstallReason::kSystem
+                            ? apps::mojom::InstallSource::kSystem
+                            : apps::mojom::InstallSource::kChromeWebStore;
 
   app->is_platform_app = extension->is_platform_app()
                              ? apps::mojom::OptionalBool::kTrue
@@ -535,7 +539,11 @@ void ExtensionAppsBase::OnExtensionLoaded(
   app->app_id = extension->id();
   app->readiness = apps::mojom::Readiness::kReady;
   app->name = extension->name();
-  app->install_reason = GetInstallSource(profile_, extension);
+  app->install_reason = GetInstallReason(profile_, extension);
+  app->install_source =
+      app->install_reason == apps::mojom::InstallReason::kSystem
+          ? apps::mojom::InstallSource::kSystem
+          : apps::mojom::InstallSource::kChromeWebStore;
   Publish(std::move(app), subscribers_);
 }
 

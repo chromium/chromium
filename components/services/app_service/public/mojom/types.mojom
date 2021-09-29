@@ -42,6 +42,10 @@ struct App {
   // Whether the app was installed by sync, policy or as a default app.
   InstallReason install_reason;
 
+  // Where the app was installed from, e.g. from play sstore, from chrome web
+  // store, etc.
+  InstallSource install_source;
+
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
   OptionalBool is_platform_app;
@@ -140,6 +144,16 @@ enum InstallReason {
   kDefault,    // Preinstalled by default, but is not considered a system app.
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
+};
+
+// Where the app was installed from.
+enum InstallSource {
+  kUnknown = 0,
+  kSystem,          // Installed as part of Chrome OS.
+  kSync,            // Installed from sync.
+  kPlayStore,       // Installed from Play store.
+  kChromeWebStore,  // Installed from Chrome web store.
+  kBrowser,         // Installed from browser.
 };
 
 // What caused the app to be uninstalled.

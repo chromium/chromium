@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -77,7 +78,7 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::NOTIFICATIONS,
 };
 
-apps::mojom::InstallReason GetHighestPriorityInstallSource(
+apps::mojom::InstallReason GetHighestPriorityInstallReason(
     const WebApp* web_app) {
   // TODO(crbug.com/1189949): Introduce kOem as a new Source::Type value
   // immediately below web_app::Source::kSystem, so that this custom behavior
@@ -101,6 +102,41 @@ apps::mojom::InstallReason GetHighestPriorityInstallSource(
       return apps::mojom::InstallReason::kSync;
     case Source::kDefault:
       return apps::mojom::InstallReason::kDefault;
+  }
+}
+
+apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
+                                            const AppId& app_id) {
+  auto install_source = web_app::GetWebAppInstallSource(prefs, app_id);
+  if (!install_source.has_value()) {
+    return apps::mojom::InstallSource::kUnknown;
+  }
+
+  switch (static_cast<webapps::WebappInstallSource>(install_source.value())) {
+    case webapps::WebappInstallSource::MENU_BROWSER_TAB:
+    case webapps::WebappInstallSource::MENU_CUSTOM_TAB:
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+    case webapps::WebappInstallSource::API_BROWSER_TAB:
+    case webapps::WebappInstallSource::API_CUSTOM_TAB:
+    case webapps::WebappInstallSource::DEVTOOLS:
+    case webapps::WebappInstallSource::MANAGEMENT_API:
+    case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
+    case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case webapps::WebappInstallSource::EXTERNAL_POLICY:
+    case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
+      return apps::mojom::InstallSource::kBrowser;
+    case webapps::WebappInstallSource::ARC:
+      return apps::mojom::InstallSource::kPlayStore;
+    case webapps::WebappInstallSource::INTERNAL_DEFAULT:
+    case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
+    case webapps::WebappInstallSource::SYSTEM_DEFAULT:
+      return apps::mojom::InstallSource::kSystem;
+    case webapps::WebappInstallSource::SYNC:
+      return apps::mojom::InstallSource::kSync;
+    case webapps::WebappInstallSource::COUNT:
+      return apps::mojom::InstallSource::kUnknown;
   }
 }
 
@@ -264,9 +300,13 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
                   : apps::mojom::Readiness::kReady;
 
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      app_type(), web_app->app_id(), readiness, web_app->name(),
-      GetHighestPriorityInstallSource(web_app));
+  auto install_reason = GetHighestPriorityInstallReason(web_app);
+  apps::mojom::AppPtr app =
+      apps::PublisherBase::MakeApp(app_type(), web_app->app_id(), readiness,
+                                   web_app->name(), install_reason);
+
+  app->install_source =
+      GetInstallSource(profile()->GetPrefs(), web_app->app_id());
 
   // For system web apps (only), the install source is |kSystem|.
   DCHECK_EQ(web_app->IsSystemApp(),

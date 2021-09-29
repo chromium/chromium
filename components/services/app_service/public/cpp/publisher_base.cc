@@ -34,6 +34,7 @@ apps::mojom::AppPtr PublisherBase::MakeApp(
   app->install_time = base::Time();
 
   app->install_reason = install_reason;
+  app->install_source = apps::mojom::InstallSource::kUnknown;
 
   app->is_platform_app = apps::mojom::OptionalBool::kFalse;
   app->recommendable = apps::mojom::OptionalBool::kTrue;
