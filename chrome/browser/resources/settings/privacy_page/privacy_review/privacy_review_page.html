@@ -30,7 +30,9 @@
       [[computeHeaderString_(privacyReviewStep_)]]
     </div>
   </div>
-  <template is="dom-if" if="[[showWelcomeFragment_(privacyReviewStep_)]]">
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
     <div id="welcomeFragment">
       <div>$i18n{privacyReviewWelcomeCardHeader}</div>
       <div class="footer">
@@ -41,7 +43,9 @@
       </div>
     </div>
   </template>
-  <template is="dom-if" if="[[showCompletionFragment_(privacyReviewStep_)]]">
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
     <div id="completionFragment">
       <div>$i18n{privacyReviewCompletionCardHeader}</div>
       <div class="footer">
@@ -52,16 +56,21 @@
       </div>
     </div>
   </template>
-  <template is="dom-if" if="[[showMsbbFragment_(privacyReviewStep_)]]">
+  <template is="dom-if"
+      if="[[showFragment_(privacyReviewStepEnum_.MSBB, privacyReviewStep_)]]">
     <privacy-review-msbb-fragment id="msbbFragment" prefs="{{prefs}}">
     </privacy-review-msbb-fragment>
   </template>
-  <template is="dom-if" if="[[showClearOnExitFragment_(privacyReviewStep_)]]">
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.CLEAR_ON_EXIT, privacyReviewStep_)]]">
     <privacy-review-clear-on-exit-fragment id="clearOnExitFragment"
         prefs="{{prefs}}">
     </privacy-review-clear-on-exit-fragment>
   </template>
-  <template is="dom-if" if="[[showHistorySyncFragment_(privacyReviewStep_)]]">
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.HISTORY_SYNC, privacyReviewStep_)]]">
     <privacy-review-history-sync-fragment id="historySyncFragment"
         prefs="{{prefs}}">
     </privacy-review-history-sync-fragment>

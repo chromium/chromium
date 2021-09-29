@@ -74,6 +74,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       },
 
       /**
+       * Valid privacy review states.
+       */
+      privacyReviewStepEnum_: {
+        type: Object,
+        value: PrivacyReviewStep,
+      },
+
+      /**
        * The current step in the privacy review flow.
        * @private {PrivacyReviewStep}
        */
@@ -292,28 +300,13 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     return !!this.computeHeaderString_();
   }
 
-  private showWelcomeFragment_(): boolean {
-    return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME;
-  }
-
-  private showCompletionFragment_(): boolean {
-    return this.privacyReviewStep_ === PrivacyReviewStep.COMPLETION;
+  private showFragment_(step: PrivacyReviewStep): boolean {
+    return this.privacyReviewStep_ === step;
   }
 
   private showAnySettingFragment_(): boolean {
-    return !this.showWelcomeFragment_() && !this.showCompletionFragment_();
-  }
-
-  private showMsbbFragment_(): boolean {
-    return this.privacyReviewStep_ === PrivacyReviewStep.MSBB;
-  }
-
-  private showClearOnExitFragment_(): boolean {
-    return this.privacyReviewStep_ === PrivacyReviewStep.CLEAR_ON_EXIT;
-  }
-
-  private showHistorySyncFragment_(): boolean {
-    return this.privacyReviewStep_ === PrivacyReviewStep.HISTORY_SYNC;
+    return this.privacyReviewStep_ !== PrivacyReviewStep.WELCOME &&
+        this.privacyReviewStep_ !== PrivacyReviewStep.COMPLETION;
   }
 }
 
