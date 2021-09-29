@@ -171,6 +171,10 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       kQuickAnswersUnitConverstionEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateUnitConverstionEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      language::prefs::kApplicationLocale,
+      base::BindRepeating(&QuickAnswersState::OnLocaleChanged,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();

@@ -48,6 +48,7 @@
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -108,6 +109,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
     registry->RegisterBooleanPref(
         ::prefs::kLiveCaptionEnabled, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterStringPref(language::prefs::kApplicationLocale,
+                                 std::string());
   }
 }
 
