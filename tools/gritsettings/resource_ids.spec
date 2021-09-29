@@ -418,6 +418,10 @@
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_swa_resources.grd": {
     "META": {"sizes": {"includes": [100]}},
+    "includes": [2518],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
     "includes": [2519],
   },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {

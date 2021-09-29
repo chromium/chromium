@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
@@ -28,6 +29,9 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   auto* trusted_source = CreateTrustedAppDataSource();
   content::WebUIDataSource::Add(browser_context, trusted_source);
+
+  // Add ability to request chrome-untrusted: URLs
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
 
 content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
@@ -64,6 +68,12 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
       "'self' ;");
+
+  // Allow using the chrome-untrusted:// scheme in the host.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc,
+      "frame-src chrome-untrusted://file-manager "
+      "'self';");
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();

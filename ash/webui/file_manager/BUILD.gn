@@ -11,6 +11,24 @@ static_library("constants") {
   ]
 }
 
+static_library("file_manager_untrusted_ui") {
+  sources = [
+    "file_manager_untrusted_ui.cc",
+    "file_manager_untrusted_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//ash/webui/file_manager/resources:file_manager_untrusted_resources",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/file_manager:resources",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
 static_library("file_manager_ui") {
   sources = [
     "file_manager_page_handler.cc",
@@ -26,6 +44,7 @@ static_library("file_manager_ui") {
 
   deps = [
     ":constants",
+    ":file_manager_untrusted_ui",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//base",

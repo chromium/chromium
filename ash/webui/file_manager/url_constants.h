@@ -10,6 +10,8 @@ namespace file_manager {
 
 extern const char kChromeUIFileManagerHost[];
 extern const char kChromeUIFileManagerURL[];
+extern const char kChromeUIFileManagerUntrustedHost[];
+extern const char kChromeUIFileManagerUntrustedURL[];
 
 }  // namespace file_manager
 }  // namespace ash

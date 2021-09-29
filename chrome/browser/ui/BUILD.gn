@@ -2795,6 +2795,7 @@ static_library("ui") {
       "//ash/shortcut_viewer",
       "//ash/webui/diagnostics_ui",
       "//ash/webui/file_manager:file_manager_ui",
+      "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/help_app_ui",
       "//ash/webui/help_app_ui/search:mojo_bindings",
       "//ash/webui/media_app_ui",
