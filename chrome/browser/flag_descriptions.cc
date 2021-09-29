@@ -3947,10 +3947,6 @@ const char kMetalDescription[] =
     "Use Metal instead of OpenGL for rasterization (if out-of-process "
     "rasterization is enabled) and display (if the Skia renderer is enabled)";
 
-const char kScreenTimeName[] = "Screen Time";
-const char kScreenTimeDescription[] =
-    "Integrate with the macOS Screen Time system.";
-
 const char kUseAngleDescriptionMac[] =
     "Choose the graphics backend for ANGLE. The OpenGL backend is soon to be "
     "deprecated on Mac, and may contain driver bugs that are not planned to be "

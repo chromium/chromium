@@ -4736,11 +4736,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "screentime",
-    "owners": [ "ellyjones", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "scroll-capture",
     "owners": [ "ckitagawa", "fredmello", "yashard" ],
     "expiry_milestone": 100
