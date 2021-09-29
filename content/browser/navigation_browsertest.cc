@@ -3535,10 +3535,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     // will be the navigation to `url2` started below.
     TestNavigationObserver nav_observer(wc, 2);
 
-    // Start a same-document navigation to url2, but it's racing with the
-    // renderer's history.pushState(). It will return false, as the navigation
-    // is restarted.
-    EXPECT_FALSE(NavigateToURL(shell(), url2));
+    // Start a same-document navigation to url2 that is racing with the
+    // renderer's history.pushState().
+    shell()->LoadURL(url2);
 
     nav_observer.Wait();
   }
@@ -3708,8 +3707,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       handler_method, BrowserURLHandler::null_handler());
 
   TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL(embedded_test_server()->GetURL("/virtual-url.html"))));
+  shell()->LoadURL(embedded_test_server()->GetURL("/virtual-url.html"));
+  observer.Wait();
   EXPECT_EQ("/title2.html", observer.last_navigation_url().path());
   EXPECT_EQ(2, rewrite_count);
 }
@@ -5843,9 +5842,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
   // Since we committed a navigation, the next cross-origin navigation will
   // create a speculative RenderFrameHost.
 
-  NavigateToURLBlockUntilNavigationsComplete(
-      web_contents(), initial_url, /*number_of_navigations=*/1,
-      /*ignore_uncommitted_navigations=*/true);
+  EXPECT_TRUE(NavigateToURL(web_contents(), initial_url,
+                            /*expected_commit_url=*/redirection_url));
+
   EXPECT_TRUE(IsLastCommittedEntryOfPageType(web_contents(), PAGE_TYPE_NORMAL));
   EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
 }

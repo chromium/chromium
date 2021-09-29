@@ -8177,7 +8177,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   // Several tests expect a load of Chrome Debug URLs to send a DidStopLoading
   // notification, so set is loading to true here to properly surface it when
   // the renderer process is done handling the URL.
-  // TODO(clamy): Remove the test dependency on this behavior.
+  // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
     bool was_loading = frame_tree()->IsLoading();
     is_loading_ = true;

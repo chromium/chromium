@@ -114,6 +114,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
@@ -679,7 +680,9 @@ bool NavigateToURL(WebContents* web_contents, const GURL& url) {
 bool NavigateToURL(WebContents* web_contents,
                    const GURL& url,
                    const GURL& expected_commit_url) {
-  NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents, url, 1,
+      /*ignore_uncommitted_navigations=*/false);
   if (!IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL))
     return false;
 
@@ -757,6 +760,8 @@ void NavigateToURLBlockUntilNavigationsComplete(
       web_contents, number_of_navigations,
       MessageLoopRunner::QuitMode::IMMEDIATE,
       /*ignore_uncommitted_navigations=*/ignore_uncommitted_navigations);
+  if (!blink::IsRendererDebugURL(url) && number_of_navigations == 1)
+    same_tab_observer.set_expected_initial_url(url);
 
   // This mimics behavior of Shell::LoadURL...
   NavigationController::LoadURLParams params(url);

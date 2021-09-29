@@ -76,6 +76,7 @@
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_WIN)
@@ -260,7 +261,10 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     content::WaitForLoadStop(tab_strip->GetActiveWebContents());
   content::TestNavigationObserver same_tab_observer(
       tab_strip->GetActiveWebContents(), number_of_navigations,
-      content::MessageLoopRunner::QuitMode::DEFERRED);
+      content::MessageLoopRunner::QuitMode::DEFERRED,
+      /*ignore_uncommitted_navigations=*/false);
+  if (!blink::IsRendererDebugURL(url))
+    same_tab_observer.set_expected_initial_url(url);
 
   std::set<Browser*> initial_browsers;
   for (auto* initial_browser : *BrowserList::GetInstance())
@@ -296,7 +300,10 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   } else if (web_contents) {
     content::TestNavigationObserver observer(
         web_contents, number_of_navigations,
-        content::MessageLoopRunner::QuitMode::DEFERRED);
+        content::MessageLoopRunner::QuitMode::DEFERRED,
+        /*ignore_uncommitted_navigations=*/false);
+    if (!blink::IsRendererDebugURL(url))
+      observer.set_expected_initial_url(url);
     observer.Wait();
     return web_contents->GetMainFrame();
   }

@@ -16,10 +16,12 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
+class NavigationRequest;
 class WebContents;
 
 // For browser_tests, which run on the UI thread, run a second
@@ -34,7 +36,7 @@ class TestNavigationObserver {
   // Create and register a new TestNavigationObserver against the
   // |web_contents|.
   TestNavigationObserver(WebContents* web_contents,
-                         int number_of_navigations,
+                         int expected_number_of_navigations,
                          MessageLoopRunner::QuitMode quit_mode =
                              MessageLoopRunner::QuitMode::IMMEDIATE,
                          bool ignore_uncommitted_navigations = true);
@@ -46,7 +48,7 @@ class TestNavigationObserver {
   // Create and register a new TestNavigationObserver that will wait for
   // a navigation with |target_error|.
   explicit TestNavigationObserver(WebContents* web_contents,
-                                  net::Error target_error,
+                                  net::Error expected_target_error,
                                   MessageLoopRunner::QuitMode quit_mode =
                                       MessageLoopRunner::QuitMode::IMMEDIATE,
                                   bool ignore_uncommitted_navigations = true);
@@ -54,7 +56,7 @@ class TestNavigationObserver {
   // Create and register a new TestNavigationObserver that will wait for
   // |target_url| to complete loading or for a finished navigation to
   // |target_url|.
-  explicit TestNavigationObserver(const GURL& target_url,
+  explicit TestNavigationObserver(const GURL& expected_target_url,
                                   MessageLoopRunner::QuitMode quit_mode =
                                       MessageLoopRunner::QuitMode::IMMEDIATE,
                                   bool ignore_uncommitted_navigations = true);
@@ -63,6 +65,14 @@ class TestNavigationObserver {
   TestNavigationObserver& operator=(const TestNavigationObserver&) = delete;
 
   virtual ~TestNavigationObserver();
+
+  void set_expected_initial_url(const GURL& url) {
+    // Debug URLs do not go through NavigationRequest and therefore cannot be
+    // used as an `expected_initial_url_`.
+    DCHECK(!blink::IsRendererDebugURL(url));
+
+    expected_initial_url_ = url;
+  }
 
   void set_wait_event(WaitEvent event) { wait_event_ = event; }
 
@@ -166,9 +176,9 @@ class TestNavigationObserver {
   };
 
   TestNavigationObserver(WebContents* web_contents,
-                         int number_of_navigations,
-                         const absl::optional<GURL>& target_url,
-                         absl::optional<net::Error> target_error,
+                         int expected_number_of_navigations,
+                         const absl::optional<GURL>& expected_target_url,
+                         absl::optional<net::Error> expected_target_error,
                          MessageLoopRunner::QuitMode quit_mode =
                              MessageLoopRunner::QuitMode::IMMEDIATE,
                          bool ignore_uncommitted_navigations = true);
@@ -185,6 +195,12 @@ class TestNavigationObserver {
   void OnDidStopLoading(WebContents* web_contents);
   void OnDidStartNavigation(NavigationHandle* navigation_handle);
   void EventTriggered(WebContentsState* web_contents_state);
+
+  // Returns true of |expected_initial_url_| is missing, or if it matches the
+  // original URL of the NavigationRequest (stripping the initial view-source:
+  // if necessary).
+  bool DoesNavigationMatchExpectedInitialUrl(
+      NavigationRequest* navigation_request);
 
   // Returns true if |target_url_| or |target_error_| is configured.
   bool HasFilter();
@@ -204,15 +220,17 @@ class TestNavigationObserver {
   // The number of navigations to wait for.
   // If |target_url_| and/or |target_error_| are set, only navigations that
   // match those criteria will count towards this.
-  int number_of_navigations_;
+  int expected_number_of_navigations_;
 
-  // The URL to wait for.
-  // If this is nullopt, any URL counts.
-  const absl::optional<GURL> target_url_;
+  // The target URL to wait for.  If this is nullopt, any URL counts.
+  const absl::optional<GURL> expected_target_url_;
+
+  // The initial URL to wait for.  If this is nullopt, any URL counts.
+  absl::optional<GURL> expected_initial_url_;
 
   // The net error of the finished navigation to wait for.
   // If this is nullopt, any net::Error counts.
-  const absl::optional<net::Error> target_error_;
+  const absl::optional<net::Error> expected_target_error_;
 
   // Whether to ignore navigations that finish but don't commit.
   bool ignore_uncommitted_navigations_;

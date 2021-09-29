@@ -1452,12 +1452,16 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   ASSERT_EQ(settings_browser, app_session->GetSettingsBrowserForTesting());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), page2);
 
-  // Try navigating to a disallowed subpage.
-  NavigateToURLBlockUntilNavigationsComplete(web_contents, page2_sub, 1);
+  // Try navigating to a disallowed subpage (this won't commit the navigation).
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents, page2_sub, 1,
+      /*ignore_uncommitted_navigations=*/false);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), page2);
 
-  // Try navigating to a disallowed page.
-  NavigateToURLBlockUntilNavigationsComplete(web_contents, page3, 1);
+  // Try navigating to a disallowed page (this won't commit the navigation).
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents, page3, 1,
+      /*ignore_uncommitted_navigations=*/false);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), page2);
 
   // Close settings browser, expect the value to be cleared.

@@ -2099,7 +2099,17 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   InjectIsolationRequestingNavigation injector(this, web_contents(), tab2,
                                                isolated_origin_url);
-  EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
+  {
+    TestNavigationObserver tab1_navigation_observer(shell()->web_contents(), 1);
+    tab1_navigation_observer.set_expected_initial_url(isolated_origin_url);
+    shell()->LoadURL(isolated_origin_url);
+
+    // Waiting for DidNavigationFinished is sufficient to ensure that
+    // `injector.was_called()`.  We can't waiting for DidStopLoading, because
+    // running a nested message loop in the injector confuses
+    // TestNavigationObserver by changing the order of notifications.
+    tab1_navigation_observer.WaitForNavigationFinished();
+  }
   EXPECT_TRUE(injector.was_called());
 
   SiteInstanceImpl* tab1_site_instance =
