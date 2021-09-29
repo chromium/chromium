@@ -147,10 +147,6 @@ class SystemWebAppDelegate {
   virtual bool HasTitlebarTerminalSelectNewTabButton() const;
 #endif
 
-  // Whether |url| which is outside the normal Navigation Scope should be
-  // considered part of this System App.
-  virtual bool IsUrlInSystemAppScope(const GURL& url) const;
-
  protected:
   SystemAppType type_;
   std::string internal_name_;

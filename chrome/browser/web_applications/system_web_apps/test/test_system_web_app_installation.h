@@ -47,7 +47,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool IsAppEnabled() const override;
-  bool IsUrlInSystemAppScope(const GURL& url) const override;
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
@@ -85,7 +84,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool has_tab_strip_ = false;
   bool should_have_reload_button_in_minimal_ui_ = true;
   bool allow_scripts_to_close_windows_ = false;
-  GURL url_in_system_app_scope_;
 
   base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
       base::NullCallback();

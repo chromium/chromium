@@ -163,13 +163,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents(), off_scheme_page,
       1);
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
-
-  // URL has been added to be within scope for the SWA.
-  GURL in_scope_for_swa_page("http://example.com/in-scope");
-  content::NavigateToURLBlockUntilNavigationsComplete(
-      app_browser->tab_strip_model()->GetActiveWebContents(),
-      in_scope_for_swa_page, 1);
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
