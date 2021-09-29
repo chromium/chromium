@@ -421,7 +421,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
 
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_TestExtensionWasAlreadyUninstalled) {
@@ -456,6 +455,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
 
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationEnabledBrowserTest,
                        PRE_TestAppInstalled) {
