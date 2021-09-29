@@ -61,7 +61,8 @@
             origin:origin];
   self.mediator =
       [[LinkPreviewMediator alloc] initWithWebState:_previewWebState.get()
-                                         previewURL:self.URL];
+                                         previewURL:self.URL
+                                           referrer:self.referrer];
   self.mediator.consumer = self.viewController;
 }
 

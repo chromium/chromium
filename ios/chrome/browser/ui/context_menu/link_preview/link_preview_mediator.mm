@@ -9,8 +9,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_consumer.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -31,6 +29,9 @@
 // YES if the restoration of the webState is finished.
 @property(nonatomic, assign) BOOL restorationHasFinished;
 
+// The referrer for the preview.
+@property(nonatomic, assign) web::Referrer referrer;
+
 @end
 
 @implementation LinkPreviewMediator {
@@ -38,11 +39,13 @@
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      previewURL:(const GURL&)previewURL {
+                      previewURL:(const GURL&)previewURL
+                        referrer:(const web::Referrer&)referrer {
   self = [super init];
   if (self) {
     _webState = webState;
     _URL = previewURL;
+    _referrer = referrer;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
 
@@ -69,17 +72,10 @@
       !_webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
     self.restorationHasFinished = YES;
 
-    std::string referrerURL = base::GetFieldTrialParamValueByFeature(
-        kEnableDiscoverFeedPreview, kDiscoverReferrerParameter);
-    if (referrerURL.empty()) {
-      referrerURL = kDefaultDiscoverReferrer;
-    }
-    web::Referrer referrer =
-        web::Referrer(GURL(referrerURL), web::ReferrerPolicyDefault);
 
     // Load the preview page using the copied web state.
     web::NavigationManager::WebLoadParams loadParams(self.URL);
-    loadParams.referrer = referrer;
+    loadParams.referrer = self.referrer;
 
     // Attempt to prevent the WebProcess from suspending. Set this before
     // triggering the preview page loads.

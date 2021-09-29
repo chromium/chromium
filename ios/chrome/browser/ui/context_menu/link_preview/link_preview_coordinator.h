@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+namespace web {
+struct Referrer;
+}
+
 class GURL;
 
 // Coordinator for the link preview. Provides the preview view controller and
@@ -21,6 +25,9 @@ class GURL;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The referrer for the preview request.
+@property(nonatomic, assign) web::Referrer referrer;
 
 // Returns the viewController for the link preview. It displays a loaded
 // webState UIView.

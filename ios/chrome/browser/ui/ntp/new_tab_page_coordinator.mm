@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
@@ -534,8 +535,16 @@
 #pragma mark - DiscoverFeedPreviewDelegate
 
 - (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL {
+  std::string referrerURL = base::GetFieldTrialParamValueByFeature(
+      kEnableDiscoverFeedPreview, kDiscoverReferrerParameter);
+  if (referrerURL.empty()) {
+    referrerURL = kDefaultDiscoverReferrer;
+  }
+
   self.linkPreviewCoordinator =
       [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser URL:URL];
+  self.linkPreviewCoordinator.referrer =
+      web::Referrer(GURL(referrerURL), web::ReferrerPolicyDefault);
   [self.linkPreviewCoordinator start];
   return [self.linkPreviewCoordinator linkPreviewViewController];
 }

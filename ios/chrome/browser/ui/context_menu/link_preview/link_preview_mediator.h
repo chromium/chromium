@@ -9,6 +9,7 @@
 #include "url/gurl.h"
 
 namespace web {
+struct Referrer;
 class WebState;
 }
 
@@ -21,9 +22,11 @@ class WebState;
 // The consumer that is updated by this mediator.
 @property(nonatomic, weak) id<LinkPreviewConsumer> consumer;
 
-// Init the LinkPreviewMediator with a |webState| and the first URL.
+// Init the LinkPreviewMediator with a |webState|, the |previewURL| and the
+// |referrer|.
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      previewURL:(const GURL&)previewURL;
+                      previewURL:(const GURL&)previewURL
+                        referrer:(const web::Referrer&)referrer;
 
 @end
 
