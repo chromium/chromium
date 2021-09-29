@@ -169,7 +169,8 @@ INSTANTIATE_TEST_SUITE_P(
                             version_info::Channel::DEV,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"-unstable")));
-#if defined(OS_MAC) || defined(OS_WIN)  // No canary channel on Linux.
+#if defined(OS_MAC) || defined(OS_WIN) || \
+    defined(OS_FUCHSIA)  // No canary channel on Linux.
 INSTANTIATE_TEST_SUITE_P(
     Canary,
     ChannelInfoTest,

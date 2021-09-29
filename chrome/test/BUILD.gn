@@ -211,7 +211,8 @@ static_library("test_support") {
   }
 
   if (is_chrome_branded &&
-      (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash))) {
+      (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash) ||
+       is_fuchsia)) {
     sources += [ "base/scoped_channel_override.h" ]
     if (is_mac) {
       sources += [ "base/scoped_channel_override_mac.cc" ]
@@ -219,6 +220,8 @@ static_library("test_support") {
       sources += [ "base/scoped_channel_override_win.cc" ]
     } else if (is_posix && !is_android && !is_chromeos_ash) {
       sources += [ "base/scoped_channel_override_posix.cc" ]
+    } else if (is_fuchsia) {
+      sources += [ "base/scoped_channel_override_fuchsia.cc" ]
     }
   }
 

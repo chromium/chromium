@@ -6,7 +6,6 @@
 -CB*
 -ChromeDownloadManagerDelegateTest.Maybe*
 -ChromePaths.*
--Chromium/ChannelInfoTest.GetChannel/*
 -ComponentLoaderTest.AddOr*
 -Crash*
 -DeepScanningDownloadTest.LargeFileBlockedByPreference/1

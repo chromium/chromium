@@ -213,7 +213,7 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
       version_ui::kCommandLine,
       base::AsString16(
           base::CommandLine::ForCurrentProcess()->GetCommandLineString()));
-#elif defined(OS_POSIX)
+#else
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
