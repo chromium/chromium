@@ -200,6 +200,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // If it is already requested to disable, no-op.
   void RequestDisable();
 
+  // Requests to disable ARC session and remove ARC data.
+  // If it is already requested to disable, no-op.
+  void RequestDisableWithArcDataRemoval();
+
   // Requests to remove the ARC data.
   // If ARC is stopped, triggers to remove the data. Otherwise, queues to
   // remove the data after ARC stops.
@@ -326,6 +330,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Requests to disable ARC session and allows to optionally remove ARC data.
+  // If ARC is already disabled, no-op.
+  void RequestDisable(bool remove_arc_data);
 
   // RequestEnable() has a check in order not to trigger starting procedure
   // twice. This method can be called to bypass that check when restarting.

@@ -1142,7 +1142,7 @@ bool ArcSessionManager::RequestEnableImpl() {
   return false;
 }
 
-void ArcSessionManager::RequestDisable() {
+void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
 
@@ -1166,6 +1166,17 @@ void ArcSessionManager::RequestDisable() {
   // Reset any pending request to re-enable ARC.
   reenable_arc_ = false;
   StopArc();
+
+  if (remove_arc_data)
+    RequestArcDataRemoval();
+}
+
+void ArcSessionManager::RequestDisable() {
+  RequestDisable(false);
+}
+
+void ArcSessionManager::RequestDisableWithArcDataRemoval() {
+  RequestDisable(true);
 }
 
 void ArcSessionManager::RequestArcDataRemoval() {

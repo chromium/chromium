@@ -569,10 +569,7 @@ TEST_F(ArcSessionManagerTest, CancelFetchingDisablesArc) {
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 
   // Emulate the preference handling.
-  const bool enable_requested = arc_session_manager()->enable_requested();
-  arc_session_manager()->RequestDisable();
-  if (enable_requested)
-    arc_session_manager()->RequestArcDataRemoval();
+  arc_session_manager()->RequestDisableWithArcDataRemoval();
 
   // Wait until data is removed.
   ASSERT_TRUE(WaitForDataRemoved(ArcSessionManager::State::STOPPED));
@@ -842,10 +839,7 @@ TEST_F(ArcSessionManagerTest, ClearArcTransitionOnShutdown) {
       prefs::kArcManagementTransition,
       static_cast<int>(ArcManagementTransition::CHILD_TO_REGULAR));
   // Simulate ARC shutdown.
-  const bool enable_requested = arc_session_manager()->enable_requested();
-  arc_session_manager()->RequestDisable();
-  if (enable_requested)
-    arc_session_manager()->RequestArcDataRemoval();
+  arc_session_manager()->RequestDisableWithArcDataRemoval();
   EXPECT_EQ(static_cast<int>(ArcManagementTransition::NO_TRANSITION),
             profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
 
