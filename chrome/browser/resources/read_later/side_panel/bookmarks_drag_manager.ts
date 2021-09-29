@@ -66,9 +66,10 @@ class DragSession {
 
     const dragOverBookmark = getBookmarkFromElement(dragOverElement);
     const ascendants = this.delegate_.getAscendants(dragOverBookmark.id);
-    const isInvalidDragOverTarget = this.dragData_.elements &&
-        this.dragData_.elements.some(
-            element => ascendants.indexOf(element.id) !== -1);
+    const isInvalidDragOverTarget = dragOverBookmark.unmodifiable ||
+        this.dragData_.elements &&
+            this.dragData_.elements.some(
+                element => ascendants.indexOf(element.id) !== -1);
     if (isInvalidDragOverTarget) {
       this.lastDragOverElement_ = null;
       return;
