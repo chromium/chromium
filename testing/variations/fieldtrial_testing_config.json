@@ -2141,9 +2141,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210721",
+                    "name": "Enabled_20210929",
                     "params": {
-                        "delete_all_merchants_on_clear_history": "true"
+                        "delete_all_merchants_on_clear_history": "true",
+                        "trust_signals_message_delay_ms": "20000"
                     },
                     "enable_features": [
                         "CommerceMerchantViewer"
