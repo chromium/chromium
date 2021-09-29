@@ -161,4 +161,64 @@ public class OmniboxResourceProviderTest {
         assertEquals("Secure color for INCOGNITO should be the lighter green.", greenOnDark,
                 OmniboxResourceProvider.getUrlBarSecureColor(mActivity, OmniboxTheme.INCOGNITO));
     }
+
+    @Test
+    public void getSuggestionPrimaryTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int incognitoColor = resources.getColor(R.color.default_text_color_light);
+        final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOnSurface, TAG);
+
+        assertEquals("Wrong suggestion primary text color for LIGHT_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                        mActivity, OmniboxTheme.LIGHT_THEME));
+        assertEquals("Wrong suggestion primary text color for DARK_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                        mActivity, OmniboxTheme.DARK_THEME));
+        assertEquals("Wrong suggestion primary text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                        mActivity, OmniboxTheme.INCOGNITO));
+        assertEquals("Wrong suggestion primary text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                        mActivity, OmniboxTheme.DEFAULT));
+    }
+
+    @Test
+    public void getSuggestionSecondaryTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int incognitoColor = resources.getColor(R.color.default_text_color_secondary_light);
+        final int defaultColor =
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
+
+        assertEquals("Wrong suggestion secondary text color for LIGHT_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
+                        mActivity, OmniboxTheme.LIGHT_THEME));
+        assertEquals("Wrong suggestion secondary text color for DARK_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
+                        mActivity, OmniboxTheme.DARK_THEME));
+        assertEquals("Wrong suggestion secondary text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
+                        mActivity, OmniboxTheme.INCOGNITO));
+        assertEquals("Wrong suggestion secondary text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
+                        mActivity, OmniboxTheme.DEFAULT));
+    }
+
+    @Test
+    public void getSuggestionUrlTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int incognitoColor = resources.getColor(R.color.suggestion_url_color_incognito);
+        final int defaultColor = resources.getColor(R.color.suggestion_url_color);
+
+        assertEquals("Wrong suggestion url text color for LIGHT_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionUrlTextColor(
+                        mActivity, OmniboxTheme.LIGHT_THEME));
+        assertEquals("Wrong suggestion url text color for DARK_THEME.", defaultColor,
+                OmniboxResourceProvider.getSuggestionUrlTextColor(
+                        mActivity, OmniboxTheme.DARK_THEME));
+        assertEquals("Wrong suggestion url text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getSuggestionUrlTextColor(
+                        mActivity, OmniboxTheme.INCOGNITO));
+        assertEquals("Wrong suggestion url text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getSuggestionUrlTextColor(mActivity, OmniboxTheme.DEFAULT));
+    }
 }

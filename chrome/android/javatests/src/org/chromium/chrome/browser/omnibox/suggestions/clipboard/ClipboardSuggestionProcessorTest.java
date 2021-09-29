@@ -8,10 +8,12 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
+import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,6 +67,7 @@ public class ClipboardSuggestionProcessorTest {
     @Mock
     Resources mResources;
 
+    private Context mContext;
     private ClipboardSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
@@ -78,13 +81,14 @@ public class ClipboardSuggestionProcessorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        mContext = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 5, Config.ARGB_8888);
-        mProcessor = new ClipboardSuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, () -> mIconBridge);
-        mRootView = new LinearLayout(ContextUtils.getApplicationContext());
-        mTitleTextView = new TextView(ContextUtils.getApplicationContext());
+        mProcessor = new ClipboardSuggestionProcessor(mContext, mSuggestionHost, () -> mIconBridge);
+        mRootView = new LinearLayout(mContext);
+        mTitleTextView = new TextView(mContext);
         mTitleTextView.setId(R.id.line_1);
-        mContentTextView = new TextView(ContextUtils.getApplicationContext()) {
+        mContentTextView = new TextView(mContext) {
             @Override
             public void setTextDirection(int textDirection) {
                 super.setTextDirection(textDirection);
@@ -226,7 +230,7 @@ public class ClipboardSuggestionProcessorTest {
     @SmallTest
     @UiThreadTest
     public void clipboardSuggestion_thumbnailShouldResizeIfTooLarge() {
-        int size = ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
+        int size = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_decoration_image_size);
 
         Bitmap largeBitmap = Bitmap.createBitmap(size * 2, size * 2, Config.ARGB_8888);

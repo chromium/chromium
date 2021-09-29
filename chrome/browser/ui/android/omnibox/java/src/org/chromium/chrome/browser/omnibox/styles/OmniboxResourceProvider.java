@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -52,7 +53,7 @@ public class OmniboxResourceProvider {
      * @param context The {@link Context}.
      * @param isIncognito Whether incognito mode is enabled.
      * @param primaryBackgroundColor The primary background color of the omnibox.
-     * @return The omnibox theme.
+     * @return The {@link OmniboxTheme}.
      */
     public static @OmniboxTheme int getOmniboxTheme(
             Context context, boolean isIncognito, @ColorInt int primaryBackgroundColor) {
@@ -71,7 +72,7 @@ public class OmniboxResourceProvider {
      * Returns the primary text color for the url bar.
      *
      * @param context The context to retrieve the resources from.
-     * @param omniboxTheme The {@link OmniboxTheme}
+     * @param omniboxTheme The {@link OmniboxTheme}.
      * @return Primary url bar text color.
      */
     public static @ColorInt int getUrlBarPrimaryTextColor(
@@ -95,7 +96,7 @@ public class OmniboxResourceProvider {
      * Returns the secondary text color for the url bar.
      *
      * @param context The context to retrieve the resources from.
-     * @param omniboxTheme The {@link OmniboxTheme}
+     * @param omniboxTheme The {@link OmniboxTheme}.
      * @return Secondary url bar text color.
      */
     public static @ColorInt int getUrlBarSecondaryTextColor(
@@ -119,7 +120,7 @@ public class OmniboxResourceProvider {
      * Returns the hint text color for the url bar.
      *
      * @param context The context to retrieve the resources from.
-     * @param omniboxTheme The {@link OmniboxTheme}
+     * @param omniboxTheme The {@link OmniboxTheme}.
      * @return The url bar hint text color.
      */
     public static @ColorInt int getUrlBarHintTextColor(
@@ -131,7 +132,7 @@ public class OmniboxResourceProvider {
      * Returns the danger semantic color.
      *
      * @param context The context to retrieve the resources from.
-     * @param omniboxTheme The omnibox theme.
+     * @param omniboxTheme The {@link OmniboxTheme}.
      * @return The danger semantic color to be used on the url bar.
      */
     public static @ColorInt int getUrlBarDangerColor(
@@ -151,7 +152,7 @@ public class OmniboxResourceProvider {
      * Returns the secure semantic color.
      *
      * @param context The context to retrieve the resources from.
-     * @param omniboxTheme The omnibox theme.
+     * @param omniboxTheme The {@link OmniboxTheme}.
      * @return The secure semantic color to be used on the url bar.
      */
     public static @ColorInt int getUrlBarSecureColor(
@@ -165,6 +166,57 @@ public class OmniboxResourceProvider {
             colorId = R.color.default_green_dark;
         }
         return context.getResources().getColor(colorId);
+    }
+
+    /**
+     * Returns the primary text color for the suggestions.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param omniboxTheme The {@link OmniboxTheme}.
+     * @return Primary suggestion text color.
+     */
+    public static @ColorInt int getSuggestionPrimaryTextColor(
+            Context context, @OmniboxTheme int omniboxTheme) {
+        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
+        // are ignored as they don't change the result.
+        return omniboxTheme == OmniboxTheme.INCOGNITO
+                ? ApiCompatibilityUtils.getColor(
+                        context.getResources(), R.color.default_text_color_light)
+                : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+    }
+
+    /**
+     * Returns the secondary text color for the suggestions.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param omniboxTheme The {@link OmniboxTheme}.
+     * @return Secondary suggestion text color.
+     */
+    public static @ColorInt int getSuggestionSecondaryTextColor(
+            Context context, @OmniboxTheme int omniboxTheme) {
+        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
+        // are ignored as they don't change the result.
+        return omniboxTheme == OmniboxTheme.INCOGNITO
+                ? ApiCompatibilityUtils.getColor(
+                        context.getResources(), R.color.default_text_color_secondary_light)
+                : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+    }
+
+    /**
+     * Returns the URL text color for the suggestions.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param omniboxTheme The {@link OmniboxTheme}.
+     * @return URL suggestion text color.
+     */
+    public static @ColorInt int getSuggestionUrlTextColor(
+            Context context, @OmniboxTheme int omniboxTheme) {
+        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
+        // are ignored as they don't change the result.
+        final @ColorRes int colorId = omniboxTheme == OmniboxTheme.INCOGNITO
+                ? R.color.suggestion_url_color_incognito
+                : R.color.suggestion_url_color;
+        return ApiCompatibilityUtils.getColor(context.getResources(), colorId);
     }
 
     /**
