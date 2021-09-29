@@ -8898,38 +8898,6 @@
             ]
         }
     ],
-    "WebRtcHybridAgc": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "adjacent_speech_frames_threshold": "12",
-                        "avx2_allowed": "true",
-                        "dry_run": "false",
-                        "max_gain_change_db_per_second": "3",
-                        "max_output_noise_level_dbfs": "-50",
-                        "neon_allowed": "true",
-                        "sse2_allowed": "true",
-                        "vad_reset_period_ms": "1500"
-                    },
-                    "enable_features": [
-                        "WebRtcHybridAgc"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUIFeedback": [
         {
             "platforms": [
