@@ -5122,6 +5122,11 @@ crbug.com/1033852 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/i
 crbug.com/1034374 http/tests/devtools/tracing/timeline-worker-events.js [ Failure Pass ]
 crbug.com/1034513 [ Win7 ] virtual/stable/fast/dom/Window/window-resize-contents.html [ Failure Pass ]
 
+# Temporary suppression to allow https://crrev.com/c/3193535
+crbug.com/1254259 http/tests/devtools/sources/debugger-async/async-await/async-callstack-async-await1.js [ Skip ]
+crbug.com/1254259 http/tests/devtools/sources/debugger-async/async-await/async-callstack-async-await2.js [ Skip ]
+crbug.com/1254259 http/tests/devtools/sources/debugger-async/async-await/async-callstack-async-await3.js [ Skip ]
+
 # Assertion errors need to be fixed
 crbug.com/1034492 http/tests/devtools/unit/filtered-item-selection-dialog-filtering.js [ Failure Pass ]
 crbug.com/1034492 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
