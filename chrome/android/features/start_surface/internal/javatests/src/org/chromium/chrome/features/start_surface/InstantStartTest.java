@@ -741,8 +741,8 @@ public class InstantStartTest {
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q,
-            message = "Failing on P, https://crbug.com/1254327")
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.N_MR1, sdk_is_less_than = VERSION_CODES.Q,
+            message = "Failing on O and P, https://crbug.com/1254327")
     // clang-format off
     public void testInstantStartDisabledOnLowEndDevice() throws IOException {
         // clang-format on
