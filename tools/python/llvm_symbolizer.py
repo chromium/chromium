@@ -53,7 +53,10 @@ class LLVMSymbolizer(object):
     """
     if os.path.isfile(_LLVM_SYMBOLIZER_PATH):
       self._llvm_symbolizer_subprocess = subprocess.Popen(
-        [_LLVM_SYMBOLIZER_PATH], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+          [_LLVM_SYMBOLIZER_PATH],
+          stdout=subprocess.PIPE,
+          stdin=subprocess.PIPE,
+          universal_newlines=True)
     else:
       logging.error('Cannot find llvm_symbolizer here: %s.' %
                     _LLVM_SYMBOLIZER_PATH)
@@ -92,19 +95,18 @@ class LLVMSymbolizer(object):
         or not _CheckValidAddr(addr) or not os.path.isfile(lib)):
       return [(_UNKNOWN, lib)]
 
+    proc = self._llvm_symbolizer_subprocess
     with self._lock:
-      self._llvm_symbolizer_subprocess.stdin.write('%s %s\n' % (lib, addr))
-      self._llvm_symbolizer_subprocess.stdin.flush()
-
+      proc.stdin.write('%s %s\n' % (lib, addr))
+      proc.stdin.flush()
       result = []
-      # Read till see new line, which is a symbol of end of output.
-      # One line of function name is always followed by one line of line number.
+      # Read until an empty line is observed, which indicates the end of the
+      # output. Each line with a function name is always followed by one line
+      # with the corresponding line number.
       while True:
-        line = self._llvm_symbolizer_subprocess.stdout.readline()
+        line = proc.stdout.readline()
         if line != '\n':
-          line_numbers = self._llvm_symbolizer_subprocess.stdout.readline()
-          result.append(
-            (line[:-1],
-             line_numbers[:-1]))
+          line_numbers = proc.stdout.readline()
+          result.append((line[:-1], line_numbers[:-1]))
         else:
           return result

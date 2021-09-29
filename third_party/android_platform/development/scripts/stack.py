@@ -203,7 +203,8 @@ def main(argv, test_symbolizer=None):
     rootdir, symbol.SYMBOLS_DIR = UnzipSymbols(zip_arg)
 
   if not arguments or arguments[0] == "-":
-    logging.info('Reading native crash info from stdin')
+    logging.info('Reading native crash info from stdin (symbolization starts '
+                 'on the first unrelated line or EOF)')
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
                                        fallback_monochrome, arch_defined,

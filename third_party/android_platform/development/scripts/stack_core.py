@@ -186,7 +186,8 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
 
   preprocessor = PreProcessLog(load_vaddrs, apks_directory)
   for line in iter(sys.stdin.readline, b''):
-    print(line)
+    if not line: # EOF
+      break
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
