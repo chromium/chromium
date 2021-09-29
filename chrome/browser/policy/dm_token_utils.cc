@@ -16,6 +16,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/user_manager/user.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
 #else
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -64,7 +66,16 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
     dm_token = DMToken(DMToken::Status::kValid,
                        policy_manager->core()->client()->dm_token());
   }
-
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service)
+    return dm_token;
+  const crosapi::mojom::BrowserInitParams* init_params = service->init_params();
+  if (dm_token.is_empty() && init_params && init_params->device_properties &&
+      !init_params->device_properties->device_dm_token.empty()) {
+    dm_token = DMToken(DMToken::Status::kValid,
+                       init_params->device_properties->device_dm_token);
+  }
 #elif !defined(OS_ANDROID)
   if (dm_token.is_empty() &&
       ChromeBrowserCloudManagementController::IsEnabled()) {

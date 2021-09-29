@@ -37,11 +37,14 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/policy/dm_token_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/policy/dm_token_utils.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
@@ -118,7 +121,7 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
 #endif
 
   void SetupDMToken() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
 #else

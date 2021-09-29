@@ -51,6 +51,11 @@
 #include "extensions/common/constants.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/cloud/affiliation.h"
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
@@ -75,6 +80,9 @@ void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
   auto* manager = profile->GetUserCloudPolicyManagerAsh();
   if (manager && manager->core() && manager->core()->client())
     client_id = manager->core()->client()->client_id();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1252802): Add the client ID for LaCrOS.
+  std::string client_id = "";
 #else
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
@@ -385,6 +393,15 @@ std::string ConnectorsService::GetManagementDomain() {
     return std::string();
 
   if (scope.value() == policy::PolicyScope::POLICY_SCOPE_USER) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (Profile::FromBrowserContext(context_)->IsMainProfile()) {
+      const enterprise_management::PolicyData* policy =
+          policy::PolicyLoaderLacros::main_user_policy_data();
+      if (policy && policy->has_managed_by())
+        return policy->managed_by();
+    }
+#endif
+
     return chrome::GetAccountManagerIdentity(
                Profile::FromBrowserContext(context_))
         .value_or(std::string());
@@ -477,8 +494,20 @@ ConnectorsService::GetProfileDmToken() const {
   if (!CanUseProfileDmToken())
     return absl::nullopt;
 
+  Profile* profile = Profile::FromBrowserContext(context_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile->IsMainProfile()) {
+    const enterprise_management::PolicyData* policy =
+        policy::PolicyLoaderLacros::main_user_policy_data();
+    if (policy && policy->has_request_token() &&
+        !policy->request_token().empty()) {
+      return DmToken(policy->request_token(), policy::POLICY_SCOPE_USER);
+    }
+  }
+#endif
+
   policy::UserCloudPolicyManager* policy_manager =
-      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+      profile->GetUserCloudPolicyManager();
   if (!policy_manager || !policy_manager->IsClientRegistered())
     return absl::nullopt;
 
@@ -487,13 +516,36 @@ ConnectorsService::GetProfileDmToken() const {
 }
 
 bool ConnectorsService::CanUseProfileDmToken() const {
+  Profile* profile = Profile::FromBrowserContext(context_);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The main LaCrOS profile can use its DM token only if it's affiliated to the
+  // device, so compare its affiliation IDs to those Ash provides.
+  if (profile->IsMainProfile()) {
+    const enterprise_management::PolicyData* policy =
+        policy::PolicyLoaderLacros::main_user_policy_data();
+    const crosapi::mojom::BrowserInitParams* init_params =
+        chromeos::LacrosService::Get()->init_params();
+    if (policy && !policy->user_affiliation_ids().empty() && init_params &&
+        init_params->device_properties &&
+        init_params->device_properties->device_affiliation_ids.has_value()) {
+      const auto& user_ids = policy->user_affiliation_ids();
+      const auto& device_ids =
+          init_params->device_properties->device_affiliation_ids.value();
+
+      return policy::IsAffiliated({user_ids.begin(), user_ids.end()},
+                                  {device_ids.begin(), device_ids.end()});
+    }
+    return false;
+  }
+#else
   // If the browser isn't managed by CBCM, then the profile DM token can be
   // used.
   if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
     return true;
+#endif
 
-  return chrome::enterprise_util::IsProfileAffiliated(
-      Profile::FromBrowserContext(context_));
+  return chrome::enterprise_util::IsProfileAffiliated(profile);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

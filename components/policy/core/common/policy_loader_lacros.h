@@ -15,6 +15,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -54,6 +55,13 @@ class POLICY_EXPORT PolicyLoaderLacros
   // Returns if the main user is managed or not.
   // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
   static bool IsMainUserManaged();
+
+  // Returns the policy data corresponding to the main user to be used by
+  // Enterprise Connector policies.
+  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  static const enterprise_management::PolicyData* main_user_policy_data();
+  static void set_main_user_policy_data_for_testing(
+      const enterprise_management::PolicyData& policy_data);
 
  private:
   // Task runner for running background jobs.

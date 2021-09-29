@@ -31,6 +31,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace {
 
 // Returns policy for the given |profile|. If failed to get policy returns
@@ -38,6 +42,16 @@ namespace {
 const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   if (!profile)
     return nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1254373): Clean up for Dent V2
+  if (profile->IsMainProfile()) {
+    const enterprise_management::PolicyData* policy =
+        policy::PolicyLoaderLacros::main_user_policy_data();
+    if (policy)
+      return policy;
+  }
+#endif
 
   auto* manager =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,6 +78,15 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
 std::string GetUserDmToken(Profile* profile) {
   if (!profile)
     return std::string();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile->IsMainProfile()) {
+    const enterprise_management::PolicyData* policy =
+        policy::PolicyLoaderLacros::main_user_policy_data();
+    if (policy)
+      return policy->request_token();
+  }
+#endif
 
   const enterprise_management::PolicyData* policy = GetPolicyData(profile);
   if (!policy || !policy->has_request_token())

@@ -1513,6 +1513,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/download/save_page_browsertest.cc",
       "../browser/engagement/site_engagement_helper_browsertest.cc",
       "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
+      "../browser/enterprise/connectors/connectors_service_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/extensions/protocol_handler_apitest.cc",
@@ -2093,7 +2094,6 @@ if (!is_android && !is_fuchsia) {
     if (!is_chromeos_lacros) {
       sources += [
         "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
-        "../browser/enterprise/connectors/connectors_service_browsertest.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.h",
         "../browser/enterprise/connectors/file_system/signin_experience_browsertest.cc",
