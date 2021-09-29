@@ -52,6 +52,9 @@ constexpr int kMaximizeCueHorizontalInsets = 16;
 constexpr int kMaximizeCueVerticalInsets = 8;
 constexpr int kMaximizeCueBackgroundBlur = 80;
 
+constexpr int kPhantomWindowCornerRadius = 4;
+constexpr gfx::Insets kPhantomWindowInsets(8);
+
 // The move down factor of y-position for entrance animation of maximize cue.
 constexpr float kMaximizeCueEntraceAnimationYPositionMoveDownFactor = 1.5f;
 
@@ -156,8 +159,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PhantomWindow";
   params.layer_type = ui::LAYER_SOLID_COLOR;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.shadow_elevation = ::wm::kShadowElevationActiveWindow;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_ShelfContainer);
   phantom_widget->set_focus_on_creation(false);
   phantom_widget->Init(std::move(params));
@@ -174,7 +176,18 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
     phantom_widget_window->parent()->StackChildAtBottom(phantom_widget_window);
   }
   ui::Layer* widget_layer = phantom_widget_window->layer();
-  widget_layer->SetColor(SkColorSetA(SK_ColorWHITE, 0.4 * 255));
+
+  views::View* phantom_view =
+      phantom_widget->SetContentsView(std::make_unique<views::View>());
+  phantom_view->SetPaintToLayer();
+  phantom_view->layer()->SetFillsBoundsOpaquely(false);
+  phantom_view->SetBackground(views::CreateRoundedRectBackground(
+      DeprecatedGetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield20,
+          kSplitviewPhantomWindowColor),
+      kPhantomWindowCornerRadius));
+
+  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
 
   phantom_widget->Show();
 
@@ -187,7 +200,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   scoped_setter.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   widget_layer->SetOpacity(1);
-  phantom_widget->SetBounds(target_bounds_in_screen_);
+  gfx::Rect phantom_widget_bounds = target_bounds_in_screen_;
+  phantom_widget_bounds.Inset(kPhantomWindowInsets);
+  phantom_widget->SetBounds(phantom_widget_bounds);
 
   return phantom_widget;
 }

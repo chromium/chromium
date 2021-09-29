@@ -134,11 +134,6 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     label_parent_ = AddChildView(std::make_unique<views::View>());
     label_parent_->SetPaintToLayer();
     label_parent_->layer()->SetFillsBoundsOpaquely(false);
-    label_parent_->SetBackground(views::CreateRoundedRectBackground(
-        DeprecatedGetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80,
-            kSplitviewLabelBackgroundColor),
-        kSplitviewLabelRoundRectRadiusDp));
     label_parent_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets(kSplitviewLabelVerticalInsetDp,
@@ -146,12 +141,6 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
     label_ = label_parent_->AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));
-    label_->SetEnabledColor(DeprecatedGetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary,
-        kSplitviewLabelEnabledColor));
-    label_->SetBackgroundColor(DeprecatedGetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80,
-        kSplitviewLabelBackgroundColor));
   }
 
   RotatedImageLabelView(const RotatedImageLabelView&) = delete;
@@ -216,6 +205,22 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_IN);
       return;
     }
+  }
+
+  // views:View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    label_parent_->SetBackground(views::CreateRoundedRectBackground(
+        DeprecatedGetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80,
+            kSplitviewLabelBackgroundColor),
+        kSplitviewLabelRoundRectRadiusDp));
+    label_->SetEnabledColor(DeprecatedGetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary,
+        kSplitviewLabelEnabledColor));
+    label_->SetBackgroundColor(DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80,
+        kSplitviewLabelBackgroundColor));
   }
 
  protected:
