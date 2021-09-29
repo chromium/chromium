@@ -4888,10 +4888,6 @@ const char kNearbyKeepAliveFixDescription[] =
     "makes Nearby Connections WebRTC KeepAlive less chatty to help with "
     "battery life.";
 
-const char kNearbySharingName[] = "Nearby Sharing";
-const char kNearbySharingDescription[] =
-    "Enables Nearby Sharing for sharing content between devices.";
-
 const char kNearbySharingArcName[] = "ARC Nearby Sharing";
 const char kNearbySharingArcDescription[] =
     "Enables Nearby Sharing from ARC apps.";
@@ -4902,15 +4898,6 @@ const char kNearbySharingBackgroundScanningDescription[] =
     "Enables background scanning for Nearby Share, allowing devices to "
     "persistently scan and present a notification when a nearby device is "
     "attempting to share.";
-
-const char kNearbySharingDeviceContactsName[] =
-    "Nearby Sharing Device Contacts";
-const char kNearbySharingDeviceContactsDescription[] =
-    "Enables use of device contacts in Nearby Share.";
-
-const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
-const char kNearbySharingWebRtcDescription[] =
-    "Enables use of WebRTC in Nearby Share.";
 
 const char kPerformantSplitViewResizing[] = "Performant Split View Resizing";
 const char kPerformantSplitViewResizingDescription[] =

@@ -6517,9 +6517,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"nearby-keep-alive-fix", flag_descriptions::kNearbyKeepAliveFixName,
      flag_descriptions::kNearbyKeepAliveFixDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNearbyKeepAliveFix)},
-    {"nearby-sharing", flag_descriptions::kNearbySharingName,
-     flag_descriptions::kNearbySharingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharing)},
     {"nearby-sharing-arc", flag_descriptions::kNearbySharingArcName,
      flag_descriptions::kNearbySharingArcDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShare)},
@@ -6527,13 +6524,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbySharingBackgroundScanningName,
      flag_descriptions::kNearbySharingBackgroundScanningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingBackgroundScanning)},
-    {"nearby-sharing-device-contacts",
-     flag_descriptions::kNearbySharingDeviceContactsName,
-     flag_descriptions::kNearbySharingDeviceContactsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingDeviceContacts)},
-    {"nearby-sharing-webrtc", flag_descriptions::kNearbySharingWebRtcName,
-     flag_descriptions::kNearbySharingWebRtcDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingWebRtc)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"align-font-display-auto-lcp",

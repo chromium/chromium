@@ -3859,11 +3859,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "nearby-sharing",
-    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "nearby-sharing-arc",
     "owners": [ "phshah", "alanding", "cros-sharesheet@google.com", "arc-app-dev@google.com" ],
     "expiry_milestone": 98
@@ -3872,16 +3867,6 @@
     "name": "nearby-sharing-background-scanning",
     "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98
-  },
-  {
-    "name": "nearby-sharing-device-contacts",
-    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "nearby-sharing-webrtc",
-    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 95
   },
   {
     "name": "new-canvas-2d-api",
