@@ -8,9 +8,61 @@
 #include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_permission_user_data.h"
+#include "chromecast/common/activity_url_filter.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+
+bool IsRequestingOriginAllowed(
+    const GURL& requesting_origin,
+    const GURL& app_web_url,
+    const std::vector<std::string>& additional_feature_permission_origins) {
+  // |app_web_url| is allowed by default.
+  if (requesting_origin == app_web_url.GetOrigin()) {
+    return true;
+  }
+  chromecast::ActivityUrlFilter activity_url_filter(
+      additional_feature_permission_origins);
+  return activity_url_filter.UrlMatchesWhitelist(requesting_origin);
+}
+
+blink::mojom::PermissionStatus GetPermissionStatusFromCastPermissionUserData(
+    content::PermissionType permission,
+    const GURL& requesting_origin,
+    chromecast::shell::CastPermissionUserData* cast_permission_user_data) {
+  std::string app_id = cast_permission_user_data->GetAppId();
+  GURL app_web_url = cast_permission_user_data->GetAppWebUrl();
+  // We expect to grant content::PermissionType::PROTECTED_MEDIA_IDENTIFIER
+  // to origins same as |app_web_url| by default.
+  if (requesting_origin != app_web_url.GetOrigin() ||
+      permission != content::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
+    chromecast::metrics::CastMetricsHelper::GetInstance()
+        ->RecordApplicationEventWithValue(
+            app_id, /*session_id=*/"", /*sdk_version=*/"",
+            "Cast.Platform.PermissionRequestWithFrame",
+            static_cast<int>(permission));
+  }
+
+  if (!cast_permission_user_data->GetEnforceFeaturePermissions()) {
+    return blink::mojom::PermissionStatus::GRANTED;
+  }
+
+  // Permissions that are granted by default should have been added to the
+  // FeaturePermissions in CastPermissionUserData.
+  bool permitted =
+      cast_permission_user_data->GetFeaturePermissions().count(
+          static_cast<int32_t>(permission)) > 0 &&
+      IsRequestingOriginAllowed(
+          requesting_origin, app_web_url,
+          cast_permission_user_data->GetAdditionalFeaturePermissionOrigins());
+
+  return permitted ? blink::mojom::PermissionStatus::GRANTED
+                   : ::blink::mojom::PermissionStatus::DENIED;
+}
+
+}  // namespace
 
 namespace chromecast {
 namespace shell {
@@ -52,34 +104,22 @@ blink::mojom::PermissionStatus GetPermissionStatusInternal(
     return GetPermissionStatusInternal(permission, requesting_origin);
   }
 
-  std::string app_id = cast_permission_user_data->GetAppId();
-  GURL app_web_url = cast_permission_user_data->GetAppWebUrl();
-
-  // We expect to grant content::PermissionType::PROTECTED_MEDIA_IDENTIFIER to
-  // origins same as |app_web_url| by default.
-  if (requesting_origin != app_web_url.GetOrigin() ||
-      permission != content::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
-    metrics::CastMetricsHelper::GetInstance()->RecordApplicationEventWithValue(
-        app_id, /*session_id=*/"", /*sdk_version=*/"",
-        "Cast.Platform.PermissionRequestWithFrame",
-        static_cast<int>(permission));
-  }
-
   blink::mojom::PermissionStatus permission_status =
-      blink::mojom::PermissionStatus::GRANTED;
+      GetPermissionStatusFromCastPermissionUserData(
+          permission, requesting_origin, cast_permission_user_data);
   LOG(INFO) << __func__ << ": "
             << (permission_status == blink::mojom::PermissionStatus::GRANTED
                     ? " grants "
                     : " doesn't grant ")
             << "permission " << static_cast<int>(permission)
-            << " to frame associated with app: " << app_id;
+            << " to frame associated with app: "
+            << cast_permission_user_data->GetAppId();
   return permission_status;
 }
 
 CastPermissionManager::CastPermissionManager() {}
 
-CastPermissionManager::~CastPermissionManager() {
-}
+CastPermissionManager::~CastPermissionManager() {}
 
 void CastPermissionManager::RequestPermission(
     content::PermissionType permission,
@@ -108,11 +148,9 @@ void CastPermissionManager::RequestPermissions(
   std::move(callback).Run(permission_statuses);
 }
 
-void CastPermissionManager::ResetPermission(
-    content::PermissionType permission,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) {
-}
+void CastPermissionManager::ResetPermission(content::PermissionType permission,
+                                            const GURL& requesting_origin,
+                                            const GURL& embedding_origin) {}
 
 blink::mojom::PermissionStatus CastPermissionManager::GetPermissionStatus(
     content::PermissionType permission,

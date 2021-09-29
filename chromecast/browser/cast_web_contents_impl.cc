@@ -339,19 +339,21 @@ void CastWebContentsImpl::ClearRenderWidgetHostView() {
   }
 }
 
-void CastWebContentsImpl::SetAppProperties(const std::string& app_id,
-                                           const std::string& session_id,
-                                           bool is_audio_app,
-                                           const GURL& app_web_url) {
+void CastWebContentsImpl::SetAppProperties(
+    const std::string& app_id,
+    const std::string& session_id,
+    bool is_audio_app,
+    const GURL& app_web_url,
+    bool enforce_feature_permissions,
+    const std::vector<int32_t>& feature_permissions,
+    const std::vector<std::string>& additional_feature_permission_origins) {
   if (!web_contents_)
     return;
   shell::CastNavigationUIData::SetAppPropertiesForWebContents(
       web_contents_, session_id, is_audio_app);
-  // Cast Activities should not use CastPermissionUserData. Since they don't
-  // set |app_id|, we use this to gate the behavior.
-  if (!app_id.empty()) {
-    new shell::CastPermissionUserData(web_contents_, app_id, app_web_url);
-  }
+  new shell::CastPermissionUserData(
+      web_contents_, app_id, app_web_url, enforce_feature_permissions,
+      feature_permissions, additional_feature_permission_origins);
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,

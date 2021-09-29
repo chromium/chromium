@@ -223,6 +223,7 @@ cast_source_set("browser_base") {
     "//chromecast/browser/general_audience_browsing/mojom",
     "//chromecast/browser/webui/mojom",
     "//chromecast/common",
+    "//chromecast/common:activity_url_filter",
     "//chromecast/common:queryable_data",
     "//chromecast/common/media",
     "//chromecast/common/mojom",

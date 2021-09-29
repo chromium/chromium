@@ -17,7 +17,9 @@ namespace chromecast {
 
 class ActivityUrlFilter {
  public:
-  // |url_filters| are applied to network requests from the Activity.
+  // |url_filters| are regular expressions that are allowed.
+  // TODO(guohuideng): This class is used by activities and regular cast apps.
+  // We could rename this class in future.
   explicit ActivityUrlFilter(const std::vector<std::string>& url_filters);
 
   ActivityUrlFilter(const ActivityUrlFilter&) = delete;

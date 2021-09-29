@@ -20,8 +20,16 @@ namespace shell {
 CastPermissionUserData::CastPermissionUserData(
     content::WebContents* web_contents,
     const std::string& app_id,
-    const GURL& app_web_url)
-    : app_id_(app_id), app_web_url_(app_web_url) {
+    const GURL& app_web_url,
+    bool enforce_feature_permissions,
+    std::vector<int32_t> feature_permissions,
+    std::vector<std::string> additional_feature_permission_origins)
+    : app_id_(app_id),
+      app_web_url_(app_web_url),
+      enforce_feature_permissions_(enforce_feature_permissions),
+      feature_permissions_(std::move(feature_permissions)),
+      additional_feature_permission_origins_(
+          std::move(additional_feature_permission_origins)) {
   web_contents->SetUserData(&kCastPermissionUserDataKey,
                             base::WrapUnique(this));
 }

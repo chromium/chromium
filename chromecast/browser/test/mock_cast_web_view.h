@@ -29,7 +29,13 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void, ClearRenderWidgetHostView, (), (override));
   MOCK_METHOD(void,
               SetAppProperties,
-              (const std::string&, const std::string&, bool, const GURL&),
+              (const std::string&,
+               const std::string&,
+               bool,
+               const GURL&,
+               bool,
+               const std::vector<int32_t>&,
+               const std::vector<std::string>&),
               (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));

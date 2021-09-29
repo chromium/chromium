@@ -89,7 +89,10 @@ interface CastWebContents {
   SetAppProperties(string app_id,
                    string session_id,
                    bool is_audio_app,
-                   url.mojom.Url app_web_url);
+                   url.mojom.Url app_web_url,
+                   bool enforce_feature_permissions,
+                   array<int32> feature_permissions,
+                   array<string> additional_feature_permission_origins);
 
   // Dictionary of renderer feature configurations.
   AddRendererFeatures(mojo_base.mojom.Value features);
