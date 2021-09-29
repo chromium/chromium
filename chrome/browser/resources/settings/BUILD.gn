@@ -119,8 +119,8 @@ preprocess_if_expr("preprocess") {
     "base_mixin.ts",
     "chrome_cleanup_page/chrome_cleanup_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
-    "controls/pref_control_behavior.js",
-    "controls/settings_boolean_control_behavior.js",
+    "controls/pref_control_mixin.js",
+    "controls/settings_boolean_control_mixin.js",
     "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
@@ -166,8 +166,8 @@ preprocess_if_expr("preprocess") {
     # files are purposefully *not* listed in the :build_ts target's |in_files|
     # list, so that they don't end-up in the generated grd file.
     # TODO(crbug.com/1234307): Delete these files once no longer necessary.
-    "controls/pref_control_behavior_ts.ts",
-    "controls/settings_boolean_control_behavior_ts.ts",
+    "controls/pref_control_mixin_ts.ts",
+    "controls/settings_boolean_control_mixin_ts.ts",
     "controls/settings_checkbox_ts.ts",
     "controls/settings_dropdown_menu_ts.ts",
     "controls/settings_radio_group_ts.ts",
@@ -606,8 +606,8 @@ ts_library("build_ts") {
     "controls/controlled_radio_button.js",
     "controls/extension_controlled_indicator.js",
     "controls/password_prompt_dialog.js",
-    "controls/pref_control_behavior.js",
-    "controls/settings_boolean_control_behavior.js",
+    "controls/pref_control_mixin.js",
+    "controls/settings_boolean_control_mixin.js",
     "controls/settings_checkbox.js",
     "controls/settings_dropdown_menu.js",
     "controls/settings_idle_load.ts",

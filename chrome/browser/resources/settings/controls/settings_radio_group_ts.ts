@@ -5,7 +5,7 @@
 // TODO(crbug.com/1234307): Delete this file once
 // settings_radio_group.js has been migrated to TypeScript.
 
-import {PrefControlMixinInterface} from './pref_control_behavior_ts.js';
+import {PrefControlMixinInterface} from './pref_control_mixin_ts.js';
 
 export interface SettingsRadioGroupElement extends PrefControlMixinInterface,
                                                    HTMLElement {

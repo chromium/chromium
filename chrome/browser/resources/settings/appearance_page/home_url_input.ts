@@ -11,11 +11,11 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.js';
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefControlMixin} from '../controls/pref_control_behavior.js';
+import {PrefControlMixin} from '../controls/pref_control_mixin.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 

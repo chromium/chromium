@@ -5,7 +5,7 @@
 // TODO(crbug.com/1234307): Delete this file once
 // settings_toggle_button.js has been migrated to TypeScript.
 
-import {SettingsBooleanControlMixinInterface} from './settings_boolean_control_behavior_ts.js';
+import {SettingsBooleanControlMixinInterface} from './settings_boolean_control_mixin_ts.js';
 
 export interface SettingsToggleButtonElement extends
     SettingsBooleanControlMixinInterface, HTMLElement {}

@@ -16,14 +16,14 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_behavior.js';
+import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 
 /**
  * The |name| is shown in the gui.  The |value| us use to set or compare with

@@ -9,12 +9,12 @@
  */
 
 // clang-format off
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.js';
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_behavior.js';
+import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 // clang-format on
 
 /**

@@ -17,7 +17,7 @@ import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/po
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 // </if>
 
-import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_behavior.js';
+import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_mixin.js';
 
 
 /**

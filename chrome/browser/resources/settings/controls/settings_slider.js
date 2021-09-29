@@ -12,7 +12,7 @@ import '../settings_vars_css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.js';
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
