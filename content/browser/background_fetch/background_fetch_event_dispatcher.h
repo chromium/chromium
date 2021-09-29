@@ -24,7 +24,7 @@ class ServiceWorkerRegistration;
 class ServiceWorkerVersion;
 
 // Responsible for dispatching the Background Fetch API events on a given
-// Service Worker. Must only be used on the service worker core thread.
+// Service Worker. Must only be used on the UI thread.
 class CONTENT_EXPORT BackgroundFetchEventDispatcher {
  public:
   // This enumeration is used for recording histograms. Treat as append-only.

@@ -20,7 +20,7 @@ class BackgroundFetchRequestInfo;
 
 // Observer interface for objects that would like to be notified about changes
 // committed to storage through the Background Fetch data manager. All methods
-// will be invoked on the service worker core thread.
+// will be invoked on the UI thread.
 class BackgroundFetchDataManagerObserver {
  public:
   // Called when the Background Fetch registration has been created.

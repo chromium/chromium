@@ -95,7 +95,6 @@ BackgroundFetchEventDispatcher::BackgroundFetchEventDispatcher(
     : background_fetch_context_(background_fetch_context),
       service_worker_context_(std::move(service_worker_context)),
       devtools_context_(devtools_context) {
-  // Constructed on the UI thread, then lives on the service worker core thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(background_fetch_context_);
   DCHECK(devtools_context_);
@@ -109,6 +108,7 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchCompletionEvent(
     const BackgroundFetchRegistrationId& registration_id,
     blink::mojom::BackgroundFetchRegistrationDataPtr registration_data,
     base::OnceClosure finished_closure) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(registration_data);
 
   auto registration = blink::mojom::BackgroundFetchRegistration::New(

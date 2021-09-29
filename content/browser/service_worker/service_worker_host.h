@@ -46,9 +46,7 @@ struct ServiceWorkerVersionBaseInfo;
 // renderer process. One ServiceWorkerHost instance hosts one service worker
 // execution context instance.
 //
-// ServiceWorkerHost lives on the service worker core thread, since all nearly
-// all browser process service worker machinery lives on the service worker core
-// thread.
+// Lives on the UI thread.
 class CONTENT_EXPORT ServiceWorkerHost {
  public:
   ServiceWorkerHost(mojo::PendingAssociatedReceiver<

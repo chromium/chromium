@@ -483,8 +483,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   if (worker_state->has_pending_tasks()) {
     // TODO(lazyboy): If worker for |context_id| is already running, consider
-    // not calling StartWorker. This isn't straightforward as service worker's
-    // internal state is mostly on the core thread.
+    // not calling StartWorker. This should be straightforward now that service
+    // worker's internal state is on the UI thread rather than the IO thread.
     RunTasksAfterStartWorker(context_id);
   }
 }

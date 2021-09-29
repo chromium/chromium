@@ -83,13 +83,12 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   // Queries all logged events for |service| and returns them in sorted order
   // (by timestamp). |callback| is called with an empty vector if there was an
-  // error. Must be called from the UI thread.
+  // error.
   void GetLoggedBackgroundServiceEvents(
       devtools::proto::BackgroundService service,
       GetLoggedBackgroundServiceEventsCallback callback);
 
   // Clears all logged events related to |service|.
-  // Must be called from the UI thread.
   void ClearLoggedBackgroundServiceEvents(
       devtools::proto::BackgroundService service);
 
@@ -117,8 +116,6 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   // Maps from the background service to the time up until the events can be
   // recorded. The BackgroundService enum is used as the index.
-  // This should only be updated on the UI thread, but is also
-  // accessed from the service worker core thread.
   std::array<base::Time, devtools::proto::BackgroundService::COUNT>
       expiration_times_;
 

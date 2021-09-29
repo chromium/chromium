@@ -32,9 +32,9 @@ class RenderFrameHostImpl;
 class StoragePartitionImpl;
 
 // This class was previously responsible for passing messages between
-// BackgroundFetchJobControllers on the service worker core thread and
-// BackgroundFetchDelegate on the UI thread. It may no longer be needed
-// now that these are the same thread.
+// BackgroundFetchJobControllers on ServiceWorkerContext's thread and
+// BackgroundFetchDelegate on the UI thread. It may no longer be needed now that
+// these are the same thread.
 //
 // Lives on the UI thread.
 class CONTENT_EXPORT BackgroundFetchDelegateProxy

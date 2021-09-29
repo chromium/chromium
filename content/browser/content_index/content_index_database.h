@@ -160,7 +160,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
   void ClearServiceWorkerDataOnCorruption(
       int64_t service_worker_registration_id);
 
-  // Callbacks on the UI thread to notify |provider_| of updates.
+  // Callbacks to notify |provider_| of updates.
   void NotifyProviderContentAdded(std::vector<ContentIndexEntry> entries);
   void NotifyProviderContentDeleted(int64_t service_worker_registration_id,
                                     const url::Origin& origin,
@@ -170,14 +170,16 @@ class CONTENT_EXPORT ContentIndexDatabase {
   void BlockOrigin(const url::Origin& origin);
   void UnblockOrigin(const url::Origin& origin);
 
-  // Lives on the UI thread.
   ContentIndexProvider* provider_;
 
   // A map from origins to how many times it's been blocked.
-  // Must be used on the service worker core thread.
   base::flat_map<url::Origin, int> blocked_origins_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
+
+  // This class lives on the UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<ContentIndexDatabase> weak_ptr_factory_{this};
 };
 

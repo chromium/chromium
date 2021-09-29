@@ -96,8 +96,7 @@ void ServiceWorkerNotificationEventFinished(
 }
 
 // Dispatches the given notification action event on
-// |service_worker_registration| if the registration was available. Must be
-// called on the service worker core thread.
+// |service_worker_registration| if the registration was available.
 void DispatchNotificationEventOnRegistration(
     const NotificationDatabaseData& notification_database_data,
     NotificationOperationCallback dispatch_event_action,
@@ -213,7 +212,6 @@ void ReadNotificationDatabaseData(
 // -----------------------------------------------------------------------------
 
 // Dispatches the notificationclick event on |service_worker|.
-// Must be called on the service worker core thread.
 void DispatchNotificationClickEventOnWorker(
     const scoped_refptr<ServiceWorkerVersion>& service_worker,
     const NotificationDatabaseData& notification_database_data,
@@ -298,7 +296,6 @@ void DeleteNotificationDataFromDatabase(
 }
 
 // Dispatches the notificationclose event on |service_worker|.
-// Must be called on the service worker core thread.
 void DispatchNotificationCloseEventOnWorker(
     const scoped_refptr<ServiceWorkerVersion>& service_worker,
     const NotificationDatabaseData& notification_database_data,

@@ -61,7 +61,6 @@ class EventAckData {
       base::OnceClosure failure_callback);
 
   // Contains map of unacked event information keyed by event id.
-  // Created on UI thread, but accessed only on the core thread.
   scoped_refptr<CoreThreadEventInfo> unacked_events_;
 
   base::WeakPtrFactory<EventAckData> weak_factory_{this};

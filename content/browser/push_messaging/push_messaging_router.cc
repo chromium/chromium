@@ -42,8 +42,7 @@ void RunPushEventCallback(
 }
 
 // Given the |service_worker_registration|, this method finds and finishes the
-// |callback| by finding the |service_worker_version|. Must be called on the
-// ServiceWorkerContext core thread.
+// |callback| by finding the |service_worker_version|.
 void DidFindServiceWorkerRegistration(
     ServiceWorkerMetrics::EventType event_type,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
@@ -71,8 +70,7 @@ void DidFindServiceWorkerRegistration(
                      std::move(devtools_context)));
 }
 
-// Finds the |service_worker_registration|. Must be called on the
-// ServiceWorkerContext core thread.
+// Finds the |service_worker_registration|.
 void FindServiceWorkerRegistration(
     ServiceWorkerMetrics::EventType event_type,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
