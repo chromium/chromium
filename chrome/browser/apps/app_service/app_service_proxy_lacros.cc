@@ -113,8 +113,6 @@ void AppServiceProxyLacros::Initialize() {
 
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
-  Observe(&app_registry_cache_);
-
   web_apps_publisher_host_ =
       std::make_unique<web_app::WebAppsPublisherHost>(profile_);
   web_apps_publisher_host_->Init();
@@ -464,19 +462,6 @@ void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                    bool should_notify_initialized) {
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
-}
-
-void AppServiceProxyLacros::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!update.ReadinessChanged() ||
-      !apps_util::IsInstalled(update.Readiness())) {
-    return;
-  }
-  preferred_apps_.DeleteAppId(update.AppId());
-}
-
-void AppServiceProxyLacros::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  Observe(nullptr);
 }
 
 apps::mojom::IntentFilterPtr AppServiceProxyLacros::FindBestMatchingFilter(

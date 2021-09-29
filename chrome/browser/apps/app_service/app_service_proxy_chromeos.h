@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -54,7 +55,8 @@ struct PauseData {
 // OS.
 //
 // See components/services/app_service/README.md.
-class AppServiceProxyChromeOs : public AppServiceProxyBase {
+class AppServiceProxyChromeOs : public AppServiceProxyBase,
+                                public apps::AppRegistryCache::Observer {
  public:
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
 
@@ -169,6 +171,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source) override;
 

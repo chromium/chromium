@@ -104,6 +104,8 @@ void AppServiceProxyChromeOs::Initialize() {
     return;
   }
 
+  Observe(&AppRegistryCache());
+
   // The AppServiceProxy is also a publisher, of a variety of app types. That
   // responsibility isn't intrinsically part of the AppServiceProxy, but doing
   // that here, for each such app type, is as good a place as any.
@@ -488,8 +490,11 @@ void AppServiceProxyChromeOs::OnAppUpdate(const apps::AppUpdate& update) {
        !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());
   }
+}
 
-  AppServiceProxyBase::OnAppUpdate(update);
+void AppServiceProxyChromeOs::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
 }
 
 void AppServiceProxyChromeOs::RecordAppPlatformMetrics(

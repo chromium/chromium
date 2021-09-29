@@ -133,8 +133,6 @@ void AppServiceProxyBase::Initialize() {
     receivers_.Add(this, subscriber.InitWithNewPipeAndPassReceiver());
     app_service_->RegisterSubscriber(std::move(subscriber), nullptr);
   }
-
-  Observe(&app_registry_cache_);
 }
 
 mojo::Remote<apps::mojom::AppService>& AppServiceProxyBase::AppService() {
@@ -557,19 +555,6 @@ void AppServiceProxyBase::OnPreferredAppsChanged(
 void AppServiceProxyBase::InitializePreferredApps(
     PreferredAppsList::PreferredApps preferred_apps) {
   preferred_apps_.Init(preferred_apps);
-}
-
-void AppServiceProxyBase::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!update.ReadinessChanged() ||
-      !apps_util::IsInstalled(update.Readiness())) {
-    return;
-  }
-  preferred_apps_.DeleteAppId(update.AppId());
-}
-
-void AppServiceProxyBase::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  Observe(nullptr);
 }
 
 apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(

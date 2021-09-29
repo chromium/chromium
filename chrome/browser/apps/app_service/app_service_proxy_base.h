@@ -57,8 +57,7 @@ struct IntentLaunchInfo {
 // See components/services/app_service/README.md.
 class AppServiceProxyBase : public KeyedService,
                             public apps::IconLoader,
-                            public apps::mojom::Subscriber,
-                            public apps::AppRegistryCache::Observer {
+                            public apps::mojom::Subscriber {
  public:
   explicit AppServiceProxyBase(Profile* profile);
   AppServiceProxyBase(const AppServiceProxyBase&) = delete;
@@ -320,11 +319,6 @@ class AppServiceProxyBase : public KeyedService,
       apps::mojom::PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(
       PreferredAppsList::PreferredApps preferred_apps) override;
-
-  // apps::AppRegistryCache::Observer overrides:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
 
   apps::mojom::IntentFilterPtr FindBestMatchingFilter(
       const apps::mojom::IntentPtr& intent);

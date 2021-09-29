@@ -57,7 +57,6 @@ struct IntentLaunchInfo {
 // See components/services/app_service/README.md.
 class AppServiceProxyLacros : public KeyedService,
                               public apps::IconLoader,
-                              public apps::AppRegistryCache::Observer,
                               public crosapi::mojom::AppServiceSubscriber {
  public:
   explicit AppServiceProxyLacros(Profile* profile);
@@ -308,11 +307,6 @@ class AppServiceProxyLacros : public KeyedService,
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
               bool should_notify_initialized) override;
-
-  // apps::AppRegistryCache::Observer overrides:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
 
   apps::mojom::IntentFilterPtr FindBestMatchingFilter(
       const apps::mojom::IntentPtr& intent);
