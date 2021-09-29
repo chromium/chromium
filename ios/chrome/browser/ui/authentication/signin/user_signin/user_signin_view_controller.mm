@@ -270,10 +270,11 @@ enum AuthenticationButtonType {
   self.actionButtonsView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableArray* bottomViews = [[NSMutableArray alloc] init];
-  if (self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType) {
+  if (self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType ||
+      self.delegate.unifiedConsentCoordinatorHasRestrictedAccounts) {
     UITextView* noticeTextView =
         [self noticeViewForMessageID:
-                  IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_LEARN_MORE
+                  IDS_IOS_ACCOUNT_UNIFIED_CONSENT_MANAGED_LEARN_MORE
                                  URL:GURL(kChromeUIManagementURL)];
     [bottomViews addObject:noticeTextView];
   }

@@ -19,6 +19,9 @@
 // Returns whether there are policies disabling Sync for at least one data type.
 - (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType;
 
+// Returns true if there are policies restricting accounts.
+- (BOOL)unifiedConsentCoordinatorHasRestrictedAccounts;
+
 // Performs add account operation.
 - (void)userSigninViewControllerDidTapOnAddAccount;
 

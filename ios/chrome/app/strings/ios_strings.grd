@@ -207,8 +207,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. [iOS only]">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>See what you can sync<ph name="END_LINK">END_LINK</ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_LEARN_MORE" desc="Explanation text on the sync consent dialog to explain that syncable types are limited (i.e. managed). Includes a Learn More link. [iOS only]">
-        Your organization limits what you can sync. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_MANAGED_LEARN_MORE" desc="Explanation text on the sync consent dialog to explain that syncable types are limited (i.e. managed). Includes a Learn More link. [iOS only]">
+        Your browser is managed and by your organization. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT" desc="Title of the button to add an account [Length: 15m] [iOS only]">
         Add Account

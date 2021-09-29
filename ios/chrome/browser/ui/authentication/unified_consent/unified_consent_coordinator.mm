@@ -109,6 +109,12 @@
   return HasManagedSyncDataType(self.browser->GetBrowserState());
 }
 
+- (BOOL)hasRestrictedAccounts {
+  return ChromeAccountManagerServiceFactory::GetForBrowserState(
+             self.browser->GetBrowserState())
+      ->HasRestrictedIdentities();
+}
+
 #pragma mark - Private
 
 // Opens the identity chooser dialog with an animation from |point|.
