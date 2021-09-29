@@ -193,31 +193,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
   ASSERT_FALSE(encryption_item.enabled);
 }
 
-// Tests that encryption is not accessible when Sync is disabled by the
-// administrator.
-TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
-  FirstSetupSyncOff();
-  ON_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillByDefault(
-          Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  ASSERT_TRUE([mediator_.consumer.tableViewModel
-      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier]);
-
-  // Encryption item is disabled.
-  NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(2UL, advanced_settings_items.count);
-
-  TableViewImageItem* encryption_item = advanced_settings_items[0];
-  ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
-  ASSERT_FALSE(encryption_item.enabled);
-}
-
 // Tests that encryption is accessible when there is a Sync error due to a
 // missing passphrase, but Sync has otherwise been enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledNeedsPassphrase) {
