@@ -30,6 +30,20 @@ OAuthHttpFetcher::~OAuthHttpFetcher() = default;
 
 void OAuthHttpFetcher::ExecuteGetRequest(const GURL& url,
                                          FetchCompleteCallback callback) {
+  request_type_ = RequestType::GET;
+  StartRequest(url, std::move(callback));
+}
+
+void OAuthHttpFetcher::ExecutePostRequest(const GURL& url,
+                                          const std::string& body,
+                                          FetchCompleteCallback callback) {
+  request_type_ = RequestType::POST;
+  body_ = body;
+  StartRequest(url, std::move(callback));
+}
+
+void OAuthHttpFetcher::StartRequest(const GURL& url,
+                                    FetchCompleteCallback callback) {
   QP_LOG(VERBOSE) << __func__ << ": executing request to: " << url;
 
   if (has_call_started_) {
@@ -90,7 +104,23 @@ GURL OAuthHttpFetcher::CreateApiCallUrl() {
 }
 
 std::string OAuthHttpFetcher::CreateApiCallBody() {
-  return std::string();
+  switch (request_type_) {
+    case RequestType::GET:
+      return std::string();
+
+    case RequestType::POST:
+      return body_;
+  }
+}
+
+std::string OAuthHttpFetcher::GetRequestTypeForBody(const std::string& body) {
+  switch (request_type_) {
+    case RequestType::GET:
+      return "GET";
+
+    case RequestType::POST:
+      return "POST";
+  }
 }
 
 void OAuthHttpFetcher::ProcessApiCallSuccess(

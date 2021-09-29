@@ -28,6 +28,18 @@ class HttpFetcher {
   // available, as a string to the provided |callback|.
   virtual void ExecuteGetRequest(const GURL& url,
                                  FetchCompleteCallback callback) = 0;
+
+  // Performs a POST request to the desired URL and returns the response, if
+  // available, as a string to the provided |callback|.
+  virtual void ExecutePostRequest(const GURL& url,
+                                  const std::string& body,
+                                  FetchCompleteCallback callback);
+
+ protected:
+  enum class RequestType {
+    GET = 0,
+    POST = 1,
+  };
 };
 
 }  // namespace quick_pair
