@@ -397,8 +397,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
         }
       }
 
-      if (before_icon != nullptr && after_icon != nullptr &&
-          !before_icon->drawsNothing() && !after_icon->drawsNothing()) {
+      if (before_icon != nullptr && after_icon != nullptr) {
         ui_manager_.ShowWebAppIdentityUpdateDialog(
             app_id_, title_change, icon_diff.changes_detected, old_title,
             new_title, *before_icon, *after_icon, web_contents,
