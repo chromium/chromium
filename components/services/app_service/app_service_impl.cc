@@ -377,10 +377,16 @@ void AppServiceImpl::RemovePreferredApp(apps::mojom::AppType app_type,
     return;
   }
 
-  if (preferred_apps_.DeleteAppId(app_id)) {
+  std::vector<apps::mojom::IntentFilterPtr> removed_filters =
+      preferred_apps_.DeleteAppId(app_id);
+  if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_);
 
-    // TODO(crbug.com/1247944): Notify subscribers about the removal.
+    auto changes = apps::mojom::PreferredAppChanges::New();
+    changes->removed_filters.emplace(app_id, std::move(removed_filters));
+    for (auto& subscriber : subscribers_) {
+      subscriber->OnPreferredAppsChanged(changes->Clone());
+    }
   }
 
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForAppId);

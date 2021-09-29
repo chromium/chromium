@@ -153,13 +153,15 @@ bool PreferredAppsList::DeletePreferredApp(
   return found;
 }
 
-bool PreferredAppsList::DeleteAppId(const std::string& app_id) {
-  bool found = false;
+std::vector<apps::mojom::IntentFilterPtr> PreferredAppsList::DeleteAppId(
+    const std::string& app_id) {
+  std::vector<apps::mojom::IntentFilterPtr> out;
+
   auto iter = preferred_apps_.begin();
   // Go through the list and delete the entry with requested app_id.
   while (iter != preferred_apps_.end()) {
     if ((*iter)->app_id == app_id) {
-      found = true;
+      out.push_back(std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -170,7 +172,7 @@ bool PreferredAppsList::DeleteAppId(const std::string& app_id) {
     obs.OnPreferredAppChanged(app_id, false);
   }
 
-  return found;
+  return out;
 }
 
 std::vector<apps::mojom::IntentFilterPtr>

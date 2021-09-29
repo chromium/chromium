@@ -93,9 +93,9 @@ class PreferredAppsList {
   bool DeletePreferredApp(const std::string& app_id,
                           const apps::mojom::IntentFilterPtr& intent_filter);
 
-  // Delete all settings for an |app_id|.
-  // Returns |true| if |app_id| was found in the list of preferred apps.
-  bool DeleteAppId(const std::string& app_id);
+  // Delete all settings for an |app_id|. Returns the deleted filters, if any.
+  std::vector<apps::mojom::IntentFilterPtr> DeleteAppId(
+      const std::string& app_id);
 
   // Deletes all stored supported link preferences for an |app_id|.
   // Returns the deleted filters, if any.

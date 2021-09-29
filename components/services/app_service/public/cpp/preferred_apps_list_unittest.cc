@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 
+#include "base/containers/contains.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -498,7 +499,8 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleFilters) {
 
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
 
-  preferred_apps_.DeleteAppId(kAppId1);
+  std::vector<apps::mojom::IntentFilterPtr> removed_filters =
+      preferred_apps_.DeleteAppId(kAppId1);
 
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
@@ -506,6 +508,11 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleFilters) {
             preferred_apps_.FindPreferredAppForUrl(filter_url_2));
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+
+  EXPECT_EQ(3u, removed_filters.size());
+  EXPECT_TRUE(base::Contains(removed_filters, intent_filter_1));
+  EXPECT_TRUE(base::Contains(removed_filters, intent_filter_2));
+  EXPECT_TRUE(base::Contains(removed_filters, intent_filter_3));
 }
 
 // Test that for filter with multiple condition values, DeleteAppId() can

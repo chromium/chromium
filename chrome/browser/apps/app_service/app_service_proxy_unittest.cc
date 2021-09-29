@@ -282,7 +282,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
 
     absl::optional<std::string> preferred_app =
         proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
-    ASSERT_EQ(preferred_app, kTestAppId);
+    ASSERT_EQ(kTestAppId, preferred_app);
   }
 
   // Updating the app should not change its preferred app status.
@@ -300,7 +300,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
 
     absl::optional<std::string> preferred_app =
         proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
-    ASSERT_EQ(preferred_app, kTestAppId);
+    ASSERT_EQ(kTestAppId, preferred_app);
   }
 
   // Uninstalling the app should remove it from the preferred app list.
@@ -316,8 +316,9 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
                     /*should_notify_initialized=*/false);
     proxy()->FlushMojoCallsForTesting();
 
-    // TODO(crbug.com/1247944): Once removals are synced back to
-    // AppServiceProxy, check that the app is no longer preferred.
+    absl::optional<std::string> preferred_app =
+        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(absl::nullopt, preferred_app);
   }
 }
 
