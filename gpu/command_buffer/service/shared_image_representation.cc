@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_representation.h"
 
+#include "base/strings/stringprintf.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -211,7 +212,12 @@ SharedImageRepresentationSkia::BeginScopedReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   if (!IsCleared()) {
-    LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
+    auto cr = ClearedRect();
+    LOG(ERROR) << base::StringPrintf(
+        "Attempt to read from an uninitialized SharedImage. "
+        "Initialized region: (%d, %d, %d, %d) Size: (%d, %d)",
+        cr.x(), cr.y(), cr.width(), cr.height(), size().width(),
+        size().height());
     return nullptr;
   }
 
