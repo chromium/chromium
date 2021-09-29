@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 
 namespace content {
 namespace background_fetch {
@@ -26,6 +27,28 @@ GetDeveloperIdsTask::GetDeveloperIdsTask(
 GetDeveloperIdsTask::~GetDeveloperIdsTask() = default;
 
 void GetDeveloperIdsTask::Start() {
+  service_worker_context()->FindReadyRegistrationForIdOnly(
+      service_worker_registration_id_,
+      base::BindOnce(&GetDeveloperIdsTask::DidGetServiceWorkerRegistration,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void GetDeveloperIdsTask::DidGetServiceWorkerRegistration(
+    blink::ServiceWorkerStatusCode status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  if (ToDatabaseStatus(status) != DatabaseStatus::kOk || !registration) {
+    SetStorageErrorAndFinish(
+        BackgroundFetchStorageError::kServiceWorkerStorageError);
+    return;
+  }
+
+  // TODO(crbug.com/1199077): Move this check into the SW context.
+  if (registration->origin() != origin_) {
+    SetStorageErrorAndFinish(
+        BackgroundFetchStorageError::kServiceWorkerStorageError);
+    return;
+  }
+
   service_worker_context()->GetRegistrationUserKeysAndDataByKeyPrefix(
       service_worker_registration_id_, {kActiveRegistrationUniqueIdKeyPrefix},
       base::BindOnce(&GetDeveloperIdsTask::DidGetUniqueIds,
