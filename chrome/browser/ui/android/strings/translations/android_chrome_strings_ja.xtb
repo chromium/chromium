@@ -146,7 +146,7 @@
 <translation id="1986685561493779662">この名前はすでに存在しています</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ボタン</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
-<translation id="200114059308480249">Google 検索に周囲のテキストを含めますか？</translation>
+<translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 件のファイル}other{# 件のファイル}}</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
 <translation id="2038563949887743358">[PC 版サイトを見る] をオンにします</translation>
@@ -244,7 +244,7 @@
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2518590038762162553">ライトモードを使用すると、Chrome でページの読み込みが高速化され、データ使用量も最大 60% 抑えることができます。アクセスするページを最適化するため、ウェブ トラフィックが Chrome から Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">アクセスしたページの URL を Google に送信します</translation>
-<translation id="2527209463677295330">ページの他のテキストを含めると、より正確な結果が得られる可能性があります</translation>
+<translation id="2527209463677295330">表示するページテキストを増やすと、より正確な結果が得られる可能性があります</translation>
 <translation id="2527497042232966453">シークレット タブに切り替えました</translation>
 <translation id="2527779675047087889">クリップボードの内容を非表示</translation>
 <translation id="2532336938189706096">ウェブ表示</translation>
@@ -321,7 +321,7 @@
 <translation id="2979448359891869301">スクリーンショットを展開できません。スマートフォンがビジー状態でないときにもう一度お試しください。</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2981364137500752533">同時に開くことができるウィンドウは最大 5 つです。</translation>
-<translation id="2984978667043170458">Google 検索に周囲のテキストを含める</translation>
+<translation id="2984978667043170458">Google 検索に周辺のテキストを含める</translation>
 <translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
 <translation id="2992473221983447149">画像の説明</translation>
@@ -1047,7 +1047,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 件の選択されたアイテムを共有します}other{# 件の選択されたアイテムを共有します}}</translation>
 <translation id="7359002509206457351">お支払い方法へのアクセス</translation>
 <translation id="7375125077091615385">タイプ:</translation>
-<translation id="7376560087009844242">ページの他のテキストを含めると、「タップして検索」でより正確な結果が得られる可能性があります。<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />でいつでも変更できます。</translation>
+<translation id="7376560087009844242">表示するページテキストを増やすと、「タップして検索」使用時により正確な結果が得られる可能性があります。<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />からいつでも変更できます。</translation>
 <translation id="7386842512861524348">サイトの接続は保護されます（保護されない場合は通知されます）。</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />。</translation>
 <translation id="7400418766976504921">URL</translation>

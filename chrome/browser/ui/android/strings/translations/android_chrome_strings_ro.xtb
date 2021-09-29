@@ -1047,7 +1047,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Trimite un element selectat}few{Trimite # elemente selectate}other{Trimite # de elemente selectate}}</translation>
 <translation id="7359002509206457351">Acces la metodele de plată</translation>
 <translation id="7375125077091615385">Tip:</translation>
-<translation id="7376560087009844242">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune când folosești Atinge pentru a căuta. Poți accesa oricând <ph name="BEGIN_LINK" />setările<ph name="END_LINK" /> pentru a modifica opțiunea.</translation>
+<translation id="7376560087009844242">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune când folosești Atinge pentru a căuta. Poți accesa oricând<ph name="BEGIN_LINK" />setările<ph name="END_LINK" /> pentru a schimba această setare.</translation>
 <translation id="7386842512861524348">Conexiunea site-ului este sigură dacă Chrome nu anunță contrariul.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">Adresă URL</translation>

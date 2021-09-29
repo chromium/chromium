@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Ce nom existe déjà</translation>
 <translation id="1987739130650180037">Bouton <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
+<translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
@@ -243,6 +244,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2518590038762162553">En mode simplifié, Chrome charge les pages plus vite et utilise jusqu'à 60 % moins de données. Pour optimiser les pages que vous visitez, Chrome achemine votre trafic Web vers Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
+<translation id="2527209463677295330">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats</translation>
 <translation id="2527497042232966453">Passé aux onglets de navigation privée</translation>
 <translation id="2527779675047087889">Masquer le contenu du presse-papier</translation>
 <translation id="2532336938189706096">Affichage Web</translation>
@@ -319,6 +321,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2979448359891869301">Impossible d'étendre la capture d'écran. Essayez de nouveau lorsque votre téléphone n'est pas occupé.</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2981364137500752533">Vous pouvez ouvrir jusqu'à cinq fenêtres.</translation>
+<translation id="2984978667043170458">Inclure le texte à proximité dans les recherches Google</translation>
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
 <translation id="2989523299700148168">Visites récentes</translation>
 <translation id="2992473221983447149">Descriptions des images</translation>
@@ -1044,6 +1047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partager 1 élément sélectionné}one{Partager # élément sélectionné}other{Partager # éléments sélectionnés}}</translation>
 <translation id="7359002509206457351">Accéder aux modes de paiement</translation>
 <translation id="7375125077091615385">Type :</translation>
+<translation id="7376560087009844242">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats lorsque vous utilisez la fonctionnalité Toucher pour rechercher. Vous pouvez toujours accéder aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" /> pour modifier cette option.</translation>
 <translation id="7386842512861524348">La connexion du site est sécuritaire, à moins que Chrome vous indique le contraire.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1058,6 +1062,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7444811645081526538">Plus de catégories</translation>
 <translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
+<translation id="7474822150871987353">Apprenez-en davantage sur des sujets mentionnés sur des sites Web sans quitter la page. Sélectionnez au moins un mot sur la page pour le rechercher.</translation>
 <translation id="7475192538862203634">Si vous rencontrez souvent ce problème, essayez ces <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Carte SD introuvable. Certains de vos fichiers pourraient être manquants.</translation>
 <translation id="7479104141328977413">Gestion des onglets</translation>
@@ -1224,6 +1229,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
+<translation id="8419244640277402268">Inclure</translation>
 <translation id="8424781820952413435">Page envoyée. Pour la consulter, ouvrez Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">L'onglet d'aperçu est ouvert à moitié</translation>
 <translation id="8428213095426709021">Paramètres</translation>
