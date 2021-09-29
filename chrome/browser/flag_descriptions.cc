@@ -2729,6 +2729,11 @@ const char kWebIdDescription[] =
     "Enables WebID HTTP filtering and JavaScript "
     "API to intermediate federated identity requests.";
 
+const char kWebMidiName[] = "Web MIDI";
+const char kWebMidiDescription[] =
+    "Enables the implementation of the Web MIDI API. When disabled the "
+    "interface will still be exposed by Blink.";
+
 const char kWebOtpBackendName[] = "Web OTP";
 const char kWebOtpBackendDescription[] =
     "Enables Web OTP API that uses the specified backend.";

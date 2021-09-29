@@ -1541,6 +1541,9 @@ extern const char kWebBundlesDescription[];
 extern const char kWebIdName[];
 extern const char kWebIdDescription[];
 
+extern const char kWebMidiName[];
+extern const char kWebMidiDescription[];
+
 extern const char kWebOtpBackendName[];
 extern const char kWebOtpBackendDescription[];
 extern const char kWebOtpBackendSmsVerification[];

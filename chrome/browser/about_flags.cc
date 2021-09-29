@@ -7672,6 +7672,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRawDrawDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRawDraw)},
 
+    {"web-midi", flag_descriptions::kWebMidiName,
+     flag_descriptions::kWebMidiDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebMidi)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

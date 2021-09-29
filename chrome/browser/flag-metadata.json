@@ -5538,6 +5538,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "web-midi",
+    "owners": [ "reillyg", "deviceapi-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "web-otp-backend",
     "owners": [ "yigu", "majidvp" ],
     "expiry_milestone": 96
