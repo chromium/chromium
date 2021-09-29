@@ -149,11 +149,11 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
 
   // Adds |item_ptr| to |top_level_item_list_| and notifies observers.
-  AppListItem* AddItemToItemListAndNotify(std::unique_ptr<AppListItem> item_ptr,
+  AppListItem* AddItemToRootListAndNotify(std::unique_ptr<AppListItem> item_ptr,
                                           ReparentItemReason reason);
 
   // Adds |item_ptr| to |folder| and notifies observers.
-  AppListItem* AddItemToFolderItemAndNotify(
+  AppListItem* AddItemToFolderListAndNotify(
       AppListFolderItem* folder,
       std::unique_ptr<AppListItem> item_ptr,
       ReparentItemReason reason);

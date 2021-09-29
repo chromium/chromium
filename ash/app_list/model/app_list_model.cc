@@ -78,7 +78,7 @@ AppListFolderItem* AppListModel::FindFolderItem(const std::string& id) {
 AppListItem* AppListModel::AddItem(std::unique_ptr<AppListItem> item) {
   DCHECK(!item->IsInFolder());
   DCHECK(!top_level_item_list()->FindItem(item->id()));
-  return AddItemToItemListAndNotify(std::move(item), ReparentItemReason::kAdd);
+  return AddItemToRootListAndNotify(std::move(item), ReparentItemReason::kAdd);
 }
 
 void AppListModel::AddPageBreakItemAfter(const AppListItem* previous_item) {
@@ -100,7 +100,7 @@ AppListItem* AppListModel::AddItemToFolder(std::unique_ptr<AppListItem> item,
     return nullptr;
   DCHECK(!dest_folder->item_list()->FindItem(item->id()))
       << "Already in folder: " << dest_folder->id();
-  return AddItemToFolderItemAndNotify(dest_folder, std::move(item),
+  return AddItemToFolderListAndNotify(dest_folder, std::move(item),
                                       ReparentItemReason::kAdd);
 }
 
@@ -139,7 +139,7 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
     source_item_ptr->set_position(
         target_folder->item_list()->CreatePositionBefore(
             syncer::StringOrdinal()));
-    AddItemToFolderItemAndNotify(target_folder, std::move(source_item_ptr),
+    AddItemToFolderListAndNotify(target_folder, std::move(source_item_ptr),
                                  ReparentItemReason::kUpdate);
     return target_folder->id();
   }
@@ -161,17 +161,17 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
       std::make_unique<AppListFolderItem>(new_folder_id);
   new_folder_ptr->set_position(target_item_ptr->position());
   AppListFolderItem* new_folder =
-      static_cast<AppListFolderItem*>(AddItemToItemListAndNotify(
+      static_cast<AppListFolderItem*>(AddItemToRootListAndNotify(
           std::move(new_folder_ptr), ReparentItemReason::kAdd));
 
   // Add the items to the new folder.
   target_item_ptr->set_position(
       new_folder->item_list()->CreatePositionBefore(syncer::StringOrdinal()));
-  AddItemToFolderItemAndNotify(new_folder, std::move(target_item_ptr),
+  AddItemToFolderListAndNotify(new_folder, std::move(target_item_ptr),
                                ReparentItemReason::kUpdate);
   source_item_ptr->set_position(
       new_folder->item_list()->CreatePositionBefore(syncer::StringOrdinal()));
-  AddItemToFolderItemAndNotify(new_folder, std::move(source_item_ptr),
+  AddItemToFolderListAndNotify(new_folder, std::move(source_item_ptr),
                                ReparentItemReason::kUpdate);
 
   return new_folder->id();
@@ -187,10 +187,10 @@ void AppListModel::MoveItemToFolder(AppListItem* item,
   std::unique_ptr<AppListItem> item_ptr = RemoveItem(item);
   if (dest_folder) {
     CHECK(!item->IsInFolder());
-    AddItemToFolderItemAndNotify(dest_folder, std::move(item_ptr),
+    AddItemToFolderListAndNotify(dest_folder, std::move(item_ptr),
                                  ReparentItemReason::kUpdate);
   } else {
-    AddItemToItemListAndNotify(std::move(item_ptr),
+    AddItemToRootListAndNotify(std::move(item_ptr),
                                ReparentItemReason::kUpdate);
   }
 }
@@ -214,12 +214,12 @@ bool AppListModel::MoveItemToFolderAt(AppListItem* item,
   if (dest_folder) {
     item_ptr->set_position(
         dest_folder->item_list()->CreatePositionBefore(position));
-    AddItemToFolderItemAndNotify(dest_folder, std::move(item_ptr),
+    AddItemToFolderListAndNotify(dest_folder, std::move(item_ptr),
                                  ReparentItemReason::kUpdate);
   } else {
     item_ptr->set_position(
         top_level_item_list_->CreatePositionBefore(position));
-    AddItemToItemListAndNotify(std::move(item_ptr),
+    AddItemToRootListAndNotify(std::move(item_ptr),
                                ReparentItemReason::kUpdate);
   }
   return true;
@@ -344,12 +344,12 @@ AppListFolderItem* AppListModel::FindOrCreateFolderItem(
       std::make_unique<AppListFolderItem>(folder_id);
   new_folder->set_position(
       top_level_item_list_->CreatePositionBefore(syncer::StringOrdinal()));
-  AppListItem* new_folder_item = AddItemToItemListAndNotify(
+  AppListItem* new_folder_item = AddItemToRootListAndNotify(
       std::move(new_folder), ReparentItemReason::kAdd);
   return static_cast<AppListFolderItem*>(new_folder_item);
 }
 
-AppListItem* AppListModel::AddItemToItemListAndNotify(
+AppListItem* AppListModel::AddItemToRootListAndNotify(
     std::unique_ptr<AppListItem> item_ptr,
     ReparentItemReason reason) {
   DCHECK(!item_ptr->IsInFolder());
@@ -363,7 +363,7 @@ AppListItem* AppListModel::AddItemToItemListAndNotify(
   return item;
 }
 
-AppListItem* AppListModel::AddItemToFolderItemAndNotify(
+AppListItem* AppListModel::AddItemToFolderListAndNotify(
     AppListFolderItem* folder,
     std::unique_ptr<AppListItem> item_ptr,
     ReparentItemReason reason) {
