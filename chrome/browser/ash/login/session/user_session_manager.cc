@@ -534,9 +534,9 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
 
   // account_manager::AccountManager::Observer overrides:
   void OnTokenUpserted(const account_manager::Account& account) override {
-    if (account.key.account_type != account_manager::AccountType::kGaia)
+    if (account.key.account_type() != account_manager::AccountType::kGaia)
       return;
-    if (account.key.id != account_id_.GetGaiaId())
+    if (account.key.id() != account_id_.GetGaiaId())
       return;
 
     callback_.Run(account_id_);

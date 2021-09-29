@@ -49,7 +49,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
                        AccountTrackerService* account_tracker_service,
                        SigninClient* signin_client,
                        const account_manager::Account& device_account) {
-  if (device_account.key.account_type != account_manager::AccountType::kGaia)
+  if (device_account.key.account_type() != account_manager::AccountType::kGaia)
     return;
 
   // An account can be set as the Primary Account only if it exists in
@@ -59,7 +59,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
   // the account in `AccountTrackerService` to get around this issue.
   const CoreAccountId device_account_id =
       account_tracker_service->SeedAccountInfo(
-          /*gaia=*/device_account.key.id, device_account.raw_email);
+          /*gaia=*/device_account.key.id(), device_account.raw_email);
 
   // TODO(https://crbug.com/1194983): Figure out how split sync settings will
   // work here. For now, we will mimic Ash's behaviour of having sync turned on
@@ -80,7 +80,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
       device_account_id, ConsentLevel::kSync));
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
-           device_account.key.id);
+           device_account.key.id());
 }
 #endif
 

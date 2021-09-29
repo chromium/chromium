@@ -139,9 +139,8 @@ absl::optional<account_manager::Account> FromMojoAccount(
   if (!account_key.has_value())
     return absl::nullopt;
 
-  account_manager::Account account;
-  account.key = account_key.value();
-  account.raw_email = mojom_account->raw_email;
+  account_manager::Account account{account_key.value(),
+                                   mojom_account->raw_email};
   return account;
 }
 
@@ -159,19 +158,20 @@ absl::optional<account_manager::AccountKey> FromMojoAccountKey(
       FromMojoAccountType(mojom_account_key->account_type);
   if (!account_type.has_value())
     return absl::nullopt;
+  if (mojom_account_key->id.empty())
+    return absl::nullopt;
 
-  account_manager::AccountKey account_key;
-  account_key.id = mojom_account_key->id;
-  account_key.account_type = account_type.value();
-  return account_key;
+  return account_manager::AccountKey(mojom_account_key->id,
+                                     account_type.value());
 }
 
 crosapi::mojom::AccountKeyPtr ToMojoAccountKey(
     const account_manager::AccountKey& account_key) {
   crosapi::mojom::AccountKeyPtr mojom_account_key =
       crosapi::mojom::AccountKey::New();
-  mojom_account_key->id = account_key.id;
-  mojom_account_key->account_type = ToMojoAccountType(account_key.account_type);
+  mojom_account_key->id = account_key.id();
+  mojom_account_key->account_type =
+      ToMojoAccountType(account_key.account_type());
   return mojom_account_key;
 }
 

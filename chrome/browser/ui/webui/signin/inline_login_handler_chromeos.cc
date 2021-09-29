@@ -401,7 +401,7 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
     const std::vector<::account_manager::Account>& accounts) {
   base::ListValue account_emails;
   for (const auto& account : accounts) {
-    if (account.key.account_type ==
+    if (account.key.account_type() ==
         ::account_manager::AccountType::kActiveDirectory) {
       // Don't send Active Directory account email to Gaia.
       account_emails.Append(AnonymizeAccountEmail(account.raw_email));

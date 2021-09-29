@@ -27,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -85,7 +86,7 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
           "device-account-token" /*token*/};
 }
 
-account_manager::Account GetAccountByKey(
+absl::optional<account_manager::Account> GetAccountByKey(
     std::vector<account_manager::Account> accounts,
     account_manager::AccountKey key) {
   for (const account_manager::Account& account : accounts) {
@@ -93,7 +94,7 @@ account_manager::Account GetAccountByKey(
       return account;
     }
   }
-  return account_manager::Account();
+  return absl::nullopt;
 }
 
 std::string ValueOrEmpty(const std::string* str) {
@@ -360,9 +361,11 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       continue;
     EXPECT_FALSE(account.FindBoolKey("isDeviceAccount").value());
 
-    ::account_manager::Account expected_account = GetAccountByKey(
-        account_manager_accounts, {ValueOrEmpty(account.FindStringKey("id")),
-                                   account_manager::AccountType::kGaia});
+    ::account_manager::Account expected_account =
+        GetAccountByKey(account_manager_accounts,
+                        {ValueOrEmpty(account.FindStringKey("id")),
+                         account_manager::AccountType::kGaia})
+            .value();
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_CHILD) {
       EXPECT_FALSE(account.FindBoolKey("unmigrated").value());
@@ -370,14 +373,14 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       EXPECT_EQ(HasDummyGaiaToken(expected_account.key),
                 account.FindBoolKey("unmigrated").value());
     }
-    EXPECT_EQ(static_cast<int>(expected_account.key.account_type),
+    EXPECT_EQ(static_cast<int>(expected_account.key.account_type()),
               account.FindIntKey("accountType"));
     EXPECT_EQ(expected_account.raw_email,
               ValueOrEmpty(account.FindStringKey("email")));
 
     AccountInfo expected_account_info =
         identity_manager()->FindExtendedAccountInfoByGaiaId(
-            expected_account.key.id);
+            expected_account.key.id());
     EXPECT_FALSE(expected_account_info.IsEmpty());
     EXPECT_EQ(expected_account_info.full_name,
               ValueOrEmpty(account.FindStringKey("fullName")));

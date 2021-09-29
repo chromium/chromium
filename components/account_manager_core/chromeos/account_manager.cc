@@ -186,7 +186,6 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
         consumer_(consumer) {
     DCHECK(account_manager_);
     DCHECK(consumer_);
-    DCHECK(account_key_.IsValid());
   }
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
@@ -230,7 +229,7 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
     DCHECK(are_token_requests_allowed_);
     is_request_pending_ = false;
 
-    if (account_key_.account_type != ::account_manager::AccountType::kGaia) {
+    if (account_key_.account_type() != ::account_manager::AccountType::kGaia) {
       FireOnGetTokenFailure(GoogleServiceAuthError(
           GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
       return;
@@ -413,14 +412,13 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
       is_any_account_corrupt = true;
       continue;
     }
-    ::account_manager::AccountKey account_key{account.id(),
-                                              account_type.value()};
-    if (!account_key.IsValid()) {
-      LOG(WARNING) << "Ignoring invalid account_key load from disk: "
-                   << account_key;
+    if (account.id().empty()) {
+      LOG(WARNING) << "Ignoring invalid account_key load from disk";
       is_any_account_corrupt = true;
       continue;
     }
+    ::account_manager::AccountKey account_key{account.id(),
+                                              account_type.value()};
     accounts[account_key] = AccountInfo{account.raw_email(), account.token()};
   }
   if (is_any_account_corrupt) {
@@ -584,7 +582,7 @@ void AccountManager::UpdateToken(
     const std::string& token) {
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  if (account_key.account_type ==
+  if (account_key.account_type() ==
       ::account_manager::AccountType::kActiveDirectory) {
     DCHECK_EQ(token, kActiveDirectoryDummyToken);
   }
@@ -636,9 +634,8 @@ void AccountManager::UpsertAccountInternal(
     const AccountInfo& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-  DCHECK(account_key.IsValid()) << "Invalid account_key: " << account_key;
 
-  if (account_key.account_type == ::account_manager::AccountType::kGaia) {
+  if (account_key.account_type() == ::account_manager::AccountType::kGaia) {
     DCHECK(!account.raw_email.empty())
         << "Email must be present for Gaia accounts";
   }
@@ -697,9 +694,9 @@ std::string AccountManager::GetSerializedAccounts() {
 
   for (const auto& account : accounts_) {
     internal::Account* account_proto = accounts_proto.add_accounts();
-    account_proto->set_id(account.first.id);
+    account_proto->set_id(account.first.id());
     account_proto->set_account_type(
-        ToProtoAccountType(account.first.account_type));
+        ToProtoAccountType(account.first.account_type()));
     account_proto->set_raw_email(account.second.raw_email);
     account_proto->set_token(account.second.token);
   }
@@ -829,7 +826,7 @@ void AccountManager::CheckDummyGaiaTokenForAllAccountsInternal(
 void AccountManager::MaybeRevokeTokenOnServer(
     const ::account_manager::AccountKey& account_key,
     const std::string& old_token) {
-  if ((account_key.account_type == ::account_manager::AccountType::kGaia) &&
+  if ((account_key.account_type() == ::account_manager::AccountType::kGaia) &&
       !old_token.empty() && (old_token != kInvalidToken)) {
     RevokeGaiaTokenOnServer(old_token);
   }
@@ -868,9 +865,7 @@ absl::optional<std::string> AccountManager::GetRefreshToken(
     const ::account_manager::AccountKey& account_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  DCHECK(account_key.IsValid());
-  DCHECK(account_key.account_type == ::account_manager::AccountType::kGaia);
+  DCHECK(account_key.account_type() == ::account_manager::AccountType::kGaia);
 
   auto it = accounts_.find(account_key);
   if (it == accounts_.end() || it->second.token.empty()) {

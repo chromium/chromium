@@ -37,7 +37,7 @@ void ProfileAccountManager::Shutdown() {
 void ProfileAccountManager::OnAccountUpserted(
     const base::FilePath& profile_path,
     const account_manager::Account& account) {
-  DCHECK_EQ(account.key.account_type, account_manager::AccountType::kGaia);
+  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
   if (profile_path != profile_path_)
     return;
   for (auto& obs : observers_)

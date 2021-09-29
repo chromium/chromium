@@ -21,20 +21,6 @@
 
 namespace {
 
-// Returns the `account_manager::Account` with the specified ID. The account
-// must exist in `account_cache`.
-account_manager::Account FindAccountByGaiaID(
-    const base::flat_map<std::string, account_manager::Account>& account_cache,
-    const std::string& gaia_id) {
-  base::flat_map<std::string, account_manager::Account>::const_iterator it =
-      account_cache.find(gaia_id);
-  if (it == account_cache.cend()) {
-    NOTREACHED() << "Account " << gaia_id << " missing.";
-    return account_manager::Account();
-  }
-  return it->second;
-}
-
 // Adds the account specified in `result` to the profile associated with
 // `profile_path`, and returns whether the operation succeeded.
 bool TryAddAccountToProfile(
@@ -50,9 +36,9 @@ bool TryAddAccountToProfile(
     return false;  // The OS flow failed.
   }
   const account_manager::Account& account = *result.account();
-  if (account.key.account_type != account_manager::AccountType::kGaia)
+  if (account.key.account_type() != account_manager::AccountType::kGaia)
     return false;  // The account is not Gaia.
-  const std::string& gaia_id = account.key.id;
+  const std::string& gaia_id = account.key.id();
   DCHECK(!gaia_id.empty());
   auto profile_accounts = entry->GetGaiaIds();
   auto inserted = profile_accounts.insert(gaia_id);
@@ -101,8 +87,15 @@ void AccountProfileMapper::GetAccounts(
   // `entry` may be null during profile deletion, as it is destroyed before the
   // profile.
   if (entry) {
-    for (const std::string& gaia_id : entry->GetGaiaIds())
-      accounts.push_back(FindAccountByGaiaID(account_cache_, gaia_id));
+    for (const std::string& gaia_id : entry->GetGaiaIds()) {
+      base::flat_map<std::string, account_manager::Account>::const_iterator it =
+          account_cache_.find(gaia_id);
+      if (it == account_cache_.cend()) {
+        NOTREACHED() << "Account " << gaia_id << " missing.";
+        continue;
+      }
+      accounts.push_back(it->second);
+    }
   }
   std::move(callback).Run(accounts);
 }
@@ -222,8 +215,8 @@ AccountProfileMapper::AddNewGaiaAccounts(
   // Diff that set against system accounts.
   std::vector<const account_manager::Account*> added_accounts;
   for (const account_manager::Account& account : system_accounts) {
-    if (account.key.account_type == account_manager::AccountType::kGaia &&
-        !profile_gaia_ids.contains(account.key.id)) {
+    if (account.key.account_type() == account_manager::AccountType::kGaia &&
+        !profile_gaia_ids.contains(account.key.id())) {
       added_accounts.push_back(&account);
     }
   }
@@ -231,7 +224,7 @@ AccountProfileMapper::AddNewGaiaAccounts(
   if (entry_for_new_accounts) {
     base::flat_set<std::string> gaia_ids = entry_for_new_accounts->GetGaiaIds();
     for (const account_manager::Account* account : added_accounts)
-      gaia_ids.insert(account->key.id);
+      gaia_ids.insert(account->key.id());
     entry_for_new_accounts->SetGaiaIds(gaia_ids);
   }
   return added_accounts;
@@ -246,9 +239,9 @@ void AccountProfileMapper::OnGetAccountsCompleted(
   for (const account_manager::Account& account : system_accounts) {
     const account_manager::AccountKey& key = account.key;
     // Filter out non-Gaia accounts.
-    if (key.account_type != account_manager::AccountType::kGaia)
+    if (key.account_type() != account_manager::AccountType::kGaia)
       continue;
-    account_cache_[key.id] = account;
+    account_cache_.emplace(key.id(), account);
   }
   // Accounts that were removed.
   std::vector<std::pair<base::FilePath, std::string>> removed_ids =
@@ -267,13 +260,18 @@ void AccountProfileMapper::OnGetAccountsCompleted(
       path_for_new_accounts = entry_for_new_accounts->GetPath();
     for (auto& obs : observers_) {
       for (const auto* account : added_accounts) {
-        DCHECK_EQ(account->key.account_type,
+        DCHECK_EQ(account->key.account_type(),
                   account_manager::AccountType::kGaia);
         obs.OnAccountUpserted(path_for_new_accounts, *account);
       }
       for (const auto& pair : removed_ids) {
-        obs.OnAccountRemoved(pair.first,
-                             FindAccountByGaiaID(old_cache, pair.second));
+        base::flat_map<std::string, account_manager::Account>::const_iterator
+            it = old_cache.find(pair.second);
+        if (it == old_cache.cend()) {
+          NOTREACHED() << "Account " << pair.second << " missing.";
+          continue;
+        }
+        obs.OnAccountRemoved(pair.first, it->second);
       }
     }
   } else {
@@ -313,7 +311,7 @@ bool AccountProfileMapper::ProfileContainsAccount(
       profile_attributes_storage_->GetProfileAttributesWithPath(profile_path);
   if (!entry)
     return false;
-  return entry->GetGaiaIds().contains(account.id);
+  return entry->GetGaiaIds().contains(account.id());
 }
 
 ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()

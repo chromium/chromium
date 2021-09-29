@@ -88,14 +88,14 @@ void AccountManagerPolicyController::RemoveSecondaryAccounts(
   // current list of accounts from Account Manager and then issue calls to
   // remove all Secondary Accounts.
   for (const auto& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       // |kSecondaryGoogleAccountSigninAllowed| applies only to Gaia accounts.
       // Ignore other types of accounts.
       continue;
     }
 
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       // Do not remove the Device Account.
       continue;
     }
@@ -157,12 +157,12 @@ void AccountManagerPolicyController::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       // Do not invalidate the Device Account.
       continue;
     }

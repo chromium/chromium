@@ -20,7 +20,7 @@
 
 namespace account_manager {
 struct Account;
-struct AccountKey;
+class AccountKey;
 }  // namespace account_manager
 
 namespace base {

@@ -55,20 +55,16 @@ const AccountId kDeviceAccount =
 
 ::account_manager::Account GetAccountFor(const std::string& email,
                                          const std::string& gaia_id) {
-  ::account_manager::Account account;
-  account.raw_email = email;
-  account.key.id = gaia_id;
-  account.key.account_type = account_manager::AccountType::kGaia;
-  return account;
+  ::account_manager::AccountKey key(gaia_id,
+                                    ::account_manager::AccountType::kGaia);
+  return {key, email};
 }
 
 void AddAccount(account_manager::AccountManager* account_manager,
                 const std::string& email,
                 const std::string& gaia_id) {
-  ::account_manager::AccountKey account_key;
-  account_key.id = gaia_id;
-  account_key.account_type = account_manager::AccountType::kGaia;
-
+  ::account_manager::AccountKey account_key(
+      gaia_id, ::account_manager::AccountType::kGaia);
   account_manager->UpsertAccount(account_key, email, kValidToken);
 }
 

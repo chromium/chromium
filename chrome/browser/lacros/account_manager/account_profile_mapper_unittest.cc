@@ -64,32 +64,27 @@ class MockAccountProfileMapperObserver : public AccountProfileMapper::Observer {
 MATCHER_P(OptionalAccountEqual, other, "optional<Account> equality matcher") {
   if (arg == absl::nullopt && other == absl::nullopt)
     return true;
-  return std::tie(arg->raw_email, arg->key.account_type, arg->key.id) ==
-         std::tie(other->raw_email, other->key.account_type, other->key.id);
+  return arg->key == other->key && arg->raw_email == other->raw_email;
 }
 
 // Synthetizes a non-Gaia `Account` from an id.
 Account NonGaiaAccountFromID(const std::string& id) {
-  Account account;
-  account.key = {id, account_manager::AccountType::kActiveDirectory};
-  account.raw_email = id + std::string("@example.com");
-  return account;
+  AccountKey key(id, account_manager::AccountType::kActiveDirectory);
+  return {key, id + std::string("@example.com")};
 }
 
 // Synthetizes a `Account` from a Gaia ID, with a dummy email.
 Account AccountFromGaiaID(const std::string& gaia_id) {
-  Account account;
-  account.key = {gaia_id, kGaiaType};
-  account.raw_email = gaia_id + std::string("@gmail.com");
-  return account;
+  AccountKey key(gaia_id, kGaiaType);
+  return {key, gaia_id + std::string("@gmail.com")};
 }
 
 // Similar to `AccountFromGaiaID()`, but operates on vectors.
 std::vector<Account> AccountsFromGaiaIDs(
     const std::vector<std::string>& gaia_ids) {
-  std::vector<Account> accounts(gaia_ids.size());
-  std::transform(gaia_ids.cbegin(), gaia_ids.cend(), accounts.begin(),
-                 AccountFromGaiaID);
+  std::vector<Account> accounts;
+  for (const auto& id : gaia_ids)
+    accounts.push_back(AccountFromGaiaID(id));
   return accounts;
 }
 
@@ -259,15 +254,15 @@ class AccountProfileMapperTest : public testing::Test {
   // and immediately returns with a new account.
   void ExpectFacadeShowAddAccountDialogCalled(
       AccountManagerFacade::AccountAdditionSource source,
-      Account new_account) {
+      const absl::optional<Account>& new_account) {
     EXPECT_CALL(mock_facade_, ShowAddAccountDialog(source, testing::_))
         .WillOnce(
             [new_account](AccountManagerFacade::AccountAdditionSource,
                           base::OnceCallback<void(const AccountAdditionResult&)>
                               callback) {
               std::move(callback).Run(
-                  new_account.key.IsValid()
-                      ? AccountAdditionResult::FromAccount(new_account)
+                  new_account.has_value()
+                      ? AccountAdditionResult::FromAccount(new_account.value())
                       : AccountAdditionResult::FromStatus(
                             AccountAdditionResult::Status::kCancelledByUser));
             });
@@ -520,7 +515,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   // Flow aborted.
-  ExpectFacadeShowAddAccountDialogCalled(source, Account());
+  ExpectFacadeShowAddAccountDialogCalled(source, absl::nullopt);
   EXPECT_CALL(account_added_callback,
               Run(OptionalAccountEqual(absl::optional<Account>())));
   mapper->ShowAddAccountDialog(other_path, source,

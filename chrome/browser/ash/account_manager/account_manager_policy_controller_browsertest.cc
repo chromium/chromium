@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 }  // namespace ash
