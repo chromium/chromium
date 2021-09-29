@@ -20,7 +20,7 @@ using BatchAnnotationCallback =
 // interface can be implemented by testing mocks.
 class PageContentAnnotator {
  public:
-  virtual ~PageContentAnnotator();
+  virtual ~PageContentAnnotator() = default;
 
   // Annotates all |inputs| according to the |annotation_type| and returns the
   // result to the given |callback|. The vector size passed to the callback will

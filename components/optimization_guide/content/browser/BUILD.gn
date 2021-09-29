@@ -10,15 +10,17 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "optimization_guide_decider.h",
+    "page_content_annotation_fifo_queue.cc",
+    "page_content_annotation_fifo_queue.h",
     "page_content_annotation_job.cc",
     "page_content_annotation_job.h",
+    "page_content_annotation_job_queue.h",
     "page_content_annotations_common.cc",
     "page_content_annotations_common.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
     "page_content_annotations_web_contents_observer.cc",
     "page_content_annotations_web_contents_observer.h",
-    "page_content_annotator.cc",
     "page_content_annotator.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
@@ -83,6 +85,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "page_content_annotation_fifo_queue_unittest.cc",
     "page_content_annotation_job_unittest.cc",
     "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
