@@ -1104,13 +1104,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             l10n_util::GetStringFUTF16(IDS_PLUGIN_DISABLED, group_name));
         break;
       }
-      case chrome::mojom::PluginStatus::kFlashHiddenPreferHtml: {
-        placeholder = create_blocked_plugin(
-            IDR_PREFER_HTML_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_PREFER_HTML_BY_DEFAULT,
-                                       group_name));
-        break;
-      }
       case chrome::mojom::PluginStatus::kOutdatedBlocked: {
         placeholder = create_blocked_plugin(
             IDR_BLOCKED_PLUGIN_HTML,

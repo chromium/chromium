@@ -74,9 +74,6 @@ class ChromePluginPlaceholder final
   // content::RenderThreadObserver methods:
   void PluginListChanged() override;
 
-  // Show the Plugins permission bubble.
-  void ShowPermissionBubbleCallback();
-
   // chrome::mojom::PluginRenderer methods.
   void FinishedDownloading() override;
   void UpdateDownloading() override;

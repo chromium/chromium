@@ -13,9 +13,6 @@ import "url/mojom/url.mojom";
 
 // Plugin messages sent from renderer to the host.
 interface PluginHost {
-  // Tells the browser to show the Flash permission bubble in the same tab.
-  ShowFlashPermissionBubble();
-
   // Tells the browser that there was an error loading a plugin.
   CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
 
@@ -45,9 +42,6 @@ enum PluginStatus {
   // Plugin is blocked, and cannot be manually loaded via context menu.
   kBlockedNoLoading,
   kDisabled,
-  // Flash is blocked, but user can click on the placeholder to trigger the
-  // Flash permission prompt.
-  kFlashHiddenPreferHtml,
   kNotFound,
   kOutdatedBlocked,
   kOutdatedDisallowed,
@@ -84,7 +78,6 @@ interface PluginInfoHost {
 
 // Plugin messages sent from a host to the renderer.
 interface PluginRenderer {
-
   // Notifies a missing plugin placeholder that we have finished downloading
   // the plugin.
   FinishedDownloading();

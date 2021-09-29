@@ -240,14 +240,6 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 
   DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
 
-  if (*status == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml) {
-    if (plugin_setting == CONTENT_SETTING_BLOCK) {
-      *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
-                           : chrome::mojom::PluginStatus::kBlockedNoLoading;
-    }
-    return;
-  }
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Check if the plugin is outdated.
   if (security_status == PluginMetadata::SECURITY_STATUS_OUT_OF_DATE &&

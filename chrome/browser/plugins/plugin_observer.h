@@ -60,11 +60,10 @@ class PluginObserver : public content::WebContentsObserver,
   explicit PluginObserver(content::WebContents* web_contents);
 
   // chrome::mojom::PluginHost methods.
+  void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
   void BlockedOutdatedPlugin(
       mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
       const std::string& identifier) override;
-  void ShowFlashPermissionBubble() override;
-  void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
   void OpenPDF(const GURL& url) override;
 
   void RemovePluginPlaceholderHost(PluginPlaceholderHost* placeholder);

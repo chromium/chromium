@@ -199,13 +199,6 @@ void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
   status_ = status;
 }
 
-void ChromePluginPlaceholder::ShowPermissionBubbleCallback() {
-  mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      plugin_host.BindNewEndpointAndPassReceiver());
-  plugin_host->ShowFlashPermissionBubble();
-}
-
 void ChromePluginPlaceholder::FinishedDownloading() {
   SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_UPDATING, plugin_name_));
 }
@@ -274,24 +267,13 @@ void ChromePluginPlaceholder::ShowContextMenu(
     params.custom_items.push_back(std::move(separator_item));
   }
 
-  bool flash_hidden =
-      status_ == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
-  if (!GetPluginInfo().path.value().empty() && !flash_hidden) {
+  if (!GetPluginInfo().path.value().empty()) {
     auto run_item = blink::mojom::CustomContextMenuItem::New();
     run_item->action = MENU_COMMAND_PLUGIN_RUN;
     // Disable this menu item if the plugin is blocked by policy.
     run_item->enabled = LoadingAllowed();
     run_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
     params.custom_items.push_back(std::move(run_item));
-  }
-
-  if (flash_hidden) {
-    auto enable_flash_item = blink::mojom::CustomContextMenuItem::New();
-    enable_flash_item->action = MENU_COMMAND_ENABLE_FLASH;
-    enable_flash_item->enabled = true;
-    enable_flash_item->label =
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_ENABLE_FLASH);
-    params.custom_items.push_back(std::move(enable_flash_item));
   }
 
   auto hide_item = blink::mojom::CustomContextMenuItem::New();
@@ -340,10 +322,6 @@ void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
       HidePlugin();
       break;
     }
-    case MENU_COMMAND_ENABLE_FLASH: {
-      ShowPermissionBubbleCallback();
-      break;
-    }
     default:
       NOTREACHED();
   }
@@ -385,9 +363,7 @@ gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
               "load", &ChromePluginPlaceholder::LoadCallback)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
               "didFinishLoading",
-              &ChromePluginPlaceholder::DidFinishLoadingCallback)
-          .SetMethod("showPermissionBubble",
-                     &ChromePluginPlaceholder::ShowPermissionBubbleCallback);
+              &ChromePluginPlaceholder::DidFinishLoadingCallback);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePluginPlaceholderTesting)) {
