@@ -23,7 +23,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -173,13 +172,12 @@ void WaitForLoadStart(WebContents* web_contents) {
 }
 }  // namespace
 
-// Check if the |actual| string matches the string or the string pattern in
-// |pattern| and print a readable message if it does not match.
-#define ASSERT_MULTILINE_STR_MATCHES(pattern, actual) \
-  ASSERT_TRUE(base::MatchPattern(actual, pattern))    \
-      << "Expected match pattern:\n"                  \
-      << pattern << "\n\nActual:\n"                   \
-      << actual
+// Using ASSERT_TRUE deliberately instead of ASSERT_EQ or ASSERT_STREQ
+// in order to print a more readable message if the strings differ.
+#define ASSERT_MULTILINE_STREQ(expected, actual) \
+    ASSERT_TRUE(expected == actual) \
+        << "Expected:\n" << expected \
+        << "\n\nActual:\n" << actual
 
 class PDFExtensionTestWithoutUnseasonedOverride
     : public extensions::ExtensionApiTest {
@@ -1514,10 +1512,7 @@ std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
   return ax_tree_dump;
 }
 
-// This is a pattern with a few wildcards due to a PDF bug where the
-// fi ligature is not parsed correctly on some systems.
-// http://crbug.com/701427
-constexpr char kExpectedPDFAXTreePattern[] =
+constexpr char kExpectedPDFAXTree[] =
     "pdfRoot 'PDF document containing 3 pages'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
@@ -1525,8 +1520,8 @@ constexpr char kExpectedPDFAXTreePattern[] =
     "        inlineTextBox '1 '\n"
     "        inlineTextBox 'First Section'\n"
     "    paragraph\n"
-    "      staticText 'This is the *rst section.'\n"
-    "        inlineTextBox 'This is the *rst section.'\n"
+    "      staticText 'This is the first section.'\n"
+    "        inlineTextBox 'This is the first section.'\n"
     "    paragraph\n"
     "      staticText '1'\n"
     "        inlineTextBox '1'\n"
@@ -1536,8 +1531,8 @@ constexpr char kExpectedPDFAXTreePattern[] =
     "        inlineTextBox '1.1 '\n"
     "        inlineTextBox 'First Subsection'\n"
     "    paragraph\n"
-    "      staticText 'This is the *rst subsection.'\n"
-    "        inlineTextBox 'This is the *rst subsection.'\n"
+    "      staticText 'This is the first subsection.'\n"
+    "        inlineTextBox 'This is the first subsection.'\n"
     "    paragraph\n"
     "      staticText '2'\n"
     "        inlineTextBox '2'\n"
@@ -1564,7 +1559,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibility) {
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
 
-  ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityEnableLater) {
@@ -1580,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityEnableLater) {
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
-  ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
 // Flaky, see crbug.com/1228762
@@ -1604,7 +1599,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfAccessibilityInIframe) {
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
-  ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityInOOPIF) {
@@ -1622,7 +1617,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityInOOPIF) {
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
-  ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
