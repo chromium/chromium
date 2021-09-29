@@ -488,7 +488,11 @@ std::vector<uint8_t> ClipboardMac::ReadPngInternal(
   if (!image)
     return std::vector<uint8_t>();
 
-  scoped_refptr<base::RefCountedMemory> mem = gfx::Image(image).As1xPNGBytes();
+  auto gfx_image = gfx::Image(image);
+  if (gfx_image.IsEmpty())
+    return std::vector<uint8_t>();
+
+  scoped_refptr<base::RefCountedMemory> mem = gfx_image.As1xPNGBytes();
   std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
   return image_data;
 }
