@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -918,8 +919,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
   // TODO(1231679): Remove or move to another place after finishing the PCScan
   // experiment.
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)) {
+  if (base::internal::PCScan::IsInitialized()) {
     star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
   }
 #endif

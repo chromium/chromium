@@ -4974,12 +4974,12 @@ namespace {
 class PCScanFeature {
  public:
   PCScanFeature() {
-    scoped_feature_list_.InitAndEnableFeature(
-        base::features::kPartitionAllocPCScanBrowserOnly);
+    using PCScan = base::internal::PCScan;
+    if (!PCScan::IsInitialized())
+      PCScan::Initialize(
+          {PCScan::InitConfig::WantedWriteProtectionMode::kDisabled,
+           PCScan::InitConfig::SafepointMode::kDisabled});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Initialize PCScanFeature before WebContentsImplBrowserTest to make sure that

@@ -72,6 +72,7 @@ class BASE_EXPORT PCScan final {
 
   // Initializes PCScan and prepares internal data structures.
   static void Initialize(InitConfig);
+  static bool IsInitialized();
 
   // Disable/reenable PCScan. Temporal disabling can be useful in CPU demanding
   // contexts.

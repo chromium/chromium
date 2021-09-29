@@ -13,6 +13,10 @@ void PCScan::Initialize(InitConfig config) {
   PCScanInternal::Instance().Initialize(config);
 }
 
+bool PCScan::IsInitialized() {
+  return PCScanInternal::Instance().is_initialized();
+}
+
 void PCScan::Disable() {
   auto& instance = PCScan::Instance();
   instance.scheduler().scheduling_backend().DisableScheduling();
