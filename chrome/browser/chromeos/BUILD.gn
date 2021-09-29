@@ -3296,6 +3296,8 @@ source_set("chromeos") {
     "extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h",
     "extensions/login_screen/login/cleanup/cleanup_manager.cc",
     "extensions/login_screen/login/cleanup/cleanup_manager.h",
+    "extensions/login_screen/login/cleanup/files_cleanup_handler.cc",
+    "extensions/login_screen/login/cleanup/files_cleanup_handler.h",
     "extensions/login_screen/login/cleanup/open_windows_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h",
     "extensions/login_screen/login/login_api.cc",
