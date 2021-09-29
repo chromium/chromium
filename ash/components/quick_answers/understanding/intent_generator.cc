@@ -137,8 +137,7 @@ IntentGenerator::~IntentGenerator() {
 }
 
 void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
-  if (features::ShouldUseQuickAnswersTextAnnotator() ||
-      use_text_annotator_for_testing_) {
+  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Load text classifier.
     chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
@@ -151,10 +150,6 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
 
   std::move(complete_callback_)
       .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
-}
-
-void IntentGenerator::UseTextAnnotatorForTesting() {
-  use_text_annotator_for_testing_ = true;
 }
 
 void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,

@@ -130,8 +130,6 @@ source_set("tests") {
     "service_unittest.cc",
     "test_support/fake_service_context.cc",
     "test_support/fake_service_context.h",
-    "test_support/fully_initialized_assistant_state.cc",
-    "test_support/fully_initialized_assistant_state.h",
     "test_support/scoped_device_actions.cc",
     "test_support/scoped_device_actions.h",
   ]
@@ -152,6 +150,8 @@ static_library("test_support") {
     "test_support/fake_libassistant_service.h",
     "test_support/fake_service_controller.cc",
     "test_support/fake_service_controller.h",
+    "test_support/fully_initialized_assistant_state.cc",
+    "test_support/fully_initialized_assistant_state.h",
     "test_support/libassistant_media_controller_mock.cc",
     "test_support/libassistant_media_controller_mock.h",
     "test_support/mock_assistant.cc",

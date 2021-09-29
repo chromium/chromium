@@ -10,6 +10,7 @@
 #include "ash/components/quick_answers/utils/quick_answers_metrics.h"
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/containers/contains.h"
 
 namespace ash {
@@ -126,7 +127,7 @@ void QuickAnswersClient::IntentGeneratorCallback(
 
   delegate_->OnRequestPreprocessFinished(processed_request);
 
-  if (features::ShouldUseQuickAnswersTextAnnotator()) {
+  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     RecordIntentType(intent_info.intent_type);
     if (intent_info.intent_type == IntentType::kUnknown) {
       // Don't fetch answer if no intent is generated.

@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//ash/components/quick_answers/public/cpp:prefs",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/public/cpp/quick_answers/test_support",
     "//ash/public/mojom",
     "//base",
     "//base/test:test_support",

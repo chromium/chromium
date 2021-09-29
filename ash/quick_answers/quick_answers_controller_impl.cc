@@ -104,7 +104,7 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
   quick_answer_.reset();
 
   QuickAnswersRequest request = BuildRequest();
-  if (features::ShouldUseQuickAnswersTextAnnotator()) {
+  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Send the request for preprocessing. Only shows quick answers view if the
     // predicted intent is not |kUnknown| at |OnRequestPreprocessFinish|.
     quick_answers_client_->SendRequestForPreprocessing(request);
@@ -215,7 +215,7 @@ void QuickAnswersControllerImpl::OnNetworkError() {
 
 void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
     const QuickAnswersRequest& processed_request) {
-  if (!features::ShouldUseQuickAnswersTextAnnotator()) {
+  if (!ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Ignore preprocessing result if text annotator is not enabled.
     return;
   }
@@ -238,7 +238,7 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
 
 void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {
   QuickAnswersRequest request = BuildRequest();
-  if (features::ShouldUseQuickAnswersTextAnnotator()) {
+  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     quick_answers_client_->SendRequestForPreprocessing(request);
   } else {
     quick_answers_client_->SendRequest(request);

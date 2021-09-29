@@ -12,6 +12,7 @@
 #include "ash/components/quick_answers/test/test_helpers.h"
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/quick_answers/test_support/quick_answers_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -79,15 +80,18 @@ class MockIntentGenerator : public IntentGenerator {
 
 }  // namespace
 
-class QuickAnswersClientTest : public testing::Test {
+class QuickAnswersClientTest : public QuickAnswersTestBase {
  public:
   QuickAnswersClientTest() = default;
 
   QuickAnswersClientTest(const QuickAnswersClientTest&) = delete;
   QuickAnswersClientTest& operator=(const QuickAnswersClientTest&) = delete;
 
-  // Testing::Test:
+  ~QuickAnswersClientTest() override = default;
+
+  // QuickAnswersTestBase:
   void SetUp() override {
+    QuickAnswersTestBase::SetUp();
     mock_delegate_ = std::make_unique<MockQuickAnswersDelegate>();
 
     client_ = std::make_unique<QuickAnswersClient>(&test_url_loader_factory_,
@@ -108,6 +112,7 @@ class QuickAnswersClientTest : public testing::Test {
     QuickAnswersClient::SetResultLoaderFactoryForTesting(nullptr);
     QuickAnswersClient::SetIntentGeneratorFactoryForTesting(nullptr);
     client_.reset();
+    QuickAnswersTestBase::TearDown();
   }
 
   void IntentGeneratorTestCallback(const IntentInfo& intent_info) {}

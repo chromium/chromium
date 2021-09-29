@@ -10,6 +10,8 @@
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
+#include "ash/public/cpp/quick_answers/test_support/quick_answers_test_base.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -38,7 +40,7 @@ TextLanguagePtr DefaultLanguage() {
 
 }  // namespace
 
-class IntentGeneratorTest : public testing::Test {
+class IntentGeneratorTest : public QuickAnswersTestBase {
  public:
   IntentGeneratorTest() = default;
 
@@ -46,14 +48,18 @@ class IntentGeneratorTest : public testing::Test {
   IntentGeneratorTest& operator=(const IntentGeneratorTest&) = delete;
 
   void SetUp() override {
+    QuickAnswersTestBase::SetUp();
     intent_generator_ = std::make_unique<IntentGenerator>(
         base::BindOnce(&IntentGeneratorTest::IntentGeneratorTestCallback,
                        base::Unretained(this)));
 
-    intent_generator_->UseTextAnnotatorForTesting();
+    QuickAnswersState::Get()->set_use_text_annotator_for_testing();
   }
 
-  void TearDown() override { intent_generator_.reset(); }
+  void TearDown() override {
+    intent_generator_.reset();
+    QuickAnswersTestBase::TearDown();
+  }
 
   void IntentGeneratorTestCallback(const IntentInfo& intent_info) {
     intent_info_ = intent_info;

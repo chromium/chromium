@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -249,6 +250,11 @@ void QuickAnswersState::OnConsentResult(ConsentResultType result) {
   }
 
   consent_start_time_ = base::TimeTicks();
+}
+
+bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
+  return base::SysInfo::IsRunningOnChromeOS() ||
+         use_text_annotator_for_testing_;
 }
 
 void QuickAnswersState::InitializeObserver(

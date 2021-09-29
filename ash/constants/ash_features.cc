@@ -1716,11 +1716,6 @@ bool ShouldUseBrowserSyncConsent() {
          base::FeatureList::IsEnabled(kUseBrowserSyncConsent);
 }
 
-bool ShouldUseQuickAnswersTextAnnotator() {
-  // The text classifier is only available on ChromeOS.
-  return base::SysInfo::IsRunningOnChromeOS();
-}
-
 bool ShouldUseV1DeviceSync() {
   return !ShouldUseV2DeviceSync() ||
          !base::FeatureList::IsEnabled(kDisableCryptAuthV1DeviceSync);

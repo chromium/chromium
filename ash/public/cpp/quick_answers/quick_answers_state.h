@@ -70,6 +70,8 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   void StartConsent();
   void OnConsentResult(ConsentResultType result);
 
+  bool ShouldUseQuickAnswersTextAnnotator();
+
   bool settings_enabled() const { return settings_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {
     return consent_status_;
@@ -81,6 +83,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
 
   void set_eligibility_for_testing(bool is_eligible) {
     is_eligible_ = is_eligible;
+  }
+  void set_use_text_annotator_for_testing() {
+    use_text_annotator_for_testing_ = true;
   }
 
  private:
@@ -118,6 +123,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
 
   // Whether the pref values has been initialized.
   bool prefs_initialized_ = false;
+
+  // Whether to use text annotator for testing.
+  bool use_text_annotator_for_testing_ = false;
 
   // Time when the notice is shown.
   base::TimeTicks consent_start_time_;
