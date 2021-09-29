@@ -1853,7 +1853,15 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
   auto visible_rect = gfx::RectFToSkRect(params->visible_rect);
   current_canvas_->clipRect(visible_rect);
 
-  DCHECK(!rpdq_params);
+  absl::optional<int> restore_count;
+  sk_sp<SkColorFilter> color_filter =
+      rpdq_params ? GetContentColorFilter() : nullptr;
+  if (quad->ShouldDrawWithBlending() || color_filter) {
+    auto paint = params->paint(color_filter);
+    // TODO(penghuang): saveLayer() is expensive, try to avoid it as much as
+    // possible.
+    restore_count = current_canvas_->saveLayer(&visible_rect, &paint);
+  }
 
   if (clear_color)
     current_canvas_->drawColor(*clear_color);
@@ -1863,6 +1871,10 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
 
   cc::PlaybackParams playback_params(nullptr, SkM44());
   buffer->Playback(current_canvas_, playback_params);
+
+  if (restore_count) {
+    current_canvas_->restoreToCount(*restore_count);
+  }
 }
 
 void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
