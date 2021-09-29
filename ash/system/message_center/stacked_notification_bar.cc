@@ -274,6 +274,7 @@ StackedNotificationBar::StackedNotificationBar(
       notification_icons_container_(
           AddChildView(std::make_unique<views::View>())),
       count_label_(AddChildView(std::make_unique<views::Label>())),
+      spacer_(AddChildView(std::make_unique<views::View>())),
       clear_all_button_(AddChildView(std::make_unique<StackingBarLabelButton>(
           base::BindRepeating(&UnifiedMessageCenterView::ClearAllNotifications,
                               base::Unretained(message_center_view_)),
@@ -304,8 +305,7 @@ StackedNotificationBar::StackedNotificationBar(
   count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
-  views::View* spacer = AddChildView(std::make_unique<views::View>());
-  layout->SetFlexForView(spacer, 1);
+  layout->SetFlexForView(spacer_, 1);
 
   clear_all_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_TOOLTIP));

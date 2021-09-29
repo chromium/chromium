@@ -111,6 +111,7 @@ class StackedNotificationBar : public views::View,
   UnifiedMessageCenterView* const message_center_view_;
   views::View* notification_icons_container_;
   views::Label* const count_label_;
+  views::View* const spacer_;
   views::Button* const clear_all_button_;
   views::Button* const expand_all_button_;
 
