@@ -381,7 +381,7 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.5.30.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.5.31.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
   supports_android = true
   deps = [
@@ -644,6 +644,7 @@ java_prebuilt("net_ltgt_gradle_incap_incap_java") {
 java_prebuilt("org_checkerframework_checker_qual_java") {
   jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.8.0.jar"
   output_name = "org_checkerframework_checker_qual"
+  supports_android = true
   enable_bytecode_checks = false
 
   # To remove visibility constraint, add this dependency to
@@ -698,7 +699,7 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.5.30.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.5.31.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
   supports_android = true
 
@@ -1319,7 +1320,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_guava_guava_android_java") {
-    jar_path = "libs/com_google_guava_guava_android/guava-30.1-android.jar"
+    jar_path = "libs/com_google_guava_guava_android/guava-31.0-android.jar"
     output_name = "com_google_guava_guava_android"
     supports_android = true
     deps = [
@@ -1329,6 +1330,7 @@ if (!limit_android_deps) {
       ":com_google_guava_listenablefuture_java",
       ":com_google_j2objc_j2objc_annotations_java",
       ":org_checkerframework_checker_compat_qual_java",
+      ":org_checkerframework_checker_qual_java",
     ]
     bypass_platform_checks = true
 
