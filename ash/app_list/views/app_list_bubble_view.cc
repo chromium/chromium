@@ -96,7 +96,7 @@ AppListBubbleView::AppListBubbleView(
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
   InitContentsView(drag_and_drop_host);
-  InitFolderView();
+  InitFolderView(drag_and_drop_host);
   // Folder view is laid out manually based on its contents.
   layout->SetChildViewIgnoredByLayout(folder_view_, true);
 
@@ -153,10 +153,13 @@ void AppListBubbleView::InitContentsView(
   assistant_page_->SetVisible(false);
 }
 
-void AppListBubbleView::InitFolderView() {
+void AppListBubbleView::InitFolderView(
+    ApplicationDragAndDropHost* drag_and_drop_host) {
   auto folder_view = std::make_unique<AppListFolderView>(
       this, apps_page_->scrollable_apps_grid_view(), view_delegate_->GetModel(),
       /*contents_view=*/nullptr, a11y_announcer_.get(), view_delegate_);
+  folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
+      drag_and_drop_host);
   folder_background_view_ =
       AddChildView(std::make_unique<FolderBackgroundView>(folder_view.get()));
   folder_background_view_->SetVisible(false);

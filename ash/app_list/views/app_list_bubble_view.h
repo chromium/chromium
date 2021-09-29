@@ -87,7 +87,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void InitContentsView(ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Initializes the folder view, which appears on top of all other views.
-  void InitFolderView();
+  void InitFolderView(ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Makes the root apps grid view and other top-level views unfocusable if
   // `disabled` is true, such that focus is contained in the folder view.
