@@ -11,10 +11,12 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -217,6 +219,10 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   EXPECT_TRUE(recent_content.HasRecentImageFromClipboard());
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_FALSE(recent_content.GetRecentTextFromClipboard().has_value());
+  recent_content.GetRecentImageFromClipboard(
+      base::BindLambdaForTesting([&bitmap](absl::optional<gfx::Image> image) {
+        EXPECT_TRUE(gfx::BitmapsAreEqual(image->AsBitmap(), bitmap));
+      }));
 }
 
 TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {

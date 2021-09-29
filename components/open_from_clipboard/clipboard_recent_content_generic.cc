@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -29,13 +28,14 @@ const char* kAuthorizedSchemes[] = {
 
 void OnGetRecentImageFromClipboard(
     ClipboardRecentContent::GetRecentImageCallback callback,
-    const SkBitmap& sk_bitmap) {
-  if (sk_bitmap.empty()) {
+    const std::vector<uint8_t>& png_data) {
+  if (png_data.empty()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  std::move(callback).Run(gfx::Image::CreateFrom1xBitmap(sk_bitmap));
+  std::move(callback).Run(
+      gfx::Image::CreateFrom1xPNGBytes(png_data.data(), png_data.size()));
 }
 
 bool HasRecentURLFromClipboard() {
@@ -136,7 +136,7 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-  ui::Clipboard::GetForCurrentThread()->ReadImage(
+  ui::Clipboard::GetForCurrentThread()->ReadPng(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
@@ -148,7 +148,7 @@ bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::PngType(), ui::ClipboardBuffer::kCopyPaste,
       &data_dst);
 }
 
