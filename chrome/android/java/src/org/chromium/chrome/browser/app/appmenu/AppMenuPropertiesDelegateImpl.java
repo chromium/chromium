@@ -434,9 +434,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 shouldShowHomeScreenMenuItem(
                         isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
 
-        updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */);
+        updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */, isChromeScheme);
 
-        updateAutoDarkMenuItem(menu, currentTab);
+        updateAutoDarkMenuItem(menu, currentTab, isChromeScheme);
 
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id).setVisible(shouldShowReaderModePrefs(currentTab));
@@ -944,19 +944,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * Updates the request desktop site item's state.
      *
      * @param menu {@link Menu} for request desktop site.
-     * @param currentTab      Current tab being displayed.
+     * @param currentTab Current tab being displayed.
+     * @param canShowRequestDesktopSite If the request desktop site menu item should show or not.
+     * @param isChromeScheme Whether URL for the current tab starts with the chrome:// scheme.
+     *
      */
     protected void updateRequestDesktopSiteMenuItem(
-            Menu menu, Tab currentTab, boolean canShowRequestDesktopSite) {
+            Menu menu, Tab currentTab, boolean canShowRequestDesktopSite, boolean isChromeScheme) {
         MenuItem requestMenuRow = menu.findItem(R.id.request_desktop_site_row_menu_id);
         MenuItem requestMenuLabel = menu.findItem(R.id.request_desktop_site_id);
         MenuItem requestMenuCheck = menu.findItem(R.id.request_desktop_site_check_id);
 
         // Hide request desktop site on all chrome:// pages except for the NTP.
-        GURL url = currentTab.getUrl();
-        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-
         boolean itemVisible = canShowRequestDesktopSite
                 && (!isChromeScheme || currentTab.isNativePage())
                 && !shouldShowReaderModePrefs(currentTab) && currentTab.getWebContents() != null;
@@ -990,15 +989,17 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * Updates the auto dark menu item's state.
      *
      * @param menu {@link Menu} for auto dark.
-     * @param currentTab      Current tab being displayed.
+     * @param currentTab Current tab being displayed.
+     * @param isChromeScheme Whether URL for the current tab starts with the chrome:// scheme.
      */
-    protected void updateAutoDarkMenuItem(Menu menu, Tab currentTab) {
+    protected void updateAutoDarkMenuItem(Menu menu, Tab currentTab, boolean isChromeScheme) {
         MenuItem autoDarkMenuItem = menu.findItem(R.id.auto_dark_web_contents_id);
 
-        // Show app menu item if auto dark enabled.
-        boolean autoDarkEnabled = isAutoDarkWebContentsEnabled();
-        autoDarkMenuItem.setVisible(autoDarkEnabled);
-        if (!autoDarkEnabled) return;
+        // Hide app menu item if on non-NTP chrome:// page or auto dark not enabled.
+        boolean isAutoDarkEnabled = isAutoDarkWebContentsEnabled();
+        boolean itemVisible = !isChromeScheme && isAutoDarkEnabled;
+        autoDarkMenuItem.setVisible(itemVisible);
+        if (!itemVisible) return;
 
         // Set text based on if site is blocked or not.
         boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(

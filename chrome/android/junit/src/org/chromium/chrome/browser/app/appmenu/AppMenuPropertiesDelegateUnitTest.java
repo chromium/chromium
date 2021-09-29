@@ -248,9 +248,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
                 R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.request_desktop_site_row_menu_id,
-                R.id.auto_dark_web_contents_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id};
+                R.id.divider_line_id, R.id.request_desktop_site_row_menu_id, R.id.divider_line_id,
+                R.id.preferences_id, R.id.help_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
