@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
@@ -19,6 +18,7 @@
 #endif
 
 namespace password_manager {
+class PasswordStore;
 class PasswordReuseManager;
 }
 
@@ -42,8 +42,8 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
  private:
   void StartMetricsReporting() {
-    password_manager::PasswordStoreInterface* profile_store =
-        IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+    password_manager::PasswordStore* profile_store =
+        IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =
