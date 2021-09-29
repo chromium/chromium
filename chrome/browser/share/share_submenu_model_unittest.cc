@@ -42,6 +42,12 @@ TEST(ShareSubmenuModelTest, CopyItemPresentForEmail) {
   EXPECT_TRUE(HasItemWithName(model, IDS_CONTENT_CONTEXT_COPYEMAILADDRESS));
 }
 
+TEST(ShareSubmenuModelTest, QRCodeItemPresentForLink) {
+  ShareSubmenuModel model(nullptr, nullptr, ShareSubmenuModel::Context::LINK,
+                          GURL("https://www.chromium.org/"), u"");
+  EXPECT_TRUE(HasItemWithName(model, IDS_CONTEXT_MENU_GENERATE_QR_CODE_LINK));
+}
+
 class ShareSubmenuModelMetricsTest : public ::testing::Test {
  public:
   ShareSubmenuModelMetricsTest() :

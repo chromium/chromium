@@ -7938,6 +7938,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
           Create QR Code for this image
         </message>
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_LINK" desc="The label for the Create QR Code for this Link context menu item.">
+          Create QR Code for this link
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR Code for this Page context menu item.">
@@ -7945,6 +7948,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
           Create QR Code for this Image
+        </message>
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_LINK" desc="The label for the Create QR Code for this Link context menu item.">
+          Create QR Code for this Link
         </message>
       </if>
       <if expr="not is_android">

@@ -23500,6 +23500,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingQRCode.DialogLaunched.ContextMenuLink">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    User launched the QR Generator dialog for a link via the context menu on
+    desktop.
+  </description>
+</action>
+
 <action name="SharingQRCode.DialogLaunched.ContextMenuPage">
   <owner>skare@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
