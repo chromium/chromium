@@ -518,7 +518,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const frameTime30Fps = 32;
   let lastTimestamp = performance.now();
 
-  const oneFrame = (timestamp) => {
+  const oneFrame = () => {
+    const timestamp = performance.now();
     const elapsed = timestamp - lastTimestamp;
     if (elapsed < frameTime30Fps) {
       window.requestAnimationFrame(oneFrame);
@@ -572,14 +573,15 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       });
   };
 
-  const oneFrameWithImportTextureApi = (timestamp) => {
+  const oneFrameWithImportTextureApi = () => {
+    // Target frame rate: 30 fps. rAF might run at 60 fps.
+    const timestamp = performance.now();
     const elapsed = timestamp - lastTimestamp;
     if (elapsed < frameTime30Fps) {
       window.requestAnimationFrame(oneFrameWithImportTextureApi);
       return;
     }
     lastTimestamp = timestamp;
-
 
     // Always import all videos. The video textures are destroyed before the
     // next frame.
@@ -628,7 +630,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     const interval30Fps = 1000.0 / 30;  // 33.3 ms.
     if (functionDuration > interval30Fps) {
       console.warn(
-          'rAF callback oneFrameWithImportTextureApi() takes longer than 33.3 ms. (1sec/30fps)');
+          'rAF callback oneFrameWithImportTextureApi() takes ',
+          functionDuration, 'ms,  longer than 33.3 ms (1sec/30fps)');
     }
 
     window.requestAnimationFrame(oneFrameWithImportTextureApi);
