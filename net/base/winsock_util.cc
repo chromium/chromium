@@ -5,6 +5,7 @@
 #include "net/base/winsock_util.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "net/base/net_errors.h"
 
@@ -12,15 +13,12 @@ namespace net {
 
 namespace {
 
-// Prevent the compiler from optimizing away the arguments so they appear
-// nicely on the stack in crash dumps.
-#pragma warning(push)
-#pragma warning (disable: 4748)
-#pragma optimize( "", off )
-
 // Pass the important values as function arguments so that they are available
-// in crash dumps.
-void CheckEventWait(WSAEVENT hEvent, DWORD wait_rv, DWORD expected) {
+// in crash dumps. Disable inlining so that an actual function call is made and
+// disable tail calls so that the parent function is on the call stack.
+NOINLINE void NOT_TAIL_CALLED CheckEventWait(WSAEVENT hEvent,
+                                             DWORD wait_rv,
+                                             DWORD expected) {
   if (wait_rv != expected) {
     DWORD err = ERROR_SUCCESS;
     if (wait_rv == WAIT_FAILED)
@@ -29,9 +27,6 @@ void CheckEventWait(WSAEVENT hEvent, DWORD wait_rv, DWORD expected) {
     CHECK(false);  // Crash.
   }
 }
-
-#pragma optimize( "", on )
-#pragma warning(pop)
 
 }  // namespace
 
