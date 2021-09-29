@@ -10,6 +10,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
@@ -89,6 +90,7 @@ void ScannerBrokerImpl::StopScanning(Protocol protocol) {
 
 void ScannerBrokerImpl::StartFastPairScanning() {
   DCHECK(!fast_pair_discoverable_scanner_);
+  DCHECK(!fast_pair_not_discoverable_scanner_);
   DCHECK(adapter_);
 
   QP_LOG(VERBOSE) << "Starting Fast Pair Scanning.";
@@ -103,10 +105,19 @@ void ScannerBrokerImpl::StartFastPairScanning() {
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
                               weak_pointer_factory_.GetWeakPtr()));
+
+  fast_pair_not_discoverable_scanner_ =
+      std::make_unique<FastPairNotDiscoverableScanner>(
+          fast_pair_scanner, std::make_unique<RangeTracker>(adapter_),
+          base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
+                              weak_pointer_factory_.GetWeakPtr()),
+          base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
+                              weak_pointer_factory_.GetWeakPtr()));
 }
 
 void ScannerBrokerImpl::StopFastPairScanning() {
   fast_pair_discoverable_scanner_.reset();
+  fast_pair_not_discoverable_scanner_.reset();
   QP_LOG(VERBOSE) << "Stopping Fast Pair Scanning.";
 }
 
