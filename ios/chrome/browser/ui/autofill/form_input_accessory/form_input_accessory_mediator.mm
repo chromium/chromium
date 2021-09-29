@@ -48,6 +48,14 @@
 
 using base::UmaHistogramEnumeration;
 
+namespace {
+
+// Kill switch guarding a workaround for keyboard flicker, see crbug.com/1253561
+const base::Feature kFormInputKeyboardReloadInputViews{
+    "FormInputKeyboardReloadInputViews", base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
+
 @interface FormInputAccessoryMediator () <FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
                                           CRWWebStateObserver,
@@ -299,7 +307,11 @@ using base::UmaHistogramEnumeration;
   }
 
   self.validActivityForAccessoryView = YES;
-  [GetFirstResponder() reloadInputViews];
+  static bool form_input_keyboard_reload_input_views_workaround =
+      base::FeatureList::IsEnabled(kFormInputKeyboardReloadInputViews);
+  if (!form_input_keyboard_reload_input_views_workaround) {
+    [GetFirstResponder() reloadInputViews];
+  }
 
   NSString* frameID;
   if (frame) {
@@ -314,6 +326,11 @@ using base::UmaHistogramEnumeration;
   if (params.type == "blur" || params.type == "change" ||
       params.type == "form_changed") {
     return;
+  }
+
+  if (form_input_keyboard_reload_input_views_workaround &&
+      _lastSeenParams.field_type != params.field_type) {
+    [GetFirstResponder() reloadInputViews];
   }
   _lastSeenParams = params;
   _hasLastSeenParams = YES;
