@@ -67,9 +67,9 @@ mistakes:
    users.
  * For several months following the roll-out of new heuristics, we accept
    appeals from site operators whose sites have been incorrectly flagged.
- * Heuristics launching in M88 or later will trigger a console message informing
-   site owners of the issue for at least one release prior to triggering
-   user-visible warnings.
+ * Heuristics launching in Chrome 88 or later will trigger a console message
+   informing site owners of the issue for at least one release prior to
+   triggering user-visible warnings.
 
 
 ## Not all users see all warnings
@@ -85,10 +85,60 @@ sites, or the user has an established relationship.
 Sites that show a warning to you may not show for another user, unless that user
 has visited the same sites that you have.
 
+## Removing Lookalike Warnings from a site
 
-## Appealing a Lookalike Warning
+It is possible to remove warnings on sites where Chrome is incorrectly showing
+a warning.
+ * If you are the owner of both the site showing the warning and the site that
+   Chrome thinks users should visit, you can
+   [**verify ownership of both sites**](#automated-warning-removal).
+ * If you are not the owner of both sites, or you can't follow the automated
+   process, you can [**request a manual review**](#requesting-a-manual-review).
+ 
+ 
+### Automated warning removal
 
-If you operate a site that erroneously triggers lookalike warnings in Chrome,
+If you own both the site where Chrome is showing a warning, as well as the site
+that Chrome is recommending, you can suppress these warnings by proving that you
+control both sites. To do this, Chrome uses a special form of 
+[Digital Asset Links](https://developers.google.com/digital-asset-links).
+
+#### Instructions
+1.  Assuming you own both `example.com` and `example.net`, create a file
+named `assetlinks.json` and put the following contents in it:
+```
+[{
+  "relation": ["lookalikes/allowlist"],
+  "target" : { "namespace": "web", "site": "https://example.com"}
+},{
+  "relation": ["lookalikes/allowlist"],
+  "target" : { "namespace": "web", "site": "https://example.net"}
+}]
+```
+
+2. Upload this file to the following URLs:
+  - `https://example.com/.well-known/assetlinks.json`
+  - `https://example.net/.well-known/assetlinks.json`
+3. Fill out a self-verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8).
+
+Once you submit the request, please allow a few days for all warnings to stop.
+If verification fails, you should be notified via email within a few hours. If
+you don't get an email indicating verification failure and your sites still show
+a warning after a week, please submit a manual review
+[request](https://forms.gle/BxV3JGbCbRjucDxq6).
+
+Important notes:
+ * You must keep the `assetlinks.json` file in place so long as you wish to
+   suppress the warnings. If you remove either file, Chrome may resume showing
+   warnings.
+ * You can extend the example `assetlinks.json` to support more than two
+   domains, or to support additional Digital Asset Links entries, if needed.
+   Please note that Chrome does not support `include` statements in
+   `assetlinks.json` files.
+
+### Requesting a manual review
+
+If a site triggers erroneous lookalike warnings in Chrome,
 you can ask for a manual appeal. These appeals are evaluated manually, and we
 can suppress the warning for all Chrome users when necessary.
 
@@ -104,11 +154,11 @@ designed to allow Chrome to detect most existing sites that trigger the
 heuristic erroneously. After that time, we encourage developers to test their
 new sites in Chrome to ensure that their new domain does not trigger warnings.
 
-If you are a site operator and would like to request an appeal, please fill out
+If you are a site owner and would like to request an appeal, please fill out
 a [request](https://forms.gle/BxV3JGbCbRjucDxq6).
 
 
-## Reasons an appeal might be denied
+#### Reasons an appeal might be denied
 
 There are several reasons that may lead us to deny your appeal. Most commonly,
 appeals are denied for domains that are only used internally (i.e. for testing
@@ -124,4 +174,3 @@ not look like domains used by other sites commonly visited by your users.
 
 Many warnings are also only encountered by a small fraction of users who happen
 to intersect with both sites. See a further description of this above.
-
