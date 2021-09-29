@@ -13,7 +13,7 @@ namespace features {
 // field names.
 // TODO(crbug.com/1181759): Remove once launched.
 const base::Feature kAutocompleteFilterForMeaningfulNames{
-    "AutocompleteFilterForMeaningfulNames", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutocompleteFilterForMeaningfulNames", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to flatten and fill cross-iframe forms.
 // TODO(crbug.com/1187842) Remove once launched.
