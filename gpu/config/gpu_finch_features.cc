@@ -215,7 +215,7 @@ const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 #if defined(OS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
-    &kVulkan, "BlockListByBrand", ""};
+    &kVulkan, "BlockListByBrand", "HONOR"};
 
 const base::FeatureParam<std::string> kVulkanBlockListByDevice{
     &kVulkan, "BlockListByDevice", "OP4863|OP4883"};
