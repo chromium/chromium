@@ -57,11 +57,13 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   virtual size_t GetBucketIndex(HistogramBase::Sample value) const;
 
   // Moves the single-sample value to a mounted "counts" array.
-  void MoveSingleSampleToCounts();
+  // TODO(crbug.com/1254354): Remove NOINLINE after diagnosis.
+  void NOINLINE MoveSingleSampleToCounts();
 
   // Mounts (creating if necessary) an array of "counts" for multi-value
   // storage.
-  void MountCountsStorageAndMoveSingleSample();
+  // TODO(crbug.com/1254354): Remove NOINLINE after diagnosis.
+  void NOINLINE MountCountsStorageAndMoveSingleSample();
 
   // Mounts "counts" storage that already exists. This does not attempt to move
   // any single-sample information to that storage as that would violate the
