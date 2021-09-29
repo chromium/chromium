@@ -3389,8 +3389,8 @@
   },
   {
     "name": "incognito-brand-consistency-for-desktop",
-    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "incognito-brand-consistency-for-ios",
@@ -3414,7 +3414,7 @@
   },
   {
     "name": "incognito-reauthentication-for-android",
-    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
+    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
     "expiry_milestone": 100
   },
   {
@@ -3424,8 +3424,8 @@
   },
   {
     "name": "inherit-native-theme-from-parent-widget",
-    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "installed-apps-in-cbd",
