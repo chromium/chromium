@@ -3201,6 +3201,21 @@
             ]
         }
     ],
+    "EnableDuplicateDownloadDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDuplicateDownloadDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableManualPasswordGenerationIOS": [
         {
             "platforms": [

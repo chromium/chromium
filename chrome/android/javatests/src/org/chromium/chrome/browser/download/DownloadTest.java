@@ -73,10 +73,10 @@ import java.util.List;
  * Tests Chrome download feature by attempting to download some files.
  */
 @RunWith(ParameterizedRunner.class)
-@ParameterAnnotations
-        .UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-        @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-        public class DownloadTest implements CustomMainActivityStart {
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "disable-features=" + ChromeFeatureList.ENABLE_DUPLICATE_DOWNLOAD_DIALOG})
+public class DownloadTest implements CustomMainActivityStart {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = Arrays.asList(
             new ParameterSet().value(true).name("UseDownloadOfflineContentProviderEnabled"),
