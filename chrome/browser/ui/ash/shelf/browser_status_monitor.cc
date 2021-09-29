@@ -72,13 +72,6 @@ class BrowserStatusMonitor::LocalWebContentsObserver
     }
   }
 
-  void WebContentsDestroyed() override {
-    // TODO(crbug.com/1219835): Remove the method when confident this is
-    // unreachable. This should be unreachable because the observer is removed
-    // when the tab is removed.
-    base::debug::DumpWithoutCrashing();
-  }
-
  private:
   BrowserStatusMonitor* monitor_;
 };
