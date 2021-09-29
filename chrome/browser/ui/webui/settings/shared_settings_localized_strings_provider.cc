@@ -36,6 +36,9 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace settings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -52,6 +55,8 @@ std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
 }  // namespace
 #endif
 
+// Lacros side-by-side warning should be shown as long as both Lacros and Ash
+// browsers enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ShouldShowLacrosSideBySideWarningInAsh() {
   return base::FeatureList::IsEnabled(
@@ -63,11 +68,11 @@ bool ShouldShowLacrosSideBySideWarningInAsh() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldShowLacrosSideBySideWarningInLacros() {
-  // TODO(crbug.com/1221498): determine whether Lacros is enabled in
-  // side-by-side mode (needs exposure of LacrosLaunchSwitch by Ash into
-  // Lacros).
   return base::FeatureList::IsEnabled(
-      switches::kSyncSettingsShowLacrosSideBySideWarning);
+             switches::kSyncSettingsShowLacrosSideBySideWarning) &&
+         !chromeos::LacrosService::Get()
+              ->init_params()
+              ->standalone_browser_is_only_browser;
 }
 #endif
 
