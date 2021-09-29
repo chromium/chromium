@@ -1049,7 +1049,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + 'f339eb9463714c3d31657c8ee1bd53d1c7e5c555',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '1415817d8daa7fa72ec9b26a6b9d166a1d54626a',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '7792b1e909a98703181aecb8810b4b654004c25d',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '069b14c94db6c1625a143d9f82e07a08a29909cf',
@@ -1584,7 +1584,7 @@ deps = {
   },
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '31960ee82bce0fe1934b9265b8496c58fcd4559a',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'a1c67c43ea73a314debec81ed230feba2b830fd4',
 
   'src/third_party/turbine': {
       'packages': [
