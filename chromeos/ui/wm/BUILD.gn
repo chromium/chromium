@@ -11,7 +11,11 @@ assert(is_chromeos_ash || is_chromeos_lacros,
 source_set("wm") {
   defines = [ "IS_CHROMEOS_UI_WM_IMPL" ]
 
-  sources = [ "desks/desks_helper.h" ]
+  sources = [
+    "desks/desks_helper.h",
+    "features.cc",
+    "features.h",
+  ]
 
   deps = [
     "//base",

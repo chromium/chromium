@@ -1939,9 +1939,9 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   gfx::Point desk_2_mini_view_center =
       desk_2_mini_view->GetBoundsInScreen().CenterPoint();
-  // When |features::kVerticalSnapState| is enabled, one of two drag indicators
-  // show up on the top instead of the left side of the display. Such top
-  // indicator pushes the desks bar down, so we need to drag the item to the
+  // When |chromeos::wm::features::kVerticalSnap| is enabled, one of two drag
+  // indicators show up on the top instead of the left side of the display. Such
+  // top indicator pushes the desks bar down, so we need to drag the item to the
   // area that triggers drag indicators without dropping first to get the
   // updated position of the mini view before dropping the window on it.
   DragItemToPoint(overview_item, desk_2_mini_view_center, GetEventGenerator(),

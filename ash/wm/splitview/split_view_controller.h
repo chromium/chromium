@@ -125,8 +125,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // false                 false                  bottom               top
   // In tablet mode, these functions return values based on display orientation.
   // In clamshell mode, these functions return above values if
-  // `IsVerticalSnapStateEnabled()`; otherwise they return true.
-  // |window| is used to find the nearest display to check if the display
+  // `chromeos::wm::features::IsVerticalSnapEnabled()`; otherwise they return
+  // true. |window| is used to find the nearest display to check if the display
   // layout is horizontal and is primary or not.
   static bool IsLayoutHorizontal(aura::Window* window);
   static bool IsLayoutHorizontal(const display::Display& display);

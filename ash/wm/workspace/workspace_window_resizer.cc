@@ -37,6 +37,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
@@ -737,7 +738,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
           kSnapDragDwellTimeResetThreshold;
       // If vertical snap state is enabled, update phantom window for top/bottom
       // snap before setting a timer for maximize phantom to show up.
-      if (features::IsVerticalSnapStateEnabled() &&
+      if (chromeos::wm::features::IsVerticalSnapEnabled() &&
           !snap_phantom_window_controller_ &&
           snap_type != SnapType::kMaximize) {
         UpdateSnapPhantomWindow(snap_type);
@@ -751,7 +752,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
         // before it turns into maximize phantom window.
         dwell_countdown_timer_.Start(
             FROM_HERE,
-            (features::IsVerticalSnapStateEnabled() &&
+            (chromeos::wm::features::IsVerticalSnapEnabled() &&
              snap_type != SnapType::kMaximize)
                 ? kDwellLongTime
                 : kDwellTime,

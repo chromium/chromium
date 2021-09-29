@@ -5055,7 +5055,6 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
-      "//chromeos/ui/wm",
       "//ui/platform_window",
     ]
   }
@@ -5093,6 +5092,7 @@ static_library("browser") {
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
+      "//chromeos/ui/wm",
     ]
   }
 

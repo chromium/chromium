@@ -4,7 +4,6 @@
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -21,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -2271,7 +2271,8 @@ class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
 
   // WorkspaceWindowResizerTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVerticalSnapState);
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kVerticalSnap);
     WorkspaceWindowResizerTest::SetUp();
     UpdateDisplay("600x800");
 

@@ -20,6 +20,7 @@
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -175,11 +176,11 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       snap_bounds.set_x(work_area.right() - axis_length);
       break;
     case SnapPosition::kTop:
-      DCHECK(features::IsVerticalSnapStateEnabled());
+      DCHECK(chromeos::wm::features::IsVerticalSnapEnabled());
       snap_bounds.set_height(axis_length);
       break;
     case SnapPosition::kBottom:
-      DCHECK(features::IsVerticalSnapStateEnabled());
+      DCHECK(chromeos::wm::features::IsVerticalSnapEnabled());
       snap_bounds.set_height(axis_length);
       // Snap to the bottom.
       snap_bounds.set_y(work_area.bottom() - axis_length);
@@ -193,7 +194,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
 
 ash::OrientationLockType GetSnapDisplayOrientation(
     const display::Display& display) {
-  if (!features::IsVerticalSnapStateEnabled())
+  if (!chromeos::wm::features::IsVerticalSnapEnabled())
     return ash::OrientationLockType::kLandscapePrimary;
 
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode

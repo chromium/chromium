@@ -17,7 +17,6 @@
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -75,6 +74,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -6044,17 +6044,19 @@ class SplitViewOverviewSessionInClamshellTest
   // AshTestBase:
   void SetUp() override {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kVerticalSnapState);
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::wm::features::kVerticalSnap);
     } else {
-      scoped_feature_list_.InitWithFeatureState(features::kVerticalSnapState,
-                                                IsVerticalSnapStateEnabled());
+      scoped_feature_list_.InitWithFeatureState(
+          chromeos::wm::features::kVerticalSnap,
+          chromeos::wm::features::IsVerticalSnapEnabled());
     }
     OverviewSessionTest::SetUp();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
     DCHECK(ShouldAllowSplitView());
   }
 
-  bool IsVerticalSnapStateEnabled() const { return GetParam(); }
+  bool IsVerticalSnapEnabled() const { return GetParam(); }
 
   aura::Window* CreateWindowWithHitTestComponent(int hit_test_component,
                                                  const gfx::Rect& bounds) {
@@ -6628,12 +6630,11 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
   const gfx::Rect left_snapped_bounds(300, height);
   const gfx::Rect right_snapped_bounds(300, 0, 300, height);
   EXPECT_EQ(
-      IsVerticalSnapStateEnabled() ? top_snapped_bounds : left_snapped_bounds,
+      IsVerticalSnapEnabled() ? top_snapped_bounds : left_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
   EXPECT_EQ(
-      IsVerticalSnapStateEnabled() ? bottom_snapped_bounds
-                                   : right_snapped_bounds,
+      IsVerticalSnapEnabled() ? bottom_snapped_bounds : right_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr));
 
@@ -6649,12 +6650,11 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
   // Check the snapped window bounds again. They should be the same as before.
   EXPECT_EQ(
-      IsVerticalSnapStateEnabled() ? top_snapped_bounds : left_snapped_bounds,
+      IsVerticalSnapEnabled() ? top_snapped_bounds : left_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
   EXPECT_EQ(
-      IsVerticalSnapStateEnabled() ? bottom_snapped_bounds
-                                   : right_snapped_bounds,
+      IsVerticalSnapEnabled() ? bottom_snapped_bounds : right_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr));
 }
