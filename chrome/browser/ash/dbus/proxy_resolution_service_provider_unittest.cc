@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/net/system_proxy_manager.h"
+#include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/services/service_provider_test_helper.h"

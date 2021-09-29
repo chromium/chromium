@@ -44,7 +44,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/net/dhcp_wpad_url_client.h"
+#include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

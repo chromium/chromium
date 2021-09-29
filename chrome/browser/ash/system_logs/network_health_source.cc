@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chromeos/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_service.h"
 #include "chromeos/network/network_event_log.h"
 #include "content/public/browser/browser_thread.h"
 

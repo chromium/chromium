@@ -6,7 +6,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/dbus/proxy_resolution_service_provider.h"
-#include "chrome/browser/chromeos/net/system_proxy_manager.h"
+#include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"

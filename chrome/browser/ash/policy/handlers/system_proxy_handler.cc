@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"

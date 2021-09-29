@@ -8,7 +8,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 
 namespace ash {
 
