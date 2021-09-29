@@ -705,8 +705,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
   // skip the alignment, because this call isn't requesting it.
-  size_t new_reservation_size =
-      GetDirectMapReservationSize(raw_size, brp_enabled());
+  size_t new_reservation_size = GetDirectMapReservationSize(raw_size);
 
   // If new reservation would be larger, there is nothing we can do to
   // reallocate in-place.
@@ -741,16 +740,14 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   // allocation can grow.
   size_t available_reservation_size =
       current_reservation_size - extent->padding_for_alignment -
-      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize(
-          brp_enabled());
+      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
 #if DCHECK_IS_ON()
   char* reservation_start = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(slot_start) & kSuperPageBaseMask);
   PA_DCHECK(internal::IsReservationStart(reservation_start));
   PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
-                GetDirectMapMetadataAndGuardPagesSize(brp_enabled()) +
-                PartitionPageSize());
+                GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
 #endif
 
   if (new_slot_size == current_slot_size) {

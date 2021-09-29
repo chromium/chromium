@@ -1866,8 +1866,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
       bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
-          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize(
-              allocator.root()->brp_enabled())};
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
     size -= kExtraAllocSize;
     EXPECT_GT(size, kMaxBucketed)
@@ -3072,8 +3071,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       // It also includes alignment. However, these would double count the first
       // partition page, so it needs to be subtracted.
       size_t surrounding_pages_size =
-          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize(
-              root.brp_enabled()) +
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize() +
           alignment - PartitionPageSize();
       size_t expected_direct_map_size =
           bits::AlignUp(aligned_size + surrounding_pages_size,

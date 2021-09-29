@@ -520,23 +520,16 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
-  GetDirectMapMetadataAndGuardPagesSize(bool brp_enabled) {
+  GetDirectMapMetadataAndGuardPagesSize() {
     // Because we need to fake a direct-map region to look like a super page, we
-    // need to allocate a bunch of system pages more around the payload:
-    // - The first few system pages are the partition page in which the super
-    // page metadata is stored.
-    // - We add a trailing guard page (one system page will suffice).
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
-    // On 32-bit systems, we need PartitionPageSize() guard pages at both the
-    // beginning and the end of each direct-map allocated memory. This is needed
-    // for the BRP pool bitmap which excludes guard pages and operates at
-    // PartitionPageSize() granularity. This is to match the behavior of normal
-    // buckets allocations.
-    return PartitionPageSize() +
-           (brp_enabled ? PartitionPageSize() : SystemPageSize());
-#else
-    return PartitionPageSize() + SystemPageSize();
-#endif
+    // need to allocate more pages around the payload:
+    // - The first partition page is a combination of metadata and guard region.
+    // - We also add a trailing guard page. In most cases, a system page would
+    //   suffice. But on 32-bit systems when BRP is on, we need a partition page
+    //   to match granularity of the BRP pool bitmap. For cosistency, we'll use
+    //   a partition page everywhere, which is cheap as it's uncommitted address
+    //   space anyway.
+    return 2 * PartitionPageSize();
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
@@ -549,13 +542,13 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   static ALWAYS_INLINE size_t
-  GetDirectMapReservationSize(size_t padded_raw_size, bool brp_enabled) {
+  GetDirectMapReservationSize(size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(padded_raw_size <= MaxDirectMapped());
     return bits::AlignUp(
-        padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(brp_enabled),
+        padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
         DirectMapAllocationGranularity());
   }
 
