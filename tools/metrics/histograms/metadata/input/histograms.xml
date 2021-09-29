@@ -462,6 +462,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Handwriting.LanguageModelLoadTime" units="ms"
+    expires_after="2022-06-01">
+  <owner>curtismcmullan@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The number of milliseconds taken to load the language model required for the
+    handwriting input method. Recorded every time a new language model is loaded
+    for the handwriting input method.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.ID2" enum="InputMethodID2"
     expires_after="2021-12-12">
   <owner>tranbaoduy@chromium.org</owner>
