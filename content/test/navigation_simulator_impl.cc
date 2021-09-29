@@ -1276,11 +1276,6 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->has_user_gesture = has_user_gesture_;
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
   common_params->should_replace_current_entry = should_replace_current_entry_;
-
-  if (history_url_for_data_url_.has_value()) {
-    common_params->history_url_for_data_url = history_url_for_data_url_.value();
-  }
-
   common_params->href_translate = href_translate_;
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>

@@ -696,12 +696,6 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  DCHECK(common_params_->history_url_for_data_url.is_empty());
-  if (potential_activation.history_url_for_data_url.is_empty() !=
-      common_params_->history_url_for_data_url.is_empty()) {
-    return false;
-  }
-
   // The previews_state is always set to NO_PREVIEWS in BeginNavigation and the
   // previews code was removed, so no need to compare it here as it's not used.
   // TODO(crbug.com/1232909): remove this previews_state.

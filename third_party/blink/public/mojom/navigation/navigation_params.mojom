@@ -174,10 +174,6 @@ struct CommonNavigationParams {
   // Is only used with data: URLs.
   url.mojom.Url base_url_for_data_url;
 
-  // History URL for use in Blink's SubstituteData.
-  // Is only used with data: URLs.
-  url.mojom.Url history_url_for_data_url;
-
   // Bitmask that has whether or not to request a Preview version of the
   // document for various preview types or let the browser decide.
   // Defined in third_party/blink/public/common/loader/previews_state.h.

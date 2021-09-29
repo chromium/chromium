@@ -628,18 +628,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return renderer_url_info_.last_document_url;
   }
 
-  // The current "history URL" of the document in the renderer process. See
-  // comment in the declaration of RendererURLInfo's `last_history_url` for more
-  // details.
-  const GURL& last_history_url_in_renderer() const {
-    return renderer_url_info_.last_history_url;
-  }
-
   // Returns the "loading" URL in the renderer. This tries to replicate
-  // RenderFrameImpl::GetLoadingUrl(), and should only be used to preserve
-  // calculations that were previously done in the renderer but got moved to
-  // the browser (e.g. URL comparisons to determine if a navigation should do
-  // a replacement or not).
+  // RenderFrameImpl::GetLoadingUrl(). This might return a different URL from
+  // GetLastCommittedURL() in case the document had changed its URL through
+  // document.open() before, and last_document_url_in_renderer() in case of
+  // error pages and loadDataWithBaseURL documents. See comments in the
+  // implementation for details.
+  // This function should only be used to preserve calculations that were
+  // previously done in the renderer but got moved to the browser (e.g. URL
+  // comparisons to determine if a navigation should do a replacement or not).
   const GURL& GetLastLoadingURLInRenderer() const;
 
   // Saves the URLs and other URL-related information used in the renderer.
@@ -648,54 +645,27 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // or to preserve behavior of calculations that used to live in the renderer
   // but was moved to the browser. For most use cases, prefer to use
   // `last_committed_url_` instead.
-  // TODO(https://crbug.com/1223398, https://crbug.com/1223398): Remove this
-  // struct once there's no need to track "history URL" and "loading URL",
-  // leaving only `last_document_url`.
   struct RendererURLInfo {
     // Tracks this frame's last "document URL", which might be different from:
     // - `last_committed_url_` if the frame did document.open() or sets a
     // different document URL than the committed URL (e.g. loadDataWithBaseURL
     // and error page commits).
-    // - `last_history_url` if the history URL is set to a different URL (e.g.
-    // loadDataWithBaseURL and error page commits).
+    // - The history URL in the renderer (not tracked in the browser) which
+    // might be different for error pages, where the document URL will be
+    // kUnreachableWebDataURL.
     // Note 1: `last_document_url` might be updated outside of navigation due
-    // to document.open(), unlike `last_committed_url_` and `last_history_url`,
-    // which can only be updated as a result of navigation. All three URLs are
-    // also updated/set to empty when the renderer process crashes.
+    // to document.open(), unlike `last_committed_url_` which can only be
+    // updated as a result of navigation. All three URLs are also updated/set to
+    // empty when the renderer process crashes.
     // Note 2: This might not have the accurate value of the document URL in the
-    // renderer after same-document navigations on documents loaded through
-    // loadDataWithBaseURL(). See comment in GetLastDocumentURL() in
-    // render_frame_host_impl.cc for more details.
+    // renderer after same-document navigations on error pages or documents
+    // loaded through loadDataWithBaseURL(). See comment in GetLastDocumentURL()
+    // in render_frame_host_impl.cc for more details.
     GURL last_document_url;
-
-    // Tracks this frame's last committed "history URL", which might be
-    // different from `last_committed_url_` if the last navigation's history URL
-    // is different than the navigation's commit URL (the URL in
-    // CommonNavigationParams/DidCommitProvisionalLoadParams), which can only
-    // happen on error page or loadDataWithBaseURL commits. In those cases, the
-    // history URL stays the same for the lifetime of the document.
-    // In the renderer, the history URL is used to set the DocumentLoader's
-    // "unreachable URL" and the HistoryItem's URL.
-    // In the browser, this is currently used to decide whether a navigation
-    // should do a replacement on same-URL navigation or not (see
-    // NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation()) to
-    // preserve the old check that used to live in the renderer.
-    // TODO(https://crbug.com/1223398): Remove this once we no longer use
-    // loadDataWithBaseURL's history URL in the renderer, and when we don't need
-    // to use it for same-URL navigation checks.
-    GURL last_history_url;
 
     // Whether the currently committed document is a result of webview's
     // loadDataWithBaseURL API or not.
     bool is_loaded_from_load_data_with_base_url = false;
-
-    // Whether the current document has a non-empty "unreachable URL" as a
-    // result of a loadDataWithBaseURL navigation (saved in `last_history_url`
-    // above). For more details, see
-    // NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL().
-    // TODO(https://crbug.com/1223398): Remove this once we no longer use
-    // loadDataWithBaseURL's history URL in the renderer.
-    bool document_has_unreachable_url_from_load_data_with_base_url = false;
   };
 
   // Returns the storage key for the last committed document in this
@@ -3231,14 +3201,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // DidCommitProvisionalLoadParams) after every committed navigation, and also
   // when the renderer process crashes (where it's reset to empty).
   // Note that the value tracked here might be different than the value for
-  // other URLs we track in RendererURLInfo:
-  // - `last_document_url` tracks the last "document URL", not
-  // necessarily coming from a committed navigation (e.g. document.open()) or
-  // the same as the URL used in DidCommitProvisionalLoadParams (e.g.
-  // loadDataWithBaseURL).
-  // - `last_history_url` tracks the last committed "history URL". This might
-  // be different than the navigation URL, e.g. if loadDataWithBaseURL()
-  // sets a history URL.
+  // `last_document_url` in RendererURLInfo, which tracks the last "document
+  // URL" which might not necessarily come from a committed navigation (e.g.
+  // the URL can change due to document.open()) or the same as the URL used in
+  // DidCommitProvisionalLoadParams (e.g. loadDataWithBaseURL which uses the
+  // "base URL" as the "document URL" but the data URL as the "committed URL").
   GURL last_committed_url_;
 
   // See comment in the definition of RendererURLInfo.

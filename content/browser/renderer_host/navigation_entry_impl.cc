@@ -810,11 +810,11 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       // replace an entry on session history / reload / restore navigation. New
       // navigation that may use replacement create their CommonNavigationParams
       // via NavigationRequest, for example, instead of via NavigationEntry.
-      false /* should_replace_entry */, GetBaseURLForDataURL(),
-      GetHistoryURLForDataURL(), previews_state, navigation_start,
-      frame_entry.method(), post_body ? post_body : post_data_,
-      network::mojom::SourceLocation::New(), has_started_from_context_menu(),
-      has_user_gesture(), false /* has_text_fragment_token */,
+      false /* should_replace_entry */, GetBaseURLForDataURL(), previews_state,
+      navigation_start, frame_entry.method(),
+      post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
+      has_started_from_context_menu(), has_user_gesture(),
+      false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start);
 }

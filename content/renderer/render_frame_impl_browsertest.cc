@@ -1043,7 +1043,6 @@ TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
-  common_params->history_url_for_data_url = GURL("about:blank");
   auto commit_params = blink::CreateCommitNavigationParams();
   auto waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
   GetMainRenderFrame()->Navigate(std::move(common_params),

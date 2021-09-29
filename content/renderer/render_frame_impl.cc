@@ -573,7 +573,6 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       std::move(referrer), url_request_extra_data->transition_type(),
       navigation_type, download_policy,
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem, GURL(),
-      GURL(),
       static_cast<blink::PreviewsState>(info->url_request.GetPreviewsState()),
       base::TimeTicks::Now(), info->url_request.HttpMethod().Latin1(),
       blink::GetRequestBodyForWebURLRequest(info->url_request),
@@ -2676,9 +2675,6 @@ void RenderFrameImpl::CommitNavigation(
   // URL navigation in various ways:
   // - The "document URL" will use the supplied `base_url_for_data_url` if it's
   // not empty (otherwise it will fall back to the data: URL).
-  // - The "unreachable URL" (used for HistoryItem, etc) will use the supplied
-  // `history_url_for_data_url` if it's not empty (otherwise it will fall back
-  // to the document URL).
   // - The actual data: URL will be saved in the document's DocumentState to
   // later be returned as the `url` in DidCommitProvisionalLoadParams.
   bool should_handle_data_url_as_string = false;
@@ -2705,27 +2701,6 @@ void RenderFrameImpl::CommitNavigation(
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             WebString::FromUTF8(mime_type),
                                             WebString::FromUTF8(charset), data);
-    // Even though this is a successful navigation, we set the "unreachable URL"
-    // to the value of the supplied "history URL". This value will be used for:
-    // - Setting the HistoryItem URL in
-    // DocumentLoader::SetHistoryItemStateForCommit(). Note that this is *not*
-    // used for setting the session history entry's URL in the browser side.
-    // - Determining whether various states (scroll state, document.state) from
-    // the previous HistoryItem should be carried over.
-    // - Determining whether a navigation is a same-URL navigation, and thus
-    // should result in replacement, in FrameLoader::DetermineFrameLoadType().
-    // Note that the code there compares the new *document URL* against the old
-    // *history URL* so if the base URL and the history URL is different, even
-    // if the loadDataWithBaseURL() navigation is triggered with the exact same
-    // parameters twice, it will not be classified as "same-URL". This seems to
-    // be unintended, but the old comment here says this is "Needed so that
-    // history-url-only changes don't become reloads" so at least it works to
-    // prevent reloads/replacements when the history URL changes but not
-    // everything else.
-    // TODO(https://crbug.com/1223398): Figure out if these behaviors should be
-    // kept, or even if we should send the history URL to the renderer at all.
-    navigation_params->unreachable_url =
-        common_params->history_url_for_data_url;
     std::move(commit_with_params).Run(std::move(navigation_params));
     return;
   }

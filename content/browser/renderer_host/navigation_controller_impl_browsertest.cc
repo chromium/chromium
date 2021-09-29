@@ -369,7 +369,6 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
     GURL virtual_url;
     GURL history_url_for_data_url;
     GURL document_url;
-    GURL renderer_history_url;
   };
 
   void CheckURLsMatchExpectationsForLoadDataWithBaseURL(
@@ -378,7 +377,6 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
       URLsForLoadDataWithBaseURL& urls,
       bool is_renderer_initiated_same_document_navigation = false) {
     EXPECT_EQ(urls.document_url, rfh->last_document_url_in_renderer());
-    EXPECT_EQ(urls.renderer_history_url, rfh->last_history_url_in_renderer());
     // The URL in the session history entry will use the commit URL.
     EXPECT_EQ(urls.commit_url, entry->GetURL());
     // Regardless of whether the supplied base URL and history URL are actually
@@ -427,21 +425,6 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
     // in which case it will use the commit URL.
     result.document_url =
         !supplied_base_url.is_empty() ? supplied_base_url : result.commit_url;
-    // The "renderer history URL" will be set to the supplied history URL,
-    // except in some cases (see how `history_url_for_data_url` is set in
-    // NavigationRequest::CreateNavigationRequestFromLoadParams()).
-    if (!supplied_base_url.is_empty()) {
-      // If the navigation is treated as a loadDataWithBaseURL navigation, the
-      // renderer will try to use the supplied history URL, unless it's empty.
-      result.renderer_history_url = supplied_history_url.is_empty()
-                                        ? result.commit_url
-                                        : supplied_history_url;
-    } else {
-      // If the navigation is not treated as a loadDataWithBaseURL navigation,
-      // or the base URL is empty, the "unreachable URL" will be empty, so the
-      // history URL will be the same as the document URL.
-      result.renderer_history_url = result.document_url;
-    }
     return result;
   }
 
@@ -479,13 +462,13 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   const GURL data_url = GURL(data_header + data);
-  // `base_url_for_data_url` in CommonNavigationParams.
+  // `base_url_for_data_url` in LoadURLParams.
   const GURL supplied_base_url =
       base_url_empty() ? GURL() : GURL("http://baseurl");
-  // `history_url_for_data_url` in CommonNavigationParams.
+  // `history_url_for_data_url` in LoadURLParams.
   const GURL supplied_history_url =
       history_url_empty() ? GURL() : GURL("http://historyurl");
-  // `url` in CommonNavigationParams.
+  // `url` in LoadURLParams.
   const GURL commit_url =
       use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -613,13 +596,13 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   const GURL data_url = GURL(data_header + data);
-  // `base_url_for_data_url` in CommonNavigationParams.
+  // `base_url_for_data_url` in LoadURLParams.
   const GURL supplied_base_url =
       base_url_empty() ? GURL() : GURL("http://baseurl");
-  // `history_url_for_data_url` in CommonNavigationParams.
+  // `history_url_for_data_url` in LoadURLParams.
   const GURL supplied_history_url =
       history_url_empty() ? GURL() : GURL("http://historyurl");
-  // `url` in CommonNavigationParams.
+  // `url` in LoadURLParams.
   const GURL commit_url =
       use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -700,15 +683,15 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   const GURL data_url = GURL(data_header + data);
-  // `base_url_for_data_url` in CommonNavigationParams.
+  // `base_url_for_data_url` in LoadURLParams.
   const GURL supplied_base_url =
       base_url_empty() ? GURL()
                        : embedded_test_server()->GetURL("/title1.html");
-  // `history_url_for_data_url` in CommonNavigationParams.
+  // `history_url_for_data_url` in LoadURLParams.
   const GURL supplied_history_url =
       history_url_empty() ? GURL()
                           : embedded_test_server()->GetURL("/title2.html");
-  // `url` in CommonNavigationParams.
+  // `url` in LoadURLParams.
   const GURL commit_url =
       use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -747,7 +730,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
     // Update the URL expectations for the regular data: URL commit.
     urls.commit_url = commit_url_with_fragment;
     urls.document_url = commit_url_with_fragment;
-    urls.renderer_history_url = commit_url_with_fragment;
     urls.history_url_for_data_url = GURL();
     urls.supplied_base_url = GURL();
     // If the navigation is classified as a same document, it might use the
@@ -794,7 +776,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
     // Update the URL expectations for the regular commit.
     urls.commit_url = document_url_with_fragment;
     urls.document_url = document_url_with_fragment;
-    urls.renderer_history_url = document_url_with_fragment;
     urls.history_url_for_data_url = GURL();
     urls.supplied_base_url = GURL();
     // If the navigation is classified as a same document, it might use the
@@ -994,6 +975,9 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // using an invalid base URL is already undefined behavior.
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
 
+  const GURL original_committed_url =
+      contents()->GetMainFrame()->GetLastCommittedURL();
+
   {
     // Make a same-document navigation via history.pushState.
     TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
@@ -1005,16 +989,12 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(original_committed_url.spec() + "#foo",
+            contents()->GetMainFrame()->GetLastCommittedURL());
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
   EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
-
-  const GURL push_state_url =
-      GURL("data:text/html;charset=utf-8," + data + "#foo");
-  EXPECT_EQ(
-      use_load_data_as_string_with_base_url() ? history_url : push_state_url,
-      contents()->GetMainFrame()->GetLastCommittedURL());
 }
 
 // ContentBrowserClient that blocks normal commits to any URL in
@@ -2148,13 +2128,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   FrameTreeNode* root = contents()->GetFrameTree()->root();
   EXPECT_EQ(url1, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(url1, root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url1, root->current_frame_host()->last_history_url_in_renderer());
+  EXPECT_EQ(url1, root->current_frame_host()->GetLastLoadingURLInRenderer());
   FrameTreeNode* iframe = root->child_at(0);
   EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(iframe_url,
             iframe->current_frame_host()->last_document_url_in_renderer());
   EXPECT_EQ(iframe_url,
-            iframe->current_frame_host()->last_history_url_in_renderer());
+            iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 2) Do a document.open() on the iframe from the main frame.
   EXPECT_TRUE(ExecJs(
@@ -2167,7 +2147,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(url1,
             iframe->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url1, iframe->current_frame_host()->last_history_url_in_renderer());
+  EXPECT_EQ(url1, iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 3) Do a same-document navigation to `url_1_fragment` on the iframe (Note
   // that this is a same-document navigation because the iframe's document URL
@@ -2187,7 +2167,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url_1_fragment,
             iframe->current_frame_host()->last_document_url_in_renderer());
   EXPECT_EQ(url_1_fragment,
-            iframe->current_frame_host()->last_history_url_in_renderer());
+            iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 4) Do a navigation to `url404`, which wil result in an error page.
   // The document URL will be set to the kUnreachableWebDataURL.
@@ -2196,7 +2176,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
             root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url404, root->current_frame_host()->last_history_url_in_renderer());
+  EXPECT_EQ(url404, root->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 5) Do a same-document pushState on an error page without changing the URL
   // (otherwise it will result in an origin mismatch error). The URLs will stay
@@ -2211,7 +2191,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
             root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url404, root->current_frame_host()->last_history_url_in_renderer());
+  EXPECT_EQ(url404, root->current_frame_host()->GetLastLoadingURLInRenderer());
 }
 
 // Tests various cases of replacements caused by error pages.

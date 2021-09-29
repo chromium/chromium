@@ -826,15 +826,6 @@ TEST_F(PrerenderHostRegistryTest,
 }
 
 TEST_F(PrerenderHostRegistryTest,
-       CompareInitialAndActivationCommonParams_HistoryURLForDataURL) {
-  EXPECT_FALSE(CheckIsActivatedForParams(
-      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        const GURL kOriginalUrl("https://example.com/");
-        navigation->set_history_url_for_data_url(kOriginalUrl);
-      })));
-}
-
-TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_Method) {
   EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {

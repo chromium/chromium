@@ -194,10 +194,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     searchable_form_encoding_ = searchable_form_encoding;
   }
 
-  void set_history_url_for_data_url(const GURL& history_url_for_data_url) {
-    history_url_for_data_url_ = history_url_for_data_url;
-  }
-
   void set_href_translate(const std::string& href_translate) {
     href_translate_ = href_translate;
   }
@@ -387,7 +383,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       blink::mojom::MixedContentContextType::kBlockable;
   GURL searchable_form_url_;
   std::string searchable_form_encoding_;
-  absl::optional<GURL> history_url_for_data_url_;
   std::string href_translate_;
   blink::mojom::RequestContextType request_context_type_ =
       blink::mojom::RequestContextType::LOCATION;

@@ -728,16 +728,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Returns true if this is a NavigationRequest represents a WebView
   // loadDataWithBaseUrl navigation.
-  bool IsLoadDataWithBaseURL();
-
-  // Returns true if the navigation is a WebView loadDataWithBaseUrl
-  // navigation that has a non-empty "unreachable URL" in the renderer, set to
-  // the "history URL" supplied with the loadDataWithBaseUrl call.
-  // NOTE: This function is currently only used for simulating renderer-side
-  // calculations. Do not use it to make actual decisions.
-  // TODO(https://crbug.com/1223398): Remove this function once we no longer
-  // send history URL to the renderer for loadDataWithBaseUrl navigations.
-  bool IsLoadDataWithBaseURLAndHasUnreachableURL();
+  bool IsLoadDataWithBaseURL() const;
 
   // Calculates the origin that this NavigationRequest may commit.
   //

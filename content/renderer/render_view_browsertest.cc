@@ -821,7 +821,6 @@ TEST_F(RenderViewImplUpdateTitleTest, MAYBE_OnNavigationLoadDataWithBaseURL) {
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
-  common_params->history_url_for_data_url = GURL("about:blank");
   auto commit_params = DummyCommitNavigationParams();
   commit_params->data_url_as_string =
       "data:text/html,<html><head><title>Data page</title></head></html>";

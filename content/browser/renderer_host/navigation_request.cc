@@ -1145,7 +1145,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
           GURL() /* base_url_for_data_url*/,
-          GURL() /* history_url_for_data_url */,
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
           method /* method */, nullptr /* post_data */,
           network::mojom::SourceLocation::New(),
@@ -5677,7 +5676,7 @@ bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
   return was_early_hints_preload_link_header_received_;
 }
 
-bool NavigationRequest::IsLoadDataWithBaseURL() {
+bool NavigationRequest::IsLoadDataWithBaseURL() const {
   // A navigation is a loadDataWithBaseURL navigation if it's a successful main
   // frame navigation, and its base URL is valid. This function should be kept
   // in sync with the ShouldLoadDataWithBaseURL() function in
@@ -5685,23 +5684,6 @@ bool NavigationRequest::IsLoadDataWithBaseURL() {
   return IsInMainFrame() && !DidEncounterError() &&
          common_params_->url.SchemeIs(url::kDataScheme) &&
          common_params_->base_url_for_data_url.is_valid();
-}
-
-bool NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL() {
-  // On loadDataURLWithBaseURL navigations, `history_url_for_data_url` is saved
-  // in WebNavigationParams' and DocumentLoader's `unreachable_url` in the
-  // renderer.
-  bool can_set_unreachable_url = IsLoadDataWithBaseURL();
-#if defined(OS_ANDROID)
-  // Even when IsLoadDataWithBaseURL() returns false (e.g. when the base URL
-  // is empty/invalid), the `history_url_for_data_url` might still be used as
-  // the unreachable URL, if `data_url_as_string` is not empty. See
-  // RenderFrameImpl::CommitNavigation() for more details.
-  can_set_unreachable_url |= IsInMainFrame() && !DidEncounterError() &&
-                             !commit_params_->data_url_as_string.empty();
-#endif
-  return can_set_unreachable_url &&
-         common_params_->history_url_for_data_url.is_valid();
 }
 
 url::Origin NavigationRequest::GetTentativeOriginAtRequestTime() {
@@ -6816,16 +6798,26 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
   // Not a same-url navigation. Note that this is comparing against the last
   // history URL since this is what was used in the renderer check that was
-  // moved here. This means for error pages we will compare against the URL
-  // that failed to load, and for documents loaded with loadDataWithBaseURL,
-  // we'll compare against the history URL.
-  // TODO(https://crbug.com/1223398): Once we confirm we don't need history URLs
-  // for other uses anymore, use document URL (for non-error pages) &
-  // committed URL (for error pages) instead.
+  // moved here. This means for error pages we should compare against the URL
+  // that failed to load (the last committed URL), while for other navigations
+  // we should compare against the last document URL, which might be different
+  // from the last committed URL due to document.open() changing the URL. To
+  // handle that, we compare against the "loading URL".
   if (common_params_->url !=
-      frame_tree_node_->current_frame_host()->last_history_url_in_renderer()) {
+      frame_tree_node_->current_frame_host()->GetLastLoadingURLInRenderer()) {
     return false;
   }
+
+  if (IsLoadDataWithBaseURL()) {
+    // Preserve old behavior of loadDataWithBaseURL() navigations, which almost
+    // never does same-URL replacement when the (data) URL is the same, since it
+    // used to compare the data URL against the "history URL", which in almost
+    // all cases wouldn't match the data: URL (in most cases it's either the
+    // same as the base/document URL, or about:blank [the default value], see
+    // https://crbug.com/1244746#c1 for more details).
+    return false;
+  }
+
   // Never replace if there is no NavigationEntry to replace.
   if (!frame_tree_node_->navigator().controller().GetEntryCount())
     return false;

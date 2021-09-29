@@ -987,46 +987,6 @@ GURL GetLastDocumentURL(
   return params.url;
 }
 
-// Returns the "history" URL used for a navigation, which might be different
-// than the commit URL (CommonNavigationParam's URL) for loadDataWithBaseURL()
-// navigations. The history URL is used for HistoryItem, PageState and some
-// history/navigation-related decisions in the renderer. This is currently used
-// to preserve calculations that were historically done in the renderer (e.g.
-// URL comparisons to determine the navigation type) on the browser side.
-GURL GetLastHistoryURL(
-    NavigationRequest* request,
-    const mojom::DidCommitProvisionalLoadParams& params,
-    bool last_document_is_error_page,
-    const RenderFrameHostImpl::RendererURLInfo& renderer_url_info) {
-  if (request->IsLoadDataWithBaseURLAndHasUnreachableURL()) {
-    // loadDataWithBaseURL() navigation can set its own history URL, which will
-    // be used by the renderer (unless the navigation failed which is already
-    // accounted for in IsLoadDataWithBaseURLAndHasUnreachableURL() above, or
-    // it's empty, in which case it will fall back to the document URL).
-    const GURL& supplied_history_url =
-        request->common_params().history_url_for_data_url;
-    if (!supplied_history_url.is_empty()) {
-      return supplied_history_url;
-    }
-    // When the supplied history URL is empty, the document URL is used.
-    return GetLastDocumentURL(request, params, last_document_is_error_page,
-                              renderer_url_info);
-  }
-  if (request->IsSameDocument() &&
-      (last_document_is_error_page ||
-       renderer_url_info
-           .document_has_unreachable_url_from_load_data_with_base_url)) {
-    // The "unreachable URL" stays the same as long as the document stays the
-    // same, so just return the previous history URL if this is a
-    // same-document navigation on a document that has an "unreachable URL".
-    return renderer_url_info.last_history_url;
-  }
-  // For all other navigations, the history URL should be the same as the URL
-  // that is used to commit. This includes error page navigations, where the
-  // URL that failed to commit is returned.
-  return params.url;
-}
-
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -2102,9 +2062,8 @@ const GURL& RenderFrameHostImpl::GetLastLoadingURLInRenderer() const {
       renderer_url_info_.is_loaded_from_load_data_with_base_url) {
     return last_committed_url_;
   }
-  // Otherwise, return the last history URL (which will fall back to the
-  // document URL if it's the same).
-  return renderer_url_info_.last_history_url;
+  // Otherwise, return the last document URL.
+  return renderer_url_info_.last_document_url;
 }
 
 const net::NetworkIsolationKey& RenderFrameHostImpl::GetNetworkIsolationKey() {
@@ -3559,8 +3518,6 @@ void RenderFrameHostImpl::DidNavigate(
   if (!navigation_request->DidEncounterError())
     last_successful_url_ = params.url;
 
-  renderer_url_info_.last_history_url = GetLastHistoryURL(
-      navigation_request, params, is_error_page_, renderer_url_info_);
   renderer_url_info_.last_document_url = GetLastDocumentURL(
       navigation_request, params, is_error_page_, renderer_url_info_);
 
@@ -4205,16 +4162,6 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
   GURL filtered_url(url);
   GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
   renderer_url_info_.last_document_url = filtered_url;
-  if (!is_error_page_ &&
-      !renderer_url_info_
-           .document_has_unreachable_url_from_load_data_with_base_url) {
-    // Only update the history URL if it should be the same as the document URL.
-    // When the document has an "unreachable URL" (e.g. error page and some
-    // documents loaded through loadDataWithBaseURL), the "unreachable URL" will
-    // be used as the history URL as long as the document stays the same, so we
-    // shouldn't update it even when document.open() happens.
-    renderer_url_info_.last_history_url = filtered_url;
-  }
   frame_tree_node_->DidOpenDocumentInputStream();
 }
 
@@ -10578,11 +10525,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   renderer_url_info_.is_loaded_from_load_data_with_base_url =
       navigation_request->IsLoadDataWithBaseURL();
 
-  // Mark whether the document is loaded with loadDataWithBaseURL and has a
-  // non-empty "unreachable URL" (set to the supplied history URL).
-  renderer_url_info_.document_has_unreachable_url_from_load_data_with_base_url =
-      navigation_request->IsLoadDataWithBaseURLAndHasUnreachableURL();
-
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
   // loads to UMA.
@@ -11294,26 +11236,6 @@ const std::string CalculateMethod(
   return nav_request_method;
 }
 
-bool CalculateURLIsUnreachable(NavigationRequest* request,
-                               bool is_error_page,
-                               bool prev_document_has_unreachable_url) {
-  // url_is_unreachable should only be true in two cases:
-  // 1) The navigation is for an error page
-  if (is_error_page)
-    return true;
-  // 2) This is a main frame navigation to a data: URL document with a base_url
-  // and history URL (either an initial load or a same-document navigation).
-  // For same-document navigations, we can know this by checking the value
-  // of |prev_document_has_unreachable_url|, which was set when the document
-  // was initially loaded.
-  if (request->IsSameDocument())
-    return prev_document_has_unreachable_url;
-
-  // For cross-document navigations, we can know by checking
-  // NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL().
-  return request->IsLoadDataWithBaseURLAndHasUnreachableURL();
-}
-
 int CalculateHTTPStatusCode(NavigationRequest* request,
                             int last_http_status_code) {
   // Same-document navigations should retain the HTTP status code from the last
@@ -11476,23 +11398,13 @@ GURL CalculateLoadingURL(
     return GURL(url::kAboutBlankURL);
   }
 
-  if (request->IsSameDocument()) {
+  if (request->IsSameDocument() &&
+      (last_document_is_error_page ||
+       last_renderer_url_info.is_loaded_from_load_data_with_base_url)) {
     // Documents that have an "override" URL (loadDataWithBaseURL navigations,
     // error pages) will continue using that URL even after same-document
     // navigations.
-    if (last_renderer_url_info.is_loaded_from_load_data_with_base_url ||
-        last_document_is_error_page)
-      return last_committed_url;
-
-    // For all other same-document navigations, return the
-    // CommonNavigationParams' url.
-    return request->common_params().url;
-  }
-
-  if (request->IsLoadDataWithBaseURLAndHasUnreachableURL() &&
-      !request->common_params().base_url_for_data_url.is_valid()) {
-    // See RenderFrameImpl::CommitNavigation().
-    return request->common_params().history_url_for_data_url;
+    return last_committed_url;
   }
 
   // For all other navigations, the returned URL should be the same as the URL
@@ -11544,12 +11456,8 @@ std::string GetURLRelationForCrashKey(
     return "common params URL";
   if (actual_url == common_params.base_url_for_data_url)
     return "base URL";
-  if (actual_url == common_params.history_url_for_data_url)
-    return "common params history URL";
   if (actual_url == renderer_url_info.last_document_url)
     return "last document URL";
-  if (actual_url == renderer_url_info.last_history_url)
-    return "last history URL";
   return "unknown";
 }
 
@@ -11587,10 +11495,7 @@ void RenderFrameHostImpl::
   const bool is_error_page = (request->DidEncounterError() ||
                               (is_error_page_ && request->IsSameDocument()));
 
-  const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
-      request, is_error_page,
-      renderer_url_info_
-          .document_has_unreachable_url_from_load_data_with_base_url);
+  const bool browser_url_is_unreachable = is_error_page;
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -11680,10 +11585,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "prev_ldwb",
       renderer_url_info_.is_loaded_from_load_data_with_base_url);
-  SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "prev_ldwbu",
-      renderer_url_info_
-          .document_has_unreachable_url_from_load_data_with_base_url);
   SCOPED_CRASH_KEY_STRING32(
       "VerifyDidCommit", "base_url_fdu_type",
       GetURLTypeForCrashKey(request->common_params().base_url_for_data_url));
@@ -11691,9 +11592,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "data_url_empty",
                         request->commit_params().data_url_as_string.empty());
 #endif
-  SCOPED_CRASH_KEY_STRING32(
-      "VerifyDidCommit", "history_url_fdu_type",
-      GetURLTypeForCrashKey(request->common_params().history_url_for_data_url));
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_as_new_entry",
                         request->commit_params().intended_as_new_entry);
@@ -11849,9 +11747,6 @@ void RenderFrameHostImpl::
                              GetLastCommittedURL().spec());
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_document_url",
                              renderer_url_info_.last_document_url.spec());
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_history_url",
-                             renderer_url_info_.last_history_url.spec());
-
   SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "last_url_type",
                             GetURLTypeForCrashKey(GetLastCommittedURL()));
 

@@ -274,7 +274,7 @@ absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
   // URL used for the navigation.
   // TODO(https://crbug.com/1198406): Save committed origin in
   // FrameNavigationEntry for this case too.
-  if (request->IsLoadDataWithBaseURLAndHasUnreachableURL())
+  if (request->IsLoadDataWithBaseURL())
     return absl::nullopt;
 
   return absl::make_optional(params.origin);
@@ -3495,8 +3495,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   if (is_view_source_mode)
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
 
-  const GURL& history_url_for_data_url =
-      params.base_url_for_data_url.is_empty() ? GURL() : virtual_url;
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
           url_to_load, params.initiator_origin,
@@ -3504,7 +3502,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
                                       params.referrer.policy),
           params.transition_type, navigation_type, download_policy,
           should_replace_current_entry, params.base_url_for_data_url,
-          history_url_for_data_url, previews_state, navigation_start,
+          previews_state, navigation_start,
           params.load_type == LOAD_TYPE_HTTP_POST ? "POST" : "GET",
           params.post_data, std::move(source_location),
           params.started_from_context_menu, has_user_gesture,
