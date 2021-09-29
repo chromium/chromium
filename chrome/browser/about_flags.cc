@@ -4669,10 +4669,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMemoriesVariations,
                                     "Memories")},
 
-    {"memories-debug", flag_descriptions::kMemoriesDebugName,
-     flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(history_clusters::kDebug)},
-
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

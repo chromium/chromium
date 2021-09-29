@@ -919,9 +919,6 @@ extern const char kMediaSessionWebRTCDescription[];
 extern const char kMemoriesName[];
 extern const char kMemoriesDescription[];
 
-extern const char kMemoriesDebugName[];
-extern const char kMemoriesDebugDescription[];
-
 extern const char kMetricsSettingsAndroidName[];
 extern const char kMetricsSettingsAndroidDescription[];
 

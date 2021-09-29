@@ -1605,10 +1605,6 @@ const char kMediaSessionWebRTCDescription[] =
 const char kMemoriesName[] = "Memories";
 const char kMemoriesDescription[] = "Enables the history clusters UI.";
 
-const char kMemoriesDebugName[] = "Memories Debug";
-const char kMemoriesDebugDescription[] =
-    "Shows debug information in the history clusters UI.";
-
 const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
     "Enables the new design of metrics settings.";
