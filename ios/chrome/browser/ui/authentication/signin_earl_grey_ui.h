@@ -33,7 +33,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button, and then validated the confirmation dialog
 // according to |confirmation|.
-// This method should be used only if SimplifySignOutIOS is turned on.
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
 
 // Taps the sign in confirmation page, scrolls first to make the OK button

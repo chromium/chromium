@@ -41,7 +41,7 @@
   {
     "name": "account-id-migration",
     "owners": [ "msarda" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 100
   },
   {
     "name": "account-management-flows-v2",
@@ -5025,11 +5025,6 @@
     "expiry_milestone" : 100
   },
   {
-    "name": "simplify-sign-out-ios",
-    "owners": [ "jlebel", "msarda", "fernandex" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "single-touch-select",
     "owners": [ "donnd", "contextual-search-eng@google.com" ],
     "expiry_milestone": 97
@@ -5411,11 +5406,6 @@
     "owners": [ "azeemarshad", "khorimoto", "jonmann" ],
     // This flag is required for QA and dogfood testing.
     "expiry_milestone": -1
-  },
-  {
-    "name": "use-multilogin-endpoint",
-    "owners": [ "droger", "msarda" ],
-    "expiry_milestone": 92
   },
   {
     "name": "use-passthrough-command-decoder",
