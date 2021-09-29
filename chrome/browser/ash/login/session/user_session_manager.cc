@@ -137,7 +137,7 @@
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
