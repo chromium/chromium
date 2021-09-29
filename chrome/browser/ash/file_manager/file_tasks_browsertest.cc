@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -21,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -341,6 +343,30 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 
   TestExpectationsAgainstDefaultTasks(expectations);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Check that QuickOffice has a handler installed for common Office doc types.
+// This test only runs with the is_chrome_branded GN flag set because otherwise
+// QuickOffice is not installed.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, QuickOffice) {
+  std::vector<Expectation> expectations = {
+      {"doc", extension_misc::kQuickOfficeComponentExtensionId,
+       "application/msword"},
+      {"docx", extension_misc::kQuickOfficeComponentExtensionId,
+       "application/"
+       "vnd.openxmlformats-officedocument.wordprocessingml.document"},
+      {"ppt", extension_misc::kQuickOfficeComponentExtensionId,
+       "application/vnd.ms-powerpoint"},
+      {"pptx", extension_misc::kQuickOfficeComponentExtensionId,
+       "application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"},
+      {"xls", extension_misc::kQuickOfficeComponentExtensionId},
+      {"xlsx", extension_misc::kQuickOfficeComponentExtensionId},
+  };
+
+  TestExpectationsAgainstDefaultTasks(expectations);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // The Media App will be preferred over a chrome app with a specific extension,
 // unless that app is set default via prefs.
