@@ -97,7 +97,6 @@
 
   .active-marker,
   .inactive-marker {
-    background-color: rgba(255, 255, 255, 0.54);
     border-radius: 50%;
     display: block;
     height: 100%;
@@ -108,8 +107,21 @@
     z-index: 2;
   }
 
+  .active-marker {
+    background-color: rgba(var(--cros-bg-color-rgb), 0.6);
+  }
+
   .inactive-marker {
-    background-color: rgba(26, 115, 232, 0.54);
+    --background-color-opacity: 0.6;
+    background-color: rgba(
+      var(--cros-button-background-color-primary-rgb),
+      var(--background-color-opacity));
+  }
+
+  @media(prefers-color-scheme: dark) {
+    .inactive-marker {
+      --background-color-opacity: 1;
+    }
   }
 
   #legendContainer {
