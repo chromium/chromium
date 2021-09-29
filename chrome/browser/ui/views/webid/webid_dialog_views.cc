@@ -23,13 +23,14 @@
 constexpr int kDialogMinWidth = 512;
 constexpr int kDialogHeight = 450;
 
-WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents)
-    : WebIdDialogViews(rp_web_contents, nullptr) {
-}
+WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents,
+                                   CloseCallback callback)
+    : WebIdDialogViews(rp_web_contents, nullptr, std::move(callback)) {}
 
 WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents,
-                                   gfx::NativeView parent)
-    : WebIdDialog(rp_web_contents) {
+                                   gfx::NativeView parent,
+                                   CloseCallback callback)
+    : WebIdDialog(rp_web_contents), close_callback_(std::move(callback)) {
   // WebIdDialogViews is a WidgetDelegate, owned by its views::Widget. It
   // is destroyed by `DeleteDelegate()` which is invoked by view
   // hierarchy. The below check ensures this is true.
@@ -65,8 +66,7 @@ void WebIdDialogViews::ShowTokenExchangePermission(
 }
 
 void WebIdDialogViews::ShowSigninPage(content::WebContents* idp_web_contents,
-                                      const GURL& idp_signin_url,
-                                      CloseCallback on_close) {
+                                      const GURL& idp_signin_url) {
   DCHECK(rp_web_contents());
   state_ = State::kSignIn;
 
@@ -80,7 +80,6 @@ void WebIdDialogViews::ShowSigninPage(content::WebContents* idp_web_contents,
   auto content_view = std::make_unique<SigninPageView>(
       this, rp_web_contents(), idp_web_contents, idp_signin_url);
 
-  close_callback_ = std::move(on_close);
   SetContent(std::move(content_view));
   ShowDialog();
 }
@@ -144,6 +143,11 @@ void WebIdDialogViews::OnClose() {
         // The dialog has closed without the user expressing an explicit
         // preference. The current permission request should be denied.
         std::move(permission_callback_).Run(UserApproval::kDenied);
+      } else {
+        // If the window dialog has closed after the permission was selected
+        // but before it has transitioned to State::kSignIn, there needs to
+        // be a close callback invocation.
+        std::move(close_callback_).Run();
       }
       break;
     case State::kSignIn:
@@ -175,6 +179,7 @@ BEGIN_METADATA(WebIdDialogViews, views::BubbleDialogDelegateView)
 END_METADATA
 
 // static
-WebIdDialog* WebIdDialog::Create(content::WebContents* rp_web_contents) {
-  return new WebIdDialogViews(rp_web_contents);
+WebIdDialog* WebIdDialog::Create(content::WebContents* rp_web_contents,
+                                 CloseCallback callback) {
+  return new WebIdDialogViews(rp_web_contents, std::move(callback));
 }
