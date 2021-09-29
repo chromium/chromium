@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
 
-interface ZeroTrustConnectorElement {
-  $: {enabledString: HTMLSpanElement};
-}
-
-class ZeroTrustConnectorElement extends PolymerElement {
+export class ZeroTrustConnectorElement extends CustomElement {
   static get is() {
     return 'zero-trust-connector';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return `{__html_template__}`;
   }
 
-  static get properties() {
-    return {
-      enabledString: String,
-    };
+  public set enabledString(str: string) {
+    const strEl = (this.$('#enabled-string') as HTMLElement);
+    if (strEl) {
+      strEl.innerText = str;
+    } else {
+      console.error('Could not find #enabled-string element.');
+    }
   }
 
   private readonly pageHandler: PageHandlerInterface;
@@ -36,11 +34,11 @@ class ZeroTrustConnectorElement extends PolymerElement {
 
   private setZeroTrustValues(state: ZeroTrustState|undefined) {
     if (!state) {
-      this.$.enabledString.innerText = 'error';
+      this.enabledString = 'error';
       return;
     }
 
-    this.$.enabledString.innerText = `${state.isEnabled}`;
+    this.enabledString = `${state.isEnabled}`;
   }
 
   private async fetchZeroTrustValues(): Promise<ZeroTrustState|undefined> {
