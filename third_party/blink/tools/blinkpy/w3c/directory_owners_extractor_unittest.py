@@ -228,8 +228,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
                                                         'a/b/OWNERS')
 
         self.assertEqual(self.host.executive.full_calls[0].args, [
-            'dirmd', 'compute', '-root', MOCK_WEB_TESTS_WITHOUT_SLASH,
-            MOCK_WEB_TESTS + 'a/b'
+            'dirmd', 'read', '-form', 'sparse', MOCK_WEB_TESTS + 'a/b'
         ])
         self.assertEqual(wpt_dir_metadata.team_email, 'bar')
         self.assertEqual(wpt_dir_metadata.should_notify, True)
@@ -243,8 +242,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
                                                         'a/b/OWNERS')
 
         self.assertEqual(self.host.executive.full_calls[0].args, [
-            'dirmd', 'compute', '-root', MOCK_WEB_TESTS_WITHOUT_SLASH,
-            MOCK_WEB_TESTS + 'a/b'
+            'dirmd', 'read', '-form', 'sparse', MOCK_WEB_TESTS + 'a/b'
         ])
         self.assertEqual(wpt_dir_metadata, None)
 
