@@ -8,12 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
@@ -307,6 +309,14 @@ class AutoConnectHandlerTest : public testing::Test {
 
 namespace {
 
+const char* kConfigureCellular1UnmanagedConnected = R"(
+  { "GUID": "cellular1", "Type": "cellular", "State": "online",
+    "AutoConnect": true, "Profile": "/profile/default" })";
+
+const char* kConfigureCellular2ManagedConnectable = R"(
+  { "GUID": "cellular2", "Type": "cellular", "State": "idle",
+    "AutoConnect": true, "Profile": "/profile/default" })";
+
 const char* kConfigWifi0UnmanagedSharedConnected = R"(
   { "GUID": "wifi0", "Type": "wifi", "State": "online",
     "Security": "wpa", "Profile": "/profile/default" })";
@@ -391,6 +401,18 @@ const char* kPolicyTwoHiddenSsids = R"(
       }
     }
   ])";
+
+const char* kCellularPolicy = R"(
+    [
+      { "GUID": "cellular2",
+        "Name": "cellular2",
+        "Type": "Cellular",
+        "Cellular": {
+          "SMDPAddress": "123"
+        }
+      }
+    ])";
+
 }  // namespace
 
 TEST_F(AutoConnectHandlerTest, ReconnectOnCertLoading) {
@@ -863,6 +885,76 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
   EXPECT_EQ(0, test_observer_->num_auto_connect_events());
+}
+
+TEST_F(AutoConnectHandlerTest,
+       DisableCellularAutoConnectOnAllowOnlyPolicyNetworksAutoconnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
+  std::string cellular1_service_path =
+      ConfigureService(kConfigureCellular1UnmanagedConnected);
+  ASSERT_FALSE(cellular1_service_path.empty());
+  std::string cellular2_service_path =
+      ConfigureService(kConfigureCellular2ManagedConnectable);
+  ASSERT_FALSE(cellular2_service_path.empty());
+
+  EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular1_service_path));
+  EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular2_service_path));
+  const base::Value* properties =
+      helper().service_test()->GetServiceProperties(cellular1_service_path);
+  absl::optional<bool> auto_connect =
+      properties->FindBoolKey(shill::kAutoConnectProperty);
+  ASSERT_TRUE(auto_connect);
+  EXPECT_TRUE(*auto_connect);
+
+  // Apply 'AllowOnlyPolicyNetworksToAutoconnect' policy as a device
+  // policy and provide a network configuration for cellular2 to make it
+  // managed.
+  base::DictionaryValue global_config;
+  global_config.SetKey(
+      ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
+      base::Value(true));
+  SetupPolicy(kCellularPolicy, global_config,
+              false /* load as device policy */);
+  // cellular1's service state should be set to idle and autoconnect property
+  // should be set false.
+  EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular1_service_path));
+  EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  properties =
+      helper().service_test()->GetServiceProperties(cellular1_service_path);
+  auto_connect = properties->FindBoolKey(shill::kAutoConnectProperty);
+  ASSERT_TRUE(auto_connect);
+  EXPECT_FALSE(*auto_connect);
+}
+
+TEST_F(AutoConnectHandlerTest,
+       DisconnectCellularOnPolicyLoadingAllowOnlyPolicyCellularNetworks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
+  std::string cellular1_service_path =
+      ConfigureService(kConfigureCellular1UnmanagedConnected);
+  ASSERT_FALSE(cellular1_service_path.empty());
+  std::string cellular2_service_path =
+      ConfigureService(kConfigureCellular2ManagedConnectable);
+  ASSERT_FALSE(cellular2_service_path.empty());
+
+  EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular1_service_path));
+  EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
+
+  // Apply 'AllowOnlyPolicyCellularNetworks' policy as a device policy and
+  // provide a network configuration for cellular2 to make it managed.
+  base::DictionaryValue global_config;
+  global_config.SetKey(
+      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+      base::Value(true));
+  SetupPolicy(kCellularPolicy, global_config,
+              false /* load as device policy */);
+
+  // The cellular1 service configuration should be removed.
+  EXPECT_FALSE(helper().profile_test()->HasService(cellular1_service_path));
 }
 
 TEST_F(AutoConnectHandlerTest, DisconnectFromBlockedNetwork) {
