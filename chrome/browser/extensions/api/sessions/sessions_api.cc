@@ -234,6 +234,7 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // List of entries. They are ordered from most to least recent.
   // We prune the list to contain max 25 entries at any time and removes
   // uninteresting entries.
+  int counter = 0;
   for (const auto& entry : tab_restore_service->entries()) {
     // TODO(crbug.com/1192309): Support group entries in the Sessions API,
     // rather than sharding the group out into individual tabs.
@@ -241,9 +242,15 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
       auto& group =
           static_cast<const sessions::TabRestoreService::Group&>(*entry);
       for (const auto& tab : group.tabs)
-        result.push_back(std::move(*CreateSessionModel(*tab)));
+        if (counter++ < max_results)
+          result.push_back(std::move(*CreateSessionModel(*tab)));
+        else
+          break;
     } else {
-      result.push_back(std::move(*CreateSessionModel(*entry)));
+      if (counter++ < max_results)
+        result.push_back(std::move(*CreateSessionModel(*entry)));
+      else
+        break;
     }
   }
 
