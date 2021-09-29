@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, BrowserService} from 'chrome://history/history.js';
+import {BrowserProxy, BrowserService, PageCallbackRouter, PageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks} from 'chrome://test/test_util.js';
-import {TestBrowserProxy} from './history_clusters/utils.js';
+
+function createHistoryClustersBrowserProxy() {
+  const handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+  const callbackRouter = new PageCallbackRouter();
+  BrowserProxy.setInstance(new BrowserProxy(handler, callbackRouter));
+}
 
 [true, false].forEach(isHistoryClustersEnabled => {
   suite('routing-test', function() {
@@ -31,7 +37,7 @@ import {TestBrowserProxy} from './history_clusters/utils.js';
       window.history.replaceState({}, '', '/');
       document.body.innerHTML = '';
       BrowserService.setInstance(new TestBrowserService());
-      BrowserProxyImpl.setInstance(new TestBrowserProxy());
+      createHistoryClustersBrowserProxy();
       app = document.createElement('history-app');
       document.body.appendChild(app);
 

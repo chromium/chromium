@@ -9,17 +9,13 @@
  * ui/webui/resources/js/
  */
 
-export interface OpenWindowProxy {
-  open(url: string): void;
-}
-
-export class OpenWindowProxyImpl implements OpenWindowProxy {
+export class OpenWindowProxy {
   open(url: string) {
     window.open(url);
   }
 
   static getInstance(): OpenWindowProxy {
-    return instance || (instance = new OpenWindowProxyImpl());
+    return instance || (instance = new OpenWindowProxy());
   }
 
   static setInstance(obj: OpenWindowProxy) {

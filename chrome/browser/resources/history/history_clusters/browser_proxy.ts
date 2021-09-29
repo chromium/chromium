@@ -10,12 +10,7 @@ import {PageCallbackRouter, PageHandler, PageHandlerRemote} from './history_clus
  * the browser.
  */
 
-export interface BrowserProxy {
-  handler: PageHandlerRemote;
-  callbackRouter: PageCallbackRouter;
-}
-
-export class BrowserProxyImpl implements BrowserProxy {
+export class BrowserProxy {
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
@@ -32,7 +27,7 @@ export class BrowserProxyImpl implements BrowserProxy {
     const handler = PageHandler.getRemote();
     const callbackRouter = new PageCallbackRouter();
     handler.setPage(callbackRouter.$.bindNewPipeAndPassRemote());
-    return instance = new BrowserProxyImpl(handler, callbackRouter);
+    return instance = new BrowserProxy(handler, callbackRouter);
   }
 
   static setInstance(obj: BrowserProxy) {

@@ -14,8 +14,8 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
-import {MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
-import {OpenWindowProxyImpl} from './open_window_proxy.js';
+import {MetricsProxy, VisitAction, VisitType} from './metrics_proxy.js';
+import {OpenWindowProxy} from './open_window_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -124,7 +124,7 @@ class VisitRowElement extends PolymerElement {
   }
 
   private onAuxClick_() {
-    MetricsProxyImpl.getInstance().recordVisitAction(
+    MetricsProxy.getInstance().recordVisitAction(
         VisitAction.CLICKED, this.index, this.getVisitType_());
 
     // Notify the parent <history-cluster> element of this event.
@@ -145,7 +145,7 @@ class VisitRowElement extends PolymerElement {
     // To record metrics.
     this.onAuxClick_();
 
-    OpenWindowProxyImpl.getInstance().open(this.visit.normalizedUrl.url);
+    OpenWindowProxy.getInstance().open(this.visit.normalizedUrl.url);
   }
 
   private onRemoveAllButtonClick_() {
@@ -167,7 +167,7 @@ class VisitRowElement extends PolymerElement {
 
     this.$.actionMenu.get().close();
 
-    MetricsProxyImpl.getInstance().recordVisitAction(
+    MetricsProxy.getInstance().recordVisitAction(
         VisitAction.DELETED, this.index, this.getVisitType_());
   }
 
