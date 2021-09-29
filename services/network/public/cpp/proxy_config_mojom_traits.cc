@@ -118,6 +118,7 @@ bool StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig>::Read(
 
   out_proxy_config->set_auto_detect(data.auto_detect());
   out_proxy_config->set_pac_mandatory(data.pac_mandatory());
+  out_proxy_config->set_from_system(data.from_system());
   return true;
 }
 

@@ -94,6 +94,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   // The kCFNetworkProxiesExcludeSimpleHostnames key is not available on iOS.
 
   // Source
+  proxy_config.set_from_system(true);
   *config = ProxyConfigWithAnnotation(proxy_config, traffic_annotation);
 }
 

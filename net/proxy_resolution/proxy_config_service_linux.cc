@@ -1047,6 +1047,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
 absl::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   ProxyConfig config;
+  config.set_from_system(true);
 
   std::string mode;
   if (!setting_getter_->GetString(SettingGetter::PROXY_MODE, &mode)) {

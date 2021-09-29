@@ -219,9 +219,9 @@ ProxyConfig::~ProxyConfig() = default;
 ProxyConfig& ProxyConfig::operator=(const ProxyConfig& config) = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
-  return auto_detect_ == other.auto_detect_ &&
-         pac_url_ == other.pac_url_ &&
+  return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
          pac_mandatory_ == other.pac_mandatory_ &&
+         from_system_ == other.from_system_ &&
          proxy_rules_.Equals(other.proxy_rules());
 }
 
@@ -244,6 +244,9 @@ base::Value ProxyConfig::ToValue() const {
     dict.SetStringKey("pac_url", pac_url_.possibly_invalid_spec());
     if (pac_mandatory_)
       dict.SetBoolKey("pac_mandatory", pac_mandatory_);
+  }
+  if (from_system_) {
+    dict.SetBoolKey("from_system", from_system_);
   }
 
   // Output the manual settings.

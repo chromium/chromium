@@ -95,6 +95,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig> {
  public:
   static bool auto_detect(const net::ProxyConfig& r) { return r.auto_detect(); }
+  static bool from_system(const net::ProxyConfig& r) { return r.from_system(); }
   static const std::string& pac_url(const net::ProxyConfig& r) {
     return r.pac_url().possibly_invalid_spec();
   }

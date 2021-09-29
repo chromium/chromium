@@ -47,6 +47,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
       SCDynamicStoreCopyProxies(NULL));
   DCHECK(config_dict);
   ProxyConfig proxy_config;
+  proxy_config.set_from_system(true);
 
   // auto-detect
 

@@ -157,6 +157,7 @@ void ProxyConfigServiceWin::GetCurrentProxyConfig(
   ProxyConfig proxy_config;
   SetFromIEConfig(&proxy_config, ie_config);
   FreeIEConfig(&ie_config);
+  proxy_config.set_from_system(true);
   *config = ProxyConfigWithAnnotation(proxy_config, traffic_annotation);
 }
 

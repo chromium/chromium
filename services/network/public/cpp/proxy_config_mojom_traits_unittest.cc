@@ -41,6 +41,14 @@ TEST(ProxyConfigTraitsTest, Direct) {
   EXPECT_TRUE(TestProxyConfigRoundTrip(proxy_config));
 }
 
+TEST(ProxyConfigTraitsTest, FromSystem) {
+  net::ProxyConfig base_config;
+  base_config.set_from_system(true);
+  net::ProxyConfigWithAnnotation proxy_config(base_config,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_TRUE(TestProxyConfigRoundTrip(proxy_config));
+}
+
 TEST(ProxyConfigTraitsTest, CustomPacURL) {
   net::ProxyConfigWithAnnotation proxy_config(
       net::ProxyConfig::CreateFromCustomPacURL(GURL("http://foo/")),

@@ -150,6 +150,7 @@ bool GetProxyRules(const GetPropertyCallback& get_property,
 void GetLatestProxyConfigInternal(const GetPropertyCallback& get_property,
                                   ProxyConfigWithAnnotation* config) {
   ProxyConfig proxy_config;
+  proxy_config.set_from_system(true);
   if (GetProxyRules(get_property, &proxy_config.proxy_rules())) {
     *config =
         ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
