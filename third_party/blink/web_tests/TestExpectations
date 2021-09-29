@@ -4140,9 +4140,6 @@ crbug.com/1157857 virtual/percent-based-scrolling/max-percent-delta-cross-origin
 
 crbug.com/683800 [ Debug Win7 ] external/wpt/selection/* [ Failure Pass ]
 
-# Importing 'fetch' tests from WPT.
-crbug.com/705490 external/wpt/fetch/api/basic/error-after-response.html [ Pass Timeout ]
-
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
 
 # Test timing out when SharedArrayBuffer is disabled by default.
@@ -6986,3 +6983,6 @@ crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-local-time-af
 crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Skip ]
 crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
 crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
+
+# Sheriff 2021-09-29
+crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
