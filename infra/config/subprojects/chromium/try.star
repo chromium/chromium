@@ -1311,6 +1311,16 @@ try_.chromium_linux_builder(
     name = "linux-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(),
+)
+
+try_.chromium_linux_builder(
+    name = "linux-rel-orchestrator",
+    builderless = False,
     cores = 4,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
@@ -1323,23 +1333,23 @@ try_.chromium_linux_builder(
         },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
 )
 
 try_.chromium_linux_builder(
     name = "linux-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 16,
+    builderless = False,
+    cores = None,
     executable = "recipe:chromium/compilator",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    ssd = True,
     properties = {
         "orchestrator": {
-            "builder_name": "linux-rel",
+            "builder_name": "linux-rel-orchestrator",
             "builder_group": "tryserver.chromium.linux",
         },
     },

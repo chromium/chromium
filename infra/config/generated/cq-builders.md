@@ -463,6 +463,9 @@ as required builders.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
+* [linux-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/linux-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-orchestrator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-orchestrator))
+  * Experiment percentage: 10.0
+
 * [linux-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/linux-rel-reclient) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-reclient)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-reclient))
   * Experiment percentage: 10.0
 
