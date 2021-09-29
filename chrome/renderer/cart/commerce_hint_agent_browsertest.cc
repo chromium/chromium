@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/renderer/cart/commerce_renderer_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -618,6 +619,12 @@ class CommerceHintProductInfoTest : public CommerceHintAgentTest {
                 {"www.ccc.com": "products-(\\w+)",
                  "www.guitarcenter.com": "products-(\\w+)"}
               }
+            )###"}}},
+         {commerce_renderer_feature::kRetailCoupons,
+          {{"coupon-partner-merchant-pattern", "(eee.com)"},
+           {"coupon-product-id-pattern-mapping",
+            R"###(
+              {"product_url": {"www.eee.com": "products-(\\w+)"}}
             )###"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
@@ -704,6 +711,21 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
            "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
           {"foo_2-0-medium", "bar_2-0-medium"});
   const ShoppingCarts expected_carts = {{"ddd.com", expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       ExtractCart_CaptureId_CouponPartnerMerchants) {
+  // This page has two products.
+  NavigateToURL("https://www.eee.com/shopping-cart.html");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(
+          "eee.com", "https://www.eee.com/shopping-cart.html",
+          {"https://static.guitarcenter.com/product-image/foo_2-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
+          {"foo_3", "bar_3"});
+  const ShoppingCarts expected_carts = {{"eee.com", expected_cart_protos}};
   WaitForProductCount(expected_carts);
 }
 
