@@ -12,8 +12,12 @@ corsPreflight("CORS [PUT], server allows, check preflight has user agent", corsU
 corsPreflight("CORS [PUT], server refuses", corsUrl, "PUT", false);
 corsPreflight("CORS [PATCH], server allows", corsUrl, "PATCH", true);
 corsPreflight("CORS [PATCH], server refuses", corsUrl, "PATCH", false);
+corsPreflight("CORS [patcH], server allows", corsUrl, "patcH", true);
+corsPreflight("CORS [patcH], server refuses", corsUrl, "patcH", false);
 corsPreflight("CORS [NEW], server allows", corsUrl, "NEW", true);
 corsPreflight("CORS [NEW], server refuses", corsUrl, "NEW", false);
+corsPreflight("CORS [chicken], server allows", corsUrl, "chicken", true);
+corsPreflight("CORS [chicken], server refuses", corsUrl, "chicken", false);
 
 corsPreflight("CORS [GET] [x-test-header: allowed], server allows", corsUrl, "GET", true, [["x-test-header1", "allowed"]]);
 corsPreflight("CORS [GET] [x-test-header: refused], server refuses", corsUrl, "GET", false, [["x-test-header1", "refused"]]);
