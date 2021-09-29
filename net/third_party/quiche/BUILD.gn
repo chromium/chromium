@@ -1223,9 +1223,7 @@ source_set("quiche_tests") {
     "src/common/quiche_linked_hash_map_test.cc",
     "src/common/quiche_text_utils_test.cc",
     "src/http2/adapter/oghttp2_adapter_test.cc",
-
-    # TODO (b/201106443): re-enable this.
-    #"src/http2/adapter/oghttp2_session_test.cc",
+    "src/http2/adapter/oghttp2_session_test.cc",
     "src/http2/adapter/test_frame_sequence.cc",
     "src/http2/adapter/test_frame_sequence.h",
     "src/http2/adapter/test_utils.cc",

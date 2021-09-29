@@ -153,7 +153,7 @@ TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   field_trial_params["channel"] = "T";
-  field_trial_params["epoch"] = "20201019";
+  field_trial_params["epoch"] = "90001234";  // Epoch in the far future.
   field_trial_params["quic_version"] = quic::AlpnForVersion(version);
   variations::AssociateVariationParams("QUIC", "ValidQuicParams",
                                        field_trial_params);
