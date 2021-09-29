@@ -36,7 +36,16 @@ const base::Feature kEvictRootSurfaceWhenHidden{
 const base::Feature kScreenPowerListenerForNativeWinOcclusion{
     "ScreenPowerListenerForNativeWinOcclusion",
     base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // OW_WIN
+
+// If enabled, displays Windows 11 style menus on Windows 11.
+const base::Feature kWin11StyleMenus{"Win11StyleMenus",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If this Windows 11 style menu feature parameter is enabled, displays that
+// style menu on all Windows versions.
+const char kWin11StyleMenuAllWindowsVersionsName[] = "All Windows Versions";
+
+#endif  // defined(OS_WIN)
 
 // Whether or not to delegate color queries to the color provider.
 const base::Feature kColorProviderRedirection = {

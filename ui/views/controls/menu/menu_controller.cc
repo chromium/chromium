@@ -2148,14 +2148,21 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       item->AddEmptyMenus();
     }
   }
+  const MenuConfig& menu_config = MenuConfig::instance();
   bool prefer_leading =
       state_.open_leading.empty() ? true : state_.open_leading.back();
   bool resulting_direction;
   // Anchor for calculated bounds. Can be alternatively used by a system
   // compositor for better positioning.
   ui::OwnedWindowAnchor anchor;
+  // While the Windows 11 style menus uses the same bubble border as "touch-
+  // style" menus, some positioning calculations are different. Testing for that
+  // condition separately will allow those subtle positioning differences to be
+  // taken into account within CalculateBubbleMenuBounds() and elsewhere.
   gfx::Rect bounds =
-      MenuItemView::IsBubble(state_.anchor)
+      MenuItemView::IsBubble(state_.anchor) ||
+              (menu_config.win11_style_menus &&
+               menu_config.CornerRadiusForMenu(this))
           ? CalculateBubbleMenuBounds(item, prefer_leading,
                                       &resulting_direction, &anchor)
           : CalculateMenuBounds(item, prefer_leading, &resulting_direction,
@@ -2483,6 +2490,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   DCHECK(item);
   DCHECK(anchor);
 
+  const bool is_bubble = MenuItemView::IsBubble(state_.anchor);
+
   // TODO(msisov): Shall we also calculate anchor for bubble menus, which are
   // used by ash? If there is a need. Fix that.
   anchor->anchor_position = ui::OwnedWindowAnchorPosition::kTopLeft;
@@ -2520,7 +2529,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       int max_height = monitor_bounds.height();
       // In case of bubbles, the maximum width is limited by the space
       // between the display corner and the target area + the tip size.
-      if (MenuItemView::IsBubble(state_.anchor) ||
+      if (is_bubble ||
           item->actual_menu_position() == MenuPosition::kAboveBounds) {
         // Don't consider |border_and_shadow_insets| because when the max size
         // is enforced, the scroll view is shown and the md shadows are not
@@ -2549,18 +2558,24 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       case MenuAnchorPosition::kBubbleTopRight:
       case MenuAnchorPosition::kBubbleBottomLeft:
       case MenuAnchorPosition::kBubbleBottomRight:
+      case MenuAnchorPosition::kTopLeft:
+      case MenuAnchorPosition::kTopRight:
+      case MenuAnchorPosition::kBottomCenter:
         // Align the right edges of the menu and anchor.
-        x_menu_on_left = anchor_bounds.right() - menu_size.width() +
+        x_menu_on_left = anchor_bounds.right() -
+                         (state_.anchor == MenuAnchorPosition::kBottomCenter
+                              ? menu_size.width() / 2
+                              : menu_size.width()) +
                          border_and_shadow_insets.right();
         // Align the left edges of the menu and anchor.
         x_menu_on_right = anchor_bounds.x() - border_and_shadow_insets.left();
         // Align the bottom of the menu with the top of the anchor.
         y_menu_above = anchor_bounds.y() - menu_size.height() +
                        border_and_shadow_insets.bottom() -
-                       menu_config.touchable_anchor_offset;
+                       (is_bubble ? menu_config.touchable_anchor_offset : 0);
         // Align the top of the menu with the bottom of the anchor.
         y_menu_below = anchor_bounds.bottom() - border_and_shadow_insets.top() +
-                       menu_config.touchable_anchor_offset;
+                       (is_bubble ? menu_config.touchable_anchor_offset : 0);
         break;
       case MenuAnchorPosition::kBubbleLeft:
       case MenuAnchorPosition::kBubbleRight:
@@ -2578,10 +2593,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
         // Align the top of the menu with the top of the anchor.
         y_menu_below = anchor_bounds.y() - border_and_shadow_insets.top();
         break;
-      case MenuAnchorPosition::kTopLeft:
-      case MenuAnchorPosition::kTopRight:
-      case MenuAnchorPosition::kBottomCenter:
-        NOTREACHED();
     }
 
     // Choose the most appropriate x coordinate.
@@ -2589,20 +2600,19 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       case MenuAnchorPosition::kBubbleTopLeft:
       case MenuAnchorPosition::kBubbleLeft:
       case MenuAnchorPosition::kBubbleBottomLeft:
+      case MenuAnchorPosition::kTopRight:
+      case MenuAnchorPosition::kBottomCenter:
         x = x_menu_on_left >= monitor_bounds.x() ? x_menu_on_left
                                                  : x_menu_on_right;
         break;
       case MenuAnchorPosition::kBubbleTopRight:
       case MenuAnchorPosition::kBubbleRight:
       case MenuAnchorPosition::kBubbleBottomRight:
+      case MenuAnchorPosition::kTopLeft:
         x = x_menu_on_right + menu_size.width() <= monitor_bounds.right()
                 ? x_menu_on_right
                 : x_menu_on_left;
         break;
-      case MenuAnchorPosition::kTopLeft:
-      case MenuAnchorPosition::kTopRight:
-      case MenuAnchorPosition::kBottomCenter:
-        NOTREACHED();
     }
 
     // Choose the most appropriate y coordinate.
@@ -2614,6 +2624,9 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       case MenuAnchorPosition::kBubbleRight:
       case MenuAnchorPosition::kBubbleBottomLeft:
       case MenuAnchorPosition::kBubbleBottomRight:
+      case MenuAnchorPosition::kTopLeft:
+      case MenuAnchorPosition::kTopRight:
+      case MenuAnchorPosition::kBottomCenter:
         // Respect the actual menu position calculated earlier if possible, to
         // prevent changing positions during menu size updates.
         if (able_to_show_menu_below &&
@@ -2648,10 +2661,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
           item->set_actual_menu_position(MenuPosition::kBestFit);
         }
         break;
-      case MenuAnchorPosition::kTopLeft:
-      case MenuAnchorPosition::kTopRight:
-      case MenuAnchorPosition::kBottomCenter:
-        NOTREACHED();
     }
 
     // The above adjustments may have shifted a large menu off the screen.
@@ -2667,11 +2676,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     x = base::clamp(x, x_min, x_max);
     y = base::clamp(y, y_min, y_max);
   } else {
-    if (!use_touchable_layout_) {
-      NOTIMPLEMENTED()
-          << "Nested bubble menus are only implemented for touchable menus.";
-    }
-
     // This is a sub-menu, position it relative to the parent menu.
     const gfx::Rect item_bounds = item->GetBoundsInScreen();
     // If the layout is RTL, then a 'leading' menu is positioned to the left of

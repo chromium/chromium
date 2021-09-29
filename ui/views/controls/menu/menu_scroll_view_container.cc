@@ -265,8 +265,10 @@ gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
   prefsize.Enlarge(insets.width(), insets.height());
   const MenuConfig& config = MenuConfig::instance();
   // Leave space for the menu border, below the footnote.
-  if (GetFootnote() && config.use_outer_border && !HasBubbleBorder())
+  if (GetFootnote() && config.use_outer_border && !HasBubbleBorder() &&
+      !config.win11_style_menus) {
     prefsize.Enlarge(0, 1);
+  }
   return prefsize;
 }
 
@@ -367,13 +369,19 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
   if (menu_config.use_outer_border) {
-    SkColor color = GetWidget()
-                        ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
-                        : gfx::kPlaceholderColor;
-    SetBorder(views::CreateBorderPainter(
-        std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-        gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
-                    horizontal_inset)));
+    if (menu_config.win11_style_menus &&
+        menu_config.CornerRadiusForMenu(
+            content_view_->GetMenuItem()->GetMenuController())) {
+      CreateBubbleBorder();
+    } else {
+      SkColor color = GetWidget()
+                          ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
+                          : gfx::kPlaceholderColor;
+      SetBorder(views::CreateBorderPainter(
+          std::make_unique<views::RoundRectPainter>(color, corner_radius_),
+          gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
+                      horizontal_inset)));
+    }
   } else {
     SetBorder(CreateEmptyBorder(vertical_inset, horizontal_inset, bottom_inset,
                                 horizontal_inset));
@@ -381,6 +389,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
+  const MenuConfig& menu_config = MenuConfig::instance();
+  const int border_radius = menu_config.CornerRadiusForMenu(
+      content_view_->GetMenuItem()->GetMenuController());
   const SkColor color =
       GetWidget() ? GetColorProvider()->GetColor(ui::kColorMenuBackground)
                   : gfx::kPlaceholderColor;
@@ -388,9 +399,9 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
       arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()
           ->GetMenuController()
-          ->use_touchable_layout()) {
-    const MenuConfig& menu_config = MenuConfig::instance();
-    bubble_border->SetCornerRadius(menu_config.touchable_corner_radius);
+          ->use_touchable_layout() ||
+      border_radius > 0) {
+    bubble_border->SetCornerRadius(border_radius);
     bubble_border->set_md_shadow_elevation(
         menu_config.touchable_menu_shadow_elevation);
     gfx::Insets insets(menu_config.vertical_touchable_menu_item_padding, 0);
