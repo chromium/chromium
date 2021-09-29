@@ -435,6 +435,9 @@ bool IsZeroCopyUploadEnabled() {
 }
 
 bool IsPartialRasterEnabled() {
+  // Partial raster is not supported with RawDraw.
+  if (features::IsUsingRawDraw())
+    return false;
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   return !command_line.HasSwitch(blink::switches::kDisablePartialRaster);
 }
