@@ -5524,15 +5524,15 @@ bool WebContentsImpl::ShouldPreserveAbortedURLs() {
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     FrameTreeNode* frame_tree_node,
     bool navigation_is_within_page) {
-  // The render_frame_host is always a main frame.
+  // The `frame_tree_node` is always a main frame.
   DCHECK(frame_tree_node->IsMainFrame());
   TRACE_EVENT1("content,navigation",
                "WebContentsImpl::DidNavigateMainFramePreCommit",
                "navigation_is_within_page", navigation_is_within_page);
-  bool is_primary_main_frame =
-      GetMainFrame() == frame_tree_node->render_manager()->current_frame_host();
+  const bool is_primary =
+      frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrimary;
   // If running for a non-primary main frame, early out.
-  if (!is_primary_main_frame)
+  if (!is_primary)
     return;
 
   // Ensure fullscreen mode is exited before committing the navigation to a
@@ -5560,7 +5560,7 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
   OPTIONAL_TRACE_EVENT1("content,navigation",
                         "WebContentsImpl::DidNavigateMainFramePostCommit",
                         "render_frame_host", render_frame_host);
-  bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
+  const bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
 
   if (details.is_navigation_to_different_page()) {
     if (is_primary_main_frame) {
@@ -6523,7 +6523,7 @@ void WebContentsImpl::RenderFrameCreated(
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
                "render_frame_host", render_frame_host);
 
-  if (IsInPrimaryMainFrame(render_frame_host)) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     NotifyPrimaryMainFrameProcessIsAlive();
   }
 
@@ -7025,7 +7025,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   }
 
   auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
-  DCHECK(IsInPrimaryMainFrame(rvh_impl->GetMainRenderFrameHost()))
+  DCHECK(rvh_impl->GetMainRenderFrameHost()->IsInPrimaryMainFrame())
       << "GetRenderViewHost() must belong to the primary frame tree";
 
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
@@ -7737,7 +7737,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   // observers can not deal with events coming from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (IsInPrimaryMainFrame(new_frame)) {
+  if (new_frame->IsInPrimaryMainFrame()) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
     DCHECK_EQ(frame_tree_.root()->render_manager()->GetRenderWidgetHostView(),
@@ -7779,7 +7779,7 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
   // from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (!IsInPrimaryMainFrame(new_frame)) {
+  if (!new_frame->IsInPrimaryMainFrame()) {
     return;
   }
   NotifyViewSwapped(old_frame ? old_frame->GetRenderViewHost() : nullptr,
@@ -8926,14 +8926,6 @@ void WebContentsImpl::RenderFrameHostStateChanged(
 
   observers_.NotifyObservers(&WebContentsObserver::RenderFrameHostStateChanged,
                              render_frame_host, old_state, new_state);
-}
-
-bool WebContentsImpl::IsInPrimaryMainFrame(
-    RenderFrameHost* render_frame_host) const {
-  const bool is_primary = static_cast<RenderFrameHostImpl*>(render_frame_host)
-                              ->IsInPrimaryMainFrame();
-  DCHECK_EQ(is_primary, frame_tree_.GetMainFrame() == render_frame_host);
-  return is_primary;
 }
 
 void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,

@@ -279,6 +279,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // almost all of the cases. See RenderFrameHost::IsActive for the details.
   virtual RenderFrameHost* GetMainFrame() = 0;
 
+  // Returns true if `this` is the main document of the primary `Page` of the
+  // associated WebContents. See the description of
+  // `WebContents::GetPrimaryPage` for details. It is therefore also current in
+  // the primary main frame.
+  virtual bool IsInPrimaryMainFrame() = 0;
+
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if this document is the root of a fenced frame tree.
   //

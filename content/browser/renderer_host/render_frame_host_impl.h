@@ -322,6 +322,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocument() override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
+  bool IsInPrimaryMainFrame() override;
   bool IsFencedFrameRoot() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
@@ -2284,10 +2285,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // origin when recovering from a renderer crash).
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateSubresourceLoaderFactoriesForInitialEmptyDocument();
-
-  // Returns true if this document is current in the main frame for the
-  // associated WebContent's primary frame tree.
-  bool IsInPrimaryMainFrame();
 
   // Prerender2:
   // Dispatches DidFinishLoad and DOMContentLoaded if it occurred pre-activation

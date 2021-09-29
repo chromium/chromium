@@ -207,8 +207,7 @@ void ContentPasswordManagerDriver::SendLoggingAvailability() {
 }
 
 bool ContentPasswordManagerDriver::IsInPrimaryMainFrame() const {
-  return render_frame_host_->GetParent() == nullptr &&
-         render_frame_host_->GetPage().IsPrimary();
+  return render_frame_host_->IsInPrimaryMainFrame();
 }
 
 bool ContentPasswordManagerDriver::CanShowAutofillUi() const {

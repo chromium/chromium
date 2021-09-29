@@ -79,6 +79,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
   EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocument(),
             primary_rfh.get());
 
+  // Test `RenderFrameHostImpl::IsInPrimaryMainFrame`.
+  EXPECT_TRUE(primary_rfh->IsInPrimaryMainFrame());
+  EXPECT_FALSE(inner_fenced_frame_rfh->IsInPrimaryMainFrame());
+
   // Test `FrameTreeNode::IsFencedFrameRoot()`.
   EXPECT_FALSE(web_contents()->GetFrameTree()->root()->IsFencedFrameRoot());
   EXPECT_FALSE(primary_rfh->child_at(0)->IsFencedFrameRoot());

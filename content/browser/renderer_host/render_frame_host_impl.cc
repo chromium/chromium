@@ -8702,6 +8702,10 @@ const RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() const {
   return main_frame;
 }
 
+bool RenderFrameHostImpl::IsInPrimaryMainFrame() {
+  return !GetParent() && GetPage().IsPrimary();
+}
+
 bool RenderFrameHostImpl::CanAccessFilesOfPageState(
     const blink::PageState& state) {
   return ChildProcessSecurityPolicyImpl::GetInstance()->CanReadAllFiles(
@@ -12551,10 +12555,6 @@ void RenderFrameHostImpl::IncreaseCommitNavigationCounter() {
 
 bool RenderFrameHostImpl::ShouldWaitForUnloadHandlers() const {
   return has_unload_handlers() && !IsInBackForwardCache();
-}
-
-bool RenderFrameHostImpl::IsInPrimaryMainFrame() {
-  return !GetParent() && GetPage().IsPrimary();
 }
 
 // Returns the string corresponding to LifecycleStateImpl, used for logging

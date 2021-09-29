@@ -4414,6 +4414,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleStateImpl::kSpeculative, pending_rfh->lifecycle_state());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
   EXPECT_EQ(root_frame_host(), rfh_a);
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+  EXPECT_FALSE(pending_rfh->IsInPrimaryMainFrame());
 
   // 5) Let the navigation finish and make sure it is succeeded.
   manager.WaitForNavigationFinished();
@@ -4427,8 +4429,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       testing::AnyOf(testing::Eq(LifecycleStateImpl::kRunningUnloadHandlers),
                      testing::Eq(LifecycleStateImpl::kInBackForwardCache)));
   EXPECT_FALSE(rfh_a->GetPage().IsPrimary());
+  EXPECT_FALSE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
   EXPECT_TRUE(rfh_b->GetPage().IsPrimary());
+  EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
 }
 
 // Test the LifecycleStateImpl is updated correctly for a subframe.
@@ -4449,6 +4453,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* rfh_a = web_contents()->GetMainFrame();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+  // `rfh_b` is in the primary page, but since it's a subframe, it's not the
+  // primary main frame.
+  EXPECT_TRUE(rfh_b->GetPage().IsPrimary());
+  EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
 
   // 2) Navigate B's subframe to a cross-site C.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_c));
@@ -4488,6 +4496,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       EXPECT_EQ(rfh->GetLifecycleState(),
                 RenderFrameHost::LifecycleState::kPendingCommit);
       EXPECT_FALSE(rfh->GetPage().IsPrimary());
+      EXPECT_FALSE(rfh->IsInPrimaryMainFrame());
     }
   };
 
@@ -4519,6 +4528,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             speculative_rfh->lifecycle_state());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
   EXPECT_EQ(root_frame_host(), rfh_a);
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+  EXPECT_FALSE(speculative_rfh->IsInPrimaryMainFrame());
 
   // 4) Check that LifecycleStateImpl of speculative_rfh transitions to
   // kPendingCommit in ReadyToCommitNavigation.

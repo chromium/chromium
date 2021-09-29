@@ -1744,12 +1744,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetSlowWebPreferences(const base::CommandLine& command_line,
                              blink::web_pref::WebPreferences* prefs);
 
-  // Checks whether the given RenderFrameHost belongs to the primary FrameTree
-  // *and* is current, i.e., the document's URL is shown in the address bar.
-  // Non-primary documents would be for example a Prerender or an uncommitted
-  // navigation.
-  bool IsInPrimaryMainFrame(RenderFrameHost* render_frame_host) const;
-
   // This is the actual implementation of the various overloads of
   // |ForEachRenderFrameHost|.
   void ForEachRenderFrameHostImpl(

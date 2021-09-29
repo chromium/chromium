@@ -547,8 +547,10 @@ bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
     return false;
 
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(routing_id);
-  return frame_tree_node &&
-         frame_tree_node->current_frame_host()->IsInPrimaryMainFrame();
+  // TODO(1254377): Consider replacing FrameTree::Type with the type on the
+  // FrameTreeNode.
+  return frame_tree_node && frame_tree_node->IsMainFrame() &&
+         frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrimary;
 }
 
 // This class lives on the UI thread. It is self-owned and will delete itself
@@ -1772,7 +1774,7 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
-  if (!is_primary_main_frame)
+  if (!is_primary_main_frame.has_value())
     is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
   auto web_contents_getter =
       base::BindRepeating(GetWebContents, process_id, routing_id);

@@ -2248,6 +2248,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   // Both rfh_a and rfh_b lifecycle state's should be kPrerendering.
   EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_a->lifecycle_state());
   EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_b->lifecycle_state());
+  EXPECT_FALSE(rfh_a->IsInPrimaryMainFrame());
+  EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
 
   // Activate the prerendered page.
   NavigatePrimaryPage(kPrerenderingUrl);
@@ -2255,6 +2257,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   // Both rfh_a and rfh_b lifecycle state's should be kActive after activation.
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+  EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
 
   // "Navigation.TimeToActivatePrerender" histogram should be recorded on every
   // prerender activation.
