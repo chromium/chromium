@@ -40,7 +40,6 @@ function loadCommonComponents() {
 // <include src="../device_disabled.js">
 // <include src="../screen_wrong_hwid.js">
 // <include src="../family_link_notice.js">
-// <include src="../user_creation.js">
 // <include src="../screen_signin_fatal_error.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../oobe_screen_autolaunch.js">

@@ -44,6 +44,7 @@ oobe_auto_imports = [
 ]
 
 oobe_namespace_rewrites = [
+  "action_link.m.js|action_link.js",
   "Polymer.mixinBehaviors|mixinBehaviors",
   "Polymer.Element|PolymerElement",
 ]

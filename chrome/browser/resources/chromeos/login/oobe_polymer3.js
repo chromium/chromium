@@ -6,6 +6,7 @@ import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
 import 'chrome://oobe/screens/common/parental_handoff.m.js';
+import 'chrome://oobe/screens/common/user_creation.m.js';
 import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 
