@@ -151,11 +151,6 @@ suite('PrivacyPage', function() {
     assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
   });
 
-  test('clearBrowsingDataClass', function() {
-    assertFalse(!!page.shadowRoot.querySelector('#clearBrowsingData')
-                      .classList.contains('hr'));
-  });
-
   test('ContentSettingsVisibility', async function() {
     // Ensure pages are visited so that HTML components are stamped.
     redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
@@ -235,11 +230,6 @@ suite('PrivacyReviewEnabled', function() {
     page.shadowRoot.querySelector('#privacyReviewLinkRow').click();
     // Ensure the correct Settings page is shown.
     assertEquals(routes.PRIVACY_REVIEW, Router.getInstance().getCurrentRoute());
-  });
-
-  test('clearBrowsingDataClass', function() {
-    assertTrue(!!page.shadowRoot.querySelector('#clearBrowsingData')
-                     .classList.contains('hr'));
   });
 });
 

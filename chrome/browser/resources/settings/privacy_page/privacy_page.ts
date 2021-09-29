@@ -347,10 +347,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.i18n('privacySandboxTrialsEnabled') :
         this.i18n('privacySandboxTrialsDisabled');
   }
-
-  private computeClearBrowsingDataClass_(): string {
-    return this.enablePrivacyReview_ ? 'hr' : '';
-  }
 }
 
 customElements.define(
