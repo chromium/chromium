@@ -289,12 +289,23 @@ cipd_archive("clear_key_cdm") {
   sources = [ "${root_out_dir}/lib/libclearkeycdm.so" ]
 }
 
+# TODO(crbug.com/1247812): Separately upload chrome's debug symbols.
+cipd_archive("chrome") {
+  package_relative_path = "${target_name}/${targetarch}/${target_name}"
+  description = "Prebuilt Chrome browser package."
+  deps = [ "//chrome/app:chrome_pkg" ]
+  sources = [ "${root_gen_dir}/chrome/app/chrome/chrome.far" ]
+}
+
 # A group for production archives to ensure nothing is testonly.
 group("production_archives") {
   deps = [
     ":castrunner",
     ":webrunner",
   ]
+  if (!is_chrome_branded) {
+    deps += [ ":chrome" ]
+  }
 }
 
 # Used by both the main group as well as :debug_symbols.
