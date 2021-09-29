@@ -9,8 +9,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -190,6 +190,6 @@ public class CustomTabToolbarColorController {
         // the page content when users swipe them in or they appear because the on-screen keyboard
         // was triggered.
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
-        return (webappExtras != null && webappExtras.displayMode == WebDisplayMode.FULLSCREEN);
+        return (webappExtras != null && webappExtras.displayMode == DisplayMode.FULLSCREEN);
     }
 }

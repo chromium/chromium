@@ -23,12 +23,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -208,7 +208,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Activity mActivity;
         private final @ActivityType int mActivityType;
         private final @Nullable String mWebApkScopeUrl;
-        private final @WebDisplayMode int mDisplayMode;
+        private final @DisplayMode.EnumType int mDisplayMode;
         private final MultiWindowUtils mMultiWindowUtils;
         private final boolean mShouldEnableEmbeddedMediaExperience;
 
@@ -217,7 +217,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
          */
         public CustomTabWebContentsDelegate(Tab tab, Activity activity,
                 @ActivityType int activityType, @Nullable String webApkScopeUrl,
-                @WebDisplayMode int displayMode, MultiWindowUtils multiWindowUtils,
+                @DisplayMode.EnumType int displayMode, MultiWindowUtils multiWindowUtils,
                 boolean shouldEnableEmbeddedMediaExperience,
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate, boolean isCustomTab,
                 BrowserControlsStateProvider browserControlsStateProvider,
@@ -281,7 +281,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public @WebDisplayMode int getDisplayMode() {
+        public @DisplayMode.EnumType int getDisplayMode() {
             return mDisplayMode;
         }
 
@@ -314,7 +314,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final @ActivityType int mActivityType;
     @Nullable
     private final String mWebApkScopeUrl;
-    private final @WebDisplayMode int mDisplayMode;
+    private final @DisplayMode.EnumType int mDisplayMode;
     private final boolean mShouldEnableEmbeddedMediaExperience;
     private final BrowserControlsVisibilityDelegate mBrowserStateVisibilityDelegate;
     private final ExternalAuthUtils mExternalAuthUtils;
@@ -362,7 +362,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      */
     private CustomTabDelegateFactory(Activity activity, boolean shouldHideBrowserControls,
             boolean isOpenedByChrome, @Nullable String webApkScopeUrl,
-            @WebDisplayMode int displayMode, boolean shouldEnableEmbeddedMediaExperience,
+            @DisplayMode.EnumType int displayMode, boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate, ExternalAuthUtils authUtils,
             MultiWindowUtils multiWindowUtils, Verifier verifier,
             Lazy<EphemeralTabCoordinator> ephemeralTabCoordinator,
@@ -426,7 +426,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * be replaced when the hidden Tab becomes shown.
      */
     static CustomTabDelegateFactory createDummy() {
-        return new CustomTabDelegateFactory(null, false, false, null, WebDisplayMode.BROWSER, false,
+        return new CustomTabDelegateFactory(null, false, false, null, DisplayMode.BROWSER, false,
                 null, null, null, null,
                 ()
                         -> null,
@@ -529,19 +529,19 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     }
 
     /**
-     * Returns the WebDisplayMode for the passed-in {@link BrowserServicesIntentDataProvider}.
+     * Returns the DisplayMode for the passed-in {@link BrowserServicesIntentDataProvider}.
      */
-    public static @WebDisplayMode int getDisplayMode(
+    public static @DisplayMode.EnumType int getDisplayMode(
             BrowserServicesIntentDataProvider intentDataProvider) {
         if (intentDataProvider.getTwaDisplayMode() instanceof ImmersiveMode) {
-            return WebDisplayMode.FULLSCREEN;
+            return DisplayMode.FULLSCREEN;
         }
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         if (webappExtras != null) {
             return webappExtras.displayMode;
         }
-        return intentDataProvider.isTrustedWebActivity() ? WebDisplayMode.STANDALONE
-                                                         : WebDisplayMode.BROWSER;
+        return intentDataProvider.isTrustedWebActivity() ? DisplayMode.STANDALONE
+                                                         : DisplayMode.BROWSER;
     }
 
     private static boolean isWebappOrWebApk(@ActivityType int activityType) {

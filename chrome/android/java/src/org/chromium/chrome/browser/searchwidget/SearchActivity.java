@@ -24,11 +24,11 @@ import org.chromium.base.Log;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -223,7 +223,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 return new TabWebContentsDelegateAndroid() {
                     @Override
                     public int getDisplayMode() {
-                        return WebDisplayMode.BROWSER;
+                        return DisplayMode.BROWSER;
                     }
 
                     @Override

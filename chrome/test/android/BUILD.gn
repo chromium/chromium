@@ -337,6 +337,7 @@ android_library("chrome_java_test_support") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public:blink_headers_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/ub-uiautomator:ub_uiautomator_java",

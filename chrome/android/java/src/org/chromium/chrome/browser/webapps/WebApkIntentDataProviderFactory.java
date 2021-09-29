@@ -32,13 +32,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
@@ -257,7 +257,7 @@ public class WebApkIntentDataProviderFactory {
 
         String scope = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SCOPE);
 
-        @WebDisplayMode
+        @DisplayMode.EnumType
         int displayMode = displayModeFromString(
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.DISPLAY_MODE));
         int orientation = orientationFromString(
@@ -384,7 +384,7 @@ public class WebApkIntentDataProviderFactory {
      */
     public static BrowserServicesIntentDataProvider create(Intent intent, String url, String scope,
             WebappIcon primaryIcon, WebappIcon splashIcon, String name, String shortName,
-            @WebDisplayMode int displayMode, int orientation, int source, long themeColor,
+            @DisplayMode.EnumType int displayMode, int orientation, int source, long themeColor,
             long backgroundColor, int defaultBackgroundColor, boolean isPrimaryIconMaskable,
             boolean isSplashIconMaskable, String webApkPackageName, int shellApkVersion,
             String manifestUrl, String manifestStartUrl, @WebApkDistributor int distributor,
@@ -495,25 +495,25 @@ public class WebApkIntentDataProviderFactory {
     }
 
     /**
-     * Returns the WebDisplayMode which matches {@link displayMode}.
+     * Returns the DisplayMode which matches {@link DisplayMode}.
      * @param displayMode One of https://www.w3.org/TR/appmanifest/#dfn-display-modes-values
-     * @return The matching WebDisplayMode. {@link WebDisplayMode#Undefined} if there is no match.
+     * @return The matching DisplayMode. {@link DisplayMode#Undefined} if there is no match.
      */
-    private static @WebDisplayMode int displayModeFromString(String displayMode) {
+    private static @DisplayMode.EnumType int displayModeFromString(String displayMode) {
         if (displayMode == null) {
-            return WebDisplayMode.UNDEFINED;
+            return DisplayMode.UNDEFINED;
         }
 
         if (displayMode.equals("fullscreen")) {
-            return WebDisplayMode.FULLSCREEN;
+            return DisplayMode.FULLSCREEN;
         } else if (displayMode.equals("standalone")) {
-            return WebDisplayMode.STANDALONE;
+            return DisplayMode.STANDALONE;
         } else if (displayMode.equals("minimal-ui")) {
-            return WebDisplayMode.MINIMAL_UI;
+            return DisplayMode.MINIMAL_UI;
         } else if (displayMode.equals("browser")) {
-            return WebDisplayMode.BROWSER;
+            return DisplayMode.BROWSER;
         } else {
-            return WebDisplayMode.UNDEFINED;
+            return DisplayMode.UNDEFINED;
         }
     }
 

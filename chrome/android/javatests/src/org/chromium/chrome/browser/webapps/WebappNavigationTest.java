@@ -39,11 +39,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -283,7 +283,7 @@ public class WebappNavigationTest {
     public void testOpenInChromeFromCustomMenuTabbedChrome() {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
-                        WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI));
+                        WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.MINIMAL_UI));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser(true);
@@ -304,7 +304,7 @@ public class WebappNavigationTest {
     public void testCanNavigateAfterReparentingToTabbedChrome() throws Exception {
         runWebappActivityAndWaitForIdle(
                 mActivityTestRule.createIntent()
-                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI)
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.MINIMAL_UI)
                         .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {

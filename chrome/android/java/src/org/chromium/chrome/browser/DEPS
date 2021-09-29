@@ -9,6 +9,7 @@ include_rules = [
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
   "+chrome/browser/ui/android/theme",
   "+chrome/browser/ui/android/toolbar",
+  "+third_party/blink/public/mojom:mojom_platform_java",
 ]
 
 specific_include_rules = {

@@ -12,7 +12,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
-    "java/src/org/chromium/chrome/browser/browserservices/intents/WebDisplayMode.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappConstants.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappIcon.java",
@@ -29,6 +28,7 @@ android_library("java") {
     "//services/device/public/mojom:mojom_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
   ]
 }
 
@@ -55,6 +55,7 @@ android_library("junit") {
     "//services/device/public/mojom:mojom_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
   ]

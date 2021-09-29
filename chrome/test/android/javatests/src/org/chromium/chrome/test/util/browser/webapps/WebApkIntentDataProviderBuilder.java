@@ -7,8 +7,8 @@ package org.chromium.chrome.test.util.browser.webapps;
 import android.content.Intent;
 import android.graphics.Color;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
@@ -23,7 +23,7 @@ public class WebApkIntentDataProviderBuilder {
     private String mWebApkPackageName;
     private String mUrl;
     private String mScope;
-    private @WebDisplayMode int mDisplayMode = WebDisplayMode.STANDALONE;
+    private @DisplayMode.EnumType int mDisplayMode = DisplayMode.STANDALONE;
     private String mManifestUrl;
     private int mWebApkVersionCode;
 
@@ -36,7 +36,7 @@ public class WebApkIntentDataProviderBuilder {
         mScope = scope;
     }
 
-    public void setDisplayMode(@WebDisplayMode int displayMode) {
+    public void setDisplayMode(@DisplayMode.EnumType int displayMode) {
         mDisplayMode = displayMode;
     }
 

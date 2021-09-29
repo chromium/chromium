@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
@@ -130,11 +131,11 @@ public class WebappInfoTest {
         Intent intent = createIntentWithUrlAndId();
         intent.putExtra(WebappConstants.EXTRA_NAME, name);
         intent.putExtra(WebappConstants.EXTRA_SHORT_NAME, shortName);
-        intent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.FULLSCREEN);
+        intent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.FULLSCREEN);
         intent.putExtra(WebappConstants.EXTRA_ORIENTATION, ScreenOrientationLockType.DEFAULT);
         intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
         WebappInfo info = createWebappInfo(intent);
-        Assert.assertEquals(WebDisplayMode.FULLSCREEN, info.displayMode());
+        Assert.assertEquals(DisplayMode.FULLSCREEN, info.displayMode());
         Assert.assertEquals(ScreenOrientationLockType.DEFAULT, info.orientation());
         Assert.assertEquals(ShortcutSource.UNKNOWN, info.source());
     }
@@ -205,9 +206,9 @@ public class WebappInfoTest {
     @Test
     public void testIntentDisplayMode() {
         Intent intent = createIntentWithUrlAndId();
-        intent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI);
+        intent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.MINIMAL_UI);
         WebappInfo info = createWebappInfo(intent);
-        Assert.assertEquals(WebDisplayMode.MINIMAL_UI, info.displayMode());
+        Assert.assertEquals(DisplayMode.MINIMAL_UI, info.displayMode());
     }
 
     @Test

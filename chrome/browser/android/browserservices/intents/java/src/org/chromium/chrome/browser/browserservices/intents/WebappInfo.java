@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -72,7 +73,7 @@ public class WebappInfo {
         return getWebappExtras().shortName;
     }
 
-    public @WebDisplayMode int displayMode() {
+    public @DisplayMode.EnumType int displayMode() {
         return getWebappExtras().displayMode;
     }
 

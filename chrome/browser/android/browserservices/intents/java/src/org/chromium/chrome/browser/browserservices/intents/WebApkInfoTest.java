@@ -27,6 +27,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.w3c.dom.Document;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
@@ -228,7 +229,7 @@ public class WebApkInfoTest {
         Assert.assertEquals(SCOPE, info.scopeUrl());
         Assert.assertEquals(NAME, info.name());
         Assert.assertEquals(SHORT_NAME, info.shortName());
-        Assert.assertEquals(WebDisplayMode.MINIMAL_UI, info.displayMode());
+        Assert.assertEquals(DisplayMode.MINIMAL_UI, info.displayMode());
         Assert.assertEquals(ScreenOrientationLockType.PORTRAIT, info.orientation());
         Assert.assertTrue(info.hasValidToolbarColor());
         Assert.assertEquals(1L, info.toolbarColor());
