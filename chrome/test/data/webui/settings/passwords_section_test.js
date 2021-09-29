@@ -2086,4 +2086,22 @@ suite('PasswordsSection', function() {
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PASSWORD_MANAGER, interaction);
   });
+
+  test(
+      'addPasswordButtonShownOnlyWhenAddingPasswordsFeatureEnabled',
+      function() {
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: false});
+        const passwordsSectionAddPasswordsDisabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertFalse(
+            !!passwordsSectionAddPasswordsDisabled.shadowRoot.querySelector(
+                '#addPasswordButton'));
+
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+        const passwordsSectionAddPasswordsEnabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertTrue(
+            !!passwordsSectionAddPasswordsEnabled.shadowRoot.querySelector(
+                '#addPasswordButton'));
+      });
 });

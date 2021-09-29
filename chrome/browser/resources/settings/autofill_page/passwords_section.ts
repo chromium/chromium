@@ -265,6 +265,13 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
       // </if>
 
       showPasswordsExportDialog_: Boolean,
+
+      showAddPasswordButton_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('addPasswordsInSettingsEnabled');
+        }
+      },
     };
   }
 
@@ -301,6 +308,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private showPasswordsExportDialog_: boolean;
+  private showAddPasswordButton_: boolean;
 
   private activeDialogAnchorStack_: Array<HTMLElement>;
   private passwordManager_: PasswordManagerProxy =
