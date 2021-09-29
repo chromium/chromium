@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -53,6 +54,7 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
         web_contents_.get());
   }
+  PrefsTabHelper::CreateForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
 }
