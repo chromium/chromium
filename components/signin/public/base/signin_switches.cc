@@ -26,7 +26,7 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
 // This feature flag is for deprecating of the Android profile data
 // Menagerie API.
 const base::Feature kDeprecateMenagerieAPI{"DeprecateMenagerieAPI",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 // This feature flag is used to wipe device data on child account signin.
 const base::Feature kWipeDataOnChildAccountSignin{
     "WipeDataOnChildAccountSignin", base::FEATURE_DISABLED_BY_DEFAULT};
