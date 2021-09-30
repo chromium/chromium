@@ -407,6 +407,10 @@ void* GLSurfaceAdapter::GetHandle() {
   return surface_->GetHandle();
 }
 
+void GLSurfaceAdapter::PreserveChildSurfaceControls() {
+  surface_->PreserveChildSurfaceControls();
+}
+
 unsigned int GLSurfaceAdapter::GetBackingFramebufferObject() {
   return surface_->GetBackingFramebufferObject();
 }

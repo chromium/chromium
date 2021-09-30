@@ -395,6 +395,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SupportsAsyncSwap() override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
+  void PreserveChildSurfaceControls() override;
   unsigned int GetBackingFramebufferObject() override;
   bool OnMakeCurrent(GLContext* context) override;
   bool SetBackbufferAllocation(bool allocated) override;
