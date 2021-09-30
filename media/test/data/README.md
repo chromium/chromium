@@ -255,6 +255,17 @@ ffmpeg -i bear-320x240.webm -acodec copy -vcodec copy -f webm pipe:1 > bear-320x
 a WebM file containing color metadata in MKV/WebM Colour element copied from
 libwebm/testing/testdata/colour.webm
 
+#### four-colors.png
+An image (320x240 .png file) of 4 color blocks (Y,R,G,B) is first created by
+Windows Paint.exe.
+
+#### four-colors.y4m
+A 320x240 raw YUV single frame video with 4 color blocks (Y,R,G,B)
+Converted from four-colors.png using ffmpeg:
+```
+ffmpeg -i four-colors.png  -pix_fmt yuv420p  -f yuv4mpegpipe four-colors.y4m"
+```
+
 #### four-colors.mp4
 A 960x540 H.264 mp4 video with 4 color blocks (Y,R,G,B) in every frame. The
 video playback looks like a still image. An image of 4 color blocks (.png file)
@@ -1210,7 +1221,7 @@ ffmpeg -i red.webm -i green.webm -i blue.webm -i a300hz.webm -i a500hz.webm -map
 ### Spherical metadata WebM files
 
 #### bear-spherical-metadata.webm
-bear_silent.webm video injected with "stereo_mode=SIDE_BY_SIDE_LEFT_EYE_FIRST", "projectionType=EQUIRECTANGULAR", 
+bear_silent.webm video injected with "stereo_mode=SIDE_BY_SIDE_LEFT_EYE_FIRST", "projectionType=EQUIRECTANGULAR",
 and projection pose_yaw, pose_pitch, and pose_roll = 10, 20, and 30 respectively.
 
 ### Opus pre-skip and end-trimming test clips

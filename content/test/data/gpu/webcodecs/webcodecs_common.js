@@ -58,27 +58,68 @@ function waitForNextFrame() {
   });
 }
 
-function drawRainbow(ctx, width, height, text) {
-  let gradient = ctx.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, 'magenta');
-  gradient.addColorStop(0.15, 'blue');
-  gradient.addColorStop(0.30, 'green');
-  gradient.addColorStop(0.50, 'yellow');
-  gradient.addColorStop(0.85, 'orange');
-  gradient.addColorStop(1.0, 'red');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+function fourColorsFrame(ctx, width, height, text) {
+  const kYellow = "#FFFF00";
+  const kRed = "#FF0000";
+  const kBlue = "#0000FF";
+  const kGreen = "#00FF00";
+
+  ctx.fillStyle = kYellow;
+  ctx.fillRect(0, 0, width / 2, height / 2);
+
+  ctx.fillStyle = kRed;
+  ctx.fillRect(width / 2, 0, width / 2, height / 2);
+
+  ctx.fillStyle = kBlue;
+  ctx.fillRect(0, height / 2, width / 2, height / 2);
+
+  ctx.fillStyle = kGreen;
+  ctx.fillRect(width / 2, height / 2, width / 2, height / 2);
 
   ctx.fillStyle = 'black';
-  ctx.font = (height / 4) + 'px fantasy';
-  ctx.fillText(text, width / 3, height / 2);
-
-  ctx.lineWidth = 20;
-  ctx.strokeStyle = 'turquoise';
-  ctx.rect(0, 0, width, height);
-  ctx.stroke();
+  ctx.font = (height / 10) + 'px sans-serif';
+  ctx.fillText(text, width / 2, height / 2);
 }
 
+function peekPixel(ctx, x, y) {
+  if (ctx.readPixels) {
+    let pixels = new Uint8Array(4);
+    ctx.readPixels(x, ctx.drawingBufferHeight - y, 1, 1,
+                   ctx.RGBA, ctx.UNSIGNED_BYTE, pixels);
+    return Array.from(pixels);
+  }
+  if (ctx.getImageData) {
+    let settings = {colorSpaceConversion: 'none'};
+    return ctx.getImageData(x, y, 1, 1, settings).data;
+  }
+}
+
+function compareColors(actual, expected, tolerance, msg) {
+  let channel = ['R', 'G', 'B', 'A'];
+  for (let i = 0; i < 4; i++) {
+    if (Math.abs(actual[i] - expected[i]) > tolerance) {
+      TEST.reportFailure(msg +
+       ` channel: ${channel[i]} actual: ${actual[i]} expected: ${expected[i]}`);
+    }
+  }
+}
+
+function checkFourColorsFrame(ctx, width, height, tolerance) {
+  const kYellow = [0xFF, 0xFF, 0x00, 0xFF];
+  const kRed = [0xFF, 0x00, 0x00, 0xFF];
+  const kBlue = [0x00, 0x00, 0xFF, 0xFF];
+  const kGreen = [0x00, 0xFF, 0x00, 0xFF];
+
+  let m = 10; // margin from the frame's edge
+  compareColors(peekPixel(ctx, m, m), kYellow,
+                      tolerance, 'top left corner is yellow');
+  compareColors(peekPixel(ctx, width - m, m), kRed,
+                      tolerance, 'top right corner is red');
+  compareColors(peekPixel(ctx, m, height - m), kBlue,
+                      tolerance, 'bottom left corner is blue');
+  compareColors(peekPixel(ctx, width - m, height - m), kGreen,
+                      tolerance, 'bottom right corner is green');
+}
 
 // Base class for video frame sources.
 class FrameSource {
@@ -102,7 +143,8 @@ class CanvasSource extends FrameSource {
   }
 
   async getNextFrame() {
-    drawRainbow(this.ctx, this.width, this.height, this.timestamp.toString());
+    fourColorsFrame(this.ctx, this.width, this.height,
+                    this.timestamp.toString());
     let result = new VideoFrame(this.canvas, {timestamp: this.timestamp});
     this.timestamp += this.duration;
     return result;
@@ -187,7 +229,7 @@ function createCanvasCaptureSource(width, height) {
 
   let ctx = canvas.getContext('2d');
   let drawOneFrame = function(time) {
-    drawRainbow(ctx, width, height, time.toString());
+    fourColorsFrame(ctx, width, height, time.toString());
     window.requestAnimationFrame(drawOneFrame);
   };
   window.requestAnimationFrame(drawOneFrame);
