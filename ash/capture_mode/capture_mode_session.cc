@@ -804,7 +804,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
         SetSettingsMenuShown(false);
       else if (focus_cycler_->HasFocus())
         focus_cycler_->ClearFocus();
-      else
+      else if (can_exit_on_escape_)
         controller_->Stop();  // |this| is destroyed here.
 
       return;

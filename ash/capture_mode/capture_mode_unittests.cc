@@ -493,6 +493,18 @@ class CaptureModeTest : public AshTestBase {
             [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
     run_loop.Run();
   }
+
+  void WaitForRecordingToStart() {
+    auto* controller = CaptureModeController::Get();
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+    ASSERT_TRUE(test_delegate);
+    base::RunLoop run_loop;
+    test_delegate->set_on_recording_started_callback(
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+    ASSERT_TRUE(controller->is_recording_in_progress());
+  }
 };
 
 class CaptureSessionWidgetObserver : public views::WidgetObserver {
@@ -4483,6 +4495,7 @@ class ProjectorCaptureModeIntegrationTests
         break;
     }
     CaptureModeTestApi().PerformCapture();
+    WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
   }
 

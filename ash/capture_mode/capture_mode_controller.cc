@@ -14,6 +14,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -1224,11 +1225,58 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   if (!IsActive())
     return;
 
+  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
+  if (!capture_params) {
+    // There's nothing to capture, so we'll stop the session and skip the rest.
+    Stop();
+    return;
+  }
+
+  // In Projector mode, the creation of the DriveFS folder that will host the
+  // video is asynchronous. We don't want the user to be able to bail out of the
+  // session at this point, since we don't want to create that folder in vain.
+  capture_mode_session_->set_can_exit_on_escape(false);
+
+  if (capture_mode_session_->is_in_projector_mode()) {
+    ProjectorControllerImpl::Get()->CreateScreencastContainerFolder(
+        base::BindOnce(
+            &CaptureModeController::OnProjectorContainerFolderCreated,
+            weak_ptr_factory_.GetWeakPtr(), *capture_params));
+    return;
+  }
+
+  BeginVideoRecording(*capture_params,
+                      /*for_projector=*/false, BuildVideoPath());
+}
+
+void CaptureModeController::OnProjectorContainerFolderCreated(
+    const CaptureParams& capture_params,
+    const base::FilePath& file_path_no_extension) {
+  DCHECK(IsActive());
+
+  // An empty path is sent to indicate an error.
+  if (file_path_no_extension.empty()) {
+    Stop();
+    return;
+  }
+
+  BeginVideoRecording(capture_params, /*for_projector=*/true,
+                      file_path_no_extension.AddExtension("webm"));
+}
+
+void CaptureModeController::BeginVideoRecording(
+    const CaptureParams& capture_params,
+    bool for_projector,
+    const base::FilePath& video_file_path) {
+  DCHECK(IsActive());
+  DCHECK_EQ(capture_mode_session_->is_in_projector_mode(), for_projector);
+  DCHECK(GetCaptureParams());
+  DCHECK(!video_file_path.empty());
+  DCHECK(video_file_path.MatchesExtension(".webm"));
+
   // Do not trigger an alert when exiting the session, since we end the session
   // to start recording.
   capture_mode_session_->set_a11y_alert_on_session_exit(false);
-
-  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
 
   // Acquire the session's layer in order to potentially reuse it for painting
   // a highlight around the region being recorded.
@@ -1236,25 +1284,20 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
       capture_mode_session_->ReleaseLayer();
   session_layer->set_delegate(nullptr);
 
-  const bool projector_mode = capture_mode_session_->is_in_projector_mode();
-
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
   Stop();
 
-  if (!capture_params)
-    return;
-
   // During the 3-second count down, screen content might have changed such that
   // admin-restricted or HDCP content became present. We must check again.
   const CaptureAllowance allowance =
-      IsCaptureAllowedByEnterprisePolicies(*capture_params);
+      IsCaptureAllowedByEnterprisePolicies(capture_params);
   if (allowance != CaptureAllowance::kAllowed) {
     ShowDisabledNotification(allowance);
     return;
   }
 
-  if (ShouldBlockRecordingForContentProtection(capture_params->window)) {
+  if (ShouldBlockRecordingForContentProtection(capture_params.window)) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByHdcp);
     return;
   }
@@ -1264,8 +1307,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   auto cursor_overlay_receiver =
       cursor_capture_overlay.InitWithNewPipeAndPassReceiver();
   video_recording_watcher_ = std::make_unique<VideoRecordingWatcher>(
-      this, capture_params->window, std::move(cursor_capture_overlay),
-      projector_mode);
+      this, capture_params.window, std::move(cursor_capture_overlay),
+      for_projector);
 
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
@@ -1273,20 +1316,18 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
-  // TODO(crbug.com/1240430): Get the correct video file path from Projector
-  // when in |projector_mode|.
-  current_video_file_path_ = BuildVideoPath();
+  current_video_file_path_ = video_file_path;
 
-  LaunchRecordingServiceAndStartRecording(*capture_params,
+  LaunchRecordingServiceAndStartRecording(capture_params,
                                           std::move(cursor_overlay_receiver));
 
+  capture_mode_util::SetStopRecordingButtonVisibility(
+      capture_params.window->GetRootWindow(), true);
+
   delegate_->StartObservingRestrictedContent(
-      capture_params->window, capture_params->bounds,
+      capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::InterruptVideoRecording,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  capture_mode_util::SetStopRecordingButtonVisibility(
-      capture_params->window->GetRootWindow(), true);
 }
 
 void CaptureModeController::InterruptVideoRecording() {

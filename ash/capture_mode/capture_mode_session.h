@@ -71,6 +71,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
     return capture_mode_bar_widget_.get();
   }
   bool is_in_projector_mode() const { return is_in_projector_mode_; }
+  void set_can_exit_on_escape(bool value) { can_exit_on_escape_ = value; }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
   void set_a11y_alert_on_session_exit(bool value) {
@@ -317,6 +318,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Whether this session was started from a projector workflow.
   const bool is_in_projector_mode_ = false;
+
+  // Whether pressing the escape key can exit the session. This is used when we
+  // find capturable content at the end of the 3-second count down, but we need
+  // to do some extra asynchronous operations before we start the actual
+  // recording. At this point we don't want the user to be able to bail out.
+  bool can_exit_on_escape_ = true;
 
   // Stores the data needed to select a region during a region capture session.
   // This variable indicates if the user is currently selecting a region to

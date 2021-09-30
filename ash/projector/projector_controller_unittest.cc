@@ -221,17 +221,14 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
-  base::ScopedTempDir screencast_container_path;
-  ASSERT_TRUE(screencast_container_path.CreateUniqueTempDir());
+  base::FilePath screencast_container_path;
+  ASSERT_TRUE(
+      mock_client_.GetDriveFsMountPointPath(&screencast_container_path));
 
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
   EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
-  EXPECT_CALL(mock_client_, GetDriveFsMountPointPath(testing::_))
-      .WillOnce(testing::DoAll(
-          testing::SetArgPointee<0>(screencast_container_path.GetPath()),
-          testing::Return(true)));
 
   // Advance clock to 20:02:10 Jan 2nd, 2021.
   base::Time start_time;
@@ -254,8 +251,7 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   // the expected path.
   const std::string expected_screencast_name = "Screencast 2021-01-02 20.02.10";
   EXPECT_CALL(*mock_metadata_controller_,
-              SaveMetadata(screencast_container_path.GetPath()
-                               .Append("root")
+              SaveMetadata(screencast_container_path.Append("root")
                                .Append("projector_data")
                                // Screencast container folder.
                                .Append(expected_screencast_name)

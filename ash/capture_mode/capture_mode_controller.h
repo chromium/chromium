@@ -316,6 +316,23 @@ class ASH_EXPORT CaptureModeController
   // Called when the video record 3-seconds count down finishes.
   void OnVideoRecordCountDownFinished();
 
+  // Called when the Projector controller creates the DriveFS folder that will
+  // host the video file along with the associated metadata file created by the
+  // Projector session. Note that |file_path_no_extension| is the full path of
+  // the video file minus its (.webm) extension.
+  void OnProjectorContainerFolderCreated(
+      const CaptureParams& capture_params,
+      const base::FilePath& file_path_no_extension);
+
+  // Ends the capture session and starts the video recording for the given
+  // |capture_params|. The video will be saved to a file to the given
+  // |video_file_path|. |for_projector| will be true if this recording was
+  // initiated for a Projector session.
+  // This can only be called while the session is still active.
+  void BeginVideoRecording(const CaptureParams& capture_params,
+                           bool for_projector,
+                           const base::FilePath& video_file_path);
+
   // Called to interrupt the ongoing video recording because it's not anymore
   // allowed to be captured.
   void InterruptVideoRecording();

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,6 +30,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
 
   recording::RecordingServiceTestApi* recording_service() const {
     return recording_service_.get();
+  }
+  void set_on_recording_started_callback(base::OnceClosure callback) {
+    on_recording_started_callback_ = std::move(callback);
   }
 
   // Gets the current frame sink id being captured by the service.
@@ -76,6 +80,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
   base::FilePath fake_downloads_dir_;
+  base::OnceClosure on_recording_started_callback_;
 };
 
 }  // namespace ash

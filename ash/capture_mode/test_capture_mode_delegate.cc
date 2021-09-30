@@ -96,7 +96,12 @@ bool TestCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
 void TestCaptureModeDelegate::StartObservingRestrictedContent(
     const aura::Window* window,
     const gfx::Rect& bounds,
-    base::OnceClosure stop_callback) {}
+    base::OnceClosure stop_callback) {
+  // This is called at the last stage of recording initialization to signal that
+  // recording has actually started.
+  if (on_recording_started_callback_)
+    std::move(on_recording_started_callback_).Run();
+}
 
 void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/projector/projector_client.h"
+#include "base/files/scoped_temp_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {
@@ -21,12 +22,12 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient {
   MockProjectorClient();
   MockProjectorClient(const MockProjectorClient&) = delete;
   MockProjectorClient& operator=(const MockProjectorClient&) = delete;
-  virtual ~MockProjectorClient();
+  ~MockProjectorClient() override;
 
   // ProjectorClient:
   MOCK_METHOD0(StartSpeechRecognition, void());
   MOCK_METHOD0(StopSpeechRecognition, void());
-  MOCK_CONST_METHOD1(GetDriveFsMountPointPath, bool(base::FilePath*));
+  bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   MOCK_CONST_METHOD0(IsDriveFsMounted, bool());
   MOCK_METHOD0(ShowSelfieCam, void());
   MOCK_METHOD0(CloseSelfieCam, void());
@@ -35,6 +36,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient {
   void SetSelfieCamVisible(bool visible);
 
  private:
+  base::ScopedTempDir screencast_container_path_;
   bool is_selfie_cam_visible_ = false;
 };
 
