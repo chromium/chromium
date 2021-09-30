@@ -189,22 +189,30 @@ Starter::Starter(content::WebContents* web_contents,
 
 Starter::~Starter() = default;
 
-void Starter::PrimaryPageChanged(content::Page& page) {
+void Starter::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   // Navigating away from the deeplink domain during startup OR ending up on an
   // error page will break the flow, unless a trigger script is currently
   // running (in which case, the trigger script will handle this event).
-  content::RenderFrameHost& rfh = page.GetMainDocument();
-  const GURL& gurl = rfh.GetLastCommittedURL();
-  if (IsStartupPending() && !trigger_script_coordinator_) {
+  if (IsStartupPending() && navigation_handle->HasCommitted() &&
+      !trigger_script_coordinator_) {
     const GURL& url_for_intent =
         StartupUtil()
             .ChooseStartupUrlForIntent(*GetPendingTriggerContext())
             .value_or(GURL());
     bool navigated_to_target_domain =
-        url_utils::IsSamePublicSuffixDomain(url_for_intent, gurl) &&
-        url_utils::IsAllowedSchemaTransition(url_for_intent, gurl);
+        url_utils::IsSamePublicSuffixDomain(url_for_intent,
+                                            navigation_handle->GetURL()) &&
+        url_utils::IsAllowedSchemaTransition(url_for_intent,
+                                             navigation_handle->GetURL());
+
     if (navigated_to_target_domain) {
-      current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+      current_ukm_source_id_ =
+          ukm::GetSourceIdForWebContentsDocument(web_contents());
       if (waiting_for_deeplink_navigation_) {
         Start(std::move(pending_trigger_context_));
       }
@@ -220,8 +228,8 @@ void Starter::PrimaryPageChanged(content::Page& page) {
       // Note: this will record for the current domain, not the target domain.
       // There seems to be no way to avoid this.
       Metrics::RecordTriggerScriptStarted(
-          ukm_recorder_, page.GetMainDocument().GetPageUkmSourceId(),
-          rfh.IsErrorDocument()
+          ukm_recorder_, ukm::GetSourceIdForWebContentsDocument(web_contents()),
+          navigation_handle->IsErrorPage()
               ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
               : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
       CancelPendingStartup(absl::nullopt);
@@ -241,9 +249,13 @@ void Starter::PrimaryPageChanged(content::Page& page) {
     // implicitly.
   }
 
-  if (!rfh.IsErrorDocument()) {
-    current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
-    MaybeStartImplicitlyForUrl(gurl, current_ukm_source_id_);
+  if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
+    current_ukm_source_id_ =
+        ukm::GetSourceIdForWebContentsDocument(web_contents());
+    MaybeStartImplicitlyForUrl(
+        navigation_handle->GetURL(),
+        ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID));
   }
 }
 
@@ -432,7 +444,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   }
   if (IsTriggerScriptContext(*pending_trigger_context_) &&
       !url_utils::IsSamePublicSuffixDomain(
-          web_contents()->GetMainFrame()->GetLastCommittedURL(),
+          web_contents()->GetLastCommittedURL(),
           startup_url.value_or(GURL()))) {
     waiting_for_deeplink_navigation_ = true;
     return;
