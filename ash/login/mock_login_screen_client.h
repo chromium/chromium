@@ -82,6 +82,7 @@ class MockLoginScreenClient : public LoginScreenClient {
   MOCK_METHOD(void, SignOutUser, (), (override));
   MOCK_METHOD(void, CancelAddUser, (), (override));
   MOCK_METHOD(void, LoginAsGuest, (), (override));
+  MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void,
               OnMaxIncorrectPasswordAttempted,
               (const AccountId& account_id),

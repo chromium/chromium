@@ -364,6 +364,10 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
 
 void LoginDisplayHostMojo::ShowOsInstallScreen() {
   StartWizard(OsInstallScreenView::kScreenId);
+}
+
+void LoginDisplayHostMojo::ShowGuestTosScreen() {
+  StartWizard(GuestTosScreenView::kScreenId);
   ShowDialog();
 }
 

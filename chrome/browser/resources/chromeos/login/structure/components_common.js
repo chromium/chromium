@@ -43,6 +43,7 @@ function loadCommonComponents() {
 // <include src="../screen_error_message.js">
 // <include src="../managed_terms_of_service.js">
 // <include src="../consolidated_consent.js">
+// <include src="../guest_tos.js">
 
 // <include src="components_[OOBE].js">
 // <include src="components_[OS_INSTALL].js">

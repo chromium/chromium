@@ -139,6 +139,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
@@ -196,6 +197,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -747,6 +749,11 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
         oobe_ui->GetView<ConsolidatedConsentScreenHandler>(),
         base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
                             weak_factory_.GetWeakPtr())));
+
+    append(std::make_unique<GuestTosScreen>(
+        oobe_ui->GetView<GuestTosScreenHandler>(),
+        base::BindRepeating(&WizardController::OnGuestTosScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   if (switches::IsOsInstallAllowed()) {
@@ -985,6 +992,11 @@ void WizardController::ShowLacrosDataMigrationScreen() {
   SetCurrentScreen(GetScreen(LacrosDataMigrationScreenView::kScreenId));
 }
 
+void WizardController::ShowGuestTosScreen() {
+  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  SetCurrentScreen(GetScreen(GuestTosScreenView::kScreenId));
+}
+
 void WizardController::OnActiveDirectoryPasswordChangeScreenExit() {
   OnScreenExit(ActiveDirectoryPasswordChangeView::kScreenId,
                kDefaultExitReason);
@@ -1154,6 +1166,28 @@ void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
     case OsTrialScreen::Result::NEXT_INSTALL:
       ShowOsInstallScreen();
       break;
+  }
+}
+
+void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
+  OnScreenExit(GuestTosScreenView::kScreenId,
+               GuestTosScreen::GetResultString(result));
+  switch (result) {
+    case GuestTosScreen::Result::ACCEPT:
+      ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
+          chromeos::UserContext(user_manager::USER_TYPE_GUEST,
+                                user_manager::GuestAccountId()),
+          chromeos::SigninSpecifics());
+      break;
+    case GuestTosScreen::Result::BACK:
+      if (previous_screen_)
+        SetCurrentScreen(previous_screen_);
+      else if (LoginDisplayHost::default_host()->HasUserPods())
+        LoginDisplayHost::default_host()->HideOobeDialog();
+      break;
+    case GuestTosScreen::Result::CANCEL:
+      if (LoginDisplayHost::default_host()->HasUserPods())
+        LoginDisplayHost::default_host()->HideOobeDialog();
   }
 }
 
@@ -2046,6 +2080,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowManagementTransitionScreen();
   } else if (screen_id == LacrosDataMigrationScreenView::kScreenId) {
     ShowLacrosDataMigrationScreen();
+  } else if (screen_id == GuestTosScreenView::kScreenId) {
+    ShowGuestTosScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

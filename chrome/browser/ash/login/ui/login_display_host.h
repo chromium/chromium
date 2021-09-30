@@ -150,6 +150,9 @@ class LoginDisplayHost {
   // Show the os install dialog.
   virtual void ShowOsInstallScreen() = 0;
 
+  // Show the guest terms of service screen.
+  virtual void ShowGuestTosScreen() = 0;
+
   // Hide any visible oobe dialog.
   virtual void HideOobeDialog() = 0;
 

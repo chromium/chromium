@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -300,6 +301,19 @@ void LoginScreenClientImpl::LoginAsGuest() {
         chromeos::UserContext(user_manager::USER_TYPE_GUEST,
                               user_manager::GuestAccountId()),
         ash::SigninSpecifics());
+  }
+}
+
+void LoginScreenClientImpl::ShowGuestTosScreen() {
+  // Guet ToS screen is only shown if EULA was not already accepted.
+  if (ash::StartupUtils::IsEulaAccepted()) {
+    LoginAsGuest();
+    return;
+  }
+
+  DCHECK(!ash::ScreenLocker::default_screen_locker());
+  if (ash::LoginDisplayHost::default_host()) {
+    ash::LoginDisplayHost::default_host()->ShowGuestTosScreen();
   }
 }
 

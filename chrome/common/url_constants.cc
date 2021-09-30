@@ -408,10 +408,10 @@ const char kNaturalScrollHelpURL[] =
 
 const char kOemEulaURLPath[] = "oem";
 
-const char kOnlineEulaURLPath[] =
+const char kGoogleEulaOnlineURLPath[] =
     "https://policies.google.com/terms/embedded?hl=%s";
 
-const char kAdditionalToSOnlineURLPath[] =
+const char kCrosEulaOnlineURLPath[] =
     "https://www.google.com/intl/%s/chrome/terms/";
 
 const char kOsSettingsSearchHelpURL[] =

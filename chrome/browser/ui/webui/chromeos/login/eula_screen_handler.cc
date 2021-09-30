@@ -71,12 +71,12 @@ std::string EulaScreenHandler::GetEulaOnlineUrl() {
         switches::kOobeEulaUrlForTests);
   }
 
-  return base::StringPrintf(chrome::kOnlineEulaURLPath,
+  return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 
 std::string EulaScreenHandler::GetAdditionalToSUrl() {
-  return base::StringPrintf(chrome::kAdditionalToSOnlineURLPath,
+  return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 

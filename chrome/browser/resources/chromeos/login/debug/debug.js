@@ -946,6 +946,55 @@ cr.define('cr.ui.login.debug', function() {
       ]
     },
     {
+      id: 'guest-tos',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'loading,loaded,google-eula,cros-eula',
+      // TODO(crbug.com/1247174): Use localized URLs for googleEulaURL and
+      // crosEulaURL.
+      states: [
+        {
+          id: 'loaded',
+          trigger: (screen) => {
+            screen.setUIStep('loaded');
+          },
+          data: {
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+          },
+        },
+        {
+          id: 'loading',
+          trigger: (screen) => {
+            screen.setUIStep('loading');
+          },
+          data: {
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+          },
+        },
+        {
+          id: 'google-eula',
+          trigger: (screen) => {
+            screen.setUIStep('google-eula');
+          },
+          data: {
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+          },
+        },
+        {
+          id: 'cros-eula',
+          trigger: (screen) => {
+            screen.setUIStep('cros-eula');
+          },
+          data: {
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+          },
+        },
+      ]
+    },
+    {
       id: 'fingerprint-setup',
       kind: ScreenKind.NORMAL,
       defaultState: 'default',

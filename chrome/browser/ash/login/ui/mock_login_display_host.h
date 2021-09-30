@@ -65,6 +65,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, AttemptShowEnableConsumerKioskScreen, (), (override));
   MOCK_METHOD(void, ShowGaiaDialog, (const AccountId&), (override));
   MOCK_METHOD(void, ShowOsInstallScreen, (), (override));
+  MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void, HideOobeDialog, (), (override));
   MOCK_METHOD(void, SetShelfButtonsEnabled, (bool), (override));
   MOCK_METHOD(void, UpdateOobeDialogState, (OobeDialogState state), (override));

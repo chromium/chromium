@@ -3984,17 +3984,43 @@
   <message name="IDS_CONSOLIDATED_TERMS_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service." translateable="false">
     Retry
   </message>
-  <message name="IDS_CONSOLIDATED_EULA_TERMS_TITLE" desc="Title of Gooogle terms of service screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_EULA_TERMS_TITLE" desc="Title of Google terms of service screen" translateable="false">
     Google terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_ADDITIONAL_TERMS_TITLE" desc="Text of the Link to Google Chrome and Chrome OS additional terms" translateable="false">
+  <message name="IDS_CONSOLIDATED_ADDITIONAL_TERMS_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen" translateable="false">
     Google Chrome and Chrome OS Additional Terms
   </message>
-  <message name="IDS_CONSOLIDATED_ARC_TERMS_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in dialog" translateable="false">
+  <message name="IDS_CONSOLIDATED_ARC_TERMS_TITLE" desc="Title of Goolge Privacy Policy in opt-in screen" translateable="false">
     Google Play terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_PRIVACY_POLICY_TERMS_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in dialog" translateable="false">
+  <message name="IDS_CONSOLIDATED_PRIVACY_POLICY_TERMS_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen" translateable="false">
     Google privacy policy
+  </message>
+
+  <!-- Guest ToS Screen -->
+  <message name="IDS_GUEST_TOS_TITLE" desc="Title of guest terms of service screen">
+    Browse as a Guest
+  </message>
+  <message name="IDS_GUEST_TOS_TERMS_TITLE" desc="Title of the terms and conditions to be accepted before starting a guest session">
+    Terms and conditions
+  </message>
+  <message name="IDS_GUEST_TOS_TERMS" desc="Terms and conditions to be accepted before starting a guest session">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_GUEST_TOS_LOADING" desc="Message shown while the terms of service are being downloaded">
+    Loading...
+  </message>
+  <message name="IDS_GUEST_TOS_ACCEPT" desc="Accept and continue button in the guest terms of service screen.">
+    Accept and continue
+  </message>
+  <message name="IDS_GUEST_TOS_OK" desc="Button for acknowledging in a dialog for terms of service.">
+    OK
+  </message>
+  <message name="IDS_GUEST_TOS_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
+    Google terms of service
+  </message>
+  <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
+    Google Chrome and Chrome OS Additional Terms
   </message>
 
   <!-- Supervision transition OOBE screen. -->

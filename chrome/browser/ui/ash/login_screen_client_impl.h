@@ -113,6 +113,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void SignOutUser() override;
   void CancelAddUser() override;
   void LoginAsGuest() override;
+  void ShowGuestTosScreen() override;
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id) override;
   void FocusLockScreenApps(bool reverse) override;
   void FocusOobeDialog() override;

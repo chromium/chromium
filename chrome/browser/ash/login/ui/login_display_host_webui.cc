@@ -1024,6 +1024,10 @@ void LoginDisplayHostWebUI::ShowOsInstallScreen() {
   StartWizard(OsInstallScreenView::kScreenId);
 }
 
+void LoginDisplayHostWebUI::ShowGuestTosScreen() {
+  StartWizard(GuestTosScreenView::kScreenId);
+}
+
 void LoginDisplayHostWebUI::HideOobeDialog() {
   NOTREACHED();
 }

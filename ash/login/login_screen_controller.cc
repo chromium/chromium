@@ -222,6 +222,12 @@ void LoginScreenController::LoginAsGuest() {
   client_->LoginAsGuest();
 }
 
+void LoginScreenController::ShowGuestTosScreen() {
+  if (!client_)
+    return;
+  client_->ShowGuestTosScreen();
+}
+
 void LoginScreenController::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
   if (!client_)

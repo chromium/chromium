@@ -118,6 +118,8 @@ void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
+void FakeLoginDisplayHost::ShowGuestTosScreen() {}
+
 void FakeLoginDisplayHost::HideOobeDialog() {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}

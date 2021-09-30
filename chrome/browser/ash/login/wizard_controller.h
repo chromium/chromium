@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
+#include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
@@ -282,6 +283,7 @@ class WizardController {
   void ShowOsTrialScreen();
   void ShowLacrosDataMigrationScreen();
   void ShowConsolidatedConsentScreen();
+  void ShowGuestTosScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -354,6 +356,7 @@ class WizardController {
   void OnOsTrialScreenExit(OsTrialScreen::Result result);
   void OnConsolidatedConsentScreenExit(
       ConsolidatedConsentScreen::Result result);
+  void OnGuestTosScreenExit(GuestTosScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

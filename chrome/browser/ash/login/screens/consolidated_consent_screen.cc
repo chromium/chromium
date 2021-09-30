@@ -52,12 +52,12 @@ std::string GetEulaOnlineUrl() {
         switches::kOobeEulaUrlForTests);
   }
 
-  return base::StringPrintf(chrome::kOnlineEulaURLPath,
+  return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 
 std::string GetAdditionalToSUrl() {
-  return base::StringPrintf(chrome::kAdditionalToSOnlineURLPath,
+  return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 
@@ -288,6 +288,8 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
 }
 
 void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
+  StartupUtils::MarkEulaAccepted();
+
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();
 
