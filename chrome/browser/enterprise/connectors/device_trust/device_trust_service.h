@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -52,6 +53,9 @@ class DeviceTrustService : public KeyedService {
   // Starts flow that actually builds a response.
   virtual void BuildChallengeResponse(const std::string& challenge,
                                       AttestationCallback callback);
+
+  // Collects device trust signals and returns them.
+  std::unique_ptr<SignalsType> GetSignals();
 
   // Register a `callback` that listens for changes in the trust URL patterns.
   // The callback may be run synchronously for initialization purposes.

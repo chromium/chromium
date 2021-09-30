@@ -67,7 +67,11 @@ void DeviceTrustService::OnPolicyUpdated() {
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
                                                 AttestationCallback callback) {
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge, signals_service_->CollectSignals(), std::move(callback));
+      challenge, GetSignals(), std::move(callback));
+}
+
+std::unique_ptr<SignalsType> DeviceTrustService::GetSignals() {
+  return signals_service_->CollectSignals();
 }
 
 base::CallbackListSubscription

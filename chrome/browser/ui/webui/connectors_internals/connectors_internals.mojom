@@ -7,6 +7,9 @@ module connectors_internals.mojom;
 struct ZeroTrustState {
   // Whether the connector is enabled or not.
   bool is_enabled;
+
+  // Dictionary containing device signals.
+  map<string, string> signals_dictionary;
 };
 
 // Browser interface for the page. Consists of calls for data and hooks for

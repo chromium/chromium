@@ -2,8 +2,17 @@
   #enabled-string {
     font-weight: bold;
   }
+
+  div ~ div {
+    margin-top: 5px;
+  }
 </style>
 <h2>Zero Trust Connector</h2>
-<div class="content">
+<div>
   Is Enabled: <span id="enabled-string"></span>
+</div>
+<div>
+  Signals:
+  <pre id="signals"></pre>
+  <button id="copy-signals">Copy Signals</button>
 </div>

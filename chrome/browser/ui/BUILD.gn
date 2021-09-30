@@ -651,9 +651,14 @@ static_library("ui") {
       "webui/connectors_internals/connectors_internals_page_handler.h",
       "webui/connectors_internals/connectors_internals_ui.cc",
       "webui/connectors_internals/connectors_internals_ui.h",
+      "webui/connectors_internals/zero_trust_utils.cc",
+      "webui/connectors_internals/zero_trust_utils.h",
     ]
 
-    deps += [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings" ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
+    ]
   }
 
   if (!is_fuchsia) {

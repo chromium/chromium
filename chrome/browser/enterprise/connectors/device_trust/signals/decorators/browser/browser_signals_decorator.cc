@@ -40,10 +40,10 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals) {
         cloud_policy_store_->policy()->obfuscated_customer_id());
   }
 
+  // TODO(b/178421844): Fetch these signals at construction time and cache
+  // them.
   enterprise_signals::DeviceInfo device_info = device_info_fetcher_->Fetch();
-
   signals.set_serial_number(device_info.serial_number);
-
   absl::optional<bool> is_disk_encrypted =
       enterprise_signals::SettingValueToBool(device_info.disk_encrypted);
   if (is_disk_encrypted.has_value()) {

@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
+#include "chrome/browser/ui/webui/connectors_internals/zero_trust_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -29,7 +30,8 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 void ConnectorsInternalsPageHandler::GetZeroTrustState(
     GetZeroTrustStateCallback callback) {
   auto state = connectors_internals::mojom::ZeroTrustState::New(
-      device_trust_service_->IsEnabled());
+      device_trust_service_->IsEnabled(),
+      utils::SignalsToMap(device_trust_service_->GetSignals()));
   std::move(callback).Run(std::move(state));
 }
 

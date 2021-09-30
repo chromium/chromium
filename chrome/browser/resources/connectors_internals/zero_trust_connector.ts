@@ -23,13 +23,40 @@ export class ZeroTrustConnectorElement extends CustomElement {
     }
   }
 
+  private _signalsString: string = '';
+  public set signalsString(str: string) {
+    const signalsEl = (this.$('#signals') as HTMLElement);
+    if (signalsEl) {
+      signalsEl.innerText = str;
+      this._signalsString = str;
+    } else {
+      console.error('Could not find #signals element.');
+    }
+  }
+
+  public get copyButton(): HTMLButtonElement|undefined {
+    return this.$('#copy-signals') as HTMLButtonElement;
+  }
+
+  public get signalsString(): string {
+    return this._signalsString;
+  }
+
   private readonly pageHandler: PageHandlerInterface;
 
   constructor() {
     super();
     this.pageHandler = PageHandler.getRemote();
 
-    this.fetchZeroTrustValues().then(state => this.setZeroTrustValues(state));
+    this.fetchZeroTrustValues()
+        .then(state => this.setZeroTrustValues(state))
+        .then(() => {
+          const copyButton = this.copyButton;
+          if (copyButton) {
+            copyButton.addEventListener(
+                'click', () => this.copySignals(copyButton));
+          }
+        });
   }
 
   private setZeroTrustValues(state: ZeroTrustState|undefined) {
@@ -39,6 +66,9 @@ export class ZeroTrustConnectorElement extends CustomElement {
     }
 
     this.enabledString = `${state.isEnabled}`;
+
+    // Pretty print the dictionary as a JSON string.
+    this.signalsString = JSON.stringify(state.signalsDictionary, null, 2);
   }
 
   private async fetchZeroTrustValues(): Promise<ZeroTrustState|undefined> {
@@ -48,6 +78,12 @@ export class ZeroTrustConnectorElement extends CustomElement {
           console.log(`fetchZeroTrustValues failed: ${JSON.stringify(e)}`);
           return undefined;
         });
+  }
+
+  private async copySignals(copyButton: HTMLButtonElement): Promise<void> {
+    copyButton.disabled = true;
+    navigator.clipboard.writeText(this.signalsString)
+        .finally(() => copyButton.disabled = false);
   }
 }
 
