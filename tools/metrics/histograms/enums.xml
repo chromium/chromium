@@ -56380,9 +56380,9 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="FRE started"/>
   <int value="1" label="Welcome shown"/>
   <int value="2" label="Data saver shown"/>
-  <int value="3" label="Sign in shown"/>
-  <int value="4" label="FRE completed w/ user signed in"/>
-  <int value="5" label="FRE completed w/ user not signed in"/>
+  <int value="3" label="Sync consent shown"/>
+  <int value="4" label="FRE completed w/ user signed in and sync"/>
+  <int value="5" label="FRE completed w/ user not signed in and sync"/>
   <int value="6" label="Search engine choice dialog shown"/>
 </enum>
 

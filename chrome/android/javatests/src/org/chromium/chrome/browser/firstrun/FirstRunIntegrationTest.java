@@ -602,8 +602,8 @@ public class FirstRunIntegrationTest {
                 FirstRunActivity.MobileFreProgress.STARTED,
                 FirstRunActivity.MobileFreProgress.WELCOME_SHOWN,
                 FirstRunActivity.MobileFreProgress.DATA_SAVER_SHOWN,
-                FirstRunActivity.MobileFreProgress.SIGNIN_SHOWN,
-                FirstRunActivity.MobileFreProgress.COMPLETED_SIGNED_IN,
+                FirstRunActivity.MobileFreProgress.SYNC_CONSENT_SHOWN,
+                FirstRunActivity.MobileFreProgress.COMPLETED_SYNC,
                 FirstRunActivity.MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
         }));
     }
@@ -624,7 +624,7 @@ public class FirstRunIntegrationTest {
         checkRecordedProgressSteps(BitSet.valueOf(new long[] {
                 FirstRunActivity.MobileFreProgress.STARTED,
                 FirstRunActivity.MobileFreProgress.WELCOME_SHOWN,
-                FirstRunActivity.MobileFreProgress.COMPLETED_NOT_SIGNED_IN,
+                FirstRunActivity.MobileFreProgress.COMPLETED_NOT_SYNC,
         }));
     }
 
@@ -1177,7 +1177,7 @@ public class FirstRunIntegrationTest {
         }
 
         @Override
-        public boolean shouldShowSignInPage(Activity activity, List<Account> accounts) {
+        public boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
             return mTestCase.showSigninPromo();
         }
 

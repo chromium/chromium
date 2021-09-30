@@ -103,17 +103,17 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     @VisibleForTesting
     @IntDef({MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN,
-            MobileFreProgress.DATA_SAVER_SHOWN, MobileFreProgress.SIGNIN_SHOWN,
-            MobileFreProgress.COMPLETED_SIGNED_IN, MobileFreProgress.COMPLETED_NOT_SIGNED_IN,
+            MobileFreProgress.DATA_SAVER_SHOWN, MobileFreProgress.SYNC_CONSENT_SHOWN,
+            MobileFreProgress.COMPLETED_SYNC, MobileFreProgress.COMPLETED_NOT_SYNC,
             MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN, MobileFreProgress.MAX})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MobileFreProgress {
         int STARTED = 0;
         int WELCOME_SHOWN = 1;
         int DATA_SAVER_SHOWN = 2;
-        int SIGNIN_SHOWN = 3;
-        int COMPLETED_SIGNED_IN = 4;
-        int COMPLETED_NOT_SIGNED_IN = 5;
+        int SYNC_CONSENT_SHOWN = 3;
+        int COMPLETED_SYNC = 4;
+        int COMPLETED_NOT_SYNC = 5;
         int DEFAULT_SEARCH_ENGINE_SHOWN = 6;
         int MAX = 7;
     }
@@ -199,9 +199,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         boolean notifyAdapter = false;
         // An optional sign-in page.
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && mFreProperties.getBoolean(SHOW_SIGNIN_PAGE)) {
+                && mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE)) {
             mPages.add(SyncConsentFirstRunFragment::new);
-            mFreProgressStates.add(MobileFreProgress.SIGNIN_SHOWN);
+            mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
         }
 
@@ -221,9 +221,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // An optional sign-in page.
         if (!FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && mFreProperties.getBoolean(SHOW_SIGNIN_PAGE)) {
+                && mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE)) {
             mPages.add(SyncConsentFirstRunFragment::new);
-            mFreProgressStates.add(MobileFreProgress.SIGNIN_SHOWN);
+            mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
         }
 
@@ -483,8 +483,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         recordFreProgressHistogram(TextUtils.isEmpty(mResultSignInAccountName)
-                        ? MobileFreProgress.COMPLETED_NOT_SIGNED_IN
-                        : MobileFreProgress.COMPLETED_SIGNED_IN);
+                        ? MobileFreProgress.COMPLETED_NOT_SYNC
+                        : MobileFreProgress.COMPLETED_SYNC);
 
         FirstRunFlowSequencer.markFlowAsCompleted(
                 mResultSignInAccountName, mResultShowSignInSettings);
