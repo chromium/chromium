@@ -1290,8 +1290,8 @@
   },
   {
     "name": "draw-predicted-ink-point",
-    "owners": [ "mabian@microsoft.com" ],
-    "expiry_milestone": 95
+    "owners": [ "joalmei@microsoft.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "drive-fs-bidirectional-native-messaging",
