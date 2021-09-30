@@ -444,6 +444,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RendererScheduler.QueueingDurationPerQueueType"
     units="ms" expires_after="2021-10-10">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="RendererScheduler.QueueType" -->
 
   <owner>kdillon@chromium.org</owner>

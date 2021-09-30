@@ -24,13 +24,6 @@ namespace scheduler {
 #define QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME \
   "RendererScheduler.QueueingDurationPerQueueType"
 
-// Same as UMA_HISTOGRAM_TIMES but for a broader view of this metric we end
-// at 1 minute instead of 10 seconds.
-#define QUEUEING_TIME_HISTOGRAM(name, sample)                               \
-  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME name, \
-                             sample, base::TimeDelta::FromMilliseconds(1),  \
-                             base::TimeDelta::FromMinutes(1), 50)
-
 enum class MainThreadTaskLoadState { kLow, kHigh, kUnknown };
 
 namespace {
