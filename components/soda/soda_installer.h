@@ -186,6 +186,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   base::flat_map<speech::LanguageCode, double> language_pack_progress_;
 
  private:
+  friend class SodaInstallerImplChromeOSTest;
+  friend class SodaInstallerImplTest;
   // Any new feature using SODA should add its pref here.
   bool IsAnyFeatureUsingSodaEnabled(PrefService* prefs);
 };
