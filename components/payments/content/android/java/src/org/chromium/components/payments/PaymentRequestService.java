@@ -1824,10 +1824,16 @@ public class PaymentRequestService
     @Override
     public void onInstrumentDetailsError(String errorMessage) {
         mInvokedPaymentApp = null;
-        if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.onInstrumentDetailsError(errorMessage);
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
         if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
+        if (mBrowserPaymentRequest == null) return;
+        if (mBrowserPaymentRequest.hasSkippedAppSelector()) {
+            assert !TextUtils.isEmpty(errorMessage);
+            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+            disconnectFromClientWithDebugMessage(errorMessage, PaymentErrorReason.USER_CANCEL);
+        } else {
+            mBrowserPaymentRequest.showAppSelectorAfterPaymentAppInvokeFailed();
+        }
     }
 
     @VisibleForTesting

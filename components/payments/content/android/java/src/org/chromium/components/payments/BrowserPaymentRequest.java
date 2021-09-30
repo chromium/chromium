@@ -175,11 +175,18 @@ public interface BrowserPaymentRequest {
     default void onInstrumentDetailsReady() {}
 
     /**
-     * Called if unable to retrieve payment details.
-     * @param errorMessage Developer-facing error message to be used when rejecting the promise
-     *                     returned from PaymentRequest.show().
+     * @return True if the app selector UI has been skipped. This method should not modify internal
+     *         states.
      */
-    void onInstrumentDetailsError(String errorMessage);
+    default boolean hasSkippedAppSelector() {
+        return true;
+    }
+
+    /**
+     * Shows the app selector UI after the payment app invocation fails. This should be called
+     * when the payment invocation fails and if the app selector was not skipped.
+     */
+    default void showAppSelectorAfterPaymentAppInvokeFailed() {}
 
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.

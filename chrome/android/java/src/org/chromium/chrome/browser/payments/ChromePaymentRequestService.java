@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.payments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -610,15 +609,14 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onInstrumentDetailsError(String errorMessage) {
-        // When skipping UI, any errors/cancel from fetching payment details should abort payment.
-        if (mHasSkippedAppSelector) {
-            assert !TextUtils.isEmpty(errorMessage);
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            disconnectFromClientWithDebugMessage(errorMessage);
-        } else {
-            mPaymentUiService.onPayButtonProcessingCancelled();
-        }
+    public boolean hasSkippedAppSelector() {
+        return mHasSkippedAppSelector;
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void showAppSelectorAfterPaymentAppInvokeFailed() {
+        mPaymentUiService.onPayButtonProcessingCancelled();
     }
 
     // Implement PaymentUiService.Delegate:
