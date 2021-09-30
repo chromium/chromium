@@ -32,7 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 namespace {
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests";
+    "API.StorageAccess.AllowedRequests2";
 }
 #endif
 

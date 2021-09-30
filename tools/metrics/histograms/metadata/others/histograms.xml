@@ -684,6 +684,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="API.StorageAccess.AllowedRequests" enum="StorageAccessResult"
     expires_after="2020-11-27">
+  <obsolete>
+    Removed 2021/09.
+  </obsolete>
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if various requests to access storage are allowed or not and if the
+    Storage Access API unblocked the request or not. Recorded whenever a
+    decision to access storage like getting/setting cookies or opening an
+    indexeddb connection is made in CookieSettings.
+
+    This histogram erroneously recorded ALLOW when cookies were globally
+    blocked.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
+    expires_after="2022-03-27">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>

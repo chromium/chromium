@@ -252,7 +252,7 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
-  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests", result);
+  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests2", result);
 }
 
 bool DomainIsHostOnly(const std::string& domain_string) {

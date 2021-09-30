@@ -27,7 +27,7 @@ using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests";
+    "API.StorageAccess.AllowedRequests2";
 
 constexpr char kDomainURL[] = "http://example.com";
 constexpr char kURL[] = "http://foo.com";
@@ -197,6 +197,21 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
             CONTENT_SETTING_BLOCK);
   EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url, nullptr),
             CONTENT_SETTING_BLOCK);
+
+  // If cookies are globally blocked, SAA grants should be ignored.
+  {
+    settings.set_content_settings(
+        {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+    settings.set_block_third_party_cookies(true);
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
+              CONTENT_SETTING_BLOCK);
+    histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+    histogram_tester.ExpectBucketCount(
+        kAllowedRequestsHistogram,
+        static_cast<int>(net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
+        1);
+  }
 }
 
 // Subdomains of the granted embedding url should not gain access if a valid
