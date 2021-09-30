@@ -70,8 +70,20 @@ bool Rotation::GetCommonAxis(const Rotation& a,
   result_angle_a = 0;
   result_angle_b = 0;
 
-  bool is_zero_a = a.axis.IsZero() || fabs(a.angle) < kAngleEpsilon;
-  bool is_zero_b = b.axis.IsZero() || fabs(b.angle) < kAngleEpsilon;
+  // We have to consider two definitions of "is zero" here, because we
+  // sometimes need to preserve (as an interpolation result) and expose
+  // to web content an axis that is associated with a zero angle.  Thus
+  // we consider having a zero axis stronger than having a zero angle.
+  bool a_has_zero_axis = a.axis.IsZero();
+  bool b_has_zero_axis = b.axis.IsZero();
+  bool is_zero_a, is_zero_b;
+  if (a_has_zero_axis || b_has_zero_axis) {
+    is_zero_a = a_has_zero_axis;
+    is_zero_b = b_has_zero_axis;
+  } else {
+    is_zero_a = fabs(a.angle) < kAngleEpsilon;
+    is_zero_b = fabs(b.angle) < kAngleEpsilon;
+  }
 
   if (is_zero_a && is_zero_b)
     return true;

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 66 tests; 61 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 tests; 64 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Compositing: property <rotate> underlying [100deg] from add [10deg] to add [30deg] at (-1) should be [90deg]
 PASS Compositing: property <rotate> underlying [100deg] from add [10deg] to add [30deg] at (0) should be [110deg]
 PASS Compositing: property <rotate> underlying [100deg] from add [10deg] to add [30deg] at (0.25) should be [115deg]
@@ -43,7 +43,7 @@ PASS Compositing: property <rotate> underlying [1 0 0 0deg] from add [1 1 0 90de
 PASS Compositing: property <rotate> underlying [1 0 0 0deg] from add [1 1 0 90deg] to replace [0 1 1 135deg] at (1) should be [0 0.71 0.71 135deg]
 PASS Compositing: property <rotate> underlying [1 0 0 0deg] from add [1 1 0 90deg] to replace [0 1 1 135deg] at (2) should be [-0.52 0.29 0.81 208.96deg]
 PASS Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (-1) should be [y -100deg]
-FAIL Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (0) should be [y 0deg] assert_equals: expected "0 1 0 0deg" but got "0deg"
+PASS Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (0) should be [y 0deg]
 PASS Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (0.25) should be [y 25deg]
 PASS Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (0.75) should be [y 75deg]
 PASS Compositing: property <rotate> underlying [none] from add [none] to replace [0 1 0 100deg] at (1) should be [y 100deg]
@@ -52,7 +52,7 @@ PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to
 PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (0) should be [0.27 0.53 0.8 270deg]
 PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (0.25) should be [0.27 0.53 0.8 202.5deg]
 PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (0.75) should be [0.27 0.53 0.8 67.5deg]
-FAIL Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (1) should be [0.27 0.53 0.8 0deg] assert_equals: expected "0.27 0.53 0.8 0deg" but got "0deg"
+PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (1) should be [0.27 0.53 0.8 0deg]
 PASS Compositing: property <rotate> underlying [none] from add [2 4 6 270deg] to replace [none] at (2) should be [0.27 0.53 0.8 -270deg]
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [none] to replace [0 1 0 100deg] at (-1) should be [0.31 -0.22 0.92 131.66deg]
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [none] to replace [0 1 0 100deg] at (0) should be [1 2 3 90deg]
@@ -64,7 +64,7 @@ PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (0) should be [0.27 0.53 0.8 360deg]
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (0.25) should be [0.27 0.53 0.8 270deg]
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (0.75) should be [0.27 0.53 0.8 90deg]
-FAIL Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (1) should be [0.27 0.53 0.8 0deg] assert_equals: expected "0.27 0.53 0.8 0deg" but got "0deg"
+PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (1) should be [0.27 0.53 0.8 0deg]
 PASS Compositing: property <rotate> underlying [1 2 3 90deg] from add [2 4 6 270deg] to replace [none] at (2) should be [0.27 0.53 0.8 -360deg]
 Harness: the test ran to completion.
 
