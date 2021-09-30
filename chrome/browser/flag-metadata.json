@@ -3099,11 +3099,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "filling-passwords-from-any-origin",
-    "owners": [ "fhorschig", "redatawfik" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
     "expiry_milestone": 100

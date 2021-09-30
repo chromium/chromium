@@ -3179,13 +3179,6 @@ const char kFeedLoadingPlaceholderDescription[] =
 const char kFeedStampName[] = "StAMP cards in the feed";
 const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
 
-const char kFillingPasswordsFromAnyOriginName[] =
-    "Filling passwords from any origin";
-const char kFillingPasswordsFromAnyOriginDescription[] =
-    "Enabling this flag adds a button to the password fallback sheet. The "
-    "button opens a different sheet that allows filling a password from any "
-    "origin.";
-
 const char kHomepagePromoCardName[] =
     "Enable homepage promo card on the New Tab Page";
 const char kHomepagePromoCardDescription[] =

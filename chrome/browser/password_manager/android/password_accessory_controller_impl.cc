@@ -161,9 +161,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   if (all_passwords_helper_.available_credentials().has_value() &&
       IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
-      all_passwords_helper_.available_credentials().value() > 0 &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kFillingPasswordsFromAnyOrigin)) {
+      all_passwords_helper_.available_credentials().value() > 0) {
     std::u16string button_title =
         is_password_field
             ? l10n_util::GetStringUTF16(

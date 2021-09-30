@@ -1805,9 +1805,6 @@ extern const char kFeedLoadingPlaceholderDescription[];
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 
-extern const char kFillingPasswordsFromAnyOriginName[];
-extern const char kFillingPasswordsFromAnyOriginDescription[];
-
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 

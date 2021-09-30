@@ -322,11 +322,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
           autofill::features::kAutofillManualFallbackAndroid)) {
     return last_focused_field_type_ ==
                FocusedFieldType::kFillablePasswordField ||
-           (last_focused_field_type_ ==
-                FocusedFieldType::kFillableUsernameField &&
-            (base::FeatureList::IsEnabled(
-                 password_manager::features::kFillingPasswordsFromAnyOrigin) ||
-             available_sources_.contains(FillingSource::PASSWORD_FALLBACKS)));
+           last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
   }
   switch (last_focused_field_type_) {
     // Always show on password fields to provide management and generation.
@@ -337,9 +333,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
       // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-      return !available_sources_.empty() ||
-             base::FeatureList::IsEnabled(
-                 password_manager::features::kFillingPasswordsFromAnyOrigin);
+      return true;
 
     // Fallbacks aren't really useful on search fields but autocomplete entries
     // justify showing the accessory.

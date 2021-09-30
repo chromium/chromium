@@ -1038,8 +1038,6 @@ class PasswordAccessoryControllerWithTestStoreTest
 
   void SetUp() override {
     PasswordAccessoryControllerTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kFillingPasswordsFromAnyOrigin);
     test_store_->Init(/*prefs=*/nullptr);
   }
 
@@ -1049,12 +1047,6 @@ class PasswordAccessoryControllerWithTestStoreTest
     PasswordAccessoryControllerTest::TearDown();
   }
 
-  void DisableFeature() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        password_manager::features::kFillingPasswordsFromAnyOrigin);
-  }
-
  protected:
   PasswordStoreInterface* CreateInternalPasswordStore() override {
     test_store_ = CreateAndUseTestPasswordStore(profile());
@@ -1062,7 +1054,6 @@ class PasswordAccessoryControllerWithTestStoreTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<TestPasswordStore> test_store_;
 };
 
@@ -1138,31 +1129,6 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
       last_sheet,
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleHttpSite16))
-          .AppendFooterCommand(manage_passwords_str(),
-                               autofill::AccessoryAction::MANAGE_PASSWORDS)
-          .Build());
-}
-
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
-       HidesShowOtherPasswordsIfDisabled) {
-  DisableFeature();
-  test_store().AddLogin(MakeSavedPassword());
-  task_environment()->RunUntilIdle();
-  CreateSheetController();
-
-  // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField,
-      /*is_manual_generation_available=*/false);
-
-  task_environment()->RunUntilIdle();  // Wait for store to trigger update.
-  EXPECT_EQ(
-      last_sheet,
-      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());

@@ -6635,14 +6635,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kFrameThrottleFpsChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
-    {"filling-passwords-from-any-origin",
-     flag_descriptions::kFillingPasswordsFromAnyOriginName,
-     flag_descriptions::kFillingPasswordsFromAnyOriginDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kFillingPasswordsFromAnyOrigin)},
-#endif  // OS_ANDROID
-
 #if defined(OS_WIN)
     {"enable-incognito-shortcut-on-desktop",
      flag_descriptions::kEnableIncognitoShortcutOnDesktopName,
