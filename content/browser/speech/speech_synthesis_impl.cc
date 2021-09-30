@@ -127,6 +127,9 @@ void SpeechSynthesisImpl::AddVoiceListObserver(
 void SpeechSynthesisImpl::Speak(
     blink::mojom::SpeechSynthesisUtterancePtr utterance,
     mojo::PendingRemote<blink::mojom::SpeechSynthesisClient> client) {
+  if (web_contents_->IsAudioMuted())
+    return;
+
   std::unique_ptr<TtsUtterance> tts_utterance =
       std::make_unique<TtsUtteranceImpl>(browser_context_, web_contents_);
   tts_utterance->SetText(utterance->text);
