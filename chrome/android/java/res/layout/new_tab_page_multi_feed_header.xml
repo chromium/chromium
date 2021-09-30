@@ -22,7 +22,7 @@
       android:orientation="horizontal"
       android:gravity="center_vertical"
       android:layoutDirection="locale"
-      android:paddingHorizontal="@dimen/ntp_header_lateral_margins_v2" >
+      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2" >
 
     <!-- Null content description for now because UX in flux. -->
     <ImageView

@@ -693,15 +693,17 @@ public class FeedSurfaceCoordinator
         // Add new headers.
         List<NtpListContentManager.FeedContent> headerList = new ArrayList<>();
         for (View header : headerViews) {
-            NtpListContentManager.NativeViewContent content =
-                    new NtpListContentManager.NativeViewContent(
-                            "Header" + header.hashCode(), header);
-            headerList.add(content);
             // Feed header view in multi does not need padding added.
+            int lateralPaddingsPx = getLateralPaddingsPx();
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
                     && header == mSectionHeaderView) {
-                content.setShouldAddPadding(false);
+                lateralPaddingsPx = 0;
             }
+
+            NtpListContentManager.NativeViewContent content =
+                    new NtpListContentManager.NativeViewContent(
+                            lateralPaddingsPx, "Header" + header.hashCode(), header);
+            headerList.add(content);
         }
         mHeaderCount = headerList.size();
         if (mHeaderCount > 0) {
@@ -1045,5 +1047,10 @@ public class FeedSurfaceCoordinator
                 imageCacheHelper.clearMemoryCache();
             }
         }
+    }
+
+    private int getLateralPaddingsPx() {
+        return mActivity.getResources().getDimensionPixelSize(
+                R.dimen.ntp_header_lateral_paddings_v2);
     }
 }

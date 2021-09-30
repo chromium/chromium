@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -20,8 +20,6 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.google.common.collect.ImmutableList;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,9 +27,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link NtpListContentManager}. */
@@ -70,7 +68,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
         NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
 
-        addContents(0, ImmutableList.of(c1, c2, c3));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1, c2, c3}));
         assertEquals(3, mManager.getItemCount());
 
         assertEquals(0, mManager.findContentPositionByKey("a"));
@@ -85,17 +83,17 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
         NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
 
-        addContents(0, ImmutableList.of(c1));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1}));
         assertEquals(1, mManager.getItemCount());
         assertEquals(c1, mManager.getContent(0));
 
-        addContents(0, ImmutableList.of(c2, c3));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c2, c3}));
         assertEquals(3, mManager.getItemCount());
         assertEquals(c2, mManager.getContent(0));
         assertEquals(c3, mManager.getContent(1));
         assertEquals(c1, mManager.getContent(2));
 
-        addContents(3, ImmutableList.of(c2, c3));
+        addContents(3, Arrays.asList(new NtpListContentManager.FeedContent[] {c2, c3}));
         assertEquals(5, mManager.getItemCount());
         assertEquals(c2, mManager.getContent(0));
         assertEquals(c3, mManager.getContent(1));
@@ -113,7 +111,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
         NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
-        addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1, c2, c3, c4, c5}));
         assertEquals(5, mManager.getItemCount());
 
         removeContents(0, 2);
@@ -139,10 +137,10 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
         NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
-        addContents(0, ImmutableList.of(c1, c2, c3));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1, c2, c3}));
         assertEquals(3, mManager.getItemCount());
 
-        updateContents(1, ImmutableList.of(c4, c5));
+        updateContents(1, Arrays.asList(new NtpListContentManager.FeedContent[] {c4, c5}));
         assertEquals(3, mManager.getItemCount());
         assertEquals(c1, mManager.getContent(0));
         assertEquals(c4, mManager.getContent(1));
@@ -158,7 +156,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
         NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
-        addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1, c2, c3, c4, c5}));
         assertEquals(5, mManager.getItemCount());
 
         moveContent(0, 3);
@@ -190,7 +188,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         View v5 = new View(mContext);
         NtpListContentManager.FeedContent c5 = createNativeViewContent(v5);
 
-        addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1, c2, c3, c4, c5}));
         assertEquals(5, mManager.getItemCount());
 
         assertFalse(mManager.isNativeView(0));
@@ -212,7 +210,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         View v = new View(mContext);
         NtpListContentManager.FeedContent c = createNativeViewContent(v);
 
-        addContents(0, ImmutableList.of(c));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c}));
 
         assertEquals(v, getNativeView(mManager.getViewType(0)));
         ViewParent p = v.getParent();
@@ -221,7 +219,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         // This time, getNativeView() creates a new enclosing parent view.
         removeContents(0, 1);
         c = createNativeViewContent(v);
-        addContents(0, ImmutableList.of(c));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c}));
         assertEquals(v, getNativeView(mManager.getViewType(0)));
         assertNotEquals(p, v.getParent());
     }
@@ -234,9 +232,9 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         View v0 = new View(mContext);
         NtpListContentManager.FeedContent c0 = createNativeViewContent(v0);
 
-        addContents(0, ImmutableList.of(c1));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c1}));
         int t1 = mManager.getViewType(0);
-        addContents(0, ImmutableList.of(c0));
+        addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c0}));
         int t0 = mManager.getViewType(0);
 
         assertEquals(1, t1);
@@ -321,7 +319,7 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
     }
 
     private NtpListContentManager.FeedContent createNativeViewContent(View v) {
-        return new NtpListContentManager.NativeViewContent(v.toString(), v);
+        return new NtpListContentManager.NativeViewContent(123, v.toString(), v);
     }
 
     private View getNativeView(int viewType) {

@@ -12,8 +12,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 import org.chromium.ui.UiUtils;
@@ -87,24 +87,22 @@ public class NtpListContentManager implements ListContentManager {
         // An unique ID for this NativeViewContent. This is initially 0, and assigned by
         // FeedListContentManager when needed.
         private int mViewType;
-        private boolean mShouldAddPadding = true;
+        @Px
+        private int mLateralPaddingsPx;
 
         /** Holds an inflated native view. */
-        public NativeViewContent(String key, View nativeView) {
+        public NativeViewContent(@Px int lateralPaddingsPx, String key, View nativeView) {
             super(key);
             assert nativeView != null;
             mNativeView = nativeView;
+            mLateralPaddingsPx = lateralPaddingsPx;
         }
 
         /** Holds a resource ID used to inflate a native view. */
-        public NativeViewContent(String key, int resId) {
+        public NativeViewContent(@Px int lateralPaddingsPx, String key, int resId) {
             super(key);
             mResId = resId;
-        }
-
-        /** Toggles adding of additional padding to the view. Defaults to true. */
-        public void setShouldAddPadding(boolean shouldAddPadding) {
-            mShouldAddPadding = shouldAddPadding;
+            mLateralPaddingsPx = lateralPaddingsPx;
         }
 
         /**
@@ -127,13 +125,10 @@ public class NtpListContentManager implements ListContentManager {
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             enclosingLayout.setLayoutParams(layoutParams);
 
-            if (mShouldAddPadding) {
-                // Set the left and right paddings.
-                int horizontalPadding = context.getResources().getDimensionPixelSize(
-                        R.dimen.ntp_header_lateral_margins_v2);
-                enclosingLayout.setPadding(/* left */ horizontalPadding, /* top */ 0,
-                        /* right */ horizontalPadding, /* bottom */ 0);
-            }
+            // Set the left and right paddings.
+            enclosingLayout.setPadding(/* left */ mLateralPaddingsPx, /* top */ 0,
+                    /* right */ mLateralPaddingsPx, /* bottom */ 0);
+
             // Do not clip children. This ensures that the negative margin use in the feed header
             // does not subsequently cause the IPH bubble to be clipped.
             enclosingLayout.setClipToPadding(false);

@@ -204,7 +204,7 @@ android_resources("chrome_app_java_resources") {
     ":ui_locale_string_resources",
     "//chrome/android/webapk/libs/common:splash_resources",
     "//chrome/app:java_strings_grd",
-    "//chrome/browser/feed/android:web_feed_java_resources",
+    "//chrome/browser/feed/android:feed_java_resources",
     "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/lens:java_resources",
     "//chrome/browser/password_check/android:java_resources",

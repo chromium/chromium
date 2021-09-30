@@ -830,7 +830,7 @@ public class FeedStreamTest {
         List<NtpListContentManager.FeedContent> contentList = new ArrayList<>();
         for (int i = 0; i < number; i++) {
             contentList.add(new NtpListContentManager.NativeViewContent(
-                    HEADER_PREFIX + i, new AppCompatTextView(mActivity)));
+                    0, HEADER_PREFIX + i, new AppCompatTextView(mActivity)));
         }
         mContentManager.addContents(0, contentList);
     }

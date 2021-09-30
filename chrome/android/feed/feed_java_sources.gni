@@ -33,7 +33,6 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSwipeRefreshLayout.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManager.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpListContentManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
@@ -62,7 +61,6 @@ feed_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/NativeViewListRendererTest.java",
-  "junit/src/org/chromium/chrome/browser/feed/v2/NtpListContentManagerTest.java",
 ]
 
 feed_test_java_sources = [

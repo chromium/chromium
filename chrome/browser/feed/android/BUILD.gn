@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
     "java/src/org/chromium/chrome/browser/feed/FeedUma.java",
+    "java/src/org/chromium/chrome/browser/feed/NtpListContentManager.java",
     "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
@@ -32,7 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarController.java",
   ]
   deps = [
-    ":web_feed_java_resources",
+    ":feed_java_resources",
     "//base:base_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
@@ -44,6 +45,7 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
+    "//chrome/browser/xsurface:java",
     "//chrome/browser/xsurface:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/util/android:java",
@@ -63,13 +65,14 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.feed.webfeed"
 }
 
-android_resources("web_feed_java_resources") {
+android_resources("feed_java_resources") {
   sources = [
     "java/res/color/chip_hairline_color.xml",
     "java/res/color/menu_footer_chip_background.xml",
@@ -83,10 +86,13 @@ android_resources("web_feed_java_resources") {
     "java/res/layout/back_to_top_bubble.xml",
     "java/res/layout/feed_management_activity.xml",
     "java/res/layout/feed_management_list_item.xml",
+    "java/res/layout/feed_placeholder_layout.xml",
     "java/res/layout/follow_management_activity.xml",
     "java/res/layout/follow_management_empty_state.xml",
     "java/res/layout/follow_management_item.xml",
     "java/res/layout/follow_management_loading_state.xml",
+    "java/res/layout/no_connection.xml",
+    "java/res/layout/no_content_v2.xml",
     "java/res/layout/radio_button_group_video_previews_preference.xml",
     "java/res/layout/web_feed_dialog.xml",
     "java/res/layout/web_feed_main_menu_item.xml",
@@ -160,6 +166,7 @@ android_library("junit") {
   bypass_platform_checks = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/NtpListContentManagerTest.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",
@@ -185,6 +192,7 @@ android_library("junit") {
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
+    "//chrome/browser/xsurface:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",

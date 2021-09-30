@@ -576,8 +576,8 @@ public class FeedStream implements Stream {
         if (shouldPlaceSpacer) {
             if (mSpacerViewContent == null) {
                 FrameLayout spacerView = new FrameLayout(mActivity);
-                mSpacerViewContent =
-                        new NtpListContentManager.NativeViewContent("Spacer", spacerView);
+                mSpacerViewContent = new NtpListContentManager.NativeViewContent(
+                        getLateralPaddingsPx(), "Spacer", spacerView);
                 spacerView.setLayoutParams(new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
@@ -873,19 +873,19 @@ public class FeedStream implements Stream {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
                     && slice.getLoadingSpinnerSlice().getIsAtTop()) {
                 return new NtpListContentManager.NativeViewContent(
-                        sliceId, R.layout.feed_placeholder_layout);
+                        getLateralPaddingsPx(), sliceId, R.layout.feed_placeholder_layout);
             }
             return new NtpListContentManager.NativeViewContent(
-                    sliceId, org.chromium.chrome.R.layout.feed_spinner);
+                    getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
         if (!mIsInterestFeed) {
-            return new NtpListContentManager.NativeViewContent(
-                    sliceId, org.chromium.chrome.R.layout.following_empty_state);
+            return new NtpListContentManager.NativeViewContent(getLateralPaddingsPx(), sliceId,
+                    org.chromium.chrome.R.layout.following_empty_state);
         }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
             return new NtpListContentManager.NativeViewContent(
-                    sliceId, org.chromium.chrome.R.layout.no_connection);
+                    getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.no_connection);
         }
         // TODO(crbug/1152592): Add new UI for NO_WEB_FEED_SUBSCRIPTIONS.
         assert slice.getZeroStateSlice().getType()
@@ -893,7 +893,7 @@ public class FeedStream implements Stream {
                 || slice.getZeroStateSlice().getType()
                         == FeedUiProto.ZeroStateSlice.Type.NO_WEB_FEED_SUBSCRIPTIONS;
         return new NtpListContentManager.NativeViewContent(
-                sliceId, org.chromium.chrome.R.layout.no_content_v2);
+                getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.no_content_v2);
     }
 
     private void updateContentsInPlace(
@@ -1114,6 +1114,11 @@ public class FeedStream implements Stream {
         public void hasUnreadContentChanged(boolean hasUnreadContent) {
             mHasUnreadContent.set(hasUnreadContent);
         }
+    }
+
+    private int getLateralPaddingsPx() {
+        return mActivity.getResources().getDimensionPixelSize(
+                R.dimen.ntp_header_lateral_paddings_v2);
     }
 
     @NativeMethods

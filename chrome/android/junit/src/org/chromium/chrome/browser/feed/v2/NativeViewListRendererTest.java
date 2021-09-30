@@ -173,6 +173,6 @@ public class NativeViewListRendererTest {
     private NtpListContentManager.FeedContent createContent(String text) {
         TextView v = new AppCompatTextView(mContext);
         v.setText(text);
-        return new NtpListContentManager.NativeViewContent(v.toString(), v);
+        return new NtpListContentManager.NativeViewContent(0, v.toString(), v);
     }
 }
