@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/desks_templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/wm/overview/desks_templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/desks_templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/desks_templates_presenter.h"
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"

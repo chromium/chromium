@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
-#define ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
+#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
 
 #include <vector>
 
@@ -43,4 +43,4 @@ class ASH_EXPORT DesksTemplatesPresenter {
 
 }  // namespace ash
 
-#endif  // ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_

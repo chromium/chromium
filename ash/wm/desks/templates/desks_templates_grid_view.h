@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
-#define ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
+#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -33,4 +33,4 @@ class DesksTemplatesGridView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_WM_OVERVIEW_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
