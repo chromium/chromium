@@ -32,7 +32,7 @@ class MockControllerObserver : public ControllerObserver {
   MOCK_METHOD1(OnCollectUserDataOptionsChanged,
                void(const CollectUserDataOptions* options));
   MOCK_METHOD2(OnUserDataChanged,
-               void(const UserData* user_data,
+               void(const UserData& user_data,
                     UserData::FieldChange field_change));
   MOCK_METHOD1(OnDetailsChanged, void(const std::vector<Details>& details));
   MOCK_METHOD1(OnInfoBoxChanged, void(const InfoBox* info_box));

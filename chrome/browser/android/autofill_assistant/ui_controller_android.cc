@@ -666,7 +666,7 @@ void UiControllerAndroid::RestoreUi() {
   OnDetailsChanged(ui_delegate_->GetDetails());
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
-  OnUserDataChanged(ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
+  OnUserDataChanged(*ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
       ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
@@ -1388,11 +1388,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
 }
 
 void UiControllerAndroid::OnUserDataChanged(
-    const UserData* state,
+    const UserData& user_data,
     UserData::FieldChange field_change) {
-  if (!state) {
-    return;
-  }
   DCHECK(ui_delegate_ != nullptr);
   DCHECK(client_->GetWebContents() != nullptr);
   const CollectUserDataOptions* collect_user_data_options =
@@ -1413,11 +1410,12 @@ void UiControllerAndroid::OnUserDataChanged(
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::TERMS_AND_CONDITIONS) {
     Java_AssistantCollectUserDataModel_setTermsStatus(
-        env, jmodel, state->terms_and_conditions_);
+        env, jmodel, user_data.terms_and_conditions_);
   }
 
   const autofill::AutofillProfile* selected_contact_profile =
-      state->selected_address(collect_user_data_options->contact_details_name);
+      user_data.selected_address(
+          collect_user_data_options->contact_details_name);
   auto jselected_contact =
       selected_contact_profile == nullptr
           ? nullptr
@@ -1432,7 +1430,8 @@ void UiControllerAndroid::OnUserDataChanged(
       selected_contact_profile, *collect_user_data_options);
 
   const autofill::AutofillProfile* selected_shipping_address =
-      state->selected_address(collect_user_data_options->shipping_address_name);
+      user_data.selected_address(
+          collect_user_data_options->shipping_address_name);
   auto jselected_shipping_address =
       selected_shipping_address == nullptr
           ? nullptr
@@ -1451,18 +1450,18 @@ void UiControllerAndroid::OnUserDataChanged(
     auto jcontactlist =
         Java_AssistantCollectUserDataModel_createAutofillContactList(env);
     auto contact_indices = user_data::SortContactsByCompleteness(
-        *collect_user_data_options, state->available_profiles_);
+        *collect_user_data_options, user_data.available_profiles_);
     for (int index : contact_indices) {
       auto jcontact = Java_AssistantCollectUserDataModel_createAutofillContact(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *state->available_profiles_[index]),
+              env, *user_data.available_profiles_[index]),
           collect_user_data_options->request_payer_name,
           collect_user_data_options->request_payer_phone,
           collect_user_data_options->request_payer_email);
       if (jcontact) {
         const auto& errors = user_data::GetContactValidationErrors(
-            state->available_profiles_[index].get(),
+            user_data.available_profiles_[index].get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addAutofillContact(
             env, jcontactlist, jcontact,
@@ -1478,7 +1477,7 @@ void UiControllerAndroid::OnUserDataChanged(
     // Billing address profiles.
     auto jbillinglist =
         Java_AssistantCollectUserDataModel_createBillingAddressList(env);
-    for (const auto& profile : state->available_profiles_) {
+    for (const auto& profile : user_data.available_profiles_) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
@@ -1495,15 +1494,15 @@ void UiControllerAndroid::OnUserDataChanged(
     auto jshippinglist =
         Java_AssistantCollectUserDataModel_createShippingAddressList(env);
     auto address_indices = user_data::SortShippingAddressesByCompleteness(
-        *collect_user_data_options, state->available_profiles_);
+        *collect_user_data_options, user_data.available_profiles_);
     for (int index : address_indices) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *state->available_profiles_[index]));
+              env, *user_data.available_profiles_[index]));
       if (jaddress) {
         const auto& errors = user_data::GetShippingAddressValidationErrors(
-            state->available_profiles_[index].get(),
+            user_data.available_profiles_[index].get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addShippingAddress(
             env, jshippinglist, jaddress,
@@ -1533,9 +1532,10 @@ void UiControllerAndroid::OnUserDataChanged(
                                             selected_shipping_address_errors));
   }
 
-  const autofill::CreditCard* selected_card = state->selected_card();
+  const autofill::CreditCard* selected_card = user_data.selected_card();
   const autofill::AutofillProfile* selected_billing_address =
-      state->selected_address(collect_user_data_options->billing_address_name);
+      user_data.selected_address(
+          collect_user_data_options->billing_address_name);
   auto jselected_card =
       selected_card == nullptr
           ? nullptr
@@ -1557,9 +1557,10 @@ void UiControllerAndroid::OnUserDataChanged(
             env);
     auto sorted_payment_instrument_indices =
         user_data::SortPaymentInstrumentsByCompleteness(
-            *collect_user_data_options, state->available_payment_instruments_);
+            *collect_user_data_options,
+            user_data.available_payment_instruments_);
     for (int index : sorted_payment_instrument_indices) {
-      const auto& instrument = state->available_payment_instruments_[index];
+      const auto& instrument = user_data.available_payment_instruments_[index];
       const auto& errors = user_data::GetPaymentInstrumentValidationErrors(
           instrument->card.get(), instrument->billing_address.get(),
           *collect_user_data_options);
@@ -1596,18 +1597,18 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::DATE_TIME_RANGE_START) {
-    if (state->date_time_range_start_date_.has_value()) {
+    if (user_data.date_time_range_start_date_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeStartDate(
           env, jmodel,
-          CreateJavaDate(env, *state->date_time_range_start_date_));
+          CreateJavaDate(env, *user_data.date_time_range_start_date_));
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeStartDate(env,
                                                                      jmodel);
     }
 
-    if (state->date_time_range_start_timeslot_.has_value()) {
+    if (user_data.date_time_range_start_timeslot_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeStartTimeSlot(
-          env, jmodel, *state->date_time_range_start_timeslot_);
+          env, jmodel, *user_data.date_time_range_start_timeslot_);
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeStartTimeSlot(
           env, jmodel);
@@ -1616,16 +1617,17 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::DATE_TIME_RANGE_END) {
-    if (state->date_time_range_end_date_.has_value()) {
+    if (user_data.date_time_range_end_date_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeEndDate(
-          env, jmodel, CreateJavaDate(env, *state->date_time_range_end_date_));
+          env, jmodel,
+          CreateJavaDate(env, *user_data.date_time_range_end_date_));
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeEndDate(env, jmodel);
     }
 
-    if (state->date_time_range_end_timeslot_.has_value()) {
+    if (user_data.date_time_range_end_timeslot_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeEndTimeSlot(
-          env, jmodel, *state->date_time_range_end_timeslot_);
+          env, jmodel, *user_data.date_time_range_end_timeslot_);
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeEndTimeSlot(env,
                                                                        jmodel);

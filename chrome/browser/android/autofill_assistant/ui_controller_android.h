@@ -104,7 +104,7 @@ class UiControllerAndroid : public ControllerObserver {
   void OnUserActionsChanged(const std::vector<UserAction>& actions) override;
   void OnCollectUserDataOptionsChanged(
       const CollectUserDataOptions* collect_user_data_options) override;
-  void OnUserDataChanged(const UserData* state,
+  void OnUserDataChanged(const UserData& user_data,
                          UserData::FieldChange field_change) override;
   void OnDetailsChanged(const std::vector<Details>& details) override;
   void OnInfoBoxChanged(const InfoBox* info_box) override;

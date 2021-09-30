@@ -51,7 +51,7 @@ class ControllerObserver : public base::CheckedObserver {
       const CollectUserDataOptions* options) = 0;
 
   // Report that a field in |user_data| has changed.
-  virtual void OnUserDataChanged(const UserData* state,
+  virtual void OnUserDataChanged(const UserData& user_data,
                                  UserData::FieldChange field_change) = 0;
 
   // Called when details have changed. Details will be empty if they have been

@@ -562,6 +562,7 @@ class WebController {
   // is guaranteed by the owner of this object.
   content::WebContents* const web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
+  // Must not be |nullptr| and outlive this web controller.
   const UserData* const user_data_;
 
   // Currently running workers.

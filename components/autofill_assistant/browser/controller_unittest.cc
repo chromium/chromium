@@ -235,7 +235,7 @@ class ControllerTest : public testing::Test {
         .WillRepeatedly(RunOnceCallback<2>(net::HTTP_OK, response_str));
   }
 
-  UserData* GetUserData() { return controller_->user_data_.get(); }
+  UserData* GetUserData() { return &controller_->user_data_; }
 
   UiDelegate* GetUiDelegate() { return controller_.get(); }
 
@@ -2089,8 +2089,7 @@ TEST_F(ControllerTest, UserDataFormEmpty) {
       .Times(1);
   EXPECT_CALL(mock_observer_, OnCollectUserDataOptionsChanged(Not(nullptr)))
       .Times(1);
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr), UserData::FieldChange::ALL))
+  EXPECT_CALL(mock_observer_, OnUserDataChanged(_, UserData::FieldChange::ALL))
       .Times(1);
   controller_->SetCollectUserDataOptions(options.get());
 }
@@ -2113,9 +2112,8 @@ TEST_F(ControllerTest, UserDataFormContactInfo) {
       .Times(1);
   controller_->SetCollectUserDataOptions(options.get());
 
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(Not(nullptr), UserData::FieldChange::CONTACT_PROFILE))
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserData::FieldChange::CONTACT_PROFILE))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))))
@@ -2153,12 +2151,10 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
   autofill::test::SetCreditCardInfo(credit_card.get(), "Marion Mitchell",
                                     "4111 1111 1111 1111", "01", "2020",
                                     /* billing_address_id = */ "");
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr), UserData::FieldChange::CARD))
+  EXPECT_CALL(mock_observer_, OnUserDataChanged(_, UserData::FieldChange::CARD))
       .Times(1);
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(Not(nullptr), UserData::FieldChange::BILLING_ADDRESS))
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserData::FieldChange::BILLING_ADDRESS))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))))
@@ -2175,12 +2171,10 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
                                  "123 Zoo St.", "unit 5", "Hollywood", "CA",
                                  "91601", "US", "16505678910");
   credit_card->set_billing_address_id(billing_address->guid());
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr), UserData::FieldChange::CARD))
+  EXPECT_CALL(mock_observer_, OnUserDataChanged(_, UserData::FieldChange::CARD))
       .Times(1);
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(Not(nullptr), UserData::FieldChange::BILLING_ADDRESS))
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserData::FieldChange::BILLING_ADDRESS))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))))
@@ -2259,8 +2253,7 @@ TEST_F(ControllerTest, SetTermsAndConditions) {
                                   Property(&UserAction::enabled, Eq(true)))))
       .Times(1);
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::TERMS_AND_CONDITIONS))
+              OnUserDataChanged(_, UserData::FieldChange::TERMS_AND_CONDITIONS))
       .Times(1);
   controller_->SetTermsAndConditions(TermsAndConditionsState::ACCEPTED);
   EXPECT_THAT(controller_->GetUserData()->terms_and_conditions_,
@@ -2281,9 +2274,8 @@ TEST_F(ControllerTest, SetLoginOption) {
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))))
       .Times(1);
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(Not(nullptr), UserData::FieldChange::LOGIN_CHOICE))
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserData::FieldChange::LOGIN_CHOICE))
       .Times(1);
   controller_->SetLoginOption("1");
   EXPECT_THAT(controller_->GetUserData()->login_choice_identifier_, Eq("1"));
@@ -2308,9 +2300,8 @@ TEST_F(ControllerTest, SetShippingAddress) {
                                  "123 Zoo St.", "unit 5", "Hollywood", "CA",
                                  "91601", "US", "16505678910");
 
-  EXPECT_CALL(
-      mock_observer_,
-      OnUserDataChanged(Not(nullptr), UserData::FieldChange::SHIPPING_ADDRESS))
+  EXPECT_CALL(mock_observer_,
+              OnUserDataChanged(_, UserData::FieldChange::SHIPPING_ADDRESS))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(true)))))
@@ -2354,8 +2345,7 @@ TEST_F(ControllerTest, SetAdditionalValues) {
                                     Property(&UserAction::enabled, Eq(true)))))
         .Times(1);
     EXPECT_CALL(mock_observer_,
-                OnUserDataChanged(Not(nullptr),
-                                  UserData::FieldChange::ADDITIONAL_VALUES))
+                OnUserDataChanged(_, UserData::FieldChange::ADDITIONAL_VALUES))
         .Times(1);
   }
   ValueProto value4;
@@ -2622,9 +2612,9 @@ TEST_F(ControllerTest, SetDateTimeRange) {
 
   controller_->SetCollectUserDataOptions(options.get());
 
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
   DateProto start_date;
   start_date.set_year(2020);
@@ -2637,16 +2627,15 @@ TEST_F(ControllerTest, SetDateTimeRange) {
             1);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_start_date_->day(), 20);
 
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
   controller_->SetDateTimeRangeStartTimeSlot(0);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_start_timeslot_, 0);
 
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
   DateProto end_date;
   end_date.set_year(2020);
@@ -2659,8 +2648,7 @@ TEST_F(ControllerTest, SetDateTimeRange) {
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_date_->day(), 25);
 
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
   controller_->SetDateTimeRangeEndTimeSlot(1);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_timeslot_, 1);
@@ -2687,13 +2675,12 @@ TEST_F(ControllerTest, SetDateTimeRangeStartDateAfterEndDate) {
 
   controller_->SetCollectUserDataOptions(options.get());
 
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
 
   date.set_day(21);
@@ -2729,12 +2716,11 @@ TEST_F(ControllerTest, SetDateTimeRangeEndDateBeforeStartDate) {
   controller_->SetCollectUserDataOptions(options.get());
 
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
 
   date.set_day(19);
@@ -2769,13 +2755,12 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDatesStartTimeAfterEndTime) {
 
   controller_->SetCollectUserDataOptions(options.get());
 
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
 
   controller_->SetDateTimeRangeStartTimeSlot(1);
@@ -2807,12 +2792,11 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDatesEndTimeBeforeStartTime) {
   controller_->SetCollectUserDataOptions(options.get());
 
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
 
   controller_->SetDateTimeRangeEndTimeSlot(0);
@@ -2841,13 +2825,12 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDateValidTime) {
   GetUserData()->date_time_range_end_date_ = date;
 
   controller_->SetCollectUserDataOptions(options.get());
-  EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_START))
+  EXPECT_CALL(
+      mock_observer_,
+      OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_START))
       .Times(1);
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::DATE_TIME_RANGE_END))
+              OnUserDataChanged(_, UserData::FieldChange::DATE_TIME_RANGE_END))
       .Times(1);
   controller_->SetDateTimeRangeStartTimeSlot(0);
   controller_->SetDateTimeRangeEndTimeSlot(1);
@@ -2870,8 +2853,7 @@ TEST_F(ControllerTest, WriteUserData) {
   controller_->SetCollectUserDataOptions(options.get());
 
   EXPECT_CALL(mock_observer_,
-              OnUserDataChanged(Not(nullptr),
-                                UserData::FieldChange::TERMS_AND_CONDITIONS))
+              OnUserDataChanged(_, UserData::FieldChange::TERMS_AND_CONDITIONS))
       .Times(1);
 
   base::OnceCallback<void(UserData*, UserData::FieldChange*)> callback =

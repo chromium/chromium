@@ -528,7 +528,7 @@ class Controller : public ScriptExecutorDelegate,
   // which information was requested.
   std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
   CollectUserDataOptions* collect_user_data_options_ = nullptr;
-  std::unique_ptr<UserData> user_data_;
+  UserData user_data_;
 
   std::unique_ptr<FormProto> form_;
   std::unique_ptr<FormProto::Result> form_result_;
