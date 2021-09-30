@@ -203,7 +203,6 @@ suite('Chrome OS with account manager disabled', function() {
 suite('Chrome OS with UseBrowserSyncConsent', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      splitSettingsSyncEnabled: true,
       useBrowserSyncConsent: true,
     });
   });
