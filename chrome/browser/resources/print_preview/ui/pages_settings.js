@@ -18,7 +18,7 @@ import {areRangesEqual} from '../print_preview_utils.js';
 
 import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /** @enum {number} */
 const PagesInputErrorState = {
@@ -57,12 +57,12 @@ function parseIntStrict(value) {
  * @extends {PolymerElement}
  * @implements {InputBehaviorInterface}
  * @implements {SelectMixinInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPagesSettingsElementBase = mixinBehaviors(
-    [SettingsBehavior, InputBehavior, WebUIListenerBehavior],
-    SelectMixin(PolymerElement));
+    [InputBehavior, WebUIListenerBehavior],
+    SettingsMixin(SelectMixin(PolymerElement)));
 
 /** @polymer */
 export class PrintPreviewPagesSettingsElement extends

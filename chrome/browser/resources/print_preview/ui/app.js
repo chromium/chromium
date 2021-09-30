@@ -36,16 +36,16 @@ import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {DestinationState} from './destination_settings.js';
 import {PreviewAreaState} from './preview_area.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewAppElementBase =
-    mixinBehaviors([SettingsBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], SettingsMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewAppElement extends PrintPreviewAppElementBase {

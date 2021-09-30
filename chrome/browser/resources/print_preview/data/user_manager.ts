@@ -163,5 +163,11 @@ class PrintPreviewUserManagerElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-user-manager': PrintPreviewUserManagerElement;
+  }
+}
+
 customElements.define(
     PrintPreviewUserManagerElement.is, PrintPreviewUserManagerElement);

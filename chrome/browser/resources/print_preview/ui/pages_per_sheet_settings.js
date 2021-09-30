@@ -6,21 +6,21 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MarginsType} from '../data/margins.js';
 
 import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {SelectMixinInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
 const PrintPreviewPagesPerSheetSettingsElementBase =
-    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewPagesPerSheetSettingsElement extends

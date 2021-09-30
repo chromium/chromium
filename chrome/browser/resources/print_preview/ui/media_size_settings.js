@@ -5,18 +5,17 @@
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 import {SelectOption} from './settings_select.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
-const PrintPreviewMediaSizeSettingsElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(PolymerElement);
 
 /** @polymer */
 export class PrintPreviewMediaSizeSettingsElement extends

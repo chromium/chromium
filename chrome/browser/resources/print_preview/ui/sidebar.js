@@ -42,7 +42,7 @@ import {Error, State} from '../data/state.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {DestinationState} from './destination_settings.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * Number of settings sections to show when "More settings" is collapsed.
@@ -54,16 +54,15 @@ const MAX_SECTIONS_TO_SHOW = 6;
  * @constructor
  * @extends {PolymerElement}
  * @implements {DarkModeMixinInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewSidebarElementBase = mixinBehaviors(
     [
-      SettingsBehavior,
       CrContainerShadowBehavior,
       WebUIListenerBehavior,
     ],
-    DarkModeMixin(PolymerElement));
+    SettingsMixin(DarkModeMixin(PolymerElement)));
 
 /** @polymer */
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {

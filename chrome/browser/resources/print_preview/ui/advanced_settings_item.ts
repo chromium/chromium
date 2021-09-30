@@ -12,18 +12,17 @@ import './print_preview_shared_css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LocalizedString, VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {Destination} from '../data/destination.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {updateHighlights} from './highlight_utils.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewAdvancedSettingsItemElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement) as
-    {new (): PolymerElement & SettingsBehaviorInterface};
+    SettingsMixin(PolymerElement);
 
 export class PrintPreviewAdvancedSettingsItemElement extends
     PrintPreviewAdvancedSettingsItemElementBase {

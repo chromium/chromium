@@ -10,21 +10,20 @@ import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {Error, State} from '../data/state.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
-const PrintPreviewHeaderElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+const PrintPreviewHeaderElementBase = SettingsMixin(PolymerElement);
 
 /** @polymer */
 export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {

@@ -11,16 +11,16 @@ import '../strings.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
 const PrintPreviewOtherOptionsSettingsElementBase =
-    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], SettingsMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewOtherOptionsSettingsElement extends

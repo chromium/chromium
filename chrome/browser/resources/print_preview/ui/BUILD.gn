@@ -18,7 +18,7 @@ html_to_js("web_components") {
     "destination_list_item.ts",
     "destination_list.ts",
     "destination_select_css.ts",
-    "destination_settings.js",
+    "destination_settings.ts",
     "dpi_settings.js",
     "duplex_settings.js",
     "header.js",
@@ -39,10 +39,10 @@ html_to_js("web_components") {
     "print_preview_shared_css.js",
     "print_preview_vars_css.js",
     "scaling_settings.js",
-    "settings_section.js",
+    "settings_section.ts",
     "settings_select.js",
     "sidebar.js",
-    "throbber_css.js",
+    "throbber_css.ts",
   ]
   if (is_chromeos) {
     js_files += [

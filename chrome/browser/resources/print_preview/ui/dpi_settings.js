@@ -8,9 +8,9 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 import {SelectOption} from './settings_select.js';
 
 /**
@@ -33,10 +33,9 @@ let LabelledDpiOption;
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
-const PrintPreviewDpiSettingsElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+const PrintPreviewDpiSettingsElementBase = SettingsMixin(PolymerElement);
 
 /** @polymer */
 export class PrintPreviewDpiSettingsElement extends

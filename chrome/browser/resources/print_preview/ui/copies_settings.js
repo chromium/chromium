@@ -7,9 +7,9 @@ import './number_settings_section.js';
 import './print_preview_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * Maximum number of copies supported by the printer if not explicitly
@@ -22,10 +22,9 @@ export const DEFAULT_MAX_COPIES = 999;
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
-const PrintPreviewCopiesSettingsElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+const PrintPreviewCopiesSettingsElementBase = SettingsMixin(PolymerElement);
 
 /** @polymer */
 export class PrintPreviewCopiesSettingsElement extends

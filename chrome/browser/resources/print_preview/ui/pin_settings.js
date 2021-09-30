@@ -15,19 +15,19 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {State} from '../data/state.js';
 
 import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {InputBehaviorInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPinSettingsElementBase = mixinBehaviors(
-    [SettingsBehavior, InputBehavior, I18nBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    [InputBehavior, I18nBehavior, WebUIListenerBehavior],
+    SettingsMixin(PolymerElement));
 
 /** @polymer */
 class PrintPreviewPinSettingsElement extends

@@ -20,7 +20,7 @@ import {Destination} from '../data/destination.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 export interface PrintPreviewAdvancedSettingsDialogElement {
   $: {
@@ -30,8 +30,8 @@ export interface PrintPreviewAdvancedSettingsDialogElement {
 }
 
 const PrintPreviewAdvancedSettingsDialogElementBase =
-    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & SettingsBehaviorInterface & I18nBehavior};
+    mixinBehaviors([I18nBehavior], SettingsMixin(PolymerElement)) as
+    {new (): PolymerElement & SettingsMixinInterface & I18nBehavior};
 
 export class PrintPreviewAdvancedSettingsDialogElement extends
     PrintPreviewAdvancedSettingsDialogElementBase {

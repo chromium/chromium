@@ -99,7 +99,7 @@ preprocess_if_expr("preprocess") {
     "ui/input_behavior.js",
     "ui/plugin_proxy.js",
     "ui/select_mixin.ts",
-    "ui/settings_behavior.js",
+    "ui/settings_mixin.ts",
   ]
 
   if (is_chromeos) {
@@ -127,7 +127,7 @@ preprocess_if_expr("preprocess_generated") {
     "ui/destination_list.ts",
     "ui/destination_list_item.ts",
     "ui/destination_select_css.ts",
-    "ui/destination_settings.js",
+    "ui/destination_settings.ts",
     "ui/dpi_settings.js",
     "ui/duplex_settings.js",
     "ui/header.js",
@@ -147,10 +147,10 @@ preprocess_if_expr("preprocess_generated") {
     "ui/print_preview_shared_css.js",
     "ui/print_preview_vars_css.js",
     "ui/scaling_settings.js",
-    "ui/settings_section.js",
+    "ui/settings_section.ts",
     "ui/settings_select.js",
     "ui/sidebar.js",
-    "ui/throbber_css.js",
+    "ui/throbber_css.ts",
   ]
 
   if (is_chromeos) {
@@ -268,7 +268,7 @@ ts_library("build_ts") {
     "ui/destination_list.ts",
     "ui/destination_list_item.ts",
     "ui/destination_select_css.ts",
-    "ui/destination_settings.js",
+    "ui/destination_settings.ts",
     "ui/dpi_settings.js",
     "ui/duplex_settings.js",
     "ui/header.js",
@@ -292,11 +292,11 @@ ts_library("build_ts") {
     "ui/print_preview_vars_css.js",
     "ui/scaling_settings.js",
     "ui/select_mixin.ts",
-    "ui/settings_behavior.js",
-    "ui/settings_section.js",
+    "ui/settings_mixin.ts",
+    "ui/settings_section.ts",
     "ui/settings_select.js",
     "ui/sidebar.js",
-    "ui/throbber_css.js",
+    "ui/throbber_css.ts",
   ]
 
   if (is_chromeos) {

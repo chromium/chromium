@@ -31,7 +31,7 @@ import {areRangesEqual} from '../print_preview_utils.js';
 
 import {MARGIN_KEY_MAP} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @typedef {{
@@ -56,12 +56,12 @@ export const PreviewAreaState = {
  * @extends {PolymerElement}
  * @implements {DarkModeMixinInterface}
  * @implements {I18nBehaviorInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPreviewAreaElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, SettingsBehavior, I18nBehavior],
-    DarkModeMixin(PolymerElement));
+    [WebUIListenerBehavior, I18nBehavior],
+    SettingsMixin(DarkModeMixin(PolymerElement)));
 
 /** @polymer */
 export class PrintPreviewPreviewAreaElement extends

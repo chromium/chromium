@@ -6,7 +6,7 @@ import './margin_control.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
@@ -15,7 +15,7 @@ import {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
 import {PrintPreviewMarginControlElement} from './margin_control.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @const {!Map<!CustomMarginsOrientation, string>}
@@ -34,10 +34,10 @@ const MINIMUM_DISTANCE = 72;  // 1 inch
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
 const PrintPreviewMarginControlContainerElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+    SettingsMixin(PolymerElement);
 
 /** @polymer */
 export class PrintPreviewMarginControlContainerElement extends

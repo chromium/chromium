@@ -8,12 +8,12 @@ import './number_settings_section.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScalingType} from '../data/scaling.js';
 
 import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
+import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /*
  * Fit to page and fit to paper options will only be displayed for PDF
@@ -25,10 +25,10 @@ import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.j
  * @constructor
  * @extends {PolymerElement}
  * @implements {SelectMixinInterface}
- * @implements {SettingsBehaviorInterface}
+ * @implements {SettingsMixinInterface}
  */
 const PrintPreviewScalingSettingsElementBase =
-    mixinBehaviors([SettingsBehavior], SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewScalingSettingsElement extends
