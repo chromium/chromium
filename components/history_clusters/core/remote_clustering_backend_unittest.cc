@@ -133,7 +133,7 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
     ASSERT_TRUE(request.ParseFromString(decoded));
 
     EXPECT_EQ(request.experiment_name(), kFakeExperimentName);
-    ASSERT_EQ(request.visits_size(), 2);
+    ASSERT_EQ(request.visits_size(), 3);
 
     auto visit = request.visits().at(0);
     EXPECT_EQ(visit.visit_id(), 1);
@@ -156,6 +156,15 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
     EXPECT_EQ(visit.page_end_reason(), 5);
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
+
+    // Don't verify the visit 3 because it's a synched visit and would be
+    // filtered by `GetAnnotatedVisitsToCluster` in history clusters service in
+    // the real world; it's bypassed by these tests so it's we assert all 3
+    // visits were sent.
+    // TODO(manukh): Once we move the filtering from
+    //  `GetAnnotatedVisitsToCluster` to the backend model, we won't need to do
+    //  this 'trick' and this test will match the real world; i.e. both cases
+    //  will send all 3 visits.
   }
 
   // This block sends a fake proto response back via the URL loader.

@@ -27,6 +27,7 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.visit_row.visit_duration = base::TimeDelta::FromMilliseconds(5600);
       visit.context_annotations.page_end_reason = 3;
       visit.context_annotations.is_new_bookmark = true;
+      visit.source = history::VisitSource::SOURCE_BROWSED;
       visits.push_back(visit);
     }
 
@@ -43,6 +44,22 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.visit_row.referring_visit = 1;
       visit.context_annotations.page_end_reason = 5;
       visit.context_annotations.is_existing_part_of_tab_group = true;
+      visit.source = history::VisitSource::SOURCE_BROWSED;
+      visits.push_back(visit);
+    }
+
+    {
+      history::AnnotatedVisit visit;
+      visit.url_row.set_id(3);
+      visit.url_row.set_url(GURL("https://synched-visit.com/"));
+      visit.url_row.set_title(u"Synched visit");
+      visit.visit_row.visit_id = 3;
+      // Choose a recent time, as otherwise History will discard the visit.
+      visit.visit_row.visit_time =
+          base::Time::Now() - base::TimeDelta::FromDays(1);
+      visit.visit_row.visit_duration = base::TimeDelta::FromSeconds(20);
+      visit.context_annotations.page_end_reason = 5;
+      visit.source = history::VisitSource::SOURCE_SYNCED;
       visits.push_back(visit);
     }
   }

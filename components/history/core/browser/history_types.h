@@ -754,7 +754,8 @@ struct AnnotatedVisit {
                  VisitRow visit_row,
                  VisitContextAnnotations context_annotations,
                  VisitContentAnnotations content_annotations,
-                 VisitID referring_visit_of_redirect_chain_start);
+                 VisitID referring_visit_of_redirect_chain_start,
+                 VisitSource visit);
   AnnotatedVisit(const AnnotatedVisit&);
   AnnotatedVisit& operator=(const AnnotatedVisit&);
   ~AnnotatedVisit();
@@ -770,6 +771,7 @@ struct AnnotatedVisit {
   // important because redirect visits are omitted from AnnotatedVisits, so
   // the uncollapsed referring visit could refer to an omitted visit.
   VisitID referring_visit_of_redirect_chain_start = 0;
+  VisitSource source;
 };
 
 // A minimal representation of `AnnotationVisit` used when retrieving them from

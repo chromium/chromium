@@ -162,15 +162,32 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       const auto& first_redirect = backend->GetRedirectChainStart(
           incomplete_visit_context_annotations.visit_row);
 
-      annotated_visits_.push_back({
-          incomplete_visit_context_annotations.url_row,
-          incomplete_visit_context_annotations.visit_row,
-          incomplete_visit_context_annotations.context_annotations,
-          // TODO(tommycli): Add content annotations.
-          {},
-          first_redirect.referring_visit,
-      });
+      // Compute `visit_source` for each incomplete visit.
+      history::VisitSource visit_source;
+      backend->GetVisitSource(
+          incomplete_visit_context_annotations.visit_row.visit_id,
+          &visit_source);
+
+      annotated_visits_.push_back(
+          {incomplete_visit_context_annotations.url_row,
+           incomplete_visit_context_annotations.visit_row,
+           incomplete_visit_context_annotations.context_annotations,
+           // TODO(tommycli): Add content annotations.
+           {},
+           first_redirect.referring_visit,
+           visit_source});
     }
+
+    // Filter out visits from sync.
+    // TODO(manukh): Consider allowing the clustering backend to handle sync
+    //  visits.
+    annotated_visits_.erase(
+        base::ranges::remove_if(annotated_visits_,
+                                [](const auto& annotated_visit) {
+                                  return annotated_visit.source ==
+                                         history::SOURCE_SYNCED;
+                                }),
+        annotated_visits_.end());
 
     return true;
   }

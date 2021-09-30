@@ -129,6 +129,7 @@ class HistoryClustersServiceTest : public testing::Test {
       add_page_args.url = visit.url_row.url();
       add_page_args.title = visit.url_row.title();
       add_page_args.time = visit.visit_row.visit_time;
+      add_page_args.visit_source = visit.source;
       history_service_->AddPage(add_page_args);
       history_service_->UpdateWithPageEndTime(
           context_id, next_navigation_id_, visit.url_row.url(),
@@ -386,7 +387,7 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesUnitTest) {
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
-  // Create persisted visits 1 and 2.
+  // Create persisted visits 1, 2, & 3.
   AddHardcodedTestDataToHistoryService();
 
   auto days_ago = [](int days) {
@@ -394,11 +395,13 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   };
 
   // Create incomplete visits; only 3 & 4 should be returned by the query.
-  AddIncompleteVisit(3, 3, days_ago(1));
+  AddIncompleteVisit(4, 4, days_ago(1));
   AddIncompleteVisit(0, 0, days_ago(1));  // Missing history rows.
-  AddIncompleteVisit(4, 4, days_ago(90));
-  AddIncompleteVisit(5, 5, days_ago(0));   // Too recent.
-  AddIncompleteVisit(6, 6, days_ago(93));  // Too old.
+  AddIncompleteVisit(5, 5, days_ago(90));
+  AddIncompleteVisit(6, 6, days_ago(0));   // Too recent.
+  AddIncompleteVisit(7, 7, days_ago(93));  // Too old.
+  AddIncompleteVisit(3, 3, days_ago(90));  // Visit 3 was added to the history
+                                           // database with source synched.
 
   history_clusters_service_->QueryClusters(
       /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
@@ -416,8 +419,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   ASSERT_EQ(visits.size(), 4u);
   EXPECT_EQ(visits[0].visit_row.visit_id, 2);
   EXPECT_EQ(visits[1].visit_row.visit_id, 1);
-  EXPECT_EQ(visits[2].visit_row.visit_id, 3);
-  EXPECT_EQ(visits[3].visit_row.visit_id, 4);
+  EXPECT_EQ(visits[2].visit_row.visit_id, 4);
+  EXPECT_EQ(visits[3].visit_row.visit_id, 5);
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {

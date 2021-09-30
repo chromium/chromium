@@ -848,6 +848,15 @@ void VisitDatabase::GetVisitsSource(const VisitVector& visits,
   }
 }
 
+VisitSource VisitDatabase::GetVisitSource(const VisitID visit_id) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT source FROM visit_source WHERE id=?"));
+  statement.BindInt64(0, visit_id);
+  if (!statement.Step())
+    return VisitSource::SOURCE_BROWSED;
+  return static_cast<VisitSource>(statement.ColumnInt(0));
+}
+
 std::vector<DomainVisit>
 VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
                                                         base::Time end_time) {

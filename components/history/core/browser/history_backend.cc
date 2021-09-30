@@ -1243,6 +1243,15 @@ bool HistoryBackend::GetVisitsSource(const VisitVector& visits,
   return true;
 }
 
+bool HistoryBackend::GetVisitSource(const VisitID visit_id,
+                                    VisitSource* source) {
+  if (!db_)
+    return false;
+
+  *source = db_->GetVisitSource(visit_id);
+  return true;
+}
+
 bool HistoryBackend::GetURL(const GURL& url, URLRow* url_row) {
   if (db_)
     return db_->GetRowForURL(url, url_row) != 0;
@@ -1468,6 +1477,9 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   db_->GetVisibleVisitsInRange(options, &visit_rows);
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());
 
+  VisitSourceMap sources;
+  GetVisitsSource(visit_rows, &sources);
+
   std::vector<AnnotatedVisit> annotated_visits;
   for (const auto& visit_row : visit_rows) {
     // Add a result row for this visit, get the URL info from the DB.
@@ -1482,7 +1494,7 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
     // failures, because visits can lack annotations for legitimate reasons.
     // In these cases, the annotations members are left unchanged.
     // TODO(tommycli): Migrate these fields to use absl::optional to make the
-    // optional nature more explicit.
+    //  optional nature more explicit.
     VisitContextAnnotations context_annotations;
     db_->GetContextAnnotationsForVisit(visit_row.visit_id,
                                        &context_annotations);
@@ -1493,9 +1505,13 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
     VisitID referring_visit_of_redirect_chain_start =
         GetRedirectChainStart(visit_row).referring_visit;
 
-    annotated_visits.emplace_back(url_row, visit_row, context_annotations,
-                                  content_annotations,
-                                  referring_visit_of_redirect_chain_start);
+    const auto source = sources.count(visit_row.visit_id) == 0
+                            ? VisitSource::SOURCE_BROWSED
+                            : sources[visit_row.visit_id];
+
+    annotated_visits.emplace_back(
+        url_row, visit_row, context_annotations, content_annotations,
+        referring_visit_of_redirect_chain_start, source);
   }
 
   return annotated_visits;
@@ -1595,12 +1611,15 @@ std::vector<AnnotatedVisit> HistoryBackend::AnnotatedVisitsFromRows(
     VisitRow visit_row;
     if (db_->GetRowForVisit(annotated_visit_row.visit_id, &visit_row) &&
         db_->GetURLRow(visit_row.url_id, &url_row)) {
+      VisitSource source;
+      GetVisitSource(annotated_visit_row.visit_id, &source);
       annotated_visits.push_back(
           {url_row,
            visit_row,
            annotated_visit_row.context_annotations,
            {},
-           GetRedirectChainStart(visit_row).referring_visit});
+           GetRedirectChainStart(visit_row).referring_visit,
+           source});
     } else {
       // Ignore corrupt data but do not crash, as user DBs can be in bad states.
       DVLOG(0) << "HistoryBackend: AnnotatedVisit found with missing associated"

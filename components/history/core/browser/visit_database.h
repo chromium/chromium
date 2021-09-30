@@ -221,8 +221,9 @@ class VisitDatabase {
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);
 
-  // Get the source information about the given visits.
+  // Get the source information about the given visit(s).
   void GetVisitsSource(const VisitVector& visits, VisitSourceMap* sources);
+  VisitSource GetVisitSource(const VisitID visit_id);
 
   // Returns the list of Google domain visits of the user based on the Google
   // searches issued in the specified time interval.
