@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -42,13 +43,16 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
      */
     public void show(BookmarkId bookmarkId) {
         mBookmarkId = bookmarkId;
+        RecordUserAction.record("MobileBookmark.SaveFlow.Show");
 
         bindBookmarkProperties(mBookmarkId);
         mPropertyModel.set(BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER, (v) -> {
+            RecordUserAction.record("MobileBookmark.SaveFlow.EditBookmark");
             BookmarkUtils.startEditActivity(mContext, mBookmarkId);
             mCloseRunnable.run();
         });
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER, (v) -> {
+            RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
             BookmarkUtils.startFolderSelectActivity(mContext, mBookmarkId);
             mCloseRunnable.run();
         });

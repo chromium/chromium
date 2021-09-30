@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -37,6 +38,8 @@ public class BookmarkSaveFlowCoordinator {
     private View mBookmarkSaveFlowView;
 
     private BookmarkModel mBookmarkModel;
+
+    private boolean mClosedViaRunnable;
 
     /**
      * @param context The {@link Context} associated with this cooridnator.
@@ -71,12 +74,19 @@ public class BookmarkSaveFlowCoordinator {
 
     private void close() {
         mDestroyChecker.checkNotDestroyed();
+
+        mClosedViaRunnable = true;
         mBottomSheetController.hideContent(mBottomSheetContent, true);
     }
 
     private void destroy() {
         mDestroyChecker.checkNotDestroyed();
         mDestroyChecker.destroy();
+
+        // The bottom sheet was closed by a means other than one of the edit actions.
+        if (mClosedViaRunnable) {
+            RecordUserAction.record("MobileBookmark.SaveFlow.ClosedWithoutEditAction");
+        }
 
         mMediator.destroy();
         mMediator = null;
