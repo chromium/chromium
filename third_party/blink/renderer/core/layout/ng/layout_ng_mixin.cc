@@ -95,17 +95,12 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   RecalcLayoutOverflowResult child_result;
-  if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
-      Base::ChildNeedsLayoutOverflowRecalc())
-    child_result = Base::RecalcChildLayoutOverflow();
-
   // Don't attempt to rebuild the fragment tree or recalculate
   // scrollable-overflow, layout will do this for us.
   if (Base::NeedsLayout())
     return RecalcLayoutOverflowResult();
 
-  if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
-      Base::ChildNeedsLayoutOverflowRecalc())
+  if (Base::ChildNeedsLayoutOverflowRecalc())
     child_result = RecalcChildLayoutOverflow();
 
   bool should_recalculate_layout_overflow =
@@ -182,7 +177,6 @@ static void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
 
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled());
   DCHECK(Base::ChildNeedsLayoutOverflowRecalc());
   Base::ClearChildNeedsLayoutOverflowRecalc();
 

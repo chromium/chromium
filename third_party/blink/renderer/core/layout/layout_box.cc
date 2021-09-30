@@ -3677,8 +3677,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // For example, for elements with a transform change we can re-use the cached
   // result but we still need to recalculate the layout overflow.
   if (use_layout_cache_slot && !is_blocked_by_display_lock &&
-      NeedsLayoutOverflowRecalc() &&
-      RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled()) {
+      NeedsLayoutOverflowRecalc()) {
 #if DCHECK_IS_ON()
     scoped_refptr<const NGLayoutResult> cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
