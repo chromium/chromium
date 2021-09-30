@@ -23,6 +23,7 @@
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -208,6 +209,13 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
         pak_path, ui::kScaleFactorNone);
 
     content::SetBrowserClientForTesting(&test_content_browser_client_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Turn on MojoJS test so we can test MojoJS interceptors.
+    // This does not imply MojoJS is enabled.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "MojoJSTest");
   }
 
   // Evaluate |statement| in frame (defaults to main frame), and returns its
@@ -425,4 +433,47 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FailedNavigation) {
       embedded_test_server()->GetURL("example.com", "/noexistent"));
   EXPECT_FALSE(NavigateToURL(web_contents, http_error_url));
   EXPECT_FALSE(FrameHasMojo());
+}
+
+// Try to get Foo Mojo interface on a top-level frame.
+IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, MojoInterceptorWorks) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(kFooURL)));
+
+  EXPECT_EQ(
+      "success",
+      EvalStatement(
+          "(async function() {"
+          "  window.intercepted = false;"
+          "  window.interceptor = new "
+          "MojoInterfaceInterceptor('test.mojom.Foo', 'context_js');"
+          "  interceptor.oninterfacerequest = _ => window.intercepted = true;"
+          "  return 'success';"
+          "})()"));
+
+  // Start interceptor, and verify it intercepts the request.
+  EXPECT_EQ("success",
+            EvalStatement("(async function() {"
+                          "  window.interceptor.start();"
+                          "  window.intercepted = false;"
+                          ""
+                          "  const r = Mojo.createMessagePipe();"
+                          "  Mojo.bindInterface('test.mojom.Foo', r.handle1);"
+                          "  if (window.intercepted) {"
+                          "    return \"Interface isn't intercepted\";"
+                          "  }"
+                          ""
+                          "  return 'success';"
+                          "})()"));
+
+  // Stop interceptor. Verify the interface method calls are handled in the
+  // browser.
+  EXPECT_EQ("foo", EvalStatement("(async () => {"
+                                 "window.interceptor.stop();"
+                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let resp = await fooRemote.getFoo();"
+                                 "  return resp.value;"
+                                 "})()"));
 }

@@ -1028,6 +1028,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_interceptor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_interceptor_scope.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_interceptor_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_interceptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_request_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_interface_request_event.h",
