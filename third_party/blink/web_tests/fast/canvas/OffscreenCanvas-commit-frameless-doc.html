@@ -23,6 +23,13 @@ function transferControlAndCommit(canvas) {
   return offscreenCanvas;
 }
 
+// See crbug.com/1254125
+test(function() {
+  var canvas = createFramelessCanvas();
+  canvas.transferControlToOffscreen();
+  assert_throws_dom("InvalidStateError", function() {canvas.transferControlToOffscreen()});
+}, "Verify that transferring a frameless canvas twice throws an error and does not cause a crash");
+
 test(function() {
   var offscreenCanvas = transferControlAndCommit(createFramelessCanvas());
   var ctx = offscreenCanvas.getContext("2d");
