@@ -970,6 +970,8 @@ const std::string Converter::kValueLookupTable[] = {
     "jis-b4",
     "standard",
     "high",
+    "spelling-error",
+    "grammar-error",
     "INVALID_VALUE",
 };
 

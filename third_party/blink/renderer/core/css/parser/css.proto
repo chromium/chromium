@@ -2390,7 +2390,9 @@ message PropertyAndValue {
     JIS_B4 = 761;
     STANDARD = 762;
     HIGH = 763;
-    INVALID_VALUE = 764;
+    SPELLING_ERROR = 764;
+    GRAMMAR_ERROR = 765;
+    INVALID_VALUE = 766;
   };
 
   optional ValueId value_id = 4;

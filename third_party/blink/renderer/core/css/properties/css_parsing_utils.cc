@@ -4731,11 +4731,21 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
   return shape;
 }
 
-// none | [ underline || overline || line-through || blink ]
+// none | [ underline || overline || line-through || blink ] | spelling-error |
+// grammar-error
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
   CSSValueID id = range.Peek().Id();
   if (id == CSSValueID::kNone)
     return ConsumeIdent(range);
+
+  if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() &&
+      (id == CSSValueID::kSpellingError || id == CSSValueID::kGrammarError)) {
+    // Note that StyleBuilderConverter::ConvertFlags() requires that values
+    // other than 'none' appear in a CSSValueList.
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*ConsumeIdent(range));
+    return list;
+  }
 
   CSSIdentifierValue* underline = nullptr;
   CSSIdentifierValue* overline = nullptr;

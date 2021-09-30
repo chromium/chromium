@@ -718,6 +718,12 @@
     "ellipsis",
 
     //
+    // text-decoration-line
+    //
+    "spelling-error",
+    "grammar-error",
+
+    //
     // text-decoration-skip-ink
     //
     // auto

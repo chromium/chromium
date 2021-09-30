@@ -4141,7 +4141,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "visual",
       field_template: "multi_keyword",
-      keywords: ["none", "underline", "overline", "line-through", "blink"],
+      keywords: ["none", "underline", "overline", "line-through", "blink", "spelling-error", "grammar-error"],
       typedom_types: ["Keyword"],
       default_value: "none",
       name_for_methods: "TextDecoration",

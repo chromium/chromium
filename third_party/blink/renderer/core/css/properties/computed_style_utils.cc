@@ -1485,6 +1485,17 @@ FloatSize ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
 
 CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
     TextDecoration text_decoration) {
+  switch (text_decoration) {
+    case TextDecoration::kNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    case TextDecoration::kSpellingError:
+      return CSSIdentifierValue::Create(CSSValueID::kSpellingError);
+    case TextDecoration::kGrammarError:
+      return CSSIdentifierValue::Create(CSSValueID::kGrammarError);
+    default:
+      break;
+  }
+
   // Blink value is ignored.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (EnumHasFlags(text_decoration, TextDecoration::kUnderline))

@@ -928,6 +928,8 @@
 "more"
 "less"
 "custom"
+"spelling-error"
+"grammar-error"
 
 # at-rules
 "@charset"
