@@ -2756,6 +2756,7 @@ crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-002.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-004.html [ Pass ]
+crbug.com/1254608 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/textpath-selection-011.html [ Failure ]
 
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Failure Skip Timeout ]
 
@@ -4021,7 +4022,6 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/* [ Skip ]
 
 ### Tests failing with SVGTextNG enabled:
-crbug.com/1179585 external/wpt/css/css-pseudo/textpath-selection-011.html [ Failure ]
 crbug.com/1179585 svg/custom/visibility-collapse.html [ Failure ]
 
 crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]

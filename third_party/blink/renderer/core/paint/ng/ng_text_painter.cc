@@ -214,7 +214,12 @@ void NGTextPainter::PaintSelectedText(unsigned start_offset,
   // Allowing 1px overflow is almost unnoticeable, while it can avoid two-pass
   // painting in most small text.
   snapped_selection_rect.Inflate(1);
-  if (snapped_selection_rect.Contains(visual_rect_)) {
+  // For SVG text, comparing with visual_rect_ does not work well because
+  // selection_rect is in the scaled coordinate system and visual_rect_ is
+  // in the unscaled coordinate system. Checks text offsets too.
+  if (snapped_selection_rect.Contains(visual_rect_) ||
+      (start_offset == fragment_paint_info_.from &&
+       end_offset == fragment_paint_info_.to)) {
     absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
     if (NGTextPainter::SvgTextPaintState* state = GetSvgState())
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
