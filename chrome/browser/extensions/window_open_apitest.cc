@@ -408,7 +408,15 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, OpenLockedFullscreenWindow) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, UpdateWindowToLockedFullscreen) {
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UpdateWindowToLockedFullscreen \
+  DISABLED_UpdateWindowToLockedFullscreen
+#else
+#define MAYBE_UpdateWindowToLockedFullscreen UpdateWindowToLockedFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
+                       MAYBE_UpdateWindowToLockedFullscreen) {
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
@@ -473,8 +481,16 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
             extensions::WindowControllerList::GetInstance()->windows().size());
 }
 
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UpdateWindowToLockedFullscreenWithoutPermission \
+  DISABLED_UpdateWindowToLockedFullscreenWithoutPermission
+#else
+#define MAYBE_UpdateWindowToLockedFullscreenWithoutPermission \
+  UpdateWindowToLockedFullscreenWithoutPermission
+#endif
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
-                       UpdateWindowToLockedFullscreenWithoutPermission) {
+                       MAYBE_UpdateWindowToLockedFullscreenWithoutPermission) {
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/without_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
