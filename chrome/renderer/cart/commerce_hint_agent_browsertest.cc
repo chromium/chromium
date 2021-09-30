@@ -450,7 +450,8 @@ class CommerceHintNoRateControlTest : public CommerceHintAgentTest {
 
 // TODO(crbug.com/1241582): Add the rate control back for this test after
 // figuring out why rate control makes this test flaky.
-IN_PROC_BROWSER_TEST_F(CommerceHintNoRateControlTest, CartPriority) {
+// Disabled due to failing tests. https://crbug.com/1254802
+IN_PROC_BROWSER_TEST_F(CommerceHintNoRateControlTest, DISABLED_CartPriority) {
   NavigateToURL("https://www.guitarcenter.com/");
   NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExampleFallbackCart);
