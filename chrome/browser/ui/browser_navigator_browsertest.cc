@@ -1804,17 +1804,17 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
     defined(OS_MAC)
-// Flaky on Win, Linux, Mac. See https://crbug.com/1044335.
+// Flaky. See https://crbug.com/1044335.
 #define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
 #else
 #define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
 #endif
 
 // Test that there's no crash when a navigation to a WebUI page reuses an
-// existing swapped out RenderViewHost.  Previously, this led to a browser
-// process crash in WebUI pages that use MojoWebUIController, which tried to
-// use the RenderViewHost's GetMainFrame() when it was invalid in
-// RenderViewCreated(). See https://crbug.com/627027.
+// inactive RenderViewHost. Previously, this led to a browser process crash in
+// WebUI pages that use MojoWebUIController, which tried to use the
+// RenderViewHost's GetMainFrame() when it was invalid in RenderViewCreated().
+// See https://crbug.com/627027.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1824,39 +1824,34 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
 
   // window.open a new tab.  This will keep the chrome://omnibox process alive
   // once we navigate away from it.
-  content::WindowedNotificationObserver windowed_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::TestNavigationObserver nav_observer(webui_url);
+  nav_observer.StartWatchingNewWebContents();
   ASSERT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('" + webui_url.spec() + "');"));
-  windowed_observer.Wait();
-  content::NavigationController* controller =
-      content::Source<content::NavigationController>(windowed_observer.source())
-          .ptr();
-  WebContents* popup = controller->DeprecatedGetWebContents();
-  ASSERT_TRUE(popup);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  content::RenderViewHost* webui_rvh =
-      popup->GetMainFrame()->GetRenderViewHost();
-  content::RenderFrameHost* webui_rfh = popup->GetMainFrame();
+      content::JsReplace("window.open($1);", webui_url)));
+  nav_observer.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  WebContents* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  content::RenderFrameHost* webui_rfh = new_contents->GetMainFrame();
+  EXPECT_EQ(webui_rfh->GetLastCommittedURL(), webui_url);
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
               webui_rfh->GetEnabledBindings());
+  content::RenderViewHost* webui_rvh = webui_rfh->GetRenderViewHost();
 
-  // Navigate to another page in the popup.
+  // Navigate to another page in the opened tab.
   GURL nonwebui_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), nonwebui_url));
-  EXPECT_NE(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
+  EXPECT_NE(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
 
-  // Go back in the popup.  This should finish without crashing and should
+  // Go back in the opened tab.  This should finish without crashing and should
   // reuse the old RenderViewHost.
-  content::TestNavigationObserver back_load_observer(popup);
-  controller->GoBack();
+  content::TestNavigationObserver back_load_observer(new_contents);
+  new_contents->GetController().GoBack();
   back_load_observer.Wait();
-  EXPECT_EQ(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
+  EXPECT_EQ(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
   EXPECT_TRUE(webui_rvh->IsRenderViewLive());
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              popup->GetMainFrame()->GetEnabledBindings());
+              new_contents->GetMainFrame()->GetEnabledBindings());
 }
 
 // Test that main frame navigations generate a NavigationUIData with the
