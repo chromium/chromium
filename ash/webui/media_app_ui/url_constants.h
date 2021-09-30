@@ -9,7 +9,6 @@ namespace ash {
 
 extern const char kChromeUIMediaAppHost[];
 extern const char kChromeUIMediaAppURL[];
-extern const char kChromeUIMediaAppAudioURL[];
 extern const char kChromeUIMediaAppGuestURL[];
 
 }  // namespace ash

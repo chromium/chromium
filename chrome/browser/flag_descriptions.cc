@@ -4851,10 +4851,6 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-const char kMediaAppHandlesAudioName[] = "Media App Handles Audio";
-const char kMediaAppHandlesAudioDescription[] =
-    "Enables opening audio files by default in chrome://media-app";
-
 const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
 const char kMediaAppHandlesPdfDescription[] =
     "Enables opening PDF files by default in chrome://media-app";

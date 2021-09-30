@@ -182,8 +182,6 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
   } else if (app_id == web_app::kMediaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
-  } else if (app_id == web_app::kMediaAppAudioId) {
-    RecordDefaultAppLaunch(DefaultAppName::kMediaAppAudio, launch_source);
   } else if (app_id == extension_misc::kChromeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
   } else if (app_id == extension_misc::kGoogleDocAppId) {

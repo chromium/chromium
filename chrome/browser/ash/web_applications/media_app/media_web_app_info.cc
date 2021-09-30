@@ -6,12 +6,10 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "base/containers/span.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -20,15 +18,12 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 
 namespace {
 
-using FileHandlerConfig = std::pair<const char*, const char*>;
-
 // FileHandler configuration.
 // See https://github.com/WICG/file-handling/blob/main/explainer.md.
-constexpr FileHandlerConfig kFileHandlers[] = {
+constexpr std::pair<const char*, const char*> kFileHandlers[] = {
     {"image/*", ""},
     {"video/*", ""},
 
@@ -64,31 +59,13 @@ constexpr FileHandlerConfig kFileHandlers[] = {
     {"application/pdf", ".pdf"},
 };
 
-constexpr FileHandlerConfig kAudioFileHandlers[] = {
-    {"audio/*", ""},
-
-    // More audio formats.
-    {"audio/flac", ".flac"},
-    {"audio/m4a", ".m4a"},
-    {"audio/mpeg", ".mp3"},
-    {"audio/ogg", ".oga,.ogg,.opus"},
-    {"audio/wav", ".wav"},
-    {"audio/webm", "weba"},
-
-    // Note: some extensions appear twice. See mime_util.cc.
-    {"audio/mp3", "mp3"},
-    {"audio/x-m4a", "m4a"},
-};
-
-// Converts a FileHandlerConfig constexpr into the type needed to populate the
+// Converts the kFileHandlers constexpr into the type needed to populate the
 // WebApplicationInfo's `accept` property.
-std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
-    base::span<const FileHandlerConfig> config) {
+std::vector<apps::FileHandler::AcceptEntry> MakeHandlerAccept() {
   std::vector<apps::FileHandler::AcceptEntry> result;
-  result.reserve(config.size());
 
   const std::string separator = ",";
-  for (const auto& handler : config) {
+  for (const auto& handler : kFileHandlers) {
     result.emplace_back();
     result.back().mime_type = handler.first;
     auto file_extensions = base::SplitString(
@@ -97,17 +74,6 @@ std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
                                          file_extensions.end());
   }
   return result;
-}
-
-std::unique_ptr<WebApplicationInfo> CreateCommonWebAppInfoForMediaWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
-  info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
-  info->theme_color = 0xff202124;
-  info->background_color = 0xff3c4043;
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
-  return info;
 }
 
 }  // namespace
@@ -123,9 +89,12 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
 }
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
-  auto info = CreateCommonWebAppInfoForMediaWebApp();
+  std::unique_ptr<WebApplicationInfo> info =
+      std::make_unique<WebApplicationInfo>();
+  info->start_url = GURL(ash::kChromeUIMediaAppURL);
   info->scope = GURL(ash::kChromeUIMediaAppURL);
-  info->start_url = info->scope;
+
+  info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {
@@ -139,9 +108,14 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
       },
       *info);
+  info->theme_color = 0xff202124;
+  info->background_color = 0xff3c4043;
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+
   apps::FileHandler file_handler;
   file_handler.action = GURL(ash::kChromeUIMediaAppURL);
-  file_handler.accept = MakeFileHandlerAccept(kFileHandlers);
+  file_handler.accept = MakeHandlerAccept();
   info->file_handlers.push_back(std::move(file_handler));
   return info;
 }
@@ -169,56 +143,4 @@ bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 
 bool MediaSystemAppDelegate::ShouldBeSingleWindow() const {
   return !ShouldShowNewWindowMenuOption();
-}
-
-AudioSystemAppDelegate::AudioSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::MEDIA_AUDIO,
-          "MediaAudio",
-          GURL("chrome://media-app/audio_pwa.html"),
-          profile,
-          web_app::OriginTrialsMap(
-              {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
-}
-
-std::unique_ptr<WebApplicationInfo> AudioSystemAppDelegate::GetWebAppInfo()
-    const {
-  auto info = CreateCommonWebAppInfoForMediaWebApp();
-  info->scope = GURL(ash::kChromeUIMediaAppAudioURL);
-  info->start_url = info->scope;
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
-      {
-          {"app_icon_16.png", 16, IDR_AUDIO_PLAYER_ICON_16},
-          {"app_icon_32.png", 32, IDR_AUDIO_PLAYER_ICON_32},
-          {"app_icon_48.png", 48, IDR_AUDIO_PLAYER_ICON_48},
-          {"app_icon_64.png", 64, IDR_AUDIO_PLAYER_ICON_64},
-          {"app_icon_96.png", 96, IDR_AUDIO_PLAYER_ICON_96},
-          {"app_icon_128.png", 128, IDR_AUDIO_PLAYER_ICON_128},
-          {"app_icon_192.png", 192, IDR_AUDIO_PLAYER_ICON_192},
-          {"app_icon_256.png", 256, IDR_AUDIO_PLAYER_ICON_256},
-      },
-      *info);
-  apps::FileHandler file_handler;
-  file_handler.action = GURL(ash::kChromeUIMediaAppAudioURL);
-  file_handler.accept = MakeFileHandlerAccept(kAudioFileHandlers);
-  info->file_handlers.push_back(std::move(file_handler));
-  return info;
-}
-
-bool AudioSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return true;
-}
-
-bool AudioSystemAppDelegate::ShouldShowInLauncher() const {
-  return false;
-}
-
-bool AudioSystemAppDelegate::ShouldShowInSearch() const {
-  return false;
-}
-
-bool AudioSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kMediaAppHandlesAudio);
 }

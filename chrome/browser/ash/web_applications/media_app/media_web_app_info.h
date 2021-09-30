@@ -23,18 +23,6 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldBeSingleWindow() const override;
 };
 
-class AudioSystemAppDelegate : public web_app::SystemWebAppDelegate {
- public:
-  explicit AudioSystemAppDelegate(Profile* profile);
-
-  // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
-  bool ShouldIncludeLaunchDirectory() const override;
-  bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
-  bool IsAppEnabled() const override;
-};
-
 // Return a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp();
 

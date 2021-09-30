@@ -62,7 +62,8 @@ enum class DefaultAppName {
   kShimlessRMAApp = 45,
   kOsFeedbackApp = 46,
   kCursive = 47,
-  kMediaAppAudio = 48,
+  // MediaAppAudio is scheduled to be absorbed into MediaApp in M97.
+  kDeletedMediaAppAudio = 48,
   kProjector = 49,
   kCalculator = 50,
   // Add any new values above this one, and update kMaxValue to the highest
