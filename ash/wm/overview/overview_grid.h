@@ -333,6 +333,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Shows the grid of the desks templates. Creates the widget if needed.
   void ShowDesksTemplatesGrid();
 
+  // True if the grid of desks templates is shown.
+  bool IsShowingDesksTemplatesGrid() const;
+
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
 

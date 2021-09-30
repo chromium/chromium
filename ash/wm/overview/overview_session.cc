@@ -932,6 +932,7 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 void OverviewSession::ShowDesksTemplatesGrids() {
   for (auto& grid : grid_list_)
     grid->ShowDesksTemplatesGrid();
+  UpdateNoWindowsWidget();
 }
 
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
@@ -1203,8 +1204,17 @@ void OverviewSession::UpdateNoWindowsWidget() {
   if (is_shutting_down_)
     return;
 
-  // Hide the widget if there is an item in overview.
-  if (!IsEmpty()) {
+  bool desks_templates_grid_visible = false;
+  for (auto& grid : grid_list_) {
+    if (grid->IsShowingDesksTemplatesGrid()) {
+      desks_templates_grid_visible = true;
+      break;
+    }
+  }
+
+  // Hide the widget if there is an item in overview or if the desks templates
+  // grid is visible.
+  if (!IsEmpty() || desks_templates_grid_visible) {
     no_windows_widget_.reset();
     return;
   }

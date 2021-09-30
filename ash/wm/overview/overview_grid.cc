@@ -804,6 +804,10 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
   desks_templates_grid_->Show();
 }
 
+bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
+  return desks_templates_grid_ && desks_templates_grid_->IsVisible();
+}
+
 void OverviewGrid::OnSelectorItemDragEnded(bool snap) {
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->OnSelectorItemDragEnded(snap);
