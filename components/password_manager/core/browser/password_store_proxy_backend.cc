@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
+#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/functional/identity.h"
@@ -16,9 +18,17 @@
 namespace password_manager {
 
 namespace {
+
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
   std::move(completion).Run(base::ranges::all_of(statuses, base::identity()));
+}
+
+void DeleteBackendAndInvokeCallback(
+    std::unique_ptr<PasswordStoreBackend> backend_to_delete,
+    base::OnceClosure completion) {
+  backend_to_delete.reset();
+  std::move(completion).Run();
 }
 
 }  // namespace
@@ -45,6 +55,20 @@ void PasswordStoreProxyBackend::InitBackend(
                              base::BindOnce(pending_initialization_calls_));
   shadow_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
                                base::BindOnce(pending_initialization_calls_));
+}
+
+void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
+  DCHECK(!pending_shutdown_calls_);
+  pending_shutdown_calls_ = base::BarrierClosure(
+      /*num_closures=*/2, std::move(shutdown_completed));
+  PasswordStoreBackend* backend = main_backend_.get();
+  backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
+                                   std::move(main_backend_),
+                                   pending_shutdown_calls_));
+  backend = shadow_backend_.get();
+  backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
+                                   std::move(shadow_backend_),
+                                   pending_shutdown_calls_));
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {

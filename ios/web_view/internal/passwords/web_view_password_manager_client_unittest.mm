@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -55,6 +56,9 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
     pref_service_.registry()->RegisterDictionaryPref(
         password_manager::prefs::kAccountStoragePerAccountSettings);
 
+    profile_store_->Init(&pref_service_);
+    account_store_->Init(&pref_service_);
+
     password_manager_client_ = std::make_unique<WebViewPasswordManagerClient>(
         &web_state_, &sync_service_, &pref_service_,
         /*identity_manager=*/nullptr,
@@ -76,6 +80,7 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
   scoped_refptr<password_manager::TestPasswordStore> profile_store_;
   scoped_refptr<password_manager::TestPasswordStore> account_store_;
   std::unique_ptr<WebViewPasswordManagerClient> password_manager_client_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(WebViewPasswordManagerClientTest, NoPromptIfBlocklisted) {

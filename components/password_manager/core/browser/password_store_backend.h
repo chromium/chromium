@@ -55,6 +55,10 @@ class PasswordStoreBackend {
                            base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion) = 0;
 
+  // Shuts down the store asynchronously. The callback is run on the main thread
+  // after the shutdown has concluded and it is safe to delete the backend.
+  virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
+
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion. Callback is called on the main
   // sequence.

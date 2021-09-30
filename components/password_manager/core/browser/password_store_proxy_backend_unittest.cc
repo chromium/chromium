@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -25,6 +26,7 @@ using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Pointer;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 using Type = PasswordStoreChange::Type;
@@ -63,6 +65,16 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   PasswordStoreProxyBackendTest() {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
         CreateMainBackend(), CreateShadowBackend());
+  }
+
+  void TearDown() override {
+    EXPECT_CALL(*shadow_backend_, Shutdown(_));
+    EXPECT_CALL(*main_backend_, Shutdown(_));
+    shadow_backend_ = nullptr;
+    main_backend_ = nullptr;
+    PasswordStoreBackend* backend = proxy_backend_.get();  // Will be destroyed.
+    backend->Shutdown(base::DoNothing());
+    proxy_backend_.reset();
   }
 
   PasswordStoreBackend& proxy_backend() { return *proxy_backend_; }

@@ -95,7 +95,9 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
   scoped_refptr<password_manager::PasswordStore> store =
-      new password_manager::PasswordStoreImpl(std::move(login_db));
+      base::MakeRefCounted<password_manager::PasswordStore>(
+          std::make_unique<password_manager::PasswordStoreImpl>(
+              std::move(login_db)));
   if (!store->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs())) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
     // UI.

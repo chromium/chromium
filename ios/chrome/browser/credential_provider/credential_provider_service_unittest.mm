@@ -41,7 +41,7 @@ using password_manager::FakeAffiliationService;
 using password_manager::PasswordForm;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
-using password_manager::PasswordStoreImpl;
+using password_manager::PasswordStore;
 using password_manager::LoginDatabase;
 
 NSString* const userEmail = @"test@email.com";
@@ -98,18 +98,19 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  scoped_refptr<PasswordStoreImpl> CreatePasswordStore() {
-    return base::MakeRefCounted<PasswordStoreImpl>(
-        std::make_unique<LoginDatabase>(
-            temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test")),
-            password_manager::IsAccountStore(false)));
+  scoped_refptr<PasswordStore> CreatePasswordStore() {
+    return base::MakeRefCounted<PasswordStore>(
+        std::make_unique<password_manager::PasswordStoreImpl>(
+            std::make_unique<LoginDatabase>(
+                temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test")),
+                password_manager::IsAccountStore(false))));
   }
 
  protected:
   TestingPrefServiceSimple testing_pref_service_;
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
-  scoped_refptr<PasswordStoreImpl> password_store_;
+  scoped_refptr<PasswordStore> password_store_;
   id<CredentialStore> credential_store_;
   AuthenticationServiceFake* auth_service_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;

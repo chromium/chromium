@@ -32,6 +32,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
+  void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
@@ -63,6 +64,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   CreateSyncControllerDelegateFactory() override;
 
   base::RepeatingCallback<void(bool)> pending_initialization_calls_;
+  base::RepeatingClosure pending_shutdown_calls_;
 
   std::unique_ptr<PasswordStoreBackend> main_backend_;
   std::unique_ptr<PasswordStoreBackend> shadow_backend_;

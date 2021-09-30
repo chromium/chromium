@@ -66,6 +66,12 @@ void PasswordStoreAndroidBackend::InitBackend(
   std::move(completion).Run(/*success=*/true);
 }
 
+void PasswordStoreAndroidBackend::Shutdown(
+    base::OnceClosure shutdown_completed) {
+  // TODO(https://crbug.com/1229654): Implement (e.g. unsubscribe from GMS).
+  std::move(shutdown_completed).Run();
+}
+
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(LoginsReply callback) {
   TaskId task_id = bridge_->GetAllLogins();
   request_for_task_.emplace(task_id, std::move(callback));

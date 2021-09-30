@@ -10,7 +10,11 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -140,21 +144,24 @@ bool TestPasswordStore::IsEmpty() const {
 
 TestPasswordStore::~TestPasswordStore() = default;
 
-scoped_refptr<base::SequencedTaskRunner>
-TestPasswordStore::CreateBackgroundTaskRunner() const {
-  return base::SequencedTaskRunnerHandle::Get();
-}
-
 void TestPasswordStore::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
-  main_task_runner()->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(completion), true));
+  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(main_task_runner_);
+  background_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(background_task_runner_);
+  main_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(std::move(completion), true));
+}
+
+void TestPasswordStore::Shutdown(base::OnceClosure shutdown_completed) {
+  std::move(shutdown_completed).Run();
 }
 
 void TestPasswordStore::GetAllLoginsAsync(LoginsReply callback) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::GetAllLoginsInternal,
                      RetainedRef(this)),
@@ -162,7 +169,7 @@ void TestPasswordStore::GetAllLoginsAsync(LoginsReply callback) {
 }
 
 void TestPasswordStore::GetAutofillableLoginsAsync(LoginsReply callback) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::GetAutofillableLoginsInternal,
                      RetainedRef(this)),
@@ -173,7 +180,7 @@ void TestPasswordStore::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::FillMatchingLoginsBulk,
                      base::Unretained(this), forms, include_psl),
@@ -182,7 +189,7 @@ void TestPasswordStore::FillMatchingLoginsAsync(
 
 void TestPasswordStore::AddLoginAsync(const PasswordForm& form,
                                       PasswordStoreChangeListReply callback) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::AddLoginImpl, base::Unretained(this),
                      form),
@@ -192,7 +199,7 @@ void TestPasswordStore::AddLoginAsync(const PasswordForm& form,
 void TestPasswordStore::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::UpdateLoginImpl,
                      base::Unretained(this), form),
@@ -202,7 +209,7 @@ void TestPasswordStore::UpdateLoginAsync(
 void TestPasswordStore::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::RemoveLoginImpl,
                      base::Unretained(this), form),
