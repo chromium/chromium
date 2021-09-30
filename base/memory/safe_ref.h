@@ -76,14 +76,14 @@ class SafeRef {
 
   // Call methods on the underlying T. Will CHECK() if the T pointee is no
   // longer alive.
-  T* operator->() {
+  T* operator->() const {
     // We rely on WeakPtr<T> to CHECK() on a bad deref; tests verify this.
     return w_.operator->();
   }
 
   // Provide access to the underlying T as a reference. Will CHECK() if the T
   // pointee is no longer alive.
-  T& operator*() { return *operator->(); }
+  T& operator*() const { return *operator->(); }
 
  private:
   template <typename U>

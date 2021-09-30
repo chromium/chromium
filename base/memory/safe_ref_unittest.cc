@@ -132,5 +132,12 @@ TEST(SafeRefTest, ConversionToBaseClassFromMoveAssign) {
   EXPECT_EQ(static_cast<WithWeak*>(&*base_safe)->self, &with);
 }
 
+TEST(SafeRefTest, CanDerefConst) {
+  WithWeak with;
+  const SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  EXPECT_EQ(safe->self->i, 1);
+  EXPECT_EQ((*safe).self->i, 1);
+}
+
 }  // namespace
 }  // namespace base
