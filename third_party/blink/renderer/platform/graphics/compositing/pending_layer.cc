@@ -69,6 +69,10 @@ void PreserveNearIntegralBounds(FloatRect& bounds) {
 
 }  // anonymous namespace
 
+void PreCompositedLayerInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(graphics_layer);
+}
+
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk)
     : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}

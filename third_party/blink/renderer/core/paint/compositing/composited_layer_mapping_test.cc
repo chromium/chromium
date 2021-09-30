@@ -50,11 +50,11 @@ class CompositedLayerMappingTest : public RenderingTest,
   }
 
   static const GraphicsLayerPaintInfo* GetSquashedLayer(
-      const Vector<GraphicsLayerPaintInfo>& squashed_layers,
+      const HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers,
       const PaintLayer& layer) {
     for (const auto& squashed_layer : squashed_layers) {
-      if (squashed_layer.paint_layer == &layer)
-        return &squashed_layer;
+      if (squashed_layer->paint_layer == &layer)
+        return squashed_layer;
     }
     return nullptr;
   }

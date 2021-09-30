@@ -319,6 +319,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(viewport_scrollable_area_);
   visitor->Trace(anchoring_adjustment_queue_);
   visitor->Trace(scroll_event_queue_);
+  visitor->Trace(pre_composited_layers_);
   visitor->Trace(layout_shift_tracker_);
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(mobile_friendliness_checker_);

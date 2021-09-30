@@ -68,22 +68,23 @@ class RasterInvalidationTracking;
 class RasterInvalidator;
 struct PreCompositedLayerInfo;
 
-typedef Vector<GraphicsLayer*, 64> GraphicsLayerVector;
+typedef HeapVector<Member<GraphicsLayer>, 64> GraphicsLayerVector;
 
 // GraphicsLayer is an abstraction for a rendering surface with backing store,
 // which may have associated transformation and animations.
-class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
+class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
+                                      public DisplayItemClient,
                                       public LayerAsJSONClient,
                                       private cc::ContentLayerClient {
-  USING_FAST_MALLOC(GraphicsLayer);
-
  public:
+  // |Destroy()| shouold be called when the object is no longer used.
   explicit GraphicsLayer(GraphicsLayerClient&);
   GraphicsLayer(const GraphicsLayer&) = delete;
   GraphicsLayer& operator=(const GraphicsLayer&) = delete;
   ~GraphicsLayer() override;
+  void Destroy();
 
-  GraphicsLayerClient& Client() const { return client_; }
+  GraphicsLayerClient& Client() const { return *client_; }
 
   void SetCompositingReasons(CompositingReasons reasons) {
     compositing_reasons_ = reasons;
@@ -104,7 +105,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   GraphicsLayer* Parent() const { return parent_; }
   void SetParent(GraphicsLayer*);  // Internal use only.
 
-  const Vector<GraphicsLayer*>& Children() const { return children_; }
+  const HeapVector<Member<GraphicsLayer>>& Children() const {
+    return children_;
+  }
   // Returns true if the child list changed.
   bool SetChildren(const GraphicsLayerVector&);
 
@@ -172,7 +175,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   // Returns true if any layer is repainted.
   bool PaintRecursively(GraphicsContext&,
-                        Vector<PreCompositedLayerInfo>&,
+                        HeapVector<PreCompositedLayerInfo>&,
                         PaintController::CycleScope& cycle_scope,
                         PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
@@ -181,7 +184,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   void SetElementId(const CompositorElementId&);
 
   // DisplayItemClient methods
-  String DebugName() const final { return client_.DebugName(this); }
+  String DebugName() const final { return client_->DebugName(this); }
   DOMNodeId OwnerNodeId() const final { return owner_node_id_; }
 
   // LayerAsJSONClient implementation.
@@ -225,6 +228,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   size_t ApproximateUnsharedMemoryUsageRecursive() const;
 
+  void Trace(Visitor* visitor) const;
+
  protected:
   String DebugName(const cc::Layer*) const;
 
@@ -238,7 +243,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   bool FillsBoundsCompletely() const final { return false; }
 
   void ClearPaintStateRecursively();
-  void Paint(Vector<PreCompositedLayerInfo>&,
+  void Paint(HeapVector<PreCompositedLayerInfo>&,
              PaintBenchmarkMode,
              PaintController::CycleScope*,
              const IntRect* interest_rect = nullptr);
@@ -261,7 +266,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   RasterInvalidator& EnsureRasterInvalidator();
   void InvalidateRaster(const IntRect&);
 
-  GraphicsLayerClient& client_;
+  Member<GraphicsLayerClient> client_;
 
   // Offset from the owning layoutObject
   IntSize offset_from_layout_object_;
@@ -282,8 +287,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   GraphicsLayerPaintingPhase painting_phase_;
 
-  Vector<GraphicsLayer*> children_;
-  GraphicsLayer* parent_;
+  HeapVector<Member<GraphicsLayer>> children_;
+  Member<GraphicsLayer> parent_;
 
   IntRect contents_rect_;
 
@@ -315,6 +320,10 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   DOMNodeId owner_node_id_ = kInvalidDOMNodeId;
   CompositingReasons compositing_reasons_ = CompositingReason::kNone;
+
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+#endif
 };
 
 // Iterates all graphics layers that should be seen by the compositor in
@@ -334,7 +343,7 @@ void ForAllGraphicsLayers(
   if (auto* contents_layer = layer.ContentsLayer())
     contents_layer_function(layer, *contents_layer);
 
-  for (auto* child : layer.Children()) {
+  for (GraphicsLayer* child : layer.Children()) {
     ForAllGraphicsLayers(*child, graphics_layer_function,
                          contents_layer_function);
   }

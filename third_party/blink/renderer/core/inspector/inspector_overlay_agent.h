@@ -326,7 +326,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   bool disposed_;
   v8_inspector::V8InspectorSession* v8_session_;
   Member<InspectorDOMAgent> dom_agent_;
-  std::unique_ptr<FrameOverlay> frame_overlay_;
+  Member<FrameOverlay> frame_overlay_;
   Member<InspectTool> inspect_tool_;
   Member<PersistentTool> persistent_tool_;
   Member<Hinge> hinge_;
