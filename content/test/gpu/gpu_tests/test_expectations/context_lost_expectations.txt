@@ -151,6 +151,7 @@ crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 # Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+crbug.com/1254745 [ mac amd debug no-passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
 # Flaky tab crash on Win10 x64 Debug (NVIDIA)
 crbug.com/1238162 [ win10 nvidia-0x1cb3 debug ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
