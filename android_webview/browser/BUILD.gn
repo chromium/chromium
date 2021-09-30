@@ -47,6 +47,8 @@ source_set("browser") {
     "aw_contents_statics.cc",
     "aw_cookie_access_policy.cc",
     "aw_cookie_access_policy.h",
+    "aw_dark_mode.cc",
+    "aw_dark_mode.h",
     "aw_debug.cc",
     "aw_devtools_manager_delegate.cc",
     "aw_devtools_manager_delegate.h",

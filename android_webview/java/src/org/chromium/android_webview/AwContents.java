@@ -483,6 +483,7 @@ public class AwContents implements SmartClipProvider {
     // attached to the Window and size tracking is enabled. It will be null otherwise.
     private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
+    private AwDarkMode mAwDarkMode;
     private DarkModeHistogramRecorder mDarkModeHistogramRecorder;
 
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
@@ -1086,6 +1087,7 @@ public class AwContents implements SmartClipProvider {
             setOverScrollMode(mContainerView.getOverScrollMode());
             setScrollBarStyle(mInternalAccessAdapter.super_getScrollBarStyle());
 
+            mAwDarkMode = new AwDarkMode(context);
             setNewAwContents(AwContentsJni.get().init(mBrowserContext.getNativePointer()));
 
             onContainerViewChanged();
@@ -1461,6 +1463,7 @@ public class AwContents implements SmartClipProvider {
         mNavigationController = mWebContents.getNavigationController();
         installWebContentsObserver();
         mSettings.setWebContents(mWebContents);
+        mAwDarkMode.setWebContents(mWebContents);
         initializeAutofillProviderIfNecessary();
 
         mDisplayObserver.onDIPScaleChanged(getDeviceScaleFactor());
