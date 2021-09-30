@@ -82,7 +82,6 @@ public class AssistantTextUtils {
                 Log.d(TAG, "Mismatching span", e);
             }
         }
-
         view.setText(SpanApplier.applySpans(
                 text, successfulSpans.toArray(new SpanApplier.SpanInfo[successfulSpans.size()])));
         view.setMovementMethod(linkIds.isEmpty() ? null : LinkMovementMethod.getInstance());
