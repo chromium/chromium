@@ -2242,7 +2242,7 @@
 
     'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols', 'arm64', 'static_angle',
-      'resource_allowlisting', 'android_fastbuild', 'webview_google',
+      'strip_debug_info', 'android_fastbuild', 'webview_google',
       'use_java_coverage', 'partial_code_coverage_instrumentation',
     ],
 
