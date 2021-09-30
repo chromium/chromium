@@ -72,7 +72,7 @@ export class Context {
     // or,
     //   { exceptionDetails: { message: '<error message from user script>', stacktrace? } }
 
-    const expression = `(${EVALUATOR_SCRIPT}).apply(null, [${JSON.stringify(
+    const expression = `(${EVALUATOR_SCRIPT}).evaluate.apply(null, [${JSON.stringify(
       script
     )}, ${JSON.stringify(args)}])`;
     const { result, exceptionDetails } = await this._cdpClient.Runtime.evaluate(

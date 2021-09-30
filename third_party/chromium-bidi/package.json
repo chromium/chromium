@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "argparse": "^2.0.1",
+    "chai-exclude": "^2.1.0",
     "debug": "^4.3.1",
     "puppeteer": "^10.2.0",
     "ts-node": "^9.1.1",
