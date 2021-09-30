@@ -8,10 +8,11 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -19,9 +20,6 @@ namespace extensions {
 
 using process_util::GetPersistentBackgroundPageState;
 using process_util::PersistentBackgroundPageState;
-
-// TODO(devlin): Replace the usage of NOTIFICATION_BACKGROUND_PAGE_READY
-// throughout this test. https://crbug.com/1174744.
 
 class ProcessUtilBrowserTest : public ExtensionBrowserTest {
  public:
@@ -32,28 +30,20 @@ class ProcessUtilBrowserTest : public ExtensionBrowserTest {
       const Extension& extension) {
     // Cache the ID, since we'll be invalidated the extension.
     const ExtensionId extension_id = extension.id();
-    content::WindowedNotificationObserver background_ready(
-        NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
+    ExtensionHostTestHelper background_ready(profile(), extension_id);
+    background_ready.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
     // Enable the extension in incognito, and wait for it to reload (including
     // the background page being ready).
     util::SetIsIncognitoEnabled(extension.id(), profile(), true);
-    background_ready.Wait();
+    background_ready.WaitForDocumentElementAvailable();
     // Get the reloaded version of the extension.
     return extension_registry()->enabled_extensions().GetByID(extension_id);
   }
 
   const Extension* LoadExtensionAndWaitForBackgroundPage(
       const base::FilePath& file_path) {
-    content::WindowedNotificationObserver background_ready(
-        NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
+    // LoadExtension() automatically waits for the background page to load.
     const Extension* extension = LoadExtension(file_path);
-    // NOTE: We don't assert the background page *isn't* ready yet, because
-    // LoadExtension() waits for views to load, which means the page might be
-    // ready at this point.
-    background_ready.Wait();
-
     return extension;
   }
 };
@@ -133,11 +123,6 @@ IN_PROC_BROWSER_TEST_F(ProcessUtilBrowserTest,
 
   extension = EnableInIncognitoAndWaitForBackgroundPage(*extension);
 
-  // Since the on-the-record version already loaded, the next background page to
-  // load should be the extension's incognito version.
-  content::WindowedNotificationObserver incognito_background_ready(
-      NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-      content::Source<const Extension>(extension));
   // NOTE: We deliberately use chrome::OpenURLOffTheRecord() here (instead of
   // InProcessBrowserTest::OpenURLOffTheRecord() or CreateIncognitoBrowser())
   // because we need the process of opening to be asynchronous for the next
@@ -155,8 +140,10 @@ IN_PROC_BROWSER_TEST_F(ProcessUtilBrowserTest,
   EXPECT_EQ(PersistentBackgroundPageState::kNotReady,
             GetPersistentBackgroundPageState(*extension, incognito_profile));
 
+  // Wait for the incognito profile to finish.
+  ExtensionBackgroundPageWaiter(incognito_profile, *extension)
+      .WaitForBackgroundOpen();
   // Now, both the incognito and on-the-record pages should should be ready.
-  incognito_background_ready.Wait();
   EXPECT_EQ(PersistentBackgroundPageState::kReady,
             GetPersistentBackgroundPageState(*extension, profile()));
   EXPECT_EQ(PersistentBackgroundPageState::kReady,
