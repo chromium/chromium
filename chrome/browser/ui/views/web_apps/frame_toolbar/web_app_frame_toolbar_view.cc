@@ -146,7 +146,7 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
   const int width = std::max(trailing_x - leading_x, 0);
   const int height = preferred_size.height();
   DCHECK_LE(height, available_height);
-  SetBounds(leading_x, y + (available_height - height) / 2, width, height);
+  SetBounds(leading_x, y, width, available_height);
   Layout();
 
   if (!center_container_->GetVisible())

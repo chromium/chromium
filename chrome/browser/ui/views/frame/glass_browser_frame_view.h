@@ -17,6 +17,7 @@
 
 class BrowserView;
 class TabSearchBubbleHost;
+class GlassBrowserCaptionButtonContainer;
 
 class GlassBrowserFrameView : public BrowserNonClientFrameView,
                               public TabIconViewModel {
@@ -74,6 +75,10 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   SkColor GetTitlebarColor() const;
 
   const views::Label* window_title_for_testing() const { return window_title_; }
+  const GlassBrowserCaptionButtonContainer*
+  caption_button_container_for_testing() const {
+    return caption_button_container_;
+  }
 
  protected:
   // BrowserNonClientFrameView:

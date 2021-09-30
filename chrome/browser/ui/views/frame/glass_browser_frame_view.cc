@@ -705,10 +705,12 @@ void GlassBrowserFrameView::LayoutTitleBar() {
   }
 
   if (web_app_frame_toolbar()) {
+    const int web_app_titlebar_height =
+        caption_button_container_->size().height();
     std::pair<int, int> remaining_bounds =
-        web_app_frame_toolbar()->LayoutInContainer(next_leading_x,
-                                                   next_trailing_x, window_top,
-                                                   titlebar_visual_height);
+        web_app_frame_toolbar()->LayoutInContainer(
+            next_leading_x, next_trailing_x, WindowTopY(),
+            web_app_titlebar_height);
     next_leading_x = remaining_bounds.first;
     next_trailing_x = remaining_bounds.second;
   }
@@ -747,9 +749,7 @@ void GlassBrowserFrameView::LayoutCaptionButtons() {
   // is smaller than our preferred button size.
   if (IsWebUITabStrip() && IsMaximized()) {
     height = std::min(height, TitlebarMaximizedVisualHeight());
-  } else if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    // When the WCO is enabled, the caption button container should be the same
-    // height as the WebAppFrameToolbar for a seamless overlay.
+  } else if (web_app_frame_toolbar()) {
     height = IsMaximized() ? TitlebarMaximizedVisualHeight()
                            : TitlebarHeight(false) - WindowTopY();
   }
