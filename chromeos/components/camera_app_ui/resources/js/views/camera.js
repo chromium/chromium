@@ -53,7 +53,6 @@ import {Layout} from './camera/layout.js';
 import {
   Modes,
   PhotoHandler,  // eslint-disable-line no-unused-vars
-  Scan,
   ScanHandler,  // eslint-disable-line no-unused-vars
   setAvc1Parameters,
   Video,
@@ -712,6 +711,7 @@ export class Camera extends View {
    * @override
    */
   handleNoDocument() {
+    nav.close(ViewName.FLASH);
     const message = loadTimeData.getI18nMessage(
         I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
     nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
@@ -757,44 +757,42 @@ export class Camera extends View {
   }
 
   /**
+   * Opens review view to review input blob.
+   * @param {!Blob} blob
+   * @param {!review.Options} options
    * @return {!Promise}
    * @private
    */
-  async restorePreviewInScanMode_() {
-    assert(this.constraints_ !== null);
-    await this.modes_.prepareDevice(Mode.SCAN);
-    await this.preview_.open(this.constraints_);
-    const scanMode = assertInstanceof(this.modes_.current, Scan);
-    scanMode.updatePreview(this.preview_.stream);
-    await this.scanOptions_.attachPreview(this.preview_.getVideoElement());
-  }
-
-  /**
-   * @override
-   */
-  async setReviewDocument(blob) {
-    this.constraints_ = this.preview_.getConstraits();
+  async doReview_(blob, options) {
+    // Because the review view will cover the whole camera view, prepare for
+    // temporarily turn off camera by stopping preview.
+    this.constraints_ = this.preview_.getConstraints();
     await this.preview_.close();
     await this.scanOptions_.detachPreview();
     try {
       await this.review_.setReviewPhoto(blob);
-    } catch (e) {
-      await this.restorePreviewInScanMode_();
-      throw e;
+      return await this.review_.startReview(options);
+    } finally {
+      assert(this.constraints_ !== null);
+      await this.modes_.prepareDevice();
+      await this.preview_.open(this.constraints_);
+      this.modes_.current.updatePreview(this.preview_.stream);
+      await this.scanOptions_.attachPreview(this.preview_.getVideoElement());
     }
   }
 
   /**
    * @override
    */
-  async getDocumentReviewResult() {
-    const primary =
-        new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, MimeType.PDF);
-    const others = [new review.Option(
-        I18nString.LABEL_SAVE_PHOTO_DOCUMENT, MimeType.JPEG)];
-    const result = await this.review_.startReview({primary, others});
-    await this.restorePreviewInScanMode_();
-    return result;
+  async reviewDocument(blob) {
+    state.addOneTimeObserver(ViewName.REVIEW, () => {
+      nav.close(ViewName.FLASH);
+    });
+    const options = new review.Options(
+        new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, MimeType.PDF),
+        new review.Option(I18nString.LABEL_SAVE_PHOTO_DOCUMENT, MimeType.JPEG),
+    );
+    return this.doReview_(blob, options);
   }
 
   /**
@@ -832,13 +830,6 @@ export class Camera extends View {
   /**
    * @override
    */
-  clearBlockingShutterEffect() {
-    nav.close(ViewName.FLASH);
-  }
-
-  /**
-   * @override
-   */
   waitPreviewReady() {
     return this.preview_.waitReadyForTakePhoto();
   }
@@ -866,7 +857,12 @@ export class Camera extends View {
    * @override
    */
   async handleResultGif(blob, name) {
-    await this.resultSaver_.saveGif(blob, name);
+    const options =
+        new review.Options(new review.Option(I18nString.LABEL_SAVE, true));
+    const result = await this.doReview_(blob, options);
+    if (result) {
+      await this.resultSaver_.saveGif(blob, name);
+    }
   }
 
   /**
@@ -945,10 +941,10 @@ export class Camera extends View {
         if (this.isSuspended()) {
           throw new CameraSuspendedError();
         }
-        this.modes_.setCaptureOption(constraints, captureR);
+        this.modes_.setCaptureParams(mode, constraints, captureR);
 
         try {
-          await this.modes_.prepareDevice(mode);
+          await this.modes_.prepareDevice();
           const factory = this.modes_.getModeFactory(mode);
 
           // Sets 2500 ms delay between screen resumed and open camera preview.
@@ -985,7 +981,7 @@ export class Camera extends View {
 
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
-              mode, factory, stream, this.facingMode_, deviceId, captureR);
+              factory, stream, this.facingMode_, deviceId);
           await this.scanOptions_.attachPreview(
               this.preview_.getVideoElement());
           for (const l of this.configureCompleteListener_) {

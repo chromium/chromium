@@ -188,7 +188,7 @@ export class Preview {
   /**
    * @return {!StreamConstraints}
    */
-  getConstraits() {
+  getConstraints() {
     assert(this.constraints_ !== null);
     return this.constraints_;
   }

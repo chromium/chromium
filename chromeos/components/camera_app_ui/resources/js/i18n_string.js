@@ -70,6 +70,7 @@ export const I18nString = {
   LABEL_PHOTO_RESOLUTION: 'label_photo_resolution',
   LABEL_RECORD_GIF_VIDEO_OPTION: 'label_record_gif_video_option',
   LABEL_RECORD_NORMAL_VIDEO_OPTION: 'label_record_normal_video_option',
+  LABEL_SAVE: 'label_save',
   LABEL_SAVE_PDF_DOCUMENT: 'label_save_pdf_document',
   LABEL_SAVE_PHOTO_DOCUMENT: 'label_save_photo_document',
   LABEL_SCAN_DOCUMENT_OPTION: 'label_scan_document_option',

@@ -98,6 +98,13 @@ export class ModeBase {
   }
 
   /**
+   * Updates preview stream currently in used.
+   * @param {!MediaStream} stream
+   * @abstract
+   */
+  updatePreview(stream) {}
+
+  /**
    * Initiates video/photo capture operation under this mode.
    * @return {!Promise}
    * @protected

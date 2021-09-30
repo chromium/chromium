@@ -36,6 +36,28 @@ export class Option {
 }
 
 /**
+ * Options for reviewing.
+ * @template T
+ */
+export class Options {
+  /**
+   * @param {!Option} primary
+   * @param {...!Option} others
+   */
+  constructor(primary, ...others) {
+    /**
+     * @const {!Option<!T>}
+     */
+    this.primary = primary;
+
+    /**
+     * @const {!Array<!Option<!T>>}
+     */
+    this.others = others;
+  }
+}
+
+/**
  * View controller for review page.
  */
 export class Review extends View {
@@ -96,13 +118,10 @@ export class Review extends View {
 
   /**
    * @template T
-   * @param {{
-   *   primary: !Option<!T>,
-   *   others: (!Iterable<!Option<!T>>|undefined),
-   * }} options
+   * @param {!Options} options
    * @return {!Promise<?T>}
    */
-  async startReview({primary, others=[]}) {
+  async startReview({primary, others = []}) {
     // Remove all existing buttons.
     while (this.btnGroups_.firstChild) {
       this.btnGroups_.removeChild(this.btnGroups_.lastChild);

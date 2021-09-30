@@ -124,6 +124,20 @@ export function addObserver(state, observer) {
 }
 
 /**
+ * Adds one-time observer function to be called on any state change.
+ * @param {!StateUnion} state State to be observed.
+ * @param {!StateObserver} observer Observer function called with
+ *     newly changed value.
+ */
+export function addOneTimeObserver(state, observer) {
+  const wrappedObserver = (...args) => {
+    observer(...args);
+    removeObserver(state, wrappedObserver);
+  };
+  addObserver(state, wrappedObserver);
+}
+
+/**
  * Removes observer function to be called on state change.
  * @param {!StateUnion} state State to remove observer from.
  * @param {!StateObserver} observer Observer function to be removed.

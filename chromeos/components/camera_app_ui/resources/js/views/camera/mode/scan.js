@@ -41,21 +41,11 @@ export class ScanHandler {
   playBlockingShutterEffect() {}
 
   /**
-   * Clears UI effect shutter effect blocking all UI operation.
-   */
-  clearBlockingShutterEffect() {}
-
-  /**
    * @param {!Blob} blob Jpeg Blob as scanned document.
-   * @return {!Promise}
-   */
-  async setReviewDocument(blob) {}
-
-  /**
    * @return {!Promise<?MimeType>} Returns which mime type user choose to save.
    *     Null for cancel document.
    */
-  async getDocumentReviewResult() {}
+  async reviewDocument(blob) {}
 
   /**
    * Handles case when no document detected in photo result.
@@ -107,16 +97,12 @@ class DocumentPhotoHandler {
     const helper = await ChromeHelper.getInstance();
     const corners = await helper.scanDocumentCorners(rawBlob);
     if (corners.length === 0) {
-      this.handler_.clearBlockingShutterEffect();
       this.handler_.handleNoDocument();
       throw new CanceledError(`Couldn't detect a document`);
     }
     const jpegBlob =
         await helper.convertToDocument(rawBlob, corners, MimeType.JPEG);
-
-    await this.handler_.setReviewDocument(jpegBlob);
-    this.handler_.clearBlockingShutterEffect();
-    const mimeType = await this.handler_.getDocumentReviewResult();
+    const mimeType = await this.handler_.reviewDocument(jpegBlob);
     if (mimeType === null) {
       this.handler_.handleCancelDocument({resolution});
       return;

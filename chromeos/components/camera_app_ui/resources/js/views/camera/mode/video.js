@@ -329,6 +329,15 @@ export class Video extends ModeBase {
   }
 
   /**
+   * @override
+   */
+  updatePreview(stream) {
+    assert(!state.get(state.State.RECORDING) && !this.isRecordingGif_);
+    this.stream_ = stream;
+    this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
+  }
+
+  /**
    * @return {!RecordType} Returns record type of checked radio buttons in
    *     record type option groups.
    */
@@ -512,6 +521,8 @@ export class Video extends ModeBase {
       const blob = await gifSaver.endWrite();
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
 
+      // TODO(b:191950622): Close capture stream before handleResultGif()
+      // opening preview page when multi-stream recording enabled.
       await this.handler_.handleResultGif(blob, gifName);
 
       state.set(state.State.RECORDING_GIF, false);
@@ -592,6 +603,8 @@ export class Video extends ModeBase {
    * @private
    */
   async captureGif_() {
+    // TODO(b:191950622): Grab frames from capture stream when multistream
+    // enabled.
     const video = this.handler_.getPreviewVideo();
     let {videoWidth: width, videoHeight: height} = video;
     if (width > GIF_MAX_SIDE || height > GIF_MAX_SIDE) {

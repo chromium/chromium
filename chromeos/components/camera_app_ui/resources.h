@@ -80,6 +80,7 @@ const struct {
     {"label_record_gif_video_option", IDS_LABEL_RECORD_GIF_VIDEO_OPTION},
     {"label_record_normal_video_option", IDS_LABEL_RECORD_NORMAL_VIDEO_OPTION},
     {"label_retake", IDS_LABEL_RETAKE},
+    {"label_save", IDS_LABEL_SAVE},
     {"label_save_pdf_document", IDS_LABEL_SAVE_PDF_DOCUMENT},
     {"label_save_photo_document", IDS_LABEL_SAVE_PHOTO_DOCUMENT},
     {"label_scan_document_option", IDS_LABEL_SCAN_DOCUMENT_OPTION},

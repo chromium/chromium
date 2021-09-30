@@ -48,7 +48,7 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
-export {Scan, ScanHandler} from './scan.js';
+export {ScanHandler} from './scan.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**
@@ -162,16 +162,15 @@ export class Modes {
     this.modesGroup_ = dom.get('#modes-group', HTMLElement);
 
     /**
-     * @type {?StreamConstraints}
+     * Parameters to create mode capture controller.
+     * @type {?{
+     *   mode: !Mode,
+     *   constraints: !StreamConstraints,
+     *   captureResolution: ?Resolution,
+     * }}
      * @private
      */
-    this.constraints_ = null;
-
-    /**
-     * @type {?Resolution}
-     * @private
-     */
-    this.captureResolution_ = null;
+    this.captureParams_ = null;
 
     /**
      * Returns a set of general constraints for fake cameras.
@@ -204,8 +203,8 @@ export class Modes {
     };
 
     const getNonNullConstraints = () => {
-      assert(this.constraints_ !== null);
-      return this.constraints_;
+      assert(this.captureParams_.constraints !== null);
+      return this.captureParams_.constraints;
     };
 
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
@@ -236,7 +235,8 @@ export class Modes {
     this.allModes_ = {
       [Mode.VIDEO]: {
         getCaptureFactory: () => new VideoFactory(
-            getNonNullConstraints(), this.captureResolution_, videoHandler),
+            getNonNullConstraints(), this.captureParams_.captureResolution,
+            videoHandler),
         isSupported: async () => true,
         isSupportPTZ: () => true,
         prepareDevice: async (constraints, resolution) => {
@@ -273,7 +273,8 @@ export class Modes {
       },
       [Mode.PHOTO]: {
         getCaptureFactory: () => new PhotoFactory(
-            getNonNullConstraints(), this.captureResolution_, photoHandler),
+            getNonNullConstraints(), this.captureParams_.captureResolution,
+            photoHandler),
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
@@ -285,7 +286,8 @@ export class Modes {
       },
       [Mode.SQUARE]: {
         getCaptureFactory: () => new SquareFactory(
-            getNonNullConstraints(), this.captureResolution_, photoHandler),
+            getNonNullConstraints(), this.captureParams_.captureResolution,
+            photoHandler),
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
@@ -297,7 +299,8 @@ export class Modes {
       },
       [Mode.PORTRAIT]: {
         getCaptureFactory: () => new PortraitFactory(
-            getNonNullConstraints(), this.captureResolution_, photoHandler),
+            getNonNullConstraints(), this.captureParams_.captureResolution,
+            photoHandler),
         isSupported: async (deviceId) => {
           if (deviceId === null) {
             return false;
@@ -318,7 +321,8 @@ export class Modes {
       },
       [Mode.SCAN]: {
         getCaptureFactory: () => new ScanFactory(
-            getNonNullConstraints(), this.captureResolution_, scanHandler),
+            getNonNullConstraints(), this.captureParams_.captureResolution,
+            scanHandler),
         isSupported: async (deviceId) => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
@@ -440,28 +444,27 @@ export class Modes {
   }
 
   /**
+   * @param {!Mode} mode
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
    * @param {?Resolution} captureResolution
    */
-  setCaptureOption(constraints, captureResolution) {
-    this.constraints_ = constraints;
-    this.captureResolution_ = captureResolution;
+  setCaptureParams(mode, constraints, captureResolution) {
+    this.captureParams_ = {mode, constraints, captureResolution};
   }
 
   /**
    * Makes video capture device prepared for capturing in this mode.
-   * @param {!Mode} mode
    * @return {!Promise}
    */
-  async prepareDevice(mode) {
+  async prepareDevice() {
     if (state.get(state.State.USE_FAKE_CAMERA)) {
       return;
     }
-    assert(this.constraints_ !== null);
+    assert(this.captureParams_ !== null);
+    const {mode, captureResolution, constraints} = this.captureParams_;
     return this.allModes_[mode].prepareDevice(
-        this.constraints_,
-        assertInstanceof(this.captureResolution_, Resolution));
+        constraints, assertInstanceof(captureResolution, Resolution));
   }
 
   /**
@@ -522,21 +525,19 @@ export class Modes {
 
   /**
    * Creates and updates current mode object.
-   * @param {!Mode} mode Classname of mode to be updated.
    * @param {!ModeFactory} factory The factory ready for producing mode capture
    *     object.
    * @param {!MediaStream} stream Stream of the new switching mode.
    * @param {!Facing} facing Camera facing of the current mode.
    * @param {?string} deviceId Device id of currently working video device.
-   * @param {?Resolution} captureResolution Capturing resolution width and
-   *     height.
    * @return {!Promise}
    */
-  async updateMode(mode, factory, stream, facing, deviceId, captureResolution) {
+  async updateMode(factory, stream, facing, deviceId) {
     if (this.current !== null) {
       await this.current.clear();
       await this.disableSaveMetadata_();
     }
+    const {mode, captureResolution} = this.captureParams_;
     this.updateModeUI_(mode);
     this.current = factory.produce();
     if (deviceId && captureResolution) {
@@ -555,6 +556,7 @@ export class Modes {
       await this.current.clear();
       await this.disableSaveMetadata_();
     }
+    this.captureParams_ = null;
     this.current = null;
   }
 

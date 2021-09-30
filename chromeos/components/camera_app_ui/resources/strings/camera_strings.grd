@@ -535,6 +535,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for current record time and the maximal record time in seconds separated by '/' sign" name="IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME">
         <ph name="current">$1<ex>4.3</ex></ph> / <ph name="maximal">$2<ex>5.0</ex></ph>s
       </message>
+      <message desc="Label for button for saving current photo result" name="IDS_LABEL_SAVE">
+        Save
+      </message>
     </messages>
   </release>
 </grit>
