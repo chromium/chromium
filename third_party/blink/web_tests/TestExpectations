@@ -931,6 +931,8 @@ crbug.com/1192763 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-justify
 crbug.com/1192763 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-justify-self-vertWM-004.html [ Failure ]
 
 # [css-ui]
+# The `input-security` property not implemented yet.
+crbug.com/1253732 external/wpt/css/css-ui/input-security-none-sensitive-text-input.html [ Failure ]
 # Layout team disagrees with the spec for this particular test.
 crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
 
@@ -2840,7 +2842,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-sizing/parsing/min-height-inv
 crbug.com/626703 [ Mac10.15 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/xhr/event-loadstart-upload.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/xhr/event-loadstart-upload.any.worker.html [ Crash ]
-crbug.com/626703 external/wpt/css/css-ui/input-security-none-sensitive-text-input.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-flexbox/dynamic-isize-change-002.html [ Crash ]
