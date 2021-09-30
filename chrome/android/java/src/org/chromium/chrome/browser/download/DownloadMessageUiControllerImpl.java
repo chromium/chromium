@@ -68,6 +68,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
     private static final long DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS = 12000;
 
+    // The description can be an extremely long data url, whose length can cause a low memory
+    // error when applied to a text view. https://crbug.com/1250423
+    private static final int MAX_DESCRIPTION_LENGTH = 200;
+
     // Values for the histogram Android.Download.InfoBar.Shown. Keep this in sync with the
     // DownloadInfoBar.ShownState enum in enums.xml.
     @IntDef({UmaInfobarShown.ANY_STATE, UmaInfobarShown.ACCELERATED, UmaInfobarShown.DOWNLOADING,
@@ -797,7 +801,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
         mPropertyModel.set(MessageBannerProperties.TITLE, info.message);
-        mPropertyModel.set(MessageBannerProperties.DESCRIPTION, info.description);
+
+        String description = info.description == null ? "" : info.description;
+        mPropertyModel.set(MessageBannerProperties.DESCRIPTION,
+                description.substring(0, Math.min(MAX_DESCRIPTION_LENGTH, description.length())));
+
         mPropertyModel.set(MessageBannerProperties.DESCRIPTION_MAX_LINES, 3);
         mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, info.link);
         mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
