@@ -849,10 +849,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
         const PaintLayerScrollableArea& scrollable_area)
         : scrollable_area_(&scrollable_area) {}
 
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(scrollable_area_);
-      DisplayItemClient::Trace(visitor);
-    }
+    void Trace(Visitor* visitor) const { visitor->Trace(scrollable_area_); }
 
    private:
     String DebugName() const final;
@@ -869,10 +866,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
         const PaintLayerScrollableArea& scrollable_area)
         : scrollable_area_(&scrollable_area) {}
 
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(scrollable_area_);
-      DisplayItemClient::Trace(visitor);
-    }
+    void Trace(Visitor* visitor) const { visitor->Trace(scrollable_area_); }
 
    private:
     String DebugName() const final;

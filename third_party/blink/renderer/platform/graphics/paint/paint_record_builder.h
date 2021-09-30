@@ -57,9 +57,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final
 
   // DisplayItemClient.
   String DebugName() const final { return "PaintRecordBuilder"; }
-  void Trace(Visitor* visitor) const override {
-    DisplayItemClient::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const {}
 
  private:
   absl::optional<PaintController> own_paint_controller_;

@@ -205,7 +205,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   mojom::blink::ColorScheme UsedColorScheme() const;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
  protected:
   void AutoscrollTimerFired(TimerBase*);

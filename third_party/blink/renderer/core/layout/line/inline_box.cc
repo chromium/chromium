@@ -44,7 +44,7 @@ struct SameSizeAsInlineBox : GarbageCollected<SameSizeAsInlineBox>,
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const {}
 };
 
 ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
@@ -54,7 +54,6 @@ void InlineBox::Trace(Visitor* visitor) const {
   visitor->Trace(prev_);
   visitor->Trace(parent_);
   visitor->Trace(line_layout_item_);
-  DisplayItemClient::Trace(visitor);
 }
 
 DISABLE_CFI_PERF

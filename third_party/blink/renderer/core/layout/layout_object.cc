@@ -231,9 +231,7 @@ LayoutObject::SetLayoutNeededForbiddenScope::~SetLayoutNeededForbiddenScope() {
 }
 #endif
 
-struct SameSizeAsLayoutObject : public GarbageCollected<SameSizeAsLayoutObject>,
-                                ImageResourceObserver,
-                                DisplayItemClient {
+struct SameSizeAsLayoutObject : ImageResourceObserver, DisplayItemClient {
   // Normally this field uses the gap between DisplayItemClient and
   // LayoutObject's other fields.
   uint8_t paint_invalidation_reason_;
@@ -375,7 +373,6 @@ void LayoutObject::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
   visitor->Trace(fragment_);
   ImageResourceObserver::Trace(visitor);
-  DisplayItemClient::Trace(visitor);
 }
 
 bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {

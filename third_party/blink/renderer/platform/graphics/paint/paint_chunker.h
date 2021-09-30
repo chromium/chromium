@@ -38,7 +38,7 @@ class PLATFORM_EXPORT PaintChunker final {
 #endif
 
   void StartMarkingClientsForValidation(
-      HeapVector<Member<const DisplayItemClient>>& clients_to_validate);
+      Vector<const DisplayItemClient*>& clients_to_validate);
   void MarkClientForValidation(const DisplayItemClient& client);
   void StopMarkingClientsForValidation();
 
@@ -113,8 +113,8 @@ class PLATFORM_EXPORT PaintChunker final {
   void FinalizeLastChunkProperties();
 
   Vector<PaintChunk>* chunks_ = nullptr;
-  Persistent<HeapVector<Member<const DisplayItemClient>>> clients_to_validate_ =
-      nullptr;
+  Vector<const DisplayItemClient*>* clients_to_validate_ = nullptr;
+
   // The id specified by UpdateCurrentPaintChunkProperties(). If it is not
   // nullopt, we will use it as the id of the next new chunk. Otherwise we will
   // use the id of the first display item of the new chunk as the id.

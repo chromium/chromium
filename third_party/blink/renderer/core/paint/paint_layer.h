@@ -1164,7 +1164,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool KnownToClipSubtree() const;
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   PhysicalRect LocalBoundingBoxForCompositingOverlapTest() const;

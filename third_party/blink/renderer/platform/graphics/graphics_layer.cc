@@ -754,7 +754,6 @@ void GraphicsLayer::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(children_);
   visitor->Trace(parent_);
-  DisplayItemClient::Trace(visitor);
 }
 
 }  // namespace blink

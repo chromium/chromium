@@ -685,7 +685,7 @@ void PaintController::CommitNewDisplayItems() {
 }
 
 PaintController::CycleScope::~CycleScope() {
-  for (const auto& client : *clients_to_validate_) {
+  for (const auto* client : clients_to_validate_) {
     if (client->IsCacheable())
       client->Validate();
   }
@@ -694,7 +694,7 @@ PaintController::CycleScope::~CycleScope() {
 }
 
 void PaintController::StartCycle(
-    HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
+    Vector<const DisplayItemClient*>& clients_to_validate,
     bool record_debug_info) {
   // StartCycle() can only be called before the controller has painted anything.
   DCHECK(new_paint_artifact_);
