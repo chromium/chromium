@@ -6723,7 +6723,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
+          "--log-wptreport"
         ],
         "isolate_name": "system_webview_wpt",
         "merge": {

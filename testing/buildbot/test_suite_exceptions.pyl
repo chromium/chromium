@@ -2735,6 +2735,9 @@
   'system_webview_wpt': {
     'modifications': {
       'android-webview-pie-x86-wpt-fyi-rel': {
+        'args': [
+          '--log-wptreport',
+        ],
         'swarming': {
           'shards': 18,
         },
