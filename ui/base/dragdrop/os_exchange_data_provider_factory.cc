@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ui_base_features.h"
 #if defined(USE_OZONE)
@@ -64,8 +64,7 @@ OSExchangeDataProviderFactory::CreateProvider() {
   return std::make_unique<OSExchangeDataProviderWin>();
 #elif defined(OS_FUCHSIA)
   // TODO(crbug.com/980371): Implement OSExchangeDataProvider for Fuchsia.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<OSExchangeDataProviderNonBacked>();
 #else
 #error "Unknown operating system"
 #endif
