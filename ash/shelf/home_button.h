@@ -16,6 +16,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_targeter_delegate.h"
 
+namespace views {
+class CircleLayerDelegate;
+}  // namespace views
+
 namespace ash {
 
 class ShelfButtonDelegate;
@@ -93,8 +97,26 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
+  // Starts the launcher nudge animation.
+  void StartNudgeAnimation();
+
+  // Callback for the nudge animation.
+  void OnNudgeAnimationEnded();
+
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
+
+  // The ripple layer in the launcher nudge animation. Only exists during the
+  // nudge animation.
+  std::unique_ptr<ui::Layer> nudge_ripple_layer_;
+
+  // The delegate used by |nudge_ripple_layer_|. Only exists during the
+  // nudge animation.
+  std::unique_ptr<views::CircleLayerDelegate> ripple_layer_delegate_;
+
+  std::unique_ptr<ScopedNoClipRect> scoped_no_clip_rect_;
+
+  base::WeakPtrFactory<HomeButton> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
