@@ -77,13 +77,6 @@ if (is_linux || is_chromeos_lacros) {
   ]
 }
 
-if (is_fuchsia) {
-  grit_defines += [
-    "-D",
-    "is_fuchsia",
-  ]
-}
-
 if (toolkit_views) {
   grit_defines += [
     "-D",
@@ -149,6 +142,12 @@ if (current_toolchain != host_toolchain) {
     grit_defines += [
       "-t",
       "win32",
+    ]
+  }
+  if (is_fuchsia) {
+    grit_defines += [
+      "-t",
+      "fuchsia",
     ]
   }
 }

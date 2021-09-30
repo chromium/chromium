@@ -496,6 +496,8 @@ class Node(object):
         value = target_platform == 'android'
       elif name == 'is_ios':
         value = target_platform == 'ios'
+      elif name == 'is_fuchsia':
+        value = target_platform == 'fuchsia'
       elif name == 'is_bsd':
         value = 'bsd' in target_platform
       elif name == 'is_posix':
