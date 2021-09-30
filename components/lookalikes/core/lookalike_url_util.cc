@@ -161,7 +161,9 @@ bool GetSimilarDomainFromTop500(
                 top_domain_skeleton, url_formatter::SkeletonType::kFull)
                 .domain;
         DCHECK(!top_domain.empty());
-        if (!target_allowlisted.Run(top_domain)) {
+        if (!IsLikelyCharacterSwapFalsePositive(navigated_domain,
+                                                GetDomainInfo(top_domain)) &&
+            !target_allowlisted.Run(top_domain)) {
           *matched_domain = top_domain;
           *match_type = LookalikeUrlMatchType::kCharacterSwapTop500;
           return true;
@@ -206,7 +208,9 @@ bool GetSimilarDomainFromEngagedSites(
         }
         // Check character swap on skeletons.
         if (HasOneCharacterSwap(base::UTF8ToUTF16(navigated_skeleton),
-                                base::UTF8ToUTF16(engaged_skeleton))) {
+                                base::UTF8ToUTF16(engaged_skeleton)) &&
+            !IsLikelyCharacterSwapFalsePositive(navigated_domain,
+                                                engaged_site)) {
           *matched_domain = engaged_site.domain_and_registry;
           *match_type = LookalikeUrlMatchType::kCharacterSwapSiteEngagement;
           return true;
@@ -670,6 +674,19 @@ bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
   }
 
   return false;
+}
+
+bool IsLikelyCharacterSwapFalsePositive(const DomainInfo& navigated_domain,
+                                        const DomainInfo& matched_domain) {
+  DCHECK(url_formatter::top_domains::IsEditDistanceCandidate(
+      matched_domain.domain_and_registry));
+  DCHECK(url_formatter::top_domains::IsEditDistanceCandidate(
+      navigated_domain.domain_and_registry));
+  // If the only difference between the domains is the registry part, this is
+  // unlikely to be a spoofing attempt and we should ignore this match.  E.g.
+  // exclude matches like google.sr and google.rs.
+  return navigated_domain.domain_without_registry ==
+         matched_domain.domain_without_registry;
 }
 
 bool IsTopDomain(const DomainInfo& domain_info) {
