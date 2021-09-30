@@ -5652,6 +5652,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "win11-style-menus",
+    "owners": [ "kylixrd", "robliao" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "wipe-data-on-child-account-signin",
     "owners": [ "aliceywang", "msarda", "triploblastic" ],
     "expiry_milestone": 95

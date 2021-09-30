@@ -3922,6 +3922,10 @@ const char kWin10TabSearchCaptionButtonDescription[] =
     "Move the Tab Search entrypoint besides the window caption buttons on "
     "Windows 10 platforms.";
 
+const char kWin11StyleMenusName[] = "Windows 11 Style Menus";
+const char kWin11StyleMenusDescription[] =
+    "Use Windows 11 style menus where possible.";
+
 #endif  // defined(OS_WIN)
 
 // Mac -------------------------------------------------------------------------

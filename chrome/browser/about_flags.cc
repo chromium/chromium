@@ -2639,6 +2639,16 @@ const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
     {"20", switches::kDocumentTransitionSlowdownFactor, "20"},
     {"50", switches::kDocumentTransitionSlowdownFactor, "50"}};
 
+#if defined(OS_WIN)
+const FeatureEntry::FeatureParam kWin11StyleMenusAllWindowsVersions[] = {
+    {features::kWin11StyleMenuAllWindowsVersionsName, "true"}};
+
+const FeatureEntry::FeatureVariation kWin11StyleMenusVariations[] = {
+    {" - All Windows Versions", kWin11StyleMenusAllWindowsVersions,
+     base::size(kWin11StyleMenusAllWindowsVersions), nullptr},
+};
+#endif  // defined(OS_WIN)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7635,6 +7645,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-midi", flag_descriptions::kWebMidiName,
      flag_descriptions::kWebMidiDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebMidi)},
+
+#if defined(OS_WIN)
+    {"win11-style-menus", flag_descriptions::kWin11StyleMenusName,
+     flag_descriptions::kWin11StyleMenusDescription, kOsWin,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kWin11StyleMenus,
+                                    kWin11StyleMenusVariations,
+                                    "Win11StyleMenus")},
+#endif  // defined(OS_WIN)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

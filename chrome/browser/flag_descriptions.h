@@ -2234,6 +2234,8 @@ extern const char kUseXpsForPrintingFromPdfDescription[];
 extern const char kWin10TabSearchCaptionButtonName[];
 extern const char kWin10TabSearchCaptionButtonDescription[];
 
+extern const char kWin11StyleMenusName[];
+extern const char kWin11StyleMenusDescription[];
 #endif  // defined(OS_WIN)
 
 // Mac ------------------------------------------------------------------------
