@@ -2240,6 +2240,9 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasKey" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021 since all recorded values were True
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2267,6 +2270,9 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedBase64"
     enum="BooleanSuccess" expires_after="M95">
+  <obsolete>
+    Removed 09-2021 since all recorded values were True
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2281,6 +2287,9 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedProto"
     enum="BooleanSuccess" expires_after="M95">
+  <obsolete>
+    Removed 09-2021 since all recorded values were True
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

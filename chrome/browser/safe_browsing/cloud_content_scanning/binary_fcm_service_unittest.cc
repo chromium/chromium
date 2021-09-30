@@ -179,64 +179,6 @@ TEST_F(BinaryFCMServiceTest, RoutesMessages) {
   EXPECT_EQ(response2.request_token(), "");
 }
 
-TEST_F(BinaryFCMServiceTest, EmitsHasKeyHistogram) {
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasKey", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "proto";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasKey", true, 1);
-  }
-}
-
-TEST_F(BinaryFCMServiceTest, EmitsMessageParsedHistogram) {
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "invalid base 64";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "invalid+proto+data==";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", true, 1);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-    enterprise_connectors::ContentAnalysisResponse message;
-    std::string serialized_message;
-
-    ASSERT_TRUE(message.SerializeToString(&serialized_message));
-    base::Base64Encode(serialized_message, &serialized_message);
-    incoming_message.data["proto"] = serialized_message;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", true, 1);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", true, 1);
-  }
-}
-
 TEST_F(BinaryFCMServiceTest, EmitsMessageHasValidTokenHistogram) {
   gcm::IncomingMessage incoming_message;
   enterprise_connectors::ContentAnalysisResponse message;

@@ -181,23 +181,17 @@ void BinaryFCMService::OnMessage(const std::string& app_id,
                                  const gcm::IncomingMessage& message) {
   auto serialized_proto_iterator =
       message.data.find(kBinaryFCMServiceMessageKey);
-  base::UmaHistogramBoolean("SafeBrowsingFCMService.IncomingMessageHasKey",
-                            serialized_proto_iterator != message.data.end());
   if (serialized_proto_iterator == message.data.end())
     return;
 
   std::string serialized_proto;
   bool parsed =
       base::Base64Decode(serialized_proto_iterator->second, &serialized_proto);
-  base::UmaHistogramBoolean(
-      "SafeBrowsingFCMService.IncomingMessageParsedBase64", parsed);
   if (!parsed)
     return;
 
   enterprise_connectors::ContentAnalysisResponse response;
   parsed = response.ParseFromString(serialized_proto);
-  base::UmaHistogramBoolean("SafeBrowsingFCMService.IncomingMessageParsedProto",
-                            parsed);
 
   if (!parsed)
     return;
