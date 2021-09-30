@@ -18,6 +18,7 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -47,6 +48,8 @@ using storage::FileSystemOperation;
 using storage::FileSystemOperationRunner;
 
 namespace content {
+
+using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 namespace {
 
@@ -210,7 +213,8 @@ void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
 
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), url(), /*recurse=*/false),
+                     weak_factory_.GetWeakPtr(), url(), /*recurse=*/false,
+                     WriteLockType::kExclusive),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveCallback callback) {
         std::move(callback).Run(std::move(result));
@@ -232,8 +236,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     return;
   }
 
-  auto lock = manager()->TakeWriteLock(
-      url(), FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  auto lock = manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
   if (!lock.has_value()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -504,8 +507,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     return;
   }
 
-  auto lock = manager()->TakeWriteLock(
-      url(), FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  auto lock = manager()->TakeWriteLock(url(), WriteLockType::kShared);
   if (!lock.has_value()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kInvalidState,

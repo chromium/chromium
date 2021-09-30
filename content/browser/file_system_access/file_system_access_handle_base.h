@@ -11,6 +11,7 @@
 #include "base/threading/sequence_bound.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -88,6 +89,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoRemove(const storage::FileSystemURL& url,
                 bool recurse,
+                FileSystemAccessWriteLockManager::WriteLockType lock_type,
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
 

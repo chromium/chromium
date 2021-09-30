@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -23,6 +24,9 @@
 #include "storage/common/file_system/file_system_util.h"
 
 namespace content {
+
+using WriteLock = FileSystemAccessWriteLockManager::WriteLock;
+using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 FileSystemAccessHandleBase::FileSystemAccessHandleBase(
     FileSystemAccessManagerImpl* manager,
@@ -302,9 +306,9 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   // The file can only be moved if we can acquire exclusive write locks to
   // both the source or destination URLs.
-  std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>> locks;
-  auto source_write_lock = manager()->TakeWriteLock(
-      url(), FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  std::vector<scoped_refptr<WriteLock>> locks;
+  auto source_write_lock =
+      manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
   if (!source_write_lock.has_value()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidState));
@@ -315,8 +319,8 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
   // Since we're using exclusive locks, we should only acquire the
   // lock of the destination URL if it is different from the source URL.
   if (url() != dest_url) {
-    auto dest_write_lock = manager()->TakeWriteLock(
-        dest_url, FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+    auto dest_write_lock =
+        manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
     if (!dest_write_lock.has_value()) {
       std::move(callback).Run(file_system_access_error::FromStatus(
           blink::mojom::FileSystemAccessStatus::kInvalidState));
@@ -330,8 +334,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
       base::BindOnce(
           [](base::WeakPtr<FileSystemAccessHandleBase> handle,
              storage::FileSystemURL new_url,
-             std::vector<scoped_refptr<
-                 FileSystemAccessWriteLockManager::WriteLock>> /*write_locks*/,
+             std::vector<scoped_refptr<WriteLock>> /*write_locks*/,
              base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,
              base::File::Error result) {
@@ -351,22 +354,41 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 void FileSystemAccessHandleBase::DoRemove(
     const storage::FileSystemURL& url,
     bool recurse,
+    WriteLockType lock_type,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  DoFileSystemOperation(
-      FROM_HERE, &storage::FileSystemOperationRunner::Remove,
-      base::BindOnce(
-          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
-                 callback,
-             base::File::Error result) {
-            std::move(callback).Run(
-                file_system_access_error::FromFileError(result));
-          },
-          std::move(callback)),
-      url, recurse);
+  // A locked file cannot be removed. Acquire a write lock and release it
+  // after the remove operation completes.
+  std::vector<scoped_refptr<WriteLock>> write_locks;
+  // TODO(crbug.com/1252614): A directory should only be able to be removed if
+  // none of the containing files are locked.
+  auto write_lock = manager()->TakeWriteLock(url, lock_type);
+  if (!write_lock.has_value()) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kOperationAborted));
+    return;
+  }
+  write_locks.push_back(std::move(write_lock.value()));
+
+  // Bind the `write_locks` to the Remove callback to guarantee the locks are
+  // held until the operation completes.
+  auto wrapped_callback = base::BindOnce(
+      [](std::vector<scoped_refptr<WriteLock>> write_locks,
+         base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+             callback,
+         base::File::Error result) {
+        // Destroy locks so they are released by the time the callback runs.
+        write_locks.clear();
+        std::move(callback).Run(
+            file_system_access_error::FromFileError(result));
+      },
+      std::move(write_locks), std::move(callback));
+
+  DoFileSystemOperation(FROM_HERE, &storage::FileSystemOperationRunner::Remove,
+                        std::move(wrapped_callback), url, recurse);
 }
 
 storage::FileSystemURL FileSystemAccessHandleBase::GetParentURL() {

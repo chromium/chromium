@@ -11,11 +11,13 @@
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
@@ -31,6 +33,7 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
+using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 FileSystemAccessDirectoryHandleImpl::FileSystemAccessDirectoryHandleImpl(
     FileSystemAccessManagerImpl* manager,
@@ -202,7 +205,8 @@ void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
 
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), url(), recurse),
+                     weak_factory_.GetWeakPtr(), url(), recurse,
+                     WriteLockType::kExclusive),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
         std::move(callback).Run(std::move(result));
@@ -224,9 +228,15 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
     return;
   }
 
+  // TODO(crbug.com/1254078): Consider requiring an exclusive lock to match the
+  // behavior of `remove()`.
+  //
+  // Use a shared write lock to allow the file to be removed if it has an open
+  // writable, but not if it has an open access handle.
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), child_url, recurse),
+                     weak_factory_.GetWeakPtr(), child_url, recurse,
+                     WriteLockType::kShared),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
         std::move(callback).Run(std::move(result));
