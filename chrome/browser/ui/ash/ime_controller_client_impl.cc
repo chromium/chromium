@@ -226,7 +226,7 @@ void ImeControllerClientImpl::RefreshIme() {
 
   std::vector<ash::ImeInfo> available_imes;
   std::unique_ptr<std::vector<InputMethodDescriptor>> enabled_ime_descriptors =
-      state->GetEnabledInputMethods();
+      state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
   for (const InputMethodDescriptor& descriptor : *enabled_ime_descriptors) {
     ash::ImeInfo info = GetAshImeInfo(descriptor);
     available_imes.push_back(std::move(info));

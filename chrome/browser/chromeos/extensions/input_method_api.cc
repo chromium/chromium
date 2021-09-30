@@ -175,7 +175,7 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
   std::unique_ptr<ash::input_method::InputMethodDescriptors> input_methods =
-      ime_state->GetEnabledInputMethods();
+      ime_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
   for (size_t i = 0; i < input_methods->size(); ++i) {
     const ash::input_method::InputMethodDescriptor& input_method =
         (*input_methods)[i];

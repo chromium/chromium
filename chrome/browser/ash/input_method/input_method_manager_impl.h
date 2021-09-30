@@ -89,6 +89,8 @@ class InputMethodManagerImpl : public InputMethodManager,
         const std::vector<std::string>& initial_layouts) override;
     void EnableLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;
+    std::unique_ptr<InputMethodDescriptors>
+    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const override;
     std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const override;
     const std::vector<std::string>& GetEnabledInputMethodIds() const override;

@@ -160,7 +160,7 @@
       }, {
         "name": "getInputMethods",
         "type": "function",
-        "description": "Gets all whitelisted input methods.",
+        "description": "Gets all enabled input methods, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
         "parameters": [
           {
             "name": "callback",
@@ -170,7 +170,7 @@
               {
                 "name": "inputMethods",
                 "type": "array",
-                "description": "Whitelisted input method objects.",
+                "description": "Enabled input method objects, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
                 "items": {
                   "type": "object",
                   "properties": {

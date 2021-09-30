@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.inputMethodPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: inputMethodPrivate */
 
@@ -164,7 +164,9 @@ chrome.inputMethodPrivate.InputMethodSettings;
 chrome.inputMethodPrivate.getInputMethodConfig = function(callback) {};
 
 /**
- * Gets all whitelisted input methods.
+ * Gets all enabled input methods, sorted in ascending order of their localized
+ * full display names, according to the lexicographical order defined by the
+ * current system locale aka. display language.
  * @param {function(!Array<{
  *   id: string,
  *   name: string,

@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "base/i18n/string_compare.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -46,6 +47,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -197,6 +199,29 @@ InputMethodManagerImpl::StateImpl::GetEnabledInputMethods() const {
     result->push_back(
         InputMethodUtil::GetFallbackInputMethodDescriptor());
   }
+
+  return result;
+}
+
+std::unique_ptr<InputMethodDescriptors> InputMethodManagerImpl::StateImpl::
+    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const {
+  std::unique_ptr<InputMethodDescriptors> result = GetEnabledInputMethods();
+
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));  // use current ICU locale
+  DCHECK(U_SUCCESS(error_code));
+  const InputMethodUtil& util = manager_->util_;
+
+  std::sort(
+      result->begin(), result->end(),
+      [&collator, &util](const InputMethodDescriptor& a,
+                         const InputMethodDescriptor& b) {
+        std::u16string a16 = base::UTF8ToUTF16(util.GetLocalizedDisplayName(a));
+        std::u16string b16 = base::UTF8ToUTF16(util.GetLocalizedDisplayName(b));
+        return base::i18n::CompareString16WithCollator(*collator, a16, b16) < 0;
+      });
+
   return result;
 }
 
@@ -760,14 +785,23 @@ void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
     return;
   }
 
-  auto iter =
-      std::find(enabled_input_method_ids_.begin(),
-                enabled_input_method_ids_.end(), current_input_method_.id());
-  if (iter != enabled_input_method_ids_.end())
+  const std::string& current_input_method_id = current_input_method_.id();
+  std::unique_ptr<InputMethodDescriptors> sorted_enabled_input_methods =
+      GetEnabledInputMethodsSortedByLocalizedDisplayNames();
+
+  auto iter = std::find_if(
+      sorted_enabled_input_methods->begin(),
+      sorted_enabled_input_methods->end(),
+      [&current_input_method_id](const InputMethodDescriptor& input_method) {
+        return current_input_method_id == input_method.id();
+      });
+
+  if (iter != sorted_enabled_input_methods->end())
     ++iter;
-  if (iter == enabled_input_method_ids_.end())
-    iter = enabled_input_method_ids_.begin();
-  ChangeInputMethod(*iter, true);
+  if (iter == sorted_enabled_input_methods->end())
+    iter = sorted_enabled_input_methods->begin();
+
+  ChangeInputMethod(iter->id(), true);
 }
 
 void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {

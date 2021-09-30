@@ -68,8 +68,8 @@ class TestInputMethodManager : public MockInputMethodManager {
       current_ime_id_ = input_method_id;
       last_show_message_ = show_message;
     }
-    std::unique_ptr<std::vector<InputMethodDescriptor>> GetEnabledInputMethods()
-        const override {
+    std::unique_ptr<std::vector<InputMethodDescriptor>>
+    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const override {
       return std::make_unique<std::vector<InputMethodDescriptor>>(
           input_methods_);
     }

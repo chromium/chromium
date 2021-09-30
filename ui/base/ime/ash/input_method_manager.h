@@ -180,13 +180,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // Returns a list of descriptors for all Input Method Extensions.
     virtual void GetInputMethodExtensions(InputMethodDescriptors* result) = 0;
 
-    // Returns the list of input methods we can select (i.e. enabled) including
-    // extension input methods.
+    // Returns the list of enabled input methods, including extension input
+    // methods, sorted in ascending order of their localized full display names,
+    // according to the lexicographical order defined by the current system
+    // locale (aka. display language).
+    virtual std::unique_ptr<InputMethodDescriptors>
+    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const = 0;
+
+    // Returns enabled input methods, including extension input methods.
+    // Although presented as a list, the result is NOT sorted in any specific
+    // order; the ordering is arbitrary and undefined.
     virtual std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const = 0;
 
-    // Returns the list of input method IDs we can select (i.e. enabled)
-    // including extension input methods.
+    // Returns IDs of enabled input methods, including extension input methods.
+    // Although presented as a list, the result is NOT sorted in any specific
+    // order; the ordering is arbitrary and undefined.
     virtual const std::vector<std::string>& GetEnabledInputMethodIds()
         const = 0;
 
@@ -212,11 +221,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::string& locale,
         const std::string& layout) = 0;
 
-    // Switches the current input method (or keyboard layout) to the next one.
+    // Switches the current input method to the next one on the list of enabled
+    // input methods sorted in ascending order of their localized full display
+    // names, according to the lexicographical order defined by the current
+    // system locale. In other words, "next" is based on the list returned by
+    // |GetEnabledInputMethodsSortedByLocalizedDisplayNames()|.
     virtual void SwitchToNextInputMethod() = 0;
 
-    // Switches the current input method (or keyboard layout) to the last used
-    // one.
+    // Switches the current input method to the last used one.
     virtual void SwitchToLastUsedInputMethod() = 0;
 
     // Gets the descriptor of the input method which is currently selected.

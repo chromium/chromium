@@ -23,6 +23,12 @@ MockInputMethodManagerImpl::State::Clone() const {
   return manager_->GetActiveIMEState();
 }
 
+std::unique_ptr<InputMethodDescriptors> MockInputMethodManagerImpl::State::
+    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const {
+  // GetEnabledInputMethods() returns a one-element list, so already "sorted".
+  return GetEnabledInputMethods();
+}
+
 std::unique_ptr<InputMethodDescriptors>
 MockInputMethodManagerImpl::State::GetEnabledInputMethods() const {
   std::unique_ptr<InputMethodDescriptors> result =

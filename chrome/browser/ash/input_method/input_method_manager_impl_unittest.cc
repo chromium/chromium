@@ -14,8 +14,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/i18n/string_compare.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/mock_candidate_window_controller.h"
@@ -29,6 +31,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/uloc.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
@@ -604,20 +608,20 @@ TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
   // For http://crbug.com/19655#c11 - (9).
   TestObserver observer;
   manager_->AddObserver(&observer);
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
-  ids.push_back(ImeIdFromEngineId("xkb:us:colemak:eng"));
+  std::string us_id = ImeIdFromEngineId("xkb:us::eng");
+  std::string us_dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::string us_colemak_id = ImeIdFromEngineId("xkb:us:colemak:eng");
+  std::vector<std::string> ids{us_id, us_dvorak_id, us_colemak_id};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(3U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(1, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
   // Switch to Dvorak.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_dvorak_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(2, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+  EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   // Disable Dvorak.
@@ -625,8 +629,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(3, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),  // US Qwerty
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
   manager_->RemoveObserver(&observer);
 }
@@ -635,25 +638,26 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
   // For http://crbug.com/19655#c11 - (10).
   TestObserver observer;
   manager_->AddObserver(&observer);
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
-  ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));
+  std::string dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::string mozc_id = ImeIdFromEngineId(kNaclMozcUsId);
+  std::vector<std::string> ids{dvorak_id, mozc_id};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(1, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
+  EXPECT_EQ(dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   // Switch to Mozc
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(mozc_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(2, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+  EXPECT_EQ(mozc_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
   // Disable Mozc.
   ids.erase(ids.begin() + 1);
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(1U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
+  EXPECT_EQ(dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 }
@@ -714,20 +718,20 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   // For http://crbug.com/19655#c11 - (14).
   TestObserver observer;
   manager_->AddObserver(&observer);
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
+  std::string us_id = ImeIdFromEngineId("xkb:us::eng");
+  std::string us_dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::vector<std::string> ids{us_id, us_dvorak_id};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(1, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
 
   // Switch to Dvorak.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_dvorak_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(2, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+  EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
@@ -737,13 +741,13 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),  // still Dvorak
+  EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   // Switch back to Qwerty.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_id,
+                                                   /*show_message=*/false);
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
 
   // Unlock screen. The original state, Dvorak, is restored.
@@ -751,7 +755,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
             InputMethodManager::UIStyle::kNormal);
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+  EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
@@ -762,22 +766,20 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   // For http://crbug.com/19655#c11 - (15).
   TestObserver observer;
   manager_->AddObserver(&observer);
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
-  ids.push_back(ImeIdFromEngineId(kExt2Engine2Id));
-  ids.push_back(ImeIdFromEngineId(kExt2Engine1Id));
+  std::string id1 = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::string id2 = ImeIdFromEngineId(kExt2Engine2Id);
+  std::string id3 = ImeIdFromEngineId(kExt2Engine1Id);
+  std::vector<std::string> ids{id1, id2, id3};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(3U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(1, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(id1, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
-  // Switch to Mozc.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  // Switch to id2.
+  manager_->GetActiveIMEState()->ChangeInputMethod(id2, /*show_message=*/false);
   EXPECT_EQ(2, observer.input_method_changed_count_);
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(id2, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   // Lock screen
@@ -787,24 +789,23 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
   EXPECT_EQ(2U,
             manager_->GetActiveIMEState()
-                ->GetNumEnabledInputMethods());  // Qwerty+Dvorak.
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:dvorak:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+                ->GetNumEnabledInputMethods());  // hardware layout + id1
+  EXPECT_EQ(id1, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),  // The hardware keyboard layout.
+
+  std::string hardware_layout_ime_id = ImeIdFromEngineId("xkb:us::eng");
+  manager_->GetActiveIMEState()->ChangeInputMethod(hardware_layout_ime_id,
+                                                   /*show_message=*/false);
+  EXPECT_EQ(hardware_layout_ime_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
 
-  // Unlock screen. The original state, pinyin-dv, is restored.
+  // Unlock screen. The original state is restored.
   manager_->SetState(saved_ime_state);
   EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
             InputMethodManager::UIStyle::kNormal);
-  EXPECT_EQ(3U,
-            manager_->GetActiveIMEState()
-                ->GetNumEnabledInputMethods());  // Dvorak and 2 IMEs.
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(3U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
+  EXPECT_EQ(id2, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   manager_->RemoveObserver(&observer);
@@ -813,25 +814,29 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
 TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
   // For http://crbug.com/19655#c11 - (8), step 7-11.
   EXPECT_EQ(1, keyboard_->set_current_keyboard_layout_by_name_count_);
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
-  ids.push_back(ImeIdFromEngineId("xkb:us:colemak:eng"));
-  ids.push_back(ImeIdFromEngineId(kNaclMozcJpId));
-  ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));
+  std::string dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::string colemak_id = ImeIdFromEngineId("xkb:us:colemak:eng");
+  std::string mozc_jp_id = ImeIdFromEngineId(kNaclMozcJpId);
+  std::string mozc_us_id = ImeIdFromEngineId(kNaclMozcUsId);
+  std::vector<std::string> ids{dvorak_id, colemak_id, mozc_jp_id, mozc_us_id};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(4U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(2, keyboard_->set_current_keyboard_layout_by_name_count_);
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(colemak_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(3, keyboard_->set_current_keyboard_layout_by_name_count_);
   EXPECT_EQ("us(colemak)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(mozc_jp_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(4, keyboard_->set_current_keyboard_layout_by_name_count_);
   EXPECT_EQ("jp", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(mozc_us_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(5, keyboard_->set_current_keyboard_layout_by_name_count_);
   EXPECT_EQ("us", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(dvorak_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(6, keyboard_->set_current_keyboard_layout_by_name_count_);
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   // Disable Dvorak.
@@ -919,57 +924,110 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
             menu_manager_->GetCurrentInputMethodMenuItemList().at(0).key);
 }
 
+TEST_F(InputMethodManagerImplTest,
+       TestGetEnabledInputMethodsSortedByDisplayNames) {
+  scoped_refptr<InputMethodManager::State> active_state =
+      manager_->GetActiveIMEState();
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:us::eng"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:fr::fra"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:se::swe"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:jp::jpn"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:ru::rus"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:hu::hun"));
+  active_state->EnableInputMethod(ImeIdFromEngineId("xkb:de::ger"));
+
+  base::i18n::SetICUDefaultLocale("en-US");
+  std::unique_ptr<InputMethodDescriptors> result =
+      active_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
+  ASSERT_FALSE(result->empty());
+
+  InputMethodUtil* util = manager_->GetInputMethodUtil();
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));
+
+  for (int i = 1; i < result->size(); ++i) {
+    std::string prev_name = util->GetLocalizedDisplayName(result->at(i - 1));
+    std::string name = util->GetLocalizedDisplayName(result->at(i));
+    ASSERT_EQ(UCOL_LESS, base::i18n::CompareString16WithCollator(
+                             *collator, base::UTF8ToUTF16(prev_name),
+                             base::UTF8ToUTF16(name)));
+  }
+}
+
 TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:us::eng"));
+
   // For http://crbug.com/19655#c11 - (1)
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us", keyboard_->last_layout_);
+  std::unique_ptr<InputMethodDescriptors> sorted_enabled_input_methods =
+      manager_->GetActiveIMEState()
+          ->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
+  InputMethodDescriptor current_input_method =
+      manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(0).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:intl:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(intl)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(1).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:altgr-intl:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(altgr-intl)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(2).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:dvorak:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(3).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:dvp:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(dvp)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(4).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:colemak:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(colemak)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(5).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:workman:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(workman)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(6).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:workman-intl:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(workman-intl)", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(7).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us", keyboard_->last_layout_);
+  current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
+  EXPECT_EQ(sorted_enabled_input_methods->at(0).id(),
+            current_input_method.id());
+  EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->RemoveObserver(&observer);
 }
@@ -978,51 +1036,63 @@ TEST_F(InputMethodManagerImplTest, TestLastUsedInputMethod) {
   TestObserver observer;
   manager_->AddObserver(&observer);
 
+  std::string us_id = ImeIdFromEngineId("xkb:us::eng");
+  std::string us_intl_id = ImeIdFromEngineId("xkb:us:intl:eng");
+  std::string us_altgr_intl_id = ImeIdFromEngineId("xkb:us:altgr-intl:eng");
   std::vector<std::string> keyboard_layouts;
-  keyboard_layouts.push_back(ImeIdFromEngineId("xkb:us::eng"));
+  keyboard_layouts.push_back(us_id);
+
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_intl_id,
+                                                   /*show_message=*/true);
+  EXPECT_TRUE(observer.last_show_message_);
+  EXPECT_EQ(us_intl_id,
+            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us(intl)", keyboard_->last_layout_);
+
+  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
+  EXPECT_TRUE(observer.last_show_message_);
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us", keyboard_->last_layout_);
+
+  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
+  EXPECT_TRUE(observer.last_show_message_);
+  EXPECT_EQ(us_intl_id,
+            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us(intl)", keyboard_->last_layout_);
+
+  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
+  EXPECT_TRUE(observer.last_show_message_);
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us", keyboard_->last_layout_);
+
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_intl_id,
+                                                   /*show_message=*/true);
   EXPECT_TRUE(observer.last_show_message_);
   EXPECT_EQ(ImeIdFromEngineId("xkb:us:intl:eng"),
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(intl)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
+
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_altgr_intl_id,
+                                                   /*show_message=*/true);
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
-  EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:intl:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(intl)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
-  EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:intl:eng"),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
-  EXPECT_EQ("us(intl)", keyboard_->last_layout_);
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:altgr-intl:eng"),
+  EXPECT_EQ(us_altgr_intl_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(altgr-intl)", keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:intl:eng"),
+  EXPECT_EQ(us_intl_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(intl)", keyboard_->last_layout_);
+
   manager_->GetActiveIMEState()->SwitchToLastUsedInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:altgr-intl:eng"),
+  EXPECT_EQ(us_altgr_intl_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(altgr-intl)", keyboard_->last_layout_);
 
@@ -1166,7 +1236,8 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
   // Switch to the IME.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  manager_->GetActiveIMEState()->ChangeInputMethod(ext_id,
+                                                   /*show_message=*/false);
   EXPECT_EQ(3, observer.input_method_changed_count_);
   EXPECT_EQ(ext_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
@@ -1469,39 +1540,39 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   ime_controller_client.Init();
 
   // Setup 3 IMEs.
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
-  ids.push_back(ImeIdFromEngineId(kExt2Engine2Id));
-  ids.push_back(ImeIdFromEngineId(kExt2Engine1Id));
+  std::string id1 = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::string id2 = ImeIdFromEngineId(kExt2Engine2Id);
+  std::string id3 = ImeIdFromEngineId(kExt2Engine1Id);
+  std::vector<std::string> ids{id1, id2, id3};
   manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids);
 
   // Ash received the IMEs.
   ASSERT_EQ(3u, ime_controller.available_imes_.size());
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]), ime_controller.current_ime_id_);
+  EXPECT_EQ(id1, ime_controller.current_ime_id_);
 
-  // Switch to Mozc.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]), ime_controller.current_ime_id_);
+  // Switch to another IME.
+  manager_->GetActiveIMEState()->ChangeInputMethod(id3, false);
+  EXPECT_EQ(id3, ime_controller.current_ime_id_);
 
   // Lock the screen.
   scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
-  EXPECT_EQ(2u, ime_controller.available_imes_.size());  // Qwerty+Dvorak.
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us:dvorak:eng"),
-            ime_controller.current_ime_id_);
+  EXPECT_EQ(2u, ime_controller.available_imes_.size());  // id1, hardware layout
+  EXPECT_EQ(id1, ime_controller.current_ime_id_);
 
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),  // The hardware keyboard layout.
-            ime_controller.current_ime_id_);
+  std::string hardware_layout_ime_id = ImeIdFromEngineId("xkb:us::eng");
+  manager_->GetActiveIMEState()->ChangeInputMethod(hardware_layout_ime_id,
+                                                   false);
+  EXPECT_EQ(hardware_layout_ime_id, ime_controller.current_ime_id_);
 
-  // Unlock screen. The original state, pinyin-dv, is restored.
+  // Unlock screen. The original state is restored.
   manager_->SetState(saved_ime_state);
   EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
             InputMethodManager::UIStyle::kNormal);
-  ASSERT_EQ(3u, ime_controller.available_imes_.size());  // Dvorak and 2 IMEs.
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]), ime_controller.current_ime_id_);
+  ASSERT_EQ(3u, ime_controller.available_imes_.size());
+  EXPECT_EQ(id3, ime_controller.current_ime_id_);
 }
 
 TEST_F(InputMethodManagerImplTest, SetFeaturesDisabled) {
@@ -1613,29 +1684,29 @@ class InputMethodManagerImplPositionalTest : public InputMethodManagerImplTest {
 TEST_F(InputMethodManagerImplPositionalTest, ValidatePositionalShortcutLayout) {
   // Initialize with one positional (US) and one non-positional (US-dvorak)
   // layout.
-  std::vector<std::string> ids;
-  ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
-  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
+  std::string us_id = ImeIdFromEngineId("xkb:us::eng");
+  std::string us_dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
+  std::vector<std::string> ids{us_id, us_dvorak_id};
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
   // Verify the US layout is positional.
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
   EXPECT_TRUE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
 
   // Switch to dvorak and verify it is non-positional.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_dvorak_id,
+                                                   /*show_message=*/false);
+  EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   EXPECT_FALSE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
 
   // Switch back to US and verify it is positional again.
-  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
-  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
-            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  manager_->GetActiveIMEState()->ChangeInputMethod(us_id,
+                                                   /*show_message=*/false);
+  EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
   EXPECT_TRUE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
 }
