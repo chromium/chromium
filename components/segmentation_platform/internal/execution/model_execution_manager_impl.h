@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -55,7 +56,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
           const SegmentationModelHandler::ModelUpdatedCallback&)>;
 
   explicit ModelExecutionManagerImpl(
-      std::vector<OptimizationTarget> segment_ids,
+      const base::flat_set<OptimizationTarget>& segment_ids,
       ModelHandlerCreator model_handler_creator,
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,

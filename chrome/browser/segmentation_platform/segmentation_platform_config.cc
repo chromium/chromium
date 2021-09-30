@@ -31,9 +31,7 @@ constexpr int kDefaultSegmentSelectionTTLDays = 28;
 // The key to be used for adaptive toolbar feature.
 const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
 
-}  // namespace
-
-std::unique_ptr<Config> GetSegmentationPlatformConfig() {
+std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
 
@@ -53,6 +51,14 @@ std::unique_ptr<Config> GetSegmentationPlatformConfig() {
   };
 
   return config;
+}
+
+}  // namespace
+
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
+  std::vector<std::unique_ptr<Config>> configs;
+  configs.emplace_back(GetConfigForAdaptiveToolbar());
+  return configs;
 }
 
 }  // namespace segmentation_platform

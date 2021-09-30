@@ -52,7 +52,7 @@ std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    std::vector<optimization_guide::proto::OptimizationTarget> segment_ids,
+    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,

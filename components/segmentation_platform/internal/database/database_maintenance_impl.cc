@@ -86,12 +86,12 @@ struct DatabaseMaintenanceImpl::CleanupState {
 };
 
 DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
-    Config* config,
+    const base::flat_set<OptimizationTarget>& segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_info_database,
     SignalDatabase* signal_database,
     SignalStorageConfig* signal_storage_config)
-    : config_(config),
+    : segment_ids_(segment_ids),
       clock_(clock),
       segment_info_database_(segment_info_database),
       signal_database_(signal_database),
@@ -100,8 +100,10 @@ DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
+  std::vector<OptimizationTarget> segment_ids(segment_ids_.begin(),
+                                              segment_ids_.end());
   segment_info_database_->GetSegmentInfoForSegments(
-      config_->segment_ids,
+      segment_ids,
       base::BindOnce(&DatabaseMaintenanceImpl::OnSegmentInfoCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }

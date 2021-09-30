@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -22,7 +23,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     SegmentationResultPrefs* result_prefs,
-    Config* config,
+    const Config* config,
     base::Clock* clock)
     : segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
@@ -77,6 +78,10 @@ void SegmentSelectorImpl::OnSegmentUsed(OptimizationTarget segment_id) {
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
+  // If the |segment_id| is not in config, then skip any updates early.
+  if (!base::Contains(config_->segment_ids, segment_id))
+    return;
+
   segment_database_->GetSegmentInfoForSegments(
       config_->segment_ids,
       base::BindOnce(&SegmentSelectorImpl::RunSegmentSelection,

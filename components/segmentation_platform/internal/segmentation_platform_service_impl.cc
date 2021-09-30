@@ -54,7 +54,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
-    std::unique_ptr<Config> config)
+    std::vector<std::unique_ptr<Config>> configs)
     : SegmentationPlatformServiceImpl(
           db_provider->GetDB<proto::SegmentInfo>(
               leveldb_proto::ProtoDbType::SEGMENT_INFO_DATABASE,
@@ -72,7 +72,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           pref_service,
           task_runner,
           clock,
-          std::move(config)) {}
+          std::move(configs)) {}
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
@@ -84,11 +84,11 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
-    std::unique_ptr<Config> config)
+    std::vector<std::unique_ptr<Config>> config)
     : model_provider_(model_provider),
       task_runner_(task_runner),
       clock_(clock),
-      config_(std::move(config)) {
+      configs_(std::move(config)) {
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
@@ -108,12 +108,20 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       segment_info_database_.get(), user_action_signal_handler_.get(),
       histogram_signal_handler_.get());
 
-  segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-      segment_info_database_.get(), signal_storage_config_.get(),
-      segmentation_result_prefs_.get(), config_.get(), clock);
+  for (const auto& config : configs_) {
+    segment_selectors_[config->segmentation_key] =
+        std::make_unique<SegmentSelectorImpl>(
+            segment_info_database_.get(), signal_storage_config_.get(),
+            segmentation_result_prefs_.get(), config.get(), clock);
+  }
+
+  for (const auto& config : configs_) {
+    for (const auto& segment_id : config->segment_ids)
+      all_segment_ids_.insert(segment_id);
+  }
 
   database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
-      config_.get(), clock, segment_info_database_.get(),
+      all_segment_ids_, clock, segment_info_database_.get(),
       signal_database_.get(), signal_storage_config_.get());
 
   // Kick off initialization of all databases. Internal operations will be
@@ -134,7 +142,8 @@ SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() = default;
 void SegmentationPlatformServiceImpl::GetSelectedSegment(
     const std::string& segmentation_key,
     SegmentSelectionCallback callback) {
-  segment_selector_->GetSelectedSegment(std::move(callback));
+  auto& selector = segment_selectors_.at(segmentation_key);
+  selector->GetSelectedSegment(std::move(callback));
 }
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
@@ -177,15 +186,18 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
     return;
 
   model_execution_manager_ = CreateModelExecutionManager(
-      model_provider_, task_runner_, config_->segment_ids, clock_,
+      model_provider_, task_runner_, all_segment_ids_, clock_,
       segment_info_database_.get(), signal_database_.get(),
       std::make_unique<FeatureAggregatorImpl>(),
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()));
 
+  std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
+  for (auto& key_and_selector : segment_selectors_)
+    observers.push_back(key_and_selector.second.get());
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-      segment_selector_.get(), segment_info_database_.get(),
+      std::move(observers), segment_info_database_.get(),
       signal_storage_config_.get(), model_execution_manager_.get(), clock_);
 
   signal_filter_processor_->OnSignalListUpdated();

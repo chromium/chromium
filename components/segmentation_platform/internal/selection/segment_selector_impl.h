@@ -32,7 +32,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                       SignalStorageConfig* signal_storage_config,
                       SegmentationResultPrefs* result_prefs,
-                      Config* config,
+                      const Config* config,
                       base::Clock* clock);
 
   ~SegmentSelectorImpl() override;
@@ -100,7 +100,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   SegmentationResultPrefs* result_prefs_;
 
   // The config for providing configuration params.
-  Config* config_;
+  const Config* config_;
 
   // The time provider.
   base::Clock* clock_;

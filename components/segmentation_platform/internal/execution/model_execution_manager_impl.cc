@@ -113,7 +113,7 @@ struct ModelExecutionManagerImpl::FeatureState {
 };
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
-    std::vector<OptimizationTarget> segment_ids,
+    const base::flat_set<OptimizationTarget>& segment_ids,
     ModelHandlerCreator model_handler_creator,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,

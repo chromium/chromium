@@ -28,7 +28,7 @@ class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
-  ModelExecutionSchedulerImpl(Observer* observer,
+  ModelExecutionSchedulerImpl(std::vector<Observer*>&& observers,
                               SegmentInfoDatabase* segment_database,
                               SignalStorageConfig* signal_storage_config,
                               ModelExecutionManager* model_execution_manager,
@@ -59,9 +59,9 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   void OnResultSaved(OptimizationTarget segment_id, bool success);
 
-  // Observer listening to model exeuction events. Required by the segment
+  // Observers listening to model exeuction events. Required by the segment
   // selection pipeline.
-  Observer* observer_;
+  std::vector<Observer*> observers_;
 
   // The database storing metadata and results.
   SegmentInfoDatabase* segment_database_;

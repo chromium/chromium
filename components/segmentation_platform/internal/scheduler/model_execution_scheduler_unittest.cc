@@ -49,15 +49,18 @@ class ModelExecutionSchedulerTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
+    std::vector<ModelExecutionScheduler::Observer*> observers = {&observer1_,
+                                                                 &observer2_};
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-        &observer_, segment_database_.get(), &signal_storage_config_,
+        std::move(observers), segment_database_.get(), &signal_storage_config_,
         &model_execution_manager_, &clock_);
   }
 
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
-  MockModelExecutionObserver observer_;
+  MockModelExecutionObserver observer1_;
+  MockModelExecutionObserver observer2_;
   MockSignalStorageConfig signal_storage_config_;
   MockModelExecutionManager model_execution_manager_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
@@ -149,7 +152,9 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
       segment_database_->FindOrCreateSegment(kTestOptimizationTarget);
 
   // TODO(shaktisahu): Add tests for model failure.
-  EXPECT_CALL(observer_, OnModelExecutionCompleted(kTestOptimizationTarget))
+  EXPECT_CALL(observer2_, OnModelExecutionCompleted(kTestOptimizationTarget))
+      .Times(1);
+  EXPECT_CALL(observer1_, OnModelExecutionCompleted(kTestOptimizationTarget))
       .Times(1);
   float score = 0.4;
   model_execution_scheduler_->OnModelExecutionCompleted(

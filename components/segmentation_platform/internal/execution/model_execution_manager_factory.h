@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/sequenced_task_runner.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
@@ -32,7 +33,7 @@ class SignalDatabase;
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    std::vector<optimization_guide::proto::OptimizationTarget> segment_ids,
+    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,

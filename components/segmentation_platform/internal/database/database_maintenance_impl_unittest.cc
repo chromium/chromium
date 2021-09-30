@@ -55,15 +55,6 @@ struct SignalData {
   bool success;
 };
 
-std::unique_ptr<Config> CreateTestConfig() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kTestSegmentationKey;
-  config->segment_selection_ttl = base::TimeDelta::FromDays(28);
-  config->segment_ids = {
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
-  return config;
-}
 }  // namespace
 
 class DatabaseMaintenanceImplTest : public testing::Test {
@@ -72,12 +63,14 @@ class DatabaseMaintenanceImplTest : public testing::Test {
   ~DatabaseMaintenanceImplTest() override = default;
 
   void SetUp() override {
-    config_ = CreateTestConfig();
     segment_info_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     signal_storage_config_ = std::make_unique<MockSignalStorageConfig>();
+    base::flat_set<OptimizationTarget> segment_ids = {
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
-        config_.get(), &clock_, segment_info_database_.get(),
+        segment_ids, &clock_, segment_info_database_.get(),
         signal_database_.get(), signal_storage_config_.get());
 
     clock_.SetNow(base::Time::Now());

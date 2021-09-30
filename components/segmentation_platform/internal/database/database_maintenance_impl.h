@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/database_maintenance.h"
@@ -27,7 +28,6 @@ namespace segmentation_platform {
 namespace proto {
 class SegmentInfo;
 }  // namespace proto
-struct Config;
 class SignalDatabase;
 class SegmentInfoDatabase;
 class SignalStorageConfig;
@@ -39,11 +39,12 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   using SignalIdentifier = std::pair<uint64_t, proto::SignalType>;
   using CleanupItem = std::tuple<uint64_t, proto::SignalType, base::Time>;
 
-  explicit DatabaseMaintenanceImpl(Config* config,
-                                   base::Clock* clock,
-                                   SegmentInfoDatabase* segment_info_database,
-                                   SignalDatabase* signal_database,
-                                   SignalStorageConfig* signal_storage_config);
+  explicit DatabaseMaintenanceImpl(
+      const base::flat_set<OptimizationTarget>& segment_ids,
+      base::Clock* clock,
+      SegmentInfoDatabase* segment_info_database,
+      SignalDatabase* signal_database,
+      SignalStorageConfig* signal_storage_config);
   ~DatabaseMaintenanceImpl() override;
 
   // DatabaseMaintenance overrides.
@@ -86,7 +87,7 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   void CompactSamplesDone(base::OnceClosure next_action);
 
   // Input.
-  Config* config_;
+  base::flat_set<OptimizationTarget> segment_ids_;
   base::Clock* clock_;
 
   // Databases.

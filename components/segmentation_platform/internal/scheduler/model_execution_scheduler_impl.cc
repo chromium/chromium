@@ -17,12 +17,12 @@
 namespace segmentation_platform {
 
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
-    Observer* observer,
+    std::vector<Observer*>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager,
     base::Clock* clock)
-    : observer_(observer),
+    : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
       model_execution_manager_(model_execution_manager),
@@ -140,7 +140,8 @@ void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
   if (!success)
     return;
 
-  observer_->OnModelExecutionCompleted(segment_id);
+  for (Observer* observer : observers_)
+    observer->OnModelExecutionCompleted(segment_id);
 }
 
 }  // namespace segmentation_platform
