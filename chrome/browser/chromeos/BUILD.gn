@@ -1047,6 +1047,8 @@ source_set("chromeos") {
     "../ash/borealis/borealis_service_impl.h",
     "../ash/borealis/borealis_shutdown_monitor.cc",
     "../ash/borealis/borealis_shutdown_monitor.h",
+    "../ash/borealis/borealis_switches.cc",
+    "../ash/borealis/borealis_switches.h",
     "../ash/borealis/borealis_task.cc",
     "../ash/borealis/borealis_task.h",
     "../ash/borealis/borealis_util.cc",

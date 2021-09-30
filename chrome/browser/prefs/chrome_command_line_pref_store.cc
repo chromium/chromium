@@ -21,6 +21,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/borealis_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -54,6 +56,8 @@ const CommandLinePrefStore::SwitchToPreferenceMapEntry
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         {switches::kSchedulerConfiguration, prefs::kSchedulerConfiguration},
+        {borealis::switches::kLaunchOptions,
+         borealis::prefs::kExtraLaunchOptions},
 #endif
 };
 
