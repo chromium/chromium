@@ -1,4 +1,4 @@
-<style include="history-clusters-shared-style">
+<style>
   :host {
     color: var(--cr-primary-text-color);
     display: block;
@@ -8,13 +8,14 @@
 
   #clusters,
   #header {
-    margin: var(--cluster-padding) auto;
-    width: var(--cluster-width);
+    margin: 0 auto;
+    max-width: var(--cluster-max-width);
+    min-width: var(--cluster-min-width);
+    padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
   }
 
   #header {
     font-size: 1.75rem;  /* 28px */
-    padding: 0 var(--cluster-padding);
   }
 </style>
 <div id="header" hidden="[[!result_.query]]">[[headerText_]]</div>

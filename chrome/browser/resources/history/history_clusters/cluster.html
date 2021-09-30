@@ -1,11 +1,9 @@
 <style>
   :host {
-    background-color: var(--white-fill-color);
-    box-sizing: border-box;
     display: block;
     outline: none;
-    padding: var(--cluster-padding) 0;
-    width: var(--cluster-width);
+    padding: 2px;  /* Makes the box-shadow fully visible when focused. */
+    padding-bottom: var(--cluster-padding-vertical);
   }
 
   :host-context(.focus-outline-visible):host(:focus) {

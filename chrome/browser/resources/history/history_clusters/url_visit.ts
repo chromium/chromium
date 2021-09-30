@@ -55,9 +55,9 @@ class VisitRowElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * Whether there are related visits that can be shown.
+       * Whether this is a top visit.
        */
-      hasRelatedVisits: {
+      isTopVisit: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,

@@ -15,7 +15,12 @@
     justify-content: space-between;
     min-width: 0;
     outline: none;
+    padding-inline-start: var(--cluster-padding-horizontal);
     user-select: none;
+  }
+
+  :host(:not([is-top-visit])) #header {
+    padding-inline-start: calc(var(--cluster-padding-horizontal) + var(--top-visit-favicon-size));
   }
 
   :host-context(.focus-outline-visible) #header:focus {
@@ -70,7 +75,7 @@
   :host([is-top-visit]) #title,
   :host([is-top-visit]) #hostname {
     font-size: 1.125rem;  /* 18px */
-    font-weight: 700;
+    font-weight: 500;
   }
 
   #debug-info {
@@ -97,8 +102,16 @@
     flex-shrink: 0;
   }
 
+  :host(:not([is-top-visit])) #timestamp {
+    display: none;
+  }
+
   #actionMenuButton {
-    --cr-icon-button-margin-end: 1px;
+    --cr-icon-button-margin-end: 8px;
+  }
+
+  :host([is-top-visit]) #actionMenuButton {
+    --cr-icon-button-icon-size: 24px;
   }
 
   :host(:not([has-related-visits])) #removeAllButton {
@@ -126,7 +139,7 @@
     </div>
   </div>
   <div id="end-justified">
-    <div id="timestamp" hidden="[[!isTopVisit]]">[[visit.relativeDate]]</div>
+    <div id="timestamp">[[visit.relativeDate]]</div>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
         on-click="onActionMenuButtonClick_">
     </cr-icon-button>

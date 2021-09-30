@@ -1,6 +1,5 @@
 <style include="history-clusters-shared-style">
   :host {
-    background-color: var(--grey-fill-color);
     display: block;
     min-width: 0;
   }
@@ -11,6 +10,14 @@
     display: flex;
     outline: none;
     text-decoration: none;
+  }
+
+  :host(:hover) a {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  :host(:active) a {
+    background-color: var(--cr-active-background-color);
   }
 
   :host-context(.focus-outline-visible) a:focus {

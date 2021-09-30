@@ -2,24 +2,24 @@
   :host {
     --indentation: 52px;
     --search-query-margin: 10px;
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
     display: block;
+    padding: var(--cluster-padding-vertical) 0;
   }
 
-  #related-content {
-    margin-inline-start: calc(var(--top-visit-favicon-size) + var(--favicon-margin));
+  :host([has-hidden-related-visits_]) {
+    margin-bottom: var(--cluster-padding-vertical);
   }
 
   #related-searches {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    margin-top: calc(var(--cluster-padding) - var(--search-query-margin));
+    padding: var(--cluster-padding-vertical) var(--cluster-padding-horizontal);
   }
 
   #related-searches-label {
     color: var(--cr-secondary-text-color);
-    margin-inline-end: 16px;
-    margin-top: var(--search-query-margin);
+    font-weight: 500;
   }
 
   #search-queries {
@@ -40,43 +40,20 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    margin-top: var(--cluster-padding);
-    position: relative;
-  }
-
-  #horizontal-line {
-    background-color: var(--border-color);
-    height: 1px;
-    margin-top: calc((var(--pill-height) - 1px) / 2);
-    position: absolute;
-    width: 100%;
-  }
-
-  #toggle-button,
-  #toggle-button-white-background {
-    align-items: center;
-    background-color: var(--white-fill-color);
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    min-width: calc(var(--cluster-width) / 4);
-    outline: none;
-    overflow: hidden;
+    margin-top: var(--cluster-padding-vertical);
     position: relative;
   }
 
   #toggle-button {
-    margin-top: calc(-1 * var(--pill-height));
-  }
-
-  #toggle-button:hover {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  #toggle-button:active {
-    background-color: var(--cr-active-background-color);
+    --pill-padding-icon: 60px;
+    --pill-padding-text: 64px;
+    align-items: center;
+    background-color: var(--grey-fill-color);
+    cursor: pointer;
+    display: flex;
+    outline: none;
+    position: absolute;
+    top: calc(var(--cluster-padding-vertical) - var(--pill-height) / 2);
   }
 
   :host-context(.focus-outline-visible) #toggle-button:focus {
@@ -93,41 +70,35 @@
   }
 </style>
 <url-visit visit="[[visit]]" index="0" is-top-visit
-    has-related-visits="[[hasRelatedVisits_]]">
+    has-related-visits$="[[hasRelatedVisits_]]">
 </url-visit>
-<div id="related-content">
-  <div id="related-visits">
-    <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-      <url-visit visit="[[item]]"
-          index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
-      </url-visit>
+<template is="dom-repeat" items="[[visibleRelatedVisits_]]">
+  <url-visit visit="[[item]]"
+      index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+  </url-visit>
+</template>
+<!-- Disable animation on iron-collapse, as the parent iron-list can't
+     easily handle it. -->
+<iron-collapse opened="[[expanded_]]" no-animation>
+  <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
+    <url-visit visit="[[item]]"
+        index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+    </url-visit>
+  </template>
+</iron-collapse>
+<div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
+  <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
+  <div id="search-queries">
+    <template is="dom-repeat" items="[[visit.relatedSearches]]">
+      <search-query search-query="[[item]]" index="[[index]]">
+      </search-query>
     </template>
-    <!-- Disable animation on iron-collapse, as the parent iron-list can't
-         easily handle it. -->
-    <iron-collapse opened="[[expanded_]]" no-animation>
-      <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
-        <url-visit visit="[[item]]"
-            index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
-        </url-visit>
-      </template>
-    </iron-collapse>
   </div>
-  <div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
-    <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
-    <div id="search-queries">
-      <template is="dom-repeat" items="[[visit.relatedSearches]]">
-        <search-query class="pill" search-query="[[item]]" index="[[index]]">
-        </search-query>
-      </template>
-    </div>
-  </div>
-  <div id="visibility-toggle" hidden="[[!hiddenRelatedVisits_.length]]">
-    <div id="horizontal-line"></div>
-    <div id="toggle-button-white-background" class="pill"></div>
-    <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
-        on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
-      <span>[[getToggleButtonLabel_(expanded_)]]</span>
-      <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
-    </div>
+</div>
+<div id="visibility-toggle" hidden="[[!hasHiddenRelatedVisits_]]">
+  <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
+      on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
+    <span>[[getToggleButtonLabel_(expanded_)]]</span>
+    <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
   </div>
 </div>

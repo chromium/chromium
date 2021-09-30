@@ -8,8 +8,6 @@
     --google-green-600-rgb: 30, 142, 62;  /* #1e8e3e */
     --google-green-600: rgb(var(--google-green-600-rgb));
 
-    --white-fill-color: var(--md-background-color);
-
     --annotation-background-color: var(--google-green-50);
     --annotation-text-color: var(--google-green-600);
     --border-color: var(--google-grey-refresh-300);
@@ -31,10 +29,13 @@
 
   /* Sizes: */
   html {
-    --cluster-padding: 24px;
-    --cluster-width: 742px;
+    --cluster-max-width: var(--card-max-width);
+    --cluster-min-width: var(--card-min-width);
+    --cluster-padding-horizontal: var(--card-padding-side);
+    --cluster-padding-vertical: var(--card-padding-between);
     --favicon-margin: 16px;
     --favicon-size: 16px;
+    --first-cluster-padding-top: var(--first-card-padding-top);
     --pill-height: 34px;
     --pill-padding-icon: 12px;
     --pill-padding-text: 16px;
