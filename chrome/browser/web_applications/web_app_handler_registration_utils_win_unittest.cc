@@ -61,8 +61,7 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
                    const std::wstring& app_name_extension,
                    const base::FilePath& profile_path) {
     base::FilePath web_app_path(
-        web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id,
-                                                          GURL()));
+        GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
 
     absl::optional<base::FilePath> launcher_path =
         CreateAppLauncherFile(app_name, app_name_extension, web_app_path);

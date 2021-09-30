@@ -29,6 +29,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/filename_util.h"
 
+namespace web_app {
+
 namespace {
 
 // UMA metric name for file handler registration result.
@@ -43,7 +45,7 @@ constexpr const char* kRegistrationResultMetric =
 // only installed in exactly one other profile, it will need its app name
 // updated.
 bool IsWebAppLauncherRegisteredWithWindows(
-    const web_app::AppId& app_id,
+    const AppId& app_id,
     const base::FilePath& cur_profile_path,
     base::FilePath* only_profile_with_app_installed) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -56,8 +58,7 @@ bool IsWebAppLauncherRegisteredWithWindows(
     base::FilePath profile_path = entry->GetPath();
     if (profile_path == cur_profile_path)
       continue;
-    std::wstring profile_prog_id =
-        web_app::GetProgIdForApp(profile_path, app_id);
+    std::wstring profile_prog_id = GetProgIdForApp(profile_path, app_id);
     base::FilePath shim_app_path =
         ShellUtil::GetApplicationPathForProgId(profile_prog_id);
     if (shim_app_path.empty())
@@ -88,33 +89,31 @@ std::wstring GetAppNameExtensionForProfile(const base::FilePath& profile_path) {
   return app_name_extension;
 }
 
-bool UpdateAppRegistration(const web_app::AppId& app_id,
+bool UpdateAppRegistration(const AppId& app_id,
                            const std::wstring& app_name,
                            const base::FilePath& profile_path,
                            const std::wstring& prog_id,
                            const std::wstring& app_name_extension) {
   if (!base::DeleteFile(ShellUtil::GetApplicationPathForProgId(prog_id))) {
-    web_app::RecordRegistration(
-        web_app::RegistrationResult::kFailToDeleteExistingRegistration);
+    RecordRegistration(RegistrationResult::kFailToDeleteExistingRegistration);
     return false;
   }
 
   std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::FilePath web_app_path(web_app::GetOsIntegrationResourcesDirectoryForApp(
-      profile_path, app_id, GURL()));
+  base::FilePath web_app_path(
+      GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
   absl::optional<base::FilePath> app_launcher_path =
-      web_app::CreateAppLauncherFile(app_name, app_name_extension,
-                                     web_app_path);
+      CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
   if (!app_launcher_path) {
     return false;
   }
 
-  base::CommandLine app_launch_cmd = web_app::GetAppLauncherCommand(
-      app_id, app_launcher_path.value(), profile_path);
-  base::FilePath icon_path = web_app::internals::GetIconFilePath(
-      web_app_path, base::AsString16(app_name));
+  base::CommandLine app_launch_cmd =
+      GetAppLauncherCommand(app_id, app_launcher_path.value(), profile_path);
+  base::FilePath icon_path =
+      internals::GetIconFilePath(web_app_path, base::AsString16(app_name));
 
   ShellUtil::AddApplicationClass(prog_id, app_launch_cmd, user_visible_app_name,
                                  app_name, icon_path);
@@ -131,8 +130,6 @@ bool AppNameHasProfileExtension(const std::wstring& app_name,
 }
 
 }  // namespace
-
-namespace web_app {
 
 base::CommandLine GetAppLauncherCommand(const AppId& app_id,
                                         const base::FilePath& app_launcher_path,
