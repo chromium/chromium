@@ -3625,6 +3625,7 @@ if (!is_android && !is_fuchsia) {
         "//components/device_event_log",
         "//components/drive",
         "//components/exo:test_support",
+        "//components/live_caption:constants",
         "//components/metrics/structured",
         "//components/metrics/structured:structured_events",
         "//components/onc",

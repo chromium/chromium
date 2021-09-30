@@ -88,21 +88,22 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   enum FeatureType {
     kAutoclick = 0,
     kCaretHighlight,
-    KCursorHighlight,
+    kCursorColor,
+    kCursorHighlight,
     kDictation,
+    kDockedMagnifier,
     kFloatingMenu,
     kFocusHighlight,
     kFullscreenMagnifier,
-    kDockedMagnifier,
     kHighContrast,
     kLargeCursor,
+    kLiveCaption,
     kMonoAudio,
-    kSpokenFeedback,
     kSelectToSpeak,
+    kSpokenFeedback,
     kStickyKeys,
     kSwitchAccess,
     kVirtualKeyboard,
-    kCursorColor,
 
     kFeatureCount,
     kNoConflictingFeature
@@ -223,6 +224,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   FeatureWithDialog& docked_magnifier() const;
   FeatureWithDialog& high_contrast() const;
   Feature& large_cursor() const;
+  Feature& live_caption() const;
   Feature& mono_audio() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
@@ -278,6 +280,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool IsLargeCursorSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForLargeCursor();
+
+  bool IsLiveCaptionSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForLiveCaption();
 
   bool IsMonoAudioSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForMonoAudio();
@@ -497,6 +502,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateAutoclickMenuPositionFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
+  void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();

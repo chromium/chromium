@@ -29,6 +29,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/live_caption/pref_names.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -125,6 +126,14 @@ bool IsLargeCursorEnabled() {
   return AccessibilityManager::Get()->IsLargeCursorEnabled();
 }
 
+void SetLiveCaptionEnabled(bool enabled) {
+  AccessibilityManager::Get()->EnableLiveCaption(enabled);
+}
+
+bool IsLiveCaptionEnabled() {
+  return AccessibilityManager::Get()->IsLiveCaptionEnabled();
+}
+
 bool ShouldShowAccessibilityMenu() {
   return AccessibilityManager::Get()->ShouldShowAccessibilityMenu();
 }
@@ -217,6 +226,10 @@ void SetAlwaysShowMenuEnabledPref(bool enabled) {
 void SetLargeCursorEnabledPref(bool enabled) {
   GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled,
                                    enabled);
+}
+
+void SetLiveCaptionEnabledPref(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(::prefs::kLiveCaptionEnabled, enabled);
 }
 
 void SetHighContrastEnabledPref(bool enabled) {
@@ -440,6 +453,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsLargeCursorEnabled());
+  EXPECT_FALSE(IsLiveCaptionEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
@@ -451,6 +465,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetLargeCursorEnabledPref(true);
   EXPECT_TRUE(IsLargeCursorEnabled());
+
+  SetLiveCaptionEnabledPref(true);
+  EXPECT_TRUE(IsLiveCaptionEnabled());
 
   SetSpokenFeedbackEnabledPref(true);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
@@ -478,6 +495,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetLargeCursorEnabledPref(false);
   EXPECT_FALSE(IsLargeCursorEnabled());
+
+  SetLiveCaptionEnabledPref(false);
+  EXPECT_FALSE(IsLiveCaptionEnabled());
 
   SetSpokenFeedbackEnabledPref(false);
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
@@ -671,6 +691,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_FALSE(IsLargeCursorEnabled());
+  EXPECT_FALSE(IsLiveCaptionEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
@@ -687,6 +708,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   SetLargeCursorEnabled(true);
   EXPECT_TRUE(ShouldShowAccessibilityMenu());
   SetLargeCursorEnabled(false);
+  EXPECT_FALSE(ShouldShowAccessibilityMenu());
+
+  SetLiveCaptionEnabled(true);
+  EXPECT_TRUE(ShouldShowAccessibilityMenu());
+  SetLiveCaptionEnabled(false);
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
 
   SetSpokenFeedbackEnabled(true);

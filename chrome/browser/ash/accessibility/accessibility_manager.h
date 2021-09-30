@@ -62,6 +62,7 @@ enum class AccessibilityNotificationType {
   kManagerShutdown,
   kToggleHighContrastMode,
   kToggleLargeCursor,
+  kToggleLiveCaption,
   kToggleStickyKeys,
   kToggleScreenMagnifier,
   kToggleSpokenFeedback,
@@ -139,6 +140,12 @@ class AccessibilityManager
 
   // Returns true if the large cursor is enabled, or false if not.
   bool IsLargeCursorEnabled() const;
+
+  // Enables or disables Live Caption.
+  void EnableLiveCaption(bool enabled);
+
+  // Returns true if Live Caption is enabled, or false if not.
+  bool IsLiveCaptionEnabled() const;
 
   // Enables or disable Sticky Keys.
   void EnableStickyKeys(bool enabled);
@@ -407,6 +414,7 @@ class AccessibilityManager
 
   void UpdateAlwaysShowMenuFromPref();
   void OnLargeCursorChanged();
+  void OnLiveCaptionChanged();
   void OnStickyKeysChanged();
   void OnSpokenFeedbackChanged();
   void OnHighContrastChanged();

@@ -53,10 +53,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
@@ -96,7 +99,7 @@ const FeatureData kFeatures[] = {
      &kSystemMenuAccessibilityAutoClickIcon},
     {FeatureType::kCaretHighlight, prefs::kAccessibilityCaretHighlightEnabled,
      nullptr},
-    {FeatureType::KCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
+    {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
      nullptr},
     {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
      nullptr},
@@ -115,6 +118,8 @@ const FeatureData kFeatures[] = {
      &kSystemMenuAccessibilityContrastIcon},
     {FeatureType::kLargeCursor, prefs::kAccessibilityLargeCursorEnabled,
      nullptr},
+    {FeatureType::kLiveCaption, ::prefs::kLiveCaptionEnabled,
+     &vector_icons::kLiveCaptionOnIcon},
     {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr},
     {FeatureType::kSpokenFeedback, prefs::kAccessibilitySpokenFeedbackEnabled,
      &kSystemMenuAccessibilityChromevoxIcon},
@@ -734,7 +739,6 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
                                std::numeric_limits<double>::min());
-
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
       base::Value(base::Value::Type::DICTIONARY),
@@ -821,7 +825,7 @@ AccessibilityControllerImpl::caret_highlight() const {
 
 AccessibilityControllerImpl::Feature&
 AccessibilityControllerImpl::cursor_highlight() const {
-  return GetFeature(FeatureType::KCursorHighlight);
+  return GetFeature(FeatureType::kCursorHighlight);
 }
 
 AccessibilityControllerImpl::Feature&
@@ -865,6 +869,11 @@ AccessibilityControllerImpl::high_contrast() const {
 AccessibilityControllerImpl::Feature&
 AccessibilityControllerImpl::large_cursor() const {
   return GetFeature(FeatureType::kLargeCursor);
+}
+
+AccessibilityControllerImpl::Feature&
+AccessibilityControllerImpl::live_caption() const {
+  return GetFeature(FeatureType::kLiveCaption);
 }
 
 AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::mono_audio()
@@ -914,7 +923,8 @@ bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
           IsDockedMagnifierSettingVisibleInTray() ||
           IsAutoclickSettingVisibleInTray() ||
           IsVirtualKeyboardSettingVisibleInTray() ||
-          IsSwitchAccessSettingVisibleInTray());
+          IsSwitchAccessSettingVisibleInTray() ||
+          IsLiveCaptionSettingVisibleInTray());
 }
 
 bool AccessibilityControllerImpl::IsAdditionalSettingsViewVisibleInTray() {
@@ -994,6 +1004,20 @@ bool AccessibilityControllerImpl::IsLargeCursorSettingVisibleInTray() {
 
 bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForLargeCursor() {
   return large_cursor().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsLiveCaptionSettingVisibleInTray() {
+  return media::IsLiveCaptionFeatureEnabled() &&
+         base::FeatureList::IsEnabled(
+             media::kLiveCaptionSystemWideOnChromeOS) &&
+         live_caption().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForLiveCaption() {
+  return media::IsLiveCaptionFeatureEnabled() &&
+         base::FeatureList::IsEnabled(
+             media::kLiveCaptionSystemWideOnChromeOS) &&
+         live_caption().IsEnterpriseIconVisible();
 }
 
 bool AccessibilityControllerImpl::IsMonoAudioSettingVisibleInTray() {
@@ -2073,7 +2097,7 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
     case FeatureType::kCaretHighlight:
       UpdateAccessibilityHighlightingFromPrefs();
       break;
-    case FeatureType::KCursorHighlight:
+    case FeatureType::kCursorHighlight:
       UpdateAccessibilityHighlightingFromPrefs();
       break;
     case FeatureType::kDictation:
@@ -2106,6 +2130,9 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
                                    : ui::CursorSize::kNormal);
       Shell::Get()->SetLargeCursorSizeInDip(large_cursor_size_in_dip_);
       Shell::Get()->UpdateCursorCompositingEnabled();
+      break;
+    case FeatureType::kLiveCaption:
+      live_caption().SetEnabled(enabled);
       break;
     case FeatureType::kMonoAudio:
       CrasAudioHandler::Get()->SetOutputMonoEnabled(enabled);

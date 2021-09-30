@@ -26392,6 +26392,18 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="StatusArea_LiveCaptionDisabled">
+  <owner>abigailbklein@google.com</owner>
+  <description>
+    Ash system menu: Accessibility: Disable Live Caption
+  </description>
+</action>
+
+<action name="StatusArea_LiveCaptionEnabled">
+  <owner>abigailbklein@google.com</owner>
+  <description>Ash system menu: Accessibility: Enable Live Caption</description>
+</action>
+
 <action name="StatusArea_MagnifierDisabled">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
