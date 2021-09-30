@@ -17,5 +17,5 @@
     ]
   },
   "recipe": "chromium",
-  "xcode_build_version": "12d4e"
+  "xcode_build_version": "13a233"
 }
