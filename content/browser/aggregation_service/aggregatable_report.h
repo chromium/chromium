@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -140,7 +141,28 @@ class CONTENT_EXPORT AggregatableReport {
     return shared_info_;
   }
 
-  // TODO(crbug.com/1217824): Expose base::Value getter for the overall report.
+  // Returns the JSON representation of this report of the form
+  // {
+  //   "scheduled_report_time": "<timestamp in msec>",
+  //   "privacy_budget_key": "<field for server to do privacy budgeting>",
+  //   "version": "<api version>",
+  //   "aggregation_service_payloads": [
+  //     {
+  //       "origin": "https://helper1.example",
+  //       "payload": "<base64 encoded encrypted data>",
+  //       "key_id": "<string identifying public key used>"
+  //     },
+  //     {
+  //       "origin": "https://helper2.example",
+  //       "payload": "<base64 encoded encrypted data>",
+  //       "key_id": "<string identifying public key used>"
+  //     }
+  //   ]
+  // }
+  // Note that APIs may wish to add additional key-value pairs to this returned
+  // value. `this` is required to be an rvalue to avoid unnecessary copies; this
+  // method should only need to be called once.
+  base::Value::DictStorage GetAsJson() &&;
 
   // TODO(crbug.com/1247409): Expose static method to validate that a
   // base::Value appears to represent a valid report.

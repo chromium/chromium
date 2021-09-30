@@ -13,6 +13,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
@@ -229,6 +230,37 @@ TEST(AggregatableReportTest,
   ASSERT_TRUE(ordering_1.has_value());
   ASSERT_TRUE(ordering_2.has_value());
   EXPECT_EQ(ordering_1->processing_origins(), ordering_2->processing_origins());
+}
+
+TEST(AggregatableReportTest, GetAsJson_ValidJsonReturned) {
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
+                        /*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1");
+  payloads.emplace_back(url::Origin::Create(GURL("https://b.example")),
+                        /*payload=*/kEFGH5678AsBytes,
+                        /*key_id=*/"key_2");
+
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromJavaTime(1234567890123),
+      /*privacy_budget_key=*/"example_pbk");
+
+  AggregatableReport report(std::move(payloads), std::move(shared_info));
+  base::Value::DictStorage report_json_value = std::move(report).GetAsJson();
+
+  std::string report_json_string;
+  base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
+
+  const char kExpectedJsonString[] =
+      R"({)"
+      R"("aggregation_service_payloads":[)"
+      R"({"key_id":"key_1","origin":"https://a.example","payload":"ABCD1234"},)"
+      R"({"key_id":"key_2","origin":"https://b.example","payload":"EFGH5678"})"
+      R"(],)"
+      R"("privacy_budget_key":"example_pbk",)"
+      R"("scheduled_report_time":"1234567890123","version":"")"
+      R"(})";
+  EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
 }  // namespace content

@@ -12,10 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -32,12 +36,6 @@ using DistributedPointFunction =
     distributed_point_functions::DistributedPointFunction;
 using DpfKey = distributed_point_functions::DpfKey;
 using DpfParameters = distributed_point_functions::DpfParameters;
-
-constexpr char kReportingOriginKey[] = "reporting_origin";
-constexpr char kOperationKey[] = "operation";
-constexpr char kDpfKeyKey[] = "dpf_key";
-
-constexpr char kHierachicalHistogramValue[] = "hierarchical-histogram";
 
 constexpr char kPrivacyBudgetKeyKey[] = "privacy_budget_key";
 constexpr char kScheduledReportTimeKey[] = "scheduled_report_time";
@@ -132,9 +130,9 @@ absl::optional<std::vector<uint8_t>> ConstructUnencryptedPayload(
   // Start with putting all shared info in the unencrypted payload.
   cbor::Value::MapValue value = EncodeSharedInfoToCbor(shared_info);
 
-  value.emplace(kReportingOriginKey, reporting_origin.Serialize());
-  value.emplace(kOperationKey, kHierachicalHistogramValue);
-  value.emplace(kDpfKeyKey, std::move(serialized_key));
+  value.emplace("reporting_origin", reporting_origin.Serialize());
+  value.emplace("operation", "hierarchical-histogram");
+  value.emplace("dpf_key", std::move(serialized_key));
 
   return cbor::Writer::Write(cbor::Value(std::move(value)));
 }
@@ -339,6 +337,37 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
 
   return AggregatableReport(std::move(encrypted_payloads),
                             std::move(report_request.shared_info_));
+}
+
+base::Value::DictStorage AggregatableReport::GetAsJson() && {
+  base::Value::DictStorage value;
+
+  value.emplace(kPrivacyBudgetKeyKey,
+                std::move(shared_info_.privacy_budget_key));
+
+  // Encoded as a string representing the number of milliseconds since the Unix
+  // epoch, ignoring leap seconds.
+  DCHECK(!shared_info_.scheduled_report_time.is_null());
+  DCHECK(!shared_info_.scheduled_report_time.is_inf());
+  value.emplace(
+      kScheduledReportTimeKey,
+      base::NumberToString(shared_info_.scheduled_report_time.ToJavaTime()));
+  value.emplace(kVersionKey, kVersionValue);
+
+  base::Value payloads_list_value(base::Value::Type::LIST);
+  for (const AggregationServicePayload& payload : payloads_) {
+    base::Value payload_dict_value(base::Value::Type::DICTIONARY);
+    payload_dict_value.SetStringKey("origin", payload.origin.Serialize());
+    payload_dict_value.SetStringKey("payload",
+                                    base::Base64Encode(payload.payload));
+    payload_dict_value.SetStringKey("key_id", std::move(payload.key_id));
+
+    payloads_list_value.Append(std::move(payload_dict_value));
+  }
+
+  value.emplace("aggregation_service_payloads", std::move(payloads_list_value));
+
+  return value;
 }
 
 }  // namespace content
