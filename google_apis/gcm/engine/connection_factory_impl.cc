@@ -48,8 +48,7 @@ const int kConnectionResetWindowSecs = 10;  // 10 seconds.
 bool ShouldRestorePreviousBackoff(const base::TimeTicks& login_time,
                                   const base::TimeTicks& now_ticks) {
   return !login_time.is_null() &&
-      now_ticks - login_time <=
-          base::TimeDelta::FromSeconds(kConnectionResetWindowSecs);
+         now_ticks - login_time <= base::Seconds(kConnectionResetWindowSecs);
 }
 
 }  // namespace
@@ -114,8 +113,7 @@ ConnectionHandler* ConnectionFactoryImpl::GetConnectionHandler() const {
 void ConnectionFactoryImpl::Connect() {
   if (!connection_handler_) {
     connection_handler_ = CreateConnectionHandler(
-        base::TimeDelta::FromMilliseconds(kReadTimeoutMs), read_callback_,
-        write_callback_,
+        base::Milliseconds(kReadTimeoutMs), read_callback_, write_callback_,
         base::BindRepeating(&ConnectionFactoryImpl::ConnectionHandlerCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -208,10 +206,8 @@ void ConnectionFactoryImpl::SignalConnectionReset(
   recorder_->RecordConnectionResetSignaled(reason);
   if (!last_login_time_.is_null()) {
     UMA_HISTOGRAM_CUSTOM_TIMES("GCM.ConnectionUpTime",
-                               NowTicks() - last_login_time_,
-                               base::TimeDelta::FromSeconds(1),
-                               base::TimeDelta::FromHours(24),
-                               50);
+                               NowTicks() - last_login_time_, base::Seconds(1),
+                               base::Hours(24), 50);
     // |last_login_time_| will be reset below, before attempting the new
     // connection.
   }

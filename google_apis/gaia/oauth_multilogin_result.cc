@@ -103,7 +103,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* same_site = cookie.FindStringKey("sameSite");
 
     base::TimeDelta before_expiration =
-        base::TimeDelta::FromSecondsD(expiration_delta.value_or(0.0));
+        base::Seconds(expiration_delta.value_or(0.0));
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&

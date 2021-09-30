@@ -318,7 +318,7 @@ TEST_F(GaiaOAuthClientTest, NetworkFailureRecoverBackoff) {
   //
   // ... so the whole thing should take at least 307s
   EXPECT_GE(task_environment_.GetMockTickClock()->NowTicks() - start,
-            base::TimeDelta::FromSeconds(307));
+            base::Seconds(307));
 }
 
 TEST_F(GaiaOAuthClientTest, OAuthFailure) {

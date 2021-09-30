@@ -178,7 +178,7 @@ namespace gcm {
 
 // static
 const base::TimeDelta GServicesSettings::MinimumCheckinInterval() {
-  return base::TimeDelta::FromSeconds(kMinimumCheckinInterval);
+  return base::Seconds(kMinimumCheckinInterval);
 }
 
 // static
@@ -279,7 +279,7 @@ base::TimeDelta GServicesSettings::GetCheckinInterval() const {
   if (checkin_interval < kMinimumCheckinInterval)
     checkin_interval = kMinimumCheckinInterval;
 
-  return base::TimeDelta::FromSeconds(checkin_interval);
+  return base::Seconds(checkin_interval);
 }
 
 GURL GServicesSettings::GetCheckinURL() const {

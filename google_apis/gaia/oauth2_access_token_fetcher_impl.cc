@@ -340,7 +340,7 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
             value->GetInteger(kExpiresInKey, &expires_in);
   if (ok) {
     token_response->expiration_time =
-        base::Time::Now() + base::TimeDelta::FromSeconds(9 * expires_in / 10);
+        base::Time::Now() + base::Seconds(9 * expires_in / 10);
   }
   return ok;
 }

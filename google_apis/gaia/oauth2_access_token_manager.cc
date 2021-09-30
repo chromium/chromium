@@ -343,7 +343,7 @@ OAuth2AccessTokenManager::Fetcher::ComputeExponentialBackOffMilliseconds(
 bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
     const GoogleServiceAuthError& error) {
   if (retry_number_ < oauth2_access_token_manager_->max_fetch_retry_num_) {
-    base::TimeDelta backoff = base::TimeDelta::FromMilliseconds(
+    base::TimeDelta backoff = base::Milliseconds(
         ComputeExponentialBackOffMilliseconds(retry_number_));
     ++retry_number_;
     UMA_HISTOGRAM_ENUMERATION("Signin.OAuth2TokenGetRetry", error.state(),

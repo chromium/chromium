@@ -145,7 +145,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
     if (!base::Time::FromUTCExploded(exploded, parsed_time))
       return false;
     if (offset_to_utc_in_minutes != 0)
-      *parsed_time -= base::TimeDelta::FromMinutes(offset_to_utc_in_minutes);
+      *parsed_time -= base::Minutes(offset_to_utc_in_minutes);
   } else {
     if (!base::Time::FromLocalExploded(exploded, parsed_time))
       return false;
