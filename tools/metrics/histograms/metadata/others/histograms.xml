@@ -13197,7 +13197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccuracyTip.AccuracyTipInteraction"
-    enum="AccuracyTipInteraction" expires_after="M96">
+    enum="AccuracyTipInteraction" expires_after="M98">
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -13207,7 +13207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen" units="ms"
-    expires_after="M96">
+    expires_after="M98">
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -13217,7 +13217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccuracyTip.NumDialogsShown" units="dialogs"
-    expires_after="M96">
+    expires_after="M98">
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -13227,7 +13227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccuracyTip.PageStatus" enum="AccuracyTipStatus"
-    expires_after="M96">
+    expires_after="M98">
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>The accuracy status of a page. Recorded on each page load.</summary>
@@ -19542,7 +19542,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.Action"
-    enum="WebsiteSettingsDiscoverabilityAction" expires_after="M96">
+    enum="WebsiteSettingsDiscoverabilityAction" expires_after="M98">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -19551,7 +19551,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.TimeToClickHighlight"
-    units="ms" expires_after="M96">
+    units="ms" expires_after="M98">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
