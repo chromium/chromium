@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "tools/mac/power/power_sampler/monitor.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 
@@ -54,8 +55,9 @@ bool SamplingController::OnSamplingEvent() {
   DCHECK(started_);
 
   std::vector<Sample> samples;
+  const base::TimeTicks sample_time = base::TimeTicks::Now();
   for (auto& sampler : samplers_) {
-    Sample sample = sampler->GetSample();
+    Sample sample = sampler->GetSample(sample_time);
     DCHECK_EQ(sample.sampler_name(), sampler->GetName());
     // TODO(siggi): Verify that the samplers return only the datums they
     //      declare (in debug).
@@ -66,7 +68,7 @@ bool SamplingController::OnSamplingEvent() {
   // after this round if any of them want out.
   bool should_end_session = false;
   for (auto& monitor : monitors_)
-    if (monitor->OnSample(samples))
+    if (monitor->OnSample(sample_time, samples))
       should_end_session = true;
 
   return should_end_session;

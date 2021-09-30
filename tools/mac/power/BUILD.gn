@@ -48,6 +48,7 @@ test("power_sampler_unittests") {
     ":power_sampler_lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

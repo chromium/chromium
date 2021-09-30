@@ -4,6 +4,8 @@
 
 #include "tools/mac/power/power_sampler/sampling_controller.h"
 
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/mac/power/power_sampler/monitor.h"
@@ -33,7 +35,7 @@ class TestSampler : public Sampler {
     return datum_name_units;
   }
 
-  Sample GetSample() override {
+  Sample GetSample(base::TimeTicks sample_time) override {
     Sample sample(name_);
     sample.AddDatum(name_, sample_);
 
@@ -51,7 +53,9 @@ class LenientMockMonitor : public Monitor {
   ~LenientMockMonitor() = default;
 
   MOCK_METHOD(void, OnStartSession, (const Samplers& samplers));
-  MOCK_METHOD(bool, OnSample, (const Samples& samples));
+  MOCK_METHOD(bool,
+              OnSample,
+              (base::TimeTicks sample_time, const Samples& samples));
   MOCK_METHOD(void, OnEndSession, ());
 };
 using MockMonitor = StrictMock<LenientMockMonitor>;
@@ -66,6 +70,9 @@ TEST(SamplingControllerTest, AddSampler) {
 }
 
 TEST(SamplingControllerTest, CallsSamplersAndMonitors) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   SamplingController controller;
   EXPECT_TRUE(controller.AddSampler(std::make_unique<TestSampler>("foo", 1.0)));
   EXPECT_TRUE(controller.AddSampler(std::make_unique<TestSampler>("bar", 2.0)));
@@ -82,9 +89,10 @@ TEST(SamplingControllerTest, CallsSamplersAndMonitors) {
   EXPECT_CALL(*monitor, OnStartSession(_));
   controller.StartSession();
 
+  base::TimeTicks first_now = base::TimeTicks::Now();
   std::vector<Sample> last_seen_samples;
-  EXPECT_CALL(*monitor, OnSample(_))
-      .WillOnce(DoAll(SaveArg<0>(&last_seen_samples), Return(false)));
+  EXPECT_CALL(*monitor, OnSample(first_now, _))
+      .WillOnce(DoAll(SaveArg<1>(&last_seen_samples), Return(false)));
   EXPECT_FALSE(controller.OnSamplingEvent());
 
   Sample foo("foo");
@@ -95,9 +103,11 @@ TEST(SamplingControllerTest, CallsSamplersAndMonitors) {
 
   last_seen_samples.clear();
 
+  task_environment.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+  base::TimeTicks second_now = base::TimeTicks::Now();
   // Terminate the sampling session on the next sample.
-  EXPECT_CALL(*monitor, OnSample(_))
-      .WillOnce(DoAll(SaveArg<0>(&last_seen_samples), Return(true)));
+  EXPECT_CALL(*monitor, OnSample(second_now, _))
+      .WillOnce(DoAll(SaveArg<1>(&last_seen_samples), Return(true)));
   EXPECT_TRUE(controller.OnSamplingEvent());
   // We still expect the same samples.
   EXPECT_THAT(last_seen_samples, ElementsAre(foo, bar));

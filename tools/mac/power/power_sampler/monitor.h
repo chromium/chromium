@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/time/time.h"
+
 namespace power_sampler {
 
 class Sample;
@@ -33,9 +35,11 @@ class Monitor {
   // one-time setup.
   virtual void OnStartSession(const Samplers& samplers) = 0;
 
-  // Called each time a new set of samples has been acquired, returns true if
-  // the sampling session should be ended.
-  virtual bool OnSample(const Samples& samples) = 0;
+  // Called each time a new set of |samples| has been acquired.
+  // The |sample_time| is the time when the acquisition of |samples| started.
+  // Returns true if the sampling session should be ended.
+  virtual bool OnSample(base::TimeTicks sample_time,
+                        const Samples& samples) = 0;
 
   // Called once after all OnSample calls have been made.
   // Can be used to e.g. close files, flush output or other one-time teardown.

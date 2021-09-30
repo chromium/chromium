@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 
 namespace power_sampler {
 
@@ -54,8 +55,11 @@ class Sampler {
   // Returns the names and units of the datums provided by this sampler.
   virtual DatumNameUnits GetDatumNameUnits() = 0;
 
-  // Subclasses override to return their sample.
-  virtual Sample GetSample() = 0;
+  // Subclasses override to return their sample, |sample_time| is the time
+  // when the controller started the acquisition of this sample.
+  // Returns the new sample, which must have the sampler_name set to the
+  // same value as |GetName()| of this sampler.
+  virtual Sample GetSample(base::TimeTicks sample_time) = 0;
 };
 
 }  // namespace power_sampler
