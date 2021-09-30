@@ -4441,9 +4441,11 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // If a frame tree node ID is specified and it exists, ensure it is for a
       // node within this WebContents. Note: this WebContents could be hosting
       // multiple frame trees (e.g. prerendering) so it's not enough to check
-      // against this->frame_tree_.
+      // against this->frame_tree_. Check against page_delegate(), which is
+      // always a WebContentsImpl, while delegate() may be implemented by
+      // something else such as for prerendered frame trees.
       FrameTree* frame_tree = frame_tree_node->frame_tree();
-      CHECK_EQ(frame_tree->controller().DeprecatedGetWebContents(), this);
+      CHECK_EQ(frame_tree->page_delegate(), this);
 
       // Prerendering is generally hidden from embedders. If the navigation is
       // targeting a frame in a prerendering frame tree, we shouldn't run that
