@@ -477,12 +477,6 @@ void ExtensionSyncService::ApplySyncData(
           profile_, id, extension_sync_data.launch_type());
     }
 
-    if (!extension_sync_data.bookmark_app_url().empty()) {
-      // Bookmark apps have been migrated to web apps and are now handled by
-      // WebAppSyncBridge.
-      return;
-    }
-
     if (extension_sync_data.app_launch_ordinal().IsValid() &&
         extension_sync_data.page_ordinal().IsValid()) {
       AppSorting* app_sorting = system_->app_sorting();

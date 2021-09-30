@@ -30,10 +30,6 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app", "hosted_app"]
   },
-  "app.theme_color": {
-    "channel": "stable",
-    "extension_types": ["hosted_app"]
-  },
   "author": {
     "channel": "stable",
     "extension_types": "all"
@@ -256,6 +252,6 @@
   },
   "url_handlers": {
     "channel": "stable",
-    "extension_types": ["hosted_app", "platform_app"]
+    "extension_types": ["platform_app"]
   }
 }

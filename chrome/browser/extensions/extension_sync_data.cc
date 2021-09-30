@@ -8,8 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "chrome/common/extensions/manifest_handlers/linked_app_icons.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/sync_data.h"
@@ -122,9 +120,6 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
   if (is_app_ && extension.from_bookmark()) {
     // TODO(crbug/1065748): remove this dead code.
     NOTREACHED();
-    bookmark_app_description_ = extension.description();
-    bookmark_app_url_ = AppLaunchInfo::GetLaunchWebURL(&extension).spec();
-    bookmark_app_theme_color_ = AppThemeColorInfo::GetThemeColor(&extension);
     extensions::LinkedAppIcons icons =
         LinkedAppIcons::GetLinkedAppIcons(&extension);
     for (const auto& icon : icons.icons) {
@@ -188,7 +183,6 @@ void ExtensionSyncData::ToExtensionSpecifics(
     specifics->set_disable_reasons(disable_reasons_);
   specifics->set_incognito_enabled(incognito_enabled_);
   specifics->set_remote_install(remote_install_);
-  specifics->set_name(name_);
 }
 
 void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
@@ -208,18 +202,6 @@ void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
       sync_pb::AppSpecifics_LaunchType_IsValid(sync_launch_type)) {
     specifics->set_launch_type(sync_launch_type);
   }
-
-  if (!bookmark_app_url_.empty())
-    specifics->set_bookmark_app_url(bookmark_app_url_);
-
-  if (!bookmark_app_description_.empty())
-    specifics->set_bookmark_app_description(bookmark_app_description_);
-
-  if (!bookmark_app_scope_.empty())
-    specifics->set_bookmark_app_scope(bookmark_app_scope_);
-
-  if (bookmark_app_theme_color_)
-    specifics->set_bookmark_app_theme_color(bookmark_app_theme_color_.value());
 
   for (const auto& linked_icon : linked_icons_) {
     sync_pb::LinkedAppIconInfo* linked_app_icon_info =
@@ -266,7 +248,6 @@ bool ExtensionSyncData::PopulateFromExtensionSpecifics(
   disable_reasons_ = specifics.disable_reasons();
   incognito_enabled_ = specifics.incognito_enabled();
   remote_install_ = specifics.remote_install();
-  name_ = specifics.name();
   return true;
 }
 
@@ -283,12 +264,6 @@ bool ExtensionSyncData::PopulateFromAppSpecifics(
   launch_type_ = specifics.has_launch_type()
       ? static_cast<extensions::LaunchType>(specifics.launch_type())
       : LAUNCH_TYPE_INVALID;
-
-  bookmark_app_url_ = specifics.bookmark_app_url();
-  bookmark_app_description_ = specifics.bookmark_app_description();
-  bookmark_app_scope_ = specifics.bookmark_app_scope();
-  if (specifics.has_bookmark_app_theme_color())
-    bookmark_app_theme_color_ = specifics.bookmark_app_theme_color();
 
   for (int i = 0; i < specifics.linked_app_icons_size(); ++i) {
     const sync_pb::LinkedAppIconInfo& linked_app_icon_info =

@@ -121,11 +121,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AppSpecifics& proto) {
   VISIT(app_launch_ordinal);
   VISIT(page_ordinal);
   VISIT_ENUM(launch_type);
-  VISIT(bookmark_app_url);
-  VISIT(bookmark_app_description);
   VISIT_REP(linked_app_icons);
-  VISIT(bookmark_app_scope);
-  VISIT(bookmark_app_theme_color);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ArcPackageSpecifics& proto) {
@@ -514,7 +510,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ExtensionSpecifics& proto) {
   VISIT(update_url);
   VISIT(enabled);
   VISIT(incognito_enabled);
-  VISIT(name);
   VISIT(remote_install);
   VISIT(all_urls_enabled);
   VISIT(disable_reasons);

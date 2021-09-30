@@ -706,7 +706,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncData) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataDisableReasons) {
@@ -813,7 +812,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncDataTerminated) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataFilter) {

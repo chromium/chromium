@@ -20,7 +20,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
