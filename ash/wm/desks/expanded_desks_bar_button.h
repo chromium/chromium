@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_
+#define ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_
+
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
+namespace views {
+class Label;
+}  // namespace views
+
+namespace ash {
+
+class DeskButtonBase;
+class DesksBarView;
+
+// A desk button view in the expanded desks bar. It includes the
+// InnerExpandedDesksBarButton and a name label below, which has the same style
+// as a DeskMiniView, but the name label is not changeable and not focusable.
+class ExpandedDesksBarButton : public views::View {
+ public:
+  METADATA_HEADER(ExpandedDesksBarButton);
+
+  ExpandedDesksBarButton(DesksBarView* bar_view,
+                         const gfx::VectorIcon* button_icon,
+                         const std::u16string& button_label,
+                         base::RepeatingClosure callback);
+  ExpandedDesksBarButton(const ExpandedDesksBarButton&) = delete;
+  ExpandedDesksBarButton& operator=(const ExpandedDesksBarButton&) = delete;
+  ~ExpandedDesksBarButton() override = default;
+
+  const gfx::VectorIcon* icon() const { return button_icon_; }
+
+  // views::View:
+  void Layout() override;
+
+  // Updates |new_desk_button_|'s state on current desks state.
+  void UpdateButtonState();
+
+  // Updates the |label_|'s color on DesksController::CanCreateDesks.
+  void UpdateLabelColor();
+
+  DeskButtonBase* inner_button() { return inner_button_; }
+
+ private:
+  DesksBarView* const bar_view_;  // Not owned.
+  const gfx::VectorIcon* const button_icon_;
+  const std::u16string button_label_;
+  DeskButtonBase* inner_button_;
+  views::Label* label_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_

@@ -12,8 +12,10 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk_drag_proxy.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -21,7 +23,7 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -34,10 +36,12 @@
 #include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -338,20 +342,27 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
   scroll_view_contents_ =
       scroll_view_->SetContents(std::make_unique<views::View>());
-  // Make the scroll content view animable by painting to a layer.
   scroll_view_contents_->SetPaintToLayer();
+
+  // Make the scroll content view animable by painting to a layer.
   expanded_state_new_desk_button_ = scroll_view_contents_->AddChildView(
-      std::make_unique<ExpandedStateNewDeskButton>(this));
+      std::make_unique<ExpandedDesksBarButton>(
+          this, &kDesksNewDeskButtonIcon,
+          l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
+          base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
+                              base::Unretained(this))));
   zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateDefaultDeskButton>(this));
   zero_state_new_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateNewDeskButton>(this));
   if (features::AreDesksTemplatesEnabled()) {
+    // TODO(sophiewen): u"Templates" should be replaced with the localized name
+    // for the "Templates" desk label.
     desks_templates_button_ = scroll_view_contents_->AddChildView(
-        std::make_unique<views::ImageButton>(base::BindRepeating(
-            &DesksBarView::OnTemplatesButtonPressed, base::Unretained(this))));
-    desks_templates_button_->SetBorder(
-        views::CreateSolidBorder(/*thickness=*/2, SK_ColorGRAY));
+        std::make_unique<ExpandedDesksBarButton>(
+            this, &kDesksTemplatesIcon, u"Templates",
+            base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
+                                base::Unretained(this))));
   }
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
@@ -1097,7 +1108,16 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
   return adjusted_position;
 }
 
-void DesksBarView::OnTemplatesButtonPressed() {
+void DesksBarView::OnNewDeskButtonPressed() {
+  auto* controller = DesksController::Get();
+  if (controller->CanCreateDesks()) {
+    this->set_should_name_nudge(true);
+    controller->NewDesk(DesksCreationRemovalSource::kButton);
+    expanded_state_new_desk_button_->UpdateButtonState();
+  }
+}
+
+void DesksBarView::OnDesksTemplatesButtonPressed() {
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
   overview_grid_->overview_session()->ShowDesksTemplatesGrids();

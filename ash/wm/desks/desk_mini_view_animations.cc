@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -220,7 +220,7 @@ void PerformRemoveDeskMiniViewAnimation(
     DeskMiniView* removed_mini_view,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
-    ExpandedStateNewDeskButton* expanded_state_new_desk_button,
+    ExpandedDesksBarButton* expanded_state_new_desk_button,
     int shift_x) {
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);

@@ -9,7 +9,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_restore_util.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
@@ -68,7 +68,7 @@ PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() {
 SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() {
   return GetDesksBarView()
       ->expanded_state_new_desk_button()
-      ->new_desk_button()
+      ->inner_button()
       ->background_color_;
 }
 

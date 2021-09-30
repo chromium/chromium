@@ -11,7 +11,7 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -242,7 +242,7 @@ OverviewHighlightController::GetTraversableViews() const {
       }
 
       auto* new_desk_button =
-          bar_view->expanded_state_new_desk_button()->new_desk_button();
+          bar_view->expanded_state_new_desk_button()->inner_button();
       if (!is_zero_state && new_desk_button->GetEnabled())
         traversable_views.push_back(new_desk_button);
     }

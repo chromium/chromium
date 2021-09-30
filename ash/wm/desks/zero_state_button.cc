@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
@@ -103,10 +104,6 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                                 border_corder_radius);
 
   UpdateBorderState();
-}
-
-const char* DeskButtonBase::GetClassName() const {
-  return "DeskButtonBase";
 }
 
 void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
@@ -256,5 +253,8 @@ void ZeroStateNewDeskButton::OnMouseEntered(const ui::MouseEvent& event) {
 void ZeroStateNewDeskButton::OnMouseExited(const ui::MouseEvent& event) {
   SetShouldPaintBackground(false);
 }
+
+BEGIN_METADATA(DeskButtonBase, views::LabelButton)
+END_METADATA
 
 }  // namespace ash

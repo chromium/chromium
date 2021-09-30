@@ -45,7 +45,7 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
@@ -454,7 +454,7 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 
   auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
   EXPECT_TRUE(new_desk_button->GetEnabled());
   // Click many times on the expanded new desk button and expect only the max
   // number of desks will be created, and the button is no longer enabled.
@@ -508,7 +508,7 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   DCHECK(desks_bar_view);
   EXPECT_EQ(controller->desks().size(), desks_bar_view->mini_views().size());
   EXPECT_TRUE(desks_bar_view->expanded_state_new_desk_button()
-                  ->new_desk_button()
+                  ->inner_button()
                   ->GetEnabled());
 }
 
@@ -623,7 +623,7 @@ TEST_F(DesksTest, GestureTapOnNewDeskButton) {
   ClickOnView(desks_bar_view->zero_state_default_desk_button(),
               event_generator);
   auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   // Gesture tap multiple times on the new desk button until it's disabled,
@@ -1617,7 +1617,7 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
   // returned back to its original target bounds.
   DragItemToPoint(overview_item,
                   desks_bar_view->expanded_state_new_desk_button()
-                      ->new_desk_button()
+                      ->inner_button()
                       ->GetBoundsInScreen()
                       .CenterPoint(),
                   GetEventGenerator(),
@@ -1828,7 +1828,7 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   const auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
 
   // Tests that with one or two desks, the new desk button has an enabled state
   // and color.
@@ -2169,7 +2169,7 @@ TEST_F(DesksEditableNamesTest, EventsThatCommitChanges) {
 
   // Creating a new desk commits the changes.
   auto* new_desk_button =
-      desks_bar_view()->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view()->expanded_state_new_desk_button()->inner_button();
   auto* event_generator = GetEventGenerator();
   ClickOnView(new_desk_button, event_generator);
   ASSERT_EQ(3u, controller()->desks().size());
@@ -4166,7 +4166,7 @@ TEST_F(DesksTest, NameNudges) {
   EXPECT_EQ(1u, desks_bar_view->mini_views().size());
 
   auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   // Click on the new desk button until the max number of desks is created. Each
@@ -4307,7 +4307,7 @@ TEST_F(DesksTest, ScrollableDesks) {
   EXPECT_EQ(1u, desks_bar_view->mini_views().size());
 
   auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
 
   // Set the scroll delta large enough to make sure the desks bar can be
   // scrolled to the end each time.
@@ -4942,7 +4942,7 @@ TEST_F(DesksTest, NewDeskButton) {
   ClickOnView(desks_bar_view->zero_state_default_desk_button(),
               event_generator);
   auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+      desks_bar_view->expanded_state_new_desk_button()->inner_button();
   EXPECT_TRUE(new_desk_button->GetVisible());
   EXPECT_TRUE(new_desk_button->GetEnabled());
 

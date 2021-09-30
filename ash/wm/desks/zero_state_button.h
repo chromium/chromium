@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -15,11 +16,12 @@ class DesksBarView;
 class WmHighlightItemBorder;
 
 // The base class of ZeroStateDefaultDeskButton, ZeroStateNewDeskButton and
-// the InnerNewDeskButton of ExpandedStateNewDeskButton.
+// the InnerExpandedDesksBarButton of ExpandedDesksBarButton.
 class ASH_EXPORT DeskButtonBase
     : public views::LabelButton,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
+  METADATA_HEADER(DeskButtonBase);
   explicit DeskButtonBase(const std::u16string& text);
   DeskButtonBase(const std::u16string& text,
                  int border_corder_radius,
@@ -27,7 +29,6 @@ class ASH_EXPORT DeskButtonBase
   ~DeskButtonBase() override = default;
 
   // LabelButton:
-  const char* GetClassName() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
@@ -61,8 +62,8 @@ class ASH_EXPORT DeskButtonBase
 
   // Paints the background within the button's bounds by default. But if true,
   // paints the contents' bounds of the button only. For example,
-  // InnerNewDeskButton needs to be kept as the same size of the desk preview,
-  // which has a gap between the view's contents and the border.
+  // InnerExpandedDesksBarButton needs to be kept as the same size of the desk
+  // preview, which has a gap between the view's contents and the border.
   bool paint_contents_only_ = false;
 
  private:
@@ -81,7 +82,7 @@ class ASH_EXPORT DeskButtonBase
 // desks bar when there's only a single desk available, in which case the bar is
 // shown in a minimized state. Clicking the button will switch to the expanded
 // desks bar and focus on the single desk's name view. The expanded bar will
-// include the single desk and the ExpandedStateNewDeskButton.
+// include the single desk and the ExpandedDesksBarButton.
 class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
  public:
   ZeroStateDefaultDeskButton(DesksBarView* bar_view);
@@ -106,7 +107,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
 // shown in a minimized state. Clicking the button will create a new desk,
 // switch to the expanded desks bar and focus on the newly-created desks's name
 // view. The expanded bar will include two desks and the
-// ExpandedStateNewDeskButton.
+// ExpandedDesksBarButton.
 class ASH_EXPORT ZeroStateNewDeskButton : public DeskButtonBase {
  public:
   ZeroStateNewDeskButton(DesksBarView* bar_view);

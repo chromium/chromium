@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -31,52 +31,48 @@ constexpr int kBorderCornerRadius = 6;
 
 constexpr int kCornerRadius = 4;
 
-// The button belongs to ExpandedStateNewDeskButton.
-class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
+// The button belongs to ExpandedDesksBarButton.
+class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
  public:
-  InnerNewDeskButton(ExpandedStateNewDeskButton* outer_button,
-                     DesksBarView* bar_view)
+  METADATA_HEADER(InnerExpandedDesksBarButton);
+
+  // TODO(sophiewen): Move callback to DeskButtonBase constructor parameter. We
+  // also want to eventually use views::Button::Callback.
+  InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
+                              base::RepeatingClosure callback)
       : DeskButtonBase(std::u16string(), kBorderCornerRadius, kCornerRadius),
         outer_button_(outer_button),
-        bar_view_(bar_view) {
+        button_callback_(callback) {
     paint_contents_only_ = true;
   }
-  InnerNewDeskButton(const InnerNewDeskButton&) = delete;
-  InnerNewDeskButton operator=(const InnerNewDeskButton&) = delete;
-  ~InnerNewDeskButton() override = default;
-
-  // DeskButtonBase:
-  const char* GetClassName() const override { return "InnerNewDeskButton"; }
+  InnerExpandedDesksBarButton(const InnerExpandedDesksBarButton&) = delete;
+  InnerExpandedDesksBarButton operator=(const InnerExpandedDesksBarButton&) =
+      delete;
+  ~InnerExpandedDesksBarButton() override = default;
 
   void OnThemeChanged() override {
     DeskButtonBase::OnThemeChanged();
     const SkColor enabled_icon_color =
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kButtonIconColor);
-    SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(kDesksNewDeskButtonIcon, enabled_icon_color));
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(*outer_button_->icon(), enabled_icon_color));
     SetImage(views::Button::STATE_DISABLED,
              gfx::CreateVectorIcon(
-                 kDesksNewDeskButtonIcon,
+                 *outer_button_->icon(),
                  AshColorProvider::GetDisabledColor(enabled_icon_color)));
     UpdateButtonState();
   }
 
-  void OnButtonPressed() override {
-    auto* controller = DesksController::Get();
-    if (controller->CanCreateDesks()) {
-      bar_view_->set_should_name_nudge(true);
-      controller->NewDesk(DesksCreationRemovalSource::kButton);
-      UpdateButtonState();
-    }
-  }
-
+  void OnButtonPressed() override { button_callback_.Run(); }
   // Update the button's enable/disable state based on current desks state.
+  // TODO(sophiewen): This disables all expanded button types when the max # of
+  // desks is created, but this logic should be separated for New Desk creation
+  // and Desks Templates.
+
   void UpdateButtonState() override {
     outer_button_->UpdateLabelColor();
     const bool enabled = DesksController::Get()->CanCreateDesks();
-
     // Notify the overview highlight if we are about to be disabled.
     if (!enabled) {
       OverviewSession* overview_session =
@@ -86,30 +82,38 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
           this);
     }
     SetEnabled(enabled);
-
     const auto* color_provider = AshColorProvider::Get();
     background_color_ = color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
     if (!enabled)
       background_color_ = AshColorProvider::GetDisabledColor(background_color_);
-
     views::InkDrop::Get(this)->SetVisibleOpacity(
         color_provider->GetRippleAttributes(background_color_).inkdrop_opacity);
     SchedulePaint();
   }
 
  private:
-  ExpandedStateNewDeskButton* outer_button_;
-  DesksBarView* bar_view_;
+  ExpandedDesksBarButton* outer_button_;
+  // Defines the button behavior and is called in OnButtonPressed.
+  base::RepeatingClosure button_callback_;
 };
 
+BEGIN_METADATA(InnerExpandedDesksBarButton, views::LabelButton)
+END_METADATA
 }  // namespace
 
-ExpandedStateNewDeskButton::ExpandedStateNewDeskButton(DesksBarView* bar_view)
+ExpandedDesksBarButton::ExpandedDesksBarButton(
+    DesksBarView* bar_view,
+    const gfx::VectorIcon* button_icon,
+    const std::u16string& button_label,
+    base::RepeatingClosure callback)
     : bar_view_(bar_view),
-      new_desk_button_(
-          AddChildView(std::make_unique<InnerNewDeskButton>(this, bar_view))),
+      button_icon_(button_icon),
+      button_label_(button_label),
+      inner_button_(AddChildView(
+          std::make_unique<InnerExpandedDesksBarButton>(this, callback))),
       label_(AddChildView(std::make_unique<views::Label>())) {
+  DCHECK(button_icon_);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -118,24 +122,23 @@ ExpandedStateNewDeskButton::ExpandedStateNewDeskButton(DesksBarView* bar_view)
   UpdateLabelColor();
 }
 
-void ExpandedStateNewDeskButton::Layout() {
+void ExpandedDesksBarButton::Layout() {
   // Layout the button until |mini_views_| have been created. This button only
   // needs to be laid out in the expanded desks bar where the |mini_views_| is
   // always not empty.
   if (bar_view_->mini_views().empty())
     return;
-
-  const gfx::Rect new_desk_button_bounds = DeskMiniView::GetDeskPreviewBounds(
+  const gfx::Rect inner_button_bounds = DeskMiniView::GetDeskPreviewBounds(
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
-  new_desk_button_->SetBoundsRect(new_desk_button_bounds);
+  inner_button_->SetBoundsRect(inner_button_bounds);
   auto* desk_mini_view = bar_view_->mini_views()[0];
   auto* desk_name_view = desk_mini_view->desk_name_view();
-  // 'New desk' string might exceed the maximum width in different languages.
-  // Elide the string 'New desk' if it exceeds the width limit after been
-  // translated into a different language.
+  // `button_label_` string might exceed the maximum width in different
+  // languages. Elide the string `button_label_` if it exceeds the width limit
+  // after been translated into a different language.
   label_->SetText(gfx::ElideText(
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON), gfx::FontList(),
-      new_desk_button_bounds.width() - desk_name_view->GetInsets().width(),
+      button_label_, gfx::FontList(),
+      inner_button_bounds.width() - desk_name_view->GetInsets().width(),
       gfx::ELIDE_TAIL));
   const gfx::Size label_size = label_->GetPreferredSize();
   // Set the label to have the same height as the DeskNameView to keep them at
@@ -143,18 +146,18 @@ void ExpandedStateNewDeskButton::Layout() {
   // DeskNameView since desk's name is changeable, but this label here is not.
   const int label_height = desk_name_view->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(
-      gfx::Point((new_desk_button_bounds.width() - label_size.width()) / 2,
-                 new_desk_button_bounds.bottom() -
+      gfx::Point((inner_button_bounds.width() - label_size.width()) / 2,
+                 inner_button_bounds.bottom() -
                      desk_mini_view->GetPreviewBorderInsets().bottom() +
                      kNewDeskButtonAndNameSpacing),
       gfx::Size(label_size.width(), label_height)));
 }
 
-void ExpandedStateNewDeskButton::UpdateButtonState() {
-  new_desk_button_->UpdateButtonState();
+void ExpandedDesksBarButton::UpdateButtonState() {
+  inner_button_->UpdateButtonState();
 }
 
-void ExpandedStateNewDeskButton::UpdateLabelColor() {
+void ExpandedDesksBarButton::UpdateLabelColor() {
   const SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   label_->SetEnabledColor(
@@ -162,5 +165,8 @@ void ExpandedStateNewDeskButton::UpdateLabelColor() {
           ? label_color
           : AshColorProvider::Get()->GetDisabledColor(label_color));
 }
+
+BEGIN_METADATA(ExpandedDesksBarButton, views::View)
+END_METADATA
 
 }  // namespace ash
