@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
 
+#include "base/check.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -17,12 +21,24 @@
 
 namespace {
 constexpr CGFloat kMarginBetweenContents = 12;
+
+NSString* const kLearnMoreTextViewAccessibilityIdentifier =
+    @"kLearnMoreTextViewAccessibilityIdentifier";
+
+// URL for the learn more text.
+// Need to set a value so the delegate gets called.
+NSString* const kLearnMoreUrl = @"internal://learn-more";
+
 }  // namespace
 
-@interface SyncScreenViewController ()
+@interface SyncScreenViewController () <UITextViewDelegate>
 
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
+
+// Text view that displays an attributed string with the "Learn More" link that
+// opens a popover.
+@property(nonatomic, strong) UITextView* learnMoreTextView;
 
 @end
 
@@ -58,6 +74,24 @@ constexpr CGFloat kMarginBetweenContents = 12;
   self.secondaryActionString = [self
       contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
 
+  if (self.syncTypesRestricted) {
+    self.learnMoreTextView.delegate = self;
+    [self.specificContentView addSubview:self.learnMoreTextView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [self.learnMoreTextView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:advanceSyncSettingsButton
+                                                   .bottomAnchor],
+      [self.learnMoreTextView.bottomAnchor
+          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+      [self.learnMoreTextView.centerXAnchor
+          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+      [self.learnMoreTextView.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.specificContentView
+                                                .widthAnchor],
+    ]];
+  }
+
   // Sync screen-specific constraints.
   [NSLayoutConstraint activateConstraints:@[
     [contentText.topAnchor
@@ -89,6 +123,43 @@ constexpr CGFloat kMarginBetweenContents = 12;
     _overlay.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _overlay;
+}
+
+- (UITextView*)learnMoreTextView {
+  if (!_learnMoreTextView) {
+    _learnMoreTextView = [[UITextView alloc] init];
+    _learnMoreTextView.scrollEnabled = NO;
+    _learnMoreTextView.editable = NO;
+    _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
+    _learnMoreTextView.accessibilityIdentifier =
+        kLearnMoreTextViewAccessibilityIdentifier;
+
+    _learnMoreTextView.linkTextAttributes =
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+    _learnMoreTextView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+
+    NSDictionary* textAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSParagraphStyleAttributeName : paragraphStyle
+    };
+
+    NSDictionary* linkAttributes =
+        @{NSLinkAttributeName : [NSURL URLWithString:kLearnMoreUrl]};
+
+    NSAttributedString* learnMoreTextAttributedString =
+        AttributedStringFromStringWithLink(
+            l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SYNC_DETAILS),
+            textAttributes, linkAttributes);
+
+    _learnMoreTextView.attributedText = learnMoreTextAttributedString;
+  }
+  return _learnMoreTextView;
 }
 
 #pragma mark - SyncInScreenConsumer
@@ -158,6 +229,45 @@ constexpr CGFloat kMarginBetweenContents = 12;
 // Called when the sync settings button is tapped
 - (void)showAdvanceSyncSettings {
   [self.delegate showSyncSettings];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(textView == self.learnMoreTextView);
+
+  // Open signin popover.
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+                 initWithMessage:
+                     l10n_util::GetNSString(
+                         IDS_IOS_ENTERPRISE_MANAGED_SYNC_DETAILS_POPOVER)
+                  enterpriseName:nil  // TODO(crbug.com/1251986): Remove this
+                                      // variable.
+          isPresentingFromButton:NO
+                addLearnMoreLink:NO];
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView =
+      self.learnMoreTextView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      TextViewLinkBound(textView, characterRange);
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+
+  // The handler is already handling the tap.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end

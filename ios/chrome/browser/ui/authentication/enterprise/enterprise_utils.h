@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#include "ios/chrome/browser/sync/sync_setup_service.h"
+
+class ChromeBrowserState;
+
 // List of Enterprise restriction options.
 typedef NS_OPTIONS(NSUInteger, EnterpriseSignInRestrictions) {
   kNoEnterpriseRestriction = 0,
@@ -18,8 +22,18 @@ typedef NS_OPTIONS(NSUInteger, EnterpriseSignInRestrictions) {
 // Returns YES if some account restrictions are set.
 bool IsRestrictAccountsToPatternsEnabled();
 
-// Returns YES if force signIn is set.
+// Returns true if force signIn is set.
 bool IsForceSignInEnabled();
+
+// Returns true if force signIn is set.
+bool IsSyncTypesListEnabled();
+
+// Returns true if the |dataType| is managed by policies (i.e. is not syncable).
+bool IsManagedSyncDataType(ChromeBrowserState* browserState,
+                           SyncSetupService::SyncableDatatype dataType);
+
+// Returns true if any data type is managed by policies (i.e. is not syncable).
+bool HasManagedSyncDataType(ChromeBrowserState* browserState);
 
 // Returns current EnterpriseSignInRestrictions.
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions();

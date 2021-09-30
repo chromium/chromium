@@ -49,11 +49,4 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
 // Returns true if |errorState| corresponds to a transient sync error.
 bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState);
 
-// Returns YES if the given type is managed by policies (i.e. is not syncable)
-bool IsManagedSyncDataType(ChromeBrowserState* browserState,
-                           SyncSetupService::SyncableDatatype dataType);
-
-// Returns true if any data type is managed by policies (i.e. is not syncable)
-bool HasManagedSyncDataType(ChromeBrowserState* browserState);
-
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_

@@ -5,15 +5,34 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 
 #include "base/values.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/pref_names.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Map of all synceable types to the corresponding pref name.
+const std::map<SyncSetupService::SyncableDatatype, const char*>
+    kSyncableItemTypes = {
+        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
+        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
+        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
+        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
+        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
+        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
+        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
+};
+
+}  // namespace
 
 bool IsRestrictAccountsToPatternsEnabled() {
   const base::ListValue* value =
@@ -29,6 +48,31 @@ bool IsForceSignInEnabled() {
       GetApplicationContext()->GetLocalState()->GetInteger(
           prefs::kBrowserSigninPolicy));
   return policy_mode == BrowserSigninMode::kForced;
+}
+
+bool IsSyncTypesListEnabled() {
+  const base::ListValue* value =
+      GetApplicationContext()->GetLocalState()->GetList(
+          policy::key::kSyncTypesListDisabled);
+  return value->GetList().size();
+}
+
+bool IsManagedSyncDataType(ChromeBrowserState* browserState,
+                           SyncSetupService::SyncableDatatype dataType) {
+  return browserState->GetPrefs()
+      ->FindPreference(kSyncableItemTypes.at(dataType))
+      ->IsManaged();
+}
+
+bool HasManagedSyncDataType(ChromeBrowserState* browserState) {
+  for (int type = 0; type != SyncSetupService::kNumberOfSyncableDatatypes;
+       type++) {
+    SyncSetupService::SyncableDatatype dataType =
+        static_cast<SyncSetupService::SyncableDatatype>(type);
+    if (IsManagedSyncDataType(browserState, dataType))
+      return true;
+  }
+  return false;
 }
 
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions() {

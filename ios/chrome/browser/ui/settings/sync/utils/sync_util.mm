@@ -6,9 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/pref_names.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
@@ -42,17 +40,6 @@ enum InfobarSyncError {
   kMaxValue = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
 };
 
-// Map of all synceable types to the corresponding pref name.
-const std::map<SyncSetupService::SyncableDatatype, const char*>
-    kSyncableItemTypes = {
-        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
-        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
-        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
-        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
-        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
-        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
-        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
-};
 }  // namespace
 
 NSString* GetSyncErrorDescriptionForSyncSetupService(
@@ -233,22 +220,4 @@ bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState) {
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return false;
   }
-}
-
-bool IsManagedSyncDataType(ChromeBrowserState* browserState,
-                           SyncSetupService::SyncableDatatype dataType) {
-  return browserState->GetPrefs()
-      ->FindPreference(kSyncableItemTypes.at(dataType))
-      ->IsManaged();
-}
-
-bool HasManagedSyncDataType(ChromeBrowserState* browserState) {
-  for (int type = 0; type != SyncSetupService::kNumberOfSyncableDatatypes;
-       type++) {
-    SyncSetupService::SyncableDatatype dataType =
-        static_cast<SyncSetupService::SyncableDatatype>(type);
-    if (IsManagedSyncDataType(browserState, dataType))
-      return true;
-  }
-  return false;
 }

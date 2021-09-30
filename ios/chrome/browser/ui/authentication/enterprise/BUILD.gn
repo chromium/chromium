@@ -10,9 +10,13 @@ source_set("enterprise_utils") {
   ]
   deps = [
     "//base",
+    "//components/policy:policy_code_generate",
     "//components/prefs",
     "//components/signin/public/base",
+    "//components/sync/base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/sync",
   ]
 }

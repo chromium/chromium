@@ -27,6 +27,9 @@
 
 @property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate;
 
+// True if any data type is managed by policies.
+@property(nonatomic, assign) BOOL syncTypesRestricted;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SYNC_SYNC_SCREEN_VIEW_CONTROLLER_H_
