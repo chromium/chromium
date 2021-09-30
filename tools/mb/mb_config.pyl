@@ -582,7 +582,7 @@
     },
 
     'chromium.perf.calibration': {
-      'linux-perf-calibration': 'official_goma_linux_perf',
+      'linux-perf-calibration': 'official_goma_linux_perf_py3',
       'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64',
     },
 
@@ -2626,6 +2626,10 @@
       'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
     ],
 
+    'official_goma_linux_perf_py3': [
+      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0', 'use_py3_for_perf'
+    ],
+
     'official_goma_fuchsia_arm64_perf': [
       'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_astro_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
@@ -3828,6 +3832,10 @@
 
     'use_javascript_coverage': {
       'gn_args': 'use_javascript_coverage=true',
+    },
+
+    'use_py3_for_perf': {
+      'gn_args': 'use_py3_for_perf=true',
     },
 
     'v8_simulate_arm': {
