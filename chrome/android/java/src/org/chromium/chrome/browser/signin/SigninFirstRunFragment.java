@@ -14,6 +14,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -83,24 +84,24 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mSigninFirstRunCoordinator.destroy();
     }
 
-    /**
-     * Implements {@link FirstRunFragment}.
-     */
+    /** Implements {@link FirstRunFragment}. */
     @Override
-    public void setInitialA11yFocus() {}
+    public void setInitialA11yFocus() {
+        // Ignore calls before view is created.
+        if (getView() == null) return;
 
-    /**
-     * Implements {@link FirstRunFragment}.
-     */
+        final View title = getView().findViewById(R.id.title);
+        title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /** Implements {@link FirstRunFragment}. */
     @Override
     public void onNativeInitialized() {
         mNativeInitialized = true;
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
     }
 
-    /**
-     * Implements {@link SigninFirstRunCoordinator.Listener}.
-     */
+    /** Implements {@link SigninFirstRunCoordinator.Listener}. */
     @Override
     public void addAccount() {
         AccountManagerFacadeProvider.getInstance().createAddAccountIntent(
