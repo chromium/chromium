@@ -610,6 +610,8 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {
+  if (!profile)
+    return nullptr;
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;
