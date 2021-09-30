@@ -17,6 +17,7 @@ group("polymer3_elements") {
     ":marketing_opt_in_module",
     ":parental_handoff_module",
     ":sync_consent_module",
+    ":tpm_error_module",
     ":user_creation_module",
   ]
 }
@@ -42,6 +43,7 @@ js_type_check("closure_compile_module") {
     ":marketing_opt_in.m",
     ":parental_handoff.m",
     ":sync_consent.m",
+    ":tpm_error.m",
     ":user_creation.m",
   ]
 }
@@ -112,6 +114,7 @@ js_library("parental_handoff.m") {
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":parental_handoff_module" ]
@@ -130,6 +133,19 @@ js_library("sync_consent.m") {
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":sync_consent_module" ]
+}
+
+js_library("tpm_error.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/tpm_error.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":tpm_error_module" ]
 }
 
 polymer_modulizer("fingerprint_setup") {
@@ -189,6 +205,14 @@ polymer_modulizer("user_creation") {
 polymer_modulizer("sync_consent") {
   js_file = "sync_consent.js"
   html_file = "sync_consent.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("tpm_error") {
+  js_file = "tpm_error.js"
+  html_file = "tpm_error.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

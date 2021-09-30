@@ -165,4 +165,11 @@ LoginScreenBehavior.Proto;
   get EXTERNAL_API() {
     return [];
   }
+
+  /**
+   * @return {Object}
+   */
+  get defaultControl() {
+    return this;
+  }
 }

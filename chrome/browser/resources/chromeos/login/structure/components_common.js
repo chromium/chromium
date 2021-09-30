@@ -34,7 +34,6 @@ function loadCommonComponents() {
 // <include src="../multidevice_setup_first_run.js">
 // <include src="../screen_multidevice_setup.js">
 // <include src="../security_token_pin.js">
-// <include src="../screen_tpm_error.js">
 // <include src="../device_disabled.js">
 // <include src="../screen_wrong_hwid.js">
 // <include src="../family_link_notice.js">
