@@ -159,9 +159,12 @@ void It2MeConfirmationDialogChromeOS::OnEnterpriseNotificationResult(
   if (!button_index.has_value())
     return;  // This happens when the user clicks the notification itself.
 
+  // Note: |by_user| must be false, otherwise the notification will not actually
+  // be removed but instead it will be moved into the message center bubble
+  // (because the message was pinned).
   message_center::MessageCenter::Get()->RemoveNotification(
       kEnterpriseNotificationId,
-      /*by_user=*/true);
+      /*by_user=*/false);
 
   std::move(callback_).Run(*button_index == 0 ? Result::CANCEL : Result::OK);
 }
