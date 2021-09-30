@@ -573,9 +573,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSharedArrayBufferUnrestrictedAccessAllowed,
     base::Value::Type::BOOLEAN },
 #endif  // !defined(OS_ANDROID)
-  { key::kSandboxExternalProtocolBlocked,
-    prefs::kSandboxExternalProtocolBlocked,
-    base::Value::Type::BOOLEAN },
   { key::kCrossOriginWebAssemblyModuleSharingEnabled,
     prefs::kCrossOriginWebAssemblyModuleSharingEnabled,
     base::Value::Type::BOOLEAN },
