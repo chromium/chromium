@@ -307,9 +307,27 @@ message RenderFrameProxyHost {
   optional bool is_render_frame_proxy_live = 5;
 }
 
+message AndroidView {
+  optional int32 id = 1;
+  optional int32 parent_id = 2;
+  optional bool is_shown = 3;
+  optional bool is_dirty = 4;
+  optional string class_name = 5;
+  optional string resource_name = 6;
+}
+
+message AndroidActivity {
+  optional string name = 1;
+  repeated AndroidView view = 2;
+}
+
+message AndroidViewDump {
+  repeated AndroidActivity activity = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1022
+  // Next ID: 1023
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -356,5 +374,7 @@ message ChromeTrackEvent {
     optional RenderViewHost render_view_host = 1020;
 
     optional RenderFrameProxyHost render_frame_proxy_host = 1021;
+
+    optional AndroidViewDump android_view_dump = 1022;
   }
 }
