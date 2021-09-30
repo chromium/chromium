@@ -54,6 +54,11 @@ LocaleChangeGuard::~LocaleChangeGuard() {
 }
 
 void LocaleChangeGuard::OnLogin() {
+  if (session_observation_.IsObserving()) {
+    DCHECK(session_observation_.IsObservingSource(
+        session_manager::SessionManager::Get()));
+    return;
+  }
   session_observation_.Observe(session_manager::SessionManager::Get());
   registrar_.Add(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
                  content::NotificationService::AllBrowserContextsAndSources());
