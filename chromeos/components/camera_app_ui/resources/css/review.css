@@ -52,3 +52,11 @@
 #view-review .positive-button-groups button:last-child {
   margin-inline-start: 0;
 }
+
+#view-review .positive-button-groups button[i18n-text=label_share]::before {
+  content: url(/images/review_share.svg);
+  display: inline-block;
+  line-height: normal;
+  margin-inline-end: 5px;
+  vertical-align: middle;
+}

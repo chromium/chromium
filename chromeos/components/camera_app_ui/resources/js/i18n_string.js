@@ -75,6 +75,7 @@ export const I18nString = {
   LABEL_SAVE_PHOTO_DOCUMENT: 'label_save_photo_document',
   LABEL_SCAN_DOCUMENT_OPTION: 'label_scan_document_option',
   LABEL_SCAN_QRCODE_OPTION: 'label_scan_qrcode_option',
+  LABEL_SHARE: 'label_share',
   LABEL_SWITCH_RECORD_VIDEO_BUTTON: 'label_switch_record_video_button',
   LABEL_SWITCH_SCAN_MODE_BUTTON: 'label_switch_scan_mode_button',
   LABEL_SWITCH_TAKE_PHOTO_BUTTON: 'label_switch_take_photo_button',

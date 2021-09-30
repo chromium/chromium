@@ -19,19 +19,28 @@ import {View} from './view.js';
 export class Option {
   /**
    * @param {!I18nString} text Text string show on the option button.
-   * @param {!T} value Value returned if the user select this option after
-   *   review.
+   * @param {{
+   *   exitValue: (!T|undefined),
+   *   callback: (function()|undefined),
+   * }} handlerParams Sets |exitValue| if the review page will exit with this
+   *   value when option selected. Sets |callback| for the function get executed
+   *   when option selected.
    */
-  constructor(text, value) {
+  constructor(text, {exitValue, callback}) {
     /**
      * @const {!I18nString}
      */
     this.text = text;
 
     /**
-     * @const {!T}
+     * @const {?T}
      */
-    this.value = value;
+    this.exitValue = exitValue ?? null;
+
+    /**
+     * @const {?function()}
+     */
+    this.callback = callback || null;
   }
 }
 
@@ -132,7 +141,7 @@ export class Review extends View {
      * @param {!Option<!T>} option
      * @param {boolean} isPrimary
      */
-    const addButton = ({text, value}, isPrimary) => {
+    const addButton = ({text, exitValue, callback}, isPrimary) => {
       const templ = instantiateTemplate('#text-button-template');
       const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
       btn.setAttribute('i18n-text', text);
@@ -143,7 +152,12 @@ export class Review extends View {
         btn.classList.add('secondary');
       }
       btn.onclick = () => {
-        onSelected.signal(value);
+        if (callback !== null) {
+          callback();
+        }
+        if (exitValue !== null) {
+          onSelected.signal(exitValue);
+        }
       };
       this.btnGroups_.appendChild(templ);
     };

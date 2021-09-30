@@ -789,8 +789,10 @@ export class Camera extends View {
       nav.close(ViewName.FLASH);
     });
     const options = new review.Options(
-        new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, MimeType.PDF),
-        new review.Option(I18nString.LABEL_SAVE_PHOTO_DOCUMENT, MimeType.JPEG),
+        new review.Option(
+            I18nString.LABEL_SAVE_PDF_DOCUMENT, {exitValue: MimeType.PDF}),
+        new review.Option(
+            I18nString.LABEL_SAVE_PHOTO_DOCUMENT, {exitValue: MimeType.JPEG}),
     );
     return this.doReview_(blob, options);
   }
@@ -857,8 +859,24 @@ export class Camera extends View {
    * @override
    */
   async handleResultGif(blob, name) {
-    const options =
-        new review.Options(new review.Option(I18nString.LABEL_SAVE, true));
+    const options = new review.Options(
+        new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
+        new review.Option(I18nString.LABEL_SHARE, {
+          callback: async () => {
+            const file = new File([blob], name, {type: MimeType.GIF});
+            const shareData = {files: [file]};
+            try {
+              if (!navigator.canShare(shareData)) {
+                throw new Error('cannot share');
+              }
+              await navigator.share(shareData);
+            } catch (e) {
+              // TODO(b/191950622): Handles all share error case, e.g. no share
+              // target, share abort... with right treatment like toast message.
+            }
+          },
+        }),
+    );
     const result = await this.doReview_(blob, options);
     if (result) {
       await this.resultSaver_.saveGif(blob, name);

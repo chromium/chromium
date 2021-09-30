@@ -85,6 +85,7 @@ const struct {
     {"label_save_photo_document", IDS_LABEL_SAVE_PHOTO_DOCUMENT},
     {"label_scan_document_option", IDS_LABEL_SCAN_DOCUMENT_OPTION},
     {"label_scan_qrcode_option", IDS_LABEL_SCAN_QRCODE_OPTION},
+    {"label_share", IDS_LABEL_SHARE},
     {"label_switch_record_video_button", IDS_LABEL_SWITCH_RECORD_VIDEO_BUTTON},
     {"label_switch_scan_mode_button", IDS_LABEL_SWITCH_SCAN_MODE_BUTTON},
     {"label_switch_take_photo_button", IDS_LABEL_SWITCH_TAKE_PHOTO_BUTTON},

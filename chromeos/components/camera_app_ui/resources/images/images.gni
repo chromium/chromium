@@ -50,6 +50,7 @@ in_app_images = [
   "ptz_tilt_up.svg",
   "ptz_zoom_in.svg",
   "ptz_zoom_out.svg",
+  "review_share.svg",
   "settings_button_back.svg",
   "settings_button_expand.svg",
   "settings_expert.svg",

@@ -538,6 +538,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for button for saving current photo result" name="IDS_LABEL_SAVE">
         Save
       </message>
+      <message desc="Label for button for sharing current photo result" name="IDS_LABEL_SHARE">
+        Share
+      </message>
     </messages>
   </release>
 </grit>
