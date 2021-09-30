@@ -1657,6 +1657,9 @@ extern const char kForceMajorVersion100InUserAgentDescription[];
 
 #if defined(OS_ANDROID)
 
+extern const char kAccessibilityPageZoomName[];
+extern const char kAccessibilityPageZoomDescription[];
+
 extern const char kAddToHomescreenIPHName[];
 extern const char kAddToHomescreenIPHDescription[];
 

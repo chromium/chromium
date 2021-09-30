@@ -3996,6 +3996,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ForceDarkVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
+    {"enable-accessibility-page-zoom",
+     flag_descriptions::kAccessibilityPageZoomName,
+     flag_descriptions::kAccessibilityPageZoomDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityPageZoom)},
     {"enable-android-layout-change-tab-reparenting",
      flag_descriptions::kAndroidLayoutChangeTabReparentingName,
      flag_descriptions::kAndroidLayoutChangeTabReparentingDescription,

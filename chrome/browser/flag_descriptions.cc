@@ -2910,6 +2910,11 @@ const char kForceMajorVersion100InUserAgentDescription[] =
 
 #if defined(OS_ANDROID)
 
+const char kAccessibilityPageZoomName[] = "Accessibility Page Zoom";
+const char kAccessibilityPageZoomDescription[] =
+    "Whether the UI and underlying code for page zoom should be enabled to"
+    " allow a user to increase/decrease the web contents zoom factor.";
+
 const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
 const char kAddToHomescreenIPHDescription[] =
     " Shows in-product-help messages educating users about add to homescreen "
