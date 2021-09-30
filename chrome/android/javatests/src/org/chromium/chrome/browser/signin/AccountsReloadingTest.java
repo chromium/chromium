@@ -194,6 +194,8 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
+    @DisableIf.
+    Build(sdk_is_greater_than = Build.VERSION_CODES.M, message = "http://crbug.com/1254427")
     public void testRefreshTokenUpdateWhenSignedInAndSyncUserAddsNewAccount() {
         final CoreAccountInfo account1 =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
