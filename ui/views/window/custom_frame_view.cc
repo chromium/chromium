@@ -90,7 +90,9 @@ CustomFrameView::CustomFrameView(Widget* frame)
   if (frame_->widget_delegate()->ShouldShowWindowIcon()) {
     window_icon_ =
         AddChildView(std::make_unique<ImageButton>(Button::PressedCallback()));
-    window_icon_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    // `window_icon_` does not need to be focusable as it is not used here as a
+    // button and is not interactive.
+    window_icon_->SetFocusBehavior(FocusBehavior::NEVER);
   }
 }
 
