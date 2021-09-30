@@ -4699,7 +4699,7 @@
   {
     "name": "sanitizer-api",
     "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "scan-app-media-link",
