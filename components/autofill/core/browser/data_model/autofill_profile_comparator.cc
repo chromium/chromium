@@ -194,19 +194,8 @@ int32_t NormalizingIterator::GetNextChar() {
 // |target|.
 void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
                                            Address* target) {
-  ServerFieldTypeSet types_to_copy;
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes)) {
-    types_to_copy = {
-        ADDRESS_HOME_STREET_ADDRESS,        ADDRESS_HOME_STREET_NAME,
-        ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
-        ADDRESS_HOME_PREMISE_NAME,          ADDRESS_HOME_SUBPREMISE};
-  } else {
-    types_to_copy = {ADDRESS_HOME_STREET_ADDRESS};
-  }
-
-  for (auto type : types_to_copy)
-    target->SetRawInfo(type, source.GetRawInfo(type));
+  target->SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
+                     source.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Sorts |profiles| by frecency.

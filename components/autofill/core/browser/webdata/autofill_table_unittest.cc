@@ -1000,10 +1000,7 @@ TEST_F(AutofillTableTest,
 TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   // Enable the structured addresses features.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+      {features::kAutofillEnableSupportForMoreStructureInAddresses}, {});
 
   AutofillProfile profile;
   profile.set_origin(std::string());
@@ -1121,10 +1118,7 @@ TEST_F(AutofillTableTest,
        AutofillProfile_StructuredAddresses_Eventual_Deletion) {
   // Enable the structured addresses.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+      {features::kAutofillEnableSupportForMoreStructureInAddresses}, {});
 
   AutofillProfile profile;
   profile.set_origin(std::string());
@@ -1166,8 +1160,7 @@ TEST_F(AutofillTableTest,
   // Deactivate the features.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kAutofillAddressEnhancementVotes,
-           features::kAutofillEnableSupportForMoreStructureInAddresses});
+      {}, {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   // Retrieve the address and verify that the structured tokens are not written.
   std::unique_ptr<AutofillProfile> legacy_db_profile =
@@ -1218,11 +1211,8 @@ TEST_F(AutofillTableTest,
 
   // Enable the feature again and load the profile.
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   // Retrieve the address and manually query the data base to verify that the
   // structured address was deleted.

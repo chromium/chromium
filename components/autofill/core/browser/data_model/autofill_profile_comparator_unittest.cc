@@ -63,7 +63,7 @@ const char kLocale[] = "en-US";
 
 class AutofillProfileComparatorTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   // Expose the protected methods of autofill::AutofillProfileComparator for
   // testing.
@@ -294,9 +294,7 @@ class AutofillProfileComparatorTest
               actual.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale));
 
     if (check_structured_address_tokens &&
-        (base::FeatureList::IsEnabled(
-             autofill::features::kAutofillAddressEnhancementVotes) ||
-         autofill::structured_address::StructuredAddressesEnabled())) {
+        autofill::structured_address::StructuredAddressesEnabled()) {
       EXPECT_EQ(expected.GetInfo(
                     AutofillType(autofill::ADDRESS_HOME_STREET_NAME), kLocale),
                 actual.GetInfo(AutofillType(autofill::ADDRESS_HOME_STREET_NAME),
@@ -331,8 +329,7 @@ class AutofillProfileComparatorTest
 
   void InitializeFeatures() {
     structured_names_enabled_ = std::get<0>(GetParam());
-    address_enhancement_votes_enabled_ = std::get<1>(GetParam());
-    structured_addresses_enabled_ = std::get<2>(GetParam());
+    structured_addresses_enabled_ = std::get<1>(GetParam());
 
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
@@ -343,14 +340,6 @@ class AutofillProfileComparatorTest
     } else {
       disabled_features.push_back(
           autofill::features::kAutofillEnableSupportForMoreStructureInNames);
-    }
-
-    if (address_enhancement_votes_enabled_) {
-      enabled_features.push_back(
-          autofill::features::kAutofillAddressEnhancementVotes);
-    } else {
-      disabled_features.push_back(
-          autofill::features::kAutofillAddressEnhancementVotes);
     }
 
     if (structured_addresses_enabled_) {
@@ -368,11 +357,7 @@ class AutofillProfileComparatorTest
 
   bool StructuredAddresses() const { return structured_addresses_enabled_; }
   bool StructuredNames() const { return structured_names_enabled_; }
-  bool AddressEnhancementVotes() const {
-    return address_enhancement_votes_enabled_;
-  }
 
-  bool address_enhancement_votes_enabled_;
   bool structured_names_enabled_;
   bool structured_addresses_enabled_;
   base::test::ScopedFeatureList scoped_features_;
@@ -1239,17 +1224,6 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"90210-1234");
   expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
-  // If address enhancement votes are enabled, it is expecfted that the
-  // substructure from p2 since it is a superset of p1.
-  // Otherwise the fields are expected to be empty after the merge process.
-  if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName2");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        u"DependentStreetName2");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
-  }
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
 }
@@ -1282,18 +1256,6 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
   expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-
-  // If address enhancement votes are enabled, it is expecfted that the
-  // substructure from p1 is used since it is most recent.
-  // Otherwise the fields are expected to be empty after the merge process.
-  if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        u"DependentStreetName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
-  }
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1328,17 +1290,6 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
   expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-
-  // If address enhancement votes are enabled, it is expecfted that the
-  // substructure from p1 is used since it has more tokens.
-  if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        u"DependentStreetName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
-  }
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1727,7 +1678,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillProfileComparatorTest,
     testing::Combine(testing::Bool(),
-                     testing::Bool(),
                      testing::Bool()));  // Test with and without structured
-                                         // names and address enhancement votes
-                                         // and structured addresses.
+                                         // name and structured addresses.

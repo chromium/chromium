@@ -386,9 +386,7 @@ void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(ADDRESS_HOME_SORTING_CODE);
   supported_types->insert(ADDRESS_HOME_COUNTRY);
   // If those types are not added, no votes will be generated.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes) ||
-      structured_address::StructuredAddressesEnabled()) {
+  if (structured_address::StructuredAddressesEnabled()) {
     supported_types->insert(ADDRESS_HOME_STREET_NAME);
     supported_types->insert(ADDRESS_HOME_DEPENDENT_STREET_NAME);
     supported_types->insert(ADDRESS_HOME_HOUSE_NUMBER);

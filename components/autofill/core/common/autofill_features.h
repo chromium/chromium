@@ -17,8 +17,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutocompleteFilterForMeaningfulNames;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillAcrossIframes;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillAddressEnhancementVotes;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>

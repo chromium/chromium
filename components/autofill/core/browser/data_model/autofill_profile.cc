@@ -484,9 +484,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // TODO(crbug.com/1130194): Remove feature check once structured addresses are
   // fully launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes) ||
-      structured_address::StructuredAddressesEnabled()) {
+  if (structured_address::StructuredAddressesEnabled()) {
     const ServerFieldType new_types[] = {
         ADDRESS_HOME_HOUSE_NUMBER,
         ADDRESS_HOME_STREET_NAME,

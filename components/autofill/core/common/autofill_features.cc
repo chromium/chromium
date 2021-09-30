@@ -20,10 +20,6 @@ const base::Feature kAutocompleteFilterForMeaningfulNames{
 const base::Feature kAutofillAcrossIframes{"AutofillAcrossIframes",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls if Autofill sends votes for the new address types.
-const base::Feature kAutofillAddressEnhancementVotes{
-    "kAutofillAddressEnhancementVotes", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, a save prompt will be shown to user upon form submission before

@@ -259,8 +259,6 @@ bool AddAutofillProfileAddresses(const AutofillProfile& profile,
   // structured addresses is enabled or the creation of address enhancement
   // votes.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes) ||
-      base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     sql::Statement s(db->GetUniqueStatement(
         "INSERT INTO autofill_profile_addresses "
@@ -386,8 +384,6 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
 bool AddAutofillProfileAddressesToProfile(sql::Database* db,
                                           AutofillProfile* profile) {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes) ||
-      base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     sql::Statement s(db->GetUniqueStatement(
         "SELECT "
