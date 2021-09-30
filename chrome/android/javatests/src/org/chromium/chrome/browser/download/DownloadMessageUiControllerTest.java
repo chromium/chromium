@@ -55,7 +55,7 @@ public class DownloadMessageUiControllerTest {
     private static final String MESSAGE_TWO_DOWNLOAD_SCHEDULED = "2 downloads scheduled";
 
     private static final String DESCRIPTION_DOWNLOADING = "See notification for download status";
-    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB)\nexample.com";
+    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) example.com";
     private static final String DESCRIPTION_DOWNLOAD_SCHEDULED =
             "Download will start when on Wi-Fi";
 
