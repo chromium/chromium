@@ -271,7 +271,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripReadiness) {
 
 // Test that serialization and deserialization works with updating install
 // reason.
-TEST(AppServiceTypesTraitsTest, RoundTripInstallSource) {
+TEST(AppServiceTypesTraitsTest, RoundTripInstallReason) {
   apps::mojom::AppPtr input = apps::mojom::App::New();
   {
     input->install_reason = apps::mojom::InstallReason::kUnknown;

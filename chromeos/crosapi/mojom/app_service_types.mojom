@@ -43,7 +43,7 @@ struct App {
   mojo_base.mojom.Time? install_time@11;
 
   // Whether the app was installed by sync, policy or as a default app.
-  InstallSource install_source@12;
+  InstallReason install_reason@12;
   OptionalBool recommendable@13;
   OptionalBool searchable@14;
   OptionalBool show_in_launcher@15;
@@ -98,9 +98,9 @@ enum Readiness {
   [MinVersion=1] kUninstalledByMigration,
 };
 
-// How the app was installed.
-[Stable, Extensible]
-enum InstallSource {
+// The reason why the app was installed.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.InstallSource"]
+enum InstallReason {
   [Default] kUnknown = 0,
   kSystem,     // Installed with the system and is considered a part of the OS.
   kPolicy,     // Installed by policy.

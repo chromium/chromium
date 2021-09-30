@@ -63,7 +63,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
     return false;
 
   apps::mojom::InstallReason install_reason;
-  if (!data.ReadInstallSource(&install_reason))
+  if (!data.ReadInstallReason(&install_reason))
     return false;
 
   apps::mojom::OptionalBool recommendable;
@@ -259,52 +259,52 @@ bool StructTraits<crosapi::mojom::IconKeyDataView, apps::mojom::IconKeyPtr>::
   return true;
 }
 
-crosapi::mojom::InstallSource
-EnumTraits<crosapi::mojom::InstallSource, apps::mojom::InstallReason>::ToMojom(
+crosapi::mojom::InstallReason
+EnumTraits<crosapi::mojom::InstallReason, apps::mojom::InstallReason>::ToMojom(
     apps::mojom::InstallReason input) {
   switch (input) {
     case apps::mojom::InstallReason::kUnknown:
-      return crosapi::mojom::InstallSource::kUnknown;
+      return crosapi::mojom::InstallReason::kUnknown;
     case apps::mojom::InstallReason::kSystem:
-      return crosapi::mojom::InstallSource::kSystem;
+      return crosapi::mojom::InstallReason::kSystem;
     case apps::mojom::InstallReason::kPolicy:
-      return crosapi::mojom::InstallSource::kPolicy;
+      return crosapi::mojom::InstallReason::kPolicy;
     case apps::mojom::InstallReason::kOem:
-      return crosapi::mojom::InstallSource::kOem;
+      return crosapi::mojom::InstallReason::kOem;
     case apps::mojom::InstallReason::kDefault:
-      return crosapi::mojom::InstallSource::kDefault;
+      return crosapi::mojom::InstallReason::kDefault;
     case apps::mojom::InstallReason::kSync:
-      return crosapi::mojom::InstallSource::kSync;
+      return crosapi::mojom::InstallReason::kSync;
     case apps::mojom::InstallReason::kUser:
-      return crosapi::mojom::InstallSource::kUser;
+      return crosapi::mojom::InstallReason::kUser;
   }
 
   NOTREACHED();
 }
 
-bool EnumTraits<crosapi::mojom::InstallSource, apps::mojom::InstallReason>::
-    FromMojom(crosapi::mojom::InstallSource input,
+bool EnumTraits<crosapi::mojom::InstallReason, apps::mojom::InstallReason>::
+    FromMojom(crosapi::mojom::InstallReason input,
               apps::mojom::InstallReason* output) {
   switch (input) {
-    case crosapi::mojom::InstallSource::kUnknown:
+    case crosapi::mojom::InstallReason::kUnknown:
       *output = apps::mojom::InstallReason::kUnknown;
       return true;
-    case crosapi::mojom::InstallSource::kSystem:
+    case crosapi::mojom::InstallReason::kSystem:
       *output = apps::mojom::InstallReason::kSystem;
       return true;
-    case crosapi::mojom::InstallSource::kPolicy:
+    case crosapi::mojom::InstallReason::kPolicy:
       *output = apps::mojom::InstallReason::kPolicy;
       return true;
-    case crosapi::mojom::InstallSource::kOem:
+    case crosapi::mojom::InstallReason::kOem:
       *output = apps::mojom::InstallReason::kOem;
       return true;
-    case crosapi::mojom::InstallSource::kDefault:
+    case crosapi::mojom::InstallReason::kDefault:
       *output = apps::mojom::InstallReason::kDefault;
       return true;
-    case crosapi::mojom::InstallSource::kSync:
+    case crosapi::mojom::InstallReason::kSync:
       *output = apps::mojom::InstallReason::kSync;
       return true;
-    case crosapi::mojom::InstallSource::kUser:
+    case crosapi::mojom::InstallReason::kUser:
       *output = apps::mojom::InstallReason::kUser;
       return true;
   }

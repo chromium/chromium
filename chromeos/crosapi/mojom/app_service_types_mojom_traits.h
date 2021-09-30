@@ -70,7 +70,7 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->install_time;
   }
 
-  static const apps::mojom::InstallReason& install_source(
+  static const apps::mojom::InstallReason& install_reason(
       const apps::mojom::AppPtr& r) {
     return r->install_reason;
   }
@@ -160,10 +160,10 @@ struct StructTraits<crosapi::mojom::IconKeyDataView, apps::mojom::IconKeyPtr> {
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::InstallSource, apps::mojom::InstallReason> {
-  static crosapi::mojom::InstallSource ToMojom(
+struct EnumTraits<crosapi::mojom::InstallReason, apps::mojom::InstallReason> {
+  static crosapi::mojom::InstallReason ToMojom(
       apps::mojom::InstallReason input);
-  static bool FromMojom(crosapi::mojom::InstallSource input,
+  static bool FromMojom(crosapi::mojom::InstallReason input,
                         apps::mojom::InstallReason* output);
 };
 
