@@ -548,13 +548,6 @@ config("compiler") {
         ldflags += [ "-Wl,-mllvm,-instcombine-lower-dbg-declare=0" ]
       }
     }
-
-    # TODO(crbug.com/1235145): Investigate why/if this should be needed.
-    if (is_win) {
-      cflags += [ "/clang:-ffp-contract=off" ]
-    } else {
-      cflags += [ "-ffp-contract=off" ]
-    }
   }
 
   # C11/C++11 compiler flags setup.
