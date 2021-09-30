@@ -618,9 +618,12 @@ const base::Feature kReloadHiddenTabsWithCrashedSubframes {
 // Causes RenderAccessibilityHost messages to be handled initially on a thread
 // pool before being forwarded to the browser main thread to avoid so the
 // deserialization does not block it.
+//
+// TODO(nuskos): Once we've conducted a retroactive study of chrometto
+// improvements clean up this feature.
 const base::Feature kRenderAccessibilityHostDeserializationOffMainThread{
     "RenderAccessibilityHostDeserializationOffMainThread",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // RenderDocument:
 //

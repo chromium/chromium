@@ -338,8 +338,11 @@ const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 
 // Causes RenderAccessibilityHost HandleAXEvents messages to be handled with
 // minimal copying of the data.
+//
+// TODO(nuskos): Once we've conducted a retroactive study of chrometto
+// improvements clean up this feature.
 const base::Feature kRenderAccessibilityHostAvoidCopying{
-    "RenderAccessibilityHostAvoidCopying", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RenderAccessibilityHostAvoidCopying", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The next value to use for the accessibility reset token.
 int g_next_accessibility_reset_token = 1;
