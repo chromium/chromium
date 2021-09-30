@@ -8,9 +8,7 @@ import("//tools/polymer/polymer.gni")
 import("../../oobe_auto_imports.gni")
 
 group("polymer3_elements") {
-  public_deps = [
-    ":hid_detection_module",
-  ]
+  public_deps = [ ":hid_detection_module" ]
 }
 
 group("closure_compile") {
@@ -33,9 +31,7 @@ js_type_check("closure_compile_local") {
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [
-    ":hid_detection.m",
-  ]
+  deps = [ ":hid_detection.m" ]
 }
 
 ###############################
@@ -95,10 +91,12 @@ js_library("oobe_eula") {
 
 js_library("oobe_network") {
   deps = [
-    "../../components:network_select_login",
+    # TODO(crbug.com/251576): Restore when migrate to Polymer 3.
+    # "../../components:network_select_login",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
+    "//ui/webui/resources/cr_components/chromeos/network:network_select",
   ]
 }
 
@@ -114,12 +112,12 @@ js_library("packaged_license") {
 js_library("hid_detection.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/hid_detection.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":hid_detection_module" ]
 }

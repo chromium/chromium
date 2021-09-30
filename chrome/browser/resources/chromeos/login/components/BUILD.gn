@@ -11,10 +11,10 @@ import("../oobe_auto_imports.gni")
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    "behaviors:closure_compile",
     "buttons:closure_compile",
     "dialogs:closure_compile",
     "oobe_carousel:closure_compile",
-    "behaviors:closure_compile",
     "oobe_slide:closure_compile",
     "progress_list_item:closure_compile",
     "throbber_notice:closure_compile",
@@ -28,7 +28,6 @@ js_type_check("closure_compile_local") {
     ":hd_iron_icon",
     ":html-echo",
     ":long_touch_detector",
-    ":network_select_login",
     ":oobe_i18n_dropdown",
     ":oobe_select",
     ":oobe_types",
@@ -47,6 +46,7 @@ group("closure_compile_module") {
     ":display_manager_types.m",
     ":hd_iron_icon.m",
     ":long_touch_detector.m",
+    ":network_select_login.m",
     ":oobe_a11y_option.m",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
@@ -65,13 +65,14 @@ group("polymer3_elements") {
     # Local targets
     ":hd_iron_icon_module",
     ":long_touch_detector_module",
+    ":network_select_login_module",
     ":oobe_a11y_option_module",
     ":oobe_icons_module",
     ":oobe_network_icons_module",
-    ":modulize",
+  ] + [
+    ":modulize"
   ]
 }
-
 
 ###############################
 # Closure compiler libraries below
@@ -109,13 +110,6 @@ js_library("html-echo") {
 js_library("long_touch_detector") {
 }
 
-js_library("network_select_login") {
-  deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:network_select",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-  ]
-}
-
 js_library("oobe_i18n_dropdown") {
   deps = [
     ":oobe_select",
@@ -147,7 +141,18 @@ js_library("hd_iron_icon.m") {
 
 js_library("long_touch_detector.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.m.js" ]
+  deps = []
   extra_deps = [ ":long_touch_detector_module" ]
+}
+
+js_library("network_select_login.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/network:network_select.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":network_select_login_module" ]
 }
 
 js_library("oobe_a11y_option.m") {
@@ -184,6 +189,14 @@ polymer_modulizer("long_touch_detector") {
   js_file = "long_touch_detector.js"
   html_file = "long_touch_detector.html"
   html_type = "dom-module"
+}
+
+polymer_modulizer("network_select_login") {
+  js_file = "network_select_login.js"
+  html_file = "network_select_login.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 polymer_modulizer("oobe_a11y_option") {
