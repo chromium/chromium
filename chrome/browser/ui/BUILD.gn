@@ -1869,6 +1869,8 @@ static_library("ui") {
       "app_list/search/assistant_text_search_provider.h",
       "app_list/search/chrome_search_result.cc",
       "app_list/search/chrome_search_result.h",
+      "app_list/search/common/string_util.cc",
+      "app_list/search/common/string_util.h",
       "app_list/search/common/types_util.cc",
       "app_list/search/common/types_util.h",
       "app_list/search/common/url_icon_source.cc",

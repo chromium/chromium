@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/category_item_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
@@ -48,32 +49,6 @@ namespace {
 
 constexpr char kLauncherSearchQueryLengthJumped[] =
     "Apps.LauncherSearchQueryLengthJumped";
-
-// TODO(931149): Move the string manipulation utilities into a helper class.
-
-// Normalizes training targets by removing any scheme prefix and trailing slash:
-// "arc://[id]/" to "[id]". This is necessary because apps launched from
-// different parts of the launcher have differently formatted IDs.
-std::string NormalizeId(const std::string& id) {
-  std::string result(id);
-  // No existing scheme names include the delimiter string "://".
-  std::size_t delimiter_index = result.find("://");
-  if (delimiter_index != std::string::npos)
-    result.erase(0, delimiter_index + 3);
-  if (!result.empty() && result.back() == '/')
-    result.pop_back();
-  return result;
-}
-
-// Remove the Arc app shortcut label from an app ID, if it exists, so that
-// "[app]/[label]" becomes "[app]".
-std::string RemoveAppShortcutLabel(const std::string& id) {
-  std::string result(id);
-  std::size_t delimiter_index = result.find_last_of('/');
-  if (delimiter_index != std::string::npos)
-    result.erase(delimiter_index);
-  return result;
-}
 
 }  // namespace
 
