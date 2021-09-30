@@ -1732,7 +1732,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'GOWq6DuXTaO5_PhmwjQB3NYBiEn8HICAaM2po12SyJYC',
+        'version': 'Lcyldo5Bv3dWdImTlw-yq9bFeyrUJs7bKT7yPYH_wtkC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
