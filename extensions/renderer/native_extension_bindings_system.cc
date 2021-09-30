@@ -15,7 +15,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -54,7 +53,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_origin_trials.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
@@ -371,30 +369,7 @@ bool IsRuntimeAvailableToContext(ScriptContext* context) {
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
     ExternallyConnectableInfo* info = static_cast<ExternallyConnectableInfo*>(
         extension->GetManifestData(manifest_keys::kExternallyConnectable));
-    if (!info) {
-      continue;
-    }
-    // Sites can only connect to the CryptoToken component extension if it has
-    // been enabled via feature flag or deprecation trial.
-    // TODO(1224886): Delete together with CryptoToken code.
-    if (extension->id() == extension_misc::kCryptotokenExtensionId) {
-      absl::optional<blink::WebDocument> opt_document;
-      if (context->web_frame()) {
-        opt_document = context->web_frame()->GetDocument();
-      }
-      const bool u2f_api_enabled =
-          base::FeatureList::IsEnabled(
-              extensions_features::kU2FSecurityKeyAPI) ||
-          (opt_document &&
-           blink::WebOriginTrials::isTrialEnabled(
-               &opt_document.value(),
-               blink::WebString::FromUTF8(
-                   extension_misc::kCryptotokenDeprecationTrialName)));
-      if (!u2f_api_enabled) {
-        continue;
-      }
-    }
-    if (info->matches.MatchesURL(context->url())) {
+    if (info && info->matches.MatchesURL(context->url())) {
       return true;
     }
   }

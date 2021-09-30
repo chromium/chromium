@@ -15826,5 +15826,40 @@
         }
       }
     ]
+  },
+  "U2fSecurityKeyApiEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "U2fSecurityKeyApiEnabled": false },
+        "prefs": {
+          "extensions.u2f_security_key_api_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "U2fSecurityKeyApiEnabled": true },
+        "prefs": {
+          "extensions.u2f_security_key_api_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.u2f_security_key_api_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
   }
 }

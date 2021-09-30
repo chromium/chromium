@@ -40,12 +40,14 @@
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
@@ -291,7 +293,8 @@ void MessageService::OpenChannelToExtension(
         is_web_connection = true;
 
         // Sites can only connect to the CryptoToken component extension if it
-        // has been enabled via feature flag or deprecation trial.
+        // has been enabled via feature flag, enterprise policy or deprecation
+        // trial.
         // TODO(1224886): Delete together with CryptoToken code.
         if (target_extension_id == extension_misc::kCryptotokenExtensionId) {
           blink::TrialTokenValidator validator;
@@ -300,6 +303,8 @@ void MessageService::OpenChannelToExtension(
           const bool u2f_api_enabled =
               base::FeatureList::IsEnabled(
                   extensions_features::kU2FSecurityKeyAPI) ||
+              ExtensionPrefs::Get(context)->pref_service()->GetBoolean(
+                  extensions::pref_names::kU2fSecurityKeyApiEnabled) ||
               (response_headers &&
                validator.RequestEnablesFeature(
                    source_render_frame_host->GetLastCommittedURL(),

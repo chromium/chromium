@@ -24,6 +24,8 @@
 #include "device/fido/features.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
@@ -383,15 +385,32 @@ TEST_F(CryptoTokenPermissionTest, RequestPrompt) {
 }
 
 TEST_F(CryptoTokenPermissionTest, FeatureFlagOverridesRequestPrompt) {
+  // Disabling the permission prompt feature flag should suppress it.
   feature_list_.InitAndDisableFeature(device::kU2fPermissionPrompt);
   bool result = false;
-
   ASSERT_TRUE(CanMakeU2fApiRequest("https://test.com",
                                    permissions::PermissionRequestManager::NONE,
                                    &result));
-  // The result should only be positive if the user accepted the permissions
-  // prompt.
   EXPECT_TRUE(result);
+}
+
+TEST_F(CryptoTokenPermissionTest, EnterprisePolicyOverridesRequestPrompt) {
+  // Setting the deprecation override policy should cause the prompt to be
+  // suppressed. This should be true even when the API has been
+  // default-disabled, because the policy overrides that too.
+  for (bool api_enabled : {false, true}) {
+    SCOPED_TRACE(api_enabled);
+    feature_list_.InitWithFeatureState(extensions_features::kU2FSecurityKeyAPI,
+                                       api_enabled);
+    browser()->profile()->GetPrefs()->Set(
+        extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
+    bool result = false;
+    ASSERT_TRUE(CanMakeU2fApiRequest(
+        "https://test.com", permissions::PermissionRequestManager::NONE,
+        &result));
+    EXPECT_TRUE(result);
+    feature_list_.Reset();
+  }
 }
 
 }  // namespace extensions

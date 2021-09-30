@@ -26,6 +26,7 @@
 #include "device/fido/features.h"
 #include "device/fido/filter.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -300,15 +301,21 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
                                frame->GetLastCommittedURL(), response_headers,
                                extension_misc::kCryptotokenDeprecationTrialName,
                                base::Time::Now()));
+  const bool u2f_api_enterprise_policy_enabled =
+      Profile::FromBrowserContext(browser_context())
+          ->GetPrefs()
+          ->GetBoolean(extensions::pref_names::kU2fSecurityKeyApiEnabled);
+
   DCHECK(
       base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
-      u2f_api_origin_trial_enabled);
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
 
   // Don't show a permission prompt if its feature flag is disabled, or if the
   // site enrolled in the deprecation trial (since they're obviously aware of
-  // the deprecation).
+  // the deprecation), or if the enterprise policy to override U2F
+  // deprecation-related changes has been enabled.
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
-      u2f_api_origin_trial_enabled) {
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
     return RespondNow(OneArgument(base::Value(true)));
   }
 

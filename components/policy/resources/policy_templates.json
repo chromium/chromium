@@ -8948,7 +8948,7 @@
     },
     {
       'name': 'SecurityKeyPermitAttestation',
-      'owners': ['agl@chromium.org', 'martinkr@chromium.org'],
+      'owners': ['agl@chromium.org', 'martinkr@google.com'],
       'tags': ['website-sharing'],
       'type': 'list',
       'schema': {
@@ -8966,6 +8966,41 @@
       'desc': '''Setting the policy specifies URLs and domains for which no prompt appears when attestation certificates from Security Keys are requested. A signal is also sent to the Security Key indicating that individual attestation may be used. Without this, when sites request attestation of Security Keys, users are prompted in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 65 and later.
 
       URLs will only match as U2F appIDs. Domains only match as webauthn RP IDs. So to cover both U2F and webauthn APIs, list the appID URL and domain for a given site.''',
+    },
+    {
+      'name': 'U2fSecurityKeyApiEnabled',
+      'owners': ['martinkr@google.com', 'agl@chromium.org'],
+      'tags': [],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow using the U2F Security Key API.',
+        },
+        {
+          'value': False,
+          'caption': 'Apply default settings for U2F API deprecation.',
+        },
+      ],
+      'supported_on': ['chrome.*:95-103'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'default': False,
+      'id': 903,
+      'caption': '''Allow using the deprecated U2F Security Key API''',
+      'desc': '''If set to Enabled, the deprecated U2F Security Key API can be used and the deprecation reminder prompt shown for U2F API requests is suppressed.
+
+      If the policy is set to Disabled or left unset, the default behavior will apply.
+
+      The U2F Security Key API is deprecated and it will be disabled by default in Chrome 98.
+
+      This is a temporary opt-out mechanism. The U2F API will be removed from Chrome in Chrome 104, at which point this policy will cease to be supported.
+
+      For more information about the deprecation of the U2F Security Key API, please refer to https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A.''',
     },
     {
       'name': 'GCFUserDataDir',
@@ -28990,6 +29025,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 902,
+  'highest_id_currently_used': 903,
   'highest_atomic_group_id_currently_used': 41
 }

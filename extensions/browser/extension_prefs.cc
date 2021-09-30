@@ -2265,6 +2265,7 @@ void ExtensionPrefs::RegisterProfilePrefs(
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   registry->RegisterBooleanPref(pref_names::kChromeAppsEnabled, false);
 #endif
+  registry->RegisterBooleanPref(pref_names::kU2fSecurityKeyApiEnabled, false);
 
   registry->RegisterListPref(pref_names::kNativeMessagingBlocklist);
   registry->RegisterListPref(pref_names::kNativeMessagingAllowlist);

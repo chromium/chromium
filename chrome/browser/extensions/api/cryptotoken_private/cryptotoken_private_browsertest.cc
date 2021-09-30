@@ -5,14 +5,17 @@
 #include "base/strings/string_util.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -26,6 +29,7 @@ namespace extensions {
 
 namespace {
 
+constexpr char kCryptoTokenExtensionId[] = "kmendfapggjehodndflmmgagdbamhnfd";
 constexpr char kOriginTrialOrigin[] = "https://a.test";
 
 class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
@@ -69,24 +73,50 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
 
   void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
 
-  void ExpectConnectResult(bool expected_result) {
-    const std::string script = R"((() => {
-          let port = chrome.runtime.connect("kmendfapggjehodndflmmgagdbamhnfd",
-              {});
-          return !!port;
-      })())";
+  void ExpectChromeRuntimeIsUndefined() {
+    const std::string script = base::StringPrintf(
+        R"(let port = chrome.runtime.connect('%s',
+              {});)",
+        kCryptoTokenExtensionId);
     const content::EvalJsResult result = content::EvalJs(
         browser()->tab_strip_model()->GetActiveWebContents(), script);
-    if (expected_result) {
-      EXPECT_TRUE(result.ExtractBool());
-    } else {
-      // chrome.runtime will be undefined because there is no connectable
-      // extension for this origin.
-      EXPECT_THAT(
-          result.error,
-          testing::StartsWith("a JavaScript error:\nTypeError: Cannot read "
-                              "properties of undefined (reading 'connect')"));
-    }
+    EXPECT_THAT(
+        result.error,
+        testing::StartsWith("a JavaScript error:\nTypeError: Cannot read "
+                            "properties of undefined (reading 'connect')"));
+  }
+
+  void ExpectConnectSuccess() {
+    const std::string script = base::StringPrintf(
+        R"(new Promise((resolve) => {
+          chrome.runtime.sendMessage('%s',
+              {}, () => {
+                resolve(chrome.runtime.lastError === undefined);
+              });
+      }))",
+        kCryptoTokenExtensionId);
+    const content::EvalJsResult result = content::EvalJs(
+        browser()->tab_strip_model()->GetActiveWebContents(), script);
+    EXPECT_EQ(true, result);
+  }
+
+  void ExpectConnectFailure() {
+    const std::string script = base::StringPrintf(
+        R"(new Promise((resolve) => {
+          chrome.runtime.sendMessage('%s',
+              {}, () => {
+                if (!chrome.runtime.lastError) {
+                  resolve('chrome.runtime.lastError is undefined');
+                } else {
+                  resolve(chrome.runtime.lastError.message);
+                }
+              });
+      }))",
+        kCryptoTokenExtensionId);
+    const content::EvalJsResult result = content::EvalJs(
+        browser()->tab_strip_model()->GetActiveWebContents(), script);
+    EXPECT_EQ("Could not establish connection. Receiving end does not exist.",
+              result);
   }
 
   net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
@@ -127,21 +157,35 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, Connect) {
   // CryptoToken can only be connected to if the feature flag is enabled.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("a.test", "/empty.html")));
-  ExpectConnectResult(IsParamFeatureEnabled());
+  if (IsParamFeatureEnabled()) {
+    ExpectConnectSuccess();
+  } else {
+    ExpectConnectFailure();
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, ConnectWithOriginTrial) {
   // Connection succeeds regardless of feature flag state with the origin trial.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(kOriginTrialOrigin)));
-  ExpectConnectResult(true);
+  ExpectConnectSuccess();
+}
+
+IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, ConnectWithEnterprisePolicy) {
+  // Connection succeeds regardless of feature flag state with the enterprise
+  // policy overriding deprecation changes.
+  browser()->profile()->GetPrefs()->Set(
+      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(kOriginTrialOrigin)));
+  ExpectConnectSuccess();
 }
 
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {
   // Connections from insecure origins always fail.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_server_.GetURL("a.test", "/empty.html")));
-  ExpectConnectResult(false);
+  ExpectChromeRuntimeIsUndefined();
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenBrowserTest);
