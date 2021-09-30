@@ -1,9 +1,14 @@
 <style include="shortcut-customization-shared">
+  :host(:not([is-add-view_])) #container {
+    border-bottom: var(--cr-separator-line);
+  }
+
   #container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding-bottom: 10px;
+    padding-top: 8px;
   }
 
   #acceleratorInfoText {

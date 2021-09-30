@@ -8,6 +8,34 @@
     --iron-icon-fill-color: #1A73E8;
     padding-top: 11px;
   }
+
+  #addAcceleratorContainer {
+    padding-top: 12px;
+  }
+
+  #pendingAccelerator {
+    padding-top: 8px;
+  }
+
+  [slot='button-container'] {
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-end: 24px;
+    --cr-dialog-button-container-padding-start: 24px;
+    --cr-dialog-button-container-padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  [slot='body'] {
+    height: 216px;
+  }
+
+  #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 24px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-slot-padding-top: 24px;
+  }
 </style>
 
 <cr-dialog id="editDialog" on-close="onDialogClose_">

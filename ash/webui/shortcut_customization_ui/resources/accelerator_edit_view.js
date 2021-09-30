@@ -52,6 +52,13 @@ export class AcceleratorEditViewElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /** @private */
+      isAddView_: {
+        type: Boolean,
+        computed: 'computeIsAddView_(viewState)',
+        reflectToAttribute: true,
+      },
+
       viewState: {
         type: Number,
         value: ViewState.VIEW,
@@ -115,6 +122,14 @@ export class AcceleratorEditViewElement extends PolymerElement {
    */
   showEditView_() {
     return this.viewState !== ViewState.VIEW;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsAddView_() {
+    return this.viewState === ViewState.ADD;
   }
 }
 
