@@ -98,6 +98,57 @@ gen-bundle \
 
 gen-bundle \
   -version b2 \
+  -baseURL $wpt_test_origin/web-bundle/resources/wbn/ \
+  -primaryURL $wpt_test_origin/web-bundle/resources/wbn/location.html \
+  -dir location/ \
+  -o wbn/location-b2.wbn
+
+gen-bundle \
+  -version b2 \
   -har relative-url.har \
   -o wbn/relative-url.wbn
 
+gen-bundle \
+  -version b2 \
+  -baseURL $wpt_test_origin/web-bundle/resources/wbn/ \
+  -dir subresource/ \
+  -o wbn/subresource-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -baseURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/ \
+  -dir dynamic1/ \
+  -o wbn/dynamic1-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -baseURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/ \
+  -dir dynamic2/ \
+  -o wbn/dynamic2-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -baseURL $wpt_test_remote_origin/web-bundle/resources/wbn/dynamic/ \
+  -dir dynamic1/ \
+  -o wbn/dynamic1-crossorigin-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -baseURL $wpt_test_origin/web-bundle/resources/ \
+  -dir path-restriction/ \
+  -o wbn/path-restriction-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har urn-uuid.har \
+  -o wbn/urn-uuid-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har cross-origin.har \
+  -o wbn/cors/cross-origin-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har cross-origin-no-cors.har \
+  -o wbn/no-cors/cross-origin-b2.wbn

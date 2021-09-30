@@ -37,18 +37,23 @@
         "anonymous",
         "use-credentials",
       ]) {
-        const link = await addLinkAndWaitForError(
-          prefix + "cross-origin.wbn",
-          resources,
-          crossorigin_attribute_value
-        );
+        for (const version_suffix of [
+          "", // b1
+          "-b2", // for b2
+        ]) {
+          const link = await addLinkAndWaitForError(
+            prefix + "cross-origin" + version_suffix + ".wbn",
+            resources,
+            crossorigin_attribute_value
+          );
 
-        // A subresource in the bundle can not be used in any case.
-        for (const resource of resources) {
-          await fetchAndWaitForReject(resource);
-          await addScriptAndWaitForError(resource);
+          // A subresource in the bundle can not be used in any case.
+          for (const resource of resources) {
+            await fetchAndWaitForReject(resource);
+            await addScriptAndWaitForError(resource);
+          }
+          link.remove();
         }
-        link.remove();
       }
     }, "Use CORS if crossorigin=anonymous or crossorigin=use-credential is specified. A cross origin bundle must not be loaded unless a server returns a valid Access-Control-Allow-Origin header.");
   </script>

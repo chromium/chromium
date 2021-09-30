@@ -32,33 +32,38 @@
         "anonymous",
         "use-credentials",
       ]) {
-        const link = await addLinkAndWaitForLoad(
-          prefix + "cross-origin.wbn",
-          resources,
-          crossorigin_attribute_value
-        );
+        for (const version_suffix of [
+          "", // b1
+          "-b2", // for b2
+        ]) {
+          const link = await addLinkAndWaitForLoad(
+            prefix + "cross-origin" + version_suffix + ".wbn",
+            resources,
+            crossorigin_attribute_value
+          );
 
-        // Can fetch a subresource which has a valid Access-Control-Allow-Origin response header.
-        const response = await fetch(prefix + "resource.cors.js");
-        assert_true(response.ok);
-        const text = await response.text();
-        assert_equals(text, "scriptLoaded('resource.cors.js');");
+          // Can fetch a subresource which has a valid Access-Control-Allow-Origin response header.
+          const response = await fetch(prefix + "resource.cors.js");
+          assert_true(response.ok);
+          const text = await response.text();
+          assert_equals(text, "scriptLoaded('resource.cors.js');");
 
-        // Can not fetch a subresource which does NOT have a valid
-        // Access-Control-Allow-Origin response header.
-        await fetchAndWaitForReject(prefix + "resource.no-cors.js");
+          // Can not fetch a subresource which does NOT have a valid
+          // Access-Control-Allow-Origin response header.
+          await fetchAndWaitForReject(prefix + "resource.no-cors.js");
 
-        // Both subresource js can be loaded via a <script> element, which doesn't use cors.
-        for (const resource of resources) {
-          const scriptEvaluted = new Promise((resolve, reject) => {
-            window.scriptLoaded = resolve;
-          });
-          const script = document.createElement("script");
-          script.src = resource;
-          document.body.appendChild(script);
-          await scriptEvaluted;
+          // Both subresource js can be loaded via a <script> element, which doesn't use cors.
+          for (const resource of resources) {
+            const scriptEvaluted = new Promise((resolve, reject) => {
+              window.scriptLoaded = resolve;
+            });
+            const script = document.createElement("script");
+            script.src = resource;
+            document.body.appendChild(script);
+            await scriptEvaluted;
+          }
+          link.remove();
         }
-        link.remove();
       }
     }, "request's mode must be cors. A server should return a valid Access-Control-Allow-Origin header if a bundle is a cross origin bundle.");
   </script>
