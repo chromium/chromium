@@ -7,6 +7,7 @@
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -19,6 +20,10 @@ class WebContents;
 namespace views {
 class Button;
 }  // namespace views
+
+namespace sharesheet {
+class SharesheetService;
+}  // namespace sharesheet
 
 namespace sharing_hub {
 
@@ -79,6 +84,8 @@ class SharingHubBubbleController
   void OnSharesheetClosed(views::Widget::ClosedReason reason);
 
   views::ViewTracker highlighted_button_tracker_;
+  sharesheet::SharesheetService* sharesheet_service_ = nullptr;
+  gfx::NativeWindow native_window_ = nullptr;
 #endif
 
   // The web_contents associated with this controller.
