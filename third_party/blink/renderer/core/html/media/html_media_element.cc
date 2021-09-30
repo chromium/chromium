@@ -676,7 +676,13 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   // refresh the MediaPlayer's LocalFrame and FrameLoader references on document
   // changes so that playback can be resumed properly.
   ignore_preload_none_ = false;
-  InvokeLoadAlgorithm();
+  auto new_origin = GetDocument().TopFrameOrigin();
+  auto old_origin = old_document.TopFrameOrigin();
+  const bool reuse_player =
+      base::FeatureList::IsEnabled(media::kReuseMediaPlayer) && new_origin &&
+      old_origin && old_origin->IsSameOriginWith(new_origin.get());
+  if (!reuse_player)
+    InvokeLoadAlgorithm();
 
   // Decrement the load event delay count on oldDocument now that
   // web_media_player_ has been destroyed and there is no risk of dispatching a

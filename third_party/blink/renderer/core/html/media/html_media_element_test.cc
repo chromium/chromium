@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -256,6 +258,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   void SetUp() override {
     // Sniff the media player pointer to facilitate mocking.
     auto mock_media_player = std::make_unique<MockWebMediaPlayer>();
+    media_player_weak_ = mock_media_player->AsWeakPtr();
     media_player_ = mock_media_player.get();
 
     // Most tests do not care about this call, nor its return value. Those that
@@ -421,6 +424,38 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return media_player_observer().received_buffer_underflow();
   }
 
+  bool WasPlayerDestroyed() const { return !media_player_weak_; }
+
+  // Move Media() from a document in `old_origin` to  one in `new_origin`, and
+  // expect that `should_destroy` matches whether the player is destroyed.
+  void MoveElementAndTestPlayerDestruction(const char* old_origin,
+                                           const char* new_origin,
+                                           bool should_destroy) {
+    Media()
+        ->GetDocument()
+        .domWindow()
+        ->GetSecurityContext()
+        .SetSecurityOriginForTesting(
+            SecurityOrigin::CreateFromString(old_origin));
+
+    WaitForPlayer();
+    // Player should not be destroyed yet.
+    EXPECT_FALSE(WasPlayerDestroyed());
+
+    // Make another document with the same security origin.
+    auto new_dummy_page_holder = std::make_unique<DummyPageHolder>(
+        IntSize(), nullptr,
+        MakeGarbageCollected<WebMediaStubLocalFrameClient>(
+            /*player=*/nullptr));
+    Document& new_document = new_dummy_page_holder->GetDocument();
+    new_document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+        SecurityOrigin::CreateFromString(new_origin));
+
+    // Move the element.
+    new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
+    EXPECT_EQ(should_destroy, WasPlayerDestroyed());
+  }
+
  private:
   TestMediaPlayerObserver& media_player_observer() {
     return media_player_host_.observer();
@@ -431,6 +466,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   // Owned by WebMediaStubLocalFrameClient.
   MockWebMediaPlayer* media_player_;
+  base::WeakPtr<WebMediaPlayer> media_player_weak_;
 
   TestMediaPlayerHost media_player_host_;
   mojo::AssociatedReceiver<media::mojom::blink::MediaPlayerHost>
@@ -1172,4 +1208,47 @@ TEST_P(HTMLMediaElementTest,
   Media()->SetUserWantsControlsVisible(true);
   EXPECT_TRUE(MediaShouldShowAllControls());
 }
+
+TEST_P(HTMLMediaElementTest,
+       DestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsNotEnabled) {
+  // Ensure that the WebMediaPlayer is destroyed when moving to a same-origin
+  // document, if `kReuseMediaPlayer` is not enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
+                                      /*should_destroy=*/true);
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsNotEnabled) {
+  // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
+  // document, if `kReuseMediaPlayer` is not enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
+                                      /*should_destroy=*/true);
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled) {
+  // Ensure that the WebMediaPlayer is re-used when moving to a same-origin
+  // document, if `kReuseMediaPlayer` is enabled.
+  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
+                                      /*should_destroy=*/false);
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsEnabled) {
+  // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
+  // document, if `kReuseMediaPlayer` is enabled.  Re-use should only occur if
+  // it's a same-orign document.
+  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
+                                      /*should_destroy=*/true);
+}
+
 }  // namespace blink

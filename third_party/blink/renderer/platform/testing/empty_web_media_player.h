@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_EMPTY_WEB_MEDIA_PLAYER_H_
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 
 namespace cc {
@@ -18,7 +19,8 @@ namespace blink {
 // An empty WebMediaPlayer used only for tests. This class defines the methods
 // of WebMediaPlayer so that mock WebMediaPlayers don't need to redefine them if
 // they don't care their behavior.
-class EmptyWebMediaPlayer : public WebMediaPlayer {
+class EmptyWebMediaPlayer : public WebMediaPlayer,
+                            public base::SupportsWeakPtr<EmptyWebMediaPlayer> {
  public:
   ~EmptyWebMediaPlayer() override = default;
 
@@ -71,7 +73,9 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   bool HasAvailableVideoFrame() const override { return false; }
-  base::WeakPtr<WebMediaPlayer> AsWeakPtr() override { return nullptr; }
+  base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
+    return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();
+  }
 };
 
 }  // namespace blink
