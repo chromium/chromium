@@ -4,11 +4,41 @@
   "android-rust-arm-rel": {
     "additional_compile_targets": [
       "rust_build_tests"
+    ],
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "test_cpp_including_rust_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_cpp_including_rust_unittests",
+        "test_id_prefix": "ninja://build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/"
+      }
     ]
   },
   "linux-rust-x64-rel": {
     "additional_compile_targets": [
       "rust_build_tests"
+    ],
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "test_cpp_including_rust_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_cpp_including_rust_unittests",
+        "test_id_prefix": "ninja://build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/"
+      }
     ]
   }
 }

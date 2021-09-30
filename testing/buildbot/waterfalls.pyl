@@ -5474,11 +5474,17 @@
         'additional_compile_targets': [
           'rust_build_tests',
         ],
+        'test_suites': {
+          'gtest_tests': 'rust_unittests',
+        },
       },
       'linux-rust-x64-rel' : {
         'additional_compile_targets': [
           'rust_build_tests',
         ],
+        'test_suites': {
+          'gtest_tests': 'rust_unittests',
+        },
       },
     },
   },

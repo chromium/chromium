@@ -4776,6 +4776,13 @@
       }
     },
 
+    'rust_unittests': {
+      'test_cpp_including_rust_unittests': {
+        'swarming': {},
+        'test': 'test_cpp_including_rust_unittests',
+      },
+    },
+
     'site_isolation_android_fyi_gtests': {
       'site_per_process_android_browsertests': {
         'args': [
