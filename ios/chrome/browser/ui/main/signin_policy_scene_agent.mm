@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -32,19 +33,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
-// instead of this when available.
-bool IsSigninForcedByPolicy() {
-  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
-      GetApplicationContext()->GetLocalState()->GetInteger(
-          prefs::kBrowserSigninPolicy));
-  return policy_mode == BrowserSigninMode::kForced;
-}
-
-}  // namespace
 
 @interface SigninPolicySceneAgent () <AppStateObserver,
                                       PrefObserverDelegate,
@@ -178,7 +166,7 @@ bool IsSigninForcedByPolicy() {
 - (BOOL)isForcedSignInRequiredByPolicy {
   DCHECK(self.mainBrowser);
 
-  if (!IsSigninForcedByPolicy()) {
+  if (!IsForceSignInEnabled()) {
     return NO;
   }
 

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
@@ -24,8 +25,8 @@
 
 @property(nonatomic, weak) id<SigninScreenViewControllerDelegate> delegate;
 
-// YES if it is in forced signin mode.
-@property(nonatomic, assign) BOOL forcedSignin;
+@property(nonatomic, assign)
+    EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
 @end
 

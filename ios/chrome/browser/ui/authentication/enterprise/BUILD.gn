@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("enterprise_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_utils.h",
+    "enterprise_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/policy:policy_util",
+  ]
+}

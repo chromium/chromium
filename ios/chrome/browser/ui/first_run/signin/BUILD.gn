@@ -20,6 +20,7 @@ source_set("signin") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
@@ -43,6 +44,7 @@ source_set("signin_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/first_run:constants",

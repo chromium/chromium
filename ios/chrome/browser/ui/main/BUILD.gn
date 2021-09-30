@@ -162,6 +162,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/appearance",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin:user_signin",
     "//ios/chrome/browser/ui/blocking_overlay",
