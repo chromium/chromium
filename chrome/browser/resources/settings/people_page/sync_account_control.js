@@ -24,7 +24,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
@@ -33,13 +33,26 @@ import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, Syn
 export const MAX_SIGNIN_PROMO_IMPRESSION = 10;
 
 /**
+ * TODO(crbug.com/1234307): Delete this interface once sync_account_control.js
+ * is migrated to TypeScript.
+ * @interface
+ */
+class PrefsMixinInterface {
+  /**
+   * @param {string} prefPath
+   * @return {!chrome.settingsPrivate.PrefObject}
+   */
+  getPref(prefPath) {}
+}
+
+/**
  * @constructor
  * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
+ * @implements {PrefsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsSyncAccountControlElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement));
 
 /** @polymer */
 class SettingsSyncAccountControlElement extends

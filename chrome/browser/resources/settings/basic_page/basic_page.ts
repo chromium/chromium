@@ -33,13 +33,13 @@ import '../default_browser_page/default_browser_page.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {beforeNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos or lacros">
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 // </if>
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -67,22 +67,23 @@ const CrosSettingsOsBannerInteraction = {
 // TypeScript.
 type Constructor<T> = new (...args: any[]) => T;
 
+// <if expr="chromeos or lacros">
 const SettingsBasicPageElementBase =
-    mixinBehaviors(
-        [
-          // <if expr="chromeos or lacros">
-          PrefsBehavior,
-          // </if>
-        ],
-        MainPageMixin(
-            RouteObserverMixin(PolymerElement) as unknown as
-            Constructor<PolymerElement>)) as {
-      new (): PolymerElement &
-      // <if expr="chromeos or lacros">
-      PrefsBehaviorInterface &
-      // </if>
-      RouteObserverMixinInterface
+    PrefsMixin(MainPageMixin(
+        RouteObserverMixin(PolymerElement) as unknown as
+        Constructor<PolymerElement>)) as unknown as {
+      new (): PolymerElement & PrefsMixinInterface &
+      RouteObserverMixinInterface & MainPageMixinInterface
     };
+// </if>
+// <if expr="not chromeos and not lacros">
+const SettingsBasicPageElementBase = MainPageMixin(
+                                         RouteObserverMixin(PolymerElement) as
+                                         unknown as
+                                         Constructor<PolymerElement>) as {
+  new (): PolymerElement & RouteObserverMixinInterface & MainPageMixinInterface
+};
+// </if>
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {

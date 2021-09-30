@@ -26,7 +26,7 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
@@ -46,8 +46,8 @@ export interface SettingsPersonalizationOptionsElement {
 }
 
 const SettingsPersonalizationOptionsElementBase =
-    mixinBehaviors([PrefsBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & PrefsBehaviorInterface & WebUIListenerBehavior};
+    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & PrefsMixinInterface & WebUIListenerBehavior};
 
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {

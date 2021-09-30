@@ -26,7 +26,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {AppearancePageVisibility} from '../page_visibility.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -58,8 +58,8 @@ interface SettingsAppearancePageElement {
 }
 
 const SettingsAppearancePageElementBase =
-    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & PrefsBehaviorInterface};
+    mixinBehaviors([I18nBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nBehavior & PrefsMixinInterface};
 
 class SettingsAppearancePageElement extends SettingsAppearancePageElementBase {
   static get is() {

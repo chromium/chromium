@@ -20,7 +20,7 @@ import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
 
@@ -31,8 +31,8 @@ type AccountInfo = {
 };
 
 const SettingsDownloadsPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior & PrefsBehaviorInterface};
+    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior & PrefsMixinInterface};
 
 /** @polymer */
 class SettingsDownloadsPageElement extends SettingsDownloadsPageElementBase {

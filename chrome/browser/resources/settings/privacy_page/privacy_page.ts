@@ -29,7 +29,7 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
@@ -52,10 +52,10 @@ interface SiteDataDetailsSubpageElement extends HTMLElement {
 
 const SettingsPrivacyPageElementBase =
     mixinBehaviors(
-        [PrefsBehavior, I18nBehavior, WebUIListenerBehavior],
-        RouteObserverMixin(PolymerElement)) as {
+        [I18nBehavior, WebUIListenerBehavior],
+        PrefsMixin(RouteObserverMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      PrefsBehaviorInterface & RouteObserverMixinInterface
+      PrefsMixinInterface & RouteObserverMixinInterface
     };
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {

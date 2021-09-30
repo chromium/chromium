@@ -30,7 +30,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
@@ -69,10 +69,10 @@ export interface SettingsCookiesPageElement {
 
 const SettingsCookiesPageElementBase =
     mixinBehaviors(
-        [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
-        RouteObserverMixin(PolymerElement)) as {
+        [I18nBehavior, WebUIListenerBehavior],
+        PrefsMixin(RouteObserverMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      PrefsBehaviorInterface & RouteObserverMixinInterface
+      PrefsMixinInterface & RouteObserverMixinInterface
     };
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {

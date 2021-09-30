@@ -44,7 +44,7 @@ import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_prox
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
@@ -93,10 +93,9 @@ const PasswordsSectionElementBase =
           I18nBehavior,
           WebUIListenerBehavior,
           MergePasswordsStoreCopiesBehavior,
-          PrefsBehavior,
         ],
-        GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
-            PasswordCheckMixin(PolymerElement)))) as {
+        PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
+            PasswordCheckMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
       MergeExceptionsStoreCopiesMixinInterface &
       MergePasswordsStoreCopiesBehaviorInterface & PasswordCheckMixinInterface

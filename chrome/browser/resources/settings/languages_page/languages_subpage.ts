@@ -40,7 +40,7 @@ import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/po
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
@@ -66,8 +66,8 @@ export interface SettingsLanguagesSubpageElement {
 }
 
 const SettingsLanguagesSubpageElementBase =
-    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & PrefsBehaviorInterface};
+    mixinBehaviors([I18nBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nBehavior & PrefsMixinInterface};
 
 export class SettingsLanguagesSubpageElement extends
     SettingsLanguagesSubpageElementBase {

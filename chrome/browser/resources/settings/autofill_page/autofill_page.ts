@@ -14,10 +14,11 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -25,7 +26,7 @@ import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
-    mixinBehaviors([PrefsBehavior], PasswordCheckMixin(PolymerElement)) as
+    PrefsMixin(PasswordCheckMixin(BaseMixin(PolymerElement))) as unknown as
     {new (): PolymerElement & PasswordCheckMixinInterface};
 
 class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {

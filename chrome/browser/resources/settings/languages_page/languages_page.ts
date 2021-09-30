@@ -41,7 +41,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
@@ -57,8 +57,8 @@ interface RepeaterEvent extends Event {
 type FocusConfig = Map<string, (string|(() => void))>;
 
 const SettingsLanguagesPageElementBase =
-    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & PrefsBehaviorInterface};
+    mixinBehaviors([I18nBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nBehavior & PrefsMixinInterface};
 
 class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   static get is() {

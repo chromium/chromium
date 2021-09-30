@@ -19,7 +19,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 
 /**
@@ -37,7 +37,7 @@ type LiveCaptionLanguage = {
 type LiveCaptionLanguageList = Array<LiveCaptionLanguage>;
 
 const SettingsLiveCaptionElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement) as
+    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
     {new (): PolymerElement & WebUIListenerBehavior};
 
 export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {

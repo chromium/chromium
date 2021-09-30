@@ -34,7 +34,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
@@ -57,10 +57,11 @@ interface SettingsPasswordCheckElement {
 
 const SettingsPasswordCheckElementBase =
     mixinBehaviors(
-        [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
-        RouteObserverMixin(PasswordCheckMixin((PolymerElement)))) as {
+        [I18nBehavior, WebUIListenerBehavior],
+        PrefsMixin(RouteObserverMixin(PasswordCheckMixin((PolymerElement))))) as
+    {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      PrefsBehaviorInterface & PasswordCheckMixinInterface &
+      PrefsMixinInterface & PasswordCheckMixinInterface &
       RouteObserverMixinInterface
     };
 

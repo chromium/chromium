@@ -23,7 +23,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './import_data_browser_proxy.js';
 
@@ -36,7 +36,7 @@ interface SettingsImportDataDialogElement {
 
 const SettingsImportDataDialogElementBase =
     mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior, PrefsBehavior], PolymerElement) as
+        [I18nBehavior, WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
     {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
 class SettingsImportDataDialogElement extends

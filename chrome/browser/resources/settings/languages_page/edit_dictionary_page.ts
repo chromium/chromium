@@ -23,7 +23,6 @@ import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polym
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {Route} from '../router.js';
 

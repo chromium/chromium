@@ -139,7 +139,7 @@ preprocess_if_expr("preprocess") {
     "page_visibility.js",
     "people_page/sync_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
-    "prefs/prefs_behavior.js",
+    "prefs/prefs_mixin.js",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
@@ -416,7 +416,7 @@ js_library("settings") {
     ":lifetime_browser_proxy",
     "people_page:sync_browser_proxy",
     "prefs:prefs",
-    "prefs:prefs_behavior",
+    "prefs:prefs_mixin",
     "prefs:prefs_types",
   ]
   extra_deps = [ ":build_ts" ]
@@ -632,7 +632,7 @@ ts_library("build_ts") {
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
-    "prefs/prefs_behavior.js",
+    "prefs/prefs_mixin.js",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",

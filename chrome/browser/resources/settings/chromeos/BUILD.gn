@@ -320,6 +320,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "i18n_setup.js",
     "icons.js",
     "lifetime_browser_proxy.js",
+    "prefs/prefs_mixin.js",
     "privacy_page/personalization_options.js",
     "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/secure_dns_input.js",

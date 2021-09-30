@@ -17,7 +17,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
@@ -68,9 +68,8 @@ type ModelArgs = {
  * updates it whenever Chrome's pref store and other settings change.
  */
 
-const SettingsLanguagesElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & PrefsBehaviorInterface};
+const SettingsLanguagesElementBase = PrefsMixin(PolymerElement) as unknown as
+    {new (): PolymerElement & PrefsMixinInterface};
 
 class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     LanguageHelper {

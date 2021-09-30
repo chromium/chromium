@@ -23,7 +23,7 @@ import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
@@ -61,9 +61,9 @@ export interface SettingsSecurityPageElement {
 
 const SettingsSecurityPageElementBase =
     mixinBehaviors(
-        [I18nBehavior, PrefsBehavior], RouteObserverMixin(PolymerElement)) as {
+        [I18nBehavior], PrefsMixin(RouteObserverMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & RouteObserverMixinInterface &
-      PrefsBehaviorInterface
+      PrefsMixinInterface
     };
 
 export class SettingsSecurityPageElement extends

@@ -7,18 +7,17 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, PrefsMixinInterface, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
-const PrivacySandboxAppElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & PrefsBehaviorInterface};
+const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement) as unknown as
+    {new (): PolymerElement & PrefsMixinInterface};
 
 /** @polymer */
 export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {

@@ -38,7 +38,7 @@ export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.js
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from './prefs/pref_util.js';
 export {SettingsPrefsElement} from './prefs/prefs.js';
-export {PrefsBehavior, PrefsBehaviorInterface} from './prefs/prefs_behavior.js';
+export {PrefsMixin, PrefsMixinInterface} from './prefs/prefs_mixin.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';

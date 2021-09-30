@@ -15,7 +15,7 @@ import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
@@ -56,10 +56,10 @@ export function defaultSettingLabel(
 
 const SettingsSiteSettingsListElementBase =
     mixinBehaviors(
-        [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
-        BaseMixin(PolymerElement)) as {
+        [WebUIListenerBehavior, I18nBehavior],
+        PrefsMixin(BaseMixin(PolymerElement))) as {
       new (): PolymerElement & BaseMixinInterface & I18nBehavior &
-      PrefsBehaviorInterface & WebUIListenerBehavior
+      PrefsMixinInterface & WebUIListenerBehavior
     };
 
 class SettingsSiteSettingsListElement extends

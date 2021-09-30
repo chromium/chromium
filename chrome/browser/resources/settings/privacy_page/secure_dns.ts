@@ -27,7 +27,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page_browser_proxy.js';
 
@@ -40,8 +40,8 @@ interface SettingsSecureDnsElement {
 }
 
 const SettingsSecureDnsElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior & PrefsBehaviorInterface};
+    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior & PrefsMixinInterface};
 
 class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {
