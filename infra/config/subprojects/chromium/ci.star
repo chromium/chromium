@@ -1536,6 +1536,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "linux-archive-tagged",
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "tag",
