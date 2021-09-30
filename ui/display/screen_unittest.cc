@@ -46,6 +46,23 @@ class ScreenTest : public testing::Test {
   test::TestScreen test_screen_;
 };
 
+class ZeroDisplayScreenTest : public testing::Test {
+ public:
+  ZeroDisplayScreenTest() {
+    const Display test_display = test_screen_.GetPrimaryDisplay();
+    test_screen_.display_list().RemoveDisplay(test_display.id());
+    Screen::SetScreenInstance(&test_screen_);
+  }
+
+  ZeroDisplayScreenTest(const ZeroDisplayScreenTest&) = delete;
+  ZeroDisplayScreenTest& operator=(const ZeroDisplayScreenTest&) = delete;
+
+  ~ZeroDisplayScreenTest() override { Screen::SetScreenInstance(nullptr); }
+
+ private:
+  test::TestScreen test_screen_;
+};
+
 TEST_F(ScreenTest, GetPrimaryDisplaySize) {
   const gfx::Size size = Screen::GetScreen()->GetPrimaryDisplay().size();
   EXPECT_EQ(DEFAULT_DISPLAY_WIDTH, size.width());
@@ -117,6 +134,22 @@ TEST_F(ScreenTest, GetScreenInfosNearestDisplay) {
               screen_infos.current().display_id);
     EXPECT_FALSE(screen_infos.current().is_primary);
   }
+}
+
+// This unit test is a cross-platform replication of some Fuchsia unit tests
+// which have no displays (and don't need displays) but also need to have
+// this function return non-empty ScreenInfos.
+TEST_F(ZeroDisplayScreenTest, GetScreenInfosZeroDisplays) {
+  Screen* screen = Screen::GetScreen();
+  ScreenInfos screen_infos =
+      screen->GetScreenInfosNearestDisplay(kInvalidDisplayId);
+
+  EXPECT_TRUE(screen->GetAllDisplays().empty());
+  EXPECT_EQ(screen_infos.screen_infos.size(), 1u);
+  EXPECT_NE(screen_infos.current().display_id, kInvalidDisplayId);
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            screen_infos.current().display_id);
+  EXPECT_TRUE(screen_infos.current().is_primary);
 }
 
 }  // namespace display

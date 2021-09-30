@@ -141,9 +141,17 @@ ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
   // Determine the current and primary display ids.
   std::vector<Display> displays = GetAllDisplays();
   Display primary = GetPrimaryDisplay();
-  CHECK(!displays.empty());
-  CHECK_NE(primary.id(), kInvalidDisplayId);
-  CHECK_NE(nearest_id, kInvalidDisplayId);
+  // Note: displays being empty can happen in Fuchsia unit tests.
+  if (displays.empty()) {
+    if (primary.id() == kInvalidDisplayId) {
+      // If we are in a situation where we have no displays and so the primary
+      // display is invalid, then it's a logic error (elsewhere) to pass in a
+      // valid id, because where would it come from?
+      DCHECK_EQ(nearest_id, kInvalidDisplayId);
+      primary.set_id(kDefaultDisplayId);
+    }
+    displays = {primary};
+  }
 
   // Use the primary and nearest displays as fallbacks for each other, if the
   // counterpart exists in `displays`. Otherwise, use `display[0]` for both.
