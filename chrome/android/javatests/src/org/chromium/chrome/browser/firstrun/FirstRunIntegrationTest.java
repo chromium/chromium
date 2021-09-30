@@ -364,6 +364,12 @@ public class FirstRunIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(() -> chromeLauncherActivity.isFinishing());
     }
 
+    // TODO(http://crbug.com/1240516): Add test cases for the new Welcome screen that includes the
+    // Sign-in promo once the sign-in components can be disabled by policy.
+
+    // TODO(http://crbug.com/1254470): Add test cases for ToS page disabled by policy after the user
+    // accepted ToS and aborted first run.
+
     @Test
     @MediumTest
     public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
@@ -963,6 +969,288 @@ public class FirstRunIntegrationTest {
                 () -> LocaleManager.getInstance().setDelegateForTest(mockDelegate));
     }
 
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Change preferences to disable all promos.
+        testCase.setDataSaverPromo(false);
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        testCase.setSigninPromo(false);
+
+        // Go back should skip all the promo pages and reach the terms of service page. Accepting
+        // terms of service completes first run.
+        navigationHelper.goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_noPagesShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Show terms of services.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .ensureTermsOfServiceIsCurrentPage();
+
+        // Change preferences before any promo page is shown.
+        testCase.setDataSaverPromo(false);
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        testCase.setSigninPromo(false);
+
+        // Accepting terms of services should complete first run, since all the promos are disabled.
+        navigationHelper.acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureSigninPromoNotCurrentPage();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_dataReductionPromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Accept terms of service and pass through data saver prompt.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled();
+
+        // Disable data saver prompt after the next page is shown.
+        testCase.setDataSaverPromo(false);
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run. The data server prompt shouldn't be shown again in either
+        // direction.
+        navigationHelper.selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_dataReductionPromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Accept terms of service and don't skip the data saver prompt.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .ensureDataSaverPromoIsCurrentPage();
+
+        // Disable data saver prompt while it's shown. This will not hide the page.
+        testCase.setDataSaverPromo(false);
+
+        // Pass the data saver prompt, and go until the last page without skipping the last one.
+        // Go back until initial page, and then complete first run. The data server prompt shouldn't
+        // be shown again in either direction.
+        navigationHelper.acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable search engine prompt after the next page is shown.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        setUpLocaleManagerDelegate(SearchEnginePromoType.DONT_SHOW);
+
+        // Go back until initial page, and
+        // then complete first run. The search engine prompt shouldn't be shown again in either
+        // direction.
+        navigationHelper.goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_searchEnginePromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go over first run prompts and stop at the search engine page.
+        FirstRunNavigationHelper navigationHelper =
+                new FirstRunNavigationHelper(firstRunActivity)
+                        .ensurePagesCreationSucceeded()
+                        .acceptTermsOfService()
+                        .acknowledgeDataSaverEnabled()
+                        .ensureDefaultSearchEnginePromoIsCurrentPage();
+
+        // Disable search engine prompt while it's shown. This will not hide the page.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        setUpLocaleManagerDelegate(SearchEnginePromoType.DONT_SHOW);
+
+        // Pass the search engine prompt, and move to the last page without skipping it.
+        // Go back until initial page, and then complete first run. The search engine prompt
+        // shouldn't be shown again in either direction.
+        navigationHelper.selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_signinPromoPromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable sign-in prompt while it's shown. This will not hide the page.
+        testCase.setSigninPromo(false);
+
+        // Go back until initial page, and then complete first run. The sign-in prompt shouldn't be
+        // shown again.
+        navigationHelper.goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_signinPromoPromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable sign-in prompt while it's shown. This will not hide the page.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+
+        // User should be able to interact with sign-in promo page and complete first run.
+        navigationHelper.ensureSigninPromoIsCurrentPage().skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
     private void clickButton(final Activity activity, final int id, final String message) {
         CriteriaHelper.pollUiThread(() -> {
             View view = activity.findViewById(id);
@@ -1007,24 +1295,40 @@ public class FirstRunIntegrationTest {
             return mShowSigninPromo;
         }
 
-        FirstRunPagesTestCase withCctTosDisabled() {
-            mCctTosDisabled = true;
+        FirstRunPagesTestCase setCctTosDisabled(boolean cctTosDisabled) {
+            mCctTosDisabled = cctTosDisabled;
             return this;
+        }
+
+        FirstRunPagesTestCase setDataSaverPromo(boolean showDataSaverPromo) {
+            mShowDataSaverPromo = showDataSaverPromo;
+            return this;
+        }
+
+        FirstRunPagesTestCase setSearchPromoType(@SearchEnginePromoType int searchPromoType) {
+            mSearchPromoType = searchPromoType;
+            return this;
+        }
+
+        FirstRunPagesTestCase setSigninPromo(boolean showSigninPromo) {
+            mShowSigninPromo = showSigninPromo;
+            return this;
+        }
+
+        FirstRunPagesTestCase withCctTosDisabled() {
+            return setCctTosDisabled(true);
         }
 
         FirstRunPagesTestCase withDataSaverPromo() {
-            mShowDataSaverPromo = true;
-            return this;
+            return setDataSaverPromo(true);
         }
 
         FirstRunPagesTestCase withSearchPromo() {
-            mSearchPromoType = SearchEnginePromoType.SHOW_EXISTING;
-            return this;
+            return setSearchPromoType(SearchEnginePromoType.SHOW_EXISTING);
         }
 
         FirstRunPagesTestCase withSigninPromo() {
-            mShowSigninPromo = true;
-            return this;
+            return setSigninPromo(true);
         }
 
         static FirstRunPagesTestCase createWithShowAllPromos() {
@@ -1111,7 +1415,7 @@ public class FirstRunIntegrationTest {
             return this;
         }
 
-        private FirstRunNavigationHelper acknowledgeDataSaverEnabled() throws Exception {
+        protected FirstRunNavigationHelper acknowledgeDataSaverEnabled() throws Exception {
             ensureDataSaverPromoIsCurrentPage();
 
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
@@ -1154,7 +1458,7 @@ public class FirstRunIntegrationTest {
             return this;
         }
 
-        private FirstRunNavigationHelper waitForCurrentFragmentToMatch(
+        protected FirstRunNavigationHelper waitForCurrentFragmentToMatch(
                 String failureReason, Matcher<Object> matcher) {
             CriteriaHelper.pollUiThread(
                     ()

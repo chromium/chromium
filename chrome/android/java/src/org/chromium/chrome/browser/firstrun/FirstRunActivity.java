@@ -163,11 +163,19 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private void createPageSequence() {
         FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mPages.add(SigninFirstRunFragment::new);
+            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class));
         } else {
+            FirstRunPage.SkipPageCondition welcomePageCondition =
+                    (Bundle freProperties) -> FirstRunStatus.shouldSkipWelcomePage();
+            // TODO(crbug.com/1111490): Revisit during post-MVP.
+            // There's an edge case where we accept the welcome page in the main app, abort the FRE,
+            // then go through this CCT FRE again.
             mPages.add(shouldCreateEnterpriseCctTosPage()
-                            ? new TosAndUmaFirstRunFragmentWithEnterpriseSupport.Page()
-                            : new ToSAndUMAFirstRunFragment.Page());
+                            ? new FirstRunPage<>(
+                                    TosAndUmaFirstRunFragmentWithEnterpriseSupport.class,
+                                    welcomePageCondition)
+                            : new FirstRunPage<>(
+                                    ToSAndUMAFirstRunFragment.class, welcomePageCondition));
         }
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);
         mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
@@ -194,27 +202,32 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private void createPostNativeAndPoliciesPageSequence() {
         assert !mPostNativeAndPolicyPagesCreated;
         assert areNativeAndPoliciesInitialized();
-        mFirstRunFlowSequencer.onNativeAndPoliciesInitialized(mFreProperties);
+        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+
+        FirstRunPage.SkipPageCondition signinCondition =
+                (Bundle freProperties) -> !freProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
 
         boolean notifyAdapter = false;
         // An optional sign-in page.
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()
                 && mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE)) {
-            mPages.add(SyncConsentFirstRunFragment::new);
+            mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, signinCondition));
             mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
         }
 
         // An optional Data Saver page.
         if (mFreProperties.getBoolean(SHOW_DATA_REDUCTION_PAGE)) {
-            mPages.add(new DataReductionProxyFirstRunFragment.Page());
+            mPages.add(new FirstRunPage<>(DataReductionProxyFirstRunFragment.class,
+                    (Bundle freProperties) -> !freProperties.getBoolean(SHOW_DATA_REDUCTION_PAGE)));
             mFreProgressStates.add(MobileFreProgress.DATA_SAVER_SHOWN);
             notifyAdapter = true;
         }
 
         // An optional page to select a default search engine.
         if (mFreProperties.getBoolean(SHOW_SEARCH_ENGINE_PAGE)) {
-            mPages.add(new DefaultSearchEngineFirstRunFragment.Page());
+            mPages.add(new FirstRunPage<>(DefaultSearchEngineFirstRunFragment.class,
+                    (Bundle freProperties) -> !freProperties.getBoolean(SHOW_SEARCH_ENGINE_PAGE)));
             mFreProgressStates.add(MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN);
             notifyAdapter = true;
         }
@@ -222,7 +235,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // An optional sign-in page.
         if (!FREMobileIdentityConsistencyFieldTrial.isEnabled()
                 && mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE)) {
-            mPages.add(SyncConsentFirstRunFragment::new);
+            mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, signinCondition));
             mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
         }
@@ -448,10 +461,17 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             return;
         }
 
-        if (mPager.getCurrentItem() == 0) {
+        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+
+        int position = mPager.getCurrentItem() - 1;
+        while (position > 0 && mPages.get(position).shouldSkipPage(mFreProperties)) {
+            --position;
+        }
+
+        if (position < 0) {
             abortFirstRunExperience();
         } else {
-            setCurrentItemForPager(mPager.getCurrentItem() - 1);
+            setCurrentItemForPager(position);
         }
     }
 
@@ -463,7 +483,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean advanceToNextPage() {
+        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+
         int position = mPager.getCurrentItem() + 1;
+        while (position < mPagerAdapter.getItemCount()
+                && mPages.get(position).shouldSkipPage(mFreProperties)) {
+            ++position;
+        }
         if (!setCurrentItemForPager(position)) return false;
 
         recordFreProgressHistogram(mFreProgressStates.get(position));
@@ -609,7 +635,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void skipPagesIfNecessary() {
-        while (mPages.get(mPager.getCurrentItem()).shouldSkipPageOnCreate()
+        while (mPages.get(mPager.getCurrentItem()).shouldSkipPage(mFreProperties)
                 && advanceToNextPage()) {
         }
     }

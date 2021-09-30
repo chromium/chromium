@@ -193,7 +193,7 @@ public abstract class FirstRunFlowSequencer  {
      * no on-device policies.
      * @param freProperties Resulting FRE properties bundle.
      */
-    public void onNativeAndPoliciesInitialized(Bundle freProperties) {
+    public void updateFirstRunProperties(Bundle freProperties) {
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
         freProperties.putBoolean(
