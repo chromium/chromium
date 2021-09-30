@@ -34,11 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
 
 using ::testing::ElementsAre;
 
@@ -668,16 +664,11 @@ TEST(ShellIntegrationTest, GetMimeTypesRegistrationFileContents) {
 // The WM class name may be either capitalised or not, depending on the
 // platform.
 void CheckProgramClassClass(const std::string& class_name) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
-    EXPECT_EQ("foo", class_name);
-  } else {
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
     EXPECT_EQ("Foo", class_name);
+  } else {
+    EXPECT_EQ("foo", class_name);
   }
-#else
-  EXPECT_EQ("foo", class_name);
-#endif
 }
 
 TEST(ShellIntegrationTest, WmClass) {

@@ -11,16 +11,12 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/linux/fake_input_method_context_factory.h"
 #include "ui/views/linux_ui/linux_ui.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/gtk/gtk_ui_factory.h"
-#endif
-
-#if defined(USE_OZONE)
-#include "ui/base/ime/input_method.h"
-#include "ui/base/linux/linux_ui_delegate.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace {
@@ -28,10 +24,8 @@ namespace {
 std::unique_ptr<views::LinuxUI> BuildLinuxUI() {
   // If the ozone backend hasn't provided a LinuxUiDelegate, don't try to create
   // a LinuxUi instance as this may result in a crash in toolkit initialization.
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() && !ui::LinuxUiDelegate::GetInstance())
+  if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
-#endif
 
   // GtkUi is the only LinuxUI implementation for now.
 #if BUILDFLAG(USE_GTK)
@@ -71,14 +65,10 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // In case if GTK is not used, input method factory won't be set for X11 and
     // Ozone/X11. Set a fake one instead to avoid crashing browser later.
     DCHECK(!ui::LinuxInputMethodContextFactory::instance());
-#if defined(USE_OZONE)
     // Try to create input method through Ozone so that the backend has a chance
     // to set factory by itself.
-    if (features::IsUsingOzonePlatform()) {
-      ui::OzonePlatform::GetInstance()->CreateInputMethod(
-          nullptr, gfx::kNullAcceleratedWidget);
-    }
-#endif
+    ui::OzonePlatform::GetInstance()->CreateInputMethod(
+        nullptr, gfx::kNullAcceleratedWidget);
   }
   // If factory is not set, set a fake instance.
   if (!ui::LinuxInputMethodContextFactory::instance()) {

@@ -135,8 +135,7 @@
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 #endif
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
+#if defined(OS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -391,16 +390,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(USE_OZONE)
-  bool show_custom_chrome_frame = true;
-  if (features::IsUsingOzonePlatform()) {
-    show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
-                                   ->GetPlatformRuntimeProperties()
-                                   .supports_server_side_window_decorations;
-  }
-#else
-  const bool show_custom_chrome_frame = true;
-#endif
+  bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
+                                      ->GetPlatformRuntimeProperties()
+                                      .supports_server_side_window_decorations;
   html_source->AddBoolean("showCustomChromeFrame", show_custom_chrome_frame);
 #endif
 }

@@ -5,7 +5,6 @@
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -14,11 +13,8 @@ namespace ui {
 ScopedDisableClientSideDecorationsForTest::
     ScopedDisableClientSideDecorationsForTest() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    if (auto* platform_utils =
-            OzonePlatform::GetInstance()->GetPlatformUtils()) {
-      disabled_csd_ = platform_utils->DisableClientSideDecorationsForTest();
-    }
+  if (auto* platform_utils = OzonePlatform::GetInstance()->GetPlatformUtils()) {
+    disabled_csd_ = platform_utils->DisableClientSideDecorationsForTest();
   }
 #endif
 }

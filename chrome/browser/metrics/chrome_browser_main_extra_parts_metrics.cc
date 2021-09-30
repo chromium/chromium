@@ -67,16 +67,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#include "ui/base/x/x11_util.h"
-#endif
 #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -386,7 +382,7 @@ void RecordTouchEventState() {
                                 UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT);
 }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 
 // Asynchronously records the touch event state when the ui::DeviceDataManager
 // completes a device scan.
@@ -419,7 +415,7 @@ void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
   RecordTouchEventState();
 }
 
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 #if defined(OS_WIN)
 void RecordPinnedToTaskbarProcessError(bool error) {
@@ -728,13 +724,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   RecordMemoryMetricsAfterDelay();
   RecordLinuxGlibcVersion();
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // Ozone writes this histogram upon platform initialisation.
-    base::UmaHistogramEnumeration("Linux.WindowManager",
-                                  ui::GetWindowManagerUMA());
-  }
-#endif
 
   constexpr base::TaskTraits kBestEffortTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -746,10 +735,10 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
                              base::BindOnce(&RecordLinuxDistro));
 #endif
 
-#if defined(USE_OZONE) || defined(USE_X11)
-  // The touch event state for X11 and Ozone based event sub-systems are based
-  // on device scans that happen asynchronously. So we may need to attach an
-  // observer to wait until these scans complete.
+#if defined(USE_OZONE)
+  // The touch event state for Ozone based event sub-systems are based on device
+  // scans that happen asynchronously. So we may need to attach an observer to
+  // wait until these scans complete.
   if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
     RecordTouchEventState();
   } else {
@@ -758,7 +747,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   }
 #else
   RecordTouchEventState();
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 #if defined(OS_MAC)
   RecordMacMetrics();

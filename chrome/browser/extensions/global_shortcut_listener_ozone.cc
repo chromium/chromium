@@ -95,4 +95,12 @@ void GlobalShortcutListenerOzone::OnPlatformListenerDestroyed() {
   platform_global_shortcut_listener_ = nullptr;
 }
 
+// static
+GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  static GlobalShortcutListenerOzone* instance =
+      new GlobalShortcutListenerOzone();
+  return instance;
+}
+
 }  // namespace extensions

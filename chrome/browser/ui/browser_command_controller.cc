@@ -1018,11 +1018,9 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_RESTORE_WINDOW, true);
   bool use_system_title_bar = true;
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    use_system_title_bar = ui::OzonePlatform::GetInstance()
-                               ->GetPlatformRuntimeProperties()
-                               .supports_server_side_window_decorations;
-  }
+  use_system_title_bar = ui::OzonePlatform::GetInstance()
+                             ->GetPlatformRuntimeProperties()
+                             .supports_server_side_window_decorations;
 #endif
   command_updater_.UpdateCommandEnabled(IDC_USE_SYSTEM_TITLE_BAR,
                                         use_system_title_bar);

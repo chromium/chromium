@@ -66,9 +66,9 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 #if defined(OS_MAC) || defined(OS_WIN)
   // Tracks coarse usage scenarios that affect performance during a given

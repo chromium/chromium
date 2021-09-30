@@ -5570,9 +5570,6 @@ static_library("browser") {
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
     }
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-    }
     if (use_dbus) {
       deps += [ "//dbus" ]
       defines += [ "USE_DBUS" ]
@@ -5641,10 +5638,8 @@ static_library("browser") {
       sources += [ "fullscreen_ozone.cc" ]
     }
 
-    if (use_ozone || use_x11) {
-      # use_x11 also uses window_icon_util_ozone that controls
-      # the path using features::IsUsingOzonePlatform.
-      sources += [ "media/webrtc/window_icon_util_linux.cc" ]
+    if (use_ozone) {
+      sources += [ "media/webrtc/window_icon_util_ozone.cc" ]
     }
 
     if (rtc_use_pipewire) {
@@ -5933,14 +5928,12 @@ static_library("browser") {
     }
   }
 
-  if (use_x11 || use_ozone) {
+  if (use_ozone) {
     sources += [
       "chrome_browser_main_extra_parts_ozone.cc",
       "chrome_browser_main_extra_parts_ozone.h",
     ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
+    deps += [ "//ui/ozone" ]
   }
 
   if (enable_click_to_call) {

@@ -10,11 +10,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
 
 using DesktopBrowserFrameAuraLinuxTest = InProcessBrowserTest;
 using SupportsSsdForTest =
@@ -32,8 +28,6 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
           browser_view->frame()->native_browser_frame());
   auto* pref_service = browser_view->browser()->profile()->GetPrefs();
 
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     // Try overriding the runtime platform property that indicates whether the
     // platform supports server-side window decorations.  For each variant,
     // check what is the effective value of the property (the platform may
@@ -71,13 +65,4 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
     // Reset the override.
     ui::OzonePlatform::PlatformRuntimeProperties::
         override_supports_ssd_for_test = SupportsSsdForTest::kNotSet;
-    return;
-  }
-#endif
-
-  // The non-Ozone path respects the user preference always.
-  for (const auto setting : {true, false}) {
-    pref_service->SetBoolean(prefs::kUseCustomChromeFrame, setting);
-    EXPECT_EQ(frame->UseCustomFrame(), setting);
-  }
 }

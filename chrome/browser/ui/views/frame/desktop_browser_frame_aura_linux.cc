@@ -14,12 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
-
-#if defined(USE_OZONE) && \
-    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
 
 DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
     BrowserFrame* browser_frame,
@@ -63,17 +58,13 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
 }
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
-#if defined(USE_OZONE) && \
-    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // If the platform does not support server side decorations, ignore the user
   // preference and return true.
-  if (features::IsUsingOzonePlatform() &&
-      !ui::OzonePlatform::GetInstance()
+  if (!ui::OzonePlatform::GetInstance()
            ->GetPlatformRuntimeProperties()
            .supports_server_side_window_decorations) {
     return true;
   }
-#endif
 
   // Normal browser windows get a custom frame (per the user's preference).
   if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {

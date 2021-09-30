@@ -103,10 +103,6 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS) && defined(USE_X11)
-#include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
-#endif
-
 #if defined(OS_MAC)
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut_mac.h"
 #endif
@@ -125,10 +121,6 @@
 #include "chrome/browser/printing/print_dialog_cloud_win.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // defined(OS_WIN)
-
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
 
 #include "chrome/browser/ui/startup/web_app_protocol_handling_startup_utils.h"
 
@@ -957,13 +949,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     silent_launch = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if defined(TOOLKIT_VIEWS) && defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // Ozone sets the device list upon platform initialisation.
-    ui::TouchFactory::SetTouchDeviceListFromCommandLine();
-  }
-#endif
 
 #if defined(OS_MAC)
   if (web_app::MaybeRebuildShortcut(command_line))

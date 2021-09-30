@@ -30,14 +30,9 @@ namespace {
 
 bool UseEventBlocker() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .app_modal_dialogs_use_event_blocker;
-  }
-#endif
-#if defined(USE_X11)
-  return true;
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .app_modal_dialogs_use_event_blocker;
 #else
   return false;
 #endif

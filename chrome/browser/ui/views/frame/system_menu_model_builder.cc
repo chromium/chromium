@@ -42,7 +42,6 @@
 
 #if defined(USE_OZONE) && \
     !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -99,12 +98,10 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   bool supports_server_side_decorations = true;
 #if defined(USE_OZONE) && \
     !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (features::IsUsingOzonePlatform()) {
-    supports_server_side_decorations =
-        ui::OzonePlatform::GetInstance()
-            ->GetPlatformRuntimeProperties()
-            .supports_server_side_window_decorations;
-  }
+  supports_server_side_decorations =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_server_side_window_decorations;
 #endif
   if (supports_server_side_decorations) {
     model->AddCheckItemWithStringId(IDC_USE_SYSTEM_TITLE_BAR,

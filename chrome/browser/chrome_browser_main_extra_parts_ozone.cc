@@ -8,50 +8,24 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-
-#if defined(USE_X11)
-#include "ui/gfx/x/connection.h"  // nogncheck
-#endif
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
 
 ChromeBrowserMainExtraPartsOzone::ChromeBrowserMainExtraPartsOzone() = default;
 
 ChromeBrowserMainExtraPartsOzone::~ChromeBrowserMainExtraPartsOzone() = default;
 
 void ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::PreEarlyInitialization();
-    return;
-  }
-#endif
 }
 
 void ChromeBrowserMainExtraPartsOzone::PostCreateMainMessageLoop() {
   auto shutdown_cb = base::BindOnce([] {
     chrome::SessionEnding();
   });
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::GetInstance()->PostCreateMainMessageLoop(
-        std::move(shutdown_cb));
-    return;
-  }
-#endif
-#if defined(USE_X11)
-  x11::Connection::Get()->SetIOErrorHandler(std::move(shutdown_cb));
-#endif
+  ui::OzonePlatform::GetInstance()->PostCreateMainMessageLoop(
+      std::move(shutdown_cb));
 }
 
 void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopRun() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
-    return;
-  }
-#endif
 }

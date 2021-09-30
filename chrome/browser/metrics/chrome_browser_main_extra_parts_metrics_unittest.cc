@@ -16,7 +16,7 @@
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 #include "ui/events/devices/device_data_manager_test_api.h"
 #endif
 
@@ -59,7 +59,7 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 #endif
   }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
 #endif
 
@@ -90,7 +90,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
       kTouchEventFeatureDetectionEnabledHistogramName, 0);
 }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 
 // Verify a TouchEventsEnabled value isn't recorded during PostBrowserStart if
 // the device scan hasn't completed yet.
@@ -169,7 +169,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
       kTouchEventFeatureDetectionEnabledHistogramName, 1);
 }
 
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 // Verify a Hardware.Display.SupportsHDR value is recorded during
 // PostBrowserStart.

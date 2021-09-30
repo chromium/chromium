@@ -7,8 +7,6 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
-// Temporarily used by both Ozone and non-Ozone/X11. Once Ozone becomes default
-// on Linux, this class will be used purely by Ozone.
 class ChromeBrowserMainExtraPartsOzone : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsOzone();

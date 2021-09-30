@@ -55,16 +55,12 @@
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_utils.h"
 #include "url/gurl.h"
 
 #if defined(USE_GLIB)
 #include <glib.h>
-#endif
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/platform_utils.h"
 #endif
 
 namespace shell_integration_linux {
@@ -430,18 +426,10 @@ std::string GetProgramClassClass(const base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kWmClass))
     return command_line.GetSwitchValueASCII(switches::kWmClass);
   std::string desktop_base_name = GetDesktopBaseName(desktop_file_name);
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    if (auto* platform_utils =
-            ui::OzonePlatform::GetInstance()->GetPlatformUtils()) {
-      return platform_utils->GetWmWindowClass(desktop_base_name);
-    }
-    return desktop_base_name;
+  if (auto* platform_utils =
+          ui::OzonePlatform::GetInstance()->GetPlatformUtils()) {
+    return platform_utils->GetWmWindowClass(desktop_base_name);
   }
-#endif
-#if !defined(USE_X11)
-  NOTREACHED();
-#endif
   if (!desktop_base_name.empty()) {
     // Capitalize the first character like gtk does.
     desktop_base_name[0] = base::ToUpperASCII(desktop_base_name[0]);

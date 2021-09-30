@@ -33,7 +33,6 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
@@ -179,9 +178,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   size_t expected_size = 1u;
 #if defined(OS_LINUX)
   // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  // TODO(https://crbug.com/1096425): remove this if condition.
-  if (features::IsUsingOzonePlatform())
-    expected_size = 2u;
+  expected_size = 2u;
 #endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
@@ -243,9 +240,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   size_t expected_size = 1u;
 #if defined(OS_LINUX)
   // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  // TODO(https://crbug.com/1096425): remove this if condition.
-  if (features::IsUsingOzonePlatform())
-    expected_size = 2u;
+  expected_size = 2u;
 #endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));

@@ -533,8 +533,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ExitType) {
 }
 
 // The EndSession IO synchronization is only critical on Windows, but also
-// happens under the USE_X11 define. See BrowserProcessImpl::EndSession.
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+// happens under the USE_OZONE define. See BrowserProcessImpl::EndSession.
+#if defined(OS_WIN) || defined(USE_OZONE)
 
 namespace {
 
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_TRUE(succeeded) << "profile->EndSession() timed out too often.";
 }
 
-#endif  // defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#endif  // defined(OS_WIN) || defined(USE_OZONE)
 
 // The following tests make sure that it's safe to shut down while one of the
 // Profile's URLLoaderFactories is in use by a SimpleURLLoader.

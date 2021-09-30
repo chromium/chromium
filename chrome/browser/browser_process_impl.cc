@@ -222,7 +222,7 @@
 static const int kUpdateCheckIntervalHours = 6;
 #endif
 
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#if defined(OS_WIN) || defined(USE_OZONE)
 // How long to wait for the File thread to complete during EndSession, on Linux
 // and Windows. We have a timeout here because we're unable to run the UI
 // messageloop and there's some deadlock risk. Our only option is to exit
@@ -637,7 +637,7 @@ void BrowserProcessImpl::EndSession() {
   //
   // If you change the condition here, be sure to also change
   // ProfileBrowserTests to match.
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#if defined(OS_WIN) || defined(USE_OZONE)
   // Do a best-effort wait on the successful countdown of rundown tasks. Note
   // that if we don't complete "quickly enough", Windows will terminate our
   // process.

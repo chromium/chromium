@@ -12,12 +12,7 @@
 #include "components/prefs/pref_service.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"  // nogncheck
 #endif
 
 namespace {
@@ -32,17 +27,12 @@ const char kTabStripLayoutType[] = "tab_strip_layout_type";
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 bool GetCustomFramePrefDefault() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     return ui::OzonePlatform::GetInstance()
         ->GetPlatformProperties()
         .custom_frame_pref_default;
-  }
-#endif  // defined(USE_OZONE)
-#if defined(USE_X11)
-  return ui::GetCustomFramePrefDefault();
 #else
   return false;
-#endif  // defined(USE_X11)
+#endif  // defined(USE_OZONE)
 }
 #endif
 

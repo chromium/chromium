@@ -40,7 +40,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) && defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -166,10 +165,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestNewTabExitsFullscreen) {
 #if defined(OS_LINUX) && defined(USE_OZONE)
   // Flaky in Linux interactive_ui_tests_wayland: crbug.com/1200036
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland")
     GTEST_SKIP();
-  }
 #endif
 
   ASSERT_TRUE(embedded_test_server()->Start());
