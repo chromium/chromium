@@ -164,8 +164,7 @@ class TestWaitForResults(unittest.TestCase):
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml'
-        ],
-                                                   stderr=subprocess.STDOUT)
+        ])
 
     @mock.patch('signing.commands.run_command_output')
     def test_success_with_asc_provider(self, run_command_output):
@@ -191,8 +190,7 @@ class TestWaitForResults(unittest.TestCase):
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
-        ],
-                                                   stderr=subprocess.STDOUT)
+        ])
 
     @mock.patch('signing.commands.run_command_output')
     def test_failure(self, run_command_output):
@@ -256,8 +254,7 @@ class TestWaitForResults(unittest.TestCase):
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
                 '--output-format', 'xml'
-            ],
-                      stderr=subprocess.STDOUT)
+            ])
         ])
 
     @mock.patch('signing.commands.run_command_output')
@@ -299,8 +296,7 @@ class TestWaitForResults(unittest.TestCase):
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
                 '--output-format', 'xml'
-            ],
-                      stderr=subprocess.STDOUT)
+            ])
         ])
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
@@ -328,8 +324,7 @@ class TestWaitForResults(unittest.TestCase):
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
                 '--output-format', 'xml'
-            ],
-                      stderr=subprocess.STDOUT)
+            ])
         ])
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
@@ -359,8 +354,7 @@ class TestWaitForResults(unittest.TestCase):
                     'xcrun', 'altool', '--notarization-info', uuid,
                     '--username', '[NOTARY-USER]', '--password',
                     '[NOTARY-PASSWORD]', '--output-format', 'xml'
-                ],
-                          stderr=subprocess.STDOUT))
+                ]))
 
         total_time = sum([call[1][0] for call in kwargs['sleep'].mock_calls])
         self.assertLess(total_time, 61 * 60)
