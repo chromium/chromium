@@ -368,7 +368,7 @@ std::u16string HoldingSpaceItemChipView::GetTooltipText(
   // Otherwise, concatenate and return the primary and secondary tooltips. This
   // will look something of the form: "filename.txt, Paused, 10/100 MB".
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_CHIP_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
       secondary_tooltip);
 }
 
@@ -410,6 +410,7 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
 
 void HoldingSpaceItemChipView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
+
   UpdateImage();
   UpdateLabels();
 
@@ -566,26 +567,12 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                 AshColorProvider::ContentLayerType::kTextColorSecondary));
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 
-  // Updating accessibility and tooltip is only necessary if the text displayed
-  // in `this` view has changed.
-  if (primary_label_->GetText() == last_primary_text &&
-      secondary_label_->GetText() == last_secondary_text) {
-    return;
-  }
-
-  // Accessibility.
-  std::u16string accessible_name =
-      secondary_label_->GetText().empty()
-          ? primary_label_->GetText()
-          : l10n_util::GetStringFUTF16(
-                IDS_ASH_HOLDING_SPACE_CHIP_A11Y_NAME_AND_TOOLTIP,
-                primary_label_->GetText(), secondary_label_->GetText());
-  GetViewAccessibility().OverrideName(accessible_name);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                           /*send_native_event=*/true);
-
   // Tooltip.
-  TooltipTextChanged();
+  // NOTE: Only necessary if the displayed text has changed.
+  if (primary_label_->GetText() != last_primary_text ||
+      secondary_label_->GetText() != last_secondary_text) {
+    TooltipTextChanged();
+  }
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {

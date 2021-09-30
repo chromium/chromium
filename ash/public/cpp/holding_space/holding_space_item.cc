@@ -5,10 +5,12 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -192,6 +194,27 @@ bool HoldingSpaceItem::SetSecondaryText(
     return false;
 
   secondary_text_ = secondary_text;
+  return true;
+}
+
+std::u16string HoldingSpaceItem::GetAccessibleName() const {
+  if (accessible_name_)
+    return accessible_name_.value();
+
+  if (!secondary_text_)
+    return GetText();
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, GetText(),
+      secondary_text_.value());
+}
+
+bool HoldingSpaceItem::SetAccessibleName(
+    const absl::optional<std::u16string>& accessible_name) {
+  if (accessible_name_ == accessible_name)
+    return false;
+
+  accessible_name_ = accessible_name;
   return true;
 }
 

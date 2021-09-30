@@ -343,6 +343,7 @@ component("cpp") {
     "//ash/components/quick_answers/public/cpp:prefs",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
+    "//ash/strings",
     "//base",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/cpp",

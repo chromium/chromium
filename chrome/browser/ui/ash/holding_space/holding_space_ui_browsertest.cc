@@ -54,6 +54,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -69,6 +70,15 @@ namespace ash {
 namespace {
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the accessible name of the specified `view`.
+std::string GetAccessibleName(const views::View* view) {
+  ui::AXNodeData a11y_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&a11y_data);
+  std::string a11y_name;
+  a11y_data.GetStringAttribute(ax::mojom::StringAttribute::kName, &a11y_name);
+  return a11y_name;
+}
 
 // Returns all holding space item types.
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
@@ -1841,9 +1851,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn({DownloadTypeToUse::kAsh,
                                             DownloadTypeToUse::kLacros}));
 
-// Verifies that primary and secondary text are displayed as intended.
+// Verifies that primary, secondary, and accessible text work as intended.
 IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
-                       PrimaryAndSecondaryText) {
+                       PrimarySecondaryAndAccessibleText) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -1885,6 +1895,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   EXPECT_EQ(secondary_label->GetText(), u"0 B");
 
+  // The accessible name should indicate that the download is in progress.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Downloading " + target_file_name));
+
   // Pause the download.
   RightClick(download_chips.at(0));
   EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPauseItem));
@@ -1898,6 +1912,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 0 B");
 
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
+
   // Update received bytes.
   received_bytes = 1024 * 1024;
   UpdateInProgressDownloadByteCounts(in_progress_download.get(), received_bytes,
@@ -1910,6 +1929,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1,024 KB");
 
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
+
   // Resume the download.
   RightClick(download_chips.at(0));
   EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kResumeItem));
@@ -1921,6 +1945,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1,024 KB");
+
+  // The accessible name should indicate that the download is in progress.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Downloading " + target_file_name));
 
   // Update total bytes.
   total_bytes = 2 * received_bytes;
@@ -1935,6 +1963,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1.0/2.0 MB");
 
+  // The accessible name should indicate that the download is in progress.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Downloading " + target_file_name));
+
   // Pause the download.
   RightClick(download_chips.at(0));
   EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPauseItem));
@@ -1947,6 +1979,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1.0/2.0 MB");
+
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
 
   // Update received bytes to indicate that all bytes have been received.
   received_bytes = total_bytes;
@@ -1963,6 +2000,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
 
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
+
   // Mark the download as dangerous.
   UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
                                                     /*is_dangerous=*/true,
@@ -1974,6 +2016,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
+
+  // The accessible name should indicate that the download is dangerous.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download dangerous " + target_file_name));
 
   // Mark the download as safe.
   UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
@@ -1987,6 +2033,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
 
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
+
   // Mark the download as mixed content.
   UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
                                                     /*is_dangerous=*/false,
@@ -1998,6 +2049,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
+
+  // The accessible name should indicate that the download is dangerous.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download dangerous " + target_file_name));
 
   // Mark the download as *not* mixed content.
   UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
@@ -2011,6 +2066,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
 
+  // The accessible name should indicate that the download is in progress and
+  // that progress is paused.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download paused " + target_file_name));
+
   // Complete the download.
   CompleteInProgressDownload(in_progress_download.get());
 
@@ -2018,6 +2078,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_FALSE(secondary_label->GetVisible());
+
+  // The accessible name should indicate the target file name.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(target_file_name));
 }
 
 // Verifies that canceling holding space items works as intended.

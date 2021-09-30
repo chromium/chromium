@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_locale.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,6 +78,43 @@ TEST_P(HoldingSpaceItemTest, DeserializeId) {
       HoldingSpaceItem::DeserializeId(serialized_holding_space_item);
 
   EXPECT_EQ(deserialized_holding_space_id, holding_space_item->id());
+}
+
+// Tests setting the accessible name for each holding space item type.
+TEST_P(HoldingSpaceItemTest, AccessibleName) {
+  // Force locale since strings are being verified.
+  base::ScopedLocale scoped_locale("en_US.UTF-8");
+
+  // Create a `holding_space_item`.
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+
+  // Initially the accessible name should be based on the backing file.
+  EXPECT_EQ(holding_space_item->GetAccessibleName(), u"file_path");
+
+  // If primary text is set, that should affect accessible name.
+  EXPECT_TRUE(holding_space_item->SetText(u"Primary text"));
+  EXPECT_EQ(holding_space_item->GetAccessibleName(), u"Primary text");
+
+  // If secondary text is set, that should affect accessible name.
+  EXPECT_TRUE(holding_space_item->SetSecondaryText(u"Secondary text"));
+  EXPECT_EQ(holding_space_item->GetAccessibleName(),
+            u"Primary text, Secondary text");
+
+  // It should be possible to override accessible name.
+  EXPECT_TRUE(holding_space_item->SetAccessibleName(u"Accessible name"));
+  EXPECT_EQ(holding_space_item->GetAccessibleName(), u"Accessible name");
+
+  // It should no-op to try to override accessible name w/ existing values.
+  EXPECT_FALSE(holding_space_item->SetAccessibleName(u"Accessible name"));
+  EXPECT_EQ(holding_space_item->GetAccessibleName(), u"Accessible name");
+
+  // It should be possible to remove the accessible name override.
+  EXPECT_TRUE(holding_space_item->SetAccessibleName(absl::nullopt));
+  EXPECT_EQ(holding_space_item->GetAccessibleName(),
+            u"Primary text, Secondary text");
 }
 
 // Tests pause for each holding space item type.

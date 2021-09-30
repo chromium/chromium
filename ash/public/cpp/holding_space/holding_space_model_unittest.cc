@@ -145,6 +145,13 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(model().items().size(), 1u);
   EXPECT_EQ(model().items()[0].get(), item_ptr);
 
+  // Update accessible name.
+  model().UpdateItem(item_ptr->id())->SetAccessibleName(u"accessible_name");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"accessible_name");
+
   // Update backing file.
   base::FilePath updated_file_path("updated_file_path");
   GURL updated_file_system_url("filesystem::updated_file_system_url");
@@ -193,7 +200,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(updated_file_path, updated_file_system_url)
+      ->SetAccessibleName(u"updated_accessible_name")
+      .SetBackingFile(updated_file_path, updated_file_system_url)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
       .SetPaused(false)
@@ -201,10 +209,11 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
-            UpdatedField::kBackingFile | UpdatedField::kPaused |
-                UpdatedField::kProgress | UpdatedField::kSecondaryText |
-                UpdatedField::kText);
+            UpdatedField::kAccessibleName | UpdatedField::kBackingFile |
+                UpdatedField::kPaused | UpdatedField::kProgress |
+                UpdatedField::kSecondaryText | UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"updated_accessible_name");
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
   EXPECT_FALSE(item_ptr->IsPaused());
@@ -239,7 +248,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   // Perform another no-op update. No observers should be notified.
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
+      ->SetAccessibleName(absl::nullopt)
+      .SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
       .SetPaused(item_ptr->IsPaused())

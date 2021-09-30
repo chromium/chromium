@@ -47,6 +47,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& operator=(const ScopedItemUpdate&) = delete;
     ~ScopedItemUpdate();
 
+    // Sets the accessible name that should be used for the item and returns a
+    // reference to `this`.
+    ScopedItemUpdate& SetAccessibleName(
+        const absl::optional<std::u16string>& accessible_name);
+
     // Sets the backing file for the item and returns a reference to `this`.
     ScopedItemUpdate& SetBackingFile(const base::FilePath& file_path,
                                      const GURL& file_system_url);
@@ -80,6 +85,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     HoldingSpaceModel* const model_;
     HoldingSpaceItem* const item_;
 
+    absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<base::FilePath> file_path_;
     absl::optional<GURL> file_system_url_;
     absl::optional<bool> paused_;

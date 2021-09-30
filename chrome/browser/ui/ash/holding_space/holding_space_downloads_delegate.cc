@@ -187,6 +187,21 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // Marks the underlying download to be opened when complete.
   virtual void OpenWhenComplete() = 0;
 
+  // Returns the accessible name to use for the underlying download.
+  // NOTE: If the underlying download is complete, the return value will be
+  // absent so as to fallback to default accessibility behavior.
+  absl::optional<std::u16string> GetAccessibleName() const {
+    if (IsComplete(mojo_download_item_.get()))
+      return absl::nullopt;
+    return l10n_util::GetStringFUTF16(
+        IsDangerous() || IsMixedContent()
+            ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS
+            : IsPaused()
+                  ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED
+                  : IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME,
+        mojo_download_item_->target_file_path.BaseName().LossyDisplayName());
+  }
+
   // Returns the file path associated with the underlying download.
   // NOTE: The file path may be empty before a target file path has been picked.
   base::FilePath GetFilePath() const {
@@ -826,9 +841,10 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   // Update.
   service()
       ->UpdateItem(item->id())
-      ->SetBackingFile(in_progress_download->GetFilePath(),
-                       holding_space_util::ResolveFileSystemUrl(
-                           profile(), in_progress_download->GetFilePath()))
+      ->SetAccessibleName(in_progress_download->GetAccessibleName())
+      .SetBackingFile(in_progress_download->GetFilePath(),
+                      holding_space_util::ResolveFileSystemUrl(
+                          profile(), in_progress_download->GetFilePath()))
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())

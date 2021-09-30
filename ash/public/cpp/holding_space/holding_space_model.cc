@@ -19,6 +19,14 @@ namespace ash {
 HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   uint32_t updated_fields = 0u;
 
+  // Update accessible name.
+  if (accessible_name_) {
+    if (item_->SetAccessibleName(accessible_name_.value())) {
+      updated_fields |=
+          HoldingSpaceModelObserver::UpdatedField::kAccessibleName;
+    }
+  }
+
   // Update backing file.
   if (file_path_ && file_system_url_) {
     if (item_->SetBackingFile(file_path_.value(), file_system_url_.value()))
@@ -59,6 +67,13 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
     for (auto& observer : model_->observers_)
       observer.OnHoldingSpaceItemUpdated(item_, updated_fields);
   }
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
+    const absl::optional<std::u16string>& accessible_name) {
+  accessible_name_ = accessible_name;
+  return *this;
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
