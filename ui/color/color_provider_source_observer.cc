@@ -11,15 +11,30 @@ ColorProviderSourceObserver::ColorProviderSourceObserver() = default;
 ColorProviderSourceObserver::~ColorProviderSourceObserver() = default;
 
 void ColorProviderSourceObserver::OnColorProviderSourceDestroying() {
+  source_ = nullptr;
   color_provider_source_observation_.Reset();
 }
 
+const ui::ColorProviderSource*
+ColorProviderSourceObserver::GetColorProviderSourceForTesting() const {
+  return GetColorProviderSource();
+}
+
 void ColorProviderSourceObserver::Observe(ColorProviderSource* source) {
-  if (color_provider_source_observation_.IsObservingSource(source))
+  if (source && color_provider_source_observation_.IsObservingSource(source))
     return;
 
   color_provider_source_observation_.Reset();
+  source_ = source;
+  if (!source_)
+    return;
+
   color_provider_source_observation_.Observe(source);
+}
+
+const ui::ColorProviderSource*
+ColorProviderSourceObserver::GetColorProviderSource() const {
+  return source_;
 }
 
 }  // namespace ui

@@ -72,6 +72,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -182,7 +183,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                        public blink::mojom::ColorChooserFactory,
                                        public NavigationControllerDelegate,
                                        public NavigatorDelegate,
-                                       public ui::NativeThemeObserver {
+                                       public ui::NativeThemeObserver,
+                                       public ui::ColorProviderSourceObserver {
  public:
   class FriendWrapper;
 
@@ -354,6 +356,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   absl::optional<SkColor> GetThemeColor() override;
   absl::optional<SkColor> GetBackgroundColor() override;
   void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
+  void SetColorProviderSource(ui::ColorProviderSource* source) override;
   WebUI* GetWebUI() override;
   void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
                             bool override_in_new_tabs) override;
@@ -1724,6 +1727,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
   void OnCaptionStyleUpdated() override;
 
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
+
+  // Returns the ColorProvider instance for this WebContents object. This will
+  // always return a valid ColorProvider instance.
+  const ui::ColorProvider* GetColorProvider() const;
+
   // Sets the visibility to |new_visibility| and propagates this to the
   // renderer side, taking into account the current capture state. This
   // can be called with the current visibility to effect capturing
@@ -2173,6 +2183,17 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       ui::NativeTheme::PreferredColorScheme::kLight;
   ui::NativeTheme::PreferredContrast preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
+
+  // A cached copy of the most recently observed ColorProviderKey. This is used
+  // as a fallback to get the most recently seen ColorProvider in situations
+  // where the ColorProviderSource is no longer available but the WebContents
+  // continues to require colors for rendering. This ensures the WebContents
+  // does not repaint with incorrect colors when removed from a UI hierarchy
+  // with a ColorProviderSource only to later be re-inserted into the same UI
+  // hierarchy. This pattern is present in the behavior of browser tabs where
+  // WebContents objects are added to and removed from the browser UI as the
+  // active tab changes.
+  ui::ColorProviderManager::ColorProviderKey color_provider_key_;
 
   // Tracks clients who want to be notified when a JavaScript dialog is
   // dismissed.

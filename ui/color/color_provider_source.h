@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ui {
 
@@ -29,12 +30,21 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   // this source.
   virtual const ColorProvider* GetColorProvider() const = 0;
 
+  // Gets the ColorProviderKey associated with the source's current
+  // ColorProvider instance.
+  virtual ColorProviderManager::ColorProviderKey GetColorProviderKey()
+      const = 0;
+
   void AddObserver(ColorProviderSourceObserver* observer);
   void RemoveObserver(ColorProviderSourceObserver* observer);
 
   // Should be called by the implementation whenever the ColorProvider supplied
   // in the method `GetColorProvider()` changes.
   void NotifyColorProviderChanged();
+
+  base::ObserverList<ColorProviderSourceObserver>& observers_for_testing() {
+    return observers_;
+  }
 
  private:
   base::ObserverList<ColorProviderSourceObserver> observers_;

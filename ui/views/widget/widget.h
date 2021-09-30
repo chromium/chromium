@@ -1040,6 +1040,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
+  ui::ColorProviderManager::ColorProviderKey GetColorProviderKey()
+      const override;
 
   // Set the native theme from which this widget gets color from.
   void SetNativeThemeForTest(ui::NativeTheme* native_theme) {

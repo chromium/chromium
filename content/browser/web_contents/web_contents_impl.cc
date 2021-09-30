@@ -160,6 +160,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation.h"
@@ -497,6 +498,25 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
 
   bounds->AdjustToFit(display.work_area());
   return display.id();
+}
+
+// WebContents can exist independently of a ColorProviderSource and is still
+// expected to be able to be inserted into a system gfx::NativeView hierarchy.
+// Whilst most WebContents clients should be setting a ColorProviderSource we
+// must accommodate for cases where this is not currently being done. For these
+// cases fallback to a ColorProvider keyed to various NativeTheme bits.
+ui::ColorProviderManager::ColorProviderKey GetWebDefaultColorProviderKey() {
+  const auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  const auto color_scheme = native_theme->GetDefaultSystemColorScheme();
+  return {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+              ? ui::ColorProviderManager::ColorMode::kDark
+              : ui::ColorProviderManager::ColorMode::kLight,
+          (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+              ? ui::ColorProviderManager::ContrastMode::kHigh
+              : ui::ColorProviderManager::ContrastMode::kNormal,
+          native_theme->is_custom_system_theme()
+              ? ui::ColorProviderManager::SystemTheme::kCustom
+              : ui::ColorProviderManager::SystemTheme::kDefault};
 }
 
 }  // namespace
@@ -885,6 +905,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
+      color_provider_key_(GetWebDefaultColorProviderKey()),
       prerender_host_registry_(blink::features::IsPrerender2Enabled()
                                    ? std::make_unique<PrerenderHostRegistry>()
                                    : nullptr),
@@ -1509,6 +1530,10 @@ void WebContentsImpl::SetPageBaseBackgroundColor(
           broadcast->SetPageBaseBackgroundColor(color);
       },
       page_base_background_color_));
+}
+
+void WebContentsImpl::SetColorProviderSource(ui::ColorProviderSource* source) {
+  ColorProviderSourceObserver::Observe(source);
 }
 
 void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
@@ -8846,6 +8871,22 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 void WebContentsImpl::OnCaptionStyleUpdated() {
   NotifyPreferencesChanged();
+}
+
+void WebContentsImpl::OnColorProviderChanged() {
+  // TODO(tluk): Code that needs to be notified of theme color changes (not just
+  // NativeTheme changes) should be moved here.
+  DCHECK(GetColorProviderSource());
+  color_provider_key_ = GetColorProviderSource()->GetColorProviderKey();
+}
+
+const ui::ColorProvider* WebContentsImpl::GetColorProvider() const {
+  // Always defer to the ColorProviderSource if available for the correct
+  // ColorProvider instance.
+  return GetColorProviderSource()
+             ? GetColorProviderSource()->GetColorProvider()
+             : ui::ColorProviderManager::Get().GetColorProviderFor(
+                   color_provider_key_);
 }
 
 blink::mojom::FrameWidgetInputHandler*

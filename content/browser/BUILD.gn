@@ -238,6 +238,8 @@ source_set("browser") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/idle",
     "//ui/base/ime/init",
+    "//ui/color",
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/display/types",
     "//ui/display/util:gpu_info_util",

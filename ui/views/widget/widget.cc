@@ -1742,17 +1742,22 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 // Widget, ui::ColorProviderSource:
 
 const ui::ColorProvider* Widget::GetColorProvider() const {
-  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
   return ui::ColorProviderManager::Get().GetColorProviderFor(
-      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
-           ? ui::ColorProviderManager::ColorMode::kDark
-           : ui::ColorProviderManager::ColorMode::kLight,
-       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-           ? ui::ColorProviderManager::ContrastMode::kHigh
-           : ui::ColorProviderManager::ContrastMode::kNormal,
-       GetNativeTheme()->is_custom_system_theme()
-           ? ui::ColorProviderManager::SystemTheme::kCustom
-           : ui::ColorProviderManager::SystemTheme::kDefault});
+      GetColorProviderKey());
+}
+
+ui::ColorProviderManager::ColorProviderKey Widget::GetColorProviderKey() const {
+  const auto* native_theme = GetNativeTheme();
+  const auto color_scheme = native_theme->GetDefaultSystemColorScheme();
+  return {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+              ? ui::ColorProviderManager::ColorMode::kDark
+              : ui::ColorProviderManager::ColorMode::kLight,
+          (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+              ? ui::ColorProviderManager::ContrastMode::kHigh
+              : ui::ColorProviderManager::ContrastMode::kNormal,
+          native_theme->is_custom_system_theme()
+              ? ui::ColorProviderManager::SystemTheme::kCustom
+              : ui::ColorProviderManager::SystemTheme::kDefault};
 }
 
 ////////////////////////////////////////////////////////////////////////////////

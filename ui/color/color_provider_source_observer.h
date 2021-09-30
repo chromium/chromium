@@ -21,18 +21,27 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSourceObserver
   ~ColorProviderSourceObserver() override;
 
   // Called when the source's ColorProvider instance has changed.
-  virtual void OnColorProviderChanged(const ColorProviderSource* source) = 0;
-
-  // Starts observing the new `source`. Clears the current observation if
-  // already observing a ColorProviderSource.
-  void Observe(ColorProviderSource* source);
+  virtual void OnColorProviderChanged() = 0;
 
   // Called by the ColorProviderSource during destruction. Avoids situations
   // where we could be left with a dangling pointer should the observer outlive
   // the source.
   void OnColorProviderSourceDestroying();
 
+  const ui::ColorProviderSource* GetColorProviderSourceForTesting() const;
+
+ protected:
+  // Starts observing the new `source`. Clears the current observation if
+  // already observing a ColorProviderSource.
+  void Observe(ColorProviderSource* source);
+
+  // Gets the ColorProviderSource currently under observation, if it exists.
+  const ui::ColorProviderSource* GetColorProviderSource() const;
+
  private:
+  // The currently observed source.
+  const ui::ColorProviderSource* source_ = nullptr;
+
   // Ensure references to the observer are removed from the source should the
   // source outlive the observer.
   base::ScopedObservation<ColorProviderSource, ColorProviderSourceObserver>

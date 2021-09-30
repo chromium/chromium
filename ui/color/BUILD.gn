@@ -74,6 +74,7 @@ test("color_unittests") {
   sources = [
     "color_mixer_unittest.cc",
     "color_provider_manager_unittest.cc",
+    "color_provider_source_observer_unittest.cc",
     "color_provider_unittest.cc",
     "color_recipe_unittest.cc",
     "color_transform_unittest.cc",

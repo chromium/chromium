@@ -16,7 +16,7 @@ ColorProviderSource::~ColorProviderSource() {
 
 void ColorProviderSource::AddObserver(ColorProviderSourceObserver* observer) {
   observers_.AddObserver(observer);
-  observer->OnColorProviderChanged(this);
+  observer->OnColorProviderChanged();
 }
 
 void ColorProviderSource::RemoveObserver(
@@ -26,7 +26,7 @@ void ColorProviderSource::RemoveObserver(
 
 void ColorProviderSource::NotifyColorProviderChanged() {
   for (auto& observer : observers_)
-    observer.OnColorProviderChanged(this);
+    observer.OnColorProviderChanged();
 }
 
 }  // namespace ui

@@ -88,9 +88,14 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   TRACE_EVENT0("views", "WebView::SetWebContents");
   if (replacement == web_contents())
     return;
+  if (web_contents())
+    web_contents()->SetColorProviderSource(nullptr);
   SetCrashedOverlayView(nullptr);
   DetachWebContentsNativeView();
   WebContentsObserver::Observe(replacement);
+  if (replacement)
+    replacement->SetColorProviderSource(GetWidget());
+
   // web_contents() now returns |replacement| from here onwards.
   if (wc_owner_.get() != replacement)
     wc_owner_.reset();
@@ -256,10 +261,15 @@ void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void WebView::AddedToWidget() {
+  if (!web_contents())
+    return;
+
+  web_contents()->SetColorProviderSource(GetWidget());
+
   // If added to a widget hierarchy and |holder_| already has a NativeView
   // attached, update the accessible parent here to support reparenting the
   // WebView.
-  if (web_contents() && holder_->native_view())
+  if (holder_->native_view())
     UpdateNativeViewHostAccessibleParent(holder_, parent());
 }
 

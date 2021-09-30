@@ -79,6 +79,7 @@ class InterfaceProvider;
 namespace ui {
 struct AXPropertyFilter;
 struct AXTreeUpdate;
+class ColorProviderSource;
 }
 
 namespace content {
@@ -486,6 +487,12 @@ class WebContents : public PageNavigator,
   // functionality here, which will be more consistent and simpler to
   // understand.
   virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
+
+  // Sets the ColorProviderSource for the WebContents. The WebContents will
+  // maintain an observation of `source` until a new source is set or the
+  // current source is destroyed. WebContents will receive updates when the
+  // source's ColorProvider changes.
+  virtual void SetColorProviderSource(ui::ColorProviderSource* source) = 0;
 
   // Returns the committed WebUI if one exists.
   virtual WebUI* GetWebUI() = 0;
