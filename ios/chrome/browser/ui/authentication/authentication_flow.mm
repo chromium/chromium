@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#include "base/strings/sys_string_conversions.h"
 
 #include "base/check_op.h"
 #import "base/ios/block_types.h"
@@ -90,6 +89,7 @@ enum AuthenticationState {
   BOOL _shouldShowManagedConfirmation;
   BOOL _shouldCommitSync;
   Browser* _browser;
+  ChromeIdentity* _browserStateIdentity;
   ChromeIdentity* _identityToSignIn;
   NSString* _identityToSignInHostedDomain;
 
@@ -326,17 +326,13 @@ enum AuthenticationState {
 }
 
 - (void)checkSigninSteps {
-  ChromeIdentity* currentIdentity =
+  _browserStateIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
           _browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  // The identity must be either nil or the same as the one we want to sign in.
-  DCHECK((currentIdentity == nil) ||
-         [currentIdentity isEqual:_identityToSignIn])
-      << "currentIdentity: "
-      << base::SysNSStringToUTF8([currentIdentity description])
-      << "_identityToSignIn: "
-      << base::SysNSStringToUTF8([_identityToSignIn description]);
+  if (_browserStateIdentity)
+    _shouldSignOut = YES;
+
   _shouldSignIn = YES;
   _shouldCommitSync = _postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC;
 }

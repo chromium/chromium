@@ -792,8 +792,8 @@ void ExpectSyncConsentHistogram(
                                            IDS_IOS_SETTING_OFF)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
-                                   grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+                                   nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];

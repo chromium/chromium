@@ -26,10 +26,6 @@ namespace unified_consent {
 class UnifiedConsentService;
 }
 
-namespace syncer {
-class SyncService;
-}
-
 // Mediator that handles the sync operation.
 @interface SyncScreenMediator : NSObject
 
@@ -50,8 +46,6 @@ class SyncService;
                  syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
-                      syncService:(syncer::SyncService*)syncService
-
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.
