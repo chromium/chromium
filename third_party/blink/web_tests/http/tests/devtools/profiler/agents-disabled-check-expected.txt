@@ -10,6 +10,7 @@ frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridN
 frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]}}
 frontend: {"id":<number>,"method":"Overlay.setShowScrollSnapOverlays","params":{"scrollSnapHighlightConfigs":[]}}
 frontend: {"id":<number>,"method":"Overlay.setShowContainerQueryOverlays","params":{"containerQueryHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowIsolatedElements","params":{"isolatedElementHighlightConfigs":[]}}
 frontend: {"id":<number>,"method":"Debugger.disable","params":{}}
 
 --> SDK.targetManager.resumeAllTargets();

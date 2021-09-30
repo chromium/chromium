@@ -6762,9 +6762,6 @@ crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-
 crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Skip Timeout ]
 crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/h264.https.html [ Pass Skip Timeout ]
 
-# Temporary disabling to allow landing https://crrev.com/c/3175289
-crbug.com/1146422 http/tests/devtools/profiler/agents-disabled-check.js [ Failure Pass ]
-
 # Following tests fail on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-lists/counter-reset-reversed-list-item.html [ Failure ]
