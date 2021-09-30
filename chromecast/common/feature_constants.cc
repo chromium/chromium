@@ -7,8 +7,12 @@
 namespace chromecast {
 namespace feature {
 
-const char kEnableTrackAppRendererFeatureUse[] = "track_renderer_feature_use";
+const char kEnableTrackControlAppRendererFeatureUse[] =
+    "track_control_renderer_feature_use";
 const char kEnablePlayready[] = "playready";
+
+const char kKeyAppId[] = "app_id";
+const char kKeyAllowInsecureContent[] = "allow_insecure_content";
 
 }  // namespace feature
 }  // namespace chromecast
