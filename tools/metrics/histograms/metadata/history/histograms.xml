@@ -578,6 +578,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     latest unreported day, while the profile remains open. If no domains are
     visited in a given day, a count of 0 will be reported for that day.
 
+    Warning: this histogram is logged incorrectly on ChromeOS. See
+    http://crbug.com/1237591
+
     Warning about delayed data: Chrome may upload logs on a given day without
     uploading this histogram. This can happen because Chrome uploads logs
     initially upon startup. This histogram is emitted shortly _after_ startup.
@@ -614,6 +617,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     period, while the profile remains open. If no domains are visited during a
     28-day period, a count of 0 will be reported for that period.
 
+    Warning: this histogram is logged incorrectly on ChromeOS. See
+    http://crbug.com/1237591
+
     Warning about delayed data: Chrome may upload logs on a given day without
     uploading this histogram. This can happen because Chrome uploads logs
     initially upon startup. This histogram is emitted shortly _after_ startup.
@@ -649,6 +655,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Also reported once every 24 hours thereafter for the latest unreported
     period, while the profile remains open. If no domains are visited during a
     7-day period, a count 0 will be reported for that period.
+
+    Warning: this histogram is logged incorrectly on ChromeOS. See
+    http://crbug.com/1237591
 
     Warning about delayed data: Chrome may upload logs on a given day without
     uploading this histogram. This can happen because Chrome uploads logs
