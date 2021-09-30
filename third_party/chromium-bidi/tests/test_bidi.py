@@ -312,10 +312,10 @@ async def _ignore_test_waitForSelector_success_slow(websocket):
 # 3. Add element to the page.
     await send_JSON_command(websocket, {
         "id": 19,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "document.documentElement.innerHTML='<h2 />'",
-            "context": contextID}})
+            "expression": "document.documentElement.innerHTML='<h2 />'",
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -529,14 +529,14 @@ async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 31,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "element => '!!@@##, ' + element.innerHTML",
+            "expression": "element => '!!@@##, ' + element.innerHTML",
     # TODO: send properly serialised element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectID}],
-            "context": contextID}})
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -554,10 +554,10 @@ async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 32,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "'!!@@##, ' + window.location.href",
-            "context": contextID}})
+            "expression": "'!!@@##, ' + window.location.href",
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -575,13 +575,13 @@ async def _ignore_test_pageEvaluateWithScalarArgs_resultReceived(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 45,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
     # TODO: send properly serialised scalars according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [1, 2],
-            "function": "(a,b) => a+b",
-            "context": contextID}})
+            "expression": "(a,b) => a+b",
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -599,10 +599,10 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "console.log('some log message')",
-            "context": contextID}})
+            "expression": "console.log('some log message')",
+            "target": {"context": contextID}}})
 
     # Assert "log.entryAdded" event emitted.
     resp = await read_JSON_message(websocket)
@@ -678,14 +678,14 @@ async def _ignore_test_browsingContextType_textTyped(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 36,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "element => element.value",
+            "expression": "element => element.value",
     # TODO: send properly serialised element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectID}],
-            "context": contextID}})
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -703,10 +703,10 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 43,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "console.info('some log message')",
-            "context": contextID}})
+            "expression": "console.info('some log message')",
+            "target": {"context": contextID}}})
 
     # Assert method "info".
     resp = await read_JSON_message(websocket)
@@ -728,10 +728,10 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 44,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "console.error('some log message')",
-            "context": contextID}})
+            "expression": "console.error('some log message')",
+            "target": {"context": contextID}}})
 
     # Assert method "error".
     resp = await read_JSON_message(websocket)
@@ -752,10 +752,10 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 9997,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": f"({jsStrObject})",
-            "context": contextID}})
+            "expression": f"({jsStrObject})",
+            "target": {"context": contextID}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -986,14 +986,14 @@ async def _ignore_test_serialisation_node(websocket):
 
     await send_JSON_command(websocket, {
         "id": 48,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
-            "function": "element => element",
+            "expression": "element => element",
     # TODO: send properly serialised element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectId}],
-            "context": contextID}})
+            "target": {"context":contextID}}})
 
     # Assert result.
     resp = await read_JSON_message(websocket)

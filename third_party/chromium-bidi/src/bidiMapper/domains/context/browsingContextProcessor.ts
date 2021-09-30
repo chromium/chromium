@@ -18,7 +18,9 @@
 import { log } from '../../../utils/log';
 import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
+import { Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
+
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
@@ -146,9 +148,13 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_PROTO_page_evaluate(params: any) {
-    const context = this._getKnownContext(params.context);
-    return context.evaluateScript(params.function, params.args || []);
+  async process_script_evaluate(params: Script.ScriptEvaluateParameters): Promise<Script.ScriptEvaluateResult> {
+    const context = this._getKnownContext(
+      (params.target as Script.ContextTarget).context
+    );
+    // TODO sadym: add arguments params after they are specified.
+    // https://github.com/w3c/webdriver-bidi/pull/136#issuecomment-926700556
+    return await context.evaluateScript(params.expression);
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

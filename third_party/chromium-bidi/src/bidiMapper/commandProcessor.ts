@@ -20,6 +20,7 @@ import { BrowsingContextProcessor } from './domains/context/browsingContextProce
 import { Context } from './domains/context/context';
 import { Protocol } from 'devtools-protocol';
 import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
+import { Script } from './bidiProtocolTypes';
 
 export class CommandProcessor {
   private _browserCdpClient: CdpClient;
@@ -160,14 +161,13 @@ export class CommandProcessor {
         return await this._process_session_status(commandData.params);
       case 'browsingContext.getTree':
         return await this._process_browsingContext_getTree(commandData.params);
+      case 'script.evaluate':
+        return await this._contextProcessor.process_script_evaluate(
+          commandData.params as Script.ScriptEvaluateParameters
+        );
 
       case 'PROTO.browsingContext.createContext':
         return await this._contextProcessor.process_createContext(
-          commandData.params
-        );
-
-      case 'PROTO.page.evaluate':
-        return await this._contextProcessor.process_PROTO_page_evaluate(
           commandData.params
         );
 

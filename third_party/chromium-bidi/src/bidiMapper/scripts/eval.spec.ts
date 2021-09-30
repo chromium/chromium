@@ -19,14 +19,15 @@ import fs from 'fs/promises';
 import path from 'path';
 import * as chai from 'chai';
 import chaiExclude from 'chai-exclude';
+import { CommonDataTypes } from '../bidiProtocolTypes';
 
 chai.use(chaiExclude);
 
 describe('Evaluator', function () {
     let EVALUATOR: {
         evaluate: Function,
-        serialize: Function,
-        deserialize: Function
+        serialize: (x: any) => CommonDataTypes.RemoteValue,
+        deserialize: (x: CommonDataTypes.RemoteValue) => any
     };
 
     // Get EVALUATOR.
@@ -40,7 +41,9 @@ describe('Evaluator', function () {
     });
 
     describe('serialize + deserialize', function () {
-        function checkSerializeAndDeserialize(originalObject: any, expectedSerializedObj: any, excluding: string[] = []) {
+        function checkSerializeAndDeserialize(originalObject: any,
+            expectedSerializedObj: CommonDataTypes.RemoteValue,
+            excluding: string[] = []) {
             // Check serialize.
             const serializedOrigianlObj = EVALUATOR.serialize(originalObject);
             if (excluding.length > 0) {
