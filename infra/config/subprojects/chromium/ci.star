@@ -1557,9 +1557,7 @@ ci.chromium_builder(
         short_name = "off",
     ),
     cores = 32,
-    # TODO: Change this back down to something reasonable once these builders
-    # have populated their cached by getting through the compile step
-    execution_timeout = 10 * time.hour,
+    execution_timeout = 7 * time.hour,
     main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
     tree_closing = False,
