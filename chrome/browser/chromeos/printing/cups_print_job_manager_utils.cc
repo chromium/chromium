@@ -76,6 +76,49 @@ bool UpdateCurrentPage(const ::printing::CupsJob& job,
   return pages_updated;
 }
 
+void UpdateProcessingJob(const ::printing::PrinterStatus& printer_status,
+                         const ::printing::CupsJob& job,
+                         CupsPrintJob* print_job,
+                         bool* pages_updated) {
+  *pages_updated = UpdateCurrentPage(job, print_job);
+
+  const PrinterErrorCode printer_error_code =
+      PrinterErrorCodeFromPrinterStatusReasons(printer_status);
+  const bool delay_print_job_timeout =
+      printer_error_code == PrinterErrorCode::PRINTER_UNREACHABLE &&
+      (base::Time::Now() - print_job->creation_time() <
+       kMinElaspedPrintJobTimeout);
+
+  if (printer_error_code != PrinterErrorCode::NO_ERROR &&
+      !delay_print_job_timeout) {
+    print_job->set_error_code(printer_error_code);
+    print_job->set_state(printer_error_code ==
+                                 PrinterErrorCode::PRINTER_UNREACHABLE
+                             ? CupsPrintJob::State::STATE_FAILED
+                             : CupsPrintJob::State::STATE_ERROR);
+  } else {
+    print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+  }
+}
+
+void UpdateCompletedJob(const ::printing::CupsJob& job,
+                        CupsPrintJob* print_job) {
+  DCHECK_GE(job.current_pages, print_job->total_page_number());
+  print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+  print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
+}
+
+void UpdateStoppedJob(const ::printing::CupsJob& job, CupsPrintJob* print_job) {
+  // If cups job STOPPED but with filter failure, treat as ERROR
+  if (JobContainsReason(job, kJobCompletedWithErrors)) {
+    print_job->set_error_code(PrinterErrorCode::FILTER_FAILED);
+    print_job->set_state(CupsPrintJob::State::STATE_FAILED);
+  } else {
+    print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+    print_job->set_state(ConvertState(job.state));
+  }
+}
+
 }  // namespace
 
 bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
@@ -87,42 +130,14 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
 
   bool pages_updated = false;
   switch (job.state) {
-    case ::printing::CupsJob::PROCESSING: {
-      pages_updated = UpdateCurrentPage(job, print_job);
-
-      const PrinterErrorCode printer_error_code =
-          PrinterErrorCodeFromPrinterStatusReasons(printer_status);
-      const bool delay_print_job_timeout =
-          printer_error_code == PrinterErrorCode::PRINTER_UNREACHABLE &&
-          (base::Time::Now() - print_job->creation_time() <
-           kMinElaspedPrintJobTimeout);
-
-      if (printer_error_code != PrinterErrorCode::NO_ERROR &&
-          !delay_print_job_timeout) {
-        print_job->set_error_code(printer_error_code);
-        print_job->set_state(printer_error_code ==
-                                     PrinterErrorCode::PRINTER_UNREACHABLE
-                                 ? CupsPrintJob::State::STATE_FAILED
-                                 : CupsPrintJob::State::STATE_ERROR);
-      } else {
-        print_job->set_error_code(PrinterErrorCode::NO_ERROR);
-      }
+    case ::printing::CupsJob::PROCESSING:
+      UpdateProcessingJob(printer_status, job, print_job, &pages_updated);
       break;
-    }
     case ::printing::CupsJob::COMPLETED:
-      DCHECK_GE(job.current_pages, print_job->total_page_number());
-      print_job->set_error_code(PrinterErrorCode::NO_ERROR);
-      print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
+      UpdateCompletedJob(job, print_job);
       break;
     case ::printing::CupsJob::STOPPED:
-      // If cups job STOPPED but with filter failure, treat as ERROR
-      if (JobContainsReason(job, kJobCompletedWithErrors)) {
-        print_job->set_error_code(PrinterErrorCode::FILTER_FAILED);
-        print_job->set_state(CupsPrintJob::State::STATE_FAILED);
-      } else {
-        print_job->set_error_code(PrinterErrorCode::NO_ERROR);
-        print_job->set_state(ConvertState(job.state));
-      }
+      UpdateStoppedJob(job, print_job);
       break;
     case ::printing::CupsJob::ABORTED:
     case ::printing::CupsJob::CANCELED:
