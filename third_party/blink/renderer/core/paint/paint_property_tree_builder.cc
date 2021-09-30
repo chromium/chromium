@@ -2241,7 +2241,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         state.flags.delegates_to_parent_for_backface = true;
       auto effective_change_type = properties_->UpdateScrollTranslation(
           *context_.current.transform, std::move(state));
-      if (effective_change_type ==
+      // Even if effective_change_type is kUnchanged, we might still need to
+      // DirectlyUpdateScrollOffsetTransform, in case the cc::TransformNode
+      // was also updated in LayerTreeHost::ApplyCompositorChanges.
+      if (effective_change_type <=
               PaintPropertyChangeType::kChangedOnlySimpleValues &&
           properties_->ScrollTranslation()->HasDirectCompositingReasons()) {
         if (auto* paint_artifact_compositor =
