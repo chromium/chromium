@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,12 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   // WebUIMessageHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void Initialize() override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
+
+ private:
+  void LoginWithPin(const std::string& username, const std::string& pin);
 };
 
 }  // namespace chromeos

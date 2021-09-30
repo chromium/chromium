@@ -355,6 +355,9 @@ class OobeApiProvider {
       PinSetupScreen: new PinSetupScreen(),
       EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreen(),
     };
+    this.loginWithPin = function(username, pin) {
+      chrome.send('OobeTestApi.loginWithPin', [username, pin]);
+    };
   }
 }
 

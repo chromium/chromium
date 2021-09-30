@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -97,6 +99,23 @@ class OobeTestApiRemoraRequisitionTest : public OobeTestApiTest,
 
 IN_PROC_BROWSER_TEST_F(OobeTestApiRemoraRequisitionTest, SkipsEula) {
   test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
+}
+
+class OobeTestApiLoginPinTest : public OobeTestApiTest {
+ public:
+  OobeTestApiLoginPinTest() { login_mixin_.AppendRegularUsers(1); }
+
+ protected:
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiLoginPinTest, Success) {
+  test::OobeJS().CreateWaiter("window.OobeAPI")->Wait();
+  const std::string username =
+      login_mixin_.users()[0].account_id.GetUserEmail();
+  test::OobeJS().ExecuteAsync(base::StringPrintf(
+      "OobeAPI.loginWithPin('%s', '123456')", username.c_str()));
+  login_mixin_.WaitForActiveSession();
 }
 
 }  // namespace chromeos
