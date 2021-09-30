@@ -1644,7 +1644,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.LocalCardMigrationBubbleOffer{AutofillLocalCardMigrationBubbleShow}"
-    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2021-11-07">
+    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1659,7 +1659,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.LocalCardMigrationBubbleResult{AutofillLocalCardMigrationBubbleShow}"
-    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2022-03-01">
+    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
