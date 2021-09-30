@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/unified_consent/unified_consent_service.h"
+#include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -36,6 +37,8 @@
     unified_consent::UnifiedConsentService* unifiedConsentService;
 // Service that allows for configuring sync.
 @property(nonatomic, assign) SyncSetupService* syncSetupService;
+// Service that helps reseting the user state.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -50,7 +53,8 @@
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
-                 syncSetupService:(SyncSetupService*)syncSetupService {
+                 syncSetupService:(SyncSetupService*)syncSetupService
+                      syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _identityManager = identityManager;
@@ -58,6 +62,7 @@
     _authenticationService = authenticationService;
     _unifiedConsentService = unifiedConsentService;
     _syncSetupService = syncSetupService;
+    _syncService = syncService;
   }
   return self;
 }
@@ -68,9 +73,33 @@
 
   self.authenticationFlow = authenticationFlow;
   __weak UserSigninMediator* weakSelf = self;
-  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf onAccountSigninCompletion:success identity:identity];
-  }];
+  BOOL settingsLinkWasTapped =
+      [self.delegate userSigninMediatorGetSettingsLinkWasTapped];
+  ProceduralBlockWithBool completion = ^(BOOL success) {
+    if (settingsLinkWasTapped) {
+      [weakSelf
+          onAccountSigninCompletionForAdvancedSettingsWithSuccess:success];
+    } else {
+      // Otherwise, the user tapped "Yes, I'm in".
+      [weakSelf onAccountSigninCompletion:success identity:identity];
+    }
+  };
+  [self.authenticationFlow startSignInWithCompletion:completion];
+}
+
+- (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success {
+  self.authenticationFlow = nil;
+  if (success) {
+    // This will display the advanced sync settings.
+    [self.delegate userSigninMediatorSigninFinishedWithResult:
+                       SigninCoordinatorResultSuccess];
+    // We need to set Sync requested in order to display the preferences
+    // correctly and differentiate the special state where the user is
+    // signed in, but the sync feature can't start yet.
+    self.syncService->GetUserSettings()->SetSyncRequested(true);
+  } else {
+    [self.delegate userSigninMediatorSigninFailed];
+  }
 }
 
 - (void)cancelSignin {
@@ -97,6 +126,7 @@
 // For users that cancel the sign-in flow, revert to the sign-in
 // state prior to starting sign-in coordinators.
 - (void)revertToSigninStateOnStart {
+  self.syncService->GetUserSettings()->SetSyncRequested(false);
   switch (self.delegate.signinStateOnStart) {
     case IdentitySigninStateSignedOut: {
       self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
@@ -105,18 +135,11 @@
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {
-      ChromeIdentity* syncingIdentity =
-          self.authenticationService->GetPrimaryIdentity(
-              signin::ConsentLevel::kSync);
-      // If the identity is Syncing, Chrome needs to manually sign the user out
-      // and back in again in order to properly end the sign-in flow in its
-      // original state.
-      if (syncingIdentity) {
-        self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                            /*force_clear_browsing_data=*/false,
-                                            nil);
-        self.authenticationService->SignIn(syncingIdentity);
-      }
+      DCHECK(!self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSync));
+      // Call StopAndClear() to clear the encryption passphrase, in case the
+      // user entered it before canceling the sync opt-in flow.
+      _syncService->StopAndClear();
       break;
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
@@ -131,21 +154,19 @@
   return self.authenticationFlow != nil;
 }
 
+// Called when signin is complete, after tapping "Yes, I'm in".
 - (void)onAccountSigninCompletion:(BOOL)success
                          identity:(ChromeIdentity*)identity {
   self.authenticationFlow = nil;
-  if (success) {
-    [self signinCompletedWithIdentity:identity];
-  } else {
+  if (!success) {
     [self.delegate userSigninMediatorSigninFailed];
+    return;
   }
+  [self signinCompletedWithIdentity:identity];
 }
 
-// Starts the sync engine only if the user tapped on "YES, I'm in", and closes
-// the sign-in view.
+// Grants and records Sync consent, and finishes the Sync setup flow.
 - (void)signinCompletedWithIdentity:(ChromeIdentity*)identity {
-  // The consent has to be given as soon as the user is signed in. Even when
-  // they open the settings through the link.
   self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   sync_pb::UserConsentTypes::SyncConsent syncConsent;
@@ -168,15 +189,11 @@
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
   self.authenticationService->GrantSyncConsent(identity);
 
-  BOOL settingsLinkWasTapped =
-      [self.delegate userSigninMediatorGetSettingsLinkWasTapped];
-  if (!settingsLinkWasTapped) {
-    // FirstSetupComplete flag should be turned on after the authentication
-    // service has granted user consent to start Sync.
-    self.syncSetupService->SetFirstSetupComplete(
-        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-    self.syncSetupService->CommitSyncChanges();
-  }
+  // FirstSetupComplete flag should be turned on after the authentication
+  // service has granted user consent to start Sync when tapping "Yes, I'm in."
+  self.syncSetupService->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  self.syncSetupService->CommitSyncChanges();
 
   [self.delegate userSigninMediatorSigninFinishedWithResult:
                      SigninCoordinatorResultSuccess];

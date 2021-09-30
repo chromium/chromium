@@ -83,13 +83,16 @@ class UserSigninMediatorTest : public PlatformTest {
                       identityManager:identity_manager()
                        consentAuditor:consent_auditor()
                 unifiedConsentService:unified_consent_service()
-                     syncSetupService:sync_setup_service()];
+                     syncSetupService:sync_setup_service()
+                          syncService:sync_service()];
+
     mediator_.delegate = mediator_delegate_mock_;
 
     fake_consent_auditor_ =
         static_cast<consent_auditor::FakeConsentAuditor*>(consent_auditor());
     sync_setup_service_mock_ =
         static_cast<SyncSetupServiceMock*>(sync_setup_service());
+    sync_service_mock_ = static_cast<syncer::MockSyncService*>(sync_service());
   }
 
   void TearDown() override {
@@ -236,6 +239,10 @@ class UserSigninMediatorTest : public PlatformTest {
     return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
+  syncer::SyncService* sync_service() {
+    return SyncServiceFactory::GetForBrowserState(browser_state_.get());
+  }
+
   unified_consent::UnifiedConsentService* unified_consent_service() {
     return UnifiedConsentServiceFactory::GetForBrowserState(
         browser_state_.get());
@@ -258,6 +265,7 @@ class UserSigninMediatorTest : public PlatformTest {
   AuthenticationFlowPerformer* performer_mock_ = nullptr;
   UIViewController* presenting_view_controller_mock_ = nullptr;
   SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
+  syncer::MockSyncService* sync_service_mock_ = nullptr;
 };
 
 // Tests a successful authentication for a given identity.
@@ -290,12 +298,6 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentitySuccess) {
 TEST_F(UserSigninMediatorTest, AuthenticateWithSettingsLinkTapped) {
   SetPerformerSigninExpectations();
 
-  // Retrieving coordinator data for the mediator delegate.
-  OCMExpect(
-      [mediator_delegate_mock_ userSigninMediatorGetConsentConfirmationId])
-      .andReturn(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS);
-  OCMExpect([mediator_delegate_mock_ userSigninMediatorGetConsentStringIds])
-      .andReturn(&consent_string_ids_);
   OCMExpect(
       [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
       .andReturn(YES);
@@ -310,13 +312,15 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithSettingsLinkTapped) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
-  ExpectConsent(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS);
 }
 
 // Tests authentication failure for a given identity.
 TEST_F(UserSigninMediatorTest, AuthenticateWithIdentityError) {
   SetPerformerFailureExpectations();
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Returns to sign-in flow.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
 
@@ -341,6 +345,9 @@ TEST_F(UserSigninMediatorTest, CancelAuthenticationNotInProgress) {
 TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/NO);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
   OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
@@ -365,6 +372,9 @@ TEST_F(UserSigninMediatorTest,
        CancelAndDismissAuthenticationInProgressWithAnimation) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/YES);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
   OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
@@ -381,6 +391,9 @@ TEST_F(UserSigninMediatorTest,
        CancelAndDismissAuthenticationInProgressWithoutAnimation) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/NO);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
   OCMExpect([mediator_delegate_mock_ signinStateOnStart]);

@@ -7,6 +7,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
+#include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -145,6 +147,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                                         GetForBrowserState(
                                             self.browser->GetBrowserState())
                    syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                        self.browser->GetBrowserState())
+                        syncService:SyncServiceFactory::GetForBrowserState(
                                         self.browser->GetBrowserState())];
   self.mediator.delegate = self;
 

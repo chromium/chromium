@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "components/signin/public/base/signin_metrics.h"
+#include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @class AuthenticationFlow;
@@ -64,6 +65,7 @@ class UnifiedConsentService;
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
                  syncSetupService:(SyncSetupService*)syncSetupService
+                      syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 // The delegate.
@@ -84,6 +86,9 @@ class UnifiedConsentService;
 // Cancels and dismisses with animation if |animated| the authentication flow
 // when sign-in is in progress.
 - (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated;
+
+// Called when signin is finished and advanced settings link was tapped.
+- (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success;
 
 @end
 

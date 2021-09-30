@@ -88,18 +88,10 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {
-      ChromeIdentity* syncingIdentity =
-          self.authenticationService->GetPrimaryIdentity(
-              signin::ConsentLevel::kSync);
-      // If the identity is Syncing, Chrome needs to manually sign the user out
-      // and back in again in order to properly end the sign-in flow in its
-      // original state.
-      if (syncingIdentity) {
-        self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                            /*force_clear_browsing_data=*/false,
-                                            nil);
-        self.authenticationService->SignIn(syncingIdentity);
-      }
+      // Sync consent is not granted in Advanced Settings, therefore
+      // there should be no syncing identity.
+      DCHECK(!self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSync));
       break;
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
