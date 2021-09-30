@@ -588,9 +588,91 @@ void CopyBooleanOrDoubleConstraint(
   }
 }
 
-void CopyStringConstraint(const V8ConstrainDOMString* blink_union_form,
-                          NakedValueDisposition naked_treatment,
-                          StringConstraint& web_form) {
+bool ValidateString(const String& str, MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
+  if (str.length() > kMaxConstraintStringLength) {
+    error_state.ThrowTypeError("Constraint string too long.");
+    return false;
+  }
+  return true;
+}
+
+bool ValidateStringSeq(const Vector<String>& strs,
+                       MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
+  if (strs.size() > kMaxConstraintStringSeqLength) {
+    error_state.ThrowTypeError("Constraint string sequence too long.");
+    return false;
+  }
+
+  for (const String& str : strs) {
+    if (!ValidateString(str, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool ValidateStringConstraint(
+    V8UnionStringOrStringSequence* string_or_string_seq,
+    MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
+  switch (string_or_string_seq->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString: {
+      return ValidateString(string_or_string_seq->GetAsString(), error_state);
+    }
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence: {
+      return ValidateStringSeq(string_or_string_seq->GetAsStringSequence(),
+                               error_state);
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
+                              MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
+  switch (blink_union_form->GetContentType()) {
+    case V8ConstrainDOMString::ContentType::kConstrainDOMStringParameters: {
+      const auto* blink_form =
+          blink_union_form->GetAsConstrainDOMStringParameters();
+      if (blink_form->hasIdeal() &&
+          !ValidateStringConstraint(blink_form->ideal(), error_state)) {
+        return false;
+      }
+      if (blink_form->hasExact() &&
+          !ValidateStringConstraint(blink_form->exact(), error_state)) {
+        return false;
+      }
+      return true;
+    }
+    case V8ConstrainDOMString::ContentType::kString:
+      return ValidateString(blink_union_form->GetAsString(), error_state);
+    case V8ConstrainDOMString::ContentType::kStringSequence:
+      return ValidateStringSeq(blink_union_form->GetAsStringSequence(),
+                               error_state);
+  }
+  NOTREACHED();
+  return false;
+}
+
+WARN_UNUSED_RESULT bool ValidateAndCopyStringConstraint(
+    const V8ConstrainDOMString* blink_union_form,
+    NakedValueDisposition naked_treatment,
+    StringConstraint& web_form,
+    MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
+  if (!ValidateStringConstraint(blink_union_form, error_state)) {
+    return false;
+  }
   web_form.SetIsPresent(true);
   switch (blink_union_form->GetContentType()) {
     case V8ConstrainDOMString::ContentType::kConstrainDOMStringParameters: {
@@ -641,6 +723,7 @@ void CopyStringConstraint(const V8ConstrainDOMString* blink_union_form,
       }
       break;
   }
+  return true;
 }
 
 void CopyBooleanConstraint(const V8ConstrainBoolean* blink_union_form,
@@ -672,9 +755,13 @@ void CopyBooleanConstraint(const V8ConstrainBoolean* blink_union_form,
   }
 }
 
-void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
-                       NakedValueDisposition naked_treatment,
-                       MediaTrackConstraintSetPlatform& constraint_buffer) {
+bool ValidateAndCopyConstraintSet(
+    const MediaTrackConstraintSet* constraints_in,
+    NakedValueDisposition naked_treatment,
+    MediaTrackConstraintSetPlatform& constraint_buffer,
+    MediaErrorState& error_state) {
+  DCHECK(!error_state.HadException());
+
   if (constraints_in->hasWidth()) {
     CopyLongConstraint(constraints_in->width(), naked_treatment,
                        constraint_buffer.width);
@@ -692,12 +779,20 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
                          constraint_buffer.frame_rate);
   }
   if (constraints_in->hasFacingMode()) {
-    CopyStringConstraint(constraints_in->facingMode(), naked_treatment,
-                         constraint_buffer.facing_mode);
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->facingMode(), naked_treatment,
+            constraint_buffer.facing_mode, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   if (constraints_in->hasResizeMode()) {
-    CopyStringConstraint(constraints_in->resizeMode(), naked_treatment,
-                         constraint_buffer.resize_mode);
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->resizeMode(), naked_treatment,
+            constraint_buffer.resize_mode, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   if (constraints_in->hasSampleRate()) {
     CopyLongConstraint(constraints_in->sampleRate(), naked_treatment,
@@ -728,16 +823,28 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
                        constraint_buffer.channel_count);
   }
   if (constraints_in->hasDeviceId()) {
-    CopyStringConstraint(constraints_in->deviceId(), naked_treatment,
-                         constraint_buffer.device_id);
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->deviceId(), naked_treatment,
+            constraint_buffer.device_id, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   if (constraints_in->hasGroupId()) {
-    CopyStringConstraint(constraints_in->groupId(), naked_treatment,
-                         constraint_buffer.group_id);
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->groupId(), naked_treatment,
+            constraint_buffer.group_id, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   if (constraints_in->hasVideoKind()) {
-    CopyStringConstraint(constraints_in->videoKind(), naked_treatment,
-                         constraint_buffer.video_kind);
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->videoKind(), naked_treatment,
+            constraint_buffer.video_kind, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   if (constraints_in->hasPan()) {
     CopyBooleanOrDoubleConstraint(constraints_in->pan(), naked_treatment,
@@ -751,20 +858,30 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
     CopyBooleanOrDoubleConstraint(constraints_in->zoom(), naked_treatment,
                                   constraint_buffer.zoom);
   }
+  return true;
 }
 
 MediaConstraints ConvertTrackConstraintsToMediaConstraints(
-    const MediaTrackConstraints* constraints_in) {
+    const MediaTrackConstraints* constraints_in,
+    MediaErrorState& error_state) {
   MediaConstraints constraints;
   MediaTrackConstraintSetPlatform constraint_buffer;
   Vector<MediaTrackConstraintSetPlatform> advanced_buffer;
-  CopyConstraintSet(constraints_in, NakedValueDisposition::kTreatAsIdeal,
-                    constraint_buffer);
+  if (!ValidateAndCopyConstraintSet(constraints_in,
+                                    NakedValueDisposition::kTreatAsIdeal,
+                                    constraint_buffer, error_state)) {
+    DCHECK(error_state.HadException());
+    return constraints;
+  }
   if (constraints_in->hasAdvanced()) {
     for (const auto& element : constraints_in->advanced()) {
       MediaTrackConstraintSetPlatform advanced_element;
-      CopyConstraintSet(element, NakedValueDisposition::kTreatAsExact,
-                        advanced_element);
+      if (!ValidateAndCopyConstraintSet(element,
+                                        NakedValueDisposition::kTreatAsExact,
+                                        advanced_element, error_state)) {
+        DCHECK(error_state.HadException());
+        return constraints;
+      }
       advanced_buffer.push_back(advanced_element);
     }
   }
@@ -776,7 +893,10 @@ MediaConstraints Create(ExecutionContext* context,
                         const MediaTrackConstraints* constraints_in,
                         MediaErrorState& error_state) {
   MediaConstraints standard_form =
-      ConvertTrackConstraintsToMediaConstraints(constraints_in);
+      ConvertTrackConstraintsToMediaConstraints(constraints_in, error_state);
+  if (error_state.HadException()) {
+    return standard_form;
+  }
   if (constraints_in->hasOptional() || constraints_in->hasMandatory()) {
     if (!standard_form.IsUnconstrained()) {
       UseCounter::Count(context, WebFeature::kMediaStreamConstraintsOldAndNew);
