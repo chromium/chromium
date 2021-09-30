@@ -1397,11 +1397,16 @@ message BootInfo {
   enum BootMethod {
     UNKNOWN = 0;
     CROS_SECURE = 1;
+    // This field maps to kCrosEfi from cros_healthd.
     CROS_UEFI = 2;
     CROS_LEGACY = 3;
+    CROS_EFI_SECURE = 4;
   }
   optional BootMethod boot_method = 1;
-  optional bool secure_boot = 2;
+
+  // DEPRECATED: secure_boot is deprecated in favor of the
+  // CROS_EFI_SECURE BootMethod value.
+  optional bool secure_boot = 2 [deprecated = true];
 }
 
 // Report device level status.
