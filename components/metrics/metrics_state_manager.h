@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -30,6 +31,11 @@ namespace metrics {
 
 class EnabledStateProvider;
 class MetricsProvider;
+
+// Used to assess the reliability of field trial data by sending artificial
+// non-uniform data drawn from a log normal distribution.
+const base::Feature kNonUniformityValidationFeature{
+    "UMANonUniformityLogNormal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Responsible for managing MetricsService state prefs, specifically the UMA
 // client id and low entropy source. Code outside the metrics directory should
@@ -142,6 +148,9 @@ class MetricsStateManager final {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, CheckProviderResetIds);
+  FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, CheckProviderLogNormal);
+  FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
+                           CheckProviderLogNormalWithParams);
   FRIEND_TEST_ALL_PREFIXES(
       MetricsStateManagerTest,
       CheckProviderResetIds_PreviousIdOnlyReportInResetSession);
@@ -197,6 +206,11 @@ class MetricsStateManager final {
                       const base::FilePath& user_data_dir,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info);
+
+  // Returns a MetricsStateManagerProvider instance and sets its
+  // |log_normal_metric_state_.gen| with the provided random seed.
+  std::unique_ptr<MetricsProvider> GetProviderAndSetRandomSeedForTesting(
+      int64_t seed);
 
   // Backs up the current client info via |store_client_info_|.
   void BackUpCurrentClientInfo();

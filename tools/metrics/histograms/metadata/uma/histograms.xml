@@ -226,6 +226,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The source of the client id when its creation is forced.</summary>
 </histogram>
 
+<histogram name="UMA.DataValidation.LogNormal" units="random values"
+    expires_after="2021-11-14">
+  <owner>sweilun@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This is logged with a random value drawn from an artificial log normal
+    distribution in every ongoing metrics logs (not logs about the previous
+    session) and used for data validation. The mean and standard deviation
+    parameters of the log normal distribution are controlled by artificial A/B
+    experiments so that we can assess the accuracy and power of data from field
+    trials.
+  </summary>
+</histogram>
+
 <histogram name="UMA.EnrollmentStatus" enum="EnrollmentStatus"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
