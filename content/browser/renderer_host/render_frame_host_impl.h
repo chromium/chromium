@@ -435,6 +435,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void WriteIntoTrace(perfetto::TracedValue context) override;
   void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
+  bool IsErrorDocument() override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
@@ -682,9 +683,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns the POST ID of the last committed navigation.
   int64_t last_post_id() { return last_post_id_; }
-
-  // Returns true if the last committed navigation is for an error page.
-  bool is_error_page() { return is_error_page_; }
 
   // Returns true if `dest_url_info` should be considered the same site as the
   // current contents of this frame. This is the primary entry point for

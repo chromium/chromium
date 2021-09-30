@@ -2109,6 +2109,15 @@ void RenderFrameHostImpl::GetCanonicalUrl(
   }
 }
 
+bool RenderFrameHostImpl::IsErrorDocument() {
+  // This shouldn't be called before committing the document as this value is
+  // set during call to RenderFrameHostImpl::DidNavigate which happens after
+  // commit.
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+  return is_error_page_;
+}
+
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
     const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
@@ -10476,6 +10485,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 // struct.
 void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     NavigationRequest* navigation_request) {
+  // It should be kept in sync with the check in
+  // NavigationRequest::DidCommitNavigation.
   is_error_page_ = navigation_request->DidEncounterError();
 
   SetCrossOriginOpenerPolicyReporter(

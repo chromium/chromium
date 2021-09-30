@@ -4311,7 +4311,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromCspSandboxResponse) {
 
   // An error page committed. It doesn't have any sandbox flags, despite the
   // original response headers.
-  EXPECT_TRUE(current_frame_host()->is_error_page());
+  EXPECT_TRUE(current_frame_host()->IsErrorDocument());
   EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
             current_frame_host()->active_sandbox_flags());
 
@@ -4450,7 +4450,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromInSandboxedIframe) {
   // An error page committed. Apparently, the error page inherited sandbox flags
   // from its parent.
   // TODO(https://crbug.com/1158370): Reconsider this.
-  EXPECT_TRUE(child_rfh->is_error_page());
+  EXPECT_TRUE(child_rfh->IsErrorDocument());
   EXPECT_EQ(network::mojom::WebSandboxFlags::kAll &
                 ~network::mojom::WebSandboxFlags::kOrientationLock,
             child_rfh->active_sandbox_flags());
