@@ -97,8 +97,6 @@ class BarUI : public ui::UntrustedWebUIController, public ::test::mojom::Bar {
     // Allow Foo to embed this UI.
     data_source->AddFrameAncestor(GURL(kFooURL));
 
-    data_source->AddResourcePath("mojo_bindings_lite.js",
-                                 IDR_MOJO_MOJO_BINDINGS_LITE_JS);
     data_source->AddResourcePath("foobar.mojom-lite.js",
                                  IDR_FOOBAR_MOJO_LITE_JS);
     // If requested path is "error", trigger an error page.

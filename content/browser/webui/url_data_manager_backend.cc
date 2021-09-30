@@ -78,6 +78,10 @@ URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
   // Add a shared data source for chrome://resources.
   AddDataSource(
       static_cast<WebUIDataSourceImpl*>(CreateSharedResourcesDataSource()));
+
+  // Add a shared data source for chrome-untrusted://resources.
+  AddDataSource(static_cast<WebUIDataSourceImpl*>(
+      CreateUntrustedSharedResourcesDataSource()));
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;

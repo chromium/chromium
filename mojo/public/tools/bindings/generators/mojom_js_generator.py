@@ -452,7 +452,7 @@ class Generator(generator.Generator):
 
   def _GetBindingsLibraryPath(self, for_webui_module=False):
     if for_webui_module:
-      return "chrome://resources/mojo/mojo/public/js/bindings.js"
+      return "//resources/mojo/mojo/public/js/bindings.js"
     return self._GetRelativePath('mojo/public/js/bindings.js')
 
   def _SetUniqueNameForImports(self):

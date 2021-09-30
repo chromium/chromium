@@ -141,4 +141,19 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
   return source;
 }
 
+WebUIDataSource* CreateUntrustedSharedResourcesDataSource() {
+  // This data source only serves resources used by all chrome-untrusted://
+  // WebUI pages.
+  //
+  // Don't put generated Mojo bindings here. Please explicitly add them to each
+  // WebUI's own data source.
+  WebUIDataSource* source =
+      content::WebUIDataSource::Create(kChromeUIUntrustedResourcesURL);
+
+  source->AddResourcePaths(
+      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
+
+  return source;
+}
+
 }  // namespace content

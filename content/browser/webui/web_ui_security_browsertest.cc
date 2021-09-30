@@ -479,6 +479,31 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   }
 }
 
+// Verify chrome-untrusted://resources can't be loaded from the Web.
+IN_PROC_BROWSER_TEST_F(WebUISecurityTest, DisallowWebRequestToSharedResources) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  const char kLoadResourceScript[] =
+      "new Promise((resolve) => {"
+      "  const script = document.createElement('script');"
+      "  script.onload = () => {"
+      "    resolve('Script load should have failed');"
+      "  };"
+      "  script.onerror = (e) => {"
+      "    resolve('Load failed');"
+      "  };"
+      "  script.src = $1;"
+      "  document.body.appendChild(script);"
+      "});";
+
+  GURL shared_resource_url =
+      GURL("chrome-untrusted://resources/mojo/mojo/public/js/bindings.js");
+  EXPECT_EQ("Load failed", EvalJs(shell(), JsReplace(kLoadResourceScript,
+                                                     shared_resource_url)));
+}
+
 class WebUISecurityTestWithWebUIReportOnlyTrustedTypesEnabled
     : public WebUISecurityTest {
  public:
