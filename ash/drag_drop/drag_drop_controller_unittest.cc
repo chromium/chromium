@@ -324,7 +324,6 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
                    std::unique_ptr<ui::OSExchangeData> data,
                    ui::mojom::DragOperation& output_drag_op) {
     EXPECT_EQ(State::kDragUpdateInvoked, state_);
-    EXPECT_EQ(window_, event.target());
 
     state_ = State::kPerformDropInvoked;
     output_drag_op = DragOperation::kMove;

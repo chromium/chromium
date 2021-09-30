@@ -354,7 +354,6 @@ Event::Event(const Event& copy)
       flags_(copy.flags_),
       native_event_(CopyNativeEvent(copy.native_event_)),
       delete_native_event_(true),
-      target_(copy.target_),
       source_device_id_(copy.source_device_id_),
       properties_(copy.properties_
                       ? std::make_unique<Properties>(*copy.properties_)
