@@ -32,7 +32,7 @@ BrowserAppInstanceForwarder::~BrowserAppInstanceForwarder() = default;
 
 std::unique_ptr<BrowserAppInstanceForwarder>
 BrowserAppInstanceForwarder::Create(BrowserAppInstanceTracker* tracker) {
-  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
+  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
     return nullptr;
   }
   return std::make_unique<BrowserAppInstanceForwarder>(*tracker);
