@@ -110,6 +110,20 @@ export class NavigationViewPanelElement extends PolymerElement {
   constructor() {
     super();
     window.addEventListener('menu-tap', () => this.onMenuButtonTap_());
+
+    /**
+     * Event callback for 'scroll'.
+     * @private {?Function}
+     */
+    this.scrollClassHandler_ = () => {
+      this.onScroll_();
+    };
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('scroll', this.scrollClassHandler_);
   }
 
   /**
@@ -247,6 +261,18 @@ export class NavigationViewPanelElement extends PolymerElement {
 
   onMenuButtonTap_() {
     this.$.drawer.toggle();
+  }
+
+  /** @private */
+  onScroll_() {
+    if (this.showToolBar) {
+      const scrollTop = document.documentElement.scrollTop;
+      if (scrollTop <= 0) {
+        this.shadowRoot.querySelector('page-toolbar').removeAttribute('shadow');
+        return;
+      }
+      this.shadowRoot.querySelector('page-toolbar').setAttribute('shadow', '');
+    }
   }
 }
 
