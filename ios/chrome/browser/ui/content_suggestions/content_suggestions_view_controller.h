@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class BubblePresenter;
 @class ContentSuggestionsSectionInformation;
@@ -19,12 +21,16 @@
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol DiscoverFeedHeaderChanging;
 @protocol DiscoverFeedMenuCommands;
+@protocol OverscrollActionsControllerDelegate;
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
 @protocol ThemeChangeDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 // CollectionViewController to display the suggestions items.
-@interface ContentSuggestionsViewController : CollectionViewController
+@interface ContentSuggestionsViewController
+    : CollectionViewController <ContentSuggestionsCollectionControlling,
+                                ThumbStripSupporting>
 
 // Inits view controller with |style|.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
@@ -43,6 +49,9 @@
 @property(nonatomic, readonly)
     CollectionViewModel<CollectionViewItem<SuggestedContent>*>*
         collectionViewModel;
+// Delegate for the overscroll actions.
+@property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
+    overscrollDelegate;
 // Delegate for handling theme changes (dark/light theme).
 @property(nonatomic, weak) id<ThemeChangeDelegate> themeChangeDelegate;
 @property(nonatomic, weak) id<DiscoverFeedMenuCommands> discoverFeedMenuHandler;
@@ -61,6 +70,10 @@
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 
+// The pan gesture handler to notify of scroll events happening in this view
+// controller.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
@@ -76,6 +89,10 @@
 - (void)addSuggestions:
             (NSArray<CollectionViewItem<SuggestedContent>*>*)suggestions
          toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo;
+// Updates the constraints of the collection.
+- (void)updateConstraints;
+// Clear the overscroll actions.
+- (void)clearOverscroll;
 
 @end
 

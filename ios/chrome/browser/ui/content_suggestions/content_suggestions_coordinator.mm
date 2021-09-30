@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
+#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -93,6 +94,7 @@
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
     DiscoverFeedMenuCommands,
+    OverscrollActionsControllerDelegate,
     ThemeChangeDelegate,
     URLDropDelegate> {
   // Observer bridge for mediator to listen to
@@ -239,11 +241,13 @@
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
+  self.suggestionsViewController.overscrollDelegate = self;
   self.suggestionsViewController.themeChangeDelegate = self;
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.discoverFeedMenuHandler = self;
+  self.suggestionsViewController.panGestureHandler = self.panGestureHandler;
   self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
 
   self.discoverFeedHeaderDelegate =
@@ -314,6 +318,10 @@
   return self.suggestionsViewController;
 }
 
+- (id<ThumbStripSupporting>)thumbStripSupporting {
+  return self.suggestionsViewController;
+}
+
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
   NamedGuide* menuButtonGuide =
       [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
@@ -341,6 +349,66 @@
   }
 }
 
+#pragma mark - OverscrollActionsControllerDelegate
+
+- (void)overscrollActionsController:(OverscrollActionsController*)controller
+                   didTriggerAction:(OverscrollAction)action {
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
+      handler = static_cast<id<ApplicationCommands, BrowserCommands,
+                               OmniboxCommands, SnackbarCommands>>(
+          self.browser->GetCommandDispatcher());
+  switch (action) {
+    case OverscrollAction::NEW_TAB: {
+      [handler openURLInNewTab:[OpenNewTabCommand command]];
+    } break;
+    case OverscrollAction::CLOSE_TAB: {
+      [handler closeCurrentTab];
+      base::RecordAction(base::UserMetricsAction("OverscrollActionCloseTab"));
+    } break;
+    case OverscrollAction::REFRESH:
+      [self reload];
+      break;
+    case OverscrollAction::NONE:
+      NOTREACHED();
+      break;
+  }
+}
+
+- (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return YES;
+}
+
+- (UIView*)toolbarSnapshotViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return
+      [[self.headerController toolBarView] snapshotViewAfterScreenUpdates:NO];
+}
+
+- (UIView*)headerViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return self.suggestionsViewController.view;
+}
+
+- (CGFloat)headerInsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return 0;
+}
+
+- (CGFloat)headerHeightForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  CGFloat height = [self.headerController toolBarView].bounds.size.height;
+  CGFloat topInset = self.suggestionsViewController.view.safeAreaInsets.top;
+  return height + topInset;
+}
+
+- (FullscreenController*)fullscreenControllerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  // Fullscreen isn't supported here.
+  return nullptr;
+}
 
 #pragma mark - ThemeChangeDelegate
 
@@ -470,6 +538,10 @@
   collectionOffset.y -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;
   return collectionOffset;
+}
+
+- (void)willUpdateSnapshot {
+  [self.suggestionsViewController clearOverscroll];
 }
 
 - (void)reload {
