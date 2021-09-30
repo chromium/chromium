@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 
@@ -100,10 +101,14 @@ void FileSystemHelper::FetchFileSystemInfoInFileThread(FetchCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+// TODO(https://crbug.com/1254031): Refactor DeleteFileSystemOriginInFileThread
+// to replace url::Origin parameter with blink::StorageKey; replace in-line
+// conversion to StorageKey below with parameter
 void FileSystemHelper::DeleteFileSystemOriginInFileThread(
     const url::Origin& origin) {
   DCHECK(file_task_runner()->RunsTasksInCurrentSequence());
-  filesystem_context_->DeleteDataForOriginOnFileTaskRunner(origin);
+  filesystem_context_->DeleteDataForStorageKeyOnFileTaskRunner(
+      blink::StorageKey(origin));
 }
 
 void FileSystemHelper::DidFetchFileSystemInfo(

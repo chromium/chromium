@@ -111,7 +111,8 @@ SyncFileSystemDeleteFileSystemFunction::Run() {
       FROM_HERE,
       BindOnce(
           &storage::FileSystemContext::DeleteFileSystem, file_system_context,
-          url::Origin::Create(source_url().GetOrigin()), file_system_url.type(),
+          blink::StorageKey(url::Origin::Create(source_url())),
+          file_system_url.type(),
           BindOnce(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
                    this)));
   return RespondLater();

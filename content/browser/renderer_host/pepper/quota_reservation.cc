@@ -14,6 +14,7 @@
 #include "storage/browser/file_system/quota/open_file_handle.h"
 #include "storage/browser/file_system/quota/quota_reservation.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -33,7 +34,7 @@ QuotaReservation::QuotaReservation(
     : file_system_context_(file_system_context) {
   quota_reservation_ =
       file_system_context->CreateQuotaReservationOnFileTaskRunner(
-          url::Origin::Create(origin_url), file_system_type);
+          blink::StorageKey(url::Origin::Create(origin_url)), file_system_type);
 }
 
 // For unit testing only.

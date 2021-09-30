@@ -279,20 +279,18 @@ void FileSystemContext::Initialize() {
           base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
-bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
-    const url::Origin& origin) {
+bool FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
+    const blink::StorageKey& storage_key) {
   DCHECK(default_file_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(origin.GetURL().is_valid());
+  DCHECK(!storage_key.origin().opaque());
 
   bool success = true;
   for (auto& type_backend_pair : backend_map_) {
     FileSystemBackend* backend = type_backend_pair.second;
     if (!backend->GetQuotaUtil())
       continue;
-    // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
-    // correct third-party StorageKey instead of in-line converting url::Origin
     if (backend->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
-            this, quota_manager_proxy(), blink::StorageKey(origin),
+            this, quota_manager_proxy(), storage_key,
             type_backend_pair.first) != base::File::FILE_OK) {
       // Continue the loop, but record the failure.
       success = false;
@@ -304,16 +302,14 @@ bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
 
 scoped_refptr<QuotaReservation>
 FileSystemContext::CreateQuotaReservationOnFileTaskRunner(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   DCHECK(default_file_task_runner()->RunsTasksInCurrentSequence());
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend || !backend->GetQuotaUtil())
     return scoped_refptr<QuotaReservation>();
-  // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
-  // correct third-party StorageKey instead of in-line converting url::Origin
   return backend->GetQuotaUtil()->CreateQuotaReservationOnFileTaskRunner(
-      blink::StorageKey(origin), type);
+      storage_key, type);
 }
 
 void FileSystemContext::Shutdown() {
@@ -491,11 +487,11 @@ void FileSystemContext::AttemptAutoMountForURLRequest(
   std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
 }
 
-void FileSystemContext::DeleteFileSystem(const url::Origin& origin,
+void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
                                          FileSystemType type,
                                          StatusCallback callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(origin.GetURL().is_valid());
+  DCHECK(!storage_key.origin().opaque());
   DCHECK(!callback.is_null());
 
   FileSystemBackend* backend = GetFileSystemBackend(type);
@@ -511,14 +507,10 @@ void FileSystemContext::DeleteFileSystem(const url::Origin& origin,
   base::PostTaskAndReplyWithResult(
       default_file_task_runner(), FROM_HERE,
       // It is safe to pass Unretained(quota_util) since context owns it.
-      // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
-      // correct third-party StorageKey instead of in-line converting
-      // url::Origin
-      base::BindOnce(&FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,
-                     base::Unretained(backend->GetQuotaUtil()),
-                     base::RetainedRef(this),
-                     base::Unretained(quota_manager_proxy()),
-                     blink::StorageKey(origin), type),
+      base::BindOnce(
+          &FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,
+          base::Unretained(backend->GetQuotaUtil()), base::RetainedRef(this),
+          base::Unretained(quota_manager_proxy()), storage_key, type),
       std::move(callback));
 }
 
