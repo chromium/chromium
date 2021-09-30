@@ -1331,7 +1331,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video" units="ms"
-    expires_after="2021-12-05">
+    expires_after="never">
+<!-- expires-never: performance monitoring. -->
+
   <owner>chcunningham@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1341,7 +1343,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video.Clear" units="ms"
-    expires_after="2021-10-10">
+    expires_after="never">
+<!-- expires-never: performance monitoring. -->
+
   <owner>chcunningham@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1353,7 +1357,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video.Encrypted"
-    units="ms" expires_after="2021-01-15">
+    units="ms" expires_after="never">
+<!-- expires-never: performance monitoring. -->
+
   <owner>chcunningham@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
