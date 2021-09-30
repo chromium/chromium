@@ -207,6 +207,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
     std::unique_ptr<NavigationRequestInfo> request_info(
         std::make_unique<NavigationRequestInfo>(
             std::move(common_params), std::move(begin_params),
+            network::mojom::WebSandboxFlags::kNone,
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromUrl(url)),

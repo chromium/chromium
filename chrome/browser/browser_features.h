@@ -40,6 +40,7 @@ extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 extern const base::Feature kUserDataSnapshot;
 #endif
 
+extern const base::Feature kSandboxExternalProtocolBlocked;
 extern const base::Feature kTriggerNetworkDataMigration;
 
 // Returns true if network context data should be migrated to the new data path.

@@ -830,10 +830,19 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
     bool is_main_frame,
+    network::mojom::WebSandboxFlags /*sandbox_flags*/,
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  // Sandbox flags
+  // =============
+  //
+  // Contrary to the chrome/ implementation, sandbox flags are ignored. Webview
+  // by itself to not invoke external apps. However it let the embedding
+  // app to intercept the request and decide what to do. We need to be careful
+  // here not breaking applications, so the sandbox flags are ignored.
+
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
       out_factory->InitWithNewPipeAndPassReceiver();
   // We don't need to care for |security_options| as the factories constructed

@@ -26446,6 +26446,7 @@ Called by update_document_policy_enum.py.-->
   <int value="900" label="ReportDeviceSecurityStatus"/>
   <int value="901" label="EnableDeviceGranularReporting"/>
   <int value="902" label="WebSQLInThirdPartyContextEnabled"/>
+  <int value="903" label="SandboxExternalProtocol"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -34719,6 +34720,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4053" label="V8Navigator_CreateAdRequest_Method"/>
   <int value="4054" label="V8Navigator_FinalizeAd_Method"/>
   <int value="4055" label="RegionCapture"/>
+  <int value="4056" label="ExternalProtocolBlockedBySandbox"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
