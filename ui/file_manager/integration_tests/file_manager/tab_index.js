@@ -72,10 +72,6 @@ testcase.tabindexFocus = async () => {
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   if (isBannersFrameworkEnabled) {
-    // The text of the banner, ensures it is tabbed through to make it readable
-    // by screen readers.
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'educational-text-group'));
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
     chrome.test.assertTrue(
@@ -126,10 +122,6 @@ testcase.tabindexFocusDownloads = async () => {
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   if (isBannersFrameworkEnabled) {
-    // The text of the banner, ensures it is tabbed through to make it readable
-    // by screen readers.
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'educational-text-group'));
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
   } else {
@@ -204,10 +196,6 @@ testcase.tabindexFocusDirectorySelected = async () => {
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   if (isBannersFrameworkEnabled) {
-    // The text of the banner, ensures it is tabbed through to make it readable
-    // by screen readers.
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'educational-text-group'));
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
     chrome.test.assertTrue(
@@ -299,7 +287,7 @@ testcase.tabindexOpenDialogDownloads = async () => {
   const isBannersFrameworkEnabled =
       await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
   if (isBannersFrameworkEnabled) {
-    tabindexIds.push('educational-text-group', 'dismiss-button');
+    tabindexIds.push('dismiss-button');
   }
   tabindexIds.push('file-list');
   return tabindexFocus(
@@ -328,8 +316,7 @@ testcase.tabindexOpenDialogDrive = async () => {
   const isBannersFrameworkEnabled =
       await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
   if (isBannersFrameworkEnabled) {
-    tabindexIds.push(
-        'educational-text-group', 'drive-learn-more-button', 'dismiss-button');
+    tabindexIds.push('drive-learn-more-button', 'dismiss-button');
   }
   tabindexIds.push('directory-tree', 'file-list');
   return tabindexFocus(

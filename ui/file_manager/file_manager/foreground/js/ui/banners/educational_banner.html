@@ -67,18 +67,22 @@
 
   ::slotted(cr-button),
   #dismiss-button {
-    border: 0;
+    border: 1px solid transparent;
     box-shadow: none;
     height: 32px;
-    padding-inline-end: 16px;
-    padding-inline-start: 16px;
+    padding-inline: 16px;
     position: relative;
+  }
+
+  ::slotted(cr-button:focus),
+  #dismiss-button:focus {
+    border: 1px solid var(--cros-focus-ring-color);
   }
 </style>
 <div class="educational-banner">
   <div class="educational-text-icon">
     <div class="feature-icon"></div>
-    <div id="educational-text-group" tabindex="0">
+    <div id="educational-text-group">
       <div class="title headline2">
         <slot name="title"></slot>
       </div>
