@@ -324,9 +324,9 @@ public class AutofillAssistantUiController {
     }
 
     @CalledByNative
-    private void showSnackbar(int delayMs, String message) {
+    private void showSnackbar(int delayMs, String message, String undoString) {
         mSnackbarController = AssistantSnackbar.show(mActivity, mActivity.getSnackbarManager(),
-                delayMs, message, this::safeSnackbarResult);
+                delayMs, message, undoString, this::safeSnackbarResult);
     }
 
     private void dismissSnackbar() {

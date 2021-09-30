@@ -268,6 +268,7 @@ class UiControllerAndroid : public ControllerObserver {
   // action after a short delay unless the user taps the undo button.
   void ShowSnackbar(base::TimeDelta delay,
                     const std::string& message,
+                    const std::string& undo_string,
                     base::OnceCallback<void()> action);
 
   void OnCancel(int action_index,
