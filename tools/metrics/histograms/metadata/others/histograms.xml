@@ -12274,9 +12274,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PerformanceMonitor.EnergyImpact.{ProcessName}{UsageScenario}"
-    units="ScaledUnits" expires_after="2021-10-30">
-  <owner>lgrey@chromium.org</owner>
-  <owner>markchang@chromium.org</owner>
+    units="ScaledUnits" expires_after="2022-10-30">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     (Mac only) A synthetic power use estimate, as displayed in macOS Activity
     Monitor and the battery menu. This incorporates CPU utilization, idle
@@ -12311,9 +12311,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups.{ProcessName}{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2021-10-30">
-  <owner>lgrey@chromium.org</owner>
-  <owner>markchang@chromium.org</owner>
+    units="WakeupsPerSecond" expires_after="2022-10-30">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The average CPU idle wakeups per second, sampled every two minutes.
 
@@ -12332,9 +12332,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PerformanceMonitor.PackageExitIdleWakeups.{ProcessName}{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2021-10-30">
-  <owner>lgrey@chromium.org</owner>
-  <owner>markchang@chromium.org</owner>
+    units="WakeupsPerSecond" expires_after="2022-10-30">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.orgg</owner>
   <summary>
     (Mac only) The average package exit idle wakeups per second, sampled every
     two minutes. This is a subset of wakeups that indicate that the processor
