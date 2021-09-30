@@ -18,6 +18,8 @@ struct CONTENT_EXPORT SentReportInfo {
     kSent,
     // The report failed without receiving response headers.
     kTransientFailure,
+    // The report failed due to other cause and would not be retried.
+    kFailure,
     // The report was dropped without ever being sent, e.g. due to embedder
     // disabling the API.
     kDropped,

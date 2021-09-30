@@ -14859,6 +14859,12 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failed"/>
 </enum>
 
+<enum name="ConversionReportSendOutcome">
+  <int value="0" label="Sent"/>
+  <int value="1" label="Failed due to error"/>
+  <int value="2" label="Dropped due to embedder disabling the API"/>
+</enum>
+
 <enum name="ConversionReportStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Internal network error"/>

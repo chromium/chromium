@@ -515,6 +515,9 @@ std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
     case SentReportInfo::Status::kTransientFailure:
       out << "kTransientFailure";
       break;
+    case SentReportInfo::Status::kFailure:
+      out << "kFailure";
+      break;
     case SentReportInfo::Status::kDropped:
       out << "kDropped";
       break;

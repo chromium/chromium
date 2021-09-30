@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
@@ -30,6 +31,15 @@
 namespace content {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ConversionReportSendOutcome {
+  kSent = 0,
+  kFailed = 1,
+  kDropped = 2,
+  kMaxValue = kDropped
+};
 
 const size_t kMaxSentReportsToStore = 100;
 
@@ -69,6 +79,25 @@ void RecordCreateReportStatus(
 // successfully deleted, which can lead to duplicate reports.
 void RecordDeleteEvent(ConversionManagerImpl::DeleteEvent event) {
   base::UmaHistogramEnumeration("Conversions.DeleteSentReportOperation", event);
+}
+
+ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
+    SentReportInfo::Status status) {
+  switch (status) {
+    case SentReportInfo::Status::kSent:
+      return ConversionReportSendOutcome::kSent;
+    case SentReportInfo::Status::kTransientFailure:
+    case SentReportInfo::Status::kFailure:
+      return ConversionReportSendOutcome::kFailed;
+    case SentReportInfo::Status::kOffline:
+    case SentReportInfo::Status::kRemovedFromQueue:
+      // Offline reports and reports removed from the queue before being sent
+      // should never record an outcome.
+      NOTREACHED();
+      return ConversionReportSendOutcome::kFailed;
+    case SentReportInfo::Status::kDropped:
+      return ConversionReportSendOutcome::kDropped;
+  }
 }
 
 }  // namespace
@@ -359,6 +388,10 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
           RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded
                                       : DeleteEvent::kFailed);
         }));
+
+    base::UmaHistogramEnumeration(
+        "Conversion.ReportSendOutcome",
+        ConvertToConversionReportSendOutcome(info.status));
   }
 
   DCHECK_EQ(send_reports_for_web_ui_callback_.is_null(),
@@ -375,7 +408,8 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   }
 
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
-  if (info.status != SentReportInfo::Status::kSent)
+  if (info.status != SentReportInfo::Status::kSent &&
+      info.status != SentReportInfo::Status::kFailure)
     return;
 
   session_storage_.AddSentReport(std::move(info));

@@ -296,6 +296,7 @@ TEST_F(ConversionManagerImplTest, QueuedReportNotSent_QueuedAgain) {
 
 TEST_F(ConversionManagerImplTest,
        QueuedReportFailedWithShouldRetry_QueuedAgain) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
   test_reporter_->SetSentReportInfoStatus(
       SentReportInfo::Status::kTransientFailure);
@@ -309,12 +310,16 @@ TEST_F(ConversionManagerImplTest,
   // This is 3 instead of 1 because the failed report is directly added back
   // into the queue 2 times.
   EXPECT_EQ(3u, test_reporter_->num_reports());
+
+  // kFailed = 1.
+  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(ConversionManagerImplTest,
        QueuedReportFailedWithoutShouldRetry_NotQueuedAgain) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
+  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kFailure);
 
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -327,9 +332,13 @@ TEST_F(ConversionManagerImplTest,
   // If the report indicated retry, it should be added to the queue again.
   task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
+
+  // kFailed = 1.
+  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(false);
   test_reporter_->SetSentReportInfoStatus(
       SentReportInfo::Status::kTransientFailure);
@@ -382,9 +391,13 @@ TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   // At this point, the report has reached the maximum number of attempts and it
   // should no longer be present in the DB.
   ExpectNumStoredReports(0);
+
+  // kFailed = 1.
+  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
   test_reporter_->SetSentReportInfoStatus(
       SentReportInfo::Status::kTransientFailure);
@@ -405,6 +418,9 @@ TEST_F(ConversionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
   EXPECT_EQ(3u, test_reporter_->num_reports());
+
+  // kFailed =1.
+  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(ConversionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -427,6 +443,7 @@ TEST_F(ConversionManagerImplTest, ReportExpiredAtStartup_Sent) {
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -438,9 +455,13 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
   // The report should not be added to the queue again.
   task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
+
+  // kSent = 0.
+  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 0, 1);
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
+  base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
@@ -487,6 +508,13 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   EXPECT_EQ(2u, sent_reports.size());
   EXPECT_EQ(1u, sent_reports[0].report.impression.impression_data());
   EXPECT_EQ(3u, sent_reports[1].report.impression.impression_data());
+
+  // kSent = 0.
+  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 0, 2);
+  // kFailed = 1.
+  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 1, 1);
+  // kDropped = 2.
+  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 2, 1);
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {

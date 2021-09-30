@@ -249,9 +249,9 @@ TEST_F(ConversionNetworkSenderTest,
       {net::ERR_CONNECTION_ABORTED, SentReportInfo::Status::kTransientFailure},
       {net::ERR_CONNECTION_TIMED_OUT,
        SentReportInfo::Status::kTransientFailure},
-      {net::ERR_CONNECTION_REFUSED, SentReportInfo::Status::kSent},
-      {net::ERR_CERT_DATE_INVALID, SentReportInfo::Status::kSent},
-      {net::OK, SentReportInfo::Status::kSent},
+      {net::ERR_CONNECTION_REFUSED, SentReportInfo::Status::kFailure},
+      {net::ERR_CERT_DATE_INVALID, SentReportInfo::Status::kFailure},
+      {net::OK, SentReportInfo::Status::kFailure},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -289,7 +289,7 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kSent, sent_reports_.back().status);
+  EXPECT_EQ(SentReportInfo::Status::kFailure, sent_reports_.back().status);
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -302,7 +302,7 @@ TEST_F(ConversionNetworkSenderTest,
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
 
   EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kSent, sent_reports_[0].status);
+  EXPECT_EQ(SentReportInfo::Status::kFailure, sent_reports_[0].status);
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -373,7 +373,7 @@ TEST_F(ConversionNetworkSenderTest, ReportResultsInHttpError_SentCallbackRuns) {
   EXPECT_THAT(
       sent_reports_,
       ElementsAre(SentReportInfo(
-          std::move(report), SentReportInfo::Status::kSent,
+          std::move(report), SentReportInfo::Status::kFailure,
           /*http_response_code=*/net::HttpStatusCode::HTTP_BAD_REQUEST)));
 }
 

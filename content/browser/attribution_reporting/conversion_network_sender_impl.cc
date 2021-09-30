@@ -204,11 +204,14 @@ void ConversionNetworkSenderImpl::OnReportSent(
                    net_error == net::ERR_CONNECTION_ABORTED ||
                    net_error == net::ERR_CONNECTION_RESET);
 
+  SentReportInfo::Status report_status =
+      (status == Status::kOk)
+          ? SentReportInfo::Status::kSent
+          : (should_retry ? SentReportInfo::Status::kTransientFailure
+                          : SentReportInfo::Status::kFailure);
+
   std::move(sent_callback)
-      .Run(SentReportInfo(std::move(report),
-                          should_retry
-                              ? SentReportInfo::Status::kTransientFailure
-                              : SentReportInfo::Status::kSent,
+      .Run(SentReportInfo(std::move(report), report_status,
                           headers ? headers->response_code() : 0));
 }
 
