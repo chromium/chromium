@@ -4857,6 +4857,33 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
+  // Navigate the primary main frame to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html?initial");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHost* prerender_frame_host = GetPrerenderedMainFrameHost(host_id);
+  RenderProcessHost* prerender_process_host =
+      prerender_frame_host->GetProcess();
+  ASSERT_NE(prerender_frame_host, nullptr);
+  // Ensure that a prerender process is invisible in
+  // ChildProcessLauncherPriority. This will put prerender processes in lower
+  // priority compared to other active processes. (See
+  // https://crbug.com/1211665)
+  EXPECT_TRUE(prerender_process_host->IsProcessBackgrounded());
+
+  // Activate the prerendered page.
+  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  // Expect the change in the ChildProcessLauncherPriority to become visible.
+  EXPECT_FALSE(prerender_process_host->IsProcessBackgrounded());
+}
+
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderPurposePrefetchBrowserTest() = default;
