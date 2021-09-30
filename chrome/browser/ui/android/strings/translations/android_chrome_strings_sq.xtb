@@ -146,6 +146,7 @@
 <translation id="1986685561493779662">Emri ekziston tashmë</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> buton</translation>
 <translation id="2000419248597011803">Dërgon disa kuki dhe kërkime nga shiriti i adresës dhe kutia e kërkimit te motori yt i parazgjedhur i kërkimit</translation>
+<translation id="200114059308480249">Të përfshihet teksti përreth në kërkimet e Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skedar}other{# skedarë}}</translation>
 <translation id="2021896219286479412">Kontrollet e sajtit në ekranin e plotë</translation>
 <translation id="2038563949887743358">Aktivizo "Kërko sajtin për desktop"</translation>
@@ -243,6 +244,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2518590038762162553">Në "Modalitetin e lehtë", Chrome i ngarkon faqet më shpejt dhe përdor deri në 60 përqind më pak të dhëna. Për të optimizuar faqet që viziton, Chrome e dërgon trafikun tënd të uebit te Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Dërgon te Google URL-të e faqeve që ti viziton</translation>
+<translation id="2527209463677295330">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira</translation>
 <translation id="2527497042232966453">Kaloi te skedat "e fshehta"</translation>
 <translation id="2527779675047087889">Fshih përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="2532336938189706096">Pamja e uebit</translation>
@@ -319,6 +321,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2979448359891869301">Pamja e ekranit nuk mund të zgjerohet. Provo përsëri kur telefoni nuk është i zënë.</translation>
 <translation id="2979639724566107830">Hape në një dritare të re</translation>
 <translation id="2981364137500752533">Mund të kesh deri në 5 dritare.</translation>
+<translation id="2984978667043170458">Përfshi tekstin përreth në kërkimet e Google</translation>
 <translation id="2987620471460279764">Teksti i ndarë nga pajisje tjetër</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
 <translation id="2992473221983447149">Përshkrimet e imazheve</translation>
@@ -1044,6 +1047,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Ndaj 1 artikull të zgjedhur}other{Ndaj # artikuj të zgjedhur}}</translation>
 <translation id="7359002509206457351">Qasu te mënyrat e pagesës</translation>
 <translation id="7375125077091615385">Shkruaj:</translation>
+<translation id="7376560087009844242">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira kur përdor "Prek për të kërkuar". Mund të vizitosh gjithmonë <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" /> për ta ndryshuar këtë.</translation>
 <translation id="7386842512861524348">Lidhja e sajtit është e sigurt përveç nëse Chrome të thotë ndryshe.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL-ja</translation>
@@ -1058,6 +1062,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7444811645081526538">Më shumë kategori</translation>
 <translation id="7453467225369441013">Të nxjerr nga shumica e sajteve. Nuk do të dalësh nga llogaria jote e Google.</translation>
 <translation id="7454641608352164238">Nuk ka hapësirë të mjaftueshme</translation>
+<translation id="7474822150871987353">Mëso për temat në sajtet e uebit pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to.</translation>
 <translation id="7475192538862203634">Nëse e shikon shpesh këtë, provo këto <ph name="BEGIN_LINK" />sugjerime<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Karta SD nuk u gjet. Mund të mungojnë disa nga skedarët e tu.</translation>
 <translation id="7479104141328977413">Menaxhimi i skedave</translation>
@@ -1224,6 +1229,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8410695015584479363">Gjurmo çmimet</translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>
+<translation id="8419244640277402268">Përfshi</translation>
 <translation id="8424781820952413435">Faqja u dërgua. Për ta parë, hap Chrome në <ph name="DEVICE_TYPE" /> tënde</translation>
 <translation id="8427875596167638501">Skeda e shikimit paraprak është gjysmë e hapur</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
