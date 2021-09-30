@@ -7,6 +7,11 @@ declare_args() {
   # WebKit for mac but incorrectly setting `target_os="ios"`.
   is_webkit_only_build = false
 
+  # Control whether //ios/chrome and //ios/web targets are build. This
+  # is used by bots from projects based on top of Chromium that want to
+  # only reuse shared code (//ios/net, //remoting/ios, ...).
+  ios_build_chrome = true
+
   # Controls whether universal links are blocked from opening native apps
   # when the user is browsing in off the record mode.
   block_universal_links_in_off_the_record_mode = true
