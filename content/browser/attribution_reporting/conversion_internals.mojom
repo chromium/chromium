@@ -7,7 +7,7 @@ module content.mojom;
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// Represents StorableImpression::SourceType.
+// Represents StorableSource::SourceType.
 enum SourceType {
   kNavigation,
   kEvent,

@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/time/clock.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
@@ -29,11 +29,11 @@ constexpr AttributionType kAttributionTypes[] = {
 };
 
 WARN_UNUSED_RESULT AttributionType
-AttributionTypeFromSourceType(StorableImpression::SourceType source_type) {
+AttributionTypeFromSourceType(StorableSource::SourceType source_type) {
   switch (source_type) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       return AttributionType::kNavigation;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       return AttributionType::kEvent;
   }
 }
@@ -115,7 +115,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 }
 
 bool RateLimitTable::AddRateLimit(sql::Database* db,
-                                  const ConversionReport& report) {
+                                  const AttributionReport& report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(report.impression.impression_id().has_value());
 
@@ -137,7 +137,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
 bool RateLimitTable::AddRow(
     sql::Database* db,
     AttributionType attribution_type,
-    StorableImpression::Id impression_id,
+    StorableSource::Id impression_id,
     const std::string& serialized_impression_site,
     const std::string& serialized_impression_origin,
     const std::string& serialized_conversion_destination,
@@ -178,7 +178,7 @@ bool RateLimitTable::AddRow(
 
 AttributionAllowedStatus RateLimitTable::AttributionAllowed(
     sql::Database* db,
-    const ConversionReport& report,
+    const AttributionReport& report,
     base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -355,7 +355,7 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db,
 
 bool RateLimitTable::ClearDataForImpressionIds(
     sql::Database* db,
-    const std::vector<StorableImpression::Id>& impression_ids) {
+    const std::vector<StorableSource::Id>& impression_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
@@ -367,7 +367,7 @@ bool RateLimitTable::ClearDataForImpressionIds(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
 
-  for (StorableImpression::Id id : impression_ids) {
+  for (StorableSource::Id id : impression_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
     if (!statement.Run())
@@ -380,7 +380,7 @@ bool RateLimitTable::ClearDataForImpressionIds(
 AttributionAllowedStatus
 RateLimitTable::AddAggregateHistogramContributionsForTesting(
     sql::Database* db,
-    const StorableImpression& impression,
+    const StorableSource& impression,
     const std::vector<AggregateHistogramContribution>& contributions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(impression.impression_id().has_value());

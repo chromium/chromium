@@ -23,12 +23,12 @@ ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
 }
 
 int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression(
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       return 3;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       return 1;
   }
 }
@@ -73,7 +73,7 @@ ConversionStorageDelegateImpl::GetRateLimits(
 uint64_t ConversionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ConversionPolicy().GetSanitizedConversionData(
-      base::RandUint64(), StorableImpression::SourceType::kEvent);
+      base::RandUint64(), StorableSource::SourceType::kEvent);
 }
 
 base::TimeDelta
@@ -89,7 +89,7 @@ ConversionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time ConversionStorageDelegateImpl::GetReportTime(
-    const StorableImpression& impression,
+    const StorableSource& impression,
     base::Time conversion_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If in debug mode, the report should be sent immediately.

@@ -12,7 +12,7 @@ using CreateReportResult = ::content::ConversionStorage::CreateReportResult;
 
 CreateReportResult::CreateReportResult(
     Status status,
-    absl::optional<ConversionReport> dropped_report)
+    absl::optional<AttributionReport> dropped_report)
     : status(status), dropped_report(std::move(dropped_report)) {}
 
 CreateReportResult::~CreateReportResult() = default;

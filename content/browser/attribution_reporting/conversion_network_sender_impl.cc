@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -45,7 +45,7 @@ enum class Status {
 };
 
 // Called when a network request is started for |report|, for logging metrics.
-void LogMetricsOnReportSend(const ConversionReport& report) {
+void LogMetricsOnReportSend(const AttributionReport& report) {
   // Reports sent from the WebUI should not log metrics.
   if (report.report_time == base::Time::Min())
     return;
@@ -76,7 +76,7 @@ ConversionNetworkSenderImpl::ConversionNetworkSenderImpl(
 
 ConversionNetworkSenderImpl::~ConversionNetworkSenderImpl() = default;
 
-void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
+void ConversionNetworkSenderImpl::SendReport(AttributionReport report,
                                              ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -162,7 +162,7 @@ void ConversionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
 
 void ConversionNetworkSenderImpl::OnReportSent(
     UrlLoaderList::iterator it,
-    ConversionReport report,
+    AttributionReport report,
     ReportSentCallback sent_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();

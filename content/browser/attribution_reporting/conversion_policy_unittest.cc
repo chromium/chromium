@@ -9,16 +9,16 @@
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
 
-const StorableImpression::SourceType kSourceTypes[] = {
-    StorableImpression::SourceType::kNavigation,
-    StorableImpression::SourceType::kEvent,
+const StorableSource::SourceType kSourceTypes[] = {
+    StorableSource::SourceType::kNavigation,
+    StorableSource::SourceType::kEvent,
 };
 
 class ConfigurableConversionPolicy : public ConversionPolicy {
@@ -47,14 +47,14 @@ TEST_F(ConversionPolicyTest, HighEntropyConversionData_StrippedToLowerBits) {
       std::make_unique<ConfigurableConversionPolicy>(/*should_noise=*/false);
 
   EXPECT_EQ(0u, policy->GetSanitizedConversionData(
-                    8, StorableImpression::SourceType::kNavigation));
+                    8, StorableSource::SourceType::kNavigation));
   EXPECT_EQ(1u, policy->GetSanitizedConversionData(
-                    9, StorableImpression::SourceType::kNavigation));
+                    9, StorableSource::SourceType::kNavigation));
 
   EXPECT_EQ(0u, policy->GetSanitizedConversionData(
-                    2, StorableImpression::SourceType::kEvent));
+                    2, StorableSource::SourceType::kEvent));
   EXPECT_EQ(1u, policy->GetSanitizedConversionData(
-                    3, StorableImpression::SourceType::kEvent));
+                    3, StorableSource::SourceType::kEvent));
 }
 
 TEST_F(ConversionPolicyTest, SanitizeHighEntropyImpressionData_Unchanged) {
@@ -71,15 +71,14 @@ TEST_F(ConversionPolicyTest, LowEntropyConversionData_Unchanged) {
       std::make_unique<ConfigurableConversionPolicy>(/*should_noise=*/false);
 
   for (uint64_t conversion_data = 0; conversion_data < 8; conversion_data++) {
-    EXPECT_EQ(
-        conversion_data,
-        policy->GetSanitizedConversionData(
-            conversion_data, StorableImpression::SourceType::kNavigation));
+    EXPECT_EQ(conversion_data,
+              policy->GetSanitizedConversionData(
+                  conversion_data, StorableSource::SourceType::kNavigation));
   }
   for (uint64_t conversion_data = 0; conversion_data < 2; conversion_data++) {
     EXPECT_EQ(conversion_data,
               policy->GetSanitizedConversionData(
-                  conversion_data, StorableImpression::SourceType::kEvent));
+                  conversion_data, StorableSource::SourceType::kEvent));
   }
 }
 
@@ -149,19 +148,19 @@ TEST_F(ConversionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
 
 TEST_F(ConversionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
-    StorableImpression::SourceType source_type;
+    StorableSource::SourceType source_type;
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {StorableImpression::SourceType::kNavigation,
-       base::TimeDelta::FromHours(36), base::TimeDelta::FromHours(36)},
-      {StorableImpression::SourceType::kEvent, base::TimeDelta::FromHours(36),
+      {StorableSource::SourceType::kNavigation, base::TimeDelta::FromHours(36),
+       base::TimeDelta::FromHours(36)},
+      {StorableSource::SourceType::kEvent, base::TimeDelta::FromHours(36),
        base::TimeDelta::FromDays(2)},
 
-      {StorableImpression::SourceType::kNavigation,
+      {StorableSource::SourceType::kNavigation,
        base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
        base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1)},
-      {StorableImpression::SourceType::kEvent,
+      {StorableSource::SourceType::kEvent,
        base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
        base::TimeDelta::FromDays(1)},
   };

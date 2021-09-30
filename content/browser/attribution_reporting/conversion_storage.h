@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 
 namespace base {
 class Time;
@@ -23,7 +23,7 @@ class Origin;
 
 namespace content {
 
-class StorableConversion;
+class StorableTrigger;
 
 // This class provides an interface for persisting impression/conversion data to
 // disk, and performing queries on it. ConversionStorage should initialize
@@ -46,7 +46,7 @@ class ConversionStorage {
 
     // Returns the time a report should be sent for a given conversion time and
     // its corresponding impression.
-    virtual base::Time GetReportTime(const StorableImpression& impression,
+    virtual base::Time GetReportTime(const StorableSource& impression,
                                      base::Time conversion_time) const
         WARN_UNUSED_RESULT = 0;
 
@@ -56,8 +56,7 @@ class ConversionStorage {
     // Impressions will be checked against this limit after they schedule a new
     // report.
     virtual int GetMaxConversionsPerImpression(
-        StorableImpression::SourceType source_type) const
-        WARN_UNUSED_RESULT = 0;
+        StorableSource::SourceType source_type) const WARN_UNUSED_RESULT = 0;
 
     // These limits are designed solely to avoid excessive disk / memory usage.
     // In particular, they do not correspond with any privacy parameters.
@@ -117,7 +116,7 @@ class ConversionStorage {
   // an impression is stored, all matching impressions that have
   // already converted are marked as inactive, and are no longer eligible for
   // reporting. Unconverted matching impressions are not modified.
-  virtual void StoreImpression(const StorableImpression& impression) = 0;
+  virtual void StoreImpression(const StorableSource& impression) = 0;
 
   struct CONTENT_EXPORT CreateReportResult {
     // These values are persisted to logs. Entries should not be renumbered and
@@ -138,7 +137,7 @@ class ConversionStorage {
     };
 
     CreateReportResult(Status status,
-                       absl::optional<ConversionReport> dropped_report);
+                       absl::optional<AttributionReport> dropped_report);
     ~CreateReportResult();
 
     CreateReportResult(const CreateReportResult&);
@@ -150,7 +149,7 @@ class ConversionStorage {
     Status status;
     // Null unless `status` is `kSuccessDroppedLowerPriority` or
     // `kPriorityTooLow`.
-    absl::optional<ConversionReport> dropped_report;
+    absl::optional<AttributionReport> dropped_report;
   };
 
   // Finds all stored impressions matching a given `conversion`, and stores the
@@ -159,13 +158,13 @@ class ConversionStorage {
   // storage. Only active impressions will receive new conversions. Returns
   // whether a new conversion report has been scheduled/added to storage.
   virtual CreateReportResult MaybeCreateAndStoreConversionReport(
-      const StorableConversion& conversion) = 0;
+      const StorableTrigger& conversion) = 0;
 
   // Returns all of the conversion reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of conversions to return; use
   // a negative number for no limit.
-  virtual std::vector<ConversionReport> GetConversionsToReport(
+  virtual std::vector<AttributionReport> GetConversionsToReport(
       base::Time max_report_time,
       int limit = -1) WARN_UNUSED_RESULT = 0;
 
@@ -175,17 +174,17 @@ class ConversionStorage {
   // converted and then superceded by a matching impression should not be
   // returned. |limit| limits the number of impressions to return; use
   // a negative number for no limit.
-  virtual std::vector<StorableImpression> GetActiveImpressions(int limit = -1)
+  virtual std::vector<StorableSource> GetActiveImpressions(int limit = -1)
       WARN_UNUSED_RESULT = 0;
 
   // Deletes the conversion report with the given |conversion_id|. Returns
   // false if an error occurred.
-  virtual bool DeleteConversion(ConversionReport::Id conversion_id) = 0;
+  virtual bool DeleteConversion(AttributionReport::Id conversion_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
   // failure to send the report so that it is retried later.
-  virtual bool UpdateReportForSendFailure(ConversionReport::Id conversion_id,
+  virtual bool UpdateReportForSendFailure(AttributionReport::Id conversion_id,
                                           base::Time new_report_time) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between

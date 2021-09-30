@@ -11,9 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -38,13 +38,13 @@ class RateLimitTableTest : public testing::Test {
     table_ = std::make_unique<RateLimitTable>(delegate_.get(), &clock_);
   }
 
-  ConversionReport NewConversionReport(
+  AttributionReport NewConversionReport(
       url::Origin impression_origin,
       url::Origin conversion_origin,
-      StorableImpression::Id impression_id = StorableImpression::Id(0),
-      StorableImpression::SourceType source_type =
-          StorableImpression::SourceType::kNavigation) {
-    return ConversionReport(
+      StorableSource::Id impression_id = StorableSource::Id(0),
+      StorableSource::SourceType source_type =
+          StorableSource::SourceType::kNavigation) {
+    return AttributionReport(
         ImpressionBuilder(clock()->Now())
             .SetImpressionOrigin(std::move(impression_origin))
             .SetConversionOrigin(std::move(conversion_origin))
@@ -211,7 +211,7 @@ TEST_F(RateLimitTableTest, AttributionAllowed) {
 
 TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
   // Tests that limits are calculated independently for each
-  // `StorableImpression::SourceType`. In the future, we may change this so that
+  // `StorableSource::SourceType`. In the future, we may change this so that
   // there is a combined calculation but each source type is weighted
   // differently.
 
@@ -228,11 +228,11 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
   const url::Origin example_c = url::Origin::Create(GURL("https://c.example/"));
 
   const auto report_navigation =
-      NewConversionReport(example_a, example_c, StorableImpression::Id(0),
-                          StorableImpression::SourceType::kNavigation);
+      NewConversionReport(example_a, example_c, StorableSource::Id(0),
+                          StorableSource::SourceType::kNavigation);
   const auto report_event =
-      NewConversionReport(example_a, example_c, StorableImpression::Id(0),
-                          StorableImpression::SourceType::kEvent);
+      NewConversionReport(example_a, example_c, StorableSource::Id(0),
+                          StorableSource::SourceType::kEvent);
 
   // Add distinct source types on the same origin to ensure independence.
   EXPECT_TRUE(table()->AddRateLimit(&db, report_navigation));
@@ -474,7 +474,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
                 ImpressionBuilder(clock()->Now())
                     .SetImpressionOrigin(example_a)
                     .SetConversionOrigin(example_b)
-                    .SetImpressionId(StorableImpression::Id(1))
+                    .SetImpressionId(StorableSource::Id(1))
                     .Build(),
                 {{.bucket = "a", .value = 2}}));
   EXPECT_EQ(1u, GetRateLimitRows(&db));
@@ -555,17 +555,13 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
   base::Time now = clock()->Now();
 
   EXPECT_TRUE(table()->AddRateLimit(
-      &db,
-      NewConversionReport(example_a, example_b, StorableImpression::Id(1))));
+      &db, NewConversionReport(example_a, example_b, StorableSource::Id(1))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db,
-      NewConversionReport(example_a, example_b, StorableImpression::Id(2))));
+      &db, NewConversionReport(example_a, example_b, StorableSource::Id(2))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db,
-      NewConversionReport(example_c, example_d, StorableImpression::Id(3))));
+      &db, NewConversionReport(example_c, example_d, StorableSource::Id(3))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db,
-      NewConversionReport(example_c, example_d, StorableImpression::Id(4))));
+      &db, NewConversionReport(example_c, example_d, StorableSource::Id(4))));
   EXPECT_EQ(4u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
             table()->AttributionAllowed(
@@ -575,7 +571,7 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
                 &db, NewConversionReport(example_c, example_d), now));
 
   EXPECT_TRUE(table()->ClearDataForImpressionIds(
-      &db, {StorableImpression::Id(1), StorableImpression::Id(4)}));
+      &db, {StorableSource::Id(1), StorableSource::Id(4)}));
   EXPECT_EQ(2u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(
@@ -599,7 +595,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
       ImpressionBuilder(clock()->Now())
           .SetImpressionOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example/")))
-          .SetImpressionId(StorableImpression::Id(1))
+          .SetImpressionId(StorableSource::Id(1))
           .Build();
 
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,

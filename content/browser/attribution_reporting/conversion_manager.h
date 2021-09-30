@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/common/content_export.h"
 
@@ -26,8 +26,8 @@ namespace content {
 
 class ConversionPolicy;
 class ConversionSessionStorage;
-class StorableConversion;
-class StorableImpression;
+class StorableTrigger;
+class StorableSource;
 class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
@@ -51,21 +51,21 @@ class CONTENT_EXPORT ConversionManager {
 
   // Persists the given |impression| to storage. Called when a navigation
   // originating from an impression tag finishes.
-  virtual void HandleImpression(StorableImpression impression) = 0;
+  virtual void HandleImpression(StorableSource impression) = 0;
 
   // Process a newly registered conversion. Will create and log any new
   // conversion reports to storage.
-  virtual void HandleConversion(StorableConversion conversion) = 0;
+  virtual void HandleConversion(StorableTrigger conversion) = 0;
 
   // Get all impressions that are currently stored in this partition. Used for
   // populating WebUI.
   virtual void GetActiveImpressionsForWebUI(
-      base::OnceCallback<void(std::vector<StorableImpression>)> callback) = 0;
+      base::OnceCallback<void(std::vector<StorableSource>)> callback) = 0;
 
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI.
   virtual void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<ConversionReport>)> callback,
+      base::OnceCallback<void(std::vector<AttributionReport>)> callback,
       base::Time max_report_time) = 0;
 
   virtual const ConversionSessionStorage& GetSessionStorage() const

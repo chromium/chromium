@@ -7,7 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "content/browser/attribution_reporting/conversion_storage.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -35,10 +35,10 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   ~ConversionStorageDelegateImpl() override = default;
 
   // ConversionStorageDelegate:
-  base::Time GetReportTime(const StorableImpression& impression,
+  base::Time GetReportTime(const StorableSource& impression,
                            base::Time conversion_time) const override;
   int GetMaxConversionsPerImpression(
-      StorableImpression::SourceType source_type) const override;
+      StorableSource::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;

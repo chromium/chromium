@@ -6,8 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -186,10 +186,10 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   manager.SetActiveImpressionsForWebUI(
       {ImpressionBuilder(base::Time::Now())
            .SetData(std::numeric_limits<uint64_t>::max())
-           .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
+           .SetAttributionLogic(StorableSource::AttributionLogic::kNever)
            .Build(),
        ImpressionBuilder(base::Time::Now())
-           .SetSourceType(StorableImpression::SourceType::kEvent)
+           .SetSourceType(StorableSource::SourceType::kEvent)
            .SetPriority(std::numeric_limits<int64_t>::max())
            .SetDedupKeys({13, 17})
            .Build()});
@@ -294,26 +294,26 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   manager.GetSessionStorage().AddSentReport(SentReportInfo(
-      ConversionReport(ImpressionBuilder(now).SetData(100).Build(),
-                       /*conversion_data=*/5,
-                       /*conversion_time=*/now,
-                       /*report_time=*/now + base::TimeDelta::FromHours(2),
-                       /*priority=*/0, ConversionReport::Id(2)),
+      AttributionReport(ImpressionBuilder(now).SetData(100).Build(),
+                        /*conversion_data=*/5,
+                        /*conversion_time=*/now,
+                        /*report_time=*/now + base::TimeDelta::FromHours(2),
+                        /*priority=*/0, AttributionReport::Id(2)),
       SentReportInfo::Status::kSent,
       /*http_response_code=*/200));
-  manager.SetReportsForWebUI({ConversionReport(
+  manager.SetReportsForWebUI({AttributionReport(
       ImpressionBuilder(now)
           .SetData(200)
-          .SetSourceType(StorableImpression::SourceType::kEvent)
-          .SetAttributionLogic(StorableImpression::AttributionLogic::kFalsely)
+          .SetSourceType(StorableSource::SourceType::kEvent)
+          .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
           .Build(),
       /*conversion_data=*/7, /*conversion_time=*/now,
-      /*report_time=*/now, /*priority=*/13, ConversionReport::Id(1))});
+      /*report_time=*/now, /*priority=*/13, AttributionReport::Id(1))});
   manager.GetSessionStorage().AddDroppedReport(
-      ConversionReport(ImpressionBuilder(now).Build(),
-                       /*conversion_data=*/8, /*conversion_time=*/now,
-                       /*report_time=*/now + base::TimeDelta::FromHours(1),
-                       /*priority=*/11, ConversionReport::Id(3)));
+      AttributionReport(ImpressionBuilder(now).Build(),
+                        /*conversion_data=*/8, /*conversion_time=*/now,
+                        /*report_time=*/now + base::TimeDelta::FromHours(1),
+                        /*priority=*/11, AttributionReport::Id(3)));
   OverrideWebUIConversionManager(&manager);
 
   {
@@ -410,10 +410,10 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   const base::Time now = base::Time::Now();
 
   TestConversionManager manager;
-  ConversionReport report(ImpressionBuilder(now).SetData(100).Build(),
-                          /*conversion_data=*/0, /*conversion_time=*/now,
-                          /*report_time=*/now, /*priority=*/7,
-                          ConversionReport::Id(1));
+  AttributionReport report(ImpressionBuilder(now).SetData(100).Build(),
+                           /*conversion_data=*/0, /*conversion_time=*/now,
+                           /*report_time=*/now, /*priority=*/7,
+                           AttributionReport::Id(1));
   manager.SetReportsForWebUI({report});
   report.report_time += base::TimeDelta::FromHours(1);
   manager.GetSessionStorage().AddSentReport(
@@ -456,11 +456,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
   TestConversionManager manager;
-  ConversionReport report(
+  AttributionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/0, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/7,
-      ConversionReport::Id(1));
+      AttributionReport::Id(1));
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 

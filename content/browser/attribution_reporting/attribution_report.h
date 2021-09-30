@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_REPORT_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_REPORT_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_
 
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,21 +23,21 @@ namespace content {
 // Struct that contains all the data needed to serialize and send a conversion
 // report. This represents the report for a conversion event and its associated
 // impression.
-struct CONTENT_EXPORT ConversionReport {
-  using Id = base::StrongAlias<ConversionReport, int64_t>;
+struct CONTENT_EXPORT AttributionReport {
+  using Id = base::StrongAlias<AttributionReport, int64_t>;
 
   // The conversion_id may not be set for a conversion report.
-  ConversionReport(StorableImpression impression,
-                   uint64_t conversion_data,
-                   base::Time conversion_time,
-                   base::Time report_time,
-                   int64_t priority,
-                   absl::optional<Id> conversion_id);
-  ConversionReport(const ConversionReport& other);
-  ConversionReport& operator=(const ConversionReport& other);
-  ConversionReport(ConversionReport&& other);
-  ConversionReport& operator=(ConversionReport&& other);
-  ~ConversionReport();
+  AttributionReport(StorableSource impression,
+                    uint64_t conversion_data,
+                    base::Time conversion_time,
+                    base::Time report_time,
+                    int64_t priority,
+                    absl::optional<Id> conversion_id);
+  AttributionReport(const AttributionReport& other);
+  AttributionReport& operator=(const AttributionReport& other);
+  AttributionReport(AttributionReport&& other);
+  AttributionReport& operator=(AttributionReport&& other);
+  ~AttributionReport();
 
   // Returns the URL to which the report will be sent.
   GURL ReportURL() const WARN_UNUSED_RESULT;
@@ -46,7 +46,7 @@ struct CONTENT_EXPORT ConversionReport {
   std::string ReportBody(bool pretty_print = false) const WARN_UNUSED_RESULT;
 
   // Impression associated with this conversion report.
-  StorableImpression impression;
+  StorableSource impression;
 
   // Data provided at reporting time by the reporting origin. Depending on the
   // source type, this contains the associated data in the trigger redirect.
@@ -74,4 +74,4 @@ struct CONTENT_EXPORT ConversionReport {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_REPORT_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_

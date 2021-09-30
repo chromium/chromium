@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_CONVERSION_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_CONVERSION_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_
 
 #include <stdint.h>
 
@@ -17,23 +17,23 @@ namespace content {
 
 // Struct which represents a conversion registration event that was observed in
 // the renderer and is now being used by the browser process.
-class CONTENT_EXPORT StorableConversion {
+class CONTENT_EXPORT StorableTrigger {
  public:
   // Should only be created with values that the browser process has already
   // validated. At creation time, |conversion_data_| should already be stripped
   // to a lower entropy. |conversion_destination| should be filled by a
   // navigation origin known by the browser process.
-  StorableConversion(uint64_t conversion_data,
-                     net::SchemefulSite conversion_destination,
-                     url::Origin reporting_origin,
-                     uint64_t event_source_trigger_data,
-                     int64_t priority,
-                     absl::optional<int64_t> dedup_key);
-  StorableConversion(const StorableConversion& other);
-  StorableConversion& operator=(const StorableConversion& other);
-  StorableConversion(StorableConversion&& other);
-  StorableConversion& operator=(StorableConversion&& other);
-  ~StorableConversion();
+  StorableTrigger(uint64_t conversion_data,
+                  net::SchemefulSite conversion_destination,
+                  url::Origin reporting_origin,
+                  uint64_t event_source_trigger_data,
+                  int64_t priority,
+                  absl::optional<int64_t> dedup_key);
+  StorableTrigger(const StorableTrigger& other);
+  StorableTrigger& operator=(const StorableTrigger& other);
+  StorableTrigger(StorableTrigger&& other);
+  StorableTrigger& operator=(StorableTrigger&& other);
+  ~StorableTrigger();
 
   uint64_t conversion_data() const WARN_UNUSED_RESULT {
     return conversion_data_;
@@ -84,4 +84,4 @@ class CONTENT_EXPORT StorableConversion {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_CONVERSION_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_TRIGGER_H_

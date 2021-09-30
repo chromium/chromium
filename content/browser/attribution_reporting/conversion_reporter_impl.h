@@ -13,8 +13,8 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -49,7 +49,7 @@ class CONTENT_EXPORT ConversionReporterImpl
 
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST request with no-credentials.
-    virtual void SendReport(ConversionReport report,
+    virtual void SendReport(AttributionReport report,
                             ReportSentCallback sent_callback) = 0;
   };
 
@@ -64,7 +64,7 @@ class CONTENT_EXPORT ConversionReporterImpl
   ~ConversionReporterImpl() override;
 
   // ConversionManagerImpl::ConversionReporter:
-  void AddReportsToQueue(std::vector<ConversionReport> reports) override;
+  void AddReportsToQueue(std::vector<AttributionReport> reports) override;
   void RemoveAllReportsFromQueue() override;
 
   void SetNetworkSenderForTesting(
@@ -90,13 +90,14 @@ class CONTENT_EXPORT ConversionReporterImpl
   // Comparator used to order ConversionReports by their report time, with the
   // smallest time at the top of |report_queue_|.
   struct ReportComparator {
-    bool operator()(const ConversionReport& a, const ConversionReport& b) const;
+    bool operator()(const AttributionReport& a,
+                    const AttributionReport& b) const;
   };
 
   // Priority queue which holds reports that are yet to be sent. Reports are
   // removed from the queue when they are delivered to the NetworkSender.
-  std::priority_queue<ConversionReport,
-                      std::vector<ConversionReport>,
+  std::priority_queue<AttributionReport,
+                      std::vector<AttributionReport>,
                       ReportComparator>
       report_queue_;
 
@@ -104,13 +105,13 @@ class CONTENT_EXPORT ConversionReporterImpl
   // being sent by |network_sender_|. The number of concurrent conversion
   // reports being sent at any time is expected to be small, so a `flat_set` is
   // used.
-  base::flat_set<ConversionReport::Id> queued_reports_;
+  base::flat_set<AttributionReport::Id> queued_reports_;
 
   // Set of all conversion IDs that are currently being sent by
   // |network_sender_|. The number of concurrent conversion
   // reports being sent at any time is expected to be small, so a `flat_set` is
   // used.
-  base::flat_set<ConversionReport::Id> reports_being_sent_;
+  base::flat_set<AttributionReport::Id> reports_being_sent_;
 
   const base::Clock* clock_;
 

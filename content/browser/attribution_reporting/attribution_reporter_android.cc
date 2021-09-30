@@ -49,7 +49,7 @@ void ReportAppImpression(ConversionManager& conversion_manager,
       OriginFromAndroidPackageName(source_package_name);
 
   conversion_host_utils::VerifyAndStoreImpression(
-      StorableImpression::SourceType::kEvent, impression_origin, *impression,
+      StorableSource::SourceType::kEvent, impression_origin, *impression,
       context, conversion_manager);
 }
 

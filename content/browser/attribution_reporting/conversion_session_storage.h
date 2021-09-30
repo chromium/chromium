@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/common/content_export.h"
 
@@ -28,10 +28,10 @@ class CONTENT_EXPORT ConversionSessionStorage {
 
   void AddSentReport(SentReportInfo info);
 
-  const base::circular_deque<ConversionReport>& GetDroppedReports() const
+  const base::circular_deque<AttributionReport>& GetDroppedReports() const
       WARN_UNUSED_RESULT;
 
-  void AddDroppedReport(ConversionReport dropped_report);
+  void AddDroppedReport(AttributionReport dropped_report);
 
  private:
   // Stores info for the last |max_reports_to_store_| reports sent in this
@@ -40,7 +40,7 @@ class CONTENT_EXPORT ConversionSessionStorage {
 
   // Stores info for the last |max_reports_to_store_| reports dropped in
   // favor of higher-priority ones in this session.
-  base::circular_deque<ConversionReport> dropped_reports_;
+  base::circular_deque<AttributionReport> dropped_reports_;
 
   // This is needed to avoid leaking memory.
   const size_t max_reports_to_store_;

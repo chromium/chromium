@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
 
   // Verify we have received and logged an impression for the origin trial.
   conversion_manager->GetActiveImpressionsForWebUI(base::BindLambdaForTesting(
-      [&](std::vector<StorableImpression> impressions) -> void {
+      [&](std::vector<StorableSource> impressions) -> void {
         EXPECT_EQ(1u, impressions.size());
         run_loop.Quit();
       }));

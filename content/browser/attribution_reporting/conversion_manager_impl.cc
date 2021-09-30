@@ -15,13 +15,13 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/conversion_reporter_impl.h"
 #include "content/browser/attribution_reporting/conversion_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/conversion_storage_sql.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -201,13 +201,13 @@ ConversionManagerImpl::~ConversionManagerImpl() {
                 std::move(session_only_origin_predicate));
 }
 
-void ConversionManagerImpl::HandleImpression(StorableImpression impression) {
+void ConversionManagerImpl::HandleImpression(StorableSource impression) {
   // Add the impression to storage.
   conversion_storage_.AsyncCall(&ConversionStorage::StoreImpression)
       .WithArgs(std::move(impression));
 }
 
-void ConversionManagerImpl::HandleConversion(StorableConversion conversion) {
+void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
   conversion_storage_
       .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(std::move(conversion))
@@ -230,7 +230,7 @@ void ConversionManagerImpl::OnReportStored(
 }
 
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
-    base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
+    base::OnceCallback<void(std::vector<StorableSource>)> callback) {
   const int kMaxImpressions = 1000;
   conversion_storage_.AsyncCall(&ConversionStorage::GetActiveImpressions)
       .WithArgs(kMaxImpressions)
@@ -238,7 +238,7 @@ void ConversionManagerImpl::GetActiveImpressionsForWebUI(
 }
 
 void ConversionManagerImpl::GetPendingReportsForWebUI(
-    base::OnceCallback<void(std::vector<ConversionReport>)> callback,
+    base::OnceCallback<void(std::vector<AttributionReport>)> callback,
     base::Time max_report_time) {
   const int kMaxReports = 1000;
   GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
@@ -297,14 +297,14 @@ void ConversionManagerImpl::GetAndQueueReportsForNextInterval() {
 }
 
 void ConversionManagerImpl::QueueReports(
-    std::vector<ConversionReport> reports) {
+    std::vector<AttributionReport> reports) {
   if (reports.empty())
     return;
 
   // Add delay to all reports that expired while the browser was not able to
   // send reports (or not running) so they are not temporally joinable.
   base::Time current_time = clock_->Now();
-  for (ConversionReport& report : reports) {
+  for (AttributionReport& report : reports) {
     if (report.report_time >= current_time)
       continue;
 
@@ -317,18 +317,18 @@ void ConversionManagerImpl::QueueReports(
 
 void ConversionManagerImpl::HandleReportsSentFromWebUI(
     base::OnceClosure done,
-    std::vector<ConversionReport> reports) {
+    std::vector<AttributionReport> reports) {
   // If there's already a send-all in progress, ignore this request.
   if (reports.empty() || !send_reports_for_web_ui_callback_.is_null()) {
     std::move(done).Run();
     return;
   }
 
-  std::vector<ConversionReport::Id> conversion_ids;
+  std::vector<AttributionReport::Id> conversion_ids;
   conversion_ids.reserve(reports.size());
   base::Time now = clock_->Now();
   // All reports should be sent immediately.
-  for (ConversionReport& report : reports) {
+  for (AttributionReport& report : reports) {
     report.report_time = now;
     DCHECK(report.conversion_id.has_value());
     conversion_ids.push_back(*report.conversion_id);
@@ -338,7 +338,7 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
   // deduplicated by `ConversionReporterImpl::AddReportsToQueue()`. In that
   // case, the callback will be invoked as a result of the in-process reports.
   pending_conversion_ids_for_internals_ui_ =
-      base::flat_set<ConversionReport::Id>(std::move(conversion_ids));
+      base::flat_set<AttributionReport::Id>(std::move(conversion_ids));
   send_reports_for_web_ui_callback_ = std::move(done);
 
   reporter_->AddReportsToQueue(std::move(reports));
@@ -373,7 +373,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
         .WithArgs(*info.report.conversion_id, info.report.report_time)
         .Then(base::BindOnce(
             [](base::WeakPtr<ConversionManagerImpl> manager,
-               ConversionReport report, bool success) {
+               AttributionReport report, bool success) {
               if (!manager || !success)
                 return;
               manager->reporter_->AddReportsToQueue({std::move(report)});

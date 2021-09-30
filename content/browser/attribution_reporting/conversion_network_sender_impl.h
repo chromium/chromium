@@ -25,7 +25,7 @@ namespace content {
 
 class StoragePartition;
 
-struct ConversionReport;
+struct AttributionReport;
 
 // Implemented a NetworkSender capable of issuing POST requests for complete
 // conversions. Maintains a set of all ongoing UrlLoaders used for posting
@@ -47,7 +47,7 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
   // seconds.
   // |sent_callback| is run after the request finishes, whether or not it
   // succeeded,
-  void SendReport(ConversionReport report,
+  void SendReport(AttributionReport report,
                   ReportSentCallback sent_callback) override;
 
   // Tests inject a TestURLLoaderFactory so they can mock the network response.
@@ -60,7 +60,7 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
 
   // Called when headers are available for a sent report.
   void OnReportSent(UrlLoaderList::iterator it,
-                    ConversionReport report,
+                    AttributionReport report,
                     ReportSentCallback sent_callback,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 

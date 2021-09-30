@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
@@ -13,12 +13,12 @@
 
 namespace content {
 
-ConversionReport::ConversionReport(StorableImpression impression,
-                                   uint64_t conversion_data,
-                                   base::Time conversion_time,
-                                   base::Time report_time,
-                                   int64_t priority,
-                                   absl::optional<Id> conversion_id)
+AttributionReport::AttributionReport(StorableSource impression,
+                                     uint64_t conversion_data,
+                                     base::Time conversion_time,
+                                     base::Time report_time,
+                                     int64_t priority,
+                                     absl::optional<Id> conversion_id)
     : impression(std::move(impression)),
       conversion_data(conversion_data),
       conversion_time(conversion_time),
@@ -26,19 +26,19 @@ ConversionReport::ConversionReport(StorableImpression impression,
       priority(priority),
       conversion_id(conversion_id) {}
 
-ConversionReport::ConversionReport(const ConversionReport& other) = default;
+AttributionReport::AttributionReport(const AttributionReport& other) = default;
 
-ConversionReport& ConversionReport::operator=(const ConversionReport& other) =
+AttributionReport& AttributionReport::operator=(
+    const AttributionReport& other) = default;
+
+AttributionReport::AttributionReport(AttributionReport&& other) = default;
+
+AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
     default;
 
-ConversionReport::ConversionReport(ConversionReport&& other) = default;
+AttributionReport::~AttributionReport() = default;
 
-ConversionReport& ConversionReport::operator=(ConversionReport&& other) =
-    default;
-
-ConversionReport::~ConversionReport() = default;
-
-GURL ConversionReport::ReportURL() const {
+GURL AttributionReport::ReportURL() const {
   url::Replacements<char> replacements;
   static constexpr char kEndpointPath[] =
       "/.well-known/attribution-reporting/report-attribution";
@@ -46,7 +46,7 @@ GURL ConversionReport::ReportURL() const {
   return impression.reporting_origin().GetURL().ReplaceComponents(replacements);
 }
 
-std::string ConversionReport::ReportBody(bool pretty_print) const {
+std::string AttributionReport::ReportBody(bool pretty_print) const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
@@ -58,10 +58,10 @@ std::string ConversionReport::ReportBody(bool pretty_print) const {
 
   const char* source_type = nullptr;
   switch (impression.source_type()) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       source_type = "navigation";
       break;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       source_type = "event";
       break;
   }

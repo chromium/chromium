@@ -6,7 +6,7 @@
 
 namespace content {
 
-SentReportInfo::SentReportInfo(ConversionReport report,
+SentReportInfo::SentReportInfo(AttributionReport report,
                                Status status,
                                int http_response_code)
     : report(std::move(report)),

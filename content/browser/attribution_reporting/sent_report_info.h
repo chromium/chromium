@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_INFO_H_
 
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -30,7 +30,7 @@ struct CONTENT_EXPORT SentReportInfo {
     kRemovedFromQueue,
   };
 
-  SentReportInfo(ConversionReport report,
+  SentReportInfo(AttributionReport report,
                  Status status,
                  int http_response_code);
   SentReportInfo(const SentReportInfo& other);
@@ -39,7 +39,7 @@ struct CONTENT_EXPORT SentReportInfo {
   SentReportInfo& operator=(SentReportInfo&& other);
   ~SentReportInfo();
 
-  ConversionReport report;
+  AttributionReport report;
 
   Status status;
 

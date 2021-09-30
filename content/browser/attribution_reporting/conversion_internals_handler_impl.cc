@@ -13,11 +13,11 @@
 #include "base/containers/circular_deque.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/conversion_session_storage.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -30,11 +30,11 @@ namespace content {
 
 namespace {
 
-mojom::SourceType SourceTypeToMojoType(StorableImpression::SourceType input) {
+mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
   switch (input) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       return mojom::SourceType::kNavigation;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       return mojom::SourceType::kEvent;
   }
 }
@@ -42,11 +42,11 @@ mojom::SourceType SourceTypeToMojoType(StorableImpression::SourceType input) {
 void ForwardImpressionsToWebUI(
     mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
         web_ui_callback,
-    std::vector<StorableImpression> stored_impressions) {
+    std::vector<StorableSource> stored_impressions) {
   std::vector<mojom::WebUIImpressionPtr> web_ui_impressions;
   web_ui_impressions.reserve(stored_impressions.size());
 
-  for (const StorableImpression& impression : stored_impressions) {
+  for (const StorableSource& impression : stored_impressions) {
     web_ui_impressions.push_back(mojom::WebUIImpression::New(
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
@@ -55,14 +55,14 @@ void ForwardImpressionsToWebUI(
         SourceTypeToMojoType(impression.source_type()), impression.priority(),
         impression.dedup_keys(),
         /*reportable=*/impression.attribution_logic() ==
-            StorableImpression::AttributionLogic::kTruthfully));
+            StorableSource::AttributionLogic::kTruthfully));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));
 }
 
 mojom::WebUIConversionReportPtr WebUIConversionReport(
-    const ConversionReport& report,
+    const AttributionReport& report,
     int http_response_code,
     mojom::WebUIConversionReport::Status status) {
   return mojom::WebUIConversionReport::New(
@@ -71,16 +71,16 @@ mojom::WebUIConversionReportPtr WebUIConversionReport(
       /*report_time=*/report.report_time.ToJsTime(), report.priority,
       report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/report.impression.attribution_logic() ==
-          StorableImpression::AttributionLogic::kTruthfully,
+          StorableSource::AttributionLogic::kTruthfully,
       status, http_response_code);
 }
 
 void ForwardReportsToWebUI(
     mojom::ConversionInternalsHandler::GetReportsCallback web_ui_callback,
     std::vector<mojom::WebUIConversionReportPtr> web_ui_reports,
-    std::vector<ConversionReport> pending_reports) {
+    std::vector<AttributionReport> pending_reports) {
   web_ui_reports.reserve(web_ui_reports.capacity() + pending_reports.size());
-  for (const ConversionReport& report : pending_reports) {
+  for (const AttributionReport& report : pending_reports) {
     web_ui_reports.push_back(
         WebUIConversionReport(report, /*http_response_code=*/0,
                               mojom::WebUIConversionReport::Status::kPending));
@@ -137,7 +137,7 @@ void ConversionInternalsHandlerImpl::GetReports(
 
     const base::circular_deque<SentReportInfo>& sent_reports =
         session_storage.GetSentReports();
-    const base::circular_deque<ConversionReport>& dropped_reports =
+    const base::circular_deque<AttributionReport>& dropped_reports =
         session_storage.GetDroppedReports();
 
     std::vector<mojom::WebUIConversionReportPtr> session_cached_reports;
@@ -150,7 +150,7 @@ void ConversionInternalsHandlerImpl::GetReports(
                                 mojom::WebUIConversionReport::Status::kSent));
     }
 
-    for (const ConversionReport& report : dropped_reports) {
+    for (const AttributionReport& report : dropped_reports) {
       session_cached_reports.push_back(WebUIConversionReport(
           report, /*http_response_code=*/0,
           mojom::WebUIConversionReport::Status::kDroppedDueToLowPriority));

@@ -6,7 +6,7 @@
 
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -49,7 +49,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
 
   EXPECT_EQ(OriginFromAndroidPackageName(kPackageName),
             test_manager_.last_impression_origin());
-  EXPECT_EQ(StorableImpression::SourceType::kEvent,
+  EXPECT_EQ(StorableSource::SourceType::kEvent,
             test_manager_.last_impression_source_type());
 }
 

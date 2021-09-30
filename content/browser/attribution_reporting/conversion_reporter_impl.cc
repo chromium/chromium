@@ -8,9 +8,9 @@
 #include "base/callback.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_network_sender_impl.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -39,7 +39,7 @@ ConversionReporterImpl::~ConversionReporterImpl() {
 }
 
 void ConversionReporterImpl::AddReportsToQueue(
-    std::vector<ConversionReport> reports) {
+    std::vector<AttributionReport> reports) {
   DCHECK(!reports.empty());
 
   // Shuffle new reports to provide plausible deniability on the ordering of
@@ -49,7 +49,7 @@ void ConversionReporterImpl::AddReportsToQueue(
   // ordering on their conversion metadata bits.
   base::RandomShuffle(reports.begin(), reports.end());
 
-  for (ConversionReport& report : reports) {
+  for (AttributionReport& report : reports) {
     DCHECK(report.conversion_id.has_value());
     // If the given report is already being processed, ignore it.
     if (reports_being_sent_.contains(*report.conversion_id))
@@ -63,7 +63,7 @@ void ConversionReporterImpl::AddReportsToQueue(
 
 void ConversionReporterImpl::RemoveAllReportsFromQueue() {
   while (!report_queue_.empty()) {
-    ConversionReport report = report_queue_.top();
+    AttributionReport report = report_queue_.top();
     DCHECK(report.conversion_id.has_value());
     report_queue_.pop();
     OnReportSent(SentReportInfo(std::move(report),
@@ -97,7 +97,7 @@ void ConversionReporterImpl::SendNextReport() {
     return;
 
   // Send the next report and remove it from the queue.
-  ConversionReport report = report_queue_.top();
+  AttributionReport report = report_queue_.top();
   DCHECK(report.conversion_id.has_value());
   report_queue_.pop();
   size_t num_removed = queued_reports_.erase(*report.conversion_id);
@@ -164,8 +164,8 @@ void ConversionReporterImpl::OnReportSent(SentReportInfo info) {
 }
 
 bool ConversionReporterImpl::ReportComparator::operator()(
-    const ConversionReport& a,
-    const ConversionReport& b) const {
+    const AttributionReport& a,
+    const AttributionReport& b) const {
   // Returns whether a should appear before b in ordering. Because
   // std::priority_queue is max priority queue, we used greater then to make a
   // min priority queue.

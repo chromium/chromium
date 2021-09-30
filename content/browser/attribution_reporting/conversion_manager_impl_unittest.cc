@@ -21,11 +21,11 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +58,7 @@ class TestConversionReporter
   ~TestConversionReporter() override = default;
 
   // ConversionManagerImpl::ConversionReporter
-  void AddReportsToQueue(std::vector<ConversionReport> reports) override {
+  void AddReportsToQueue(std::vector<AttributionReport> reports) override {
     num_reports_ += reports.size();
     last_report_time_ = reports.back().report_time;
 
@@ -170,7 +170,7 @@ class ConversionManagerImplTest : public testing::Test {
     // There should be one impression and one conversion.
     base::RunLoop impression_loop;
     auto get_impressions_callback = base::BindLambdaForTesting(
-        [&](std::vector<StorableImpression> impressions) {
+        [&](std::vector<StorableSource> impressions) {
           EXPECT_EQ(expected_num_impressions, impressions.size());
           impression_loop.Quit();
         });
@@ -182,7 +182,7 @@ class ConversionManagerImplTest : public testing::Test {
   void ExpectNumStoredReports(size_t expected_num_reports) {
     base::RunLoop report_loop;
     auto reports_callback =
-        base::BindLambdaForTesting([&](std::vector<ConversionReport> reports) {
+        base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
           EXPECT_EQ(expected_num_reports, reports.size());
           report_loop.Quit();
         });
@@ -209,8 +209,8 @@ TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
   conversion_manager_->HandleImpression(impression);
 
   base::RunLoop run_loop;
-  auto get_impressions_callback = base::BindLambdaForTesting(
-      [&](std::vector<StorableImpression> impressions) {
+  auto get_impressions_callback =
+      base::BindLambdaForTesting([&](std::vector<StorableSource> impressions) {
         EXPECT_THAT(impressions, ElementsAre(impression));
         run_loop.Quit();
       });
@@ -227,8 +227,8 @@ TEST_F(ConversionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
   task_environment_.FastForwardBy(2 * kImpressionExpiry);
 
   base::RunLoop run_loop;
-  auto get_impressions_callback = base::BindLambdaForTesting(
-      [&](std::vector<StorableImpression> impressions) {
+  auto get_impressions_callback =
+      base::BindLambdaForTesting([&](std::vector<StorableSource> impressions) {
         EXPECT_TRUE(impressions.empty());
         run_loop.Quit();
       });
@@ -247,7 +247,7 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   auto conversion = DefaultConversion();
   conversion_manager_->HandleConversion(conversion);
 
-  ConversionReport expected_report(
+  AttributionReport expected_report(
       impression, conversion.conversion_data(),
       /*conversion_time=*/clock().Now(),
       /*report_time=*/clock().Now() + kFirstReportingWindow,
@@ -256,7 +256,7 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 
   base::RunLoop run_loop;
   auto reports_callback =
-      base::BindLambdaForTesting([&](std::vector<ConversionReport> reports) {
+      base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
         EXPECT_THAT(reports, ElementsAre(expected_report));
         run_loop.Quit();
       });

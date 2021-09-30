@@ -817,7 +817,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
   EXPECT_EQ(1u, test_manager_.num_impressions());
-  EXPECT_EQ(StorableImpression::SourceType::kEvent,
+  EXPECT_EQ(StorableSource::SourceType::kEvent,
             test_manager_.last_impression_source_type());
   EXPECT_EQ(10, test_manager_.last_attribution_source_priority());
 }

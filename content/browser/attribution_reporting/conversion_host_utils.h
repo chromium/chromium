@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_UTILS_H_
 
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -33,12 +33,11 @@ struct VerifyResult {
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a StorableImpression and persists
 // it.
-VerifyResult VerifyAndStoreImpression(
-    StorableImpression::SourceType source_type,
-    const url::Origin& impression_origin,
-    const blink::Impression& impression,
-    BrowserContext* browser_context,
-    ConversionManager& conversion_manager);
+VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
+                                      const url::Origin& impression_origin,
+                                      const blink::Impression& impression,
+                                      BrowserContext* browser_context,
+                                      ConversionManager& conversion_manager);
 
 CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,

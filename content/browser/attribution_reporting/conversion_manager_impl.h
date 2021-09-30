@@ -17,8 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/conversion_session_storage.h"
 #include "content/browser/attribution_reporting/conversion_storage.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
@@ -76,7 +76,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
     virtual ~ConversionReporter() = default;
 
     // Adds |reports| to a shared queue of reports that need to be sent.
-    virtual void AddReportsToQueue(std::vector<ConversionReport> reports) = 0;
+    virtual void AddReportsToQueue(std::vector<AttributionReport> reports) = 0;
 
     // Called by `ConversionManagerImpl::ClearData()` to prevent outstanding
     // reports from being sent. This is best-effort, as a network request may
@@ -107,13 +107,12 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   ~ConversionManagerImpl() override;
 
   // ConversionManager:
-  void HandleImpression(StorableImpression impression) override;
-  void HandleConversion(StorableConversion conversion) override;
+  void HandleImpression(StorableSource impression) override;
+  void HandleConversion(StorableTrigger conversion) override;
   void GetActiveImpressionsForWebUI(
-      base::OnceCallback<void(std::vector<StorableImpression>)> callback)
-      override;
+      base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<ConversionReport>)> callback,
+      base::OnceCallback<void(std::vector<AttributionReport>)> callback,
       base::Time max_report_time) override;
   const ConversionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
@@ -138,7 +137,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // |max_report_time|, and calls |handler_function| on them; use a negative
   // number for no limit.
   using ReportsHandlerFunc =
-      base::OnceCallback<void(std::vector<ConversionReport>)>;
+      base::OnceCallback<void(std::vector<AttributionReport>)>;
   void GetAndHandleReports(ReportsHandlerFunc handler_function,
                            base::Time max_report_time,
                            int limit = -1);
@@ -149,10 +148,10 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void GetAndQueueReportsForNextInterval();
 
   // Queue the given |reports| on |reporter_|.
-  void QueueReports(std::vector<ConversionReport> reports);
+  void QueueReports(std::vector<AttributionReport> reports);
 
   void HandleReportsSentFromWebUI(base::OnceClosure done,
-                                  std::vector<ConversionReport> reports);
+                                  std::vector<AttributionReport> reports);
 
   // Notifies storage to delete the given |conversion_id| when its associated
   // report has been sent.
@@ -161,7 +160,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void OnReportStored(ConversionStorage::CreateReportResult result);
 
   // Friend to expose the ConversionStorage for certain tests.
-  friend std::vector<ConversionReport> GetConversionsToReportForTesting(
+  friend std::vector<AttributionReport> GetConversionsToReportForTesting(
       ConversionManagerImpl* manager,
       base::Time max_report_time);
 
@@ -186,7 +185,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // Stores the set of conversion IDs whose reports are being sent by
   // `SendReportsForWebUI()`. Once empty, `send_reports_for_web_ui_callback_` is
   // invoked if non-null.
-  base::flat_set<ConversionReport::Id> pending_conversion_ids_for_internals_ui_;
+  base::flat_set<AttributionReport::Id>
+      pending_conversion_ids_for_internals_ui_;
   base::OnceClosure send_reports_for_web_ui_callback_;
 
   // Policy used for controlling API configurations such as reporting and

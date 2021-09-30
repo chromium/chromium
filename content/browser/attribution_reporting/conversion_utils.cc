@@ -8,11 +8,11 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 
 namespace content {
 
-base::Time ComputeReportTime(const StorableImpression& impression,
+base::Time ComputeReportTime(const StorableSource& impression,
                              base::Time conversion_time) {
   base::TimeDelta expiry_deadline =
       impression.expiry_time() - impression.impression_time();
@@ -43,11 +43,11 @@ base::Time ComputeReportTime(const StorableImpression& impression,
 
   std::vector<base::TimeDelta> early_deadlines;
   switch (impression.source_type()) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       early_deadlines = {base::TimeDelta::FromDays(2) - kWindowDeadlineOffset,
                          base::TimeDelta::FromDays(7) - kWindowDeadlineOffset};
       break;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       early_deadlines = {};
       break;
   }

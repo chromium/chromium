@@ -17,12 +17,11 @@ namespace content {
 namespace {
 
 WARN_UNUSED_RESULT
-uint64_t MaxAllowedValueForSourceType(
-    StorableImpression::SourceType source_type) {
+uint64_t MaxAllowedValueForSourceType(StorableSource::SourceType source_type) {
   switch (source_type) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       return 8;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       return 2;
   }
 }
@@ -43,7 +42,7 @@ uint64_t ConversionPolicy::MakeNoisedConversionData(uint64_t max) const {
 
 uint64_t ConversionPolicy::GetSanitizedConversionData(
     uint64_t conversion_data,
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   const uint64_t max_allowed_values = MaxAllowedValueForSourceType(source_type);
 
   // Add noise to the conversion when the value is first sanitized from a
@@ -60,7 +59,7 @@ uint64_t ConversionPolicy::GetSanitizedConversionData(
 
 bool ConversionPolicy::IsConversionDataInRange(
     uint64_t conversion_data,
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   return conversion_data < MaxAllowedValueForSourceType(source_type);
 }
 
@@ -73,7 +72,7 @@ uint64_t ConversionPolicy::GetSanitizedImpressionData(
 base::Time ConversionPolicy::GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   constexpr base::TimeDelta kMinImpressionExpiry = base::TimeDelta::FromDays(1);
   constexpr base::TimeDelta kDefaultImpressionExpiry =
       base::TimeDelta::FromDays(30);
@@ -82,7 +81,7 @@ base::Time ConversionPolicy::GetExpiryTimeForImpression(
   base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
 
   // Expiry time for event sources must be a whole number of days.
-  if (source_type == StorableImpression::SourceType::kEvent)
+  if (source_type == StorableSource::SourceType::kEvent)
     expiry = expiry.RoundToMultiple(base::TimeDelta::FromDays(1));
 
   // If the impression specified its own expiry, clamp it to the minimum and
@@ -120,24 +119,24 @@ absl::optional<base::TimeDelta> ConversionPolicy::GetFailedReportDelay(
   return kInitialReportDelay * pow(kDelayFactor, failed_send_attempts - 1);
 }
 
-StorableImpression::AttributionLogic
+StorableSource::AttributionLogic
 ConversionPolicy::GetAttributionLogicForImpression(
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   if (debug_mode_)
-    return StorableImpression::AttributionLogic::kTruthfully;
+    return StorableSource::AttributionLogic::kTruthfully;
 
   switch (source_type) {
-    case StorableImpression::SourceType::kNavigation:
-      return StorableImpression::AttributionLogic::kTruthfully;
-    case StorableImpression::SourceType::kEvent: {
+    case StorableSource::SourceType::kNavigation:
+      return StorableSource::AttributionLogic::kTruthfully;
+    case StorableSource::SourceType::kEvent: {
       // TODO(apaseltiner): Finalize a value for this so that noise is actually
       // triggered.
       const double kNoise = 0;
       if (base::RandDouble() < (1 - kNoise))
-        return StorableImpression::AttributionLogic::kTruthfully;
+        return StorableSource::AttributionLogic::kTruthfully;
       if (base::RandInt(0, 1) == 0)
-        return StorableImpression::AttributionLogic::kNever;
-      return StorableImpression::AttributionLogic::kFalsely;
+        return StorableSource::AttributionLogic::kNever;
+      return StorableSource::AttributionLogic::kFalsely;
     }
   }
 }

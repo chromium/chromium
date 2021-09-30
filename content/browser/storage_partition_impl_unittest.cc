@@ -32,7 +32,7 @@
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
@@ -2018,10 +2018,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
             .SetExpiry(base::TimeDelta::FromDays(2))
             .Build());
     conversion_manager->HandleConversion(
-        StorableConversion(123, net::SchemefulSite(conv), reporter,
-                           /*event_source_trigger_data=*/0,
-                           /*priority=*/0,
-                           /*dedup_key=*/absl::nullopt));
+        StorableTrigger(123, net::SchemefulSite(conv), reporter,
+                        /*event_source_trigger_data=*/0,
+                        /*priority=*/0,
+                        /*dedup_key=*/absl::nullopt));
   }
 
   EXPECT_EQ(5u, GetConversionsToReportForTesting(conversion_manager,

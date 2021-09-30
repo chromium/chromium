@@ -17,7 +17,7 @@
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/conversion_page_metrics.h"
 #include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -226,12 +226,12 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  VerifyAndStoreImpression(StorableImpression::SourceType::kNavigation,
+  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
                            impression_origin, impression, *conversion_manager);
 }
 
 bool ConversionHost::VerifyAndStoreImpression(
-    StorableImpression::SourceType source_type,
+    StorableSource::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     ConversionManager& conversion_manager) {
@@ -291,7 +291,7 @@ void ConversionHost::RegisterConversion(
 
   if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
           conversion->conversion_data,
-          StorableImpression::SourceType::kNavigation)) {
+          StorableSource::SourceType::kNavigation)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
         render_frame_host,
         devtools_instrumentation::AttributionReportingIssueType::
@@ -302,7 +302,7 @@ void ConversionHost::RegisterConversion(
 
   if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
           conversion->event_source_trigger_data,
-          StorableImpression::SourceType::kEvent)) {
+          StorableSource::SourceType::kEvent)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
         render_frame_host,
         devtools_instrumentation::AttributionReportingIssueType::
@@ -311,14 +311,13 @@ void ConversionHost::RegisterConversion(
         base::NumberToString(conversion->event_source_trigger_data));
   }
 
-  StorableConversion storable_conversion(
+  StorableTrigger storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
-          conversion->conversion_data,
-          StorableImpression::SourceType::kNavigation),
+          conversion->conversion_data, StorableSource::SourceType::kNavigation),
       conversion_destination, conversion->reporting_origin,
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
           conversion->event_source_trigger_data,
-          StorableImpression::SourceType::kEvent),
+          StorableSource::SourceType::kEvent),
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
@@ -358,7 +357,7 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
 
   const url::Origin& impression_origin =
       render_frame_host->GetLastCommittedOrigin();
-  if (VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
+  if (VerifyAndStoreImpression(StorableSource::SourceType::kEvent,
                                impression_origin, impression,
                                *conversion_manager)) {
     NotifyImpressionInitiatedByPage(impression_origin, impression);
@@ -396,7 +395,7 @@ void ConversionHost::ReportAttributionForCurrentNavigation(
 
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
-  VerifyAndStoreImpression(StorableImpression::SourceType::kNavigation,
+  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
                            impression_origin, impression, *conversion_manager);
 }
 

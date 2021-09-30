@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,12 +23,11 @@ namespace content {
 
 namespace conversion_host_utils {
 
-VerifyResult VerifyAndStoreImpression(
-    StorableImpression::SourceType source_type,
-    const url::Origin& impression_origin,
-    const blink::Impression& impression,
-    BrowserContext* browser_context,
-    ConversionManager& conversion_manager) {
+VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
+                                      const url::Origin& impression_origin,
+                                      const blink::Impression& impression,
+                                      BrowserContext* browser_context,
+                                      ConversionManager& conversion_manager) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -58,7 +57,7 @@ VerifyResult VerifyAndStoreImpression(
   base::Time impression_time = base::Time::Now();
 
   const ConversionPolicy& policy = conversion_manager.GetConversionPolicy();
-  StorableImpression storable_impression(
+  StorableSource storable_impression(
       policy.GetSanitizedImpressionData(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,
       impression_time,

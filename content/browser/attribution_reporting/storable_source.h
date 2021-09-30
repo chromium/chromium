@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_IMPRESSION_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_IMPRESSION_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
 
 #include <stdint.h>
 
@@ -22,9 +22,9 @@ namespace content {
 
 // Struct which represents all stored attributes of an impression. All values
 // should be sanitized before creating this object.
-class CONTENT_EXPORT StorableImpression {
+class CONTENT_EXPORT StorableSource {
  public:
-  using Id = base::StrongAlias<StorableImpression, int64_t>;
+  using Id = base::StrongAlias<StorableSource, int64_t>;
 
   // Denotes the type of source for this impression. This allows different types
   // of impressions to be processed differently by storage and attribution
@@ -51,21 +51,21 @@ class CONTENT_EXPORT StorableImpression {
     kMaxValue = kFalsely,
   };
 
-  StorableImpression(uint64_t impression_data,
-                     url::Origin impression_origin,
-                     url::Origin conversion_origin,
-                     url::Origin reporting_origin,
-                     base::Time impression_time,
-                     base::Time expiry_time,
-                     SourceType source_type,
-                     int64_t priority,
-                     AttributionLogic attribution_logic,
-                     absl::optional<Id> impression_id);
-  StorableImpression(const StorableImpression& other);
-  StorableImpression& operator=(const StorableImpression& other);
-  StorableImpression(StorableImpression&& other);
-  StorableImpression& operator=(StorableImpression&& other);
-  ~StorableImpression();
+  StorableSource(uint64_t impression_data,
+                 url::Origin impression_origin,
+                 url::Origin conversion_origin,
+                 url::Origin reporting_origin,
+                 base::Time impression_time,
+                 base::Time expiry_time,
+                 SourceType source_type,
+                 int64_t priority,
+                 AttributionLogic attribution_logic,
+                 absl::optional<Id> impression_id);
+  StorableSource(const StorableSource& other);
+  StorableSource& operator=(const StorableSource& other);
+  StorableSource(StorableSource&& other);
+  StorableSource& operator=(StorableSource&& other);
+  ~StorableSource();
 
   uint64_t impression_data() const WARN_UNUSED_RESULT {
     return impression_data_;
@@ -145,4 +145,4 @@ class CONTENT_EXPORT StorableImpression {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_IMPRESSION_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_

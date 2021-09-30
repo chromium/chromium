@@ -13,11 +13,11 @@ class Time;
 
 namespace content {
 
-class StorableImpression;
+class StorableSource;
 
 // Calculates the report time for a conversion associated with a given
 // impression.
-base::Time ComputeReportTime(const StorableImpression& impression,
+base::Time ComputeReportTime(const StorableSource& impression,
                              base::Time conversion_time) WARN_UNUSED_RESULT;
 }  // namespace content
 

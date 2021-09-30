@@ -14,10 +14,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
@@ -88,7 +88,7 @@ class ConversionStorageSqlTest : public testing::Test {
   }
 
   CreateReportStatus MaybeCreateAndStoreConversionReport(
-      const StorableConversion& conversion) {
+      const StorableTrigger& conversion) {
     return storage_->MaybeCreateAndStoreConversionReport(conversion).status;
   }
 
@@ -376,7 +376,7 @@ TEST_F(ConversionStorageSqlTest,
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_TRUE(storage()->DeleteConversion(ConversionReport::Id(1)));
+  EXPECT_TRUE(storage()->DeleteConversion(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), impression_origin));
@@ -436,7 +436,7 @@ TEST_F(ConversionStorageSqlTest,
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_TRUE(storage()->DeleteConversion(ConversionReport::Id(1)));
+  EXPECT_TRUE(storage()->DeleteConversion(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), conversion_origin));
@@ -507,19 +507,18 @@ TEST_F(ConversionStorageSqlTest, MaxUint64StorageSucceeds) {
   const auto impression =
       ImpressionBuilder(clock()->Now()).SetData(kMaxUint64).Build();
   storage()->StoreImpression(impression);
-  std::vector<StorableImpression> impressions =
-      storage()->GetActiveImpressions();
+  std::vector<StorableSource> impressions = storage()->GetActiveImpressions();
   EXPECT_EQ(1u, impressions.size());
   EXPECT_EQ(kMaxUint64, impressions[0].impression_data());
 
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
-      MaybeCreateAndStoreConversionReport(StorableConversion(
+      MaybeCreateAndStoreConversionReport(StorableTrigger(
           /*conversion_data=*/kMaxUint64, impression.ConversionDestination(),
           impression.reporting_origin(), /*event_source_trigger_data=*/0,
           /*priority=*/0, /*dedup_key=*/absl::nullopt)));
 
-  std::vector<ConversionReport> reports =
+  std::vector<AttributionReport> reports =
       storage()->GetConversionsToReport(clock()->Now());
   EXPECT_EQ(1u, reports.size());
   EXPECT_EQ(kMaxUint64, reports[0].conversion_data);
@@ -643,7 +642,7 @@ TEST_F(ConversionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   // Advance past the default report time.
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
-  std::vector<ConversionReport> reports =
+  std::vector<AttributionReport> reports =
       storage()->GetConversionsToReport(clock()->Now());
   EXPECT_EQ(1u, reports.size());
   EXPECT_TRUE(storage()->DeleteConversion(*reports[0].conversion_id));

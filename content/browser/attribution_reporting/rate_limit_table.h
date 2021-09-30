@@ -14,7 +14,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/conversion_storage.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -31,7 +31,7 @@ class Origin;
 
 namespace content {
 
-struct ConversionReport;
+struct AttributionReport;
 
 struct AggregateHistogramContribution {
   std::string bucket;
@@ -64,12 +64,12 @@ class CONTENT_EXPORT RateLimitTable {
   // Adds a rate limit to the table for an event-level report.
   // Returns false on failure.
   bool AddRateLimit(sql::Database* db,
-                    const ConversionReport& report) WARN_UNUSED_RESULT;
+                    const AttributionReport& report) WARN_UNUSED_RESULT;
 
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
   AttributionAllowedStatus AttributionAllowed(sql::Database* db,
-                                              const ConversionReport& report,
+                                              const AttributionReport& report,
                                               base::Time now)
       WARN_UNUSED_RESULT;
 
@@ -80,7 +80,7 @@ class CONTENT_EXPORT RateLimitTable {
   // tests.
   AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
       sql::Database* db,
-      const StorableImpression& impression,
+      const StorableSource& impression,
       const std::vector<AggregateHistogramContribution>& contributions)
       WARN_UNUSED_RESULT;
 
@@ -98,9 +98,9 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter)
       WARN_UNUSED_RESULT;
-  bool ClearDataForImpressionIds(sql::Database* db,
-                                 const std::vector<StorableImpression::Id>&
-                                     impression_ids) WARN_UNUSED_RESULT;
+  bool ClearDataForImpressionIds(
+      sql::Database* db,
+      const std::vector<StorableSource::Id>& impression_ids) WARN_UNUSED_RESULT;
 
  private:
   // Returns the capacity for the given `attribution_type`, `impression_site`,
@@ -115,7 +115,7 @@ class CONTENT_EXPORT RateLimitTable {
 
   bool AddRow(sql::Database* db,
               ConversionStorage::AttributionType attribution_type,
-              StorableImpression::Id impression_id,
+              StorableSource::Id impression_id,
               const std::string& serialized_impression_site,
               const std::string& serialized_impression_origin,
               const std::string& serialized_conversion_destination,

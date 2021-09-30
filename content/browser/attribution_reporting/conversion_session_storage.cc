@@ -31,13 +31,13 @@ void ConversionSessionStorage::AddSentReport(SentReportInfo info) {
   sent_reports_.push_back(std::move(info));
 }
 
-const base::circular_deque<ConversionReport>&
+const base::circular_deque<AttributionReport>&
 ConversionSessionStorage::GetDroppedReports() const {
   return dropped_reports_;
 }
 
 void ConversionSessionStorage::AddDroppedReport(
-    ConversionReport dropped_report) {
+    AttributionReport dropped_report) {
   if (dropped_reports_.size() == max_reports_to_store_)
     dropped_reports_.pop_front();
   dropped_reports_.push_back(std::move(dropped_report));

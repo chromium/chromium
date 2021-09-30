@@ -16,7 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/browser/attribution_reporting/storable_conversion.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -92,14 +92,14 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
 base::Time ConfigurableStorageDelegate::GetReportTime(
-    const StorableImpression& impression,
+    const StorableSource& impression,
     base::Time conversion_time) const {
   return impression.impression_time() +
          base::TimeDelta::FromMilliseconds(report_time_ms_);
 }
 
 int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
-    StorableImpression::SourceType source_type) const {
+    StorableSource::SourceType source_type) const {
   return max_conversions_per_impression_;
 }
 
@@ -145,26 +145,26 @@ TestConversionManager::TestConversionManager() = default;
 
 TestConversionManager::~TestConversionManager() = default;
 
-void TestConversionManager::HandleImpression(StorableImpression impression) {
+void TestConversionManager::HandleImpression(StorableSource impression) {
   num_impressions_++;
   last_impression_source_type_ = impression.source_type();
   last_impression_origin_ = impression.impression_origin();
   last_attribution_source_priority_ = impression.priority();
 }
 
-void TestConversionManager::HandleConversion(StorableConversion conversion) {
+void TestConversionManager::HandleConversion(StorableTrigger conversion) {
   num_conversions_++;
 
   last_conversion_destination_ = conversion.conversion_destination();
 }
 
 void TestConversionManager::GetActiveImpressionsForWebUI(
-    base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
+    base::OnceCallback<void(std::vector<StorableSource>)> callback) {
   std::move(callback).Run(impressions_);
 }
 
 void TestConversionManager::GetPendingReportsForWebUI(
-    base::OnceCallback<void(std::vector<ConversionReport>)> callback,
+    base::OnceCallback<void(std::vector<AttributionReport>)> callback,
     base::Time max_report_time) {
   std::move(callback).Run(reports_);
 }
@@ -199,12 +199,12 @@ void TestConversionManager::ClearData(
 }
 
 void TestConversionManager::SetActiveImpressionsForWebUI(
-    std::vector<StorableImpression> impressions) {
+    std::vector<StorableSource> impressions) {
   impressions_ = std::move(impressions);
 }
 
 void TestConversionManager::SetReportsForWebUI(
-    std::vector<ConversionReport> reports) {
+    std::vector<AttributionReport> reports) {
   reports_ = std::move(reports);
 }
 
@@ -222,9 +222,9 @@ ImpressionBuilder::ImpressionBuilder(base::Time time)
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
-      source_type_(StorableImpression::SourceType::kNavigation),
+      source_type_(StorableSource::SourceType::kNavigation),
       priority_(0),
-      attribution_logic_(StorableImpression::AttributionLogic::kTruthfully) {}
+      attribution_logic_(StorableSource::AttributionLogic::kTruthfully) {}
 
 ImpressionBuilder::~ImpressionBuilder() = default;
 
@@ -254,7 +254,7 @@ ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(url::Origin origin) {
 }
 
 ImpressionBuilder& ImpressionBuilder::SetSourceType(
-    StorableImpression::SourceType source_type) {
+    StorableSource::SourceType source_type) {
   source_type_ = source_type;
   return *this;
 }
@@ -265,13 +265,13 @@ ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
 }
 
 ImpressionBuilder& ImpressionBuilder::SetAttributionLogic(
-    StorableImpression::AttributionLogic attribution_logic) {
+    StorableSource::AttributionLogic attribution_logic) {
   attribution_logic_ = attribution_logic;
   return *this;
 }
 
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
-    absl::optional<StorableImpression::Id> impression_id) {
+    absl::optional<StorableSource::Id> impression_id) {
   impression_id_ = impression_id;
   return *this;
 }
@@ -282,8 +282,8 @@ ImpressionBuilder& ImpressionBuilder::SetDedupKeys(
   return *this;
 }
 
-StorableImpression ImpressionBuilder::Build() const {
-  StorableImpression impression(
+StorableSource ImpressionBuilder::Build() const {
+  StorableSource impression(
       impression_data_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
@@ -292,7 +292,7 @@ StorableImpression ImpressionBuilder::Build() const {
   return impression;
 }
 
-StorableConversion DefaultConversion() {
+StorableTrigger DefaultConversion() {
   return ConversionBuilder().Build();
 }
 
@@ -338,16 +338,16 @@ ConversionBuilder& ConversionBuilder::SetDedupKey(
   return *this;
 }
 
-StorableConversion ConversionBuilder::Build() const {
-  return StorableConversion(conversion_data_, conversion_destination_,
-                            reporting_origin_, event_source_trigger_data_,
-                            priority_, dedup_key_);
+StorableTrigger ConversionBuilder::Build() const {
+  return StorableTrigger(conversion_data_, conversion_destination_,
+                         reporting_origin_, event_source_trigger_data_,
+                         priority_, dedup_key_);
 }
 
-// Custom comparator for StorableImpressions that does not take impression IDs
+// Custom comparator for `StorableSource` that does not take impression IDs
 // or dedup keys into account.
-bool operator==(const StorableImpression& a, const StorableImpression& b) {
-  const auto tie = [](const StorableImpression& impression) {
+bool operator==(const StorableSource& a, const StorableSource& b) {
+  const auto tie = [](const StorableSource& impression) {
     return std::make_tuple(
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
@@ -361,8 +361,8 @@ bool operator==(const StorableImpression& a, const StorableImpression& b) {
 // Custom comparator for comparing two vectors of conversion reports. Does not
 // compare impression and conversion IDs as they are set by the underlying
 // sqlite db and should not be tested.
-bool operator==(const ConversionReport& a, const ConversionReport& b) {
-  const auto tie = [](const ConversionReport& conversion) {
+bool operator==(const AttributionReport& a, const AttributionReport& b) {
+  const auto tie = [](const AttributionReport& conversion) {
     return std::make_tuple(conversion.impression, conversion.conversion_data,
                            conversion.conversion_time, conversion.report_time,
                            conversion.priority,
@@ -427,37 +427,35 @@ std::ostream& operator<<(std::ostream& out, AttributionAllowedStatus status) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableImpression::SourceType source_type) {
+                         StorableSource::SourceType source_type) {
   switch (source_type) {
-    case StorableImpression::SourceType::kNavigation:
+    case StorableSource::SourceType::kNavigation:
       out << "kNavigation";
       break;
-    case StorableImpression::SourceType::kEvent:
+    case StorableSource::SourceType::kEvent:
       out << "kEvent";
       break;
   }
   return out;
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    StorableImpression::AttributionLogic attribution_logic) {
+std::ostream& operator<<(std::ostream& out,
+                         StorableSource::AttributionLogic attribution_logic) {
   switch (attribution_logic) {
-    case StorableImpression::AttributionLogic::kNever:
+    case StorableSource::AttributionLogic::kNever:
       out << "kNever";
       break;
-    case StorableImpression::AttributionLogic::kTruthfully:
+    case StorableSource::AttributionLogic::kTruthfully:
       out << "kTruthfully";
       break;
-    case StorableImpression::AttributionLogic::kFalsely:
+    case StorableSource::AttributionLogic::kFalsely:
       out << "kFalsely";
       break;
   }
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const StorableConversion& conversion) {
+std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion) {
   return out << "{conversion_data=" << conversion.conversion_data()
              << ",conversion_destination="
              << conversion.conversion_destination().Serialize()
@@ -471,8 +469,7 @@ std::ostream& operator<<(std::ostream& out,
              << "}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const StorableImpression& impression) {
+std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
   out << "{impression_data=" << impression.impression_data()
       << ",impression_origin=" << impression.impression_origin()
       << ",conversion_origin=" << impression.conversion_origin()
@@ -495,7 +492,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << "]}";
 }
 
-std::ostream& operator<<(std::ostream& out, const ConversionReport& report) {
+std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out << "{impression=" << report.impression
              << ",conversion_data=" << report.conversion_data
              << ",conversion_time=" << report.conversion_time
@@ -536,16 +533,16 @@ std::ostream& operator<<(std::ostream& out, const SentReportInfo& info) {
              << ",http_response_code=" << info.http_response_code << "}";
 }
 
-std::vector<ConversionReport> GetConversionsToReportForTesting(
+std::vector<AttributionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
     base::Time max_report_time) {
   base::RunLoop run_loop;
-  std::vector<ConversionReport> conversion_reports;
+  std::vector<AttributionReport> conversion_reports;
   manager->conversion_storage_
       .AsyncCall(&ConversionStorage::GetConversionsToReport)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(
-          [&](std::vector<ConversionReport> reports) {
+          [&](std::vector<AttributionReport> reports) {
             conversion_reports = std::move(reports);
             run_loop.Quit();
           })));

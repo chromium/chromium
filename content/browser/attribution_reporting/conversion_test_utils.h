@@ -13,15 +13,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/conversion_report.h"
 #include "content/browser/attribution_reporting/conversion_session_storage.h"
 #include "content/browser/attribution_reporting/conversion_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,7 +30,7 @@
 
 namespace content {
 
-class StorableConversion;
+class StorableTrigger;
 
 class ConversionDisallowingContentBrowserClient
     : public TestContentBrowserClient {
@@ -83,10 +83,10 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   ~ConfigurableStorageDelegate() override;
 
   // ConversionStorage::Delegate
-  base::Time GetReportTime(const StorableImpression& impression,
+  base::Time GetReportTime(const StorableSource& impression,
                            base::Time conversion_time) const override;
   int GetMaxConversionsPerImpression(
-      StorableImpression::SourceType source_type) const override;
+      StorableSource::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits(
@@ -170,13 +170,12 @@ class TestConversionManager : public ConversionManager {
   ~TestConversionManager() override;
 
   // ConversionManager:
-  void HandleImpression(StorableImpression impression) override;
-  void HandleConversion(StorableConversion conversion) override;
+  void HandleImpression(StorableSource impression) override;
+  void HandleConversion(StorableTrigger conversion) override;
   void GetActiveImpressionsForWebUI(
-      base::OnceCallback<void(std::vector<StorableImpression>)> callback)
-      override;
+      base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<ConversionReport>)> callback,
+      base::OnceCallback<void(std::vector<AttributionReport>)> callback,
       base::Time max_report_time) override;
   const ConversionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
@@ -186,9 +185,8 @@ class TestConversionManager : public ConversionManager {
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
                  base::OnceClosure done) override;
 
-  void SetActiveImpressionsForWebUI(
-      std::vector<StorableImpression> impressions);
-  void SetReportsForWebUI(std::vector<ConversionReport> reports);
+  void SetActiveImpressionsForWebUI(std::vector<StorableSource> impressions);
+  void SetReportsForWebUI(std::vector<AttributionReport> reports);
   ConversionSessionStorage& GetSessionStorage();
 
   // Resets all counters on this.
@@ -201,7 +199,7 @@ class TestConversionManager : public ConversionManager {
     return last_conversion_destination_;
   }
 
-  const absl::optional<StorableImpression::SourceType>&
+  const absl::optional<StorableSource::SourceType>&
   last_impression_source_type() {
     return last_impression_source_type_;
   }
@@ -218,18 +216,18 @@ class TestConversionManager : public ConversionManager {
   ConversionPolicy policy_;
   ConversionSessionStorage session_storage_{INT_MAX};
   net::SchemefulSite last_conversion_destination_;
-  absl::optional<StorableImpression::SourceType> last_impression_source_type_;
+  absl::optional<StorableSource::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
   absl::optional<int64_t> last_attribution_source_priority_;
   size_t num_impressions_ = 0;
   size_t num_conversions_ = 0;
 
-  std::vector<StorableImpression> impressions_;
-  std::vector<ConversionReport> reports_;
+  std::vector<StorableSource> impressions_;
+  std::vector<AttributionReport> reports_;
 };
 
-// Helper class to construct a StorableImpression for tests using default data.
-// StorableImpression members are not mutable after construction requiring a
+// Helper class to construct a StorableSource for tests using default data.
+// StorableSource members are not mutable after construction requiring a
 // builder pattern.
 class ImpressionBuilder {
  public:
@@ -246,22 +244,21 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetReportingOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type)
+  ImpressionBuilder& SetSourceType(StorableSource::SourceType source_type)
       WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetAttributionLogic(
-      StorableImpression::AttributionLogic attribution_logic)
-      WARN_UNUSED_RESULT;
+      StorableSource::AttributionLogic attribution_logic) WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetImpressionId(
-      absl::optional<StorableImpression::Id> impression_id) WARN_UNUSED_RESULT;
+      absl::optional<StorableSource::Id> impression_id) WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
       WARN_UNUSED_RESULT;
 
-  StorableImpression Build() const WARN_UNUSED_RESULT;
+  StorableSource Build() const WARN_UNUSED_RESULT;
 
  private:
   uint64_t impression_data_;
@@ -270,19 +267,19 @@ class ImpressionBuilder {
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
-  StorableImpression::SourceType source_type_;
+  StorableSource::SourceType source_type_;
   int64_t priority_;
-  StorableImpression::AttributionLogic attribution_logic_;
-  absl::optional<StorableImpression::Id> impression_id_;
+  StorableSource::AttributionLogic attribution_logic_;
+  absl::optional<StorableSource::Id> impression_id_;
   std::vector<int64_t> dedup_keys_;
 };
 
-// Returns a StorableConversion with default data which matches the default
+// Returns a StorableTrigger with default data which matches the default
 // impressions created by ImpressionBuilder.
-StorableConversion DefaultConversion() WARN_UNUSED_RESULT;
+StorableTrigger DefaultConversion() WARN_UNUSED_RESULT;
 
-// Helper class to construct a StorableConversion for tests using default data.
-// StorableConversion members are not mutable after construction requiring a
+// Helper class to construct a StorableTrigger for tests using default data.
+// StorableTrigger members are not mutable after construction requiring a
 // builder pattern.
 class ConversionBuilder {
  public:
@@ -306,7 +303,7 @@ class ConversionBuilder {
   ConversionBuilder& SetDedupKey(absl::optional<int64_t> dedup_key)
       WARN_UNUSED_RESULT;
 
-  StorableConversion Build() const WARN_UNUSED_RESULT;
+  StorableTrigger Build() const WARN_UNUSED_RESULT;
 
  private:
   uint64_t conversion_data_ = 111;
@@ -317,9 +314,9 @@ class ConversionBuilder {
   absl::optional<int64_t> dedup_key_ = absl::nullopt;
 };
 
-bool operator==(const StorableImpression& a, const StorableImpression& b);
+bool operator==(const StorableSource& a, const StorableSource& b);
 
-bool operator==(const ConversionReport& a, const ConversionReport& b);
+bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
@@ -330,25 +327,22 @@ std::ostream& operator<<(std::ostream& out,
                          RateLimitTable::AttributionAllowedStatus status);
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableImpression::SourceType source_type);
+                         StorableSource::SourceType source_type);
 
-std::ostream& operator<<(std::ostream& out,
-                         const StorableConversion& conversion);
+std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
 
-std::ostream& operator<<(std::ostream& out,
-                         const StorableImpression& impression);
+std::ostream& operator<<(std::ostream& out, const StorableSource& impression);
 
-std::ostream& operator<<(std::ostream& out, const ConversionReport& report);
+std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
 std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status);
 
 std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    StorableImpression::AttributionLogic attribution_logic);
+std::ostream& operator<<(std::ostream& out,
+                         StorableSource::AttributionLogic attribution_logic);
 
-std::vector<ConversionReport> GetConversionsToReportForTesting(
+std::vector<AttributionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 

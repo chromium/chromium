@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "content/browser/attribution_reporting/storable_impression.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,10 +35,10 @@ class CONTENT_EXPORT ConversionPolicy {
   // Gets the sanitized conversion data for a conversion.
   uint64_t GetSanitizedConversionData(
       uint64_t conversion_data,
-      StorableImpression::SourceType source_type) const WARN_UNUSED_RESULT;
+      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
   bool IsConversionDataInRange(uint64_t conversion_data,
-                               StorableImpression::SourceType source_type) const
+                               StorableSource::SourceType source_type) const
       WARN_UNUSED_RESULT;
 
   // Gets the sanitized impression data for an impression.
@@ -50,7 +50,7 @@ class CONTENT_EXPORT ConversionPolicy {
   virtual base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
-      StorableImpression::SourceType source_type) const WARN_UNUSED_RESULT;
+      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
   // Delays reports that missed their report time, such as the browser not being
   // open, or internet being disconnected. This given them a noisy report time
@@ -68,8 +68,8 @@ class CONTENT_EXPORT ConversionPolicy {
 
   // Selects how to handle the given impression; may involve RNG or other
   // dynamic criteria.
-  virtual StorableImpression::AttributionLogic GetAttributionLogicForImpression(
-      StorableImpression::SourceType source_type) const WARN_UNUSED_RESULT;
+  virtual StorableSource::AttributionLogic GetAttributionLogicForImpression(
+      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
  protected:
   virtual bool ShouldNoiseConversionData() const WARN_UNUSED_RESULT;
