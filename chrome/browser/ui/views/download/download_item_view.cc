@@ -1100,6 +1100,12 @@ ui::ImageModel DownloadItemView::GetIcon() const {
       UseNewWarnings() ? 20 : 24);
 
   const auto danger_type = model_->GetDangerType();
+  const auto kInfo = ui::ImageModel::FromVectorIcon(
+      (danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING)
+          ? views::kInfoIcon
+          : vector_icons::kHelpIcon,
+      ui::kColorIcon, non_error_icon_size);
+
   switch (danger_type) {
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return safe_browsing::AdvancedProtectionStatusManagerFactory::
@@ -1122,11 +1128,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
       return kWarning;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      return ui::ImageModel::FromVectorIcon(
-          (danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING)
-              ? views::kInfoIcon
-              : vector_icons::kHelpIcon,
-          ui::kColorIcon, non_error_icon_size);
+      return kInfo;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
@@ -1149,9 +1151,9 @@ ui::ImageModel DownloadItemView::GetIcon() const {
       break;
   }
 
-  CHECK(false) << "Unexpected danger type " << danger_type
-      << " or mixed content status " << model_->GetMixedContentStatus();
-  return ui::ImageModel();
+  LOG(ERROR) << "Unexpected danger type " << danger_type
+             << " or mixed content status " << model_->GetMixedContentStatus();
+  return kInfo;
 }
 
 gfx::RectF DownloadItemView::GetIconBounds() const {
