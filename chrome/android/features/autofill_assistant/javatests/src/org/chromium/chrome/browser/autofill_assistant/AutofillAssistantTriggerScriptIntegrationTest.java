@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
@@ -78,6 +79,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Integration tests for trigger scripts. */
@@ -119,15 +121,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     private void startAutofillAssistantOnTabWithParams(
             String pageToLoad, Map<String, Object> scriptParameters) {
-        TriggerContext.Builder argsBuilder =
-                TriggerContext.newBuilder().fromBundle(null).withInitialUrl(getURL(pageToLoad));
-        for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
-            argsBuilder.addParameter(param.getKey(), param.getValue());
-        }
-        argsBuilder.addParameter("START_IMMEDIATELY", false);
-        argsBuilder.addParameter("ENABLED", true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> AutofillAssistantFacade.start(mTestRule.getActivity(), argsBuilder.build()));
+        HashMap<String, Object> parameters = new HashMap(scriptParameters);
+        parameters.put("START_IMMEDIATELY", false);
+
+        startAutofillAssistantWithParams(mTestRule.getActivity(), getURL(pageToLoad), parameters);
     }
 
     @Before

@@ -74,6 +74,7 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
@@ -565,6 +566,23 @@ class AutofillAssistantUiTestUtil {
                                                         : activity.getInitialIntent()
                                                                   .getDataString())
                                         .build()));
+    }
+
+    /**
+     * Starts Autofill Assistant on the given {@code activity}. Will add the provided {@code url}
+     * and {@code scriptParameters} to the trigger context.
+     */
+    public static void startAutofillAssistantWithParams(
+            ChromeActivity activity, String url, Map<String, Object> scriptParameters) {
+        TriggerContext.Builder argsBuilder =
+                TriggerContext.newBuilder().fromBundle(null).withInitialUrl(url);
+        for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
+            argsBuilder.addParameter(param.getKey(), param.getValue());
+        }
+        argsBuilder.addParameter("ENABLED", true);
+        argsBuilder.addParameter("ORIGINAL_DEEPLINK", url);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AutofillAssistantFacade.start(activity, argsBuilder.build()));
     }
 
     /** Performs a single tap on the center of the specified element. */
