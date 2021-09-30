@@ -50,7 +50,7 @@ class CORE_EXPORT CaretDisplayItemClient final
   CaretDisplayItemClient(const CaretDisplayItemClient&) = delete;
   CaretDisplayItemClient& operator=(const CaretDisplayItemClient&) = delete;
   ~CaretDisplayItemClient() override;
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
   // Called indirectly from LayoutBlock::willBeDestroyed().
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);

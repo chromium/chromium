@@ -58,7 +58,9 @@ class LiteralDebugNameClient : public GarbageCollected<LiteralDebugNameClient>,
   LiteralDebugNameClient(const char* name) : name_(name) {}
 
   String DebugName() const override { return name_; }
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const override {
+    DisplayItemClient::Trace(visitor);
+  }
 
  private:
   const char* name_;

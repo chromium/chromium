@@ -22,7 +22,9 @@ class FakeDisplayItemClient : public GarbageCollected<FakeDisplayItemClient>,
 
   // This simulates a paint without needing a PaintController.
   using DisplayItemClient::Validate;
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const override {
+    DisplayItemClient::Trace(visitor);
+  }
 
  private:
   String name_;

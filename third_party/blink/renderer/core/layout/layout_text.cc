@@ -146,7 +146,9 @@ class SelectionDisplayItemClient
       public DisplayItemClient {
  public:
   String DebugName() const final { return "Selection"; }
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const override {
+    DisplayItemClient::Trace(visitor);
+  }
 };
 
 using SelectionDisplayItemClientMap =

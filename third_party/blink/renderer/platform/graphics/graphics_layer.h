@@ -228,7 +228,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
 
   size_t ApproximateUnsharedMemoryUsageRecursive() const;
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  protected:
   String DebugName(const cc::Layer*) const;

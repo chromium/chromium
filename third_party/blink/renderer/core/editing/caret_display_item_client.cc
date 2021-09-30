@@ -50,6 +50,7 @@ CaretDisplayItemClient::~CaretDisplayItemClient() = default;
 void CaretDisplayItemClient::Trace(Visitor* visitor) const {
   visitor->Trace(layout_block_);
   visitor->Trace(previous_layout_block_);
+  DisplayItemClient::Trace(visitor);
 }
 
 namespace {

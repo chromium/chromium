@@ -159,6 +159,7 @@ void FrameOverlay::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(layer_);
   GraphicsLayerClient::Trace(visitor);
+  DisplayItemClient::Trace(visitor);
 }
 
 void FrameOverlay::Paint(GraphicsContext& context) const {

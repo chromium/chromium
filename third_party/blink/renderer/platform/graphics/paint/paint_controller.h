@@ -90,14 +90,17 @@ class PLATFORM_EXPORT PaintController {
 
    public:
     explicit CycleScope(bool record_debug_info = false)
-        : record_debug_info_(record_debug_info) {}
+        : record_debug_info_(record_debug_info) {
+      clients_to_validate_ =
+          MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
+    }
     explicit CycleScope(PaintController& controller,
                         bool record_debug_info = false)
         : CycleScope(record_debug_info) {
       AddController(controller);
     }
     void AddController(PaintController& controller) {
-      controller.StartCycle(clients_to_validate_, record_debug_info_);
+      controller.StartCycle(*clients_to_validate_, record_debug_info_);
       controllers_.push_back(&controller);
     }
     ~CycleScope();
@@ -106,7 +109,7 @@ class PLATFORM_EXPORT PaintController {
     Vector<PaintController*> controllers_;
 
    private:
-    Vector<const DisplayItemClient*> clients_to_validate_;
+    HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
     bool record_debug_info_;
   };
   friend class CycleScope;
@@ -316,8 +319,9 @@ class PLATFORM_EXPORT PaintController {
   void ReserveCapacity();
 
   // Called at the beginning of a paint cycle, as defined by CycleScope.
-  void StartCycle(Vector<const DisplayItemClient*>& clients_to_validate,
-                  bool record_debug_info);
+  void StartCycle(
+      HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
+      bool record_debug_info);
 
   // Called at the end of a paint cycle, as defined by CycleScope.
   // The PaintController will cleanup data that will no longer be used for the
@@ -410,7 +414,8 @@ class PLATFORM_EXPORT PaintController {
   // CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> new_paint_artifact_;
   PaintChunker paint_chunker_;
-  Vector<const DisplayItemClient*>* clients_to_validate_ = nullptr;
+  Persistent<HeapVector<Member<const DisplayItemClient>>> clients_to_validate_ =
+      nullptr;
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;
