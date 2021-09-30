@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -32,10 +33,6 @@ class PrintBackendServiceManager {
   PrintBackendServiceManager(const PrintBackendServiceManager&) = delete;
   PrintBackendServiceManager& operator=(const PrintBackendServiceManager&) =
       delete;
-
-  // Returns true if the print backend service should be sandboxed, false
-  // otherwise.
-  bool ShouldSandboxPrintBackendService() const;
 
   // Register as a client of PrintBackendServiceManager.  This acts as a signal
   // of impending activity enabling possible optimizations within the manager.
@@ -141,9 +138,11 @@ class PrintBackendServiceManager {
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
   // Acquires a remote handle to the Print Backend Service instance, launching a
-  // process to host the service if necessary.
+  // process to host the service if necessary. |is_sandboxed| is set if the
+  // service was launched within a sandbox.
   const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
-      const std::string& printer_name);
+      const std::string& printer_name,
+      bool* is_sandboxed);
 
   // Help function to reset idle timeout duration to a short value.
   void UpdateServiceToShortIdleTimeout(
@@ -238,6 +237,11 @@ class PrintBackendServiceManager {
   RemotesMap sandboxed_remotes_;
   RemotesMap unsandboxed_remotes_;
 
+  // Keeps remotes for wrapping service hosts alive until they disconnect.
+  mojo::RemoteSet<printing::mojom::SandboxedPrintBackendHost> sandboxed_hosts_;
+  mojo::RemoteSet<printing::mojom::UnsandboxedPrintBackendHost>
+      unsandboxed_hosts_;
+
   // Set of IDs for clients actively engaged in printing.  This could include
   // tabs in print preview as well as an active system print.  Retention of a
   // service process can have benefit so long as there are active clients.
@@ -267,9 +271,6 @@ class PrintBackendServiceManager {
       unsandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedStartPrintingCallbacks sandboxed_saved_start_printing_callbacks_;
   RemoteSavedStartPrintingCallbacks unsandboxed_saved_start_printing_callbacks_;
-
-  // Track if next service started should be sandboxed.
-  bool is_sandboxed_service_ = true;
 
   // Set of printer drivers which require elevated permissions to operate.
   // It is expected that most print drivers will succeed with the preconfigured

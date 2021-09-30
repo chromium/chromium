@@ -35,6 +35,44 @@ class ScopedPrinterInfo;
 
 namespace printing {
 
+class SandboxedPrintBackendHostImpl : public mojom::SandboxedPrintBackendHost {
+ public:
+  explicit SandboxedPrintBackendHostImpl(
+      mojo::PendingReceiver<mojom::SandboxedPrintBackendHost> receiver);
+  SandboxedPrintBackendHostImpl(const SandboxedPrintBackendHostImpl&) = delete;
+  SandboxedPrintBackendHostImpl& operator=(
+      const SandboxedPrintBackendHostImpl&) = delete;
+  ~SandboxedPrintBackendHostImpl() override;
+
+ private:
+  // mojom::SandboxedPrintBackendHost
+  void BindBackend(
+      mojo::PendingReceiver<mojom::PrintBackendService> receiver) override;
+
+  mojo::Receiver<mojom::SandboxedPrintBackendHost> receiver_;
+  std::unique_ptr<mojom::PrintBackendService> print_backend_service_;
+};
+
+class UnsandboxedPrintBackendHostImpl
+    : public mojom::UnsandboxedPrintBackendHost {
+ public:
+  explicit UnsandboxedPrintBackendHostImpl(
+      mojo::PendingReceiver<mojom::UnsandboxedPrintBackendHost> receiver);
+  UnsandboxedPrintBackendHostImpl(const UnsandboxedPrintBackendHostImpl&) =
+      delete;
+  UnsandboxedPrintBackendHostImpl& operator=(
+      const UnsandboxedPrintBackendHostImpl&) = delete;
+  ~UnsandboxedPrintBackendHostImpl() override;
+
+ private:
+  // mojom::UnsandboxedPrintBackendHost
+  void BindBackend(
+      mojo::PendingReceiver<mojom::PrintBackendService> receiver) override;
+
+  mojo::Receiver<mojom::UnsandboxedPrintBackendHost> receiver_;
+  std::unique_ptr<mojom::PrintBackendService> print_backend_service_;
+};
+
 class PrintBackendServiceImpl : public mojom::PrintBackendService {
  public:
   explicit PrintBackendServiceImpl(

@@ -105,6 +105,36 @@ struct PrintBackendServiceImpl::DocumentContainer {
   SEQUENCE_CHECKER(system_sequence_checker);
 };
 
+// Sandboxed service helper.
+SandboxedPrintBackendHostImpl::SandboxedPrintBackendHostImpl(
+    mojo::PendingReceiver<mojom::SandboxedPrintBackendHost> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+SandboxedPrintBackendHostImpl::~SandboxedPrintBackendHostImpl() = default;
+
+void SandboxedPrintBackendHostImpl::BindBackend(
+    mojo::PendingReceiver<mojom::PrintBackendService> receiver) {
+  CHECK(!print_backend_service_)
+      << "Cannot bind service twice in same process.";
+  print_backend_service_ =
+      std::make_unique<PrintBackendServiceImpl>(std::move(receiver));
+}
+
+// Unsandboxed service helper.
+UnsandboxedPrintBackendHostImpl::UnsandboxedPrintBackendHostImpl(
+    mojo::PendingReceiver<mojom::UnsandboxedPrintBackendHost> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+UnsandboxedPrintBackendHostImpl::~UnsandboxedPrintBackendHostImpl() = default;
+
+void UnsandboxedPrintBackendHostImpl::BindBackend(
+    mojo::PendingReceiver<mojom::PrintBackendService> receiver) {
+  CHECK(!print_backend_service_)
+      << "Cannot bind service twice in same process.";
+  print_backend_service_ =
+      std::make_unique<PrintBackendServiceImpl>(std::move(receiver));
+}
+
 PrintBackendServiceImpl::PrintingContextDelegate::PrintingContextDelegate() =
     default;
 PrintBackendServiceImpl::PrintingContextDelegate::~PrintingContextDelegate() =

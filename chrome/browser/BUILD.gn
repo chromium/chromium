@@ -1513,7 +1513,6 @@ static_library("browser") {
     "send_tab_to_self/send_tab_to_self_client_service_factory.h",
     "send_tab_to_self/send_tab_to_self_util.cc",
     "send_tab_to_self/send_tab_to_self_util.h",
-    "service_sandbox_type.h",
     "sessions/chrome_serialized_navigation_driver.cc",
     "sessions/chrome_serialized_navigation_driver.h",
     "sessions/chrome_tab_restore_service_client.cc",

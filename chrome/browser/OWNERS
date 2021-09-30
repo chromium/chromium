@@ -82,9 +82,6 @@ per-file chrome_content_browser_client_receiver_bindings.*=file://ipc/SECURITY_O
 per-file chrome_content_browser_client_binder_policies.*=set noparent
 per-file chrome_content_browser_client_binder_policies.*=file://ipc/SECURITY_OWNERS
 
-# Changes to service sandbox configuration require a security review.
-per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS
-
 # BackForwardCache
 per-file chrome_back_forward_cache_browsertest.cc=arthursonzogni@chromium.org
 per-file chrome_back_forward_cache_browsertest.cc=altimin@chromium.org

@@ -139,6 +139,10 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kSpeechRecognition;
     case sandbox::mojom::Sandbox::kUtility:
       return sandbox::policy::SandboxType::kUtility;
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
+      return sandbox::policy::SandboxType::kPrintBackend;
+#endif
 #if defined(OS_FUCHSIA)
     case sandbox::mojom::Sandbox::kVideoCapture:
       return sandbox::policy::SandboxType::kVideoCapture;

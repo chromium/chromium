@@ -258,9 +258,16 @@ auto RunPaintPreviewCompositor(
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-auto RunPrintBackendService(
-    mojo::PendingReceiver<printing::mojom::PrintBackendService> receiver) {
-  return std::make_unique<printing::PrintBackendServiceImpl>(
+auto RunPrintingSandboxedPrintBackendHost(
+    mojo::PendingReceiver<printing::mojom::SandboxedPrintBackendHost>
+        receiver) {
+  return std::make_unique<printing::SandboxedPrintBackendHostImpl>(
+      std::move(receiver));
+}
+auto RunPrintingUnsandboxedPrintBackendHost(
+    mojo::PendingReceiver<printing::mojom::UnsandboxedPrintBackendHost>
+        receiver) {
+  return std::make_unique<printing::UnsandboxedPrintBackendHostImpl>(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -387,7 +394,8 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  services.Add(RunPrintBackendService);
+  services.Add(RunPrintingSandboxedPrintBackendHost);
+  services.Add(RunPrintingUnsandboxedPrintBackendHost);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)

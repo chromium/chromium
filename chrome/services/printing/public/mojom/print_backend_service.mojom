@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "printing/backend/mojom/print_backend.mojom";
 import "printing/mojom/print.mojom";
 import "printing/mojom/printing_context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // The default printer name, or the `ResultCode` if there was an error when
 // trying to retrieve this data.
@@ -60,6 +61,24 @@ enum PrintTargetType {
   kSystemDialog,
   [EnableIf=is_mac]
   kExternalPreview,
+};
+
+// Hosts the PrintBackendService but does so without sandboxing the service -
+// this is required if print drivers need UI access or cannot otherwise
+// operate in the normal sandbox. There is a 1:1 relationship and `service`
+// should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface UnsandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
+};
+
+// Hosts the PrintBackendService in a sandbox. There is a 1:1 relationship
+// and `service` should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kPrintBackend]
+interface SandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
 };
 
 // The main interface to Chrome's Print Backend Service, which performs

@@ -67,6 +67,10 @@ enum Sandbox {
   [EnableIf=is_win]
   kPdfConversion,
 
+  // Interfaces with operating system print drivers.
+  [EnableIf=enable_oop_printing]
+  kPrintBackend,
+
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]
   kXrCompositing,

@@ -3,8 +3,12 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   generate_java = true
   sources = [ "sandbox.mojom" ]
+  if (enable_oop_printing) {
+    enabled_features = [ "enable_oop_printing" ]
+  }
 }
