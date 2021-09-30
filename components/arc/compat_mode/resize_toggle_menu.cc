@@ -256,11 +256,11 @@ ResizeToggleMenu::MakeBubbleDelegateView(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
   phone_button_ =
-      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneIcon,
+      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneLegacyIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
-  tablet_button_ =
-      add_menu_button(ResizeCompatMode::kTablet, ash::kSystemMenuTabletIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+  tablet_button_ = add_menu_button(
+      ResizeCompatMode::kTablet, ash::kSystemMenuTabletLegacyIcon,
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
   resizable_button_ =
       add_menu_button(ResizeCompatMode::kResizable, kResizableIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);

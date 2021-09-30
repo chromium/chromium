@@ -51,32 +51,32 @@ const gfx::VectorIcon& GetBluetoothDeviceIcon(
     BluetoothDeviceInfo::ConnectionState connection_state) {
   switch (device_type) {
     case BluetoothDeviceInfo::DeviceType::kComputer:
-      return ash::kSystemMenuComputerIcon;
+      return ash::kSystemMenuComputerLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kPhone:
-      return ash::kSystemMenuPhoneIcon;
+      return ash::kSystemMenuPhoneLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kAudio:
     case BluetoothDeviceInfo::DeviceType::kCarAudio:
-      return ash::kSystemMenuHeadsetIcon;
+      return ash::kSystemMenuHeadsetLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kVideo:
-      return ash::kSystemMenuVideocamIcon;
+      return ash::kSystemMenuVideocamLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kJoystick:
     case BluetoothDeviceInfo::DeviceType::kGamepad:
-      return ash::kSystemMenuGamepadIcon;
+      return ash::kSystemMenuGamepadLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kKeyboard:
     case BluetoothDeviceInfo::DeviceType::kKeyboardMouseCombo:
-      return ash::kSystemMenuKeyboardIcon;
+      return ash::kSystemMenuKeyboardLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kTablet:
-      return ash::kSystemMenuTabletIcon;
+      return ash::kSystemMenuTabletLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kMouse:
-      return ash::kSystemMenuMouseIcon;
+      return ash::kSystemMenuMouseLegacyIcon;
     case BluetoothDeviceInfo::DeviceType::kModem:
     case BluetoothDeviceInfo::DeviceType::kPeripheral:
-      return ash::kSystemMenuBluetoothIcon;
+      return ash::kSystemMenuBluetoothLegacyIcon;
     default:
       return connection_state ==
                      BluetoothDeviceInfo::ConnectionState::kConnected
-                 ? ash::kSystemMenuBluetoothConnectedIcon
-                 : ash::kSystemMenuBluetoothIcon;
+                 ? ash::kSystemMenuBluetoothConnectedLegacyIcon
+                 : ash::kSystemMenuBluetoothLegacyIcon;
   }
 }
 

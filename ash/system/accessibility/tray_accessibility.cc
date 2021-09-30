@@ -288,7 +288,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   if (controller->IsVirtualKeyboardSettingVisibleInTray()) {
     virtual_keyboard_enabled_ = controller->virtual_keyboard().enabled();
     virtual_keyboard_view_ = AddScrollListCheckableItem(
-        kSystemMenuKeyboardIcon,
+        kSystemMenuKeyboardLegacyIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
         virtual_keyboard_enabled_,

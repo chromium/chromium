@@ -124,7 +124,7 @@ const FeatureData kFeatures[] = {
     {FeatureType::kSwitchAccess, prefs::kAccessibilitySwitchAccessEnabled,
      &kSwitchAccessIcon},
     {FeatureType::kVirtualKeyboard, prefs::kAccessibilityVirtualKeyboardEnabled,
-     &kSystemMenuKeyboardIcon}};
+     &kSystemMenuKeyboardLegacyIcon}};
 
 // An array describing the confirmation dialogs for the features which have
 // them.

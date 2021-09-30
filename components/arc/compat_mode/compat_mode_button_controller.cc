@@ -30,9 +30,9 @@ namespace {
 const gfx::VectorIcon& GetIcon(const ResizeCompatMode& mode) {
   switch (mode) {
     case ResizeCompatMode::kPhone:
-      return ash::kSystemMenuPhoneIcon;
+      return ash::kSystemMenuPhoneLegacyIcon;
     case ResizeCompatMode::kTablet:
-      return ash::kSystemMenuTabletIcon;
+      return ash::kSystemMenuTabletLegacyIcon;
     case ResizeCompatMode::kResizable:
       return kResizableIcon;
   }
