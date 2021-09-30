@@ -94,3 +94,14 @@ promise_test(async t => {
   assert_equals(info.close_info.code, 11, 'code');
   assert_equals(info.close_info.reason, expectedReason, 'reason');
 }, 'close with code and long reason');
+
+promise_test(async t => {
+  const code = 32;
+  const reason = 'abc';
+  const wt = new WebTransport(
+    webtransport_url(`server-close.py?code=${code}&reason=${reason}`));
+
+  const close_info = await wt.closed;
+  assert_equals(close_info.code, code, 'code');
+  assert_equals(close_info.reason, reason, 'reason');
+}, 'server initiated closure');
