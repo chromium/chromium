@@ -8752,6 +8752,44 @@
             ]
         }
     ],
+    "WebRTC-DataChannel-Dcsctp": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
+    "WebRTC-PreStreamDecoders": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "max:0,_V1"
+                }
+            ]
+        }
+    ],
     "WebRTC-TaskQueuePacer": [
         {
             "platforms": [
