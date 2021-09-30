@@ -256,7 +256,13 @@ const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
 const base::Feature kDesktopPWAsElidedExtensionsMenu{
-    "DesktopPWAsElidedExtensionsMenu", base::FEATURE_ENABLED_BY_DEFAULT};
+  "DesktopPWAsElidedExtensionsMenu",
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Replaces the origin text flash in web app titlebars with the name of the app.
 const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
