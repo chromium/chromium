@@ -42,15 +42,9 @@ views::View* ElementToView(ui::TrackedElement* element) {
 //
 // In the future, we should add additional specific cases, such as opening a
 // dialog or multiple submenus.
-class InteractionSequenceBrowserTest : public InProcessBrowserTest {};
+class InteractionSequenceUITest : public InProcessBrowserTest {};
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OpenMainMenuAndViewHelpItem DISABLED_OpenMainMenuAndViewHelpItem
-#else
-#define MAYBE_OpenMainMenuAndViewHelpItem OpenMainMenuAndViewHelpItem
-#endif
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserTest,
-                       MAYBE_OpenMainMenuAndViewHelpItem) {
+IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
