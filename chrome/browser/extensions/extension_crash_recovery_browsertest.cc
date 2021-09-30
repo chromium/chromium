@@ -32,7 +32,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -131,8 +131,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
                                     absl::nullopt, absl::nullopt);
     scoped_refptr<const Extension> extension =
         observer.WaitForExtensionLoaded();
-    extensions::BackgroundPageWatcher(GetProcessManager(), extension.get())
-        .WaitForOpen();
+    extensions::ExtensionBackgroundPageWaiter(profile(), *extension.get())
+        .WaitForBackgroundOpen();
   }
 
   size_t CountNotifications() {

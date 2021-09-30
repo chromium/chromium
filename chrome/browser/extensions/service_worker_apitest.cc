@@ -75,7 +75,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/common/verifier_formats.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -1259,10 +1259,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, SWServedBackgroundPageReceivesEvent) {
   // Close the background page and start it again so that the service worker
   // will start controlling pages.
   background_page->Close();
-  BackgroundPageWatcher(process_manager(), extension).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
   background_page = nullptr;
   process_manager()->WakeEventPage(extension->id(), base::DoNothing());
-  BackgroundPageWatcher(process_manager(), extension).WaitForOpen();
+  ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
 
   // Since the SW is now controlling the extension, the SW serves the background
   // script. page.html sends a message to the background script and we verify
@@ -1289,12 +1290,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, SWServedBackgroundPage) {
 
   // Close the background page.
   background_page->Close();
-  BackgroundPageWatcher(process_manager(), extension).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
   background_page = nullptr;
 
   // Start it again.
   process_manager()->WakeEventPage(extension->id(), base::DoNothing());
-  BackgroundPageWatcher(process_manager(), extension).WaitForOpen();
+  ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
 
   // The service worker should get a fetch event for the background page.
   background_page =
@@ -1420,7 +1422,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, BackgroundPageIsWokenIfAsleep) {
       process_manager()->GetBackgroundHostForExtension(extension->id());
   ASSERT_TRUE(background_page);
   background_page->Close();
-  BackgroundPageWatcher(process_manager(), extension).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
 
   EXPECT_EQ("false", NavigateAndExtractInnerText(extension->GetResourceURL(
                          "background-client-is-awake")));
