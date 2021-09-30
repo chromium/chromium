@@ -50,7 +50,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   static std::unique_ptr<NavigationSimulatorImpl> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(

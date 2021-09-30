@@ -183,6 +183,11 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(), main_url);
 
+  // Emulate a user gesture so that the current entry won't be skipped due to
+  // the history manipulation intervention when we try to navigate back to it.
+  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+      std::u16string());
+
   // Navigate subframe to an enabled extension URL.
   scoped_refptr<const Extension> extension =
       ChromeTestExtensionLoader(profile()).LoadExtension(
@@ -194,6 +199,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   content::RenderFrameHost* subframe =
       ChildFrameAt(web_contents->GetMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
+  EXPECT_EQ(web_contents->GetController().GetEntryCount(), 3);
   scoped_refptr<content::SiteInstance> extension_site_instance =
       subframe->GetSiteInstance();
 
@@ -212,10 +218,17 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // iframe, then go forward to the now-disabled extension URL.  Using a
   // history navigation makes the latter navigation a browser-initiated one,
   // which is important for reproducing https://crbug.com/1197360.
+  content::RenderFrameDeletedObserver observer(subframe);
   web_contents->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  // Ensure that the subframe's SiteInstance is deleted to prevent its reuse in
+  // the forward navigation.
+  observer.WaitUntilDeleted();
+  EXPECT_EQ(web_contents->GetController().GetLastCommittedEntryIndex(), 1);
+
   web_contents->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(web_contents->GetController().GetLastCommittedEntryIndex(), 2);
 
   subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);

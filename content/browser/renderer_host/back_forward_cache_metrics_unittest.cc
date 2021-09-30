@@ -164,8 +164,8 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
   clock_.Advance(base::TimeDelta::FromMilliseconds(0b1000));
 
   {
-    auto simulator =
-        NavigationSimulator::CreateHistoryNavigation(-1, contents());
+    auto simulator = NavigationSimulator::CreateHistoryNavigation(
+        -1, contents(), false /* is_renderer_initiated */);
     simulator->Start();
     clock_.Advance(base::TimeDelta::FromMilliseconds(0b10000));
     simulator->Commit();

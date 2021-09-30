@@ -131,8 +131,8 @@ RenderFrameHost* NavigationSimulator::GoForward(WebContents* web_contents) {
 // static
 RenderFrameHost* NavigationSimulator::GoToOffset(WebContents* web_contents,
                                                  int offset) {
-  auto simulator =
-      NavigationSimulatorImpl::CreateHistoryNavigation(offset, web_contents);
+  auto simulator = NavigationSimulatorImpl::CreateHistoryNavigation(
+      offset, web_contents, false /* is_renderer_initiated */);
   simulator->Commit();
   return simulator->GetFinalRenderFrameHost();
 }
@@ -188,8 +188,8 @@ RenderFrameHost* NavigationSimulator::GoToOffsetAndFail(
     WebContents* web_contents,
     int offset,
     int net_error_code) {
-  auto simulator =
-      NavigationSimulator::CreateHistoryNavigation(offset, web_contents);
+  auto simulator = NavigationSimulator::CreateHistoryNavigation(
+      offset, web_contents, false /* is_renderer_initiated */);
   simulator->Fail(net_error_code);
   if (net_error_code == net::ERR_ABORTED)
     return nullptr;
@@ -231,16 +231,25 @@ NavigationSimulatorImpl::CreateBrowserInitiated(const GURL& original_url,
 // static
 std::unique_ptr<NavigationSimulator>
 NavigationSimulator::CreateHistoryNavigation(int offset,
-                                             WebContents* web_contents) {
-  return NavigationSimulatorImpl::CreateHistoryNavigation(offset, web_contents);
+                                             WebContents* web_contents,
+                                             bool is_renderer_initiated) {
+  return NavigationSimulatorImpl::CreateHistoryNavigation(
+      offset, web_contents, is_renderer_initiated);
 }
 
 // static
 std::unique_ptr<NavigationSimulatorImpl>
 NavigationSimulatorImpl::CreateHistoryNavigation(int offset,
-                                                 WebContents* web_contents) {
-  auto simulator =
-      NavigationSimulatorImpl::CreateBrowserInitiated(GURL(), web_contents);
+                                                 WebContents* web_contents,
+                                                 bool is_renderer_initiated) {
+  std::unique_ptr<NavigationSimulatorImpl> simulator = nullptr;
+  if (is_renderer_initiated) {
+    simulator = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(), web_contents->GetMainFrame());
+  } else {
+    simulator =
+        NavigationSimulatorImpl::CreateBrowserInitiated(GURL(), web_contents);
+  }
   simulator->SetSessionHistoryOffset(offset);
   return simulator;
 }
@@ -431,6 +440,8 @@ void NavigationSimulatorImpl::Start() {
 
   CHECK(request_);
   if (blink::IsRendererDebugURL(navigation_url_))
+    return;
+  if (session_history_offset_)
     return;
 
   if (!NeedsThrottleChecks())
@@ -1246,6 +1257,13 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
 }
 
 bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
+  if (session_history_offset_) {
+    static_cast<NavigationControllerImpl&>(web_contents_->GetController())
+        .GoToOffsetFromRenderer(session_history_offset_);
+    request_ = render_frame_host_->frame_tree_node()->navigation_request();
+    return true;
+  }
+
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           initiator_frame_host_

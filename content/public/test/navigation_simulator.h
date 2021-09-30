@@ -120,10 +120,13 @@ class NavigationSimulator {
 
   // Creates a NavigationSimulator that will be used to simulate a history
   // navigation to one of the |web_contents|'s navigation controller |offset|.
-  // E.g. offset -1 for back navigations and 1 for forward navigations.
+  // E.g. offset -1 for back navigations and 1 for forward navigations. If
+  // |is_renderer_initiated| is true, the navigation will simulate a history
+  // navigation initiated via JS.
   static std::unique_ptr<NavigationSimulator> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // Creates a NavigationSimulator that will be used to simulate a
   // renderer-initiated navigation to |original_url| started by

@@ -297,8 +297,8 @@ TEST_F(IsolatedAppThrottleTest,
 
   // Go back. We can't use NavigationSimulator::GoBack because we need to set
   // coop headers.
-  auto simulator =
-      NavigationSimulator::CreateHistoryNavigation(-1, web_contents());
+  auto simulator = NavigationSimulator::CreateHistoryNavigation(
+      -1, web_contents(), false /* is_renderer_initiated */);
   simulator->Start();
 
   // Create a new simulator to finish the navigation because the previous one
@@ -372,8 +372,8 @@ TEST_F(IsolatedAppThrottleTest, AllowHistoryNavigationFromErrorPage) {
 
   // Go back. We can't use NavigationSimulator::GoBack because we need to set
   // coop headers.
-  auto simulator =
-      NavigationSimulator::CreateHistoryNavigation(-1, web_contents());
+  auto simulator = NavigationSimulator::CreateHistoryNavigation(
+      -1, web_contents(), false /* is_renderer_initiated */);
   simulator->Start();
   simulator->SetResponseHeaders(coop_coep_headers());
   simulator->Commit();
