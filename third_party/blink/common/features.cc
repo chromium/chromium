@@ -352,7 +352,13 @@ const base::Feature kServiceWorkerUpdateDelay{
 // (chrome/browser/prefetch/prefetch_proxy/).
 // https://crbug.com/1190167
 const base::Feature kSpeculationRulesPrefetchProxy{
-    "SpeculationRulesPrefetchProxy", base::FEATURE_DISABLED_BY_DEFAULT};
+  "SpeculationRulesPrefetchProxy",
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
