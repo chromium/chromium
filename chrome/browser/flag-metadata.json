@@ -381,12 +381,12 @@
   {
     "name": "autofill-enable-offer-notification",
     "owners": [ "siyua", "jsaul@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-enable-offer-notification-cross-tab-tracking",
     "owners": [ "siyua" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-enable-offer-notification-for-promo-codes",
@@ -396,7 +396,7 @@
   {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-enable-offers-in-downstream",
@@ -431,7 +431,7 @@
   {
     "name": "autofill-fix-offer-in-incognito",
     "owners": [ "siyua" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
@@ -5093,7 +5093,7 @@
   {
     "name": "sync-autofill-wallet-offer-data",
     "owners": ["siyua", "treib"],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "sync-setup-friendly-settings",
