@@ -20,7 +20,7 @@ struct App {
   apps.mojom.OptionalBool is_policy_pinned;
   string? version;
   string? size;
-  map<uint32, apps.mojom.Permission> permissions;
+  map<apps.mojom.PermissionType, apps.mojom.Permission> permissions;
   apps.mojom.InstallReason install_reason;
   bool hide_more_settings;
   bool hide_pin_to_shelf;
@@ -66,44 +66,4 @@ interface Page {
   OnAppAdded(App app);
   OnAppChanged(App update);
   OnAppRemoved(string app_id);
-};
-
-// Permission Type Enums for each App Publisher. The App Publishers are
-// required to provide these values so the WebUI can map permission ID to
-// permission value.
-// TODO(crbug.com/1198390): Updating to use App Service Permission Type
-// Enum instead of publisher permission ID. Not updating the front end
-// js code to keep the CL manageable.
-
-// This enum shows the ARC permission values currently supported over the
-// App Service. It should always match the PermissionType enum in
-// components/services/app_service/public/mojom/types.mojom
-enum ArcPermissionType {
-  CAMERA          = 1,
-  LOCATION        = 2,
-  MICROPHONE      = 3,
-  NOTIFICATIONS   = 4,
-  CONTACTS        = 5,
-  STORAGE         = 6,
-};
-
-// This enum shows the PWA permission values currently supported over the
-// App Service. It should always match the PermissionType enum in
-// components/services/app_service/public/mojom/types.mojom
-enum PwaPermissionType {
-  LOCATION = 2,
-  NOTIFICATIONS = 4,
-  MICROPHONE = 3,
-  CAMERA = 1,
-};
-
-// The Plugin VM app publisher uses this enum directly.
-enum PluginVmPermissionType {
-  PRINTING = 7,
-  CAMERA = 1,
-  MICROPHONE = 3,
-};
-
-enum BorealisPermissionType {
-  MICROPHONE = 3,
 };

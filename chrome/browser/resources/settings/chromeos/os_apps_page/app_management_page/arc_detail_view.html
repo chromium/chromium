@@ -12,7 +12,7 @@
   <app-management-permission-item id="notifications-card"
       class="permission-card-row separated-row header-text"
       permission-label="$i18n{appManagementNotificationsLabel}"
-      permission-type="NOTIFICATIONS">
+      permission-type="kNotifications">
   </app-management-permission-item>
   <div id="permissions-card"
       class="permission-card-row">
@@ -25,27 +25,27 @@
       <app-management-permission-item class="subpermission-row"
           icon="app-management:location"
           permission-label="$i18n{appManagementLocationPermissionLabel}"
-          permission-type="LOCATION">
+          permission-type="kLocation">
       </app-management-permission-item>
       <app-management-permission-item class="subpermission-row"
           icon="app-management:camera"
           permission-label="$i18n{appManagementCameraPermissionLabel}"
-          permission-type="CAMERA">
+          permission-type="kCamera">
       </app-management-permission-item>
       <app-management-permission-item class="subpermission-row"
           icon="app-management:microphone"
           permission-label="$i18n{appManagementMicrophonePermissionLabel}"
-          permission-type="MICROPHONE">
+          permission-type="kMicrophone">
       </app-management-permission-item>
       <app-management-permission-item class="subpermission-row"
           icon="app-management:contacts"
           permission-label="$i18n{appManagementContactsPermissionLabel}"
-          permission-type="CONTACTS">
+          permission-type="kContacts">
       </app-management-permission-item>
       <app-management-permission-item class="subpermission-row"
           icon="app-management:storage"
           permission-label="$i18n{appManagementStoragePermissionLabel}"
-          permission-type="STORAGE">
+          permission-type="kStorage">
       </app-management-permission-item>
       <template is="dom-if" if="[[noPermissionsRequested_(app_)]]">
         <div id="no-permissions" class="permission-text-row">

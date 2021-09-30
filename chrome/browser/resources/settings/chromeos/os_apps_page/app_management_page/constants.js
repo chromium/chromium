@@ -39,16 +39,6 @@ export const Bool = {
   kTrue: 1,
 };
 
-export const PwaPermissionType = appManagement.mojom.PwaPermissionType;
-
-export const PluginVmPermissionType =
-    appManagement.mojom.PluginVmPermissionType;
-
-export const ArcPermissionType = appManagement.mojom.ArcPermissionType;
-
-export const BorealisPermissionType =
-    appManagement.mojom.BorealisPermissionType;
-
 export const AppType = apps.mojom.AppType;
 
 export const PermissionValueType = apps.mojom.PermissionValueType;

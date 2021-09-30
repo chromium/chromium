@@ -258,14 +258,14 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
-  base::flat_map<uint32_t, apps::mojom::PermissionPtr> permissions;
+  base::flat_map<apps::mojom::PermissionType, apps::mojom::PermissionPtr>
+      permissions;
   for (const auto& permission : update.Permissions()) {
     if (permission->permission_type == apps::mojom::PermissionType::kStorage &&
         ShouldHideStoragePermission(update.AppId())) {
       continue;
     }
-    permissions[static_cast<uint32_t>(permission->permission_type)] =
-        permission->Clone();
+    permissions[permission->permission_type] = permission->Clone();
   }
 
   auto app = app_management::mojom::App::New();

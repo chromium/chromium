@@ -31,8 +31,7 @@ Polymer({
 
     /**
      * A string version of the permission type. Must be a value of the
-     * permission type enum corresponding to the AppType of app_.
-     * E.g. A value of PwaPermissionType if app_.type === AppType.kWeb.
+     * permission type enum in apps.mojom.PermissionType.
      * @type {string}
      */
     permissionType: String,
@@ -264,34 +263,31 @@ Polymer({
    */
   getUserMetricActionForPermission_(permissionValue, permissionType) {
     switch (permissionType) {
-      case 'NOTIFICATIONS':
+      case 'kNotifications':
         return permissionValue ? AppManagementUserAction.NotificationsTurnedOn :
                                  AppManagementUserAction.NotificationsTurnedOff;
 
-      case 'GEOLOCATION':
-      case 'LOCATION':
+      case 'kLocation':
         return permissionValue ? AppManagementUserAction.LocationTurnedOn :
                                  AppManagementUserAction.LocationTurnedOff;
 
-      case 'MEDIASTREAM_CAMERA':
-      case 'CAMERA':
+      case 'kCamera':
         return permissionValue ? AppManagementUserAction.CameraTurnedOn :
                                  AppManagementUserAction.CameraTurnedOff;
 
-      case 'MEDIASTREAM_MIC':
-      case 'MICROPHONE':
+      case 'kMicrophone':
         return permissionValue ? AppManagementUserAction.MicrophoneTurnedOn :
                                  AppManagementUserAction.MicrophoneTurnedOff;
 
-      case 'CONTACTS':
+      case 'kContacts':
         return permissionValue ? AppManagementUserAction.ContactsTurnedOn :
                                  AppManagementUserAction.ContactsTurnedOff;
 
-      case 'STORAGE':
+      case 'kStorage':
         return permissionValue ? AppManagementUserAction.StorageTurnedOn :
                                  AppManagementUserAction.StorageTurnedOff;
 
-      case 'PRINTING':
+      case 'kPrinting':
         return permissionValue ? AppManagementUserAction.PrintingTurnedOn :
                                  AppManagementUserAction.PrintingTurnedOff;
 

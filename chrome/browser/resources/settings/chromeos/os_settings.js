@@ -131,7 +131,7 @@ export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.js';
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
-export {ArcPermissionType, Bool, BorealisPermissionType, PageType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState, WindowMode} from './os_apps_page/app_management_page/constants.js';
+export {Bool, PageType, PermissionType, PermissionValueType, TriState, WindowMode} from './os_apps_page/app_management_page/constants.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.js';

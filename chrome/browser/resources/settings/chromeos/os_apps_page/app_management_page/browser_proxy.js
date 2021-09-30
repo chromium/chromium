@@ -14,7 +14,7 @@ import '/app-management/app_management.mojom-lite.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {AppType, InstallReason, PwaPermissionType, TriState} from './constants.js';
+import {AppType, InstallReason, PermissionType, TriState} from './constants.js';
 import {FakePageHandler} from './fake_page_handler.js';
 
 export class BrowserProxy {
@@ -34,11 +34,11 @@ export class BrowserProxy {
       this.handler = this.fakeHandler.getRemote();
 
       const permissionOptions = {};
-      permissionOptions[PwaPermissionType.LOCATION] = {
+      permissionOptions[PermissionType.kLocation] = {
         permissionValue: TriState.kAllow,
         isManaged: true,
       };
-      permissionOptions[PwaPermissionType.CAMERA] = {
+      permissionOptions[PermissionType.kCamera] = {
         permissionValue: TriState.kBlock,
         isManaged: true
       };

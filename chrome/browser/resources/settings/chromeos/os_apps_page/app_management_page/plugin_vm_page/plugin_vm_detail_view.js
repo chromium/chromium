@@ -77,11 +77,11 @@ Polymer({
   onPermissionChanged_: async function(e) {
     this.pendingPermissionItem_ = /** @type {Element} */ (e.target);
     switch (e.target.permissionType) {
-      case 'CAMERA':
+      case 'kCamera':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogCameraLabel');
         break;
-      case 'MICROPHONE':
+      case 'kMicrophone':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogMicrophoneLabel');
         break;

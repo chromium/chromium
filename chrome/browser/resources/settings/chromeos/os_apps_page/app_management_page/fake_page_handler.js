@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {AppType, ArcPermissionType, Bool, OptionalBool, PermissionValueType, PwaPermissionType, TriState} from './constants.js';
+import {AppType, Bool, OptionalBool, PermissionType, PermissionValueType, TriState} from './constants.js';
 import {AppManagementStore} from './store.js';
 import {createPermission} from './util.js';
 
@@ -17,26 +17,26 @@ export class FakePageHandler {
    * @return {!Object<number, Permission>}
    */
   static createWebPermissions(options) {
-    const permissionIds = [
-      PwaPermissionType.LOCATION,
-      PwaPermissionType.NOTIFICATIONS,
-      PwaPermissionType.MICROPHONE,
-      PwaPermissionType.CAMERA,
+    const permissionTypes = [
+      PermissionType.kLocation,
+      PermissionType.kNotifications,
+      PermissionType.kMicrophone,
+      PermissionType.kCamera,
     ];
 
     const permissions = {};
 
-    for (const permissionId of permissionIds) {
+    for (const permissionType of permissionTypes) {
       let permissionValue = TriState.kAllow;
       let isManaged = false;
 
-      if (options && options[permissionId]) {
-        const opts = options[permissionId];
+      if (options && options[permissionType]) {
+        const opts = options[permissionType];
         permissionValue = opts.permissionValue || permissionValue;
         isManaged = opts.isManaged || isManaged;
       }
-      permissions[permissionId] = createPermission(
-          permissionId, PermissionValueType.kTriState, permissionValue,
+      permissions[permissionType] = createPermission(
+          permissionType, PermissionValueType.kTriState, permissionValue,
           isManaged);
     }
 
@@ -48,20 +48,20 @@ export class FakePageHandler {
    * @return {!Object<number, Permission>}
    */
   static createArcPermissions(optIds) {
-    const permissionIds = optIds || [
-      ArcPermissionType.CAMERA,
-      ArcPermissionType.LOCATION,
-      ArcPermissionType.MICROPHONE,
-      ArcPermissionType.NOTIFICATIONS,
-      ArcPermissionType.CONTACTS,
-      ArcPermissionType.STORAGE,
+    const permissionTypes = optIds || [
+      PermissionType.kCamera,
+      PermissionType.kLocation,
+      PermissionType.kMicrophone,
+      PermissionType.kNotifications,
+      PermissionType.kContacts,
+      PermissionType.kStorage,
     ];
 
     const permissions = {};
 
-    for (const permissionId of permissionIds) {
-      permissions[permissionId] = createPermission(
-          permissionId, PermissionValueType.kBool, Bool.kTrue,
+    for (const permissionType of permissionTypes) {
+      permissions[permissionType] = createPermission(
+          permissionType, PermissionValueType.kBool, Bool.kTrue,
           false /*is_managed*/);
     }
 

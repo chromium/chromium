@@ -69,10 +69,10 @@ suite('<app-management-pwa-detail-view>', function() {
                      .checked);
     };
 
-    await checkToggle('NOTIFICATIONS');
-    await checkToggle('LOCATION');
-    await checkToggle('CAMERA');
-    await checkToggle('MICROPHONE');
+    await checkToggle('kNotifications');
+    await checkToggle('kLocation');
+    await checkToggle('kCamera');
+    await checkToggle('kMicrophone');
   });
 
   test('Pin to shelf toggle', async function() {

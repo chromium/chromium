@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {BorealisPermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
 // #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // #import {Router, routes, Route} from 'chrome://os-settings/chromeos/os_settings.js';
@@ -39,10 +39,10 @@ suite('<app-management-borealis-detail-view>', function() {
     replaceStore();
 
     const permissions = {};
-    const permissionIds = [BorealisPermissionType.MICROPHONE];
-    for (const permissionId of permissionIds) {
-      permissions[permissionId] = app_management.util.createPermission(
-          permissionId, PermissionValueType.kBool, Bool.kTrue,
+    const permissionTypes = [PermissionType.kMicrophone];
+    for (const permissionType of permissionTypes) {
+      permissions[permissionType] = app_management.util.createPermission(
+          permissionType, PermissionValueType.kBool, Bool.kTrue,
           false /*is_managed*/);
     }
 
@@ -85,7 +85,7 @@ suite('<app-management-borealis-detail-view>', function() {
                      .checked);
     };
 
-    await checkToggle('MICROPHONE');
+    await checkToggle('kMicrophone');
   });
 
   test('Pin to shelf toggle', async function() {

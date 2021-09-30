@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
 
-import {AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, OptionalBool, PermissionType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState, WindowMode} from './constants.js';
+import {AppManagementUserAction, AppType, Bool, OptionalBool, PermissionType, PermissionValueType, TriState, WindowMode} from './constants.js';
 
 /**
  * @fileoverview Utility functions for the App Management page.
@@ -128,21 +128,10 @@ export function getPermission(app, permissionType) {
 /**
  * @param {App} app
  * @param {string} permissionType
- * @return {number}
+ * @return {PermissionType}
  */
 export function permissionTypeHandle(app, permissionType) {
-  switch (app.type) {
-    case AppType.kWeb:
-      return PwaPermissionType[permissionType];
-    case AppType.kArc:
-      return ArcPermissionType[permissionType];
-    case AppType.kPluginVm:
-      return PluginVmPermissionType[permissionType];
-    case AppType.kBorealis:
-      return BorealisPermissionType[permissionType];
-    default:
-      assertNotReached();
-  }
+  return PermissionType[permissionType];
 }
 
 /**
