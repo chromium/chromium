@@ -15,13 +15,6 @@ namespace password_manager_util_win {
 // possible.
 bool AuthenticateUser(gfx::NativeWindow window,
                       password_manager::ReauthPurpose purpose);
-
-// Query the system to determine whether the current logged on user has a
-// password set on their OS account, and log the result with UMA. It should be
-// called on UI thread. The query is executed with a time delay to avoid calling
-// a few Windows APIs on startup.
-void DelayReportOsPassword();
-
 }  // namespace password_manager_util_win
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UTIL_WIN_H_

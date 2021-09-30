@@ -64915,6 +64915,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PasswordManagerOsPasswordStatus">
+  <obsolete>
+    Deprecated 09/2021.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Unsupported platform"/>
   <int value="2" label="Password is blank"/>

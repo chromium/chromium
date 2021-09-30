@@ -37,10 +37,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
-#include "chrome/browser/password_manager/password_manager_util_win.h"
-#endif
-
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
@@ -87,9 +83,6 @@ PasswordStoreFactory::~PasswordStoreFactory() = default;
 scoped_refptr<RefcountedKeyedService>
 PasswordStoreFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if defined(OS_WIN)
-  password_manager_util_win::DelayReportOsPassword();
-#endif
   Profile* profile = static_cast<Profile*>(context);
 
   std::unique_ptr<password_manager::LoginDatabase> login_db(

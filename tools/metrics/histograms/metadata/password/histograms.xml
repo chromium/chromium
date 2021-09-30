@@ -1942,7 +1942,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.OsPasswordStatus"
-    enum="PasswordManagerOsPasswordStatus" expires_after="2021-12-12">
+    enum="PasswordManagerOsPasswordStatus" expires_after="2021-09-23">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
