@@ -7,20 +7,15 @@ import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const ExtensionControlledIndicatorElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class ExtensionControlledIndicatorElement extends
     ExtensionControlledIndicatorElementBase {
   static get is() {
@@ -39,13 +34,11 @@ class ExtensionControlledIndicatorElement extends
     };
   }
 
-  /**
-   * @param {string} extensionId
-   * @param {string} extensionName
-   * @return {string}
-   * @private
-   */
-  getLabel_(extensionId, extensionName) {
+  extensionCanBeDisabled: boolean;
+  extensionId: string;
+  extensionName: string;
+
+  private getLabel_(): string {
     if (this.extensionId === undefined || this.extensionName === undefined) {
       return '';
     }
@@ -58,8 +51,7 @@ class ExtensionControlledIndicatorElement extends
     });
   }
 
-  /** @private */
-  onDisableTap_() {
+  private onDisableTap_() {
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
         assert(this.extensionId));

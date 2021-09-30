@@ -232,8 +232,7 @@ preprocess_if_expr("preprocess_generated") {
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
-    "controls/extension_controlled_indicator.js",
-    "controls/password_prompt_dialog.js",
+    "controls/extension_controlled_indicator.ts",
     "controls/settings_checkbox.ts",
     "controls/settings_dropdown_menu.ts",
     "controls/settings_radio_group.ts",
@@ -350,7 +349,9 @@ preprocess_if_expr("preprocess_generated") {
     ]
   }
 
-  if (!is_chromeos_ash) {
+  if (is_chromeos_ash) {
+    in_files += [ "controls/password_prompt_dialog.ts" ]
+  } else {
     in_files += [
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
@@ -381,7 +382,6 @@ grit("resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "controls:closure_compile",
     "people_page:closure_compile",
     "prefs:closure_compile",
     "settings_page:closure_compile",
@@ -592,11 +592,10 @@ ts_library("build_ts") {
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
     "clear_browsing_data_dialog/installed_app_checkbox.ts",
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
-    "controls/cr_policy_pref_mixin.ts",
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
-    "controls/extension_controlled_indicator.js",
-    "controls/password_prompt_dialog.js",
+    "controls/cr_policy_pref_mixin.ts",
+    "controls/extension_controlled_indicator.ts",
     "controls/pref_control_mixin.ts",
     "controls/settings_boolean_control_mixin.ts",
     "controls/settings_checkbox.ts",
@@ -748,6 +747,7 @@ ts_library("build_ts") {
   if (is_chromeos_ash) {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
+      "controls/password_prompt_dialog.ts",
       "people_page/account_manager_browser_proxy.js",
       "site_settings/android_info_browser_proxy.ts",
     ]
@@ -800,6 +800,10 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
+  if (is_chromeos_ash) {
+    definitions +=
+        [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  }
 
   extra_deps = [
     ":preprocess",

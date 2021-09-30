@@ -27,6 +27,7 @@ js_library("os_privacy_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = chrome_extension_public_externs
 }
 
 js_library("peripheral_data_access_browser_proxy") {

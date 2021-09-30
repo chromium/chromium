@@ -224,7 +224,6 @@ js_library("network_proxy_section") {
     ":internet_shared_css",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
     "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

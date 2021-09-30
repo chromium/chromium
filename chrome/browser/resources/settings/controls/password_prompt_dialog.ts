@@ -25,9 +25,16 @@ import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../settings_shared_css.js';
 
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+interface SettingsPasswordPromptDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsPasswordPromptDialogElement extends PolymerElement {
   static get is() {
     return 'settings-password-prompt-dialog';
@@ -42,7 +49,6 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
       /**
        * The subtext to be displayed above the password input field. Embedders
        * may choose to change this value for their specific use case.
-       * @type {string}
        */
       passwordPromptText: {
         type: String,
@@ -50,9 +56,6 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
         value: '',
       },
 
-      /**
-       * @private {string}
-       */
       inputValue_: {
         type: String,
         value: '',
@@ -61,7 +64,6 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
 
       /**
        * Helper property which marks password as valid/invalid.
-       * @private {boolean}
        */
       passwordInvalid_: {
         type: Boolean,
@@ -71,11 +73,9 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
       /**
        * Interface for chrome.quickUnlockPrivate calls. May be overridden by
        * tests.
-       * @type {Object}
        */
       quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
 
-      /** @private {boolean} */
       waitingForPasswordCheck_: {
         type: Boolean,
         value: false,
@@ -83,12 +83,16 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     };
   }
 
-  /** @return {!CrInputElement} */
-  get passwordInput() {
-    return /** @type {!CrInputElement} */ (this.$.passwordInput);
+  passwordPromptText: string;
+  private inputValue_: string;
+  private passwordInvalid_: boolean;
+  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  private waitingForPasswordCheck_: boolean;
+
+  get passwordInput(): CrInputElement {
+    return this.shadowRoot!.querySelector('cr-input')!;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -102,8 +106,7 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     }, 1);
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
@@ -111,9 +114,8 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
 
   /**
    * Run the account password check.
-   * @private
    */
-  submitPassword_() {
+  private submitPassword_() {
     this.waitingForPasswordCheck_ = true;
 
     const password = this.passwordInput.value;
@@ -145,13 +147,11 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     });
   }
 
-  /** @private */
-  onInputValueChange_() {
+  private onInputValueChange_() {
     this.passwordInvalid_ = false;
   }
 
-  /** @private */
-  isConfirmEnabled_() {
+  private isConfirmEnabled_() {
     return !this.waitingForPasswordCheck_ && !this.passwordInvalid_ &&
         this.inputValue_;
   }

@@ -2,45 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":extension_controlled_indicator",
-    ":password_prompt_dialog",
-  ]
-}
-
-js_library("extension_controlled_indicator") {
-  deps = [
-    "..:extension_control_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("password_prompt_dialog") {
-  deps = [
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-  ]
-  externs_list = chrome_extension_public_externs +
-                 [ "$externs_path/quick_unlock_private.js" ]
-}
 
 html_to_js("web_components") {
   js_files = [
     "controlled_button.ts",
     "controlled_radio_button.ts",
-    "extension_controlled_indicator.js",
-    "password_prompt_dialog.js",
+    "extension_controlled_indicator.ts",
     "settings_checkbox.ts",
     "settings_dropdown_menu.ts",
     "settings_radio_group.ts",
@@ -48,4 +17,7 @@ html_to_js("web_components") {
     "settings_textarea.ts",
     "settings_toggle_button.ts",
   ]
+  if (is_chromeos_ash) {
+    js_files += [ "password_prompt_dialog.ts" ]
+  }
 }
