@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
@@ -29,10 +30,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace blink {
 class WebInputEvent;
@@ -413,6 +410,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
+
+  static base::Value::DictStorage DictFromRect(const gfx::Rect& rect);
 
  private:
   // Message handlers.
