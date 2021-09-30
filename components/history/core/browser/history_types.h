@@ -107,8 +107,9 @@ class VisitRow {
   // Indicates the visit that opened this one.
   //
   // 0 indicates no opener visit. Only non-zero if this visit was directly
-  // initiated by open in a new tab or window. It is possible for this to be
-  // non-zero and the visit to not exist (i.e., if the visit expired).
+  // initiated by open in a new tab, window, or for same-document navigations.
+  // It is possible for this to be non-zero and the visit to not exist (i.e., if
+  // the visit expired).
   //
   // This differs from `referring_visit` since this links visits across tabs
   // whereas `referring_visit` is only populated if the Referrer is from the

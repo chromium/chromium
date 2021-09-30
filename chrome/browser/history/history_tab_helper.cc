@@ -159,7 +159,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       // WebContents.
       navigation_handle->GetPreviousMainFrameURL().is_empty()
           ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
-          : absl::nullopt);
+          // Or use the opener for same-document navigations to connect these
+          // visits.
+          : (navigation_handle->IsSameDocument()
+                 ? absl::make_optional(history::Opener(
+                       history::ContextIDForWebContents(web_contents()),
+                       nav_entry_id,
+                       navigation_handle->GetPreviousMainFrameURL()))
+                 : absl::nullopt));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
