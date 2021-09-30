@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -815,7 +816,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 
   auto app_id = update.AppId();
-  auto app_type = app_registry_cache_.GetAppType(app_id);
+  auto app_type = GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kUnknown) {
     return;
   }
@@ -1336,6 +1337,17 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
                         : registration->DesktopFileId();
   return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
       desktop_id, registration->Name());
+}
+
+apps::mojom::AppType AppPlatformMetrics::GetAppType(const std::string& app_id) {
+  auto type = app_registry_cache_.GetAppType(app_id);
+  if (type != mojom::AppType::kUnknown) {
+    return type;
+  }
+  if (crostini::IsCrostiniShelfAppId(profile_, app_id)) {
+    return mojom::AppType::kCrostini;
+  }
+  return mojom::AppType::kUnknown;
 }
 
 }  // namespace apps

@@ -278,6 +278,11 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Gets the source id for a Crostini app_id.
   ukm::SourceId GetSourceIdForCrostini(const std::string& app_id);
 
+  // Gets the app type of a given app_id. Checks multiple sources, not just the
+  // app registry cache, so can identify apps which aren't registered with app
+  // service.
+  mojom::AppType GetAppType(const std::string& app_id);
+
   Profile* const profile_ = nullptr;
 
   AppRegistryCache& app_registry_cache_;
