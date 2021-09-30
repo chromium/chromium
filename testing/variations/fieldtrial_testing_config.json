@@ -7463,29 +7463,6 @@
             ]
         }
     ],
-    "SyncInstanceIDTokenTTL": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "time_to_live_seconds": "1209600"
-                    },
-                    "enable_features": [
-                        "SyncInstanceIDTokenTTL"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncLoadDataUrlFonts": [
         {
             "platforms": [
