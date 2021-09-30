@@ -1870,7 +1870,9 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxEditingTest', 'ParagraphNavigation', function() {
+// TODO(https://crbug.com/1254742): flakes due to underlying bug with
+// accessibility intents.
+TEST_F('ChromeVoxEditingTest', 'DISABLED_ParagraphNavigation', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <div contenteditable role="textbox"
