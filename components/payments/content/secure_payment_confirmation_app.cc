@@ -4,7 +4,6 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
-#include <sstream>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,11 +14,10 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/error_strings.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -242,10 +240,8 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
     return;
 
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
-    std::stringstream status_string_stream;
-    status_string_stream << status;
-    delegate->OnInstrumentDetailsError(base::StringPrintf(
-        "Authenticator returned %s.", status_string_stream.str().c_str()));
+    delegate->OnInstrumentDetailsError(
+        errors::kWebAuthnOperationTimedOutOrNotAllowed);
     RecordSystemPromptResult(
         SecurePaymentConfirmationSystemPromptResult::kCanceled);
     return;
