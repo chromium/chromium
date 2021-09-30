@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -15,6 +16,7 @@
 
 class PrefService;
 class PrefChangeRegistrar;
+class ProfileManager;
 
 namespace chromeos {
 class NetworkState;
@@ -27,7 +29,8 @@ namespace crosapi {
 // It observes proxy changes coming from policies and the default network, and
 // propagates the proxy configuration to Lacros-Chrome observers.
 class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
-                                  public chromeos::NetworkStateHandlerObserver {
+                                  public chromeos::NetworkStateHandlerObserver,
+                                  public ProfileManagerObserver {
  public:
   explicit NetworkSettingsServiceAsh(PrefService* local_state);
   NetworkSettingsServiceAsh(const NetworkSettingsServiceAsh&) = delete;
@@ -59,6 +62,9 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   // this service, the service will stop listening for pref changes.
   void OnDisconnect(mojo::RemoteSetElementId mojo_id);
 
+  // ProfileManagerObserver:
+  void OnProfileManagerDestroying() override;
+
   crosapi::mojom::ProxyConfigPtr cached_proxy_config_;
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
@@ -70,6 +76,8 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
 
   PrefService* local_state_;
+  ProfileManager* profile_manager_ = nullptr;
+
   // Support any number of connections.
   mojo::ReceiverSet<mojom::NetworkSettingsService> receivers_;
   // Support any number of observers.

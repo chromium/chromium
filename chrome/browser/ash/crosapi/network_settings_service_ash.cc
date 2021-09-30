@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
@@ -26,7 +28,8 @@ namespace {
 PrefService* GetPrimaryLoggedInUserProfilePrefs() {
   // Check login state first.
   if (!user_manager::UserManager::IsInitialized() ||
-      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+      !user_manager::UserManager::Get()->IsUserLoggedIn() ||
+      ProfileManager::GetPrimaryUserProfile() == nullptr) {
     return nullptr;
   }
   return ProfileManager::GetPrimaryUserProfile()->GetPrefs();
@@ -36,7 +39,11 @@ PrefService* GetPrimaryLoggedInUserProfilePrefs() {
 namespace crosapi {
 
 NetworkSettingsServiceAsh::NetworkSettingsServiceAsh(PrefService* local_state)
-    : local_state_(local_state) {
+    : local_state_(local_state),
+      profile_manager_(g_browser_process->profile_manager()) {
+  if (profile_manager_) {
+    profile_manager_->AddObserver(this);
+  }
   // Uninitialized in unit_tests.
   if (chromeos::NetworkHandler::IsInitialized()) {
     chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
@@ -52,6 +59,8 @@ NetworkSettingsServiceAsh::~NetworkSettingsServiceAsh() {
     chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
         this, FROM_HERE);
   }
+  if (profile_manager_)
+    profile_manager_->RemoveObserver(this);
 }
 
 void NetworkSettingsServiceAsh::BindReceiver(
@@ -131,6 +140,15 @@ void NetworkSettingsServiceAsh::OnDisconnect(mojo::RemoteSetElementId mojo_id) {
     return;
   // Stop observing proxy pref.
   profile_prefs_registrar_.reset();
+}
+
+void NetworkSettingsServiceAsh::OnProfileManagerDestroying() {
+  profile_prefs_registrar_.reset();
+
+  if (!profile_manager_)
+    return;
+  profile_manager_->RemoveObserver(this);
+  profile_manager_ = nullptr;
 }
 
 }  // namespace crosapi
