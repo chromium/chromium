@@ -16,15 +16,17 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-using fuchsia::accessibility::semantics::MAX_LABEL_SIZE;
-
 namespace {
+
+using AXRole = ax::mojom::Role;
+using fuchsia::accessibility::semantics::MAX_LABEL_SIZE;
+using fuchsia::accessibility::semantics::Role;
 
 // Fuchsia's default root node ID.
 constexpr uint32_t kFuchsiaRootNodeId = 0;
 
 fuchsia::accessibility::semantics::Attributes ConvertAttributes(
-    const ui::AXNodeData& node) {
+    const ui::AXNode& node) {
   fuchsia::accessibility::semantics::Attributes attributes;
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     const std::string& name =
@@ -38,7 +40,7 @@ fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     attributes.set_secondary_label(description.substr(0, MAX_LABEL_SIZE));
   }
 
-  if (node.IsRangeValueSupported()) {
+  if (node.data().IsRangeValueSupported()) {
     fuchsia::accessibility::semantics::RangeAttributes range_attributes;
     if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange)) {
       range_attributes.set_min_value(
@@ -55,37 +57,97 @@ fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     attributes.set_range(std::move(range_attributes));
   }
 
+  if (node.IsTable()) {
+    fuchsia::accessibility::semantics::TableAttributes table_attributes;
+    auto col_count = node.GetTableColCount();
+    if (col_count)
+      table_attributes.set_number_of_columns(*col_count);
+
+    auto row_count = node.GetTableRowCount();
+    if (row_count)
+      table_attributes.set_number_of_rows(*row_count);
+
+    if (!table_attributes.IsEmpty())
+      attributes.set_table_attributes(std::move(table_attributes));
+  }
+
+  if (node.IsTableRow()) {
+    fuchsia::accessibility::semantics::TableRowAttributes table_row_attributes;
+    auto row_index = node.GetTableRowRowIndex();
+    if (row_index) {
+      table_row_attributes.set_row_index(*row_index);
+      attributes.set_table_row_attributes(std::move(table_row_attributes));
+    }
+  }
+
+  if (node.IsTableCellOrHeader()) {
+    fuchsia::accessibility::semantics::TableCellAttributes
+        table_cell_attributes;
+
+    auto col_index = node.GetTableCellColIndex();
+    if (col_index)
+      table_cell_attributes.set_column_index(*col_index);
+
+    auto row_index = node.GetTableCellRowIndex();
+    if (row_index)
+      table_cell_attributes.set_row_index(*row_index);
+
+    auto col_span = node.GetTableCellColSpan();
+    if (col_span)
+      table_cell_attributes.set_column_span(*col_span);
+
+    auto row_span = node.GetTableCellRowSpan();
+    if (row_span)
+      table_cell_attributes.set_row_span(*row_span);
+
+    if (!table_cell_attributes.IsEmpty())
+      attributes.set_table_cell_attributes(std::move(table_cell_attributes));
+  }
+
   return attributes;
 }
 
-// Converts an ax::mojom::Role to a fuchsia::accessibility::semantics::Role.
-fuchsia::accessibility::semantics::Role AxRoleToFuchsiaSemanticRole(
-    ax::mojom::Role role) {
+// Converts an AXRole to a Fuchsia Role.
+Role AxRoleToFuchsiaSemanticRole(AXRole role) {
   switch (role) {
-    case ax::mojom::Role::kButton:
-      return fuchsia::accessibility::semantics::Role::BUTTON;
-    case ax::mojom::Role::kCheckBox:
-      return fuchsia::accessibility::semantics::Role::CHECK_BOX;
-    case ax::mojom::Role::kHeader:
-      return fuchsia::accessibility::semantics::Role::HEADER;
-    case ax::mojom::Role::kImage:
-      return fuchsia::accessibility::semantics::Role::IMAGE;
-    case ax::mojom::Role::kLink:
-      return fuchsia::accessibility::semantics::Role::LINK;
-    case ax::mojom::Role::kRadioButton:
-      return fuchsia::accessibility::semantics::Role::RADIO_BUTTON;
-    case ax::mojom::Role::kSlider:
-      return fuchsia::accessibility::semantics::Role::SLIDER;
-    case ax::mojom::Role::kTextField:
-      return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
-    case ax::mojom::Role::kStaticText:
-      return fuchsia::accessibility::semantics::Role::STATIC_TEXT;
-    case ax::mojom::Role::kSearchBox:
-      return fuchsia::accessibility::semantics::Role::SEARCH_BOX;
-    case ax::mojom::Role::kTextFieldWithComboBox:
-      return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
+    case AXRole::kButton:
+      return Role::BUTTON;
+    case AXRole::kCheckBox:
+      return Role::CHECK_BOX;
+    case AXRole::kHeader:
+      return Role::HEADER;
+    case AXRole::kImage:
+      return Role::IMAGE;
+    case AXRole::kLink:
+      return Role::LINK;
+    case AXRole::kRadioButton:
+      return Role::RADIO_BUTTON;
+    case AXRole::kSlider:
+      return Role::SLIDER;
+    case AXRole::kTextField:
+      return Role::TEXT_FIELD;
+    case AXRole::kStaticText:
+      return Role::STATIC_TEXT;
+    case AXRole::kSearchBox:
+      return Role::SEARCH_BOX;
+    case AXRole::kTextFieldWithComboBox:
+      return Role::TEXT_FIELD_WITH_COMBO_BOX;
+    case AXRole::kTable:
+      return Role::TABLE;
+    case AXRole::kGrid:
+      return Role::GRID;
+    case AXRole::kRow:
+      return Role::TABLE_ROW;
+    case AXRole::kCell:
+      return Role::CELL;
+    case AXRole::kColumnHeader:
+      return Role::COLUMN_HEADER;
+    case AXRole::kRowGroup:
+      return Role::ROW_GROUP;
+    case AXRole::kParagraph:
+      return Role::PARAGRAPH;
     default:
-      return fuchsia::accessibility::semantics::Role::UNKNOWN;
+      return Role::UNKNOWN;
   }
 }
 
@@ -213,24 +275,25 @@ fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
 }  // namespace
 
 fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
-    const ui::AXNodeData& node,
-    const ui::AXNodeData& container_node,
+    const ui::AXNode& ax_node,
+    const ui::AXNode& container_node,
     const ui::AXTreeID& tree_id,
     bool is_root,
     float device_scale_factor,
     NodeIDMapper* id_mapper) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
   fuchsia_node.set_node_id(
-      id_mapper->ToFuchsiaNodeID(tree_id, node.id, is_root));
+      id_mapper->ToFuchsiaNodeID(tree_id, ax_node.id(), is_root));
+  const ui::AXNodeData& node = ax_node.data();
   fuchsia_node.set_role(AxRoleToFuchsiaSemanticRole(node.role));
   fuchsia_node.set_states(ConvertStates(node));
-  fuchsia_node.set_attributes(ConvertAttributes(node));
+  fuchsia_node.set_attributes(ConvertAttributes(ax_node));
   fuchsia_node.set_actions(ConvertActions(node));
   fuchsia_node.set_child_ids(
       ConvertChildIds(node.child_ids, tree_id, id_mapper));
   fuchsia_node.set_location(ConvertBoundingBox(node.relative_bounds.bounds));
   fuchsia_node.set_container_id(
-      id_mapper->ToFuchsiaNodeID(tree_id, container_node.id, false));
+      id_mapper->ToFuchsiaNodeID(tree_id, container_node.data().id, false));
 
   // The transform field must be handled carefully to account for
   // the offsetting implied by the offset container's relative bounds.
@@ -238,8 +301,8 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
   if (node.relative_bounds.transform) {
     transform = *node.relative_bounds.transform;
   }
-  transform.PostTranslate(container_node.relative_bounds.bounds.x(),
-                          container_node.relative_bounds.bounds.y());
+  transform.PostTranslate(container_node.data().relative_bounds.bounds.x(),
+                          container_node.data().relative_bounds.bounds.y());
   if (device_scale_factor > 0) {
     transform.PostScale(1 / device_scale_factor, 1 / device_scale_factor);
   }

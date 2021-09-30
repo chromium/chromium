@@ -13,6 +13,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_node.h"
 
 // Maps AXNode IDs to Fuchsia Node IDs.
 // This class saves the remapped values.
@@ -58,14 +59,14 @@ class WEB_ENGINE_EXPORT NodeIDMapper {
   base::flat_map<ui::AXTreeID, std::unordered_map<int32_t, uint32_t>> id_map_;
 };
 
-// Converts an AXNodeData to a Fuchsia Semantic Node.
+// Converts an AXNode to a Fuchsia Semantic Node.
 // Both data types represent a single node, and no additional state is needed.
-// AXNodeData is used to convey partial updates, so not all fields may be
+// AXNode is used to convey partial updates, so not all fields may be
 // present. Those that are will be converted. The Fuchsia SemanticsManager
 // accepts partial updates, so |node| does not require all fields to be set.
 WEB_ENGINE_EXPORT fuchsia::accessibility::semantics::Node
-AXNodeDataToSemanticNode(const ui::AXNodeData& node,
-                         const ui::AXNodeData& container_node,
+AXNodeDataToSemanticNode(const ui::AXNode& ax_node,
+                         const ui::AXNode& container_node,
                          const ui::AXTreeID& tree_id,
                          bool is_root,
                          float scale_factor,

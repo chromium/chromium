@@ -792,8 +792,8 @@ AccessibilityBridge::EnsureAndGetUpdatedNode(const ui::AXTreeID& tree_id,
   float device_scale_factor =
       ax_node->id() == tree->root()->id() ? GetDeviceScaleFactor() : 0.0f;
   auto new_fuchsia_node =
-      AXNodeDataToSemanticNode(ax_node->data(), container->data(), tree_id,
-                               is_root, device_scale_factor, id_mapper_.get());
+      AXNodeDataToSemanticNode(*ax_node, *container, tree_id, is_root,
+                               device_scale_factor, id_mapper_.get());
 
   if (replace_existing && fuchsia_node) {
     *fuchsia_node = std::move(new_fuchsia_node);
