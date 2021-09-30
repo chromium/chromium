@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_REGISTRY_H_
 
 #include <map>
+#include <utility>
 
 #include "base/callback.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserView;
@@ -42,14 +43,13 @@ class FeaturePromoRegistry {
   // The params must be used immediately since it contains a View
   // pointer that may become stale. This may return nothing in which
   // case the promo shouldn't show.
-  absl::optional<FeaturePromoBubbleParams> GetParamsForFeature(
-      const base::Feature& iph_feature,
-      BrowserView* browser_view);
+  absl::optional<std::pair<FeaturePromoBubbleParams, views::View*>>
+  GetParamsForFeature(const base::Feature& iph_feature,
+                      BrowserView* browser_view);
 
-  // Registers a feature promo. |iph_feature| is the feature. |params|
-  // are normal bubble params except the anchor_view member should be
-  // null. |get_anchor_view_callback| specifies how to get the bubble's
-  // anchor view for an arbitrary browser window.
+  // Registers a feature promo. |iph_feature| is the feature.
+  // |get_anchor_view_callback| specifies how to get the bubble's anchor view
+  // for an arbitrary browser window.
   //
   // Prefer putting these calls in the body of RegisterKnownFeatures()
   // when possible.

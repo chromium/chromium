@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
-#define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
+#ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
+#define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
 
 #include <memory>
 #include <string>
@@ -13,14 +13,11 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/vector_icon_types.h"
 
-namespace views {
-class View;
-}
-
 // Describes the content and appearance of an in-product help bubble.
-// |body_string_specifier|, |anchor_view|, and |arrow| are required, all
-// other fields have good defaults. For consistency between different
-// in-product help flows, avoid changing more fields than necessary.
+// |body_string_specifier| and |arrow| are required, all other fields have good
+// defaults. The anchor UI element is supplied in the framework-specific
+// factory. For consistency between different in-product help flows, avoid
+// changing more fields than necessary.
 struct FeaturePromoBubbleParams {
   FeaturePromoBubbleParams();
   ~FeaturePromoBubbleParams();
@@ -62,9 +59,6 @@ struct FeaturePromoBubbleParams {
 
   // Positioning and sizing:
 
-  // View bubble is positioned relative to. Required.
-  views::View* anchor_view = nullptr;
-
   // Mirrors most values of views::BubbleBorder::Arrow
   enum class Arrow {
     TOP_LEFT,
@@ -81,8 +75,8 @@ struct FeaturePromoBubbleParams {
     RIGHT_CENTER,
   };
 
-  // Determines position relative to |anchor_view|, and where the bubble's arrow
-  // points. Required.
+  // Determines position relative to the anchor element, and where the bubble's
+  // arrow points. Required.
   Arrow arrow = Arrow::TOP_LEFT;
 
   // If set, determines the width of the bubble. Prefer the default if
@@ -114,4 +108,4 @@ struct FeaturePromoBubbleParams {
   absl::optional<base::TimeDelta> timeout_after_interaction;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
+#endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_

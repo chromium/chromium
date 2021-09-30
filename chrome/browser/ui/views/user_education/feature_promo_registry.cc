@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -129,7 +129,7 @@ FeaturePromoRegistry* FeaturePromoRegistry::GetInstance() {
   return instance.get();
 }
 
-absl::optional<FeaturePromoBubbleParams>
+absl::optional<std::pair<FeaturePromoBubbleParams, views::View*>>
 FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
                                           BrowserView* browser_view) {
   auto data_it = feature_promo_data_.find(&iph_feature);
@@ -141,7 +141,6 @@ FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
     return absl::nullopt;
 
   FeaturePromoBubbleParams params = data_it->second.params;
-  params.anchor_view = anchor_view;
 
   if (params.feature_command_id) {
     // Only one of the two should be specified.
@@ -156,7 +155,7 @@ FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
       params.feature_accelerator = accelerator;
   }
 
-  return params;
+  return std::make_pair(params, anchor_view);
 }
 
 void FeaturePromoRegistry::RegisterFeature(

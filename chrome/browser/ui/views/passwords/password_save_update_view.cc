@@ -22,11 +22,11 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
@@ -656,7 +656,6 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   set_close_on_deactivate(false);
 
   FeaturePromoBubbleParams bubble_params;
-  bubble_params.anchor_view = destination_dropdown_;
   bubble_params.arrow = FeaturePromoBubbleParams::Arrow::RIGHT_CENTER;
   bubble_params.focus_on_create = true;
   bubble_params.persist_on_blur = false;
@@ -672,7 +671,7 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
 
     if (promo_controller_->MaybeShowPromoWithParams(
             feature_engagement::kIPHPasswordsAccountStorageFeature,
-            bubble_params)) {
+            bubble_params, destination_dropdown_)) {
       // If the regular promo was shown, the failed reauth promo is
       // definitely finished. If not, we can't be confident it hasn't
       // finished.
@@ -682,8 +681,8 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
     bubble_params.body_string_specifier =
         IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL;
 
-    failed_reauth_promo_id_ =
-        promo_controller_->ShowCriticalPromo(bubble_params);
+    failed_reauth_promo_id_ = promo_controller_->ShowCriticalPromo(
+        bubble_params, destination_dropdown_);
   }
 
   set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);

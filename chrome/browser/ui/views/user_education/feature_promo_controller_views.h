@@ -56,11 +56,13 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   bool MaybeShowPromoWithParams(
       const base::Feature& iph_feature,
       const FeaturePromoBubbleParams& params,
+      views::View* anchor_view,
       BubbleCloseCallback close_callback = BubbleCloseCallback());
 
   // Builds the CreateParams from the BubbleParams.
   FeaturePromoBubbleView::CreateParams GetBaseCreateParams(
-      const FeaturePromoBubbleParams& params);
+      const FeaturePromoBubbleParams& params,
+      views::View* anchor_view);
 
   // Only for security or privacy critical promos. Immedialy shows a
   // promo with |params|, cancelling any normal promo and blocking any
@@ -69,7 +71,8 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Returns an ID that can be passed to CloseBubbleForCriticalPromo()
   // if successful. This can fail if another critical promo is showing.
   absl::optional<base::Token> ShowCriticalPromo(
-      const FeaturePromoBubbleParams& params);
+      const FeaturePromoBubbleParams& params,
+      views::View* anchor_view);
 
   // Ends a promo started by ShowCriticalPromo() if it's still showing.
   void CloseBubbleForCriticalPromo(const base::Token& critical_promo_id);
@@ -105,12 +108,14 @@ class FeaturePromoControllerViews : public FeaturePromoController {
  private:
   bool MaybeShowPromoImpl(const base::Feature& iph_feature,
                           const FeaturePromoBubbleParams& params,
+                          views::View* anchor_view,
                           BubbleCloseCallback close_callback);
 
   // Called when PromoHandle is destroyed to finish the promo.
   void FinishContinuedPromo() override;
 
-  bool ShowPromoBubbleImpl(const FeaturePromoBubbleParams& params);
+  bool ShowPromoBubbleImpl(const FeaturePromoBubbleParams& params,
+                           views::View* anchor_view);
 
   void HandleBubbleClosed();
 

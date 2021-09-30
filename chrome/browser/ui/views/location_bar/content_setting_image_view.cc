@@ -14,9 +14,9 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -267,7 +267,6 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
     FeaturePromoBubbleParams bubble_params;
     bubble_params.body_string_specifier =
         IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO;
-    bubble_params.anchor_view = this;
     bubble_params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
     bubble_params.focus_on_create = true;
     bubble_params.persist_on_blur = false;
@@ -276,7 +275,7 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
     auto* promo_controller = FeaturePromoControllerViews::GetForView(this);
     DCHECK(promo_controller);
     current_iph_id_for_testing_ =
-        promo_controller->ShowCriticalPromo(bubble_params);
+        promo_controller->ShowCriticalPromo(bubble_params, this);
     content_setting_image_model_->SetPromoWasShown(web_contents);
   } else {
     // Set a token that is is_zero() to make it not empty for testing.
