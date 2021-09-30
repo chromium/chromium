@@ -3181,6 +3181,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter incomingHighWaterMark
 [Worker]     getter incomingMaxAge
+[Worker]     getter maxDatagramSize
 [Worker]     getter outgoingHighWaterMark
 [Worker]     getter outgoingMaxAge
 [Worker]     getter readable

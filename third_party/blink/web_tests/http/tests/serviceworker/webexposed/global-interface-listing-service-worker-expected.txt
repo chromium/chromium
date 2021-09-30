@@ -2943,6 +2943,7 @@ interface WebTransportDatagramDuplexStream
     attribute @@toStringTag
     getter incomingHighWaterMark
     getter incomingMaxAge
+    getter maxDatagramSize
     getter outgoingHighWaterMark
     getter outgoingMaxAge
     getter readable

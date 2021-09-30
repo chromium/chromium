@@ -250,6 +250,13 @@ TEST(DatagramDuplexStreamTest, SetOutgoingHighWaterMark) {
   EXPECT_EQ(duplex->outgoingHighWaterMark(), 0);
 }
 
+TEST(DatagramDuplexStreamTest, InitialMaxDatagramSize) {
+  ScopedDatagramDuplexStream scope;
+  auto* duplex = scope.Duplex();
+
+  EXPECT_EQ(duplex->maxDatagramSize(), 1024u);
+}
+
 }  // namespace
 
 }  // namespace blink

@@ -11,6 +11,7 @@
   readonly attribute ReadableStream readable;
   readonly attribute WritableStream writable;
 
+  readonly attribute unsigned long maxDatagramSize;
   attribute double? incomingMaxAge;
   attribute double? outgoingMaxAge;
   attribute long incomingHighWaterMark;
