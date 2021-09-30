@@ -70,6 +70,8 @@ constexpr char kHelpMsg[] =
     "        Specifically, try, in order, vaDeriveImage, then if that fails,\n"
     "        vaCreateImage + vaGetImage. Otherwise, only attempt the\n"
     "        specified fetch policy.\n"
+    "        NB: (b/201587517) AMD ignores this flag and always uses\n"
+    "        vaGetImage.\n"
     "    --out-prefix=<string>\n"
     "        Optional. Save PNGs of decoded (and visible, if --visible is\n"
     "        specified) frames if and only if a path prefix (which may\n"
@@ -140,7 +142,17 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
 }
 
 absl::optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
+    const VaapiDevice& va_device,
     const std::string& fetch_policy) {
+  // Always use kGetImage for AMD devices.
+  // TODO(b/201587517): remove this exception.
+  const std::string va_vendor_string = vaQueryVendorString(va_device.display());
+  if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
+                       base::CompareCase::SENSITIVE)) {
+    LOG(INFO) << "AMD driver detected, forcing vaGetImage";
+    return SharedVASurface::FetchPolicy::kGetImage;
+  }
+
   if (fetch_policy.empty())
     return SharedVASurface::FetchPolicy::kAny;
   if (base::EqualsCaseInsensitiveASCII(fetch_policy, "derive"))
@@ -187,12 +199,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  const auto fetch_policy = GetFetchPolicy(cmd->GetSwitchValueASCII("fetch"));
-  if (!fetch_policy) {
-    std::cout << kUsageMsg;
-    return EXIT_FAILURE;
-  }
-
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
@@ -216,6 +222,13 @@ int main(int argc, char** argv) {
   const VaapiDevice va_device;
   const bool loop_decode = cmd->HasSwitch("loop");
   bool first_loop = true;
+
+  const auto fetch_policy =
+      GetFetchPolicy(va_device, cmd->GetSwitchValueASCII("fetch"));
+  if (!fetch_policy) {
+    std::cout << kUsageMsg;
+    return EXIT_FAILURE;
+  }
 
   do {
     const std::unique_ptr<VideoDecoder> dec =
