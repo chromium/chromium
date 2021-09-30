@@ -51,7 +51,7 @@
           Open page in a new Incognito window (⇧⌘N)
         </message>
       </if>
-      <if expr="is_win or is_linux or chromeos">
+      <if expr="is_win or is_linux or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_RELOAD_INCOGNITO" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to open the web page in Chrome's Incognito mode.">
           Open page in a new Incognito window (Ctrl-Shift-N)
         </message>
@@ -91,7 +91,7 @@
           Restart Chromium
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or chromeos">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their computer.">
           Restart your computer
         </message>
@@ -106,7 +106,7 @@
           Learn more
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or chromeos">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_ERROR_CODE" desc="The message displayed on the crashed web page indicating the type of the crash.">
           Error code: <ph name="ERROR_CODE">$1<ex>STATUS_ACCESS_VIOLATION</ex></ph>
         </message>

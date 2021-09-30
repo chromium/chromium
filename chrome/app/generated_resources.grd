@@ -5489,7 +5489,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- chrome://browser-switch strings -->
-      <if expr="is_win or is_macosx or (is_linux and not chromeos)">
+      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_TITLE" desc="about:browser-switch page title">
           Legacy Browser Support
         </message>
