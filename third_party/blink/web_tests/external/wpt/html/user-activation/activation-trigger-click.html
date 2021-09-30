@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="resources/utils.js"></script>
+</head>
+<body>
+  <h1>Test for click activation trigger</h1>
+  <p>Tests that a popup is allowed with user activation from a click event.</p>
+  <ol id="instructions">
+    <li>Click anywhere in the document.
+  </ol>
+  <script>
+    promise_test(async () => {
+        test_driver.click(document.body);
+        await getEvent('click');
+        let consumed = await consumeTransientActivation();
+        assert_true(consumed, "click event should result in activation");
+    }, "Activation through mouse event");
+  </script>
+</body>
+</html>
