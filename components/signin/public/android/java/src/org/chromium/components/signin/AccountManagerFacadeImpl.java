@@ -23,6 +23,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -192,6 +193,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      */
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {
+        RecordUserAction.record("Signin_AddAccountToDevice");
         mDelegate.createAddAccountIntent(callback);
     }
 

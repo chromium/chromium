@@ -510,8 +510,6 @@ public abstract class SyncConsentFragmentBase
 
     @Override
     public void addAccount() {
-        RecordUserAction.record("Signin_AddAccountToDevice");
-        // TODO(https://crbug.com/842860): Revise createAddAccountIntent and AccountAdder.
         mAccountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {
             if (intent != null) {
                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
