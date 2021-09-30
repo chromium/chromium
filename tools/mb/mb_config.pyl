@@ -59,6 +59,7 @@
       'win32-official': 'x86_official_optimize_goma',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-dbg': 'debug_bot_x86',
+      'win32-archive-tagged': 'official_optimize_goma',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression',
       'win-archive-dbg': 'debug_bot',
       'win-archive-tagged': 'official_optimize_goma',

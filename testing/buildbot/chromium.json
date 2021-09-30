@@ -121,6 +121,18 @@
       }
     ]
   },
+  "win32-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "checkbins",
+        "script": "checkbins.py",
+        "swarming": {}
+      }
+    ]
+  },
   "win32-official": {
     "additional_compile_targets": [
       "all"

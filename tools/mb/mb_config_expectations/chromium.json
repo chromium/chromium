@@ -155,6 +155,12 @@
       "use_goma": true
     }
   },
+  "win32-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
   "win32-official": {
     "gn_args": {
       "is_official_build": true,
