@@ -11,6 +11,8 @@ source_set("cpp") {
   sources = [
     "account_key_filter.cc",
     "account_key_filter.h",
+    "battery_notification.cc",
+    "battery_notification.h",
     "decrypted_passkey.cc",
     "decrypted_passkey.h",
     "decrypted_response.cc",
@@ -20,7 +22,10 @@ source_set("cpp") {
     "not_discoverable_advertisement.h",
   ]
 
-  deps = [ "//crypto" ]
+  deps = [
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 source_set("unit_tests") {

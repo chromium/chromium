@@ -12,10 +12,12 @@ NotDiscoverableAdvertisement::NotDiscoverableAdvertisement() = default;
 NotDiscoverableAdvertisement::NotDiscoverableAdvertisement(
     std::vector<uint8_t> account_key_filter,
     bool show_ui,
-    uint8_t salt)
+    uint8_t salt,
+    absl::optional<BatteryNotification> battery_notification)
     : account_key_filter(std::move(account_key_filter)),
       show_ui(show_ui),
-      salt(salt) {}
+      salt(salt),
+      battery_notification(std::move(battery_notification)) {}
 
 NotDiscoverableAdvertisement::NotDiscoverableAdvertisement(
     const NotDiscoverableAdvertisement&) = default;

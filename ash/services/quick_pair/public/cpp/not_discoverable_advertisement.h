@@ -8,6 +8,9 @@
 #include <cstdint>
 #include <vector>
 
+#include "ash/services/quick_pair/public/cpp/battery_notification.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ash {
 namespace quick_pair {
 
@@ -15,9 +18,11 @@ namespace quick_pair {
 // https://developers.google.com/nearby/fast-pair/spec#AdvertisingWhenNotDiscoverable
 struct NotDiscoverableAdvertisement {
   NotDiscoverableAdvertisement();
-  NotDiscoverableAdvertisement(std::vector<uint8_t> account_key_filter,
-                               bool show_ui,
-                               uint8_t salt);
+  NotDiscoverableAdvertisement(
+      std::vector<uint8_t> account_key_filter,
+      bool show_ui,
+      uint8_t salt,
+      absl::optional<BatteryNotification> battery_notification = absl::nullopt);
   NotDiscoverableAdvertisement(const NotDiscoverableAdvertisement&);
   NotDiscoverableAdvertisement(NotDiscoverableAdvertisement&&);
   NotDiscoverableAdvertisement& operator=(const NotDiscoverableAdvertisement&);
@@ -27,6 +32,7 @@ struct NotDiscoverableAdvertisement {
   std::vector<uint8_t> account_key_filter;
   bool show_ui = false;
   uint8_t salt;
+  absl::optional<BatteryNotification> battery_notification;
 };
 
 }  // namespace quick_pair

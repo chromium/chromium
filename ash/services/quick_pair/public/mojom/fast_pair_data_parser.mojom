@@ -36,6 +36,28 @@ struct DecryptedPasskey {
   array<uint8, 12> salt;
 };
 
+// 'Not discoverable' advertisements may contaion battery information, see
+// https://developers.google.com/nearby/fast-pair/spec#BatteryNotification.
+struct BatteryInfo {
+  // Whether or not the device is charging.
+  bool is_charging;
+  // Battery level ranging from 0 to 100. -1 if unknown.
+  int8 percentage;
+};
+
+// 'Not discoverable' advertisements may contaion battery information, see
+// https://developers.google.com/nearby/fast-pair/spec#BatteryNotification.
+struct BatteryNotification {
+  // Whether or not to show UI based on this notification.
+  bool show_ui;
+  // Battery information for the left bud.
+  BatteryInfo left_bud_info;
+  // Battery information for the right bud.
+  BatteryInfo right_bud_info;
+  // Battery information for the case.
+  BatteryInfo case_info;
+};
+
 // Advertisement payload for Fast Pair 'not discoverable' devices. See
 // https://developers.google.com/nearby/fast-pair/spec#advertising_payload_fast_pair_account_data
 // for additional details (note: not all fields in the spec are in use, thus
@@ -47,6 +69,8 @@ struct NotDiscoverableAdvertisement {
   uint8 salt;
   // Whether or not to show UI based on this advertisement.
   bool show_ui;
+  // Optional battery notification information.
+  BatteryNotification? battery_notification;
 };
 
 // Parses untrusted bytes from a Bluetooth device during Fast Pair. Lives in a

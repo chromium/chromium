@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -91,11 +92,44 @@ bool EnumTraits<MessageType, FastPairMessageType>::FromMojom(
 }
 
 // static
+bool StructTraits<BatteryInfoDataView, BatteryInfo>::Read(
+    BatteryInfoDataView data,
+    BatteryInfo* out) {
+  if (data.percentage() < -1 || data.percentage() > 100)
+    return false;
+
+  out->is_charging = data.is_charging();
+  out->percentage = data.percentage() == -1
+                        ? absl::nullopt
+                        : absl::make_optional(data.percentage());
+
+  return true;
+}
+
+// static
+bool StructTraits<BatteryNotificationDataView, BatteryNotification>::Read(
+    BatteryNotificationDataView data,
+    BatteryNotification* out) {
+  if (!data.ReadLeftBudInfo(&out->left_bud_info) ||
+      !data.ReadRightBudInfo(&out->right_bud_info) ||
+      !data.ReadCaseInfo(&out->case_info)) {
+    return false;
+  }
+
+  out->show_ui = data.show_ui();
+
+  return true;
+}
+
+// static
 bool StructTraits<NotDiscoverableAdvertisementDataView,
                   NotDiscoverableAdvertisement>::
     Read(NotDiscoverableAdvertisementDataView data,
          NotDiscoverableAdvertisement* out) {
   if (!data.ReadAccountKeyFilter(&out->account_key_filter))
+    return false;
+
+  if (!data.ReadBatteryNotification(&out->battery_notification))
     return false;
 
   out->salt = data.salt();
