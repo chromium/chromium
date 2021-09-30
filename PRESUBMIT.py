@@ -2494,7 +2494,7 @@ def CheckUniquePtrOnUpload(input_api, output_api):
 
   errors = []
   if problems_nullptr:
-    errors.append(output_api.PresubmitError(
+    errors.append(output_api.PresubmitWarning(
         'The following files use std::unique_ptr<T>(). Use nullptr instead.',
         problems_nullptr))
   if problems_constructor:
@@ -4261,8 +4261,8 @@ def ChecksCommon(input_api, output_api):
         # run the tests if they still exist.
         use_python3 = False
         with open(f.LocalPath()) as fp:
-            use_python3 = any(line.startswith('USE_PYTHON3 = True')
-                              for line in fp.readlines())
+          use_python3 = any(line.startswith('USE_PYTHON3 = True')
+                            for line in fp.readlines())
 
         results.extend(input_api.canned_checks.RunUnitTestsInDirectory(
             input_api, output_api, full_path,
@@ -4870,7 +4870,7 @@ def CheckStrings(input_api, output_api):
 
 
   def _ValidateIcuSyntax(text, level, signatures):
-      """Validates ICU syntax of a text string.
+    """Validates ICU syntax of a text string.
 
       Check if text looks similar to ICU and checks for ICU syntax correctness
       in this case. Reports various issues with ICU syntax and values of
@@ -4887,77 +4887,77 @@ def CheckStrings(input_api, output_api):
         None if a string is not ICU or no issue detected.
         A tuple of (message, start index, end index) if an issue detected.
       """
-      valid_types = {
-          'plural': (frozenset(
-              ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
-                     frozenset(['=1', 'other'])),
-          'selectordinal': (frozenset(
-              ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
-                            frozenset(['one', 'other'])),
-          'select': (frozenset(), frozenset(['other'])),
-      }
+    valid_types = {
+        'plural': (frozenset(
+            ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
+                   frozenset(['=1', 'other'])),
+        'selectordinal': (frozenset(
+            ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
+                          frozenset(['one', 'other'])),
+        'select': (frozenset(), frozenset(['other'])),
+    }
 
-      # Check if the message looks like an attempt to use ICU
-      # plural. If yes - check if its syntax strictly matches ICU format.
-      like = re.match(r'^[^{]*\{[^{]*\b(plural|selectordinal|select)\b', text)
-      if not like:
-        signatures.append((level, None, None, None))
-        return
+    # Check if the message looks like an attempt to use ICU
+    # plural. If yes - check if its syntax strictly matches ICU format.
+    like = re.match(r'^[^{]*\{[^{]*\b(plural|selectordinal|select)\b', text)
+    if not like:
+      signatures.append((level, None, None, None))
+      return
 
-      # Check for valid prefix and suffix
-      m = re.match(
-          r'^([^{]*\{)([a-zA-Z0-9_]+),\s*'
-          r'(plural|selectordinal|select),\s*'
-          r'(?:offset:\d+)?\s*(.*)', text, re.DOTALL)
-      if not m:
-        return (('This message looks like an ICU plural, '
-                 'but does not follow ICU syntax.'), like.start(), like.end())
-      starting, variable, kind, variant_pairs = m.groups()
-      variants, depth, last_pos = _ParseIcuVariants(variant_pairs, m.start(4))
-      if depth:
-        return ('Invalid ICU format. Unbalanced opening bracket', last_pos,
-                len(text))
-      first = text[0]
-      ending = text[last_pos:]
-      if not starting:
-        return ('Invalid ICU format. No initial opening bracket', last_pos - 1,
-                last_pos)
-      if not ending or '}' not in ending:
-        return ('Invalid ICU format. No final closing bracket', last_pos - 1,
-                last_pos)
-      elif first != '{':
-        return (
-            ('Invalid ICU format. Extra characters at the start of a complex '
-             'message (go/icu-message-migration): "%s"') %
-            starting, 0, len(starting))
-      elif ending != '}':
-        return (('Invalid ICU format. Extra characters at the end of a complex '
-                 'message (go/icu-message-migration): "%s"')
-                % ending, last_pos - 1, len(text) - 1)
-      if kind not in valid_types:
-        return (('Unknown ICU message type %s. '
-                 'Valid types are: plural, select, selectordinal') % kind, 0, 0)
-      known, required = valid_types[kind]
-      defined_variants = set()
-      for variant, variant_range, value, value_range in variants:
-        start, end = variant_range
-        if variant in defined_variants:
-          return ('Variant "%s" is defined more than once' % variant,
-                  start, end)
-        elif known and variant not in known:
-          return ('Variant "%s" is not valid for %s message' % (variant, kind),
-                  start, end)
-        defined_variants.add(variant)
-        # Check for nested structure
-        res = _ValidateIcuSyntax(value[1:-1], level + 1, signatures)
-        if res:
-          return (res[0], res[1] + value_range[0] + 1,
-                  res[2] + value_range[0] + 1)
-      missing = required - defined_variants
-      if missing:
-        return ('Required variants missing: %s' % ', '.join(missing), 0,
-                len(text))
-      signatures.append((level, variable, kind, defined_variants))
+    # Check for valid prefix and suffix
+    m = re.match(
+        r'^([^{]*\{)([a-zA-Z0-9_]+),\s*'
+        r'(plural|selectordinal|select),\s*'
+        r'(?:offset:\d+)?\s*(.*)', text, re.DOTALL)
+    if not m:
+      return (('This message looks like an ICU plural, '
+               'but does not follow ICU syntax.'), like.start(), like.end())
+    starting, variable, kind, variant_pairs = m.groups()
+    variants, depth, last_pos = _ParseIcuVariants(variant_pairs, m.start(4))
+    if depth:
+      return ('Invalid ICU format. Unbalanced opening bracket', last_pos,
+              len(text))
+    first = text[0]
+    ending = text[last_pos:]
+    if not starting:
+      return ('Invalid ICU format. No initial opening bracket', last_pos - 1,
+              last_pos)
+    if not ending or '}' not in ending:
+      return ('Invalid ICU format. No final closing bracket', last_pos - 1,
+              last_pos)
+    elif first != '{':
+      return (
+          ('Invalid ICU format. Extra characters at the start of a complex '
+           'message (go/icu-message-migration): "%s"') %
+          starting, 0, len(starting))
+    elif ending != '}':
+      return (('Invalid ICU format. Extra characters at the end of a complex '
+               'message (go/icu-message-migration): "%s"')
+              % ending, last_pos - 1, len(text) - 1)
+    if kind not in valid_types:
+      return (('Unknown ICU message type %s. '
+               'Valid types are: plural, select, selectordinal') % kind, 0, 0)
+    known, required = valid_types[kind]
+    defined_variants = set()
+    for variant, variant_range, value, value_range in variants:
+      start, end = variant_range
+      if variant in defined_variants:
+        return ('Variant "%s" is defined more than once' % variant,
+                start, end)
+      elif known and variant not in known:
+        return ('Variant "%s" is not valid for %s message' % (variant, kind),
+                start, end)
+      defined_variants.add(variant)
+      # Check for nested structure
+      res = _ValidateIcuSyntax(value[1:-1], level + 1, signatures)
+      if res:
+        return (res[0], res[1] + value_range[0] + 1,
+                res[2] + value_range[0] + 1)
+    missing = required - defined_variants
+    if missing:
+      return ('Required variants missing: %s' % ', '.join(missing), 0,
+              len(text))
+    signatures.append((level, variable, kind, defined_variants))
 
 
   def _ParseIcuVariants(text, offset=0):
@@ -5047,8 +5047,8 @@ def CheckStrings(input_api, output_api):
     for key in old_ids.intersection(new_ids):
       if (old_id_to_msg_map[key].ContentsAsXml('', True)
           != new_id_to_msg_map[key].ContentsAsXml('', True)):
-          # The message content itself changed. Require an updated screenshot.
-          modified_ids.add(key)
+        # The message content itself changed. Require an updated screenshot.
+        modified_ids.add(key)
       elif old_id_to_msg_map[key].attrs['meaning'] != \
           new_id_to_msg_map[key].attrs['meaning']:
         # The message meaning changed. Ensure there is a screenshot for it.
@@ -5315,12 +5315,13 @@ def CheckConsistentGrdChanges(input_api, output_api):
       include_deletes=False,
       file_filter=lambda f: f.LocalPath().endswith(('.grd')))
   errors = []
-  invalid_file_regexes = [(input_api.re.compile(matcher), msg) for matcher, msg in _INVALID_GRD_FILE_LINE]
+  invalid_file_regexes = [(input_api.re.compile(matcher), msg)
+                          for matcher, msg in _INVALID_GRD_FILE_LINE]
   for grd in changed_grds:
     for i, line in enumerate(grd.NewContents()):
       for matcher, msg in invalid_file_regexes:
         if matcher.search(line):
-          errors.append(output_api.PresubmitError('Problem on {grd}:{i} - {msg}'.format(grd=grd.LocalPath(), i=i + 1, msg=msg)))
+          errors.append(
+              output_api.PresubmitError('Problem on {grd}:{i} - {msg}'.format(
+                  grd=grd.LocalPath(), i=i + 1, msg=msg)))
   return errors
-
-
