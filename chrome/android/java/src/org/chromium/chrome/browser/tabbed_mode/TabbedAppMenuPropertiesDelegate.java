@@ -121,8 +121,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     protected boolean shouldShowManagedByMenuItem(Tab currentTab) {
-        return ManagedBrowserUtils.hasBrowserPoliciesApplied(
-                Profile.fromWebContents(currentTab.getWebContents()));
+        Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+        return profile != null && ManagedBrowserUtils.hasBrowserPoliciesApplied(profile);
     }
 
     @Override

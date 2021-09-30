@@ -41,10 +41,23 @@ namespace chrome {
 namespace enterprise_util {
 
 bool HasBrowserPoliciesApplied(Profile* profile) {
-  // This profile may have policies configured.
-  auto* profile_connector = profile->GetProfilePolicyConnector();
-  if (profile_connector->IsManaged())
-    return true;
+  DCHECK(profile);
+  DCHECK(profile->GetProfilePolicyConnector());
+
+  // Temporarily, skip verification from the profile connector if profile is
+  // null while crbug/1253568 is under investigation. The reason to keep both
+  // the DCHECK and the condition is to avoid bad user experiences in the field
+  // until a proper solution is identified. Same for the profile connector.
+  //
+  // TODO(http://crbug.com/1253568): consider that profile should never null at
+  //                                 this point, so remove the conditions on
+  //                                 `profile` and `profile_connector` below.
+  if (profile) {
+    // This profile may have policies configured.
+    auto* profile_connector = profile->GetProfilePolicyConnector();
+    if (profile_connector && profile_connector->IsManaged())
+      return true;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This session's primary user may also have policies, and those policies may
@@ -64,17 +77,13 @@ bool HasBrowserPoliciesApplied(Profile* profile) {
   // The machine may be enrolled, via Google Cloud or Active Directory.
   auto* browser_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (browser_connector->IsDeviceEnterpriseManaged())
-    return true;
+  return browser_connector && browser_connector->IsDeviceEnterpriseManaged();
 #else
   // There may be policies set in a platform-specific way (e.g. Windows
   // Registry), or with machine level user cloud policies.
   auto* browser_connector = g_browser_process->browser_policy_connector();
-  if (browser_connector->HasMachineLevelPolicies())
-    return true;
+  return browser_connector && browser_connector->HasMachineLevelPolicies();
 #endif
-
-  return false;
 }
 
 std::string GetDomainFromEmail(const std::string& email) {
