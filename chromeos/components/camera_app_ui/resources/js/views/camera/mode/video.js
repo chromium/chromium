@@ -308,13 +308,6 @@ export class Video extends ModeBase {
      * @private
      */
     this.everPaused_ = false;
-
-    /**
-     * Whether the user press the stop button while recording GIF.
-     * @type {boolean}
-     * @private
-     */
-    this.isRecordingGif_ = false;
   }
 
   /**
@@ -332,7 +325,7 @@ export class Video extends ModeBase {
    * @override
    */
   updatePreview(stream) {
-    assert(!state.get(state.State.RECORDING) && !this.isRecordingGif_);
+    assert(!state.get(state.State.RECORDING));
     this.stream_ = stream;
     this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
   }
@@ -344,7 +337,7 @@ export class Video extends ModeBase {
   getToggledRecordOption_() {
     if (state.get(state.State.SHOULD_HANDLE_INTENT_RESULT) ||
         !state.get(state.State.EXPERT) ||
-        !state.get(state.State.ENABLE_GIF_RECORDING)) {
+        !state.get(state.State.SHOW_GIF_RECORDING_OPTION)) {
       return RecordType.NORMAL;
     }
     return Object.values(RecordType).find((t) => state.get(t)) ||
@@ -504,15 +497,20 @@ export class Video extends ModeBase {
     }
 
     this.recordingType_ = this.getToggledRecordOption_();
+    // TODO(b:191950622): Remove complex state logic bind with this enable flag
+    // after GIF recording move outside of expert mode and replace it with
+    // |RECORD_TYPE_GIF|.
+    state.set(
+        state.State.ENABLE_GIF_RECORDING,
+        this.recordingType_ === RecordType.GIF);
     if (this.recordingType_ === RecordType.GIF) {
       const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
-      state.set(state.State.RECORDING_GIF, true);
-      state.set(state.State.SHUTTER_PROGRESSING, true);
+      state.set(state.State.RECORDING, true);
       this.gifRecordTime_.start({resume: false});
 
       const gifSaver = await this.captureGif_();
 
-      state.set(state.State.SHUTTER_PROGRESSING, false);
+      state.set(state.State.RECORDING, false);
       this.gifRecordTime_.stop({pause: false});
 
       // Measure the latency of gif encoder finishing rest of the encoding
@@ -524,8 +522,6 @@ export class Video extends ModeBase {
       // TODO(b:191950622): Close capture stream before handleResultGif()
       // opening preview page when multi-stream recording enabled.
       await this.handler_.handleResultGif(blob, gifName);
-
-      state.set(state.State.RECORDING_GIF, false);
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;
@@ -583,7 +579,7 @@ export class Video extends ModeBase {
    */
   stop_() {
     if (this.recordingType_ === RecordType.GIF) {
-      this.isRecordingGif_ = false;
+      state.set(state.State.RECORDING, false);
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
@@ -616,7 +612,6 @@ export class Video extends ModeBase {
     const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
-    this.isRecordingGif_ = true;
 
     await new Promise((resolve) => {
       let encodedFrames = 0;
@@ -625,7 +620,7 @@ export class Video extends ModeBase {
         if (start === 0.0) {
           start = now;
         }
-        if (!this.isRecordingGif_) {
+        if (!state.get(state.State.RECORDING)) {
           resolve();
           return;
         }

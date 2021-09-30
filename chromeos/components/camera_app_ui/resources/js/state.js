@@ -52,7 +52,6 @@ export const State = {
   RECORD_TYPE_NORMAL: 'record-type-normal',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
   RECORDING: 'recording',
-  RECORDING_GIF: 'recording-gif',
   // Binds with paused state of MediaRecorder.
   RECORDING_PAUSED: 'recording-paused',
   // Controls appearance of paused/resumed UI.
@@ -66,6 +65,7 @@ export const State = {
   SHOW_METADATA: 'show-metadata',
   SHOW_SCAN_DOCUMENT_OPTIONS: 'show-scan-document-options',
   SHOW_SCAN_MODE: 'show-scan-mode',
+  SHOW_GIF_RECORDING_OPTION: 'show-gif-recording-option',
   SHUTTER_PROGRESSING: 'shutter-progressing',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',

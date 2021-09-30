@@ -2,11 +2,11 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-body:is(:not(.video), :not(.expert), :not(.enable-gif-recording), .taking, .camera-configuring, .should-handle-intent-result) #record-types-group {
+body:is(:not(.video), :not(.expert), :not(.show-gif-recording-option), .taking, .camera-configuring, .should-handle-intent-result) #record-types-group {
   display: none;
 }
 
-body:not(.recording-gif) #shutter-progress-bar {
+body:is(:not(.video), :not(.taking), :not(.enable-gif-recording)) #shutter-progress-bar {
   display: none;
 }
 
@@ -20,12 +20,12 @@ body:not(.recording-gif) #shutter-progress-bar {
   }
 }
 
-body.recording-gif #shutter-progress-bar>circle {
+body.video.taking.enable-gif-recording #shutter-progress-bar>circle {
   animation: ring-countdown 5s linear;
   animation-fill-mode: forwards;
 }
 
-body.recording-gif:not(.shutter-progressing) #shutter-progress-bar>circle {
+body.video.taking.enable-gif-recording:not(.recording) #shutter-progress-bar>circle {
   animation-play-state: paused;
 }
 

@@ -394,10 +394,7 @@ body.taking.timer:not(.video) #stop-takephoto {
   display: inline-block;
 }
 
-body:not(.recording) #video-snapshot,
-body:not(.recording) #pause-recordvideo,
-body.should-handle-intent-result #video-snapshot,
-body.should-handle-intent-result #pause-recordvideo {
+body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :is(#video-snapshot, #pause-recordvideo) {
   display: none;
 }
 

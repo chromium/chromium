@@ -43,12 +43,12 @@ export const I18nString = {
   EXPERT_ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS:
       'expert_enable_document_mode_on_all_cameras',
   EXPERT_ENABLE_EXPERT_MODE: 'expert_enable_expert_mode',
-  EXPERT_ENABLE_GIF_ENCODING: 'expert_enable_gif_encoding',
   EXPERT_MODE_BUTTON: 'expert_mode_button',
   EXPERT_PREVIEW_METADATA: 'expert_preview_metadata',
   EXPERT_PRINT_PERFORMANCE_LOGS: 'expert_print_performance_logs',
   EXPERT_SAVE_METADATA: 'expert_save_metadata',
   EXPERT_SCAN_BARCODE: 'expert_scan_barcode',
+  EXPERT_SHOW_GIF_RECORDING_OPTION: 'expert_show_gif_recording_option',
   EXPORT_BUTTON: 'export_button',
   FEEDBACK_BUTTON: 'feedback_button',
   FEEDBACK_DESCRIPTION_PLACEHOLDER: 'feedback_description_placeholder',

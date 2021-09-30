@@ -326,8 +326,8 @@
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>
-      <message desc="Label for expert mode option: enable GIF recording." name="IDS_EXPERT_ENABLE_GIF_ENCODING">
-        Enable GIF recording
+      <message desc="Label for expert mode option: Show GIF recording option." name="IDS_EXPERT_SHOW_GIF_RECORDING_OPTION">
+        Show GIF recording option
       </message>
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_LINK_COPIED">
         Link copied
