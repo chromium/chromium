@@ -115,13 +115,16 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                const _SYSTEM_INFO& system_info,
                int os_type)
     : version_(Version::PRE_XP),
-      wow64_status_(GetWOW64StatusForProcess(GetCurrentProcess())) {
+      wow64_status_(GetWOW64StatusForProcess(GetCurrentProcess())),
+      wow_process_machine_(WowProcessMachine::kUnknown),
+      wow_native_machine_(WowNativeMachine::kUnknown) {
   version_number_.major = version_info.dwMajorVersion;
   version_number_.minor = version_info.dwMinorVersion;
   version_number_.build = version_info.dwBuildNumber;
   std::tie(version_number_.patch, release_id_) = GetVersionData();
   version_ = MajorMinorBuildToVersion(
       version_number_.major, version_number_.minor, version_number_.build);
+  InitializeWowStatusValuesForProcess(GetCurrentProcess());
   service_pack_.major = version_info.wServicePackMajor;
   service_pack_.minor = version_info.wServicePackMinor;
   service_pack_str_ = WideToUTF8(version_info.szCSDVersion);
@@ -240,6 +243,25 @@ base::Version OSInfo::Kernel32BaseVersion() const {
   return *version;
 }
 
+bool OSInfo::IsWowDisabled() const {
+  return (wow_process_machine_ == WowProcessMachine::kDisabled);
+}
+
+bool OSInfo::IsWowX86OnAMD64() const {
+  return (wow_process_machine_ == WowProcessMachine::kX86 &&
+          wow_native_machine_ == WowNativeMachine::kAMD64);
+}
+
+bool OSInfo::IsWowX86OnARM64() const {
+  return (wow_process_machine_ == WowProcessMachine::kX86 &&
+          wow_native_machine_ == WowNativeMachine::kARM64);
+}
+
+bool OSInfo::IsWowX86OnOther() const {
+  return (wow_process_machine_ == WowProcessMachine::kX86 &&
+          wow_native_machine_ == WowNativeMachine::kOther);
+}
+
 std::string OSInfo::processor_model_name() {
   if (processor_model_name_.empty()) {
     const wchar_t kProcessorNameString[] =
@@ -332,6 +354,60 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
 
 Version GetVersion() {
   return OSInfo::GetInstance()->version();
+}
+
+OSInfo::WowProcessMachine OSInfo::GetWowProcessMachineArchitecture(
+    const int process_machine) {
+  switch (process_machine) {
+    case IMAGE_FILE_MACHINE_UNKNOWN:
+      return OSInfo::WowProcessMachine::kDisabled;
+    case IMAGE_FILE_MACHINE_I386:
+      return OSInfo::WowProcessMachine::kX86;
+    case IMAGE_FILE_MACHINE_ARM:
+    case IMAGE_FILE_MACHINE_THUMB:
+    case IMAGE_FILE_MACHINE_ARMNT:
+      return OSInfo::WowProcessMachine::kARM32;
+  }
+  return OSInfo::WowProcessMachine::kOther;
+}
+
+OSInfo::WowNativeMachine OSInfo::GetWowNativeMachineArchitecture(
+    const int native_machine) {
+  switch (native_machine) {
+    case IMAGE_FILE_MACHINE_ARM64:
+      return OSInfo::WowNativeMachine::kARM64;
+    case IMAGE_FILE_MACHINE_AMD64:
+      return OSInfo::WowNativeMachine::kAMD64;
+  }
+  return OSInfo::WowNativeMachine::kOther;
+}
+
+void OSInfo::InitializeWowStatusValuesForProcess(HANDLE process_handle) {
+  static const auto is_wow64_process2 =
+      reinterpret_cast<decltype(&IsWow64Process2)>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "IsWow64Process2"));
+  if (!is_wow64_process2) {
+    WOW64Status wow64_status = GetWOW64StatusForProcess(process_handle);
+    switch (wow64_status) {
+      case WOW64_DISABLED:
+        wow_process_machine_ = WowProcessMachine::kDisabled;
+        return;
+      case WOW64_ENABLED:
+        wow_process_machine_ = WowProcessMachine::kX86;
+        wow_native_machine_ = WowNativeMachine::kAMD64;
+        return;
+      case WOW64_UNKNOWN:
+        return;
+    }
+  }
+
+  USHORT process_machine = IMAGE_FILE_MACHINE_UNKNOWN;
+  USHORT native_machine = IMAGE_FILE_MACHINE_UNKNOWN;
+  if (!is_wow64_process2(process_handle, &process_machine, &native_machine)) {
+    return;
+  }
+  wow_process_machine_ = GetWowProcessMachineArchitecture(process_machine);
+  wow_native_machine_ = GetWowNativeMachineArchitecture(native_machine);
 }
 
 }  // namespace win
