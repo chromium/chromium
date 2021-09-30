@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/strings/string_piece.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
 #include "chromeos/login/auth/user_context.h"
@@ -52,12 +53,21 @@ class BrowserDataMigrator {
     std::vector<TargetItem> ash_data_items;
     // Items that should be moved to lacros data dir.
     std::vector<TargetItem> lacros_data_items;
+    // Items that will be duplicated in both ash and lacros data dir.
+    std::vector<TargetItem> common_data_items;
     // The total size of `ash_data_items`.
     int64_t ash_data_size;
     // The total size of items that can be deleted during the migration.
     int64_t no_copy_data_size;
     // The total size of `lacros_data_items`.
     int64_t lacros_data_size;
+    // The total size of `common_data_items`.
+    int64_t common_data_size;
+    // The size of data that are duplicated. Equivalent to the extra space
+    // needed for the migration. Currently this is equal to `lacros_data_size +
+    // common_data_size` since we are copying lacros data rather than moving
+    // them.
+    int64_t TotalCopySize() const;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -139,10 +149,16 @@ class BrowserDataMigrator {
   // term solution is found. Temporarily limit the migration size to 4GB until
   // the slow migration speed issue is resolved.
   static bool IsMigrationSmallEnough(const TargetInfo& target_info);
-  // Copies items to `to_dir`.
-  static bool CopyTargetItems(const TargetInfo& target_info,
-                              const base::FilePath& from_dir,
-                              const base::FilePath& to_dir);
+  // Set up the temporary directory `tmp_dir` by copying items into it.
+  static bool SetupTmpDir(const TargetInfo& target_info,
+                          const base::FilePath& from_dir,
+                          const base::FilePath& tmp_dir);
+  // Copies `items` to `to_dir`. `items_size` and `category_name` are used for
+  // logging.
+  static bool CopyTargetItems(const base::FilePath& to_dir,
+                              const std::vector<TargetItem>& items,
+                              int64_t items_size,
+                              base::StringPiece category_name);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
   static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,

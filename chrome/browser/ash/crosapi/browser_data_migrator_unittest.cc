@@ -27,6 +27,7 @@ constexpr char kCache[] = "Cache";
 constexpr char kFullRestoreData[] = "FullRestoreData";
 constexpr char kDownloads[] = "Downloads";
 constexpr char kCookies[] = "Cookies";
+constexpr char kBookmarks[] = "Bookmarks";
 constexpr char kAffiliationDatabase[] = "Affiliation Database";
 
 struct TargetItemComparator {
@@ -47,9 +48,10 @@ class BrowserDataMigratorTest : public ::testing::Test {
     // |- user/                       /* from_dir_ */
     //     |- Cache                   /* no copy */
     //     |- Downloads/data          /* ash */
-    //     |- FullRestoreData         /* lacros */
-    //     |- Cookies                 /* lacros */
-    //     |- Affilication Database/  /* lacros */
+    //     |- Bookmarks               /* lacros */
+    //     |- FullRestoreData         /* common */
+    //     |- Cookies                 /* common */
+    //     |- Affilication Database/  /* common */
     //         |- data
     //         |- Downloads/data
 
@@ -78,6 +80,9 @@ class BrowserDataMigratorTest : public ::testing::Test {
                         kDataContent, kFileSize));
     ASSERT_TRUE(
         base::WriteFile(from_dir_.Append(kCookies) /* .../user/Cookies */,
+                        kDataContent, kFileSize));
+    ASSERT_TRUE(
+        base::WriteFile(from_dir_.Append(kBookmarks) /* .../user/Bookmarks */,
                         kDataContent, kFileSize));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kAffiliationDatabase)
@@ -120,7 +125,8 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
 
   EXPECT_EQ(target_info.ash_data_size, kFileSize /* expect one files */);
   EXPECT_EQ(target_info.no_copy_data_size, kFileSize /* expect one file */);
-  EXPECT_EQ(target_info.lacros_data_size, kFileSize * 4 /* expect four file */);
+  EXPECT_EQ(target_info.lacros_data_size, kFileSize /* expect one file */);
+  EXPECT_EQ(target_info.common_data_size, kFileSize * 4 /* expect four file */);
 
   // Check for ash data.
   std::vector<BrowserDataMigrator::TargetItem> expected_ash_data_items = {
@@ -132,6 +138,15 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
 
   // Check for lacros data.
   std::vector<BrowserDataMigrator::TargetItem> expected_lacros_data_items = {
+      {from_dir_.Append(kBookmarks),
+       BrowserDataMigrator::TargetItem::ItemType::kFile},
+  };
+  ASSERT_EQ(target_info.lacros_data_items.size(),
+            expected_lacros_data_items.size());
+  EXPECT_EQ(target_info.lacros_data_items[0], expected_lacros_data_items[0]);
+
+  // Check for common data.
+  std::vector<BrowserDataMigrator::TargetItem> expected_common_data_items = {
 
       {from_dir_.Append(kAffiliationDatabase),
        BrowserDataMigrator::TargetItem::ItemType::kDirectory},
@@ -139,15 +154,15 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
        BrowserDataMigrator::TargetItem::ItemType::kFile},
       {from_dir_.Append(kFullRestoreData),
        BrowserDataMigrator::TargetItem::ItemType::kFile}};
-  std::sort(target_info.lacros_data_items.begin(),
-            target_info.lacros_data_items.end(), TargetItemComparator());
-  ASSERT_EQ(target_info.lacros_data_items.size(),
-            expected_lacros_data_items.size());
-  std::sort(target_info.lacros_data_items.begin(),
-            target_info.lacros_data_items.end(), TargetItemComparator());
-  for (int i = 0; i < target_info.lacros_data_items.size(); i++) {
-    SCOPED_TRACE(target_info.lacros_data_items[i].path.value());
-    EXPECT_EQ(target_info.lacros_data_items[i], expected_lacros_data_items[i]);
+  std::sort(target_info.common_data_items.begin(),
+            target_info.common_data_items.end(), TargetItemComparator());
+  ASSERT_EQ(target_info.common_data_items.size(),
+            expected_common_data_items.size());
+  std::sort(target_info.common_data_items.begin(),
+            target_info.common_data_items.end(), TargetItemComparator());
+  for (int i = 0; i < target_info.common_data_items.size(); i++) {
+    SCOPED_TRACE(target_info.common_data_items[i].path.value());
+    EXPECT_EQ(target_info.common_data_items[i], expected_common_data_items[i]);
   }
 }
 
@@ -248,14 +263,16 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
     // |- user/                       /* from_dir_ */
     //     |- Cache                   /* no copy */
     //     |- Downloads/data          /* ash */
-    //     |- FullRestoreData         /* lacros */
-    //     |- Cookies                 /* lacros */
-    //     |- Affiliation Database/   /* lacros */
+    //     |- Bookmarks               /* lacros */
+    //     |- FullRestoreData         /* common */
+    //     |- Cookies                 /* common */
+    //     |- Affiliation Database/   /* common */
     //         |- data
     //         |- Downloads/data
     //     |- lacros/
     //         |- `First Run`
     //         |- Default
+    //             |- Bookmarks
     //             |- Cookies
     //             |- Affiliation Database/
     //                 |- data
@@ -265,6 +282,7 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
     const base::FilePath new_profile_data_dir =
         new_user_data_dir.Append("Default");
     EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
+    EXPECT_TRUE(base::PathExists(new_profile_data_dir.Append(kBookmarks)));
     EXPECT_TRUE(base::PathExists(new_profile_data_dir.Append(kCookies)));
     EXPECT_TRUE(base::PathExists(
         new_profile_data_dir.Append(kAffiliationDatabase).Append(kDataFile)));
