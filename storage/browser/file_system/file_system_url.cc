@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "net/base/escape.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -134,7 +135,20 @@ std::string FileSystemURL::DebugString() const {
   if (!is_valid_)
     return "invalid filesystem: URL";
   std::ostringstream ss;
-  ss << GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+  switch (mount_type_) {
+    // Include GURL if GURL serialization is possible.
+    case kFileSystemTypeTemporary:
+    case kFileSystemTypePersistent:
+    case kFileSystemTypeExternal:
+    case kFileSystemTypeIsolated:
+    case kFileSystemTypeTest:
+      ss << "{ uri: ";
+      ss << GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+      break;
+    // Otherwise list the origin and path separately.
+    default:
+      ss << "{ path: ";
+  }
 
   // filesystem_id_ will be non empty for (and only for) cracked URLs.
   if (!filesystem_id_.empty()) {
@@ -146,6 +160,8 @@ std::string FileSystemURL::DebugString() const {
   } else {
     ss << path_.value();
   }
+  ss << ", storage key: " << storage_key_.GetDebugString();
+  ss << " }";
   return ss.str();
 }
 

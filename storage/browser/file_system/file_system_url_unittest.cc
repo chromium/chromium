@@ -188,9 +188,16 @@ TEST(FileSystemURLTest, DebugString) {
   const FileSystemURL kURL1 = FileSystemURL::CreateForTest(
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       kFileSystemTypeTemporary, kPath);
-  EXPECT_EQ(
-      "filesystem:http://example.com/temporary/" + NormalizedUTF8Path(kPath),
-      kURL1.DebugString());
+  EXPECT_EQ("{ uri: filesystem:http://example.com/temporary/" +
+                NormalizedUTF8Path(kPath) +
+                ", storage key: " + kURL1.storage_key().GetDebugString() + " }",
+            kURL1.DebugString());
+  const FileSystemURL kURL2 = FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      kFileSystemTypeLocal, kPath);
+  EXPECT_EQ("{ path: " + NormalizedUTF8Path(kPath) +
+                ", storage key: " + kURL1.storage_key().GetDebugString() + " }",
+            kURL2.DebugString());
 }
 
 TEST(FileSystemURLTest, IsInSameFileSystem) {
