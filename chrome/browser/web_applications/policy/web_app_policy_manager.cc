@@ -324,6 +324,10 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
          default_launch_container->GetString() ==
              kDefaultLaunchContainerTabValue);
 
+  if (!gurl.is_valid()) {
+    LOG(WARNING) << "Policy-installed web app has invalid URL " << url;
+  }
+
   DisplayMode user_display_mode;
   if (!default_launch_container) {
     user_display_mode = DisplayMode::kBrowser;
@@ -349,17 +353,13 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   if (fallback_app_name)
     install_options.fallback_app_name = fallback_app_name->GetString();
 
-  if (!gurl.is_valid()) {
-    LOG(WARNING) << "Policy-installed web app has invalid URL " << url;
-    return install_options;
+  if (custom_name) {
+    install_options.placeholder_name = custom_name->GetString();
+    if (gurl.is_valid())
+      custom_manifest_values_by_url_[gurl].SetName(custom_name->GetString());
   }
 
-  // -------- The options below this line need a valid gurl. --------
-
-  if (custom_name)
-    custom_manifest_values_by_url_[gurl].SetName(custom_name->GetString());
-
-  if (custom_icon) {
+  if (custom_icon && gurl.is_valid()) {
     const base::DictionaryValue* dict = nullptr;
     if (custom_icon->GetAsDictionary(&dict)) {
       const std::string* icon_url = dict->FindStringKey(kCustomIconURLKey);
