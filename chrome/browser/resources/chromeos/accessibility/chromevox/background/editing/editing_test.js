@@ -1933,3 +1933,50 @@ TEST_F(
         input.focus();
       });
     });
+
+TEST_F('ChromeVoxEditingTest', 'ParagraphNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable role="textbox"
+        style='max-width: 5px; overflow-wrap: normal'>
+      <p>This is paragraph number one.</p>
+      <p>Another paragraph, number two.</p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    input.focus();
+    await new Promise(
+        resolve => this.listenOnce(input, EventType.FOCUS, resolve));
+
+    // We bind specific callbacks to send keys here because EventGenerator
+    // (which sends key down and up) does not seem to work with these
+    // shortcuts.
+    const ctrlDown = () => chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+      type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyCode: KeyCode.DOWN,
+      modifiers: {ctrl: true}
+    });
+    const ctrlUp = () => chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+      type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyCode: KeyCode.UP,
+      modifiers: {ctrl: true}
+    });
+
+    mockFeedback.call(ctrlDown)
+        .expectSpeech('Another paragraph, number two.')
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('paragraph, ')
+        .call(ctrlUp)
+        .expectSpeech('This is paragraph number one.')
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('number ')
+        .call(this.press(KeyCode.UP))
+        .expectSpeech('paragraph ')
+        .call(ctrlDown)
+        .expectSpeech('Another paragraph, number two.')
+        .call(this.press(KeyCode.DOWN))
+        .expectSpeech('paragraph, ')
+        .replay();
+  });
+});

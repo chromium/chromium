@@ -20,6 +20,7 @@ const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
 const Movement = cursors.Movement;
 const Range = cursors.Range;
+const RoleType = chrome.automation.RoleType;
 const Unit = cursors.Unit;
 
 /**
@@ -141,6 +142,28 @@ IntentHandler = class {
         cur.speakLine(prev);
         return true;
 
+      case IntentTextBoundaryType.PARAGRAPH_START: {
+        let node = cur.startContainer;
+
+        if (node.role === RoleType.LINE_BREAK) {
+          return false;
+        }
+
+        while (node && AutomationPredicate.text(node)) {
+          node = node.parent;
+        }
+
+        if (!node || node.role === RoleType.TEXT_FIELD) {
+          return false;
+        }
+
+        new Output()
+            .withRichSpeechAndBraille(
+                cursors.Range.fromNode(node), null, OutputEventType.NAVIGATE)
+            .go();
+        return true;
+      }
+
       case IntentTextBoundaryType.WORD_END:
       case IntentTextBoundaryType.WORD_START: {
         const shouldMoveToPreviousWord =
@@ -165,7 +188,6 @@ IntentHandler = class {
       case IntentTextBoundaryType.PAGE_START:
       case IntentTextBoundaryType.PAGE_START_OR_END:
       case IntentTextBoundaryType.PARAGRAPH_END:
-      case IntentTextBoundaryType.PARAGRAPH_START:
       case IntentTextBoundaryType.PARAGRAPH_START_OR_END:
       case IntentTextBoundaryType.SENTENCE_END:
       case IntentTextBoundaryType.SENTENCE_START:
