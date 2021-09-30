@@ -95,6 +95,22 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
   return request;
 }
 
+assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
+    assistant_client::AssistantManagerInternal* assistant_manager_internal,
+    const std::string& locale,
+    bool spoken_feedback_enabled,
+    bool dark_mode_enabled) {
+  auto* options = assistant_manager_internal->CreateDefaultInternalOptions();
+  auto proto =
+      assistant::CreateInternalOptionsProto(locale, spoken_feedback_enabled);
+  PopulateInternalOptionsFromProto(proto, options);
+
+  assistant::SetDarkModeEnabledForV1(options, dark_mode_enabled);
+  assistant::SetTimezoneOverrideForV1(options);
+
+  return options;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,6 +434,28 @@ void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
   for (auto& observer : speaker_event_observer_list_) {
     observer.OnGrpcMessage(event_request);
   }
+}
+
+void AssistantClientV1::SetInternalOptions(const std::string& locale,
+                                           bool spoken_feedback_enabled) {
+  // All options must have value before we can convey them to libassistant.
+  DCHECK(dark_mode_enabled_.has_value());
+
+  assistant_manager_internal()->SetOptions(
+      *CreateInternalOptions(assistant_manager_internal(), locale,
+                             spoken_feedback_enabled,
+                             dark_mode_enabled_.value()),
+      [](bool success) { DVLOG(2) << "set options: " << success; });
+}
+
+void AssistantClientV1::SetLocaleOverride(const std::string& locale) {
+  assistant_manager_internal()->SetLocaleOverride(locale);
+}
+
+void AssistantClientV1::SetDeviceAttributes(bool enable_dark_mode) {
+  // We don't actually do anything here besides caching the passed in value
+  // because dark mode is set through |SetOptions| for V1.
+  dark_mode_enabled_ = enable_dark_mode;
 }
 
 }  // namespace libassistant

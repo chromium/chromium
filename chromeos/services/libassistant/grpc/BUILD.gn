@@ -104,3 +104,17 @@ source_set("libassistant_client") {
   # indirectly includes headers from grpc through grpc_libassistant_client header.
   all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_client_v1_unittests.cc" ]
+
+  deps = [
+    ":assistant_client",
+    "//base/test:test_support",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto:assistant",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

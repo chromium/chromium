@@ -75,6 +75,10 @@ class FakeAssistantClient : public AssistantClient {
       base::OnceCallback<
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
+  void SetLocaleOverride(const std::string& locale) override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
+  void SetDeviceAttributes(bool enable_dark_mode) override;
 };
 
 }  // namespace libassistant

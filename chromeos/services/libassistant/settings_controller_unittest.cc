@@ -54,23 +54,11 @@ class AssistantClientMock : public FakeAssistantClient {
        const std::string& user_id,
        base::OnceCallback<void(
            const ::assistant::api::GetAssistantSettingsResponse&)> on_done));
-};
-
-class AssistantManagerInternalMock
-    : public assistant::FakeAssistantManagerInternal {
- public:
-  AssistantManagerInternalMock() = default;
-  AssistantManagerInternalMock(const AssistantManagerInternalMock&) = delete;
-  AssistantManagerInternalMock& operator=(const AssistantManagerInternalMock&) =
-      delete;
-  ~AssistantManagerInternalMock() override = default;
-
-  // assistant::FakeAssistantManagerInternal implementation:
   MOCK_METHOD(void, SetLocaleOverride, (const std::string& locale));
   MOCK_METHOD(void,
-              SetOptions,
-              (const assistant_client::InternalOptions& options,
-               assistant_client::SuccessCallbackInternal on_done));
+              SetInternalOptions,
+              (const std::string& locale, bool spoken_feedback_enabled));
+  MOCK_METHOD(void, SetDeviceAttributes, (bool dark_mode_enabled));
 };
 
 class AssistantManagerMock : public assistant::FakeAssistantManager {
@@ -123,14 +111,10 @@ class AssistantSettingsControllerTest : public testing::Test {
     assistant_manager_internal_ = nullptr;
 
     auto assistant_manager = std::make_unique<AssistantManagerMock>();
-    assistant_manager_internal_ =
-        std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
+    assistant_manager_internal_ = std::make_unique<
+        testing::StrictMock<assistant::FakeAssistantManagerInternal>>();
     assistant_client_ = std::make_unique<AssistantClientMock>(
         std::move(assistant_manager), assistant_manager_internal_.get());
-  }
-
-  AssistantManagerInternalMock& assistant_manager_internal_mock() {
-    return *assistant_manager_internal_;
   }
 
   AssistantManagerMock& assistant_manager_mock() {
@@ -144,7 +128,8 @@ class AssistantSettingsControllerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment environment_;
 
   SettingsController controller_;
-  std::unique_ptr<AssistantManagerInternalMock> assistant_manager_internal_;
+  std::unique_ptr<assistant::FakeAssistantManagerInternal>
+      assistant_manager_internal_;
   std::unique_ptr<AssistantClientMock> assistant_client_;
 };
 
@@ -183,8 +168,8 @@ TEST_F(AssistantSettingsControllerTest,
 
   // After destroying Libassistant, the settings should be cleared.
   // We test this by ensuring they are not applied when Libassistant starts.
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetLocaleOverride);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
   EXPECT_NO_CALLS(assistant_manager_mock(), SetAuthTokens);
   CreateAndStartLibassistant();
@@ -193,7 +178,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest, ShouldSetLocale) {
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SetLocaleOverride("locale"));
+  EXPECT_CALL(assistant_client_mock(), SetLocaleOverride("locale"));
 
   controller().SetLocale("locale");
 }
@@ -203,8 +188,7 @@ TEST_F(AssistantSettingsControllerTest,
   const std::string default_locale = icu::Locale::getDefault().getName();
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_internal_mock(),
-              SetLocaleOverride(default_locale));
+  EXPECT_CALL(assistant_client_mock(), SetLocaleOverride(default_locale));
 
   controller().SetLocale("");
 }
@@ -213,7 +197,8 @@ TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenLocaleIsNotSet) {
   CreateLibassistant();
 
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
 
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
@@ -221,10 +206,11 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenSpokenFeedbackEnabledIsNotSet) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateLibassistant();
 
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
 
   controller().SetLocale("locale");
   controller().SetDarkModeEnabled(false);
@@ -232,10 +218,11 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenDarkModeEnabledIsNotSet) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateLibassistant();
 
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
 
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
@@ -243,36 +230,37 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsWhenLocaleIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
   controller().SetLocale("locale");
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsWhenSpokenFeedbackEnabledIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
   controller().SetDarkModeEnabled(false);
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
   controller().SetSpokenFeedbackEnabled(true);
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsWhenDarkModeEnabledIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
   CreateLibassistant();
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
+  EXPECT_CALL(assistant_client_mock(), SetDeviceAttributes);
 
   controller().SetDarkModeEnabled(false);
 }
@@ -283,15 +271,15 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SetLocaleOverride);
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
+  EXPECT_CALL(assistant_client_mock(), SetLocaleOverride);
+  EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
   CreateLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetDeviceOptionsWhenLocaleIsNotSet) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
@@ -301,7 +289,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetDeviceOptionsWhenHotwordEnabledIsNotSet) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
@@ -311,7 +299,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetDeviceOptionsWhenLocaleIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
   controller().SetHotwordEnabled(true);
 
@@ -322,7 +310,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetDeviceOptionsWhenHotwordEnabledIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
   controller().SetLocale("locale");
 
@@ -333,7 +321,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetDeviceOptionsWhenLibassistantIsStarted) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateLibassistant();
 
   controller().SetLocale("locale");

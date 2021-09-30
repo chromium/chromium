@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -68,6 +69,10 @@ class AssistantClientV1 : public AssistantClient {
       base::OnceCallback<
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
+  void SetLocaleOverride(const std::string& locale) override;
+  void SetDeviceAttributes(bool enable_dark_mode) override;
 
  private:
   class DeviceStateListener;
@@ -80,6 +85,8 @@ class AssistantClientV1 : public AssistantClient {
 
   void OnSpeakerIdEnrollmentUpdate(
       const assistant_client::SpeakerIdEnrollmentUpdate& update);
+
+  absl::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
   std::unique_ptr<DisplayConnectionImpl> display_connection_;

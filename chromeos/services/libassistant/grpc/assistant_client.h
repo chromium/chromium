@@ -148,6 +148,10 @@ class AssistantClient {
       const std::string& user_id,
       base::OnceCallback<void(
           const ::assistant::api::GetAssistantSettingsResponse&)> on_done) = 0;
+  virtual void SetLocaleOverride(const std::string& locale) = 0;
+  virtual void SetInternalOptions(const std::string& locale,
+                                  bool spoken_feedback_enabled) = 0;
+  virtual void SetDeviceAttributes(bool enable_dark_mode) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

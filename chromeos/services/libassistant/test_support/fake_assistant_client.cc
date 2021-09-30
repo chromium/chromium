@@ -84,5 +84,12 @@ void FakeAssistantClient::GetAssistantSettings(
     base::OnceCallback<
         void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done) {}
 
+void FakeAssistantClient::SetLocaleOverride(const std::string& locale) {}
+
+void FakeAssistantClient::SetInternalOptions(const std::string& locale,
+                                             bool spoken_feedback_enabled) {}
+
+void FakeAssistantClient::SetDeviceAttributes(bool enable_dark_mode) {}
+
 }  // namespace libassistant
 }  // namespace chromeos
