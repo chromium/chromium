@@ -36,6 +36,11 @@ class AppSourceUrlRecorderTest : public testing::Test {
     return AppSourceUrlRecorder::GetSourceIdForPWA(url);
   }
 
+  SourceId GetSourceIdForCrostini(const std::string& desktop_id,
+                                  const std::string& app_name) {
+    return AppSourceUrlRecorder::GetSourceIdForCrostini(desktop_id, app_name);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestAutoSetUkmRecorder test_ukm_recorder_;
@@ -98,6 +103,23 @@ TEST_F(AppSourceUrlRecorderTest, CheckPWA) {
   auto it = sources.find(id);
   ASSERT_NE(sources.end(), it);
   EXPECT_EQ(url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
+
+TEST_F(AppSourceUrlRecorderTest, CheckCrostini) {
+  // Typically a desktop ID won't use much besides [a-zA-Z0-9.-] but it's
+  // untrusted user-supplied data so make sure it's all escaped anyway.
+  std::string desktop_id("I-💖.unicode!\nUnd der Eisbär?");
+  GURL expected_url("app://I-💖.unicode!\nUnd der Eisbär?/Name");
+  SourceId id = GetSourceIdForCrostini(desktop_id, "Name");
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
   EXPECT_EQ(1u, it->second->urls().size());
 }
 

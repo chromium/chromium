@@ -275,6 +275,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the previous app readiness status.
   void RecordAppReadinessStatus(const apps::AppUpdate& update);
 
+  // Gets the source id for a Crostini app_id.
+  ukm::SourceId GetSourceIdForCrostini(const std::string& app_id);
+
   Profile* const profile_ = nullptr;
 
   AppRegistryCache& app_registry_cache_;

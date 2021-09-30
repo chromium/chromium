@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -174,8 +175,9 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                  true /* should_notify_initialized */);
     deltas.clear();
 
-    deltas.push_back(MakeApp(/*app_id=*/"c", apps::mojom::AppType::kCrostini,
-                             "", apps::mojom::Readiness::kReady,
+    deltas.push_back(MakeApp(/*app_id=*/crostini::kCrostiniTerminalSystemAppId,
+                             apps::mojom::AppType::kCrostini, "",
+                             apps::mojom::Readiness::kReady,
                              apps::mojom::InstallReason::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kCrostini,
                  true /* should_notify_initialized */);
@@ -1424,12 +1426,11 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
   proxy->Launch(
-      /*app_id=*/"c", ui::EventFlags::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
-  // Verify UKM is not reported for the Crostini app.
-  const auto entries =
-      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
-  ASSERT_EQ(0U, entries.size());
+      /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
+      ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal,
+      nullptr);
+  VerifyAppsLaunchUkm("app://CrostiniTerminal/Terminal", AppTypeName::kCrostini,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kCrostini);
@@ -1474,11 +1475,11 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
   proxy->UninstallSilently(
-      /*app_id=*/"c", apps::mojom::UninstallSource::kAppList);
-  // Verify UKM is not reported for the Crostini app.
-  const auto entries =
-      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UninstallApp");
-  ASSERT_EQ(0U, entries.size());
+      /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
+      apps::mojom::UninstallSource::kAppList);
+  VerifyAppsUninstallUkm("app://CrostiniTerminal/Terminal",
+                         AppTypeName::kCrostini,
+                         apps::mojom::UninstallSource::kAppList);
 
   proxy->UninstallSilently(
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);

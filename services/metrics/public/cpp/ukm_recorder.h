@@ -46,6 +46,7 @@ enum class AppType {
   kPWA,
   kExtension,
   kChromeApp,
+  kCrostini,
 };
 
 namespace internal {

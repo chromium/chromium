@@ -13,6 +13,9 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -43,6 +46,7 @@
 #include "extensions/common/extension.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -396,8 +400,8 @@ void RecordAppLaunchPerAppTypeV2(apps::AppTypeNameV2 app_type_name_v2) {
 }
 
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
-// system web apps and builtin apps are recorded because they are synced to
-// server/cloud, or part of OS. Other app types, e.g. Crostini, remote apps,
+// system web apps, builtin apps and Crostini apps are recorded because they are
+// synced to server/cloud, or part of OS. Other app types, e.g. remote apps,
 // etc, are not recorded. So returns true if the app_type_name is allowed to
 // record UKM. Otherwise, returns false.
 //
@@ -410,9 +414,9 @@ bool ShouldRecordUkmForAppTypeName(apps::AppTypeName app_type_name) {
     case apps::AppTypeName::kChromeBrowser:
     case apps::AppTypeName::kWeb:
     case apps::AppTypeName::kSystemWeb:
+    case apps::AppTypeName::kCrostini:
       return true;
     case apps::AppTypeName::kUnknown:
-    case apps::AppTypeName::kCrostini:
     case apps::AppTypeName::kMacOs:
     case apps::AppTypeName::kPluginVm:
     case apps::AppTypeName::kStandaloneBrowser:
@@ -1269,8 +1273,10 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
           ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
       break;
     }
-    case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kCrostini:
+      source_id = GetSourceIdForCrostini(app_id);
+      break;
+    case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:
@@ -1309,6 +1315,27 @@ void AppPlatformMetrics::RecordAppReadinessStatus(
   }
 
   base::UmaHistogramEnumeration(histogram_name, readiness);
+}
+
+ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
+    const std::string& app_id) {
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    // The terminal is special, since it's actually a web app (though one we
+    // count as Crostini) it doesn't have a desktop id, so give it a fake one.
+    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("CrostiniTerminal",
+                                                             "Terminal");
+  }
+  auto* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
+  auto registration = registry->GetRegistration(app_id);
+  if (!registration) {
+    return ukm::kInvalidSourceId;
+  }
+  auto desktop_id = registration->DesktopFileId() == ""
+                        ? "NoId"
+                        : registration->DesktopFileId();
+  return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
+      desktop_id, registration->Name());
 }
 
 }  // namespace apps

@@ -49,6 +49,13 @@ SourceId AppSourceUrlRecorder::GetSourceIdForPWA(const GURL& url) {
   return GetSourceIdForUrl(url, AppType::kPWA);
 }
 
+SourceId AppSourceUrlRecorder::GetSourceIdForCrostini(
+    const std::string& desktop_id,
+    const std::string& app_name) {
+  GURL url("app://" + desktop_id + "/" + app_name);
+  return GetSourceIdForUrl(url, AppType::kCrostini);
+}
+
 SourceId AppSourceUrlRecorder::GetSourceIdForUrl(const GURL& url,
                                                  AppType app_type) {
   ukm::DelegatingUkmRecorder* const recorder =
