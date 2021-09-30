@@ -252,6 +252,13 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'NumberReadingStyle', function() {
   assertEquals(
       'An unanswered call lasts for 30 seconds.', lastSpokenTextString);
 
+  tts.speak('１００');
+  assertEquals('１００', lastSpokenTextString);
+
+  tts.speak('An unanswered call lasts for ３０ seconds.');
+  assertEquals(
+      'An unanswered call lasts for ３０ seconds.', lastSpokenTextString);
+
   localStorage['numberReadingStyle'] = 'asDigits';
   tts.speak('100');
   assertEquals('1 0 0', lastSpokenTextString);
@@ -259,6 +266,13 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'NumberReadingStyle', function() {
   tts.speak('An unanswered call lasts for 30 seconds.');
   assertEquals(
       'An unanswered call lasts for 3 0 seconds.', lastSpokenTextString);
+
+  tts.speak('１００');
+  assertEquals('１ ０ ０', lastSpokenTextString);
+
+  tts.speak('An unanswered call lasts for ３０ seconds.');
+  assertEquals(
+      'An unanswered call lasts for ３ ０ seconds.', lastSpokenTextString);
 });
 
 SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'SplitLongText', function() {
