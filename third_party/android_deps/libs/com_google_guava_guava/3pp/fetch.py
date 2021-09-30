@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/guava/guava/30.1.1-jre/guava-30.1.1-jre.jar'
-_FILE_NAME = 'guava-30.1.1-jre.jar'
-_FILE_VERSION = '30.1.1-jre'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/guava/guava/31.0-jre/guava-31.0-jre.jar'
+_FILE_NAME = 'guava-31.0-jre.jar'
+_FILE_VERSION = '31.0-jre'
 
 
 def do_latest():
