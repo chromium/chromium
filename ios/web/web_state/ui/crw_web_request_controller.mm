@@ -518,7 +518,9 @@ enum class BackForwardNavigationType {
   } else {
 #if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
     if (@available(iOS 15, *)) {
-      request.attribution = NSURLRequestAttributionUser;
+      if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
+        request.attribution = NSURLRequestAttributionUser;
+      }
     }
 #endif
     navigation = [self.webView loadRequest:request];
