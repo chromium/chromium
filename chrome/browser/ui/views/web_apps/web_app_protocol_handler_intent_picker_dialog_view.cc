@@ -278,7 +278,7 @@ void ShowWebAppProtocolHandlerIntentPicker(
       profile, ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-  auto* provider = web_app::WebAppProvider::GetDeprecated(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   // Sometimes it is too early for registrar to be populated at this time. We
   // need to wait for it to get the web application info.
