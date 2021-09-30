@@ -1134,5 +1134,10 @@
     "prefix": "css-highlight-inheritance",
     "bases": ["external/wpt/css/css-pseudo"],
     "args": ["--enable-blink-features=HighlightInheritance"]
+  },
+  {
+    "prefix": "fenced-frame-mparch",
+    "bases": ["wpt_internal/fenced_frame"],
+    "args": ["--enable-features=FencedFrames:implementation_type/mparch"]
   }
 ]
