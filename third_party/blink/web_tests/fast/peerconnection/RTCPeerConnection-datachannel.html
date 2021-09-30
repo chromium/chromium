@@ -26,7 +26,7 @@ function dc_onmessage_sharedarraybuffer_view() {
     shouldThrow("dc.send(new Uint8Array(new (new WebAssembly.Memory(" +
                    "{ shared:true, initial:0, maximum:0 }).buffer.constructor)()));");
 
-    dc2.onclose = dc_onclose;
+    dc.onclose = dc_onclose;
     dc.close();
 }
 
