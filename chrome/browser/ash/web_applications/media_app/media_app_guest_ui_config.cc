@@ -24,6 +24,9 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
   source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
                                      chromeos::features::kMediaAppHandlesPdf));
+  source->AddBoolean(
+      "pdfTextAnnotation",
+      base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf));
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
