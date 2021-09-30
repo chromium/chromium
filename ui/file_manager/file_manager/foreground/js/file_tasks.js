@@ -1190,12 +1190,6 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
 };
 
 /**
- * The app ID of the video player app.
- * @const {string}
- */
-FileTasks.VIDEO_PLAYER_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
-
-/**
  * Available tasks in task menu button.
  * @enum {string}
  */

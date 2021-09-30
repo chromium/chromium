@@ -74,15 +74,6 @@ export const AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
 export const audioPlayerApp = new RemoteCall(AUDIO_PLAYER_APP_ID);
 
 /**
- * App ID of Video Player.
- * @type {string}
- * @const
- */
-export const VIDEO_PLAYER_APP_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
-
-export const videoPlayerApp = new RemoteCall(VIDEO_PLAYER_APP_ID);
-
-/**
  * Opens a Files app's main window.
  *
  * TODO(mtomasz): Pass a volumeId or an enum value instead of full paths.

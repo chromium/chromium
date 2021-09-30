@@ -22,8 +22,7 @@
   },
   "externally_connectable": {
     "ids": [
-      "hhaomjibdihmijegdhdafkllkbggdgoj",  // File Manager
-      "jcgeabjmjgoblfofpppfkcoakmfobdko"   // Video Player
+      "hhaomjibdihmijegdhdafkllkbggdgoj"  // File Manager
     ],
     "matches": [
       "chrome://file-manager/*"  // File Manager SWA

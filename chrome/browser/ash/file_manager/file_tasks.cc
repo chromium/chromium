@@ -150,10 +150,6 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   if (media_app_task == tasks->end())
     return;
 
-  // Video Player app was replaced by media app in m91, deprecated in m93 and
-  // will be deleted m94.
-  DCHECK(task_for_app(kVideoPlayerAppId) == tasks->end());
-
   // TOOD(crbug/1071289): For a while is_file_extension_match would always be
   // false for System Web App manifests, even when specifying extension matches.
   // So this line can be removed once the media app manifest is updated with a
@@ -720,10 +716,6 @@ void FindFileHandlerTasks(Profile* profile,
     if (profile->IsOffTheRecord() &&
         !extensions::util::IsIncognitoEnabled(extension->id(), profile))
       continue;
-
-    // Video player should no longer install itself or its file handlers
-    // starting in m93.
-    DCHECK_NE(kVideoPlayerAppId, extension->id());
 
     typedef std::vector<extensions::FileHandlerMatch> FileHandlerMatchList;
     FileHandlerMatchList file_handlers =

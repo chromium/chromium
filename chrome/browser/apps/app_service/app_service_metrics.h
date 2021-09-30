@@ -26,7 +26,8 @@ enum class DefaultAppName {
   kGetHelp = 12,
   // Gallery was replaced by MediaApp in M86 and deleted in M91.
   kDeletedGalleryChromeApp = 13,
-  kVideoPlayer = 14,
+  // VideoPlayer was replaced by MediaApp in M93 and deleted in M96.
+  kDeletedVideoPlayerChromeApp = 14,
   kAudioPlayer = 15,
   kChromeCanvas = 16,
   kCamera = 17,

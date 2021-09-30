@@ -49,7 +49,6 @@ group("closure_compile") {
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
-    "video_player/js:closure_compile",
   ]
 }
 
@@ -64,7 +63,6 @@ group("unit_test_data") {
     "file_manager/foreground/js/ui:js_test_gen_html_modules",
     "file_manager/foreground/js/ui/banners:js_test_gen_html_modules",
     "image_loader:js_test_gen_html_modules",
-    "video_player/js:js_test_gen_html_modules",
   ]
 }
 
@@ -324,16 +322,6 @@ preprocess_if_expr("preprocess_static") {
     "image_loader/load_image_request.js",
     "image_loader/piex_loader.js",
     "image_loader/scheduler.js",
-
-    # Video Player:
-    "video_player/js/background.js",
-    "video_player/js/error_util.js",
-    "video_player/js/main.m.js",
-    "video_player/js/main_background.m.js",
-    "video_player/js/test_util.js",
-    "video_player/js/video_player.js",
-    "video_player/js/video_player_metrics.js",
-    "video_player/js/video_player_native_controls.js",
   ]
 
   deps = [
@@ -346,9 +334,6 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/file_manager/foreground/js:main",
     "//ui/file_manager/image_loader:background.m",
     "//ui/file_manager/image_loader:js_modules",
-    "//ui/file_manager/video_player/js:js_modules",
-    "//ui/file_manager/video_player/js:main.m",
-    "//ui/file_manager/video_player/js:main_background.m",
   ]
 }
 
@@ -461,10 +446,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/shared.m.rollup.js",
 
       "image_loader/background.m.rollup.js",
-      "video_player/js/main.m.rollup.js",
-      "video_player/js/main_background.m.rollup.js",
-      "video_player/js/shared.m.rollup.js",
-      "video_player/js/runtime_loaded_test_util.rollup.js",
     ]
 
     resource_path_rewrites += [
@@ -475,9 +456,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
 
       "image_loader/background.m.rollup.js|image_loader/background.m.js",
-      "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
-      "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
-      "video_player/js/runtime_loaded_test_util.rollup.js|video_player/js/runtime_loaded_test_util.js",
     ]
 
     deps += [
@@ -486,8 +464,6 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",
       "//ui/file_manager/image_loader:build",
-      "//ui/file_manager/video_player/js:build",
-      "//ui/file_manager/video_player/js:build_background",
     ]
   } else {
     manifest_files = [

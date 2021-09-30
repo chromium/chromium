@@ -43,21 +43,6 @@
       <include name="IDR_FILE_MANAGER_HOLDING_SPACE_WELCOME_STYLE" file="file_manager/foreground/css/holding_space_welcome.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_PHOTOS_WELCOME_STYLE" file="file_manager/foreground/css/photos_welcome.css" type="BINDATA" />
 
-      <!-- The VideoPlayer app pages and scripts. -->
-      <include name="IDR_VIDEO_PLAYER_MANIFEST" file="video_player/manifest.json" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_MODULE" file="video_player/video_player_module.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_BACKGROUND_HTML" file="video_player/background.html" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_FAVICON_16" file="video_player/images/icon/video-player-favicon-16.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_16" file="video_player/images/icon/video-player-16.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_32" file="video_player/images/icon/video-player-32.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_48" file="video_player/images/icon/video-player-48.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_64" file="video_player/images/icon/video-player-64.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_96" file="video_player/images/icon/video-player-96.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_128" file="video_player/images/icon/video-player-128.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_192" file="video_player/images/icon/video-player-192.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_256" file="video_player/images/icon/video-player-256.png" type="BINDATA" />
-      <include name="IDR_VIDEO_PLAYER_ICON_FAVICON_32" file="video_player/images/icon/video-player-favicon-32.png" type="BINDATA" />
-
       <!-- The AudioPlayer app pages and scripts. -->
       <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />

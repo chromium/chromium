@@ -2465,18 +2465,6 @@ void DocumentLoader::CreateParserPostCommit() {
     window->GetOriginTrialContext()->AddForceEnabledTrials(
         force_enabled_origin_trials_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Enable Auto Picture-in-Picture feature for the built-in Chrome OS Video
-    // Player app.
-    const url::Origin origin = window->GetSecurityOrigin()->ToUrlOrigin();
-    if (CommonSchemeRegistry::IsExtensionScheme(origin.scheme()) &&
-        origin.DomainIs("jcgeabjmjgoblfofpppfkcoakmfobdko") &&
-        origin.port() == 0) {
-      window->GetOriginTrialContext()->AddFeature(
-          OriginTrialFeature::kAutoPictureInPicture);
-    }
-#endif
-
     OriginTrialContext::ActivateNavigationFeaturesFromInitiator(
         window, &initiator_origin_trial_features_);
   }

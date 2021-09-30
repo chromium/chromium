@@ -98,7 +98,6 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // when provided a filename to open. Likewise, the feedback extension needs
   // context when launching. Pinning these creates an item that does nothing.
   const char* kNoPinAppIds[] = {
-      file_manager::kVideoPlayerAppId,
       file_manager::kAudioPlayerAppId,
       extension_misc::kFeedbackExtensionId,
   };

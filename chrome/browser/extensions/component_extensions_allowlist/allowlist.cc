@@ -86,7 +86,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_IMAGE_LOADER_MANIFEST:
     case IDR_KEYBOARD_MANIFEST:
     case IDR_MOBILE_MANIFEST:
-    case IDR_VIDEO_PLAYER_MANIFEST:
     case IDR_WALLPAPERMANAGER_MANIFEST:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDR_HELP_MANIFEST:

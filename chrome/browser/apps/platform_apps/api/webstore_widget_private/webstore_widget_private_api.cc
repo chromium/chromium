@@ -17,12 +17,6 @@
 namespace chrome_apps {
 namespace api {
 
-namespace {
-
-const char kGoogleCastApiExtensionId[] = "mafeflapfdfljijmlienjedomfjfmhpd";
-
-}  // namespace
-
 WebstoreWidgetPrivateInstallWebstoreItemFunction::
     WebstoreWidgetPrivateInstallWebstoreItemFunction() {}
 
@@ -39,10 +33,7 @@ WebstoreWidgetPrivateInstallWebstoreItemFunction::Run() {
   if (params->item_id.empty())
     return RespondNow(Error("App ID empty."));
 
-  bool allow_silent_install =
-      extension()->id() == file_manager::kVideoPlayerAppId &&
-      params->item_id == kGoogleCastApiExtensionId;
-  if (params->silent_installation && !allow_silent_install)
+  if (params->silent_installation)
     return RespondNow(Error("Silent installation not allowed."));
 
   content::WebContents* web_contents = GetSenderWebContents();

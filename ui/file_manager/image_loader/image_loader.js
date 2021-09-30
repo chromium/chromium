@@ -98,7 +98,6 @@ export function ImageLoader() {
  */
 ImageLoader.ALLOWED_CLIENT_ORIGINS = [
   'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj',  // File Manager
-  'chrome-extension://jcgeabjmjgoblfofpppfkcoakmfobdko',  // Video Player
   'chrome://file-manager',  // File Manager SWA
 ];
 
