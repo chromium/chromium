@@ -233,7 +233,7 @@ const base::Feature kCrashReporting{"CrashReporting",
 // Enables support for the `Critical-CH` response header.
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 const base::Feature kCriticalClientHint{"CriticalClientHint",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable cross-origin sharing of WebAssembly modules.
 const base::Feature kCrossOriginWebAssemblyModuleSharingEnabled{
