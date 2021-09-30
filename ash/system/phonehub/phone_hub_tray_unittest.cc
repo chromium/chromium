@@ -483,8 +483,7 @@ TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
   EXPECT_FALSE(content_view());
 }
 
-// Flaky. See https://crbug.com/1224275.
-TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
+TEST_F(PhoneHubTrayTest, OnSessionChanged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -496,7 +495,7 @@ TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
 
   // Enable it to let it visible.
   GetFeatureStatusProvider()->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
   GetSessionControllerClient()->SetSessionState(
@@ -520,7 +519,7 @@ TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
     task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
     EXPECT_FALSE(phone_hub_tray_->GetVisible());
     GetFeatureStatusProvider()->SetStatus(
-        chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+        chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
   }
   EXPECT_FALSE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
@@ -531,7 +530,7 @@ TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
   GetFeatureStatusProvider()->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
   EXPECT_TRUE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
 }
