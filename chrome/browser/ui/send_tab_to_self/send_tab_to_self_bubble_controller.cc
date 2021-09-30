@@ -156,11 +156,17 @@ void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
 }
 
 void SendTabToSelfBubbleController::UpdateIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-
   // |web_contents_| can be null in tests.
-  if (web_contents_ && sharing_hub::SharingHubOmniboxEnabled(
-                           web_contents_->GetBrowserContext())) {
+  if (!web_contents_)
+    return;
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  // UpdateIcon() can be called during browser teardown.
+  if (!browser)
+    return;
+
+  if (sharing_hub::SharingHubOmniboxEnabled(
+          web_contents_->GetBrowserContext())) {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
   } else {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kSendTabToSelf);
