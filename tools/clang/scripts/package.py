@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -53,7 +53,7 @@ def TeeCmd(cmd, logfile, fail_hard=True):
                           stdin=open(os.devnull), stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT)
   for line in iter(proc.stdout.readline,''):
-    Tee(line, logfile)
+    Tee(line.decode(), logfile)
     if proc.poll() is not None:
       break
   exit_code = proc.wait()
@@ -70,7 +70,7 @@ def PrintTarProgress(tarinfo):
 def GetExpectedStamp():
   rev_cmd = [sys.executable, os.path.join(THIS_DIR, 'update.py'),
              '--print-revision']
-  return subprocess.check_output(rev_cmd).rstrip()
+  return subprocess.check_output(rev_cmd).decode().rstrip()
 
 
 def GetGsutilPath():
