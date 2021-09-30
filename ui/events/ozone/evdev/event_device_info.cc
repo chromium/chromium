@@ -46,12 +46,21 @@ constexpr struct {
     {0x046d, 0x4080},  // Logitech Pebble M350
     {0x046d, 0xb00d},  // Logitech T630 Ultrathin
     {0x046d, 0xb011},  // Logitech M558
+    {0x046d, 0xb012},  // Logitech MX Master (Bluetooth) // nocheck
+    {0x046d, 0xb013},  // Logitech MX Anywhere 2 (Bluetooth)
     {0x046d, 0xb015},  // Logitech M720 Triathlon (Bluetooth)
     {0x046d, 0xb016},  // Logitech M535
+    {0x046d, 0xb017},  // Logitech MX Master / Anywhere 2 (Bluetooth) // nocheck
     {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth) // nocheck
-    {0x046d, 0xb01b},  // Logitech M585 (Bluetooth)
+    {0x046d, 0xb01a},  // Logitech MX Anywhere 2S (Bluetooth)
+    {0x046d, 0xb01b},  // Logitech M585/M590 (Bluetooth)
+    {0x046d, 0xb01c},  // Logitech G603 Lightspeed Gaming Mouse (Bluetooth)
+    {0x046d, 0xb01e},  // Logitech MX Master (Bluetooth) // nocheck
     {0x046d, 0xb01f},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb023},  // Logitech MX Master 3 (Bluetooth) // nocheck
+    {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
+    {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
