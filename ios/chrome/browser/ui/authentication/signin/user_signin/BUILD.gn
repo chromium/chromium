@@ -9,10 +9,6 @@ source_set("user_signin") {
   sources = [
     "gradient_view.h",
     "gradient_view.mm",
-    "user_policy_signout_coordinator.h",
-    "user_policy_signout_coordinator.mm",
-    "user_policy_signout_view_controller.h",
-    "user_policy_signout_view_controller.mm",
     "user_signin_constants.h",
     "user_signin_constants.mm",
     "user_signin_coordinator.h",

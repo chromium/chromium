@@ -164,7 +164,6 @@ source_set("scene") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin",
-    "//ios/chrome/browser/ui/authentication/signin/user_signin:user_signin",
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands:commands",
