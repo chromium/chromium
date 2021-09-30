@@ -32,10 +32,16 @@ LoggedExtensionFunction::LoggedExtensionFunction()
 LoggedExtensionFunction::~LoggedExtensionFunction() = default;
 
 void LoggedExtensionFunction::OnResponded() {
+  if (!browser_context()) {
+    ExtensionFunction::OnResponded();
+    return;
+  }
+
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
 
   drive::EventLogger* logger = file_manager::util::GetLogger(
       Profile::FromBrowserContext(browser_context()));
+
   if (logger && log_on_completion_) {
     DCHECK(response_type());
     bool success = *response_type() == SUCCEEDED;
@@ -60,6 +66,7 @@ void LoggedExtensionFunction::OnResponded() {
                 "ms)",
                 name(), request_id(), elapsed.InMilliseconds());
   }
+
   ExtensionFunction::OnResponded();
 }
 
