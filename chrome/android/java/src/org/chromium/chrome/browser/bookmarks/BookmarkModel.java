@@ -142,8 +142,9 @@ public class BookmarkModel extends BookmarkBridge {
      * @return The id of the default folder to view bookmarks.
      */
     public BookmarkId getDefaultFolderViewLocation() {
-        if (BookmarkUtils.shouldUseRootFolderAsDefaultForReadLater()) return getRootFolderId();
-
+        if (ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater()) {
+            return getRootFolderId();
+        }
         return getMobileFolderId();
     }
 }

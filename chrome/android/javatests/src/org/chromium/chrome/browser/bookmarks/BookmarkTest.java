@@ -442,7 +442,7 @@ public class BookmarkTest {
         BookmarkActionBar toolbar = ((BookmarkManager) delegate).getToolbarForTests();
 
         // We should default to the root bookmark.
-        Assert.assertTrue(BookmarkUtils.shouldUseRootFolderAsDefaultForReadLater());
+        Assert.assertTrue(ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater());
         Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
         Assert.assertEquals("chrome-native://bookmarks/folder/0",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
