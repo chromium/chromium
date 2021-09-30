@@ -35,6 +35,8 @@ class PushNotificationManager {
     virtual void PurgeFetchedEntries(base::OnceClosure on_success) = 0;
   };
 
+  PushNotificationManager(const PushNotificationManager&) = delete;
+  PushNotificationManager& operator=(const PushNotificationManager&) = delete;
   virtual ~PushNotificationManager() = default;
 
   // Sets |this|'s delegate.
@@ -46,6 +48,9 @@ class PushNotificationManager {
   // Called when a new push notification arrives.
   virtual void OnNewPushNotification(
       const proto::HintNotificationPayload& notification) = 0;
+
+ protected:
+  PushNotificationManager() = default;
 };
 
 }  // namespace optimization_guide

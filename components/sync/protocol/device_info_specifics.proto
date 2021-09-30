@@ -135,6 +135,8 @@ message SharingSpecificFields {
     CLICK_TO_CALL_V2 = 7;
     // Suppots Shared Clipboard via both VAPID and sender ID.
     SHARED_CLIPBOARD_V2 = 8;
+    // Supports optimization guide push notification.
+    OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
   }
 
   // A list of enabled Sharing features.

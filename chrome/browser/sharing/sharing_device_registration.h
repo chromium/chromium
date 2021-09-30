@@ -71,6 +71,10 @@ class SharingDeviceRegistration {
   // Returns if device can handle receiving of remote copy contents.
   virtual bool IsRemoteCopySupported() const;
 
+  // Returns if device can handle receiving of optimization guide push
+  // notification.
+  virtual bool IsOptimizationGuidePushNotificationSupported() const;
+
   // For testing
   void SetEnabledFeaturesForTesting(
       std::set<sync_pb::SharingSpecificFields_EnabledFeatures>

@@ -160,6 +160,8 @@ if (build_with_tflite_lib) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_push_notification_manager.cc",
+    "mock_push_notification_manager.h",
     "optimization_guide_test_util.cc",
     "optimization_guide_test_util.h",
     "proto_database_provider_test_base.cc",
@@ -177,6 +179,7 @@ static_library("test_support") {
     "//base",
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
