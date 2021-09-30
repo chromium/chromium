@@ -1601,24 +1601,6 @@ void AXPlatformNodeBase::SanitizeStringAttribute(const std::string& input,
   base::ReplaceChars(*output, ";", "\\;", output);
 }
 
-AXPlatformNodeBase* AXPlatformNodeBase::GetHyperlinkFromHypertextOffset(
-    int offset) {
-  std::map<int32_t, int32_t>::iterator iterator =
-      hypertext_.hyperlink_offset_to_index.find(offset);
-  if (iterator == hypertext_.hyperlink_offset_to_index.end())
-    return nullptr;
-
-  int32_t index = iterator->second;
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int32_t>(hypertext_.hyperlinks.size()));
-  int32_t id = hypertext_.hyperlinks[index];
-  auto* hyperlink =
-      static_cast<AXPlatformNodeBase*>(AXPlatformNodeBase::GetFromUniqueId(id));
-  if (!hyperlink)
-    return nullptr;
-  return hyperlink;
-}
-
 int32_t AXPlatformNodeBase::GetHyperlinkIndexFromChild(
     AXPlatformNodeBase* child) {
   if (hypertext_.hyperlinks.empty())
@@ -1874,8 +1856,17 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
   // the selection.
   int* largest_offset =
       (*selection_start <= *selection_end) ? selection_end : selection_start;
-  AXPlatformNodeBase* hyperlink =
-      GetHyperlinkFromHypertextOffset(*largest_offset);
+  const std::map<int, int>& offset_to_child_index =
+      delegate_->GetHypertextOffsetToHyperlinkChildIndex();
+  auto index_iter = offset_to_child_index.find(*largest_offset);
+  if (index_iter == offset_to_child_index.end())
+    return;
+
+  int child_index = index_iter->second;
+  DCHECK_GE(child_index, 0);
+  DCHECK_LT(child_index, GetChildCount());
+  AXPlatformNodeBase* hyperlink = static_cast<AXPlatformNodeBase*>(
+      AXPlatformNode::FromNativeViewAccessible(ChildAtIndex(child_index)));
   if (!hyperlink)
     return;
 

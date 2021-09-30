@@ -550,6 +550,14 @@ std::u16string AXPlatformNodeDelegateBase::GetHypertext() const {
   return std::u16string();
 }
 
+const std::map<int, int>&
+AXPlatformNodeDelegateBase::GetHypertextOffsetToHyperlinkChildIndex() const {
+  // TODO(nektar): Remove this dummy method once hypertext computation and
+  // selection handling has moved entirely to AXNode / AXPosition.
+  static base::NoDestructor<std::map<int, int>> dummy_map;
+  return *dummy_map;
+}
+
 bool AXPlatformNodeDelegateBase::SetHypertextSelection(int start_offset,
                                                        int end_offset) {
   AXActionData action_data;

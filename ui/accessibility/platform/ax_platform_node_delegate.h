@@ -333,6 +333,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // with a special character in place of every embedded object. This represents
   // the concept of text in ATK and IA2 APIs.
   virtual std::u16string GetHypertext() const = 0;
+  // Temporary accessor method until hypertext is fully migrated to `AXNode`
+  // from `AXPlatformNodeBase`.
+  // TODO(nektar): Remove this once selection handling is fully migrated to
+  // `AXNode`.
+  virtual const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
+      const = 0;
 
   // Set the selection in the hypertext of this node. Depending on the
   // implementation, this may mean the new selection will span multiple nodes.
