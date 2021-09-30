@@ -31,18 +31,24 @@
         padding-inline-end: 0;
       }
 
+      .origin-link {
+        overflow: hidden;
+      }
+
       .spacing {
         padding-inline-start: 1ch;
       }
     </style>
     <div id="collapseParent" focus-row-container>
       <div class$="list-item [[getClassForIndex_(listIndex)]]">
-        <div id="toggleButton" class="start row-aligned two-line"
+        <div id="toggleButton" class="start row-aligned two-line text-elide"
             on-click="onSiteEntryTap_" actionable aria-expanded="false">
           <site-favicon url="[[getSiteGroupIcon_(siteGroup)]]"></site-favicon>
           <div class="middle text-elide" id="displayName">
             <div class="site-representation">
-              <span class="url-directionality">[[displayName_]]</span>
+              <span class="url-directionality text-elide">
+                [[displayName_]]
+              </span>
               <span class="secondary"
                   hidden$="[[!siteGroupScheme_(siteGroup)]]">
                 &nbsp;$i18nPolymer{siteSettingsSiteRepresentationSeparator}&nbsp;
@@ -87,7 +93,7 @@
                     <site-favicon url="[[item.origin]]"></site-favicon>
                     <div class="site-representation middle text-elide">
                       <span id="originSiteRepresentation"
-                          class="url-directionality">
+                          class="url-directionality text-elide">
                         [[originRepresentation(item.origin)]]
                       </span>
                       <span class="secondary"
