@@ -173,7 +173,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
 const char AppHistory::kSupplementName[] = "AppHistory";
 
 AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
-  if (!RuntimeEnabledFeatures::AppHistoryEnabled())
+  if (!RuntimeEnabledFeatures::AppHistoryEnabled(&window))
     return nullptr;
   auto* app_history = Supplement<LocalDOMWindow>::From<AppHistory>(window);
   if (!app_history) {
@@ -185,6 +185,11 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
+
+void AppHistory::setOnnavigate(EventListener* listener) {
+  UseCounter::Count(GetSupplementable(), WebFeature::kAppHistory);
+  SetAttributeEventListener(event_type_names::kNavigate, listener);
+}
 
 void AppHistory::PopulateKeySet() {
   DCHECK(keys_to_indices_.IsEmpty());

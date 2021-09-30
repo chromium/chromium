@@ -204,6 +204,7 @@
     },
     {
       name: "AppHistory",
+      origin_trial_feature_name: "AppHistory",
       status: "experimental",
     },
     {

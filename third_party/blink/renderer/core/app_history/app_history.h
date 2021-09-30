@@ -77,7 +77,13 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   AppHistoryResult* back(ScriptState*, AppHistoryNavigationOptions*);
   AppHistoryResult* forward(ScriptState*, AppHistoryNavigationOptions*);
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
+  // onnavigate is defined manually so that a UseCounter can be applied to just
+  // the setter
+  void setOnnavigate(EventListener* listener);
+  EventListener* onnavigate() {
+    return GetAttributeEventListener(event_type_names::kNavigate);
+  }
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currentchange, kCurrentchange)
