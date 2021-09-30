@@ -44,7 +44,6 @@
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -154,16 +153,12 @@ void UpdateTimerIntervalLocked() {
     g_high_res_timer_usage += subtle::TimeTicksNowIgnoringOverride() -
                               g_high_res_timer_last_activation;
     // Reset the timer interrupt back to the default.
-    // TODO(crbug.com/1253920): remove log after October 1, 2021.
-    VLOG(1) << "timeEndPeriod(" << g_last_interval_requested_ms << ")";
     timeEndPeriod(g_last_interval_requested_ms);
   }
   g_last_interval_requested_ms = new_interval;
   if (g_last_interval_requested_ms) {
     // Record when the timer interrupt was raised.
     g_high_res_timer_last_activation = subtle::TimeTicksNowIgnoringOverride();
-    // TODO(crbug.com/1253920): remove log after October 1, 2021.
-    VLOG(1) << "timeBeginPeriod(" << g_last_interval_requested_ms << ")";
     timeBeginPeriod(g_last_interval_requested_ms);
   }
 }
