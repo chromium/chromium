@@ -499,7 +499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ChildProcessStartTimeV2{type}" units="ms"
-    expires_after="2021-12-13">
+    expires_after="2022-10-01">
   <owner>cduvall@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>

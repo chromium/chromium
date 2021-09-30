@@ -2711,7 +2711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.BrowserLoadTime" units="ms"
-    expires_after="M99">
+    expires_after="2022-10-01">
   <obsolete>
     Replaced by ChromiumAndroidLinker.BrowserLoadTime2 in 2021-07.
   </obsolete>
@@ -2723,7 +2723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
-    enum="BooleanRelroAvailableImmediately" expires_after="2021-07-07">
+    enum="BooleanRelroAvailableImmediately" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2734,7 +2734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroProvidedSuccessfully"
-    enum="BooleanSuccess" expires_after="2021-07-07">
+    enum="BooleanSuccess" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2750,7 +2750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroSharingStatus"
-    enum="RelroSharingStatus" expires_after="2021-05-06">
+    enum="RelroSharingStatus" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2761,7 +2761,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RendererLoadTime" units="ms"
-    expires_after="M99">
+    expires_after="2022-10-01">
   <obsolete>
     Replaced by ChromiumAndroidLinker.ChildLoadTime2 in 2021-07.
   </obsolete>
@@ -2773,7 +2773,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.{ProcessType}LoadTime2" units="ms"
-    expires_after="2022-07-20">
+    expires_after="2022-10-01">
   <owner>pasko@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
