@@ -758,10 +758,6 @@ absl::optional<int32_t> AXPlatformNodeDelegateBase::CellIndexToId(
   return absl::nullopt;
 }
 
-bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaTable() const {
-  return false;
-}
-
 bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaGrid() const {
   return false;
 }

@@ -565,10 +565,6 @@ absl::optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
   return cell->id();
 }
 
-bool TestAXNodeWrapper::IsCellOrHeaderOfAriaTable() const {
-  return node_->IsCellOrHeaderOfAriaTable();
-}
-
 bool TestAXNodeWrapper::IsCellOrHeaderOfAriaGrid() const {
   return node_->IsCellOrHeaderOfAriaGrid();
 }

@@ -1898,10 +1898,6 @@ absl::optional<int32_t> BrowserAccessibility::CellIndexToId(
   return cell->id();
 }
 
-bool BrowserAccessibility::IsCellOrHeaderOfAriaTable() const {
-  return node()->IsCellOrHeaderOfAriaTable();
-}
-
 bool BrowserAccessibility::IsCellOrHeaderOfAriaGrid() const {
   return node()->IsCellOrHeaderOfAriaGrid();
 }

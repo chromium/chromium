@@ -316,7 +316,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   absl::optional<int32_t> GetCellId(int row_index,
                                     int col_index) const override;
   absl::optional<int32_t> CellIndexToId(int cell_index) const override;
-  bool IsCellOrHeaderOfAriaTable() const override;
   bool IsCellOrHeaderOfAriaGrid() const override;
 
   // Ordered-set-like and item-like nodes.

@@ -1347,19 +1347,6 @@ void AXNode::GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const {
   IdVectorToNodeVector(row_header_ids, row_headers);
 }
 
-bool AXNode::IsCellOrHeaderOfAriaTable() const {
-  if (!IsTableCellOrHeader())
-    return false;
-
-  const AXNode* node = this;
-  while (node && !node->IsTable())
-    node = node->GetParent();
-  if (!node)
-    return false;
-
-  return node->GetRole() == ax::mojom::Role::kTable;
-}
-
 bool AXNode::IsCellOrHeaderOfAriaGrid() const {
   if (!IsTableCellOrHeader())
     return false;

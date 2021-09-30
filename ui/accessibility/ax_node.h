@@ -576,9 +576,6 @@ class AX_EXPORT AXNode final {
   void GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const;
   void GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const;
 
-  // TODO(nektar): Why is this method needed?
-  bool IsCellOrHeaderOfAriaTable() const;
-
   // Returns true if this node is a cell or a row/column header in an ARIA grid
   // or treegrid.
   bool IsCellOrHeaderOfAriaGrid() const;

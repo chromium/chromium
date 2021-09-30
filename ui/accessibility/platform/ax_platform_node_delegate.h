@@ -528,9 +528,6 @@ class AX_EXPORT AXPlatformNodeDelegate {
                                             int col_index) const = 0;
   virtual absl::optional<int32_t> CellIndexToId(int cell_index) const = 0;
 
-  // TODO(nektar): Why is this method needed?
-  virtual bool IsCellOrHeaderOfAriaTable() const = 0;
-
   // Returns true if this node is a cell or a row/column header in an ARIA grid
   // or treegrid.
   virtual bool IsCellOrHeaderOfAriaGrid() const = 0;
