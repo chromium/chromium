@@ -146,6 +146,27 @@ projectorApp.OAuthToken.prototype.oauthTokenInfo;
 projectorApp.OAuthTokenInfo.prototype.error;
 
 /**
+ * Structure for Screencast information.
+ * @record
+ * @struct
+ */
+projectorApp.PendingScreencast = function() {};
+
+/**
+ * The display name of the screencast.
+ * @type {string}
+ */
+projectorApp.PendingScreencast.prototype.name;
+
+/**
+ * The upload progress of the screencast. Range from [0, 100).
+ * @type {number}
+ */
+projectorApp.PendingScreencast.prototype.uploadProgress;
+
+// TODO(b/197015567): Add other screencast fields(duration, createdDate etc.).
+
+/**
  * The delegate interface that the Projector app can use to make requests to
  * chrome.
  * @record
@@ -192,6 +213,12 @@ projectorApp.ClientDelegate.prototype.getOAuthTokenForAccount = function(
 projectorApp.ClientDelegate.prototype.onError = function(msg) {};
 
 /**
+ * Gets the list of pending screencasts currently available on the device.
+ * @return {Promise<Array<!projectorApp.PendingScreencast>>}
+ */
+projectorApp.ClientDelegate.prototype.getPendingScreencasts = function() {};
+
+/**
  * The client Api for interacting with the Projector app instance.
  * @record
  * @struct
@@ -204,6 +231,13 @@ projectorApp.AppApi = function() {};
  */
 projectorApp.AppApi.prototype.onNewScreencastPreconditionChanged = function(
     canStart) {};
+
+/**
+ * Notfies the app when screencasts' pending state have changed.
+ * @param {!Array<projectorApp.PendingScreencast>} screencasts
+ */
+projectorApp.AppApi.prototype.onScreencastsStateChange = function(
+    screencasts) {};
 
 /**
  * Sets the delegate that the Projector app can use to call into Chrome

@@ -71,6 +71,16 @@ export class TrustedAppClient extends PostMessageAPIClient {
   onError(msg) {
     this.callApiFn('onError', [msg]);
   }
+
+  /**
+   * Gets the list of pending screencasts that are uploading to drive on current
+   * device.
+   * @return {Promise<Array<!projectorApp.PendingScreencast>>}
+   */
+  // TODO(b/197015567) Wired this up with ProjectorMessageHandler.
+  getPendingScreencasts(){
+    return Promise.resolve([]);
+  }
 };
 
 
