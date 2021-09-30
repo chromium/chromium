@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/plugins/flash_temporary_permission_tracker.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_utils.h"
@@ -35,7 +34,6 @@ using content::PluginService;
 struct ChromePluginServiceFilter::ContextInfo {
   ContextInfo(scoped_refptr<PluginPrefs> pp,
               scoped_refptr<HostContentSettingsMap> hcsm,
-              scoped_refptr<FlashTemporaryPermissionTracker> ftpm,
               Profile* profile);
 
   ContextInfo(const ContextInfo&) = delete;
@@ -45,17 +43,13 @@ struct ChromePluginServiceFilter::ContextInfo {
 
   scoped_refptr<PluginPrefs> plugin_prefs;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map;
-  scoped_refptr<FlashTemporaryPermissionTracker> permission_tracker;
 };
 
 ChromePluginServiceFilter::ContextInfo::ContextInfo(
     scoped_refptr<PluginPrefs> pp,
     scoped_refptr<HostContentSettingsMap> hcsm,
-    scoped_refptr<FlashTemporaryPermissionTracker> ftpm,
     Profile* profile)
-    : plugin_prefs(std::move(pp)),
-      host_content_settings_map(std::move(hcsm)),
-      permission_tracker(std::move(ftpm)) {}
+    : plugin_prefs(std::move(pp)), host_content_settings_map(std::move(hcsm)) {}
 
 ChromePluginServiceFilter::ContextInfo::~ContextInfo() = default;
 
@@ -78,8 +72,7 @@ void ChromePluginServiceFilter::RegisterProfile(Profile* profile) {
   base::AutoLock lock(lock_);
   browser_context_map_[profile] = std::make_unique<ContextInfo>(
       PluginPrefs::GetForProfile(profile),
-      HostContentSettingsMapFactory::GetForProfile(profile),
-      FlashTemporaryPermissionTracker::Get(profile), profile);
+      HostContentSettingsMapFactory::GetForProfile(profile), profile);
 }
 
 void ChromePluginServiceFilter::UnregisterProfile(Profile* profile) {
