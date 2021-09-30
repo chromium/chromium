@@ -29,6 +29,9 @@ ChromeVoxPhoneticDataTest.prototype.extraLibraries = [
  * @const
  */
 JA_TEST_MAP = new Map([
+  ['あ', 'アサヒ ノ ア'],
+  ['ア', 'アサヒ ノ ア'],
+  ['ｱ', 'アサヒ ノ ア'],
   ['A', 'エイ アニマル'],
   ['a', 'エイ アニマル'],
   ['1', 'イチ'],
@@ -52,22 +55,29 @@ JA_TEST_MAP = new Map([
 // TODO(crbug/1195393): Polish phonetic readings so that users can disambiguate
 // more precisely.
 TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
-  assertEquals('ヒラガナ あ', PhoneticData.forCharacter('あ', 'ja'));
-  assertEquals('カタカナ ア', PhoneticData.forCharacter('ア', 'ja'));
-  assertEquals('ヒラガナ チイサイ あ', PhoneticData.forCharacter('ぁ', 'ja'));
-  assertEquals('カタカナ チイサイ ア', PhoneticData.forCharacter('ァ', 'ja'));
-  assertEquals('ハンカク ｱ', PhoneticData.forCharacter('ｱ', 'ja'));
-  assertEquals('ハンカク チイサイ ｱ', PhoneticData.forCharacter('ｧ', 'ja'));
-  assertEquals('オオモジ A', PhoneticData.forCharacter('A', 'ja'));
-  assertEquals('ハンカク a', PhoneticData.forCharacter('a', 'ja'));
-  assertEquals('ハンカク 1', PhoneticData.forCharacter('1', 'ja'));
-  assertEquals('ハンカク @', PhoneticData.forCharacter('@', 'ja'));
-  assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forCharacter('Ａ', 'ja'));
-  assertEquals('ゼンカク ａ', PhoneticData.forCharacter('ａ', 'ja'));
-  assertEquals('ゼンカク １', PhoneticData.forCharacter('１', 'ja'));
-  assertEquals('ゼンカク ＠', PhoneticData.forCharacter('＠', 'ja'));
-  assertEquals('オオモジ Α', PhoneticData.forCharacter('Α', 'ja'));
-  assertEquals('コモジ α', PhoneticData.forCharacter('α', 'ja'));
+  assertEquals('ヒラガナ アサヒ ノ ア', PhoneticData.forCharacter('あ', 'ja'));
+  assertEquals('カタカナ アサヒ ノ ア', PhoneticData.forCharacter('ア', 'ja'));
+  assertEquals(
+      'ヒラガナ チイサイ アサヒ ノ ア', PhoneticData.forCharacter('ぁ', 'ja'));
+  assertEquals(
+      'カタカナ チイサイ アサヒ ノ ア', PhoneticData.forCharacter('ァ', 'ja'));
+  assertEquals('ハンカク アサヒ ノ ア', PhoneticData.forCharacter('ｱ', 'ja'));
+  assertEquals(
+      'ハンカク チイサイ アサヒ ノ ア', PhoneticData.forCharacter('ｧ', 'ja'));
+
+  // If the capitalStrategy is announceCapitals, 'A' is read as '大文字のA エイ
+  // アニマル'
+  assertEquals('エイ アニマル', PhoneticData.forCharacter('A', 'ja'));
+
+  assertEquals('エイ アニマル', PhoneticData.forCharacter('a', 'ja'));
+  assertEquals('ハンカク イチ', PhoneticData.forCharacter('1', 'ja'));
+  assertEquals('ハンカク アットマーク', PhoneticData.forCharacter('@', 'ja'));
+  assertEquals('ゼンカク エイ アニマル', PhoneticData.forCharacter('Ａ', 'ja'));
+  assertEquals('ゼンカク エイ アニマル', PhoneticData.forCharacter('ａ', 'ja'));
+  assertEquals('ゼンカク イチ', PhoneticData.forCharacter('１', 'ja'));
+  assertEquals('ゼンカク アットマーク', PhoneticData.forCharacter('＠', 'ja'));
+  assertEquals('ギリシャ アルファ', PhoneticData.forCharacter('Α', 'ja'));
+  assertEquals('ギリシャ アルファ', PhoneticData.forCharacter('α', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forCharacter('亜', 'ja'));
 });
 

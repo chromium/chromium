@@ -30,11 +30,13 @@ JaPhoneticData = class {
   static forCharacter(char) {
     const characterSet =
         JaPhoneticData.getCharacterSet(char, JaPhoneticData.CharacterSet.NONE);
-    if (characterSet !== JaPhoneticData.CharacterSet.OTHER) {
-      const prefix = JaPhoneticData.getDefaultPrefix(characterSet);
-      return prefix + ' ' + JaPhoneticData.maybeGetLargeLetterKana(char);
+    let resultChar = JaPhoneticData.maybeGetLargeLetterKana(char);
+    resultChar = JaPhoneticData.phoneticMap_.get(resultChar) || resultChar;
+    const prefix = JaPhoneticData.getPrefixForCharacter(characterSet);
+    if (prefix) {
+      return prefix + ' ' + resultChar;
     }
-    return JaPhoneticData.phoneticMap_.get(char) || char;
+    return resultChar;
   }
 
   /**
@@ -171,6 +173,26 @@ JaPhoneticData = class {
    */
   static getDefaultPrefix(characterSet) {
     return JaPhoneticData.DEFAULT_PREFIX.get(characterSet);
+  }
+
+  /**
+   * @param {JaPhoneticData.CharacterSet} characterSet
+   * @return {?string}
+   */
+  static getPrefixForCharacter(characterSet) {
+    // Removing an annoucement of capital because users can distinguish
+    // uppercase and lowercase by capiatalStrategy options.
+    switch (characterSet) {
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER:
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER:
+      case JaPhoneticData.CharacterSet.OTHER:
+        return null;
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
+        return 'ゼンカク';
+    }
+    return JaPhoneticData.getDefaultPrefix(characterSet);
   }
 
   /**

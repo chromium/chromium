@@ -344,15 +344,15 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Phonetics', function() {
   // Japanese.
   tts.speak('t', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('T'));
-  assertTrue(spokenStrings.includes('ハンカク t'));
+  assertTrue(spokenStrings.includes('ティー タイム'));
 
   tts.speak('a', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('A'));
-  assertTrue(spokenStrings.includes('ハンカク a'));
+  assertTrue(spokenStrings.includes('エイ アニマル'));
 
   tts.speak('A', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('A'));
-  assertTrue(spokenStrings.includes('オオモジ A'));
+  assertTrue(spokenStrings.includes('エイ アニマル'));
 
   tts.speak('人', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('人'));
