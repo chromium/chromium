@@ -128,7 +128,8 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
 
   template <class T>
   bool DeleteSoon(const Location& from_here, std::unique_ptr<T> object) {
-    return DeleteSoon(from_here, object.release());
+    return DeleteOrReleaseSoonInternal(
+        from_here, &DeleteUniquePtrHelper<T>::DoDelete, object.release());
   }
 
   // Submits a non-nestable task to release the given object.

@@ -49,7 +49,6 @@ class TransitionalURLLoaderFactoryOwner::Core {
   }
 
  private:
-  friend class base::DeleteHelper<Core>;
   friend struct std::default_delete<Core>;
 
   ~Core() {

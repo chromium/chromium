@@ -82,6 +82,8 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
                               size_t* num_planes);
 
  private:
+  friend struct std::default_delete<V4L2ImageProcessorBackend>;
+
   // Callback for initialization.
   using InitCB = base::OnceCallback<void(bool)>;
 
@@ -194,5 +196,13 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
 };
 
 }  // namespace media
+
+namespace std {
+
+template <>
+struct default_delete<media::V4L2ImageProcessorBackend>
+    : public default_delete<media::ImageProcessorBackend> {};
+
+}  // namespace std
 
 #endif  // MEDIA_GPU_V4L2_V4L2_IMAGE_PROCESSOR_BACKEND_H_

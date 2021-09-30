@@ -5,6 +5,8 @@
 #ifndef BASE_SEQUENCED_TASK_RUNNER_HELPERS_H_
 #define BASE_SEQUENCED_TASK_RUNNER_HELPERS_H_
 
+#include <memory>
+
 namespace base {
 
 class SequencedTaskRunner;
@@ -22,6 +24,19 @@ class DeleteHelper {
  private:
   static void DoDelete(const void* object) {
     delete static_cast<const T*>(object);
+  }
+
+  friend class SequencedTaskRunner;
+};
+
+template <class T>
+class DeleteUniquePtrHelper {
+ private:
+  static void DoDelete(const void* object) {
+    // Carefully unwrap `object`. T could have originally been const-qualified
+    // or not, and it is important to ensure that the constness matches in order
+    // to use the right specialization of std::default_delete<T>...
+    std::unique_ptr<T> destroyer(const_cast<T*>(static_cast<const T*>(object)));
   }
 
   friend class SequencedTaskRunner;
