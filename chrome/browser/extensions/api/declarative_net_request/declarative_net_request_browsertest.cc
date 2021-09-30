@@ -75,6 +75,7 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -6122,9 +6123,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 }
 
 // Tests that the "requestMethods" and "excludedRequestMethods" properties of a
-// rule condition are considered properly for non-HTTP(s) requests.
+// rule condition are considered properly for WebSocket requests.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       BlockRequests_NonHTTPMethods) {
+                       BlockRequests_WebSocket) {
   // Load an extension with some DNR rules that have different request method
   // conditions.
   std::vector<TestRule> rules;
@@ -6205,6 +6206,78 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       &actual_blocked));
   EXPECT_EQ("all_methods_excluded,default,some_methods_excluded",
             actual_blocked);
+}
+
+class DeclarativeNetRequestWebTransportTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestWebTransportTest() { webtransport_server_.Start(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DeclarativeNetRequestBrowserTest::SetUpCommandLine(command_line);
+    webtransport_server_.SetUpCommandLine(command_line);
+  }
+
+ protected:
+  content::WebTransportSimpleTestServer webtransport_server_;
+};
+
+// Tests that the "requestMethods" and "excludedRequestMethods" properties of a
+// rule condition are considered properly for WebTransport requests.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
+  // Load an extension with some rules that have different request method
+  // conditions.
+  std::vector<TestRule> rules;
+
+  // We need to prefix "echo" so that the server accepts it.
+  TestRule rule1 = CreateGenericRule(1);
+  rule1.condition->url_filter = "echo1_default";
+  rules.push_back(rule1);
+
+  TestRule rule2 = CreateGenericRule(2);
+  rule2.condition->url_filter = "echo2_include";
+  rule2.condition->request_methods = {"connect"};
+  rules.push_back(rule2);
+
+  TestRule rule4 = CreateGenericRule(3);
+  rule4.condition->url_filter = "echo3_exclude";
+  rule4.condition->excluded_request_methods = {"connect"};
+  rules.push_back(rule4);
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  const char kOpenWebTransportScript[] = R"((
+    async () =>
+    {
+      const testCases = ["echo1_default", "echo2_include", "echo3_exclude" ];
+
+      let blockedTestCases = [];
+
+      await Promise.allSettled(
+        testCases.map(testCase =>
+          new Promise(async (resolve) =>
+          {
+            try {
+              const transport = new WebTransport(
+                `https://localhost:%d/${testCase}`);
+              await transport.ready;
+            } catch (e) {
+              blockedTestCases.push(testCase);
+            }
+            resolve();
+          })
+        )
+      );
+      return blockedTestCases.sort().join();
+    }
+  )())";
+
+  content::RenderFrameHost* main_frame = GetMainFrame();
+  EXPECT_EQ("echo1_default,echo2_include",
+            content::EvalJs(main_frame,
+                            base::StringPrintf(
+                                kOpenWebTransportScript,
+                                webtransport_server_.server_address().port())));
 }
 
 // Tests that FLEDGE requests can be blocked by the declarativeNetRequest API,
@@ -6516,6 +6589,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestAllowAllRequestsBrowserTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestWebTransportTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 

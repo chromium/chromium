@@ -243,8 +243,8 @@ class UrlRuleFlatBufferConverter {
     static_assert(flat::OptionFlag_ANY <= std::numeric_limits<uint8_t>::max(),
                   "Option flags can not be stored in uint8_t.");
     static_assert(
-        flat::RequestMethod_ANY <= std::numeric_limits<uint8_t>::max(),
-        "Request methods can not be stored in uint8_t.");
+        flat::RequestMethod_ANY <= std::numeric_limits<uint16_t>::max(),
+        "Request methods can not be stored in uint16_t.");
 
     if (rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
       options_ |= flat::OptionFlag_IS_ALLOWLIST;

@@ -63,7 +63,8 @@ enum ElementType : ushort (bit_flags) {
 }
 
 // The request methods that a URL rule should be applied to.
-enum RequestMethod : ubyte (bit_flags) {
+enum RequestMethod : ushort (bit_flags) {
+  CONNECT,
   DELETE,
   GET,
   HEAD,
@@ -71,7 +72,7 @@ enum RequestMethod : ubyte (bit_flags) {
   PATCH,
   POST,
   PUT,
-  NON_HTTP
+  NON_HTTP,
   // Note: Update the default value for `request_methods` field in UrlRule, on
   // adding/removing values from this enum.
 }
@@ -89,7 +90,7 @@ table UrlRule {
   element_types : ushort = 16383;
 
   // A bitmask of RequestMethod. Equals RequestMethod_ANY by default.
-  request_methods : ushort = 255;
+  request_methods : ushort = 511;
 
   // A bitmask of ActivationType. Disables all activation types by default.
   activation_types : ubyte = 0;

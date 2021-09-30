@@ -212,6 +212,8 @@ flat_rule::RequestMethod GetRequestMethod(
     case dnr_api::REQUEST_METHOD_NONE:
       NOTREACHED();
       return flat_rule::RequestMethod_NONE;
+    case dnr_api::REQUEST_METHOD_CONNECT:
+      return flat_rule::RequestMethod_CONNECT;
     case dnr_api::REQUEST_METHOD_DELETE:
       return flat_rule::RequestMethod_DELETE;
     case dnr_api::REQUEST_METHOD_GET:
