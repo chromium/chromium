@@ -707,10 +707,10 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
 
   client_->OnInputAccepted(match);
 
-  // popup_model() could be nullptr during unit tests.
-  if (popup_model()) {
+  // `popup_model_` could be nullptr during unit tests.
+  if (popup_model_) {
     view_->OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
-                     popup_model()->selected_line(), match_selection_timestamp);
+                     popup_model_->selected_line(), match_selection_timestamp);
   }
 }
 
@@ -979,7 +979,7 @@ bool OmniboxEditModel::AcceptKeyword(
   user_text_ = MaybeStripKeyword(user_text_);
 
   if (PopupIsOpen()) {
-    popup_model()->SetSelectedLineState(OmniboxPopupSelection::KEYWORD_MODE);
+    popup_model_->SetSelectedLineState(OmniboxPopupSelection::KEYWORD_MODE);
   } else {
     StartAutocomplete(false, true);
   }
@@ -1045,10 +1045,10 @@ void OmniboxEditModel::ClearKeyword() {
   // While we're always in keyword mode upon reaching here, sometimes we've just
   // toggled in via space or tab, and sometimes we're on a non-toggled line
   // (usually because the user has typed a search string).  Keep track of the
-  // difference, as we'll need it below. popup_model() may be nullptr in tests.
+  // difference, as we'll need it below. `popup_model_` may be nullptr in tests.
   bool was_toggled_into_keyword_mode =
-      popup_model() && popup_model()->selected_line_state() ==
-                           OmniboxPopupSelection::KEYWORD_MODE;
+      popup_model_ && popup_model_->selected_line_state() ==
+                          OmniboxPopupSelection::KEYWORD_MODE;
 
   bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
 
@@ -1286,7 +1286,7 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
     // Reverting, however, does not make sense for on-focus suggestions
     // (user_input_in_progress_ is false) unless the first result is a
     // verbatim match of the omnibox input (on-focus query refinements on SERP).
-    const auto next_selection = popup_model()->GetNextSelection(
+    const auto next_selection = popup_model_->GetNextSelection(
         count > 0 ? OmniboxPopupSelection::kForward
                   : OmniboxPopupSelection::kBackward,
         OmniboxPopupSelection::kWholeLine);
@@ -1296,7 +1296,7 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
          result().default_match()->IsVerbatimType())) {
       RevertTemporaryTextAndPopup();
     } else {
-      popup_model()->SetSelection(next_selection);
+      popup_model_->SetSelection(next_selection);
     }
     return;
   }
@@ -1572,8 +1572,8 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   bool is_keyword_hint;
   TemplateURLService* service = client_->GetTemplateURLService();
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
-  if (popup_model())
-    popup_model()->OnResultChanged();
+  if (popup_model_)
+    popup_model_->OnResultChanged();
 
   if (!is_keyword_selected() && !is_keyword_hint && !keyword.empty()) {
     // We just entered keyword mode, so remove the keyword from the input.
@@ -1639,18 +1639,18 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
       // stopped. So the default match must be the desired selection.
       *match = *result().default_match();
       found_match_for_text = true;
-    } else if (popup_model()->selected_line() !=
+    } else if (popup_model_->selected_line() !=
                OmniboxPopupSelection::kNoMatch) {
       const AutocompleteMatch& selected_match =
-          result().match_at(popup_model()->selected_line());
-      *match = (popup_model()->selected_line_state() ==
+          result().match_at(popup_model_->selected_line());
+      *match = (popup_model_->selected_line_state() ==
                 OmniboxPopupSelection::KEYWORD_MODE)
                    ? *selected_match.associated_keyword
                    : selected_match;
       found_match_for_text = true;
     }
     if (found_match_for_text && alternate_nav_url &&
-        (!popup_model() || popup_model()->SelectionOnInitialLine())) {
+        (!popup_model_ || IsPopupSelectionOnInitialLine())) {
       std::unique_ptr<AutocompleteProviderClient> provider_client =
           client_->CreateAutocompleteProviderClient();
       *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
@@ -1677,8 +1677,7 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   just_deleted_text_ = false;
   has_temporary_text_ = false;
 
-  if (popup_model())
-    popup_model()->ResetToInitialState();
+  ResetPopupToInitialState();
 
   // There are two cases in which resetting to the default match doesn't restore
   // the proper original text:
@@ -1728,7 +1727,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     gfx::Image favicon = client()->GetFaviconForPageUrl(
         match.destination_url,
         base::BindOnce(&OmniboxPopupModel::OnFaviconFetched,
-                       popup_model()->weak_factory_.GetWeakPtr(),
+                       popup_model_->weak_factory_.GetWeakPtr(),
                        match.destination_url));
 
     // Extension icons are the correct size for non-touch UI but need to be
@@ -1746,80 +1745,99 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 bool OmniboxEditModel::PopupIsOpen() const {
-  return popup_model() && popup_model()->IsOpen();
+  return popup_model_ && popup_model_->IsOpen();
+}
+
+void OmniboxEditModel::ResetPopupToInitialState() {
+  if (!popup_model_) {
+    return;
+  }
+  size_t new_line =
+      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
+  SetPopupSelection(
+      OmniboxPopupSelection(new_line, OmniboxPopupSelection::NORMAL),
+      /*reset_to_default=*/true);
+  get_popup_view()->OnDragCanceled();
 }
 
 OmniboxPopupSelection OmniboxEditModel::PopupStepSelection(
     OmniboxPopupSelection::Direction direction,
     OmniboxPopupSelection::Step step) {
-  DCHECK(popup_model());
-  return popup_model()->StepSelection(direction, step);
+  DCHECK(popup_model_);
+  return popup_model_->StepSelection(direction, step);
 }
 
 OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {
-  DCHECK(popup_model());
-  return popup_model()->selection();
+  DCHECK(popup_model_);
+  return popup_model_->selection();
 }
 
 void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool reset_to_default,
                                          bool force_update_ui) {
-  DCHECK(popup_model());
-  popup_model()->SetSelection(new_selection, reset_to_default, force_update_ui);
+  DCHECK(popup_model_);
+  popup_model_->SetSelection(new_selection, reset_to_default, force_update_ui);
 }
 
 OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
     OmniboxPopupSelection::Direction direction,
     OmniboxPopupSelection::Step step) {
-  DCHECK(popup_model());
-  return popup_model()->StepSelection(direction, step);
+  DCHECK(popup_model_);
+  return popup_model_->StepSelection(direction, step);
+}
+
+bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
+  DCHECK(popup_model_);
+  size_t initial_line =
+      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
+  return GetPopupSelection().line == initial_line;
 }
 
 bool OmniboxEditModel::IsPopupControlPresentOnMatch(
     OmniboxPopupSelection selection) const {
-  DCHECK(popup_model());
-  return popup_model()->IsControlPresentOnMatch(selection);
+  DCHECK(popup_model_);
+  return popup_model_->IsControlPresentOnMatch(selection);
 }
 
 bool OmniboxEditModel::TriggerPopupSelectionAction(
     OmniboxPopupSelection selection,
     base::TimeTicks timestamp,
     WindowOpenDisposition disposition) {
-  DCHECK(popup_model());
-  return popup_model()->TriggerSelectionAction(selection, timestamp,
-                                               disposition);
+  DCHECK(popup_model_);
+  return popup_model_->TriggerSelectionAction(selection, timestamp,
+                                              disposition);
 }
 
 void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
-  DCHECK(popup_model());
-  return popup_model()->TryDeletingLine(line);
+  DCHECK(popup_model_);
+  return popup_model_->TryDeletingLine(line);
 }
 
 std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     const std::u16string& match_text,
     bool include_positional_info,
     int* label_prefix_length) {
-  DCHECK(popup_model());
-  return popup_model()->GetAccessibilityLabelForCurrentSelection(
+  DCHECK(popup_model_);
+  return popup_model_->GetAccessibilityLabelForCurrentSelection(
       match_text, include_positional_info, label_prefix_length);
 }
 
 void OmniboxEditModel::OnPopupResultChanged() {
-  if (popup_model()) {
-    popup_model()->OnResultChanged();
+  if (popup_model_) {
+    popup_model_->OnResultChanged();
   }
 }
 
 const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
     int result_index) const {
-  DCHECK(popup_model());
-  return popup_model()->RichSuggestionBitmapAt(result_index);
+  DCHECK(popup_model_);
+  return popup_model_->RichSuggestionBitmapAt(result_index);
 }
 
 void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
                                                     const SkBitmap& bitmap) {
-  DCHECK(popup_model());
-  popup_model()->SetRichSuggestionBitmap(result_index, bitmap);
+  DCHECK(popup_model_);
+  popup_model_->SetRichSuggestionBitmap(result_index, bitmap);
 }
 
 PrefService* OmniboxEditModel::GetPrefService() const {

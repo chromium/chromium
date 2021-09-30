@@ -21,7 +21,6 @@
 #include "components/error_page/common/net_error_info.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "content/public/browser/web_contents.h"
@@ -384,12 +383,11 @@ class TypedNavigationUpgradeThrottleBrowserTest
     SetOmniboxText(url_without_scheme);
     // Regression check for crbug.com/1184872: The first autocomplete result
     // should be the same as the typed text, without a scheme.
-    OmniboxPopupModel* popup_model = omnibox()->model()->popup_model();
-    ASSERT_TRUE(popup_model);
+    ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
     WaitForAutocompleteControllerDone();
-    ASSERT_TRUE(popup_model->IsOpen());
+    ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
     EXPECT_EQ(base::UTF8ToUTF16(url_without_scheme),
-              popup_model->result().match_at(0).fill_into_edit);
+              omnibox()->model()->result().match_at(0).fill_into_edit);
 
     PressEnterAndWaitForNavigations(num_expected_navigations);
 

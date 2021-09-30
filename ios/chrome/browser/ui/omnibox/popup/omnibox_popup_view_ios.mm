@@ -56,14 +56,15 @@ void OmniboxPopupViewIOS::UpdateEditViewIcon() {
   const AutocompleteResult& result = model()->result();
 
   // Use default icon as a fallback
-  if (model()->selected_line() == OmniboxPopupSelection::kNoMatch) {
+  if (model()->GetPopupSelection().line == OmniboxPopupSelection::kNoMatch) {
     delegate_->OnSelectedMatchImageChanged(/*has_match=*/false,
                                            AutocompleteMatchType::NUM_TYPES,
                                            absl::nullopt, GURL());
     return;
   }
 
-  const AutocompleteMatch& match = result.match_at(model()->selected_line());
+  const AutocompleteMatch& match =
+      result.match_at(model()->GetPopupSelection().line);
 
   absl::optional<SuggestionAnswer::AnswerType> optAnswerType = absl::nullopt;
   if (match.answer && match.answer->type() > 0 &&
@@ -91,8 +92,8 @@ bool OmniboxPopupViewIOS::IsOpen() const {
   return [mediator_ hasResults];
 }
 
-OmniboxPopupModel* OmniboxPopupViewIOS::model() const {
-  return edit_model_->popup_model();
+OmniboxEditModel* OmniboxPopupViewIOS::model() const {
+  return edit_model_;
 }
 
 #pragma mark - OmniboxPopupProvider
@@ -117,7 +118,7 @@ bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
 }
 
 void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {
-  model()->SetSelection(OmniboxPopupSelection(row), false, true);
+  model()->SetPopupSelection(OmniboxPopupSelection(row), false, true);
   if ([mediator_ isOpen]) {
     UpdateEditViewIcon();
   }

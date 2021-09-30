@@ -156,18 +156,10 @@ class OmniboxPopupModel {
     SetSelection(OmniboxPopupSelection(selected_line(), new_state));
   }
 
-  // Called when the user hits escape after arrowing around the popup.  This
-  // will reset the popup to the initial state.
-  void ResetToInitialState();
-
   // Tries to erase the suggestion at |line|.  This should determine if the item
   // at |line| can be removed from history, and if so, remove it and update the
   // popup.
   void TryDeletingLine(size_t line);
-
-  // Returns true if the selection is on the initial line, which is usually the
-  // default match (except in the no-default-match case).
-  bool SelectionOnInitialLine() const;
 
   // Invoked from the edit model any time the result set of the controller
   // changes.

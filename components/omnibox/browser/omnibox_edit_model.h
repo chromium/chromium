@@ -78,9 +78,6 @@ class OmniboxEditModel {
   void set_popup_view(OmniboxPopupView* popup_view);
   OmniboxPopupView* get_popup_view();
 
-  // NOTE: popup_model() can be NULL for testing.
-  OmniboxPopupModel* popup_model() const { return popup_model_.get(); }
-
   OmniboxEditController* controller() const { return controller_; }
 
   OmniboxClient* client() const { return client_.get(); }
@@ -432,6 +429,10 @@ class OmniboxEditModel {
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
 
+  // Called when the user hits escape after arrowing around the popup.  This
+  // will reset the popup to the initial state.
+  void ResetPopupToInitialState();
+
   // Applies the next popup selection as provided by GetNextSelection.
   // Stepping the popup model selection gives special consideration for
   // keyword mode state maintained in the edit model.
@@ -458,6 +459,10 @@ class OmniboxEditModel {
   OmniboxPopupSelection StepPopupSelection(
       OmniboxPopupSelection::Direction direction,
       OmniboxPopupSelection::Step step);
+
+  // Returns true if popup selection is on the initial line, which is usually
+  // the default match (except in the no-default-match case).
+  bool IsPopupSelectionOnInitialLine() const;
 
   // Returns true if the control represented by |selection.state| is present on
   // the match in |selection.line|. This is the source-of-truth the UI code

@@ -148,14 +148,6 @@ void OmniboxPopupModel::SetSelection(OmniboxPopupSelection new_selection,
   }
 }
 
-void OmniboxPopupModel::ResetToInitialState() {
-  size_t new_line =
-      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
-  SetSelection(OmniboxPopupSelection(new_line, OmniboxPopupSelection::NORMAL),
-               /*reset_to_default=*/true);
-  view_->OnDragCanceled();
-}
-
 void OmniboxPopupModel::TryDeletingLine(size_t line) {
   // When called with line == selected_line(), we could use
   // GetInfoForCurrentText() here, but it seems better to try and delete the
@@ -191,12 +183,6 @@ void OmniboxPopupModel::TryDeletingLine(size_t line) {
         OmniboxPopupSelection(old_selected_line, OmniboxPopupSelection::NORMAL),
         false, true);
   }
-}
-
-bool OmniboxPopupModel::SelectionOnInitialLine() const {
-  size_t initial_line =
-      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
-  return selected_line() == initial_line;
 }
 
 void OmniboxPopupModel::OnResultChanged() {

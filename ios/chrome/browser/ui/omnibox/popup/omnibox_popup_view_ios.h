@@ -26,8 +26,8 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                       OmniboxPopupViewSuggestionsDelegate* delegate);
   ~OmniboxPopupViewIOS() override;
 
-  // Popup model used for this.
-  OmniboxPopupModel* model() const;
+  // Model used for this.
+  OmniboxEditModel* model() const;
 
   // OmniboxPopupView implementation.
   bool IsOpen() const override;

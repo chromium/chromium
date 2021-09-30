@@ -50,7 +50,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     // Populate suggestions for the omnibox popup.
     AutocompleteController* autocomplete_controller =
-        omnibox_view->model()->popup_model()->autocomplete_controller();
+        omnibox_view->model()->autocomplete_controller();
     AutocompleteResult& results = autocomplete_controller->result_;
     ACMatches matches;
     TermMatches termMatches = {{0, 0, 0}};
@@ -115,36 +115,36 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     results.AppendMatches(autocomplete_controller->input_, matches);
 
     // The omnibox popup should open with suggestions displayed.
-    omnibox_view->model()->popup_model()->OnResultChanged();
-    EXPECT_TRUE(omnibox_view->model()->popup_model()->IsOpen());
+    omnibox_view->model()->OnPopupResultChanged();
+    EXPECT_TRUE(omnibox_view->model()->PopupIsOpen());
   }
 
   bool VerifyUi() override {
     OmniboxPopupContentsView* popup_view =
         GetOmniboxViewViews()->GetPopupContentsViewForTesting();
-    OmniboxPopupModel* model = GetOmniboxViewViews()->model()->popup_model();
+    OmniboxEditModel* model = GetOmniboxViewViews()->model();
 
-    model->SetSelection(
+    model->SetPopupSelection(
         OmniboxPopupSelection(0, OmniboxPopupSelection::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(0), "Search"))
       return false;
 
-    model->SetSelection(OmniboxPopupSelection(
+    model->SetPopupSelection(OmniboxPopupSelection(
         1, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
     if (!VerifyActiveButtonText(popup_view->result_view_at(1), "Switch"))
       return false;
 
-    model->SetSelection(
+    model->SetPopupSelection(
         OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
     if (!VerifyActiveButtonText(popup_view->result_view_at(2), "Clear"))
       return false;
 
-    model->SetSelection(
+    model->SetPopupSelection(
         OmniboxPopupSelection(3, OmniboxPopupSelection::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(3), "Search"))
       return false;
 
-    model->SetSelection(OmniboxPopupSelection(
+    model->SetPopupSelection(OmniboxPopupSelection(
         3, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
     if (!VerifyActiveButtonText(popup_view->result_view_at(3), "Switch"))
       return false;
