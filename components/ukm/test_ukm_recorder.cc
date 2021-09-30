@@ -191,6 +191,25 @@ std::vector<TestUkmRecorder::HumanReadableUkmEntry> TestUkmRecorder::GetEntries(
   return results;
 }
 
+std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+TestUkmRecorder::FilteredHumanReadableMetricForEntry(
+    const std::string& entry_name,
+    const std::string& metric_name) const {
+  std::vector<std::string> metric_name_vector(1, metric_name);
+  auto metrics = GetMetrics(entry_name, metric_name_vector);
+  std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+      filtered_result;
+  std::copy_if(
+      metrics.begin(), metrics.end(), std::back_inserter(filtered_result),
+      [&metric_name](
+          ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics metric) {
+        if (metric.empty())
+          return false;
+        return metric.begin()->first == metric_name;
+      });
+  return filtered_result;
+}
+
 TestUkmRecorder::HumanReadableUkmEntry::HumanReadableUkmEntry() = default;
 
 TestUkmRecorder::HumanReadableUkmEntry::HumanReadableUkmEntry(

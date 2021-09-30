@@ -116,6 +116,13 @@ class TestUkmRecorder : public UkmRecorderImpl {
       std::string entry_name,
       const std::vector<std::string>& metric_names) const;
 
+  // A test helper returning all logged metrics with the given |metric_name| for
+  // the entry with the given |entry_name|, filtered to remove any empty
+  // HumanReadableUkmEntry results.
+  std::vector<HumanReadableUkmMetrics> FilteredHumanReadableMetricForEntry(
+      const std::string& entry_name,
+      const std::string& metric_name) const;
+
  private:
   uint64_t entry_hash_to_wait_for_ = 0;
   base::OnceClosure on_add_entry_;

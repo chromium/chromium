@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
+class BackForwardCachePageLoadMetricsObserverTest;
+
 namespace internal {
 
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];
@@ -60,6 +62,8 @@ class BackForwardCachePageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
+  friend class ::BackForwardCachePageLoadMetricsObserverTest;
+
   // Records metrics related to the end of a page visit. This occurs either
   // when the observed page enters (or re-enters) the back-forward cache, or
   // when OnComplete is called on this observer while the page is not in

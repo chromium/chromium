@@ -70,6 +70,8 @@ source_set("test_support") {
   sources = [
     "ads_page_load_metrics_test_waiter.cc",
     "ads_page_load_metrics_test_waiter.h",
+    "fake_page_load_metrics_observer_delegate.cc",
+    "fake_page_load_metrics_observer_delegate.h",
     "observers/page_load_metrics_observer_tester.cc",
     "observers/page_load_metrics_observer_tester.h",
     "page_load_metrics_test_content_browser_client.cc",
@@ -83,6 +85,7 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/page_load_metrics/common:common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/page_load_metrics/common:test_support",
     "//components/ukm:test_support",
