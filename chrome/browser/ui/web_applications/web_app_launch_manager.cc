@@ -56,7 +56,9 @@
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/screen.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -354,7 +356,8 @@ std::tuple<Browser*, WindowOpenDisposition> LaunchProcess::EnsureBrowser() {
 Browser* LaunchProcess::MaybeFindBrowserForLaunch() {
   if (params_.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
     return chrome::FindTabbedBrowser(
-        &profile_, /*match_original_profiles=*/false, params_.display_id);
+        &profile_, /*match_original_profiles=*/false,
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   }
 
   if (params_.disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB)

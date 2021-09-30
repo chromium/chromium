@@ -82,8 +82,8 @@ struct AppLaunchParams {
   apps::mojom::AppLaunchSource source;
 
   // The id of the display from which the app is launched.
-  // display::kInvalidDisplayId means that the display does not exist or is not
-  // set.
+  // display::kInvalidDisplayId means that the default display for new windows
+  // will be used. See `display::Screen` for details.
   int64_t display_id;
 
   // The files the application was launched with. Empty if the application was
