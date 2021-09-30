@@ -51,7 +51,7 @@ suite('NearbyShare', function() {
   /** @type {nearby_share.AccountManagerBrowserProxy} */
   let accountManagerBrowserProxy = null;
   /** @type {!nearby_share.FakeContactManager} */
-  const fakeContactManager = new nearby_share.FakeContactManager();
+  let fakeContactManager = null;
   /** @type {!nearby_share.FakeNearbyShareSettings} */
   let fakeSettings = null;
 
@@ -63,6 +63,7 @@ suite('NearbyShare', function() {
     fakeReceiveManager = new nearby_share.FakeReceiveManager();
     nearby_share.setReceiveManagerForTesting(fakeReceiveManager);
 
+    fakeContactManager = new nearby_share.FakeContactManager();
     nearby_share.setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
@@ -70,13 +71,24 @@ suite('NearbyShare', function() {
     fakeSettings.setEnabled(true);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
+    createSubpage(true);
+
+    featureToggleButton = subpage.$$('#featureToggleButton');
+  });
+
+  teardown(function() {
+    subpage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
+  });
+
+  function createSubpage(is_enabled) {
     PolymerTest.clearBody();
 
     subpage = document.createElement('settings-nearby-share-subpage');
     subpage.prefs = {
       'nearby_sharing': {
         'enabled': {
-          value: true,
+          value: is_enabled,
         },
         'data_usage': {
           value: 3,
@@ -89,14 +101,7 @@ suite('NearbyShare', function() {
 
     document.body.appendChild(subpage);
     Polymer.dom.flush();
-
-    featureToggleButton = subpage.$$('#featureToggleButton');
-  });
-
-  teardown(function() {
-    subpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
-  });
+  }
 
   // Returns true if the element exists and has not been 'removed' by the
   // Polymer template system.
@@ -391,9 +396,31 @@ suite('NearbyShare', function() {
     performance.now = originalNow;
   });
 
-  test('download contacts on attach', () => {
+  test('download contacts on attach', async () => {
+    await flushAsync();
     // Ensure contacts download occurs when the subpage is attached.
     assertTrue(fakeContactManager.downloadContactsCalled);
+  });
+
+  test('Do not download contacts on attach pre-onboarding', async () => {
+    await flushAsync();
+
+    subpage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
+
+    fakeContactManager = new nearby_share.FakeContactManager();
+    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager.setupContactRecords();
+
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    fakeSettings.setEnabled(false);
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+
+    createSubpage(/*is_enabled=*/ false);
+
+    await flushAsync();
+    // Ensure contacts download occurs when the subpage is attached.
+    assertFalse(fakeContactManager.downloadContactsCalled);
   });
 
   test('feature toggle UI changes', function() {

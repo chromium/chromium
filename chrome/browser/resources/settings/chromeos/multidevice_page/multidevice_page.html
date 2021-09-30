@@ -139,9 +139,12 @@
                   </div>
                 </template>
               </div>
-              <template is="dom-if" if="[[prefs.nearby_sharing.enabled.value]]"
-                  restamp>
-                <cr-icon-button class="subpage-arrow"
+              <template is="dom-if" if="[[shouldShowNearbyShareSubpageArrow_(
+                  prefs.nearby_sharing.enabled.value,
+                  shouldEnableNearbyShareBackgroundScanningRevamp_,
+                  pageContentData)]]" restamp>
+                <cr-icon-button id="nearbyShareSubpageArrow"
+                    class="subpage-arrow"
                     aria-labelledby="nearbyShareLabel"
                     aria-describedby="nearbyShareSecondary"
                     aria-roledescription="$i18n{subpageArrowRoleDescription}">

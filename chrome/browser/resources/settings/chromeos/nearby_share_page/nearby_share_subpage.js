@@ -93,7 +93,7 @@ Polymer({
     },
 
     /** @private */
-    isBackgroundScanningEnabled_: {
+    shouldShowFastInititationNotificationToggle_: {
       type: Boolean,
       value: () =>
           loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled')
@@ -105,6 +105,7 @@ Polymer({
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   receiveObserver_: null,
 
+  /** @override */
   attached() {
     // TODO(b/166779043): Check whether the Account Manager is enabled and fall
     // back to profile name, or just hide the row. This is not urgent because
@@ -121,11 +122,20 @@ Polymer({
         });
     this.receiveObserver_ = nearby_share.observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
+  },
 
-    // Trigger a contact sync whenever the Nearby subpage is opened to improve
-    // consistency. This should help avoid scenarios where a share is attempted
-    // and contacts are stale on the receiver.
-    nearby_share.getContactManager().downloadContacts();
+  /**
+   * Called when component is attached and all settings values have been
+   * retrieved.
+   */
+  onSettingsRetrieved() {
+    if (this.settings.enabled) {
+      // Trigger a contact sync whenever the Nearby subpage is opened and
+      // onboarding is complete to improve consistency. This should help avoid
+      // scenarios where a share is attempted and contacts are stale on the
+      // receiver.
+      nearby_share.getContactManager().downloadContacts();
+    }
   },
 
   /** @private */

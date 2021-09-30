@@ -183,7 +183,9 @@
           $i18n{nearbyShareEditDataUsage}
         </cr-button>
       </div>
-      <template is="dom-if" if="[[isBackgroundScanningEnabled_]]" restamp>
+      <template is="dom-if"
+          if="[[shouldShowFastInititationNotificationToggle_]]"
+          restamp>
         <div class="settings-box two-line" id="fastInitiationNotificationRow">
           <div class="start">
             <div id="fastInitiationNotificationRowTitle" aria-hidden="true">

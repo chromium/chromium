@@ -81,6 +81,13 @@ Polymer({
       }
     },
 
+    /** @private */
+    shouldEnableNearbyShareBackgroundScanningRevamp_: {
+      type: Boolean,
+      value: () =>
+          loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled')
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -540,6 +547,15 @@ Polymer({
     const nearbyEnabled = this.getPref('nearby_sharing.enabled').value;
     const onboardingComplete =
         this.getPref('nearby_sharing.onboarding_complete').value;
+
+    // If background scanning is enabled the subpage is accessible regardless of
+    // whether Nearby Share is on or off so that users can enable/disable the
+    // "Nearby device is trying to share" notification.
+    if (this.shouldEnableNearbyShareBackgroundScanningRevamp_) {
+      settings.Router.getInstance().navigateTo(settings.routes.NEARBY_SHARE);
+      return;
+    }
+
     let params = undefined;
     if (!nearbyEnabled) {
       if (onboardingComplete) {
@@ -549,9 +565,12 @@ Polymer({
         this.setPrefValue('nearby_sharing.enabled', true);
         return;
       }
+
       // Otherwise we need to go into the subpage and trigger the onboarding
       // dialog.
       params = new URLSearchParams();
+      // Set by metrics to determine entrypoint for onboarding
+      params.set('entrypoint', 'settings');
       params.set('onboarding', '');
     }
     settings.Router.getInstance().navigateTo(
@@ -572,4 +591,20 @@ Polymer({
     settings.Router.getInstance().navigateTo(
         settings.routes.NEARBY_SHARE, params);
   },
+
+  /**
+   * @param {boolean} isNearbySharingEnabled
+   * @param {boolean} shouldEnableNearbyShareBackgroundScanningRevamp
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNearbyShareSubpageArrow_(
+      isNearbySharingEnabled, shouldEnableNearbyShareBackgroundScanningRevamp) {
+    // If the background scanning feature is enabled but Nearby Sharing is
+    // disabled the subpage should be accessible. The subpage is also accessible
+    // pre-onboarding.
+    return (shouldEnableNearbyShareBackgroundScanningRevamp ||
+            isNearbySharingEnabled) &&
+        !this.isNearbyShareDisallowedByPolicy_();
+  }
 });
