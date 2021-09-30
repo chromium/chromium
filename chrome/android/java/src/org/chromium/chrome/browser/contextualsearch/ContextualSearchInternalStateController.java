@@ -286,7 +286,7 @@ class ContextualSearchInternalStateController {
      */
     private void transitionTo(
             final @InternalState int state, final @Nullable @StateChangeReason Integer reason) {
-        if (state == mState) return;
+        if (state == mState && !mPolicy.shouldRetryCurrentState(state)) return;
 
         // This should be the only part of the code that changes the state (other than #enter)!
         mPreviousState = mState;

@@ -4205,6 +4205,38 @@ public class ContextualSearchManagerTest {
         CompositorAnimationHandler.setTestingMode(false);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesDismissDuringAnimation() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        // Use the "intelligence" node to generate Related Searches suggestions.
+        simulateResolveSearch("intelligence");
+
+        // Wait for the animation to start growing the Bar.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
+        });
+
+        // Wait for the animation to change to make sure that doesn't bring the Bar back
+        final boolean[] didAnimationChange = {false};
+        mPanel.getSearchBarControl().setInBarAnimationTestNotifier(
+                () -> { didAnimationChange[0] = true; });
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(didAnimationChange[0], Matchers.is(true)); });
+        // Repeatedly closing the panel should not bring it back even during ongoing animation.
+        closePanel();
+        Assert.assertFalse("The panel is showing again due to Animation!", mPanel.isShowing());
+        // Another scroll might try to close the panel when it thinks it's already closed, which
+        // could fail due to inconsistencies in internal logic, so test that too.
+        closePanel();
+        Assert.assertFalse("Expected the panel to not be showing after a close! "
+                        + "Animation of the Bar height is the likely cause.",
+                mPanel.isShowing());
+    }
+
     // --------------------------------------------------------------------------------------------
     // Forced Caption Feature tests.
     // --------------------------------------------------------------------------------------------
