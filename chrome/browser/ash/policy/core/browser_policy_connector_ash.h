@@ -136,6 +136,9 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Returns the cloud directory API ID or an empty string if it is not set.
   std::string GetDirectoryApiID() const;
 
+  // Returns the obfuscated customer's ID or an empty string if it not set.
+  std::string GetObfuscatedCustomerID() const;
+
   // Returns the organization logo URL or an empty string if it is not set.
   std::string GetCustomerLogoURL() const;
 

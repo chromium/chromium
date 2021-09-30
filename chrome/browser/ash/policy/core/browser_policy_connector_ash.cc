@@ -452,6 +452,13 @@ std::string BrowserPolicyConnectorAsh::GetDirectoryApiID() const {
   return std::string();
 }
 
+std::string BrowserPolicyConnectorAsh::GetObfuscatedCustomerID() const {
+  const em::PolicyData* policy = GetDevicePolicy();
+  if (policy && policy->has_obfuscated_customer_id())
+    return policy->obfuscated_customer_id();
+  return std::string();
+}
+
 std::string BrowserPolicyConnectorAsh::GetCustomerLogoURL() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_customer_logo())
