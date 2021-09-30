@@ -174,7 +174,7 @@ def ZipDependencies(target_paths, dependencies, options):
           os.path.join('telemetry', os.path.basename(target_path)))
       link_info.create_system = 3  # Unix attributes.
       # 010 is regular file, 0111 is the permission bits rwxrwxrwx.
-      link_info.external_attr = 0100777 << 16  # Octal.
+      link_info.external_attr = 0o0100777 << 16  # Octal.
 
       relative_path = os.path.relpath(target_path, base_dir)
       link_script = (

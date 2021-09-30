@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import copy
-import cStringIO
+from io import BytesIO
 import unittest
 import tempfile
 import json
@@ -62,7 +62,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
         perf_data_generator.GTEST_BENCHMARKS)
     self.original_OTHER_BENCHMARKS = copy.deepcopy(
         perf_data_generator.OTHER_BENCHMARKS)
-    self.test_stream = cStringIO.StringIO()
+    self.test_stream = BytesIO()
     self.mock_get_non_telemetry_benchmarks = mock.patch(
         'core.perf_data_generator.get_scheduled_non_telemetry_benchmarks')
     self.get_non_telemetry_benchmarks = (

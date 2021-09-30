@@ -71,7 +71,7 @@ def GetSharedLibraryDependenciesLinux(binary):
   """Return absolute paths to all shared library dependencies of the binary.
 
   This implementation assumes that we're running on a Linux system."""
-  ldd = subprocess.check_output(['ldd', binary])
+  ldd = subprocess.check_output(['ldd', binary]).decode('utf-8')
   lib_re = re.compile('\t.* => (.+) \(.*\)$')
   result = []
   for line in ldd.splitlines():
@@ -221,7 +221,7 @@ def GetSharedLibraryDependenciesChromeOS(binary):
 def GetSharedLibraryDependencies(options, binary, exe_path):
   """Return absolute paths to all shared library dependencies of the binary."""
   deps = []
-  if options.platform == 'linux2':
+  if options.platform.startswith('linux'):
     deps = GetSharedLibraryDependenciesLinux(binary)
   elif options.platform == 'android':
     deps = GetSharedLibraryDependenciesAndroid(binary)
@@ -247,7 +247,7 @@ def GetTransitiveDependencies(options):
      dependencies of the binary, along with the binary itself."""
   binary = os.path.abspath(options.binary)
   exe_path = os.path.dirname(binary)
-  if options.platform == 'linux2':
+  if options.platform.startswith('linux'):
     # 'ldd' returns all transitive dependencies for us.
     deps = set(GetSharedLibraryDependencies(options, binary, exe_path))
     deps.add(binary)
@@ -289,7 +289,7 @@ def CreateSymbolDir(options, output_dir, relative_hash_dir):
   """Create the directory to store breakpad symbols in. On Android/Linux, we
      also create a symlink in case the hash in the binary is missing."""
   mkdir_p(output_dir)
-  if options.platform == 'android' or options.platform == "linux2":
+  if options.platform == 'android' or options.platform.startswith('linux'):
     try:
       os.symlink(relative_hash_dir, os.path.join(os.path.dirname(output_dir),
                  '000000000000000000000000000000000'))
@@ -322,9 +322,10 @@ def GenerateSymbols(options, binaries):
             reason = "Could not locate dump_syms executable."
             break
 
-          binary_info = GetBinaryInfoFromHeaderInfo(
-              subprocess.check_output(
-                  [dump_syms, '-i', binary]).splitlines()[0])
+          dump_syms_output = subprocess.check_output(
+              [dump_syms, '-i', binary]).decode('utf-8')
+          header_info = dump_syms_output.splitlines()[0]
+          binary_info = GetBinaryInfoFromHeaderInfo(header_info)
           if not binary_info:
             should_dump_syms = False
             reason = "Could not obtain binary information."

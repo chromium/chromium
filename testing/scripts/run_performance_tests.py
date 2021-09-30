@@ -48,6 +48,8 @@ cd tools/perf
 ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import os
@@ -160,7 +162,7 @@ class OutputFilePaths(object):
 
 
 def print_duration(step, start):
-  print 'Duration of %s: %d seconds' % (step, time.time() - start)
+  print('Duration of %s: %d seconds' % (step, time.time() - start))
 
 
 def IsWindows():
@@ -552,9 +554,9 @@ def execute_telemetry_benchmark(
     if os.path.isfile(csv_file_path):
       shutil.move(csv_file_path, output_paths.csv_perf_results)
   except Exception:
-    print ('The following exception may have prevented the code from '
-           'outputing structured test results and perf results output:')
-    print traceback.format_exc()
+    print('The following exception may have prevented the code from '
+          'outputing structured test results and perf results output:')
+    print(traceback.format_exc())
   finally:
     # On swarming bots, don't remove output directory, since Result Sink might
     # still be uploading files to Result DB. Also, swarming bots automatically
@@ -573,8 +575,8 @@ def execute_telemetry_benchmark(
   # TODO(crbug.com/1019139): Make 111 be the exit code that means
   # "no stories were run.".
   if return_code in (111, -1, 255):
-    print ('Exit code %s indicates that no stories were run, so we are marking '
-           'this as a success.' % return_code)
+    print('Exit code %s indicates that no stories were run, so we are marking '
+          'this as a success.' % return_code)
     return 0
   if return_code:
     return return_code
@@ -717,9 +719,9 @@ def main(sys_args):
         overall_return_code = return_code or overall_return_code
         test_results_files.append(output_paths.test_results)
       if options.run_ref_build:
-        print ('Not running reference build. --run-ref-build argument is only '
-               'supported for sharded benchmarks. It is simple to support '
-               'this for unsharded --benchmarks if needed.')
+        print('Not running reference build. --run-ref-build argument is only '
+              'supported for sharded benchmarks. It is simple to support '
+              'this for unsharded --benchmarks if needed.')
     elif options.test_shard_map_filename:
       # First determine what shard we are running on to know how to
       # index into the bot map to get list of telemetry benchmarks to run.

@@ -12,7 +12,6 @@
 
 import calendar
 import datetime
-import httplib
 import json
 import os
 import subprocess
@@ -21,9 +20,16 @@ import time
 import traceback
 import zlib
 import logging
+
+import six
 import six.moves.urllib.error  # pylint: disable=import-error
 import six.moves.urllib.parse  # pylint: disable=import-error
 import six.moves.urllib.request  # pylint: disable=import-error
+
+if six.PY2:
+  import httplib  # pylint: disable=wrong-import-order
+else:
+  import http.client as httplib  # pylint: disable=import-error
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error

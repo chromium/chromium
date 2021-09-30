@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import adjust_upper_limits
 import pandas as pd
 import os
 import sys
 import unittest
+
+from experimental.representative_perf_test_limit_adjuster import (
+    adjust_upper_limits)
 
 
 def create_sample_dataframe(story_name, count, avg_start, avg_step, ci_start,

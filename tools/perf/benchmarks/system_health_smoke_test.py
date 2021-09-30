@@ -295,7 +295,7 @@ def find_multi_version_stories(stories, disabled):
       else:
         prefix = name
     prefixes[prefix].append(name)
-  for prefix, stories in prefixes.items():
-    if len(stories) == 1:
-      prefixes.pop(prefix)
-  return prefixes
+  return {
+      prefix: stories
+      for prefix, stories in prefixes.items() if len(stories) != 1
+  }
