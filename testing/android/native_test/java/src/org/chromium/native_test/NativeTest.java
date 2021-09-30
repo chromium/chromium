@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Process;
-import android.system.ErrnoException;
 import android.system.Os;
 
 import org.chromium.base.Log;
@@ -64,13 +63,6 @@ public class NativeTest {
             } catch (Exception e) {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
             }
-        }
-        // Set TMPDIR to make perfetto_unittests not to use /data/local/tmp
-        // as temporary directory.
-        try {
-            Os.setenv("TMPDIR", activity.getApplicationContext().getCacheDir().getPath(), false);
-        } catch (ErrnoException e) {
-            Log.w(TAG, "failed to set TMPDIR", e);
         }
     }
 
