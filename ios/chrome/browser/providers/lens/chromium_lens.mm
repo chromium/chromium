@@ -19,5 +19,10 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
   return nil;
 }
 
+bool IsLensSupported() {
+  // Lens is not supported in Chromium.
+  return false;
+}
+
 }  // namespace provider
 }  // namespace ios

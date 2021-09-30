@@ -40,6 +40,9 @@ namespace provider {
 // communication with the downstream Lens controller.
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 
+// Returns whether Lens is supported for the current build.
+bool IsLensSupported();
+
 }  // namespace provider
 }  // namespace ios
 
