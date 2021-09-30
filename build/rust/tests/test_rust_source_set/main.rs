@@ -10,7 +10,8 @@ pub extern "C" fn say_hello_from_cpp() {
 pub fn say_hello() {
     println!(
         "Hello, world - from a Rust library. Calculations suggest that 3+4={}",
-        add_two_ints_via_rust(3, 4));
+        add_two_ints_via_rust(3, 4)
+    );
 }
 
 #[test]
