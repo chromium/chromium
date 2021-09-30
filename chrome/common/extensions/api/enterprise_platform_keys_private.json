@@ -16,20 +16,19 @@
             "type": "string",
             "name": "challenge",
             "description": "Challenge to be signed in base64."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Callback function.",
-            "parameters": [
-              {
-                "name": "response",
-                "description": "Response in base64.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback function.",
+          "parameters": [
+            {
+              "name": "response",
+              "description": "Response in base64.",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "challengeUserKey",
@@ -45,20 +44,19 @@
             "type": "boolean",
             "name": "registerKey",
             "description": "If true, the key will be registered."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Callback function.",
-            "parameters": [
-              {
-                "name": "response",
-                "description": "Response in base64.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback function.",
+          "parameters": [
+            {
+              "name": "response",
+              "description": "Response in base64.",
+              "type": "string"
+            }
+          ]
+        }
       }
     ]
   }
