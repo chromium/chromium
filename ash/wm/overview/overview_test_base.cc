@@ -7,6 +7,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -168,7 +169,19 @@ void OverviewTestBase::SetGridBounds(OverviewGrid* grid,
 }
 
 void OverviewTestBase::SetUp() {
-  AshTestBase::SetUp();
+  SetUpInternal(nullptr);
+}
+
+void OverviewTestBase::TearDown() {
+  OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
+  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(false);
+  trace_names_.clear();
+  AshTestBase::TearDown();
+}
+
+void OverviewTestBase::SetUpInternal(
+    std::unique_ptr<TestShellDelegate> delegate) {
+  AshTestBase::SetUp(std::move(delegate));
 
   aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
   shelf_view_test_api_ = std::make_unique<ShelfViewTestAPI>(
@@ -179,13 +192,6 @@ void OverviewTestBase::SetUp() {
       /*immediate=*/true);
   OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
   PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
-}
-
-void OverviewTestBase::TearDown() {
-  OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(false);
-  trace_names_.clear();
-  AshTestBase::TearDown();
 }
 
 void OverviewTestBase::CheckForDuplicateTraceName(const char* trace) {

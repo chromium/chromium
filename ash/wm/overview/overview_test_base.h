@@ -23,6 +23,7 @@ class OverviewController;
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
+class TestShellDelegate;
 class ScopedOverviewTransformWindow;
 class SplitViewController;
 class WindowPreviewView;
@@ -92,6 +93,10 @@ class OverviewTestBase : public AshTestBase {
   void TearDown() override;
 
  protected:
+  // Sets up the test suite with a custom `delegate`. If nullptr is used, a
+  // TestShellDelegate will be used by default.
+  void SetUpInternal(std::unique_ptr<TestShellDelegate> delegate);
+
   void CheckForDuplicateTraceName(const char* trace);
 
  private:

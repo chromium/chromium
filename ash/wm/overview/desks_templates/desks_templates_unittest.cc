@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
+#include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/overview/desks_templates/desks_templates_presenter.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
@@ -20,8 +22,25 @@
 #include "base/time/time.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "ui/aura/window.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
+
+class CustomTestShellDelegate : public TestShellDelegate {
+ public:
+  explicit CustomTestShellDelegate(desks_storage::DeskModel* desk_model)
+      : desk_model_(desk_model) {}
+  CustomTestShellDelegate(const CustomTestShellDelegate&) = delete;
+  CustomTestShellDelegate& operator=(const CustomTestShellDelegate&) = delete;
+  ~CustomTestShellDelegate() override = default;
+
+  // TestShellDelegate:
+  desks_storage::DeskModel* GetDeskModel() override { return desk_model_; }
+
+ private:
+  // The desk model for the desks templates feature.
+  desks_storage::DeskModel* const desk_model_;
+};
 
 class DesksTemplatesTest : public OverviewTestBase {
  public:
@@ -64,7 +83,8 @@ class DesksTemplatesTest : public OverviewTestBase {
     desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
         temp_dir_.GetPath());
 
-    OverviewTestBase::SetUp();
+    // This will call `AshTestBase::SetUp()`.
+    SetUpInternal(std::make_unique<CustomTestShellDelegate>(desk_model_.get()));
   }
 
  private:
@@ -76,21 +96,6 @@ class DesksTemplatesTest : public OverviewTestBase {
   // Temporary directory for the local desk model to store data.
   base::ScopedTempDir temp_dir_;
 };
-
-// Tests that the desks templates button is created when the feature is turned
-// on.
-// TODO(sammiequon): Update this test once more logic is added to the desks
-// templates button.
-TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
-  ToggleOverview();
-  auto* overview_session = GetOverviewSession();
-  ASSERT_TRUE(overview_session);
-
-  const auto* overview_grid =
-      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-  EXPECT_TRUE(desks_bar_view->desks_templates_button());
-}
 
 // Tests the helper `AddEntry()`, which will be used in different tests.
 TEST_F(DesksTemplatesTest, AddEntry) {
@@ -112,6 +117,23 @@ TEST_F(DesksTemplatesTest, AddEntry) {
         loop.Quit();
       }));
   loop.Run();
+}
+
+// Tests the desks templates button visibility.
+TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
+  // The templates button should appear on all root windows.
+  UpdateDisplay("800x700,801+0-800x700");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  ToggleOverview();
+  for (auto* root_window : Shell::GetAllRootWindows()) {
+    const auto* overview_grid =
+        GetOverviewSession()->GetGridWithRootWindow(root_window);
+    const auto* desks_templates_button =
+        overview_grid->desks_bar_view()->desks_templates_button();
+    ASSERT_TRUE(desks_templates_button);
+    EXPECT_TRUE(desks_templates_button->GetVisible());
+  }
 }
 
 }  // namespace ash

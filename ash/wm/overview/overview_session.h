@@ -40,6 +40,8 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+
+class DesksTemplatesPresenter;
 class OverviewDelegate;
 class OverviewGrid;
 class OverviewHighlightController;
@@ -417,6 +419,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<ScopedOverviewHideWindows> hide_overview_windows_;
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
+
+  // The object responsible to talking to the desk model.
+  std::unique_ptr<DesksTemplatesPresenter> desks_templates_presenter_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
