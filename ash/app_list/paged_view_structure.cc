@@ -156,7 +156,7 @@ void PagedViewStructure::SaveToMetadata() {
     // the last one should be full (i.e. no empty spaces). Therefore page break
     // items are useless. It is why we should only create page break items when
     // the feature flag is disabled.
-    if (!features::IsAppListBubbleEnabled() &&
+    if (!features::IsProductivityLauncherEnabled() &&
         item_index < item_list->item_count() &&
         !item_list->item_at(item_index)->is_page_break()) {
       // Remove AppListItemListObserver temporarily to avoid |pages_| being

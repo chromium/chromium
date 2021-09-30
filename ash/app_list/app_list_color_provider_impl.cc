@@ -26,7 +26,8 @@ bool IsTabletModeEnabled() {
 AppListColorProviderImpl::AppListColorProviderImpl()
     : ash_color_provider_(AshColorProvider::Get()),
       is_dark_light_mode_enabled_(features::IsDarkLightModeEnabled()),
-      is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {}
+      is_productivity_launcher_enabled_(
+          features::IsProductivityLauncherEnabled()) {}
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
@@ -101,7 +102,7 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder) const {
-  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorPrimary);
   }
@@ -123,7 +124,7 @@ SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
 }
 
 SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
-  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
     return ash_color_provider_->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80);
   }
@@ -131,7 +132,7 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
-  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
     return ash_color_provider_->GetControlsLayerColor(
         ColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   }
@@ -139,7 +140,7 @@ SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
-  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorPrimary);
   }
@@ -147,7 +148,7 @@ SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
-  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorSecondary);
   }

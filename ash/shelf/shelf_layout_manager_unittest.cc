@@ -3149,7 +3149,7 @@ TEST_P(ShelfLayoutManagerDragDropTest, AutoHideShelfOnDragDropEvents) {
 class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {
  public:
   AppListBubbleShelfLayoutManagerTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubbleShelfLayoutManagerTest() override = default;
 
@@ -3157,7 +3157,7 @@ class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-// Tests that the shelf background does not change when the AppListBubble is
+// Tests that the shelf background does not change when the bubble launcher is
 // shown.
 TEST_F(AppListBubbleShelfLayoutManagerTest, NoBackgroundChange) {
   const auto shelf_background_type = GetShelfWidget()->GetBackgroundType();

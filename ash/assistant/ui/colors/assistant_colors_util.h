@@ -16,7 +16,8 @@ namespace assistant {
 SkColor ResolveAssistantColor(assistant_colors::ColorName color_name);
 
 // Whether to use the modern dark/light mode colors, instead of legacy colors.
-// Returns true if either feature kDarkLightMode or kAppListBubble is enabled.
+// Returns true if either feature kDarkLightMode or kProductivityLauncher is
+// enabled.
 bool UseDarkLightModeColors();
 
 }  // namespace assistant

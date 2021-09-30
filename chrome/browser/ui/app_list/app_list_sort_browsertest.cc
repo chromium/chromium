@@ -25,7 +25,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {ash::features::kAppListBubble, ash::features::kLauncherAppSort},
+        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
         /*disabled_features=*/{});
     extensions::ExtensionBrowserTest::SetUp();
   }
@@ -36,8 +36,8 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(client);
     client->UpdateProfile();
 
-    // Since the AppListBubble flag is enabled, the sort buttons will only be
-    // shown in tablet mode.
+    // Since the ProductivityLauncher flag is enabled, the sort buttons will
+    // only be shown in tablet mode.
     ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
     // Ensure async callbacks are run.

@@ -28,10 +28,10 @@ class ASH_EXPORT ScopedLightModeAsDefault {
 };
 
 // As above, but for use in assistant code. Does not change the default mode if
-// feature AppListBubble is enabled, because that feature enables a new version
-// of the app list where the embedded assistant can use dark colors by default.
-// This class can be deleted when either DarkLightMode or AppListBubble is
-// permanently enabled, whichever comes first.
+// feature ProductivityLauncher is enabled, because that feature enables a new
+// version of the app list where the embedded assistant can use dark colors by
+// default. This class can be deleted when either DarkLightMode or
+// ProductivityLauncher is permanently enabled, whichever comes first.
 class ASH_EXPORT ScopedAssistantLightModeAsDefault {
  public:
   ScopedAssistantLightModeAsDefault();

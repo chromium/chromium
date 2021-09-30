@@ -1268,7 +1268,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
   EXPECT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
 
   // Select the second page.
-  ASSERT_FALSE(features::IsAppListBubbleEnabled());
+  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
   static_cast<PagedAppsGridView*>(app_list_folder_view()->items_grid_view())
       ->pagination_model()
       ->SelectPage(1, false /* animate */);

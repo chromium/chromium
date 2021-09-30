@@ -214,11 +214,12 @@ class AssistantPageViewTest : public AssistantAshTestBase {
 };
 
 // Tests for the legacy non-bubble app list ("peeking launcher").
-// These tests can be deleted when features::kAppListBubble is fully launched.
+// These tests can be deleted when features::kProductivityLauncher is fully
+// launched.
 class AssistantPageNonBubbleTest : public AssistantPageViewTest {
  public:
   AssistantPageNonBubbleTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -228,7 +229,7 @@ class AssistantPageNonBubbleTest : public AssistantPageViewTest {
 class AssistantPageBubbleTest : public AssistantPageViewTest {
  public:
   AssistantPageBubbleTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -360,15 +361,17 @@ TEST_F(AssistantPageNonBubbleTest,
 
 //------------------------------------------------------------------------------
 // Tests for the clamshell mode launcher, parameterized by the feature
-// kAppListBubble.
+// kProductivityLauncher.
 class AssistantPageClamshellTest : public AssistantPageViewTest,
                                    public testing::WithParamInterface<bool> {
  public:
   AssistantPageClamshellTest() {
     if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kProductivityLauncher);
     else
-      scoped_feature_list_.InitAndDisableFeature(features::kAppListBubble);
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kProductivityLauncher);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -829,8 +832,8 @@ TEST_P(AssistantPageClamshellTest,
 }
 
 // TODO(crbug.com/1229797): Switch to TEST_P and AssistantPageClamshellTest.
-// It fails with kAppListBubble enabled because the vertical position of the
-// suggestion chip doesn't match.
+// It fails with kProductivityLauncher enabled because the vertical position of
+// the suggestion chip doesn't match.
 TEST_F(AssistantPageViewTest,
        ShouldNotScrollSuggestionChipsWhenSubmittingQuery) {
   ShowAssistantUiInTextMode();
@@ -976,11 +979,11 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
                 ColorProvider::ShieldLayerType::kShield80));
 }
 
-// AppListBubble only uses AssistantPageView in tablet mode. Clamshell mode uses
-// AppListBubbleAssistantPage, which is tested in
+// ProductivityLauncher only uses AssistantPageView in tablet mode. Clamshell
+// mode uses AppListBubbleAssistantPage, which is tested in
 // AppListBubbleViewTest.AssistantPageDoesNotHaveBackground.
 TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
-  ASSERT_TRUE(features::IsAppListBubbleEnabled());
+  ASSERT_TRUE(features::IsProductivityLauncherEnabled());
 
   SetTabletMode(true);
   ShowAssistantUi();
@@ -997,7 +1000,7 @@ TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
 }
 
 TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
-  ASSERT_TRUE(features::IsAppListBubbleEnabled());
+  ASSERT_TRUE(features::IsProductivityLauncherEnabled());
 
   base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(

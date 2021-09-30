@@ -1142,11 +1142,11 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
 }
 
 // TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase, then
-// parameterize them based on the AppListBubble flag.
+// parameterize them based on the ProductivityLauncher flag.
 class SearchBoxViewAppListBubbleTest : public AshTestBase {
  public:
   SearchBoxViewAppListBubbleTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~SearchBoxViewAppListBubbleTest() override = default;
 

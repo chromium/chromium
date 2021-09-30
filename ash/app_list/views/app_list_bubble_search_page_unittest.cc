@@ -18,7 +18,7 @@ namespace {
 class AppListBubbleSearchPageTest : public AshTestBase {
  public:
   AppListBubbleSearchPageTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubbleSearchPageTest() override = default;
 

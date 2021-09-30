@@ -38,7 +38,7 @@ SkColor ResolveAssistantColor(assistant_colors::ColorName color_name) {
 
 bool UseDarkLightModeColors() {
   return features::IsDarkLightModeEnabled() ||
-         features::IsAppListBubbleEnabled();
+         features::IsProductivityLauncherEnabled();
 }
 
 }  // namespace assistant

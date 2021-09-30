@@ -593,14 +593,15 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithNoWindowOpen) {
 class AppListBubbleShowSourceMetricTest : public AppListShowSourceMetricTest {
  public:
   AppListBubbleShowSourceMetricTest() {
-    scoped_feature_list_.InitWithFeatures({features::kAppListBubble}, {});
+    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
+                                          {});
   }
   ~AppListBubbleShowSourceMetricTest() override = default;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that showing the AppListBubble in clamshell mode records the proper
+// Tests that showing the bubble launcher in clamshell mode records the proper
 // metrics for Apps.AppListBubbleShowSource.
 TEST_F(AppListBubbleShowSourceMetricTest, ClamshellModeHomeButton) {
   base::HistogramTester histogram_tester;
@@ -658,17 +659,17 @@ TEST_F(AppListBubbleShowSourceMetricTest,
   ClickHomeButton();
   EXPECT_FALSE(app_list_bubble_presenter->IsShowing());
 
-  // Test that no AppListBubble metrics were recorded.
+  // Test that no bubble launcher metrics were recorded.
   histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 0);
 }
 
-// Tests that Toggling the AppListBubble does not record metrics when the
-// result of the toggle is that the AppListBubble is hidden.
+// Tests that toggling the bubble launcher does not record metrics when the
+// result of the toggle is that the launcher is hidden.
 TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
   base::HistogramTester histogram_tester;
   auto* app_list_controller = Shell::Get()->app_list_controller();
 
-  // Toggle the AppListBubble to show it.
+  // Toggle the app list to show it.
   app_list_controller->ToggleAppList(GetPrimaryDisplayId(),
                                      AppListShowSource::kSearchKey,
                                      base::TimeTicks::Now());
@@ -676,7 +677,7 @@ TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
       Shell::Get()->app_list_controller()->bubble_presenter_for_test();
   ASSERT_TRUE(app_list_bubble_presenter->IsShowing());
 
-  // Toggle the AppListBubble once more, to hide it.
+  // Toggle the app list once more, to hide it.
   app_list_controller->ToggleAppList(GetPrimaryDisplayId(),
                                      AppListShowSource::kSearchKey,
                                      base::TimeTicks::Now());

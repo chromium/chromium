@@ -74,7 +74,7 @@ void ShowAppList() {
 class RecentAppsViewTest : public AshTestBase {
  public:
   RecentAppsViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~RecentAppsViewTest() override = default;
 

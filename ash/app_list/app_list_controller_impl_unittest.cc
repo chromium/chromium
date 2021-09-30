@@ -1280,13 +1280,13 @@ TEST_F(AppListControllerImplMetricsTest,
       "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 1);
 }
 
-// Tests with feature AppListBubble enabled. This is a separate test suite
+// Tests with the bubble launcher enabled. This is a separate test suite
 // because the feature must be enabled before ash::Shell constructs the
 // AppListControllerImpl.
 class AppListControllerImplAppListBubbleTest : public AshTestBase {
  public:
   AppListControllerImplAppListBubbleTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListControllerImplAppListBubbleTest() override = default;
 
@@ -1462,7 +1462,8 @@ class AppListSortTest : public AppListControllerImplTest {
  public:
   AppListSortTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kLauncherAppSort, ash::features::kAppListBubble}, {});
+        {ash::features::kLauncherAppSort, ash::features::kProductivityLauncher},
+        {});
   }
   ~AppListSortTest() override = default;
 

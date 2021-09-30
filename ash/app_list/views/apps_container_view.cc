@@ -216,7 +216,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
 
-  if (features::IsAppListBubbleEnabled()) {
+  if (features::IsProductivityLauncherEnabled()) {
     // The bounds of the |scrollable_container_| will visually clip the
     // |continue_container_| layer during page changes.
     scrollable_container_->layer()->SetMasksToBounds(true);
@@ -268,7 +268,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   apps_grid_view_->SetMaxColumns(GetAppListConfig().preferred_cols());
 
   const int preferred_rows = GetAppListConfig().preferred_rows();
-  if (!features::IsAppListBubbleEnabled()) {
+  if (!features::IsProductivityLauncherEnabled()) {
     apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/preferred_rows,
                                 /*max_row=*/preferred_rows);
   } else {
@@ -278,7 +278,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   }
 
   apps_grid_view_->Init();
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->pagination_model()->AddObserver(this);
 
   // Page switcher should be initialized after AppsGridView.
@@ -308,7 +308,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 }
 
 AppsContainerView::~AppsContainerView() {
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->pagination_model()->RemoveObserver(this);
 
   // Make sure |page_switcher_| is deleted before |apps_grid_view_| because
@@ -612,10 +612,10 @@ void AppsContainerView::Layout() {
                   GetExpectedSuggestionChipY(kAppListFullscreenProgressValue) -
                   chip_container_rect.height());
 
-  // If AppListBubble feature is enabled, the grid configuration does not change
+  // If productivity launcher is enabled, the grid configuration does not change
   // depending on the display/available space, so it's OK to keep using
   // configuration set up when the apps grid view is first initialized.
-  if (!features::IsAppListBubbleEnabled()) {
+  if (!features::IsProductivityLauncherEnabled()) {
     const GridLayout grid_layout = CalculateGridLayout();
     apps_grid_view_->SetMaxColumns(grid_layout.columns);
     apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/grid_layout.rows,
@@ -638,7 +638,7 @@ void AppsContainerView::Layout() {
   grid_rect.Inset(-grid_insets.left(), 0, -grid_insets.right(),
                   -grid_insets.bottom());
   scrollable_container_->SetBoundsRect(grid_rect);
-  if (features::IsAppListBubbleEnabled()) {
+  if (features::IsProductivityLauncherEnabled()) {
     continue_container_->SetBoundsRect(
         gfx::Rect(0, 0, grid_rect.width(),
                   continue_container_->GetPreferredSize().height()));

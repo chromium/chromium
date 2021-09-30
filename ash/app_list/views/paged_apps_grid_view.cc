@@ -194,12 +194,14 @@ PagedAppsGridView::PagedAppsGridView(
       contents_view_(contents_view),
       container_delegate_(container_delegate),
       page_flip_delay_(kPageFlipDelay),
-      is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
+      is_productivity_launcher_enabled_(
+          features::IsProductivityLauncherEnabled()) {
   DCHECK(contents_view_);
 
-  view_structure_.Init((IsInFolder() || features::IsAppListBubbleEnabled())
-                           ? PagedViewStructure::Mode::kFullPages
-                           : PagedViewStructure::Mode::kPartialPages);
+  view_structure_.Init(
+      (IsInFolder() || features::IsProductivityLauncherEnabled())
+          ? PagedViewStructure::Mode::kFullPages
+          : PagedViewStructure::Mode::kPartialPages);
 
   pagination_model_.SetTransitionDurations(kPageTransitionDuration,
                                            kOverscrollPageTransitionDuration);
@@ -668,7 +670,7 @@ gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
 }
 
 void PagedAppsGridView::UpdatePaging() {
-  if (!IsInFolder() && !features::IsAppListBubbleEnabled()) {
+  if (!IsInFolder() && !features::IsProductivityLauncherEnabled()) {
     pagination_model_.SetTotalPages(view_structure_.total_pages());
     return;
   }
@@ -690,8 +692,8 @@ void PagedAppsGridView::RecordPageMetrics() {
   DCHECK(!IsInFolder());
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages", GetTotalPages());
 
-  // There are no empty slots with AppListBubble enabled.
-  if (features::IsAppListBubbleEnabled())
+  // There are no empty slots with ProductivityLauncher enabled.
+  if (features::IsProductivityLauncherEnabled())
     return;
 
   // Calculate the number of pages that have empty slots.
@@ -976,7 +978,7 @@ bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
   // If the user wants to drag an app to the next new page and has not done so
   // during the dragging session, then it is the right target because a new page
   // will be created in OnPageFlipTimer().
-  return !features::IsAppListBubbleEnabled() && !IsInFolder() &&
+  return !features::IsProductivityLauncherEnabled() && !IsInFolder() &&
          !extra_page_opened_ && pagination_model_.total_pages() == page;
 }
 
@@ -1059,7 +1061,8 @@ void PagedAppsGridView::StartAppsGridCardifiedView() {
   // Add an extra card for the peeking page in the last page if item drag is
   // allowed to create new pages. This hints users that apps can be dragged past
   // the last existing page.
-  const int peeking_card_count = features::IsAppListBubbleEnabled() ? 0 : 1;
+  const int peeking_card_count =
+      features::IsProductivityLauncherEnabled() ? 0 : 1;
   for (int i = 0; i < pagination_model_.total_pages() + peeking_card_count; i++)
     AppendBackgroundCard();
   cardified_state_ = true;

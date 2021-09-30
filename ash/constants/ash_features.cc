@@ -100,10 +100,6 @@ const base::Feature kAmbientModePhotoPreviewFeature{
 const base::Feature kAmbientModeNewUrl{"ChromeOSAmbientModeNewUrl",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// See https://crbug.com/1204551
-const base::Feature kAppListBubble{"AppListBubble",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to enable ARC ADB sideloading support.
 const base::Feature kArcAdbSideloadingFeature{
     "ArcAdbSideloading", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -874,6 +870,13 @@ const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a bubble-based launcher in clamshell mode. Changes the suggestions
+// that appear in the launcher in both clamshell and tablet modes. Removes pages
+// from the apps grid. This feature was previously named "AppListBubble".
+// https://crbug.com/1204551
+const base::Feature kProductivityLauncher{"ProductivityLauncher",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1247,10 +1250,6 @@ bool IsAmbientModeNewUrlEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeNewUrl);
 }
 
-bool IsAppListBubbleEnabled() {
-  return base::FeatureList::IsEnabled(kAppListBubble);
-}
-
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
 }
@@ -1436,7 +1435,7 @@ bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
 }
 
 bool IsLauncherAppSortEnabled() {
-  return IsAppListBubbleEnabled() &&
+  return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherAppSort);
 }
 
@@ -1564,6 +1563,10 @@ bool IsPinSetupForManagedUsersEnabled() {
 
 bool IsPipRoundedCornersEnabled() {
   return base::FeatureList::IsEnabled(kPipRoundedCorners);
+}
+
+bool IsProductivityLauncherEnabled() {
+  return base::FeatureList::IsEnabled(kProductivityLauncher);
 }
 
 bool IsProjectorEnabled() {

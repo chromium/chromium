@@ -4029,12 +4029,6 @@ extern const char kAppDiscoveryRemoteUrlSearchName[] =
 extern const char kAppDiscoveryRemoteUrlSearchDescription[] =
     "Surface results from a URL in the app discovery service.";
 
-extern const char kAppListBubbleName[] =
-    "Productivity experiment: App Launcher";
-extern const char kAppListBubbleDescription[] =
-    "To evaluate an enhanced Launcher experience that aims to improve app "
-    "workflows by optimizing access to apps, app content, and app actions.";
-
 const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
 const char kAppServiceExternalProtocolDescription[] =
     "Use the App Service to provide data for external protocol dialog.";
@@ -4914,6 +4908,12 @@ const char kPhoneHubRecentAppsName[] = "Recent Apps in Phone Hub";
 const char kPhoneHubRecentAppsDescription[] =
     "Enables the Recent Apps feature in Phone Hub, which allows users to "
     "relaunch a recently streamed app.";
+
+const char kProductivityLauncherName[] =
+    "Productivity experiment: App Launcher";
+const char kProductivityLauncherDescription[] =
+    "To evaluate an enhanced Launcher experience that aims to improve app "
+    "workflows by optimizing access to apps, app content, and app actions.";
 
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =

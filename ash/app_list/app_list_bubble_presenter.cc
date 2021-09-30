@@ -247,7 +247,7 @@ void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
 
 void AppListBubblePresenter::OnPressOutsideBubble() {
   // Presses outside the bubble could be activating a shelf item. Record the
-  // AppListBubble state prior to dismissal.
+  // app list state prior to dismissal.
   controller_->RecordAppListState();
   Dismiss();
 }

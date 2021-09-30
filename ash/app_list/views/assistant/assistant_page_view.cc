@@ -424,7 +424,7 @@ void AssistantPageView::OnUiVisibilityChanged(
 void AssistantPageView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  if (features::IsAppListBubbleEnabled()) {
+  if (features::IsProductivityLauncherEnabled()) {
     layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80));
   } else if (features::IsDarkLightModeEnabled()) {
@@ -447,7 +447,7 @@ void AssistantPageView::InitLayout() {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
 
-  if (features::IsAppListBubbleEnabled()) {
+  if (features::IsProductivityLauncherEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

@@ -127,7 +127,7 @@ bool IsAppListLaunchRecordingEnabled() {
 
 bool IsCategoricalSearchEnabled() {
   // Force categorical search for the latest version of the launcher.
-  return ash::features::IsAppListBubbleEnabled() ||
+  return ash::features::IsProductivityLauncherEnabled() ||
          base::FeatureList::IsEnabled(kCategoricalSearch);
 }
 

@@ -274,7 +274,7 @@ GetTransitionFromMetricsAnimationInfo(
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
       fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)) {
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     bubble_presenter_ = std::make_unique<AppListBubblePresenter>(this);
 
   model_->AddObserver(this);
@@ -570,7 +570,7 @@ void AppListControllerImpl::DismissAppList() {
 
   // Don't check tablet mode here. This function can be called during tablet
   // mode transitions and we always want to close anyway.
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     bubble_presenter_->Dismiss();
 
   fullscreen_presenter_->Dismiss(base::TimeTicks());
@@ -591,7 +591,7 @@ void AppListControllerImpl::ShowAppList() {
     bubble_presenter_->Show(GetDisplayIdToShowAppListOn());
     return;
   }
-  DCHECK(!features::IsAppListBubbleEnabled() ||
+  DCHECK(!features::IsProductivityLauncherEnabled() ||
          !bubble_presenter_->IsShowing());
   fullscreen_presenter_->Show(AppListViewState::kPeeking,
                               GetDisplayIdToShowAppListOn(), base::TimeTicks(),
@@ -788,7 +788,7 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
-  if (features::IsAppListBubbleEnabled()) {
+  if (features::IsProductivityLauncherEnabled()) {
 #if !defined(OFFICIAL_BUILD)
     // Make shift-click on the shelf button toggle the non-bubble app list. This
     // allows developers to compare behavior without restarting to flip the
@@ -1059,8 +1059,8 @@ void AppListControllerImpl::OnTabletModeStarted() {
   if (app_list_view && app_list_view->is_side_shelf())
     DismissAppList();
 
-  // AppListBubble is only used in clamshell mode.
-  if (features::IsAppListBubbleEnabled())
+  // The bubble launcher is only used in clamshell mode.
+  if (features::IsProductivityLauncherEnabled())
     DismissAppList();
 
   fullscreen_presenter_->OnTabletModeChanged(true);
@@ -2045,7 +2045,7 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
 }
 
 bool AppListControllerImpl::ShouldShowAppListBubble() const {
-  return !IsTabletMode() && features::IsAppListBubbleEnabled();
+  return !IsTabletMode() && features::IsProductivityLauncherEnabled();
 }
 
 void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,

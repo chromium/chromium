@@ -69,7 +69,7 @@ size_t NumberOfWidgetsInAppListContainer() {
 class AppListBubblePresenterTest : public AshTestBase {
  public:
   AppListBubblePresenterTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubblePresenterTest() override = default;
 
@@ -286,11 +286,11 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForDisplay) {
 
   views::View* client_view = presenter->bubble_view_for_test()->parent();
 
-  // Check that the AppListBubble has the initial default bounds.
+  // Check that the bubble launcher has the initial default bounds.
   EXPECT_EQ(640, client_view->bounds().width());
   EXPECT_EQ(default_bubble_height, client_view->bounds().height());
 
-  // Check that the space between the top of the AppListBubble and the top of
+  // Check that the space between the top of the bubble launcher and the top of
   // the screen is greater than the shelf size.
   EXPECT_GE(client_view->GetBoundsInScreen().y(),
             ShelfConfig::Get()->shelf_size());
@@ -302,7 +302,7 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForDisplay) {
   client_view = presenter->bubble_view_for_test()->parent();
 
   // With a smaller display, check that the space between the top of the
-  // AppListBubble and the top of the screen is greater than the shelf size.
+  // bubble launcher and the top of the screen is greater than the shelf size.
   EXPECT_GE(client_view->GetBoundsInScreen().y(),
             ShelfConfig::Get()->shelf_size());
   // The bubble height should be smaller than the default bubble height.
@@ -341,7 +341,7 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
 
   int no_apps_bubble_view_height = presenter->bubble_view_for_test()->height();
 
-  // Add 30 apps to the AppListBubble and reopen.
+  // Add 30 apps to the app list and reopen.
   presenter->Dismiss();
   AddAppItems(30);
   presenter->Show(GetPrimaryDisplay().id());
@@ -352,7 +352,7 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
   // The AppListBubbleView should be larger after apps have neen added to it.
   EXPECT_GT(thirty_apps_bubble_view_height, no_apps_bubble_view_height);
 
-  // Add 50 more apps to the AppListBubble and reopen.
+  // Add 50 more apps to the app list and reopen.
   presenter->Dismiss();
   AddAppItems(50);
   presenter->Show(GetPrimaryDisplay().id());
@@ -360,13 +360,13 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
   int eighty_apps_bubble_view_height =
       presenter->bubble_view_for_test()->height();
 
-  // With more apps added, the height of the AppListBubble should increase.
+  // With more apps added, the height of the bubble should increase.
   EXPECT_GT(eighty_apps_bubble_view_height, thirty_apps_bubble_view_height);
 
-  // The AppListBubble height should not be larger than half the display height.
+  // The bubble height should not be larger than half the display height.
   EXPECT_LE(eighty_apps_bubble_view_height, 1000);
 
-  // The AppListBubble should be contained within the display bounds.
+  // The bubble should be contained within the display bounds.
   EXPECT_TRUE(GetPrimaryDisplay().work_area().Contains(
       presenter->bubble_view_for_test()->bounds()));
 }

@@ -268,8 +268,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // card during cardified state.
   std::vector<std::unique_ptr<ui::Layer>> background_cards_;
 
-  // Whether the AppListBubble is enabled.
-  const bool is_app_list_bubble_enabled_;
+  // Whether the feature ProductivityLauncher is enabled.
+  const bool is_productivity_launcher_enabled_;
 
   // Maximum number of rows on the first grid page.
   int max_rows_on_first_page_ = 0;

@@ -58,8 +58,8 @@ constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
 
 // The base UMA histogram that logs app launches within the HomeLauncher (tablet
-// mode AppList), and the fullscreen AppList (when AppListBubble is disabled in
-// clamshell mode) and the Shelf.
+// mode AppList), and the fullscreen AppList (when ProductivityLauncher is
+// disabled in clamshell mode) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
 
 // The UMA histograms that log app launches within the AppList, AppListBubble
@@ -226,7 +226,7 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
 
-  if (features::IsAppListBubbleEnabled() && !is_tablet_mode) {
+  if (features::IsProductivityLauncherEnabled() && !is_tablet_mode) {
     if (!app_list_shown) {
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
     } else {
@@ -239,18 +239,18 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
 
   switch (app_list_state) {
     case AppListViewState::kClosed:
-      DCHECK(!features::IsAppListBubbleEnabled());
-      // Only exists in clamshell mode with AppListBubble disabled.
+      DCHECK(!features::IsProductivityLauncherEnabled());
+      // Only exists in clamshell mode with ProductivityLauncher disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
       break;
     case AppListViewState::kPeeking:
-      DCHECK(!features::IsAppListBubbleEnabled());
-      // Only exists in clamshell mode with AppListBubble disabled.
+      DCHECK(!features::IsProductivityLauncherEnabled());
+      // Only exists in clamshell mode with ProductivityLauncher disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedPeeking, launched_from);
       break;
     case AppListViewState::kHalf:
-      DCHECK(!features::IsAppListBubbleEnabled());
-      // Only exists in clamshell mode with AppListBubble disabled.
+      DCHECK(!features::IsProductivityLauncherEnabled());
+      // Only exists in clamshell mode with ProductivityLauncher disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedHalf, launched_from);
       break;
     case AppListViewState::kFullscreenAllApps:

@@ -67,7 +67,7 @@ class ScrollableAppsGridViewTest : public AshTestBase {
  public:
   ScrollableAppsGridViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~ScrollableAppsGridViewTest() override = default;
 

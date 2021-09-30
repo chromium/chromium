@@ -106,7 +106,8 @@ void AppListTestHelper::AddPageBreakItem() {
 }
 
 bool AppListTestHelper::IsInFolderView() {
-  if (!Shell::Get()->IsInTabletMode() && features::IsAppListBubbleEnabled()) {
+  if (!Shell::Get()->IsInTabletMode() &&
+      features::IsProductivityLauncherEnabled()) {
     return GetBubbleView()->showing_folder_for_test();
   }
   return GetAppListView()

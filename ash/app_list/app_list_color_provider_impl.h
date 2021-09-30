@@ -54,8 +54,8 @@ class AppListColorProviderImpl : public AppListColorProvider {
   AshColorProvider* const ash_color_provider_;
   // Whether feature DarkLightMode is enabled. Cached for efficiency.
   const bool is_dark_light_mode_enabled_;
-  // Whether feature AppListBubble is enabled. Cached for efficiency.
-  const bool is_app_list_bubble_enabled_;
+  // Whether feature ProductivityLauncher is enabled. Cached for efficiency.
+  const bool is_productivity_launcher_enabled_;
 };
 
 }  // namespace ash

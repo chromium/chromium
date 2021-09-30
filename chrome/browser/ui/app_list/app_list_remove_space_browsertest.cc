@@ -26,7 +26,7 @@ class AppListRemoveSpaceSyncCompatibilityTest
   void SetUp() override {
     // Enable the feature flag to remove extra spaces if the pre count is one.
     if (GetTestPreCount() == 1) {
-      feature_list_.InitAndEnableFeature(ash::features::kAppListBubble);
+      feature_list_.InitAndEnableFeature(ash::features::kProductivityLauncher);
     }
     extensions::ExtensionBrowserTest::SetUp();
   }
@@ -53,7 +53,7 @@ class AppListRemoveSpaceSyncCompatibilityTest
 IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest,
                        PRE_PRE_Basics) {
   // Assume that the feature flag is disabled.
-  ASSERT_FALSE(ash::features::IsAppListBubbleEnabled());
+  ASSERT_FALSE(ash::features::IsProductivityLauncherEnabled());
 
   // Assume that there are two default apps.
   ASSERT_EQ(2, app_list_test_api_.GetTopListItemCount());
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest,
 
 // Restart Chrome with the feature enabled.
 IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest, PRE_Basics) {
-  ASSERT_TRUE(ash::features::IsAppListBubbleEnabled());
+  ASSERT_TRUE(ash::features::IsProductivityLauncherEnabled());
 
   // Because empty spaces are removed, there should be only one page.
   EXPECT_EQ(1, app_list_test_api_.GetPaginationModel()->total_pages());

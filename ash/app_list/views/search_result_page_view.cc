@@ -229,7 +229,7 @@ void SearchResultPageView::InitializeContainers(
       AddSearchResultContainerView(std::make_unique<SearchResultListView>(
           app_list_main_view, view_delegate));
   search_result_list_view_->SetListType(
-      features::IsAppListBubbleEnabled()
+      features::IsProductivityLauncherEnabled()
           ? SearchResultListView::SearchResultListType::kBestMatch
           : SearchResultListView::SearchResultListType::kUnified);
 }
@@ -323,7 +323,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
       search_result_tile_item_list_view_->num_results() &&
       search_result_list_view_->num_results() && ShouldShowSearchResultView());
 
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     SetVisible(should_show_page_view);
 
   Layout();
@@ -501,7 +501,7 @@ void SearchResultPageView::OnWillBeHidden() {
 }
 
 bool SearchResultPageView::ShouldShowSearchResultView() const {
-  return (!features::IsAppListBubbleEnabled() ||
+  return (!features::IsProductivityLauncherEnabled() ||
           !base::TrimWhitespace(search_model_->search_box()->text(),
                                 base::TrimPositions::TRIM_ALL)
                .empty());

@@ -321,8 +321,8 @@ class AppListBubbleAndTabletTest
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kAppListBubble,
-                                              app_list_bubble_param());
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              productivity_launcher_param());
     AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
@@ -341,19 +341,22 @@ class AppListBubbleAndTabletTest
     AppListView::SetShortAnimationForTesting(false);
   }
 
-  // Whether we should use the AppListBubble flag.
-  bool app_list_bubble_param() { return std::get<0>(GetParam()); }
+  // Whether we should use the ProductivityLauncher flag.
+  bool productivity_launcher_param() { return std::get<0>(GetParam()); }
 
   // Whether we should run the test in tablet mode.
   bool tablet_mode_param() { return std::get<1>(GetParam()); }
 
-  // Bubble launcher is visible in clamshell mode with kAppListBubble enabled.
+  // Bubble launcher is visible in clamshell mode with kProductivityLauncher
+  // enabled.
   bool should_show_bubble_launcher() {
-    return app_list_bubble_param() && !tablet_mode_param();
+    return productivity_launcher_param() && !tablet_mode_param();
   }
   // Zero state be shown in clamshell mode and in tablet mode when bubble
   // launcher is not enabled.
-  bool should_show_zero_state_search() { return !app_list_bubble_param(); }
+  bool should_show_zero_state_search() {
+    return !productivity_launcher_param();
+  }
 
   void MaybeRefreshAppListSearchResultPage() {
     // Bubble launcher has an AppListBubbleSearchPage which does not need to be
@@ -549,8 +552,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 // Instantiate the values in the parameterized tests. First boolean is used to
-// determine whether we should use the kAppListBubble feature flag. The second
-// boolean is to determine whether we should run the test in tablet mode.
+// determine whether to use the kProductivityLauncher feature flag. The second
+// boolean is to determine whether to run the test in tablet mode.
 INSTANTIATE_TEST_SUITE_P(All,
                          AppListBubbleAndTabletTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

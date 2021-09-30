@@ -71,21 +71,21 @@ class PagedAppsGridViewTestBase : public AshTestBase {
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
 };
 
-// Tests with AppListBubble enabled.
+// Tests with ProductivityLauncher enabled.
 class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
  public:
   PagedAppsGridViewTest() {
-    scoped_features_.InitAndEnableFeature(ash::features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(ash::features::kProductivityLauncher);
   }
 
   base::test::ScopedFeatureList scoped_features_;
 };
 
-// Tests with AppListBubble disabled.
+// Tests with ProductivityLauncher disabled, which disables the bubble launcher.
 class PagedAppsGridViewNonBubbleTest : public PagedAppsGridViewTestBase {
  public:
   PagedAppsGridViewNonBubbleTest() {
-    scoped_features_.InitAndDisableFeature(features::kAppListBubble);
+    scoped_features_.InitAndDisableFeature(features::kProductivityLauncher);
   }
 
   base::test::ScopedFeatureList scoped_features_;

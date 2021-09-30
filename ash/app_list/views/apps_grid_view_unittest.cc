@@ -228,8 +228,8 @@ class AppsGridViewTest : public AshTestBase {
     AppListView::SetShortAnimationForTesting(true);
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
-    feature_list_.InitWithFeatureState(features::kAppListBubble,
-                                       is_app_list_bubble_enabled_);
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                       is_productivity_launcher_enabled_);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -254,7 +254,7 @@ class AppsGridViewTest : public AshTestBase {
     if (create_as_tablet_mode_) {
       // The app list will be shown automatically when tablet mode is enabled.
       Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-    } else if (features::IsAppListBubbleEnabled()) {
+    } else if (features::IsProductivityLauncherEnabled()) {
       helper->ShowAppList();
     } else {
       // Show fullscreen so folders are available.
@@ -265,7 +265,7 @@ class AppsGridViewTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
 
     // Cache view pointers to make tests more concise.
-    if (!create_as_tablet_mode_ && features::IsAppListBubbleEnabled()) {
+    if (!create_as_tablet_mode_ && features::IsProductivityLauncherEnabled()) {
       // AppsGridView is scrollable in clamshell mode with AppListBubble.
       apps_grid_view_ = helper->GetScrollableAppsGridView();
       app_list_folder_view_ = helper->GetBubbleFolderView();
@@ -304,8 +304,8 @@ class AppsGridViewTest : public AshTestBase {
 
  protected:
   void AnimateFolderViewPageFlip(int target_page) {
-    // Folders are only paged without feature AppListBubble enabled.
-    DCHECK(!features::IsAppListBubbleEnabled());
+    // Folders are only paged without productivity launcher enabled.
+    DCHECK(!features::IsProductivityLauncherEnabled());
     PagedAppsGridView* paged_folder_apps_grid_view =
         static_cast<PagedAppsGridView*>(folder_apps_grid_view());
     DCHECK(paged_folder_apps_grid_view->pagination_model()->total_pages() >
@@ -377,8 +377,8 @@ class AppsGridViewTest : public AshTestBase {
   int GetTilesPerPage(int page) const { return test_api_->TilesPerPage(page); }
 
   PaginationModel* GetPaginationModel() const {
-    DCHECK(paged_apps_grid_view_)
-        << "Only available in tablet mode or when AppListBubble is disabled.";
+    DCHECK(paged_apps_grid_view_) << "Only available in tablet mode or when "
+                                     "ProductivityLauncher is disabled.";
     return paged_apps_grid_view_->pagination_model();
   }
 
@@ -457,7 +457,7 @@ class AppsGridViewTest : public AshTestBase {
   // test has added apps to the data model and is about to do an operation that
   // depends on item positions.
   void UpdateLayout() {
-    if (!create_as_tablet_mode_ && features::IsAppListBubbleEnabled())
+    if (!create_as_tablet_mode_ && features::IsProductivityLauncherEnabled())
       GetAppListTestHelper()->GetBubbleView()->Layout();
     else
       app_list_view_->Layout();
@@ -534,7 +534,8 @@ class AppsGridViewTest : public AshTestBase {
   // Update drag to either next or previous page's |to| point.
   void UpdateDragToNeighborPage(bool next_page, const gfx::Point& to) {
     ASSERT_TRUE(paged_apps_grid_view_)
-        << "Only available in tablet mode or when AppListBubble is disabled.";
+        << "Only available in tablet mode or when ProductivityLauncher is "
+           "disabled.";
     const int selected_page = GetPaginationModel()->selected_page();
     DCHECK(selected_page >= 0 &&
            selected_page <= GetPaginationModel()->total_pages());
@@ -574,15 +575,15 @@ class AppsGridViewTest : public AshTestBase {
   }
 
   // May be a PagedAppsGridView or a ScrollableAppsGridView depending on the
-  // AppListBubble flag and tablet mode.
+  // ProductivityLauncher flag and tablet mode.
   AppsGridView* apps_grid_view_ = nullptr;
 
-  // May be owned by different parent views depending on the AppListBubble flag
-  // and tablet mode.
+  // May be owned by different parent views depending on the
+  // ProductivityLauncher flag and tablet mode.
   AppListFolderView* app_list_folder_view_ = nullptr;
   SearchBoxView* search_box_view_ = nullptr;
 
-  // These views exist in tablet mode and when AppListBubble is disabled.
+  // These views exist in tablet mode and when ProductivityLauncher is disabled.
   PagedAppsGridView* paged_apps_grid_view_ = nullptr;
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   SearchResultContainerView* suggestions_container_ =
@@ -595,8 +596,8 @@ class AppsGridViewTest : public AshTestBase {
 
   // True if the test screen is configured to work with RTL locale.
   bool is_rtl_ = false;
-  // True if feature AppListBubble should be enabled.
-  bool is_app_list_bubble_enabled_ = false;
+  // True if feature ProductivityLauncher should be enabled.
+  bool is_productivity_launcher_enabled_ = false;
   // True if we set the test on tablet mode.
   bool create_as_tablet_mode_ = false;
 
@@ -611,18 +612,21 @@ class AppsGridViewTest : public AshTestBase {
   absl::optional<gfx::Point> current_drag_location_;
 };
 
-// Tests that only run with AppListBubble disabled. These can be deleted when
-// AppListBubble is the default.
+// Tests that only run with ProductivityLauncher disabled, which disables the
+// bubble launcher. These can be deleted when ProductivityLauncher is the
+// default.
 class AppsGridViewNonBubbleTest : public AppsGridViewTest {
  public:
-  AppsGridViewNonBubbleTest() { is_app_list_bubble_enabled_ = false; }
+  AppsGridViewNonBubbleTest() { is_productivity_launcher_enabled_ = false; }
 };
 
 // Test suite for clamshell mode, parameterized by feature AppListBubble.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
                                   public testing::WithParamInterface<bool> {
  public:
-  AppsGridViewClamshellTest() { is_app_list_bubble_enabled_ = GetParam(); }
+  AppsGridViewClamshellTest() {
+    is_productivity_launcher_enabled_ = GetParam();
+  }
 };
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewClamshellTest, testing::Bool());
 
@@ -642,7 +646,7 @@ class AppsGridViewDragTest
  public:
   AppsGridViewDragTest() {
     is_rtl_ = std::get<0>(GetParam());
-    is_app_list_bubble_enabled_ = std::get<1>(GetParam());
+    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
   }
 
   // AppsGridViewTest:
@@ -672,7 +676,7 @@ class AppsGridViewDragNonBubbleTest : public AppsGridViewTest,
  public:
   AppsGridViewDragNonBubbleTest() {
     is_rtl_ = GetParam();
-    is_app_list_bubble_enabled_ = false;
+    is_productivity_launcher_enabled_ = false;
   }
 };
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragNonBubbleTest, testing::Bool());
@@ -685,10 +689,10 @@ class AppsGridViewCardifiedStateTest
  public:
   AppsGridViewCardifiedStateTest() {
     is_rtl_ = std::get<0>(GetParam());
-    is_app_list_bubble_enabled_ = std::get<1>(GetParam());
-    // AppListBubble in clamshell mode does not use pages / cards, so use tablet
-    // mode instead.
-    create_as_tablet_mode_ = is_app_list_bubble_enabled_;
+    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
+    // The productivity launcher in clamshell mode does not use pages / cards,
+    // so use tablet mode instead.
+    create_as_tablet_mode_ = is_productivity_launcher_enabled_;
   }
 };
 INSTANTIATE_TEST_SUITE_P(All,
@@ -696,14 +700,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // Test suite for verifying tablet mode apps grid behaviour, parameterized by
-// RTL locale and AppListBubble feature.
+// RTL locale and ProductivityLauncher feature.
 class AppsGridViewTabletTest
     : public AppsGridViewTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   AppsGridViewTabletTest() {
     is_rtl_ = std::get<0>(GetParam());
-    is_app_list_bubble_enabled_ = std::get<1>(GetParam());
+    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
     create_as_tablet_mode_ = true;
   }
 };
@@ -805,7 +809,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
 }
 
 // Tests that control + arrow while a suggested chip is focused does not crash.
-// AppListBubble does not use suggestion chips.
+// Productivity launcher does not use suggestion chips.
 TEST_F(AppsGridViewNonBubbleTest, ControlArrowOnSuggestedChip) {
   model_->PopulateApps(5);
   suggestions_container_->children().front()->RequestFocus();
@@ -1031,7 +1035,8 @@ TEST_F(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
   EXPECT_FALSE(tap_outside.handled());
 }
 
-// AppListBubble uses scrollable folders, so this test disables AppListBubble.
+// The bubble launcher uses scrollable folders, so this test disables
+// ProductivityLauncher.
 TEST_F(AppsGridViewNonBubbleTest, PageResetAfterOpenFolder) {
   model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
@@ -1040,7 +1045,7 @@ TEST_F(AppsGridViewNonBubbleTest, PageResetAfterOpenFolder) {
 
   // Open the folder. It should be at page 0.
   test_api_->PressItemAt(0);
-  ASSERT_FALSE(features::IsAppListBubbleEnabled());
+  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
   PaginationModel* pagination_model =
       static_cast<PagedAppsGridView*>(folder_apps_grid_view())
           ->pagination_model();
@@ -1096,7 +1101,7 @@ TEST_P(AppsGridViewClamshellTest, FolderColsAndRows) {
   test_api_->PressItemAt(4);
   EXPECT_EQ(17, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
-  EXPECT_EQ(features::IsAppListBubbleEnabled() ? 20 : 16,
+  EXPECT_EQ(features::IsProductivityLauncherEnabled() ? 20 : 16,
             folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 }
@@ -1392,8 +1397,8 @@ TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
             model_->top_level_item_list()->item_at(0)->GetItemType());
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  // AppListBubble uses scrollable folders, not paged.
-  if (!features::IsAppListBubbleEnabled()) {
+  // Productivity launcher uses scrollable folders, not paged.
+  if (!features::IsProductivityLauncherEnabled()) {
     EXPECT_EQ(16, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
     EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
     EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
@@ -1441,8 +1446,10 @@ TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
   EXPECT_EQ(kTotalItems - 1, folder_item->ChildItemCount());
 }
 
-// AppListBubble does not use paged folders.
 TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
+  // ProductivityLauncher does not use paged folders.
+  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
+
   // Creates a folder item with enough views to have a second page.
   const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
@@ -1459,8 +1466,8 @@ TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
 }
 
 TEST_P(AppsGridViewDragNonBubbleTest, MouseDragItemOutOfFolderSecondPage) {
-  // AppListBubble does not use paged folders.
-  ASSERT_FALSE(features::IsAppListBubbleEnabled());
+  // ProductivityLauncher does not use paged folders.
+  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
 
   // Creates a folder item with enough views to have a second page.
   const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
@@ -1508,8 +1515,8 @@ TEST_P(AppsGridViewDragNonBubbleTest, MouseDragItemOutOfFolderSecondPage) {
 }
 
 TEST_P(AppsGridViewDragNonBubbleTest, MouseDropItemFromFolderSecondPage) {
-  // AppListBubble does not use paged folders.
-  ASSERT_FALSE(features::IsAppListBubbleEnabled());
+  // ProductivityLauncher does not use paged folders.
+  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
 
   // Creates a folder item with enough views to have a second page.
   const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
@@ -2462,9 +2469,9 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
     page_flip_waiter_->Wait();
   }
 
-  if (features::IsAppListBubbleEnabled()) {
-    // A new page cannot be created or flipped to with the AppListBubble flag
-    // enabled.
+  if (features::IsProductivityLauncherEnabled()) {
+    // A new page cannot be created or flipped to with the ProductivityLauncher
+    // flag enabled.
     EXPECT_EQ("1,2", page_flip_waiter_->selected_pages());
     EXPECT_EQ(2, GetPaginationModel()->selected_page());
   } else {
@@ -2572,8 +2579,8 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
   EndDrag(apps_grid_view_, false /*cancel*/);
 
-  if (features::IsAppListBubbleEnabled()) {
-    // AppListBubble keeps focus on the search box after drags.
+  if (features::IsProductivityLauncherEnabled()) {
+    // ProductivityLauncher keeps focus on the search box after drags.
     EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
     EXPECT_FALSE(item_view->HasFocus());
   } else {
@@ -2617,8 +2624,8 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewAfterDrag) {
   AppListItemView* const item_view = GetItemViewInTopLevelGrid(3);
   EXPECT_EQ("Item 0", item_view->item()->id());
 
-  if (features::IsAppListBubbleEnabled()) {
-    // AppListBubble keeps focus on the search box after drags.
+  if (features::IsProductivityLauncherEnabled()) {
+    // ProductivityLauncher keeps focus on the search box after drags.
     EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
     EXPECT_FALSE(item_view->HasFocus());
   } else {
@@ -2926,7 +2933,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, MoveAnItemToNewEmptyPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
@@ -2957,7 +2964,7 @@ TEST_P(AppsGridViewDragNonBubbleTest, MoveAnItemToNewEmptyPage) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemToCreateFolderInNextPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
@@ -2994,7 +3001,7 @@ TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemToCreateFolderInNextPage) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemForReorderInNextPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
@@ -3033,7 +3040,7 @@ TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemForReorderInNextPage) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemToNewEmptyPage) {
   const int kApps = 1;
   model_->PopulateApps(kApps);
@@ -3076,7 +3083,7 @@ TEST_F(AppsGridViewTest, NoPageBreakItemWithFullGrid) {
 }
 
 // This is a NonBubble test because page breaks are ignored with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, PageBreakItemAddedAfterDrag) {
   // There are two pages and last item is on second page.
   const int kApps = 2 + GetTilesPerPage(0);
@@ -3135,7 +3142,7 @@ TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
 }
 
 // This is a NonBubble test because page breaks are ignored with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, MoveItemSubsequentDragKeepPageBreak) {
   // There are two pages and last item is on second page.
   const int kApps = 2 + GetTilesPerPage(0);
@@ -3201,10 +3208,10 @@ TEST_F(AppsGridViewTest, CreateANewPageWithKeyboardLogsMetrics) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest, CreateANewPageByDraggingLogsMetrics) {
-  ASSERT_TRUE(paged_apps_grid_view_)
-      << "Only available in tablet mode or when AppListBubble is disabled.";
+  ASSERT_TRUE(paged_apps_grid_view_) << "Only available in tablet mode or when "
+                                        "ProductivityLauncher is disabled.";
 
   base::HistogramTester histogram_tester;
   model_->PopulateApps(2);
@@ -3254,7 +3261,7 @@ TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
 
   const int kExpectedBackgroundCardCount =
-      features::IsAppListBubbleEnabled() ? 1 : 2;
+      features::IsProductivityLauncherEnabled() ? 1 : 2;
   EXPECT_EQ(kExpectedBackgroundCardCount,
             paged_apps_grid_view_->BackgroundCardCountForTesting());
 
@@ -3271,7 +3278,7 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
 
   const int kExpectedBackgroundCardCount =
-      features::IsAppListBubbleEnabled() ? 2 : 3;
+      features::IsProductivityLauncherEnabled() ? 2 : 3;
   ASSERT_EQ(kExpectedBackgroundCardCount,
             paged_apps_grid_view_->BackgroundCardCountForTesting());
 
@@ -3357,7 +3364,7 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
   const int kExpectedBackgroundCardCount =
-      features::IsAppListBubbleEnabled() ? 2 : 3;
+      features::IsProductivityLauncherEnabled() ? 2 : 3;
   ASSERT_EQ(kExpectedBackgroundCardCount,
             paged_apps_grid_view_->BackgroundCardCountForTesting());
 
@@ -3425,7 +3432,7 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
 }
 
 // This is a NonBubble test because new empty pages cannot be created with the
-// AppListBubble feature.
+// ProductivityLauncher feature.
 TEST_P(AppsGridViewDragNonBubbleTest,
        PeekingCardOnLastPageAfterCreatingNewPage) {
   ASSERT_TRUE(paged_apps_grid_view_);

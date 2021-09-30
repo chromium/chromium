@@ -23,7 +23,7 @@ ScopedLightModeAsDefault::~ScopedLightModeAsDefault() {
 ScopedAssistantLightModeAsDefault::ScopedAssistantLightModeAsDefault()
     : previous_override_light_mode_as_default_(
           AshColorProvider::Get()->override_light_mode_as_default_) {
-  if (!features::IsAppListBubbleEnabled())
+  if (!features::IsProductivityLauncherEnabled())
     AshColorProvider::Get()->override_light_mode_as_default_ = true;
 }
 

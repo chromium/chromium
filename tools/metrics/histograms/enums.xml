@@ -48986,6 +48986,7 @@ from previous Chrome versions.
   <int value="-956696029" label="scheduler-configuration"/>
   <int value="-955667686"
       label="AutofillSuppressCreditCardSaveForAssistant:enabled"/>
+  <int value="-954789862" label="ProductivityLauncher:enabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
   <int value="-952971446" label="WebAssemblyCodeProtection:disabled"/>
@@ -51684,6 +51685,7 @@ from previous Chrome versions.
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
+  <int value="1178640449" label="ProductivityLauncher:disabled"/>
   <int value="1179013979"
       label="OmniboxUIExperimentMaxAutocompleteMatches:enabled"/>
   <int value="1179407596" label="PreemptiveLinkToTextGeneration:enabled"/>

@@ -544,7 +544,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-  if (features::IsAppListBubbleEnabled())
+  if (features::IsProductivityLauncherEnabled())
     InitWithScrollableAppsGrid();
   else
     InitWithPagedAppsGrid(contents_view);
@@ -695,7 +695,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
   hide_for_reparent_ = hide_for_reparent;
 
-  if (!features::IsAppListBubbleEnabled()) {
+  if (!features::IsProductivityLauncherEnabled()) {
     static_cast<PagedAppsGridView*>(items_grid_view_)
         ->pagination_model()
         ->SelectPage(0, false);

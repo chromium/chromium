@@ -103,7 +103,7 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(new SearchResultView(
         this, view_delegate_,
-        features::IsAppListBubbleEnabled()
+        features::IsProductivityLauncherEnabled()
             ? SearchResultView::SearchResultViewType::kDefault
             : SearchResultView::SearchResultViewType::kClassic));
     search_result_views_.back()->set_index_in_container(i);

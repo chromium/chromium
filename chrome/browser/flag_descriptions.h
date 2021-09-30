@@ -2303,9 +2303,6 @@ extern const char kAppDiscoveryForOobeDescription[];
 extern const char kAppDiscoveryRemoteUrlSearchName[];
 extern const char kAppDiscoveryRemoteUrlSearchDescription[];
 
-extern const char kAppListBubbleName[];
-extern const char kAppListBubbleDescription[];
-
 extern const char kAppServiceExternalProtocolName[];
 extern const char kAppServiceExternalProtocolDescription[];
 
@@ -2824,6 +2821,9 @@ extern const char kPhoneHubCameraRollDescription[];
 
 extern const char kPhoneHubRecentAppsName[];
 extern const char kPhoneHubRecentAppsDescription[];
+
+extern const char kProductivityLauncherName[];
+extern const char kProductivityLauncherDescription[];
 
 extern const char kReduceDisplayNotificationsName[];
 extern const char kReduceDisplayNotificationsDescription[];

@@ -107,7 +107,7 @@ void SimulateAssistantEnabled() {
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubbleViewTest() override = default;
 

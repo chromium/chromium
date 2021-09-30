@@ -45,7 +45,7 @@ void ShowAppList() {
 class ContinueSectionViewTest : public AshTestBase {
  public:
   ContinueSectionViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~ContinueSectionViewTest() override = default;
 
