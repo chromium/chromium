@@ -1000,7 +1000,7 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->RoleValue());
   ASSERT_EQ(3, paragraph->UnignoredChildCount());
   ASSERT_EQ(paragraph->GetNode(),
-            DisplayLockUtilities::NearestLockedInclusiveAncestor(
+            DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
                 *paragraph->GetNode()))
       << "The <p> element should be display locked.";
   EXPECT_TRUE(paragraph->IsLineBreakingObject());
@@ -1010,9 +1010,9 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, br->RoleValue())
       << "The <br> child should be display locked and thus have a generic "
          "role.";
-  ASSERT_EQ(
-      paragraph->GetNode(),
-      DisplayLockUtilities::NearestLockedInclusiveAncestor(*br->GetNode()))
+  ASSERT_EQ(paragraph->GetNode(),
+            DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+                *br->GetNode()))
       << "The <br> child should be display locked.";
   EXPECT_TRUE(br->IsLineBreakingObject());
 }

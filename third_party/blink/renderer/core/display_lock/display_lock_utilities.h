@@ -122,45 +122,33 @@ class CORE_EXPORT DisplayLockUtilities {
 
   // Ancestor navigation functions.
 
-  // Returns the nearest inclusive ancestor of |node| that is display locked.
-  static const Element* NearestLockedInclusiveAncestor(const Node& node);
-  static Element* NearestLockedInclusiveAncestor(Node& node);
+  // Helpers for ancestor navigation to find locks.
+  static const Element* LockedInclusiveAncestorPreventingLayout(
+      const Node& node);
+  static const Element* LockedInclusiveAncestorPreventingPaint(
+      const LayoutObject& object);
+  static const Element* LockedInclusiveAncestorPreventingPaint(
+      const Node& node);
+
+  // The following don't consider the passed argument as a valid lock (i.e. they
+  // are exclusive checks).
+  static Element* LockedAncestorPreventingLayout(const LayoutObject& object);
+  static Element* LockedAncestorPreventingLayout(const Node& node);
+  static Element* LockedAncestorPreventingPaint(const LayoutObject& object);
+  static Element* LockedAncestorPreventingPaint(const Node& node);
+  static Element* LockedAncestorPreventingPrePaint(const LayoutObject& object);
+  static Element* LockedAncestorPreventingStyle(const Node& element);
+
+  // Returns the nearest inclusive ancestor of |node| that is display locked
+  // and blocks style & layout tree building within the same TreeScope as
+  // |node|, meaning that no flat tree traversals are made.
+  static Element* LockedInclusiveAncestorPreventingStyleWithinTreeScope(
+      const Node& node);
 
   // Returns the highest exclusive ancestor of |node| that is display locked.
   // Note that this function crosses local frames.
   static Element* HighestLockedExclusiveAncestor(const Node& node);
   static Element* HighestLockedInclusiveAncestor(const Node& node);
-
-  // LayoutObject versions of the NearestLocked* ancestor functions.
-  static Element* NearestLockedInclusiveAncestor(const LayoutObject& object);
-
-  // Returns the nearest inclusive ancestor of |node| that is display locked
-  // within the same TreeScope as |node|, meaning that no flat tree traversals
-  // are made.
-  static Element* NearestLockedInclusiveAncestorWithinTreeScope(
-      const Node& node);
-
-  // Returns the nearest ancestor which blocks paint.
-  static Element* LockedAncestorPreventingPaint(const LayoutObject& object);
-  static Element* LockedAncestorPreventingPaint(const Node& node);
-
-  // Returns the nearest ancestor element which has a lock that prevents
-  // prepaint. Note that this is different from a nearest locked ancestor since
-  // the prepaint update can be forced.
-  static Element* LockedAncestorPreventingPrePaint(const LayoutObject& object);
-
-  // Returns the nearest ancestor element which has a lock that prevents
-  // layout. Note that this is different from a nearest locked ancestor since
-  // the layout update can be forced.
-  static Element* LockedAncestorPreventingLayout(const LayoutObject& object);
-  static Element* LockedAncestorPreventingLayout(const Node& node);
-  static const Element* LockedInclusiveAncestorPreventingLayout(
-      const Node& node);
-
-  // Returns the nearest ancestor element which has a lock that prevents
-  // style. Note that this is different from a nearest locked ancestor since
-  // the style update can be forced.
-  static Element* LockedAncestorPreventingStyle(const Node& element);
 
   // Returns true if |node| is not in a locked subtree, or if it's possible to
   // activate all of the locked ancestors for |activation_reason|.

@@ -355,10 +355,15 @@ void SlotAssignment::RecalcAssignment() {
     for (auto& slot : Slots()) {
       // TODO(crbug.com/1208573): Consider if we really need to be using
       // IsInLockedSubtreeCrossingFrames, or if
-      // NearestLockedInclusiveAncestorWithinTreeScope is good enough as-is.
+      // LockedInclusiveAncestorPreventingStyleWithinTreeScope is good enough
+      // as-is.
+      //
+      // If we have an ancestor that blocks style recalc, we should let
+      // DidRecalcAssignNodes know this, since we may need to do work that
+      // would otherwise be done in layout tree building.
       slot->DidRecalcAssignedNodes(
-          DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
-              *slot));
+          !!DisplayLockUtilities::
+               LockedInclusiveAncestorPreventingStyleWithinTreeScope(*slot));
     }
   }
 

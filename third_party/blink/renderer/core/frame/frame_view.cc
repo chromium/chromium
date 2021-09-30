@@ -51,7 +51,9 @@ bool FrameView::DisplayLockedInParentFrame() {
   // We check the inclusive ancestor to determine whether the subtree is locked,
   // since the contents of the frame are in the subtree of the frame, so they
   // would be locked if the frame owner is itself locked.
-  return DisplayLockUtilities::NearestLockedInclusiveAncestor(*owner);
+  // We use a paint check here, since as lock as we don't allow paint, we are
+  // display locked.
+  return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
 void FrameView::UpdateViewportIntersection(unsigned flags,

@@ -25,7 +25,7 @@ namespace {
 
 // Returns the nearest non-inclusive ancestor of |node| that is display
 // locked.
-static Element* NearestLockedExclusiveAncestor(const Node& node) {
+Element* NearestLockedExclusiveAncestor(const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
       !node.isConnected() ||
       node.GetDocument()
@@ -48,12 +48,46 @@ static Element* NearestLockedExclusiveAncestor(const Node& node) {
   return nullptr;
 }
 
-static Element* NearestLockedExclusiveAncestor(const LayoutObject& object) {
+const Element* NearestLockedInclusiveAncestor(const Node& node) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element)
+    return NearestLockedExclusiveAncestor(node);
+  if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
+      !node.isConnected() ||
+      node.GetDocument()
+              .GetDisplayLockDocumentState()
+              .LockedDisplayLockCount() == 0 ||
+      node.IsShadowRoot()) {
+    return nullptr;
+  }
+  if (auto* context = element->GetDisplayLockContext()) {
+    if (context->IsLocked())
+      return element;
+  }
+  return NearestLockedExclusiveAncestor(node);
+}
+
+Element* NearestLockedInclusiveAncestor(Node& node) {
+  return const_cast<Element*>(
+      NearestLockedInclusiveAncestor(static_cast<const Node&>(node)));
+}
+
+Element* NearestLockedInclusiveAncestor(const LayoutObject& object) {
+  auto* node = object.GetNode();
+  auto* ancestor = object.Parent();
+  while (ancestor && !node) {
+    node = ancestor->GetNode();
+    ancestor = ancestor->Parent();
+  }
+  return node ? NearestLockedInclusiveAncestor(*node) : nullptr;
+}
+
+Element* NearestLockedExclusiveAncestor(const LayoutObject& object) {
   if (auto* node = object.GetNode())
     return NearestLockedExclusiveAncestor(*node);
   // Since we now navigate to an ancestor, use the inclusive version.
   if (auto* parent = object.Parent())
-    return DisplayLockUtilities::NearestLockedInclusiveAncestor(*parent);
+    return NearestLockedInclusiveAncestor(*parent);
   return nullptr;
 }
 
@@ -95,19 +129,30 @@ template <typename Lambda>
 const Element* LockedInclusiveAncestorPreventingUpdate(
     const Node& node,
     Lambda update_is_prevented) {
-  if (const Element* element = DynamicTo<Element>(node)) {
+  if (auto* element = DynamicTo<Element>(node)) {
     if (auto* context = element->GetDisplayLockContext()) {
       if (update_is_prevented(context))
         return element;
     }
   }
-  return LockedAncestorPreventingUpdate(node, update_is_prevented);
+  return LockedAncestorPreventingUpdate(node, std::move(update_is_prevented));
 }
 
 template <typename Lambda>
 Element* LockedAncestorPreventingUpdate(const LayoutObject& object,
                                         Lambda update_is_prevented) {
   if (auto* ancestor = NearestLockedExclusiveAncestor(object)) {
+    if (update_is_prevented(ancestor->GetDisplayLockContext()))
+      return ancestor;
+    return LockedAncestorPreventingUpdate(*ancestor, update_is_prevented);
+  }
+  return nullptr;
+}
+
+template <typename Lambda>
+Element* LockedInclusiveAncestorPreventingUpdate(const LayoutObject& object,
+                                                 Lambda update_is_prevented) {
+  if (auto* ancestor = NearestLockedInclusiveAncestor(object)) {
     if (update_is_prevented(ancestor->GetDisplayLockContext()))
       return ancestor;
     return LockedAncestorPreventingUpdate(*ancestor, update_is_prevented);
@@ -314,31 +359,6 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::
     context->NotifyForcedUpdateScopeStarted(phase_);
 }
 
-const Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(
-    const Node& node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return NearestLockedExclusiveAncestor(node);
-  if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      !node.isConnected() ||
-      node.GetDocument()
-              .GetDisplayLockDocumentState()
-              .LockedDisplayLockCount() == 0 ||
-      node.IsShadowRoot()) {
-    return nullptr;
-  }
-  if (auto* context = element->GetDisplayLockContext()) {
-    if (context->IsLocked())
-      return element;
-  }
-  return NearestLockedExclusiveAncestor(node);
-}
-
-Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(Node& node) {
-  return const_cast<Element*>(
-      NearestLockedInclusiveAncestor(static_cast<const Node&>(node)));
-}
-
 Element* DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
     Element& element) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
@@ -371,7 +391,8 @@ Element* DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
   return nullptr;
 }
 
-Element* DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
+Element*
+DisplayLockUtilities::LockedInclusiveAncestorPreventingStyleWithinTreeScope(
     const Node& node) {
   if (!node.isConnected() || node.GetDocument()
                                      .GetDisplayLockDocumentState()
@@ -386,11 +407,35 @@ Element* DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
       continue;
     if (DisplayLockContext* context =
             ancestor_element->GetDisplayLockContext()) {
-      if (context->IsLocked())
+      if (!context->ShouldStyleChildren())
         return ancestor_element;
     }
   }
   return nullptr;
+}
+
+const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(
+    const Node& node) {
+  return LockedInclusiveAncestorPreventingUpdate(
+      node, [](DisplayLockContext* context) {
+        return !context->ShouldLayoutChildren();
+      });
+}
+
+const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+    const Node& node) {
+  return LockedInclusiveAncestorPreventingUpdate(
+      node, [](DisplayLockContext* context) {
+        return !context->ShouldPaintChildren();
+      });
+}
+
+const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+    const LayoutObject& object) {
+  return LockedInclusiveAncestorPreventingUpdate(
+      object, [](DisplayLockContext* context) {
+        return !context->ShouldPaintChildren();
+      });
 }
 
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
@@ -438,17 +483,6 @@ Element* DisplayLockUtilities::HighestLockedExclusiveAncestor(
       parent = GetFrameOwnerNode(last_node);
   }
   return locked_ancestor;
-}
-
-Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(
-    const LayoutObject& object) {
-  auto* node = object.GetNode();
-  auto* ancestor = object.Parent();
-  while (ancestor && !node) {
-    node = ancestor->GetNode();
-    ancestor = ancestor->Parent();
-  }
-  return node ? NearestLockedInclusiveAncestor(*node) : nullptr;
 }
 
 bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
@@ -636,14 +670,6 @@ Element* DisplayLockUtilities::LockedAncestorPreventingLayout(
   return LockedAncestorPreventingUpdate(node, [](DisplayLockContext* context) {
     return !context->ShouldLayoutChildren();
   });
-}
-
-const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(
-    const Node& node) {
-  return LockedInclusiveAncestorPreventingUpdate(
-      node, [](DisplayLockContext* context) {
-        return !context->ShouldLayoutChildren();
-      });
 }
 
 Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {

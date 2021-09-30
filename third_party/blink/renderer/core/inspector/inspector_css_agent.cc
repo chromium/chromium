@@ -1097,8 +1097,10 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
       return;
 
     // Skip recursing inside a display-locked tree.
-    if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+            *layout_object)) {
       return;
+    }
 
     if (!layout_object->IsAnonymous())
       --descendants_depth;

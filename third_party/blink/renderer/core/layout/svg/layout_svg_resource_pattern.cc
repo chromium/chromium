@@ -218,7 +218,7 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
   DCHECK(pattern_content_element);
   // If the element or some of its ancestor prevents us from doing paint, we can
   // early out. Note that any locked ancestor would prevent paint.
-  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(
+  if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
           *pattern_content_element)) {
     return paint_recorder.finishRecordingAsPicture();
   }

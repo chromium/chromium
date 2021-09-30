@@ -399,7 +399,11 @@ bool IsEndOfEditableOrNonEditableContent(
 // the text node. It seems weird to return false in this case.
 bool HasRenderedNonAnonymousDescendantsWithHeight(
     const LayoutObject* layout_object) {
-  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*layout_object))
+  // If we're not painting the element then we conceptually don't have children
+  // with height. We should treat this as if we didn't have layout objects (i.e.
+  // we were display: none).
+  if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+          *layout_object))
     return false;
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object)) {
     // Returns false for empty content editable, e.g.

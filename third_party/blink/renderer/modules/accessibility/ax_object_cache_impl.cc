@@ -433,7 +433,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     // Layout has more info available to determine if whitespace is relevant.
     // If display-locked, layout object may be missing or stale:
     // Assume that all display-locked text nodes are relevant.
-    if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*node))
+    if (DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(*node))
       return true;
 
     // If rendered, decision is from IsLayoutObjectRelevantForAccessibility().
@@ -482,7 +482,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // consider it relevant and return early. Checking the layout object is only
   // useful when display locking (content-visibility) is not used.
   if (node->GetLayoutObject() &&
-      !DisplayLockUtilities::NearestLockedInclusiveAncestor(*node)) {
+      !DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(*node)) {
     return true;
   }
 
