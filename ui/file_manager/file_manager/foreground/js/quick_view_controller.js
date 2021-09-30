@@ -497,15 +497,20 @@ export class QuickViewController {
             return;  // Bail: there's no point drawing a stale selection.
           }
 
+          const emptySourceContent = {
+            data: null,
+            dataType: '',
+          };
+
           this.quickView_.setProperties({
             type: params.type || '',
             subtype: params.subtype || '',
             filePath: params.filePath || '',
             hasTask: params.hasTask || false,
             canDelete: params.canDelete || false,
-            contentUrl: params.contentUrl || '',
-            videoPoster: params.videoPoster || '',
-            audioArtwork: params.audioArtwork || '',
+            sourceContent: params.sourceContent || emptySourceContent,
+            videoPoster: params.videoPoster || emptySourceContent,
+            audioArtwork: params.audioArtwork || emptySourceContent,
             autoplay: params.autoplay || false,
             browsable: params.browsable || false,
           });
@@ -540,6 +545,10 @@ export class QuickViewController {
       filePath: label,
       hasTask: tasks.length > 0,
       canDelete: canDelete,
+      sourceContent: {
+        data: null,
+        dataType: '',
+      },
     };
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
@@ -558,14 +567,23 @@ export class QuickViewController {
         return this.loadThumbnailFromDrive_(item.thumbnailUrl).then(result => {
           if (result.status === LoadImageResponseStatus.SUCCESS) {
             if (params.type == 'video') {
-              params.videoPoster = result.data;
+              params.videoPoster = {
+                data: result.data,
+                dataType: 'url',
+              };
             } else if (params.type == 'image') {
-              params.contentUrl = result.data;
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             } else {
               // TODO(sashab): Rather than re-use 'image', create a new type
               // here, e.g. 'thumbnail'.
               params.type = 'image';
-              params.contentUrl = result.data;
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             }
           }
           return params;
@@ -581,8 +599,11 @@ export class QuickViewController {
       return this.loadRawFileThumbnailFromImageLoader_(entry)
           .then(result => {
             if (result.status === LoadImageResponseStatus.SUCCESS) {
-              params.contentUrl = result.data;
               params.type = 'image';
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             }
             return params;
           })
@@ -603,33 +624,49 @@ export class QuickViewController {
           switch (type) {
             case 'image':
               if (QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(
-                      typeInfo.subtype) !== -1) {
-                params.contentUrl = '';
-              } else {
-                params.contentUrl = URL.createObjectURL(file);
+                      typeInfo.subtype) === -1) {
+                params.sourceContent = {
+                  data: file,
+                  dataType: 'blob',
+                };
               }
               return params;
             case 'video':
-              params.contentUrl = URL.createObjectURL(file);
+              params.sourceContent = {
+                data: file,
+                dataType: 'blob',
+              };
               params.autoplay = true;
               if (item.thumbnailUrl) {
-                params.videoPoster = item.thumbnailUrl;
+                params.videoPoster = {
+                  data: item.thumbnailUrl,
+                  dataType: 'url',
+                };
               }
               return params;
             case 'audio':
-              params.contentUrl = URL.createObjectURL(file);
+              params.sourceContent = {
+                data: file,
+                dataType: 'blob',
+              };
               params.autoplay = true;
               return this.metadataModel_.get([entry], ['contentThumbnailUrl'])
                   .then(items => {
                     const item = items[0];
                     if (item.contentThumbnailUrl) {
-                      params.audioArtwork = item.contentThumbnailUrl;
+                      params.audioArtwork = {
+                        data: item.contentThumbnailUrl,
+                        dataType: 'url',
+                      };
                     }
                     return params;
                   });
             case 'document':
               if (typeInfo.subtype === 'HTML') {
-                params.contentUrl = URL.createObjectURL(file);
+                params.sourceContent = {
+                  data: file,
+                  dataType: 'blob',
+                };
                 return params;
               } else {
                 break;
@@ -643,7 +680,10 @@ export class QuickViewController {
                           [text], {type: 'text/plain;charset=utf-8'});
                     })
                     .then(blob => {
-                      params.contentUrl = URL.createObjectURL(blob);
+                      params.sourceContent = {
+                        data: blob,
+                        dataType: 'blob',
+                      };
                       params.browsable = true;
                       return params;
                     })
@@ -662,10 +702,10 @@ export class QuickViewController {
           });
 
           if (params.browsable) {
-            params.contentUrl = URL.createObjectURL(file);
-            if (params.subtype === 'PDF') {
-              params.contentUrl += '#view=FitH';
-            }
+            params.sourceContent = {
+              data: file,
+              dataType: 'blob',
+            };
           }
 
           return params;
@@ -756,9 +796,9 @@ QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_ = [
  *   filePath: string,
  *   hasTask: boolean,
  *   canDelete: boolean,
- *   contentUrl: (string|undefined),
- *   videoPoster: (string|undefined),
- *   audioArtwork: (string|undefined),
+ *   sourceContent: Object,
+ *   videoPoster: (Object|undefined),
+ *   audioArtwork: (Object|undefined),
  *   autoplay: (boolean|undefined),
  *   browsable: (boolean|undefined),
  * }}

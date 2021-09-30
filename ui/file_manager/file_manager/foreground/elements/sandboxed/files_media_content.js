@@ -16,11 +16,26 @@ window.onload = () => {
     }
 
     messageSource = event.source;
+
+    const sourceContent = event.data.sourceContent;
+    let contentUrl;
+    switch (sourceContent.dataType) {
+      case 'url':
+        contentUrl = sourceContent.data;
+        break;
+      case 'blob':
+        // TODO: work out when to call URL.revokeObjectURL on these contentURL.
+        contentUrl = URL.createObjectURL(sourceContent.data);
+        break;
+      default:
+        contentUrl = '';
+    }
+
     switch (event.data.type) {
       case 'html':
         content.textContent = '';
         contentChanged(null);
-        fetch(event.data.src)
+        fetch(contentUrl)
             .then((response) => {
               return response.text();
             })
@@ -32,7 +47,7 @@ window.onload = () => {
       case 'audio':
       case 'video':
         content.onloadeddata = (e) => contentChanged(e.target.src);
-        content.src = event.data.src;
+        content.src = contentUrl;
         break;
       case 'image':
         content.remove();
@@ -49,11 +64,11 @@ window.onload = () => {
           contentDecodeFailed();
         };
 
-        image.src = event.data.src;
+        image.src = contentUrl;
         break;
       default:
         content.onload = (e) => contentChanged(e.target.src);
-        content.src = event.data.src;
+        content.src = contentUrl;
         break;
     }
   });

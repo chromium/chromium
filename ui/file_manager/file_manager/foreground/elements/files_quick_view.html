@@ -36,35 +36,35 @@
       <div id="innerContentPanel" type$="[[type]]">
         <!-- PDF, Text -->
         <template is="dom-if" if="[[browsable]]">
-          <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[contentUrl]]"></webview>
+          <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[generateBrowsableUrl_(sourceContent, subtype)]]"></webview>
         </template>
         <!-- document/HTML -->
         <template is="dom-if" if="[[isHtml_(type, subtype)]]">
-          <files-safe-media hidden="[[!contentUrl]]" type="html" class="content text-content" src="[[contentUrl]]"></files-safe-media>
-          <template is="dom-if" if="[[!contentUrl]]">
+          <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="html" class="content text-content" src="[[sourceContent]]"></files-safe-media>
+          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
             <div generic-thumbnail="[[type]]"></div>
             <div class="no-preview">[[noPreviewText]]</div>
           </template>
         </template>
         <!-- Image -->
         <template is="dom-if" if="[[isImage_(type)]]">
-          <files-safe-media hidden="[[!contentUrl]]" type="image" class="content no-close-on-click" src="[[contentUrl]]"></files-safe-media>
-          <template is="dom-if" if="[[!contentUrl]]">
+          <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="image" class="content no-close-on-click" src="[[sourceContent]]"></files-safe-media>
+          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
             <div generic-thumbnail="image"></div>
             <div class="no-preview">[[noPreviewText]]</div>
           </template>
         </template>
         <!-- Video -->
         <template is="dom-if" if="[[isVideo_(type)]]">
-          <template is="dom-if" if="[[!contentUrl]]">
+          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
             <div class="thumbnail" hidden="[[!videoPoster]]">
               <files-safe-media type="image" id="video-poster" src="[[videoPoster]]"></files-safe-media>
             </div>
             <div hidden="[[videoPoster]]" generic-thumbnail="video"></div>
             <div class="no-preview">[[noPlaybackText]]</div>
           </template>
-          <template is="dom-if" if="[[contentUrl]]">
-            <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[contentUrl]]" poster="[[videoPoster]]"></files-safe-media>
+          <template is="dom-if" if="[[hasContent_(sourceContent)]]">
+            <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[sourceContent]]" poster="[[videoPoster]]"></files-safe-media>
           </template>
         </template>
         <!-- Audio -->
@@ -72,10 +72,10 @@
           <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]" hidden="[[!audioArtwork]]"></files-safe-media>
         </template>
         <div>
-          <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioUrl_(contentUrl, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
+          <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioContent_(sourceContent, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
         </div>
         <template is="dom-if" if="[[isAudio_(type)]]">
-          <template is="dom-if" if="[[!contentUrl]]">
+          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
             <div generic-thumbnail="audio"></div>
             <div class="no-preview">[[noPlaybackText]]</div>
           </template>

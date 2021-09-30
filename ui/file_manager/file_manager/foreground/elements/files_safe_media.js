@@ -18,9 +18,9 @@ const FilesSafeMedia = Polymer({
   is: 'files-safe-media',
 
   properties: {
-    // URL accessible from webview.
+    // Source content accessible from the sandboxed environment.
     src: {
-      type: String,
+      type: Object,
       observer: 'onSrcChange_',
       reflectToAttribute: true,
     },
@@ -55,11 +55,12 @@ const FilesSafeMedia = Polymer({
   },
 
   onSrcChange_: function() {
-    if (!this.src && this.webview_) {
+    const hasContent = this.src.dataType !== '';
+    if (!hasContent && this.webview_) {
       // Remove webview to clean up unnecessary processes.
       this.$.content.removeChild(this.webview_);
       this.webview_ = null;
-    } else if (this.src && !this.webview_) {
+    } else if (hasContent && !this.webview_) {
       // Create webview node only if src exists to save resources.
       const webview =
           /** @type {!HTMLElement} */ (document.createElement('webview'));
@@ -69,10 +70,11 @@ const FilesSafeMedia = Polymer({
       this.$.content.appendChild(webview);
       webview.addEventListener('contentload', () => this.onSrcChange_());
       webview.src = this.sourceFile_();
-    } else if (this.src && this.webview_.contentWindow) {
-      const data = {};
-      data.type = this.type;
-      data.src = this.src;
+    } else if (hasContent && this.webview_.contentWindow) {
+      const data = {
+        type: this.type,
+        sourceContent: this.src,
+      };
       window.setTimeout(() => {
         this.webview_.contentWindow.postMessage(data, FILES_APP_ORIGIN);
       });
