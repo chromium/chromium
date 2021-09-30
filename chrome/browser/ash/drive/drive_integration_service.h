@@ -259,9 +259,15 @@ class DriveIntegrationService : public KeyedService,
                               bool failed_to_mount);
 
   // Helper function for ClearCacheAndRemountFileSystem() that deletes the cache
-  // folder and remounts Drive.
-  void ClearCacheAndRemountFileSystemAfterUnmount(
+  // folder.
+  void ClearCacheAndRemountFileSystemAfterDelay(
       base::OnceCallback<void(bool)> callback);
+
+  // Helper function for ClearCacheAndRemountFileSystem() that remounts Drive if
+  // necessary.
+  void MaybeRemountFileSystemAfterClearCache(
+      base::OnceCallback<void(bool)> callback,
+      bool success);
 
   // Initializes the object. This function should be called before any
   // other functions.

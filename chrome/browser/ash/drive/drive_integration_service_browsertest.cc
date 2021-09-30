@@ -70,24 +70,26 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
                        ClearCacheAndRemountFileSystem) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
   auto* drive_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
   base::FilePath cache_path = drive_service->GetDriveFsHost()->GetDataPath();
   base::FilePath log_folder_path = drive_service->GetDriveFsLogPath().DirName();
-  ASSERT_TRUE(base::CreateDirectory(cache_path));
-  ASSERT_TRUE(base::CreateDirectory(log_folder_path));
-
   base::FilePath cache_file;
   base::FilePath log_file;
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(cache_path, &cache_file));
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(log_folder_path, &log_file));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(cache_path));
+    ASSERT_TRUE(base::CreateDirectory(log_folder_path));
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(cache_path, &cache_file));
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(log_folder_path, &log_file));
+  }
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
   drive_service->ClearCacheAndRemountFileSystem(
       base::BindLambdaForTesting([=](bool success) {
+        base::ScopedAllowBlockingForTesting allow_blocking;
         EXPECT_TRUE(success);
         EXPECT_FALSE(base::PathExists(cache_file));
         EXPECT_TRUE(base::PathExists(log_file));

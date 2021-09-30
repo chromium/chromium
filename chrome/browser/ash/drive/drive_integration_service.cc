@@ -321,6 +321,29 @@ void UmaEmitFirstLaunch(const base::TimeTicks& time_started) {
                              base::TimeTicks::Now() - time_started);
 }
 
+// Clears the cache folder at |cache_path|, but preserve |logs_path|.
+// |logs_path| should be a descendent of |cache_path|.
+bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
+  DCHECK(cache_path.IsParent(logs_path));
+  bool success = true;
+  base::FileEnumerator content_enumerator(
+      cache_path, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath path = content_enumerator.Next(); !path.empty();
+       path = content_enumerator.Next()) {
+    // Keep the logs folder as it's useful for debugging.
+    if (path == logs_path) {
+      continue;
+    }
+    if (!base::DeletePathRecursively(path)) {
+      success = false;
+      break;
+    }
+  }
+  return success;
+}
+
 }  // namespace
 
 // Observes drive disable Preference's change.
@@ -721,42 +744,35 @@ void DriveIntegrationService::ClearCacheAndRemountFileSystem(
   }
   in_clear_cache_ = true;
 
+  base::TimeDelta delay;
   if (IsMounted()) {
     RemoveDriveMountPoint();
     // TODO(crbug/1069328): We wait 2 seconds here so that DriveFS can unmount
     // completely. Ideally we'd wait for an unmount complete callback.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DriveIntegrationService::
-                           ClearCacheAndRemountFileSystemAfterUnmount,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::TimeDelta::FromSeconds(2));
-  } else {
-    ClearCacheAndRemountFileSystemAfterUnmount(std::move(callback));
+    delay = base::TimeDelta::FromSeconds(2);
   }
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      delay);
 }
 
-void DriveIntegrationService::ClearCacheAndRemountFileSystemAfterUnmount(
+void DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay(
     base::OnceCallback<void(bool)> callback) {
-  bool success = true;
-  base::FilePath cache_path = GetDriveFsHost()->GetDataPath();
-  base::FilePath logs_path = GetDriveFsLogPath().DirName();
-  base::FileEnumerator content_enumerator(
-      cache_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath path = content_enumerator.Next(); !path.empty();
-       path = content_enumerator.Next()) {
-    // Keep the logs folder as it's useful for debugging.
-    if (path == logs_path) {
-      continue;
-    }
-    if (!base::DeletePathRecursively(path)) {
-      success = false;
-      break;
-    }
-  }
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ClearCache, GetDriveFsHost()->GetDataPath(),
+                     GetDriveFsLogPath().DirName()),
+      base::BindOnce(
+          &DriveIntegrationService::MaybeRemountFileSystemAfterClearCache,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void DriveIntegrationService::MaybeRemountFileSystemAfterClearCache(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
   if (is_enabled()) {
     AddDriveMountPoint();
   }
