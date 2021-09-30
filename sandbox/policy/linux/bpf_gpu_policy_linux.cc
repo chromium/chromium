@@ -23,9 +23,12 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 
+using sandbox::bpf_dsl::AllOf;
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::Arg;
+using sandbox::bpf_dsl::BoolExpr;
 using sandbox::bpf_dsl::Error;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 using sandbox::bpf_dsl::Trap;
 using sandbox::syscall_broker::BrokerProcess;
@@ -50,14 +53,15 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       // The Nvidia driver uses flags not in the baseline policy
       // fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW)
       // https://crbug.com/1128175
-      const Arg<int> cmd(1);
-      const Arg<long> long_arg(2);
+      const Arg<unsigned int> cmd(1);
+      const Arg<unsigned long> arg(2);
 
-      const uint64_t kAllowedMask = F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW;
-      if (cmd == F_ADD_SEALS && (long_arg & ~kAllowedMask) == 0)
-        return Allow();
+      const unsigned long kAllowedMask =
+          F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW;
+      BoolExpr add_seals =
+          AllOf(cmd == F_ADD_SEALS, (arg & ~kAllowedMask) == 0);
 
-      break;
+      return If(add_seals, Allow()).Else(BPFBasePolicy::EvaluateSyscall(sysno));
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Needed for dlopen.
