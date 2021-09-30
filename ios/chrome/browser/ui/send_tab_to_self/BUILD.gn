@@ -12,6 +12,7 @@ source_set("send_tab_to_self") {
     ":send_tab_to_self_ui",
     "//base",
     "//components/send_tab_to_self",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",

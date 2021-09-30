@@ -12,10 +12,13 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
+#import "components/signin/public/identity_manager/consent_level.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -60,17 +63,18 @@ NSString* const kActivityServicesSnackbarCategory =
 #pragma mark - ChromeCoordinator Methods
 
 - (void)start {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   send_tab_to_self::SendTabToSelfSyncService* syncService =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
   // This modal should not be launched in incognito mode where syncService is
   // undefined.
   DCHECK(syncService);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   DCHECK(accountManagerService);
-  ChromeIdentity* account = accountManagerService->GetDefaultIdentity();
+  ChromeIdentity* account =
+      AuthenticationServiceFactory::GetForBrowserState(browserState)
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   DCHECK(account) << "The user must be signed in to share a tab";
   self.sendTabToSelfViewController = [[SendTabToSelfTableViewController alloc]
       initWithDeviceList:syncService->GetSendTabToSelfModel()
