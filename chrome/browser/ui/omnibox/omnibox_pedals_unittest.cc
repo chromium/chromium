@@ -168,7 +168,7 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
       { "en",
         {
           "delete information",
-          "manager credentials",
+          "passwords",
           "change credit card information",
           "incognito window",
           "change language this page",
