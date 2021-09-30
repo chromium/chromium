@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.share.scroll_capture;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
@@ -181,6 +183,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
 
             Rect destRect = new Rect(0, 0, captureArea.width(), captureArea.height());
             Canvas canvas = session.getSurface().lockCanvas(destRect);
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             canvas.drawBitmap(bitmap, null, destRect, null);
             session.getSurface().unlockCanvasAndPost(canvas);
             // Translate the captureArea Rect back to its original coordinates.
