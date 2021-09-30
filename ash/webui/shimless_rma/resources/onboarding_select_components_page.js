@@ -58,6 +58,10 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
   ready() {
     super.ready();
     this.getComponents_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */

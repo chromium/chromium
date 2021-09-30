@@ -75,6 +75,10 @@ export class WrapupWaitForManualWpEnablePageElement extends PolymerElement {
     this.hwwpEnabled_ = enabled;
     // TODO(gavindodd): enable/disable next button. Or should it automatically
     // progress to the next state?
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: !this.hwwpEnabled_},
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */

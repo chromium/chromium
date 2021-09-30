@@ -24,6 +24,10 @@ export class OnboardingWpDisableCompletePage extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 };
 

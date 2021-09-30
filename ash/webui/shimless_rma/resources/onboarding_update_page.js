@@ -107,6 +107,10 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   ready() {
     super.ready();
     this.getCurrentVersionText_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /**

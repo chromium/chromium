@@ -94,6 +94,11 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
   onProvisioningUpdated(step, progress) {
     this.step_ = step;
     this.progress_ = progress;
+    let disabled = this.step_ != ProvisioningStep.kProvisioningComplete;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: disabled},
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */

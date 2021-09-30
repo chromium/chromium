@@ -116,6 +116,27 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
 
   /**
    * @private
+   * @return {boolean}
+   * TODO(gavindodd): Add basic validation for the format of RSU code.
+   * Can this use cr-input autovalidate?
+   */
+  rsuCodeIsPlausible_() {
+    return !!this.rsuCode_ && this.rsuCode_.length == 8;
+  }
+
+  /**
+   * @protected
+   * @param {!Event} event
+   */
+  onRsuCodeChanged_(event) {
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: !this.rsuCodeIsPlausible_()},
+        ));
+  }
+
+  /**
+   * @private
    * @return {!CanvasRenderingContext2D}
    */
   getCanvasContext_() {

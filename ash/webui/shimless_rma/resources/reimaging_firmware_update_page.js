@@ -62,6 +62,11 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
    */
   onFirmwareReimageSelectionChanged_(event) {
     this.reimageMethod_ = event.detail.value;
+    let disabled = !this.reimageMethod_;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: disabled},
+        ));
   }
 
   /**

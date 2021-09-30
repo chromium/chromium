@@ -66,6 +66,10 @@ export class ReimagingCalibrationPageElement extends PolymerElement {
   ready() {
     super.ready();
     this.getInitialComponentsList_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */

@@ -66,6 +66,10 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
             this.calibrationInstructions_ = message;
           }
         });
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @return {!Promise<StateResult>} */

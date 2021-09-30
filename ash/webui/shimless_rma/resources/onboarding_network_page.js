@@ -130,6 +130,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   ready() {
     super.ready();
     this.refreshNetworks();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** CrosNetworkConfigObserver impl */

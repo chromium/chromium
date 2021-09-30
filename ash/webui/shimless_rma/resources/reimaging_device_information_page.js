@@ -111,6 +111,10 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
     this.getOriginalSerialNumber_();
     this.getOriginalRegionAndRegionList_();
     this.getOriginalSkuAndSkuList_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */

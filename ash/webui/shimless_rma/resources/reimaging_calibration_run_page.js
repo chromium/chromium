@@ -86,6 +86,10 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
         this.calibrationComplete_ = true;
+        this.dispatchEvent(new CustomEvent(
+            'disable-next-button',
+            {bubbles: true, composed: true, detail: false},
+            ));
         break;
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:
