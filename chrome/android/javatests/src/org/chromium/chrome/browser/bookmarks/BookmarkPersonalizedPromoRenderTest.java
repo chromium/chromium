@@ -46,8 +46,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS,
-        ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 @DisableIf.Device(type = {UiDisableIf.TABLET})
 public class BookmarkPersonalizedPromoRenderTest {
     private final AccountManagerTestRule mAccountManagerTestRule =

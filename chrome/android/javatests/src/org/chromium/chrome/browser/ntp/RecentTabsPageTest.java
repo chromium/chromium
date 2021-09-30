@@ -46,8 +46,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS,
-        ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class RecentTabsPageTest {
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
