@@ -37,6 +37,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_creator.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
@@ -46,7 +47,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/test/test_background_page_first_load_observer.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_background_page_ready_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,7 +169,7 @@ class ForceInstallWaiter final {
   std::unique_ptr<extensions::TestExtensionRegistryObserver> registry_observer_;
   std::unique_ptr<extensions::ExtensionBackgroundPageReadyObserver>
       background_page_ready_observer_;
-  std::unique_ptr<extensions::TestBackgroundPageFirstLoadObserver>
+  std::unique_ptr<extensions::ExtensionHostTestHelper>
       background_page_first_load_observer_;
 };
 
@@ -198,8 +199,10 @@ ForceInstallWaiter::ForceInstallWaiter(
       break;
     case ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad:
       background_page_first_load_observer_ =
-          std::make_unique<extensions::TestBackgroundPageFirstLoadObserver>(
-              profile_, extension_id_);
+          std::make_unique<extensions::ExtensionHostTestHelper>(profile_,
+                                                                extension_id_);
+      background_page_first_load_observer_->RestrictToType(
+          extensions::mojom::ViewType::kExtensionBackgroundPage);
       break;
   }
 }
@@ -233,7 +236,8 @@ void ForceInstallWaiter::WaitImpl(bool* success) {
       break;
     case ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad:
       // Wait and assert that the waiting run loop didn't time out.
-      ASSERT_NO_FATAL_FAILURE(background_page_first_load_observer_->Wait());
+      ASSERT_NO_FATAL_FAILURE(background_page_first_load_observer_
+                                  ->WaitForHostCompletedFirstLoad());
       *success = true;
       break;
   }

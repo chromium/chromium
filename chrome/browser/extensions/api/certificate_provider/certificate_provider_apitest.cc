@@ -53,13 +53,14 @@
 #include "extensions/browser/api/test/test_api_observer.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "extensions/test/test_background_page_first_load_observer.h"
 #include "net/cert/x509_certificate.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/client_cert_identity.h"
@@ -945,9 +946,10 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
   // Load the test extension.
   TestCertificateProviderExtension test_certificate_provider_extension(
       profile());
-  extensions::TestBackgroundPageFirstLoadObserver
-      test_background_page_first_load_observer(
-          profile(), TestCertificateProviderExtension::extension_id());
+  extensions::ExtensionHostTestHelper host_helper(
+      profile(), TestCertificateProviderExtension::extension_id());
+  host_helper.RestrictToType(
+      extensions::mojom::ViewType::kExtensionBackgroundPage);
   const extensions::Extension* const extension =
       LoadExtension(base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
                         .AppendASCII("extensions")
@@ -955,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
                         .AppendASCII("extension"));
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension->id(), TestCertificateProviderExtension::extension_id());
-  test_background_page_first_load_observer.Wait();
+  host_helper.WaitForHostCompletedFirstLoad();
 
   // Navigate to the page that requests the client authentication. Use the
   // incognito profile in order to force re-authentication in the later request
