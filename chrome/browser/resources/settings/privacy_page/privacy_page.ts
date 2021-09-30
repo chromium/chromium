@@ -327,9 +327,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private onPrivacySandboxClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
+    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
+    // click event if this function was called in response to a touch event.
+    // See crbug.com/1253883 for details.
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
-    this.shadowRoot!.querySelector<HTMLAnchorElement>(
-                        '#privacySandboxLink')!.click();
+    this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
+        .dispatchEvent(new MouseEvent('click'));
   }
 
   private onPrivacyReviewClick_() {
