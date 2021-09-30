@@ -2475,24 +2475,6 @@
             ]
         }
     ],
-    "CrOSSystemAECDeactivatedGroups": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "AecGroupIdsWithBrowserFallbackFromCrAS",
-                    "params": {
-                        "3": "true"
-                    },
-                    "enable_features": [
-                        "CrOSSystemAECDeactivatedGroups"
-                    ]
-                }
-            ]
-        }
-    ],
     "CriticalCLientHint": [
         {
             "platforms": [
