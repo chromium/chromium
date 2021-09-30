@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -78,30 +79,65 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
   base::HistogramTester histogram_tester;
 
   base::Time download_end_time = base::Time::Now();
+  download::DownloadContent fake_content =
+      download::DownloadContent::SPREADSHEET;
   // Not logged for dangerous downloads.
   RecordDownloadOpened(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-      download_end_time + base::TimeDelta::FromDays(1), download_end_time,
+      fake_content, download_end_time + base::TimeDelta::FromDays(1),
+      download_end_time,
       /*show_download_in_folder=*/false);
   histogram_tester.ExpectTotalCount(
-      "SBClientDownload.SafeDownloadOpenedLatency.OpenDirectly", 0);
+      "SBClientDownload.SafeDownloadOpenedLatency2.OpenDirectly", 0);
 
   RecordDownloadOpened(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-      download_end_time + base::TimeDelta::FromDays(1), download_end_time,
+      fake_content, download_end_time + base::TimeDelta::FromDays(1),
+      download_end_time,
       /*show_download_in_folder=*/false);
   histogram_tester.ExpectTimeBucketCount(
-      "SBClientDownload.SafeDownloadOpenedLatency.OpenDirectly",
+      "SBClientDownload.SafeDownloadOpenedLatency2.OpenDirectly",
       /*sample=*/base::TimeDelta::FromDays(1),
       /*count=*/1);
 
   RecordDownloadOpened(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-      download_end_time + base::TimeDelta::FromHours(5), download_end_time,
+      fake_content, download_end_time + base::TimeDelta::FromHours(5),
+      download_end_time,
       /*show_download_in_folder=*/true);
   histogram_tester.ExpectTimeBucketCount(
-      "SBClientDownload.SafeDownloadOpenedLatency.ShowInFolder",
+      "SBClientDownload.SafeDownloadOpenedLatency2.ShowInFolder",
       /*sample=*/base::TimeDelta::FromHours(5),
+      /*count=*/1);
+}
+
+TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpenedFileType) {
+  base::HistogramTester histogram_tester;
+
+  base::Time download_end_time = base::Time::Now();
+
+  RecordDownloadOpenedFileType(download::DownloadContent::SPREADSHEET,
+                               download_end_time + base::TimeDelta::FromDays(1),
+                               download_end_time);
+  histogram_tester.ExpectTimeBucketCount(
+      "SBClientDownload.SafeDownloadOpenedLatencyByContentType.SPREADSHEET",
+      /*sample=*/base::TimeDelta::FromDays(1),
+      /*count=*/1);
+
+  RecordDownloadOpenedFileType(
+      download::DownloadContent::PRESENTATION,
+      download_end_time + base::TimeDelta::FromHours(5), download_end_time);
+  histogram_tester.ExpectTimeBucketCount(
+      "SBClientDownload.SafeDownloadOpenedLatencyByContentType.PRESENTATION",
+      /*sample=*/base::TimeDelta::FromHours(5),
+      /*count=*/1);
+
+  RecordDownloadOpenedFileType(download::DownloadContent::ARCHIVE,
+                               download_end_time + base::TimeDelta::FromDays(1),
+                               download_end_time);
+  histogram_tester.ExpectTimeBucketCount(
+      "SBClientDownload.SafeDownloadOpenedLatencyByContentType.ARCHIVE",
+      /*sample=*/base::TimeDelta::FromDays(1),
       /*count=*/1);
 }
 

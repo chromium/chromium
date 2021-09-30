@@ -24,6 +24,7 @@ source_set("unittests") {
   deps = [
     ":download_stats",
     "//base/test:test_support",
+    "//components/download/public/common:public",
     "//components/safe_browsing/content/common:file_type_policies",
     "//testing/gtest",
   ]

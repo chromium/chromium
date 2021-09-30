@@ -261,6 +261,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency.{ShowAction}"
     units="ms" expires_after="2022-05-20">
+  <obsolete>
+    Removed 09-2021 in favor of SBClientDownload.SafeDownloadOpenedLatency2
+    which filters autopened downloads.
+  </obsolete>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -272,6 +276,58 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="ShowAction">
     <variant name="OpenDirectly" summary="opens the download directly"/>
     <variant name="ShowInFolder" summary="clicks show in folder"/>
+  </token>
+</histogram>
+
+<histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
+    units="ms" expires_after="2022-05-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the latency between when a safe download is completed and when the
+    user {ShowAction}. Users can open the download either from the download
+    shelf or from the downloads page. Note that if the user opens the same
+    download for several times, this metric is recorded each time. Excludes
+    downloads that were auto opened.
+  </summary>
+  <token key="ShowAction">
+    <variant name="OpenDirectly" summary="opens the download directly"/>
+    <variant name="ShowInFolder" summary="clicks show in folder"/>
+  </token>
+</histogram>
+
+<histogram
+    name="SBClientDownload.SafeDownloadOpenedLatencyByContentType.{DownloadContent}"
+    units="ms" expires_after="2022-09-30">
+  <owner>anise@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the latency between when a safe {DownloadContent} download is
+    completed and when the user opens the download either from the download
+    shelf or from the downloads page. Note that if the user opens the same
+    download for several times, this metric is recorded each time. Also, this
+    metrics excludes downloads that were auto opened.
+  </summary>
+  <token key="DownloadContent">
+    <variant name="APK" summary="apk"/>
+    <variant name="ARCHIVE" summary="archive"/>
+    <variant name="AUDIO" summary="audio"/>
+    <variant name="CRX" summary="crx"/>
+    <variant name="DMG" summary="dmg"/>
+    <variant name="DOCUMENT" summary="document"/>
+    <variant name="EBOOK" summary="ebook"/>
+    <variant name="EXECUTABLE" summary="executable"/>
+    <variant name="FONT" summary="font"/>
+    <variant name="IMAGE" summary="image"/>
+    <variant name="MAX" summary="max"/>
+    <variant name="OCTET_STREAM" summary="octet stream"/>
+    <variant name="PDF" summary="pdf"/>
+    <variant name="PRESENTATION" summary="presentation"/>
+    <variant name="SPREADSHEET" summary="spreadsheet"/>
+    <variant name="TEXT" summary="text"/>
+    <variant name="UNRECOGNIZED" summary="unrecognized"/>
+    <variant name="VIDEO" summary="video"/>
+    <variant name="WEB" summary="web"/>
   </token>
 </histogram>
 

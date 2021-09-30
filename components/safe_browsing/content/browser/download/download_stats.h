@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
 
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -57,9 +58,16 @@ void RecordDangerousDownloadWarningBypassed(
 // Records that a download was opened from the download shelf or the
 // chrome://downloads page.
 void RecordDownloadOpened(download::DownloadDangerType danger_type,
+                          download::DownloadContent download_content,
                           base::Time download_opened_time,
                           base::Time download_end_time,
                           bool show_download_in_folder);
+
+// Records that latency between when a download was opened (via the shelf or
+// chrome://downloads) by extension type.
+void RecordDownloadOpenedFileType(download::DownloadContent download_content,
+                                  base::Time download_opened_time,
+                                  base::Time download_end_time);
 
 // Records the attributes of a download.
 void RecordDownloadFileTypeAttributes(

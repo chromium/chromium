@@ -64,6 +64,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
@@ -1556,9 +1557,13 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
                                                     show_download_in_folder);
   }
 #endif
-  safe_browsing::RecordDownloadOpened(download->GetDangerType(),
-                                      base::Time::Now(), download->GetEndTime(),
-                                      show_download_in_folder);
+  if (!download->GetAutoOpened()) {
+    download::DownloadContent download_content =
+        download::DownloadContentFromMimeType(download->GetMimeType(), false);
+    safe_browsing::RecordDownloadOpened(
+        download->GetDangerType(), download_content, base::Time::Now(),
+        download->GetEndTime(), show_download_in_folder);
+  }
 }
 
 void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
