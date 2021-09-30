@@ -666,13 +666,13 @@ TEST_F(AccountConsistencyServiceTest, GAIACookieMissingOnSignin) {
                                         signin::GAIA_SERVICE_TYPE_ADDSESSION))
       .Times(2);
 
-  SimulateNavigateToURLWithInterruption(response, delegate);
+  SimulateNavigateToURL(response, delegate);
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
 
   SimulateExternalSourceRemovesAllGoogleDomainCookies();
 
-  [[delegate expect] onAddAccount];
+  // Gaia cookie is not restored due to one-hour time restriction.
   SimulateNavigateToURLWithInterruption(response, delegate);
   histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
 

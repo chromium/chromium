@@ -17,7 +17,7 @@ bool ForceDisableExtendedSyncPromos() {
 }
 
 const base::Feature kRestoreGaiaCookiesOnUserAction{
-    "RestoreGAIACookiesOnUserAction", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RestoreGAIACookiesOnUserAction", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
     "minutes-delay-to-restore-gaia-cookies-if-deleted";

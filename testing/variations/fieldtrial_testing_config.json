@@ -4058,21 +4058,6 @@
             ]
         }
     ],
-    "IOSRestoreGaiaCookiesOnUserAction": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210728",
-                    "enable_features": [
-                        "RestoreGAIACookiesOnUserAction"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [
