@@ -78,6 +78,7 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
       *output = password_manager::CredentialManagerError::SUCCESS;
       return true;
     case blink::mojom::CredentialManagerError::PENDING_REQUEST:
+    case blink::mojom::CredentialManagerError::PENDING_REQUEST_WEBAUTHN:
       *output = password_manager::CredentialManagerError::PENDING_REQUEST;
       return true;
     case blink::mojom::CredentialManagerError::PASSWORD_STORE_UNAVAILABLE:

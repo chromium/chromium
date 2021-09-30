@@ -336,6 +336,13 @@ DOMException* CredentialManagerErrorToDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "A request is already pending.");
+    case CredentialManagerError::PENDING_REQUEST_WEBAUTHN:
+      // WebAuthn's PENDING_REQUEST is mapped to a different
+      // |CredentialManagerError| because WebAuthn wants kInvalidStateError to
+      // be distinctive so that sites can recognise it as
+      // |CREDENTIAL_EXCLUDED|.
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "A request is already pending.");
     case CredentialManagerError::PASSWORD_STORE_UNAVAILABLE:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,

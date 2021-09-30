@@ -1178,14 +1178,32 @@ void AuthenticatorCommon::OnRegisterResponse(
 
   switch (status_code) {
     case device::MakeCredentialStatus::kUserConsentButCredentialExcluded:
+    case device::MakeCredentialStatus::kWinInvalidStateError:
       // Duplicate registration: the new credential would be created on an
       // authenticator that already contains one of the credentials in
-      // |exclude_credentials|.
-      SignalFailureToRequestDelegate(
-          authenticator,
-          AuthenticatorRequestClientDelegate::InterestingFailureReason::
-              kKeyAlreadyRegistered,
-          blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED);
+      // |exclude_credentials|. If the request specified that only a platform
+      // authenticator was acceptable then we don't show an error message
+      // because there's no other authenticator that could be used for this
+      // request. Instead the RP learns of the result via the distinctive
+      // InvalidStateError result. This tells them that the platform
+      // authenticator is already registered with one of the credential IDs that
+      // they already know about.
+      //
+      // Windows already behaves like this and so its representation of
+      // InvalidStateError is handled this way too.
+      if (make_credential_options_->authenticator_attachment ==
+              device::AuthenticatorAttachment::kPlatform ||
+          status_code == device::MakeCredentialStatus::kWinInvalidStateError) {
+        CompleteMakeCredentialRequest(
+            blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED, nullptr,
+            Focus::kDoCheck);
+      } else {
+        SignalFailureToRequestDelegate(
+            authenticator,
+            AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kKeyAlreadyRegistered,
+            blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED);
+      }
       return;
     case device::MakeCredentialStatus::kAuthenticatorResponseInvalid:
       // The response from the authenticator was corrupted.
@@ -1255,11 +1273,6 @@ void AuthenticatorCommon::OnRegisterResponse(
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
               kStorageFull,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-      return;
-    case device::MakeCredentialStatus::kWinInvalidStateError:
-      CompleteMakeCredentialRequest(
-          blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED, nullptr,
-          Focus::kDoCheck);
       return;
     case device::MakeCredentialStatus::kWinNotAllowedError:
       SignalFailureToRequestDelegate(
