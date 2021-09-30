@@ -279,21 +279,29 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
     return promise;
   }
 
-  // Wait until the suspend map is available for the insertion. Here we should
-  // use GraphAutoLocker because it locks the graph from the main thread.
-  GraphAutoLocker locker(this);
+  {
+    // Wait until the suspend map is available for the insertion. Here we should
+    // use GraphAutoLocker because it locks the graph from the main thread.
+    GraphAutoLocker locker(this);
 
-  // If there is a duplicate suspension at the same quantized frame,
-  // reject the promise.
-  if (scheduled_suspends_.Contains(frame)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "cannot schedule more than one suspend at frame " +
-            String::Number(frame) + " (" + String::Number(when) + " seconds)"));
-    return promise;
+    // If there is a duplicate suspension at the same quantized frame,
+    // reject the promise.
+    if (scheduled_suspends_.Contains(frame)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "cannot schedule more than one suspend at frame " +
+              String::Number(frame) + " (" + String::Number(when) +
+              " seconds)"));
+      return promise;
+    }
+
+    scheduled_suspends_.insert(frame, resolver);
   }
 
-  scheduled_suspends_.insert(frame, resolver);
+  {
+    MutexLocker suspend_frames_locker(suspend_frames_lock_);
+    scheduled_suspend_frames_.insert(frame);
+  }
 
   return promise;
 }
@@ -388,16 +396,13 @@ bool OfflineAudioContext::HandlePreRenderTasks(
 
   DCHECK(IsAudioThread());
 
-  // OfflineGraphAutoLocker here locks the audio graph for this scope. Note
-  // that this locker does not use tryLock() inside because the timing of
-  // suspension MUST NOT be delayed.
-  OfflineGraphAutoLocker locker(this);
-
-  // Update the dirty state of the listener.
-  listener()->UpdateState();
-
-  GetDeferredTaskHandler().HandleDeferredTasks();
-  HandleStoppableSourceNodes();
+  {
+    // OfflineGraphAutoLocker here locks the audio graph for this scope.
+    OfflineGraphAutoLocker locker(this);
+    listener()->UpdateState();
+    GetDeferredTaskHandler().HandleDeferredTasks();
+    HandleStoppableSourceNodes();
+  }
 
   return ShouldSuspend();
 }
@@ -427,38 +432,53 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
   // Suspend the context first. This will fire onstatechange event.
   SetContextState(kSuspended);
 
-  // Wait until the suspend map is available for the removal.
-  GraphAutoLocker locker(this);
+  {
+    MutexLocker locker(suspend_frames_lock_);
+    DCHECK(scheduled_suspend_frames_.Contains(frame));
+    scheduled_suspend_frames_.erase(frame);
+  }
 
-  // If the context is going away, m_scheduledSuspends could have had all its
-  // entries removed.  Check for that here.
-  if (scheduled_suspends_.size()) {
-    // |frame| must exist in the map.
-    DCHECK(scheduled_suspends_.Contains(frame));
+  {
+    // Wait until the suspend map is available for the removal.
+    GraphAutoLocker locker(this);
 
-    SuspendMap::iterator it = scheduled_suspends_.find(frame);
-    it->value->Resolve();
+    // If the context is going away, m_scheduledSuspends could have had all its
+    // entries removed.  Check for that here.
+    if (scheduled_suspends_.size()) {
+      // |frame| must exist in the map.
+      DCHECK(scheduled_suspends_.Contains(frame));
 
-    scheduled_suspends_.erase(it);
+      SuspendMap::iterator it = scheduled_suspends_.find(frame);
+      it->value->Resolve();
+
+      scheduled_suspends_.erase(it);
+    }
   }
 }
 
 void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
 
-  // Wait until the suspend map is available for removal.
-  GraphAutoLocker locker(this);
-
-  // Offline context is going away so reject any promises that are still
-  // pending.
-
-  for (auto& pending_suspend_resolver : scheduled_suspends_) {
-    pending_suspend_resolver.value->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
+  {
+    MutexLocker locker(suspend_frames_lock_);
+    scheduled_suspend_frames_.clear();
   }
 
-  scheduled_suspends_.clear();
-  DCHECK_EQ(resume_resolvers_.size(), 0u);
+  {
+    // Wait until the suspend map is available for removal.
+    GraphAutoLocker locker(this);
+
+    // Offline context is going away so reject any promises that are still
+    // pending.
+
+    for (auto& pending_suspend_resolver : scheduled_suspends_) {
+      pending_suspend_resolver.value->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
+    }
+
+    scheduled_suspends_.clear();
+    DCHECK_EQ(resume_resolvers_.size(), 0u);
+  }
 
   RejectPendingDecodeAudioDataResolvers();
 }
@@ -475,12 +495,8 @@ bool OfflineAudioContext::IsPullingAudioGraph() const {
 bool OfflineAudioContext::ShouldSuspend() {
   DCHECK(IsAudioThread());
 
-  // Note that the GraphLock is required before this check. Since this needs
-  // to run on the audio thread, OfflineGraphAutoLocker must be used.
-  if (scheduled_suspends_.Contains(CurrentSampleFrame()))
-    return true;
-
-  return false;
+  MutexLocker locker(suspend_frames_lock_);
+  return scheduled_suspend_frames_.Contains(CurrentSampleFrame());
 }
 
 bool OfflineAudioContext::HasPendingActivity() const {
