@@ -129,7 +129,8 @@ void RunWake(UpdaterScope scope, int expected_exit_code) {
   base::CommandLine command_line(*installed_executable_path);
   command_line.AppendSwitch(kWakeSwitch);
   command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
   int exit_code = -1;
   ASSERT_TRUE(Run(scope, command_line, &exit_code));
   EXPECT_EQ(exit_code, expected_exit_code);
@@ -239,7 +240,8 @@ void ExpectAppVersion(UpdaterScope scope,
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
   command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
   if (scope == UpdaterScope::kSystem) {
     command_line.AppendSwitch(kSystemSwitch);
     command_line = MakeElevated(command_line);

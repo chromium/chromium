@@ -185,7 +185,7 @@ void AddInstallServerWorkItems(HKEY root,
                                 : kServerUpdateServiceSwitchValue);
   run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
   run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           "*/chrome/updater/*=2");
+                                           kLoggingModuleSwitchValue);
   list->AddSetRegValueWorkItem(
       root, local_server32_reg_path, WorkItem::kWow64Default, L"",
       run_com_server_command.GetCommandLineString(), true);
@@ -212,7 +212,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                                 : kServerUpdateServiceSwitchValue);
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                        "*/chrome/updater/*=2");
+                                        kLoggingModuleSwitchValue);
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), com_service_command,

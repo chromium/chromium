@@ -261,7 +261,9 @@ ProcessExitResult RunSetup(const Configuration& configuration,
 
   // Append logging-related arguments for debugging purposes, at least for
   // now.
-  if (!cmd_line.append(L" --enable-logging --vmodule=*/chrome/updater/*=2")) {
+  if (!cmd_line.append(
+          L" --enable-logging "
+          L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2")) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 

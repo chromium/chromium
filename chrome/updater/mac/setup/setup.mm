@@ -41,11 +41,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
-
-constexpr char kLoggingModuleSwitchValue[] =
-    "*/updater/*=2,*/update_client/*=2";
 
 #pragma mark Helpers
 Launchd::Domain LaunchdDomain(UpdaterScope scope) {

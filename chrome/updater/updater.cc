@@ -45,12 +45,12 @@
 // Instructions For Windows.
 // - To install only the updater, run "updatersetup.exe" from the build out dir.
 // - To install Chrome and the updater, do the same but use the --app-id:
-//    updatersetup.exe --app-id={8A69D345-D564-463c-AFF1-A69D9E530F96}
+//    updatersetup.exe --install --app-id={8A69D345-D564-463c-AFF1-A69D9E530F96}
 // - To uninstall, run "updater.exe --uninstall" from its install directory,
 // which is under %LOCALAPPDATA%\Google\GoogleUpdater, or from the |out|
 // directory of the build.
 // - To debug, append the following arguments to any updater command line:
-//    --enable-logging --vmodule=*/chrome/updater/*=2.
+//    --enable-logging --vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2.
 // - To run the `updater --install` from the `out` directory of the build,
 //   use --install-from-out-dir command line switch in addition to other
 //   arguments for --install.

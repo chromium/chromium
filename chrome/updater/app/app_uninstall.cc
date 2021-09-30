@@ -64,7 +64,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
         command_line.AppendSwitch(kSystemSwitch);
       command_line.AppendSwitch(kEnableLoggingSwitch);
       command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                     "*/chrome/updater/*=2");
+                                     kLoggingModuleSwitchValue);
       int exit_code = -1;
       std::string output;
       base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
