@@ -352,11 +352,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.getToolbar_().hidden = false;
     }
 
-    // Setup the keyboard event listener.
-    document.addEventListener(
-        'keydown',
-        e => this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (e)));
-
     this.navigator_ = new PdfNavigator(
         this.originalUrl, this.viewport,
         /** @type {!OpenPdfParamsParser} */ (this.paramsParser),
@@ -368,27 +363,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
   }
 
-  /**
-   * Helper for handleKeyEvent_ dealing with events that control toolbars.
-   * @param {!KeyboardEvent} e the event to handle.
-   * @private
-   */
-  handleToolbarKeyEvent_(e) {
-    // TODO(thestig): Should this use hasCtrlModifier() or stay as is?
-    if (e.key === '\\' && e.ctrlKey) {
-      this.getToolbar_().fitToggle();
-    }
-    // TODO: Add handling for additional relevant hotkeys for the new unified
-    // toolbar.
-  }
-
-  /**
-   * Handle key events. These may come from the user directly or via the
-   * scripting API.
-   * @param {!KeyboardEvent} e the event to handle.
-   * @private
-   */
-  handleKeyEvent_(e) {
+  /** @override */
+  handleKeyEvent(e) {
     if (shouldIgnoreKeyEvents() || e.defaultPrevented) {
       return;
     }
@@ -436,6 +412,20 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     // Handle toolbar related key events.
     this.handleToolbarKeyEvent_(e);
+  }
+
+  /**
+   * Helper for handleKeyEvent dealing with events that control toolbars.
+   * @param {!KeyboardEvent} e the event to handle.
+   * @private
+   */
+  handleToolbarKeyEvent_(e) {
+    // TODO(thestig): Should this use hasCtrlModifier() or stay as is?
+    if (e.key === '\\' && e.ctrlKey) {
+      this.getToolbar_().fitToggle();
+    }
+    // TODO: Add handling for additional relevant hotkeys for the new unified
+    // toolbar.
   }
 
   // <if expr="enable_ink">
@@ -843,6 +833,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'gesture':
         this.viewport.dispatchGesture(
             /** @type {{ gesture: !Gesture }} */ (data).gesture);
+        return;
+      case 'sendKeyEvent':
+        this.handleKeyEvent(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
+            /** @type {{ keyEvent: Object }} */ (data).keyEvent)));
         return;
     }
     assertNotReached('Unknown message type received: ' + data.type);

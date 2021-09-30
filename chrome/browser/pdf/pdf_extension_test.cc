@@ -89,9 +89,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_registry.h"
@@ -138,6 +140,8 @@ using ::guest_view::GuestViewManager;
 using ::guest_view::TestGuestViewManager;
 using ::guest_view::TestGuestViewManagerFactory;
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
+using ::testing::IsEmpty;
+using ::testing::MatchesRegex;
 using ::ui::AXTreeFormatter;
 
 const int kNumberLoadTestParts = 10;
@@ -1469,6 +1473,45 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
+  // Load without the UI (i.e. with #toolbar=0) to guarantee that any mouse
+  // click will hit the plugin frame.
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+
+  // Set the keyboard focus on the plugin frame.
+  content::FocusChangedObserver focus_observer(guest_contents);
+  content::SimulateMouseClickAt(guest_contents, /*modifiers=*/0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(1, 1));
+  focus_observer.Wait();
+
+  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(frame);
+  content::RenderWidgetHostView* view = frame->GetView();
+  EXPECT_THAT(view->GetSelectedText(), IsEmpty());
+
+  base::RunLoop run_loop;
+  content::TextInputManagerTester input_tester(guest_contents);
+  input_tester.SetOnTextSelectionChangedCallback(run_loop.QuitClosure());
+
+  bool control = false;
+  bool command = false;
+#if defined(OS_MAC)
+  command = true;
+#else
+  control = true;
+#endif
+  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, control,
+                            /*shift=*/false,
+                            /*alt=*/false, command);
+  run_loop.Run();
+
+  EXPECT_THAT(base::UTF16ToUTF8(view->GetSelectedText()),
+              MatchesRegex("this is some text\r?\nsome more text"));
 }
 
 namespace {

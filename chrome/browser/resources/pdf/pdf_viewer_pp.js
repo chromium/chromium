@@ -77,20 +77,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     this.pluginController_ = PluginController.getInstance();
 
     this.toolbarManager_ = new ToolbarManager(window, this.getZoomToolbar_());
-
-    // Setup the keyboard event listener.
-    document.addEventListener(
-        'keydown',
-        e => this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (e)));
   }
 
-  /**
-   * Handle key events. These may come from the user directly or via the
-   * scripting API.
-   * @param {!KeyboardEvent} e the event to handle.
-   * @private
-   */
-  handleKeyEvent_(e) {
+  /** @override */
+  handleKeyEvent(e) {
     if (shouldIgnoreKeyEvents() || e.defaultPrevented) {
       return;
     }
@@ -239,7 +229,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         this.pluginController_.resetPrintPreviewMode(messageData);
         return true;
       case 'sendKeyEvent':
-        this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
+        this.handleKeyEvent(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
             /** @type {{ keyEvent: Object }} */ (message.data).keyEvent)));
         return true;
       case 'hideToolbar':

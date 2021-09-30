@@ -43,3 +43,27 @@ const gestureDetector = new GestureDetector(plugin);
 for (const type of ['pinchstart', 'pinchupdate', 'pinchend']) {
   gestureDetector.getEventTarget().addEventListener(type, relayGesture);
 }
+
+document.addEventListener('keydown', e => {
+  // Only forward potential shortcut keys.
+  if (!e.ctrlKey && !e.metaKey) {
+    return;
+  }
+
+  // Take over Ctrl+A, but not other shortcuts, such as zoom or print.
+  if (e.key === 'a') {
+    e.preventDefault();
+  }
+  channel.port1.postMessage({
+    type: 'sendKeyEvent',
+    keyEvent: {
+      keyCode: e.keyCode,
+      code: e.code,
+      key: e.key,
+      shiftKey: e.shiftKey,
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+      metaKey: e.metaKey,
+    },
+  });
+});

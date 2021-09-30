@@ -275,6 +275,10 @@ export class PDFViewerBaseElement extends PolymerElement {
       this.viewport_.goToPageAndXY(e.detail.page, point.x, point.y);
     });
 
+    // Setup the keyboard event listener.
+    document.addEventListener(
+        'keydown', e => this.handleKeyEvent(/** @type {!KeyboardEvent} */ (e)));
+
     // Set up the ZoomManager.
     this.zoomManager_ = ZoomManager.create(
         this.browserApi.getZoomBehavior(), () => this.viewport_.getZoom(),
@@ -423,6 +427,14 @@ export class PDFViewerBaseElement extends PolymerElement {
    * @protected
    */
   handlePluginMessage(e) {}
+
+  /**
+   * Handles key events. For instance, these may come from the user directly,
+   * the plugin frame, or the scripting API.
+   * @param {!KeyboardEvent} e the event to handle.
+   * @protected
+   */
+  handleKeyEvent(e) {}
 
   /**
    * Sets document dimensions from the current controller.
