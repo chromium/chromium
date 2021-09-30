@@ -146,7 +146,7 @@ class PaintArtifactCompositorTest : public testing::Test,
       const WTF::Vector<const TransformPaintPropertyNode*>&
           scroll_translation_nodes = {}) {
     paint_artifact_compositor_->SetNeedsUpdate();
-    HeapVector<PreCompositedLayerInfo> pre_composited_layers = {
+    Vector<PreCompositedLayerInfo> pre_composited_layers = {
         {PaintChunkSubset(artifact)}};
     paint_artifact_compositor_->Update(pre_composited_layers,
                                        viewport_properties,
@@ -4563,37 +4563,33 @@ TEST_P(PaintArtifactCompositorTest, PreCompositedLayerNonCompositedScrolling) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
-  FakeGraphicsLayerClient& client =
-      *(MakeGarbageCollected<FakeGraphicsLayerClient>());
-  Member<GraphicsLayer> graphics_layer =
-      MakeGarbageCollected<GraphicsLayer>(client);
+  FakeGraphicsLayerClient client;
+  GraphicsLayer graphics_layer(client);
   auto parent_scroll_translation = CreateScrollTranslation(
       t0(), 10, 20, IntRect(0, 0, 100, 100), IntSize(200, 200),
       CompositingReason::kRootScroller);
   PropertyTreeState layer_state(*parent_scroll_translation, c0(), e0());
-  graphics_layer->SetLayerState(layer_state, IntPoint());
+  graphics_layer.SetLayerState(layer_state, IntPoint());
   auto scroll_translation = CreateScrollTranslation(
       *parent_scroll_translation, 10, 20, IntRect(0, 0, 150, 150),
       IntSize(200, 200), CompositingReason::kNone);
 
   TestPaintArtifact artifact;
   CreateScrollableChunk(artifact, *scroll_translation, c0(), e0());
-  HeapVector<PreCompositedLayerInfo> pre_composited_layers = {
-      {PaintChunkSubset(artifact.Build()), graphics_layer}};
+  Vector<PreCompositedLayerInfo> pre_composited_layers = {
+      {PaintChunkSubset(artifact.Build()), &graphics_layer}};
   GetPaintArtifactCompositor().SetNeedsUpdate();
   GetPaintArtifactCompositor().Update(
       pre_composited_layers, PaintArtifactCompositor::ViewportProperties(), {},
       {});
 
   EXPECT_EQ(1u, LayerCount());
-  EXPECT_EQ(&graphics_layer->CcLayer(), LayerAt(0));
+  EXPECT_EQ(&graphics_layer.CcLayer(), LayerAt(0));
   EXPECT_EQ(gfx::Rect(0, 0, 150, 150),
-            graphics_layer->CcLayer().non_fast_scrollable_region().bounds());
+            graphics_layer.CcLayer().non_fast_scrollable_region().bounds());
   EXPECT_EQ(parent_scroll_translation->CcNodeId(
-                graphics_layer->CcLayer().property_tree_sequence_number()),
-            graphics_layer->CcLayer().scroll_tree_index());
-
-  graphics_layer->Destroy();
+                graphics_layer.CcLayer().property_tree_sequence_number()),
+            graphics_layer.CcLayer().scroll_tree_index());
 }
 
 TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
@@ -4608,7 +4604,7 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   Update(artifact);
   scroll_translation->ClearChangedToRoot();
 
-  HeapVector<PreCompositedLayerInfo> pre_composited_layers = {
+  Vector<PreCompositedLayerInfo> pre_composited_layers = {
       {PaintChunkSubset(artifact)}};
   GetPaintArtifactCompositor().UpdateRepaintedLayers(pre_composited_layers);
   // This test passes if no CHECK occurs.

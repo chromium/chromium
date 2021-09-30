@@ -887,7 +887,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   IsCapturingMediaCallback is_capturing_media_callback_;
 
-  Member<FrameOverlay> frame_color_overlay_;
+  std::unique_ptr<FrameOverlay> frame_color_overlay_;
 
   absl::optional<base::UnguessableToken> embedding_token_;
 

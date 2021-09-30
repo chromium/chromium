@@ -60,8 +60,8 @@ TEST_P(ValidationMessageOverlayDelegateTest,
       TextDirection::kLtr);
   ValidationMessageOverlayDelegate* delegate_ptr = delegate.get();
 
-  auto* overlay =
-      MakeGarbageCollected<FrameOverlay>(&GetFrame(), std::move(delegate));
+  auto overlay =
+      std::make_unique<FrameOverlay>(&GetFrame(), std::move(delegate));
   delegate_ptr->CreatePage(*overlay);
   ASSERT_TRUE(GetFrame().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest));
@@ -84,8 +84,6 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   for (const auto& animation : animations) {
     EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   }
-
-  overlay->Destroy();
 }
 
 // Regression test for https://crbug.com/990680, where we found we were not

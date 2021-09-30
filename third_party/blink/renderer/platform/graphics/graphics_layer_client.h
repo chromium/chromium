@@ -28,7 +28,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -53,7 +52,7 @@ enum GraphicsLayerPaintingPhaseFlags {
 };
 typedef unsigned GraphicsLayerPaintingPhase;
 
-class PLATFORM_EXPORT GraphicsLayerClient : public GarbageCollectedMixin {
+class PLATFORM_EXPORT GraphicsLayerClient {
  public:
   virtual ~GraphicsLayerClient() = default;
 
@@ -96,8 +95,6 @@ class PLATFORM_EXPORT GraphicsLayerClient : public GarbageCollectedMixin {
   // while painting.
   virtual void VerifyNotPainting() {}
 #endif
-
-  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink
