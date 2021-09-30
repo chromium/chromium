@@ -55,7 +55,7 @@ def GetPDBInfoFromImg(filename):
 
       return ("%08X%04X%04X%s%s%d" % (guid.Data1, guid.Data2, guid.Data3,
                                       guid.Data4_0, guid.Data4_1, cv.Age),
-              cv.PdbFileName.split(b'\x00', 1)[0])
+              cv.PdbFileName.split(b'\x00', 1)[0].decode())
 
     break
 
