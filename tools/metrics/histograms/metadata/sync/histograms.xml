@@ -632,7 +632,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.LocalDeviceInfoDeletionReuploaded" enum="Boolean"
-    expires_after="M96">
+    expires_after="2022-01-31">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
