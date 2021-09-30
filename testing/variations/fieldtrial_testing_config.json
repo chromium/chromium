@@ -120,6 +120,25 @@
             ]
         }
     ],
+    "AndroidContextualSearchM95": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_With_Partial_Translate_20210930",
+                    "params": {
+                        "promo_card_max_shown": "3"
+                    },
+                    "enable_features": [
+                        "ContextualSearchNewSettings",
+                        "ContextualSearchTranslations"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDynamicColor": [
         {
             "platforms": [
@@ -2395,21 +2414,6 @@
                     ],
                     "disable_features": [
                         "ContextualSearchLiteralSearchTap"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ContextualSearchTranslations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Launch-candidate_20210915",
-                    "enable_features": [
-                        "ContextualSearchTranslations"
                     ]
                 }
             ]
