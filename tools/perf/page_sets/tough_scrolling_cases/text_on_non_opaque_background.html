@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<!--
+This sets up an element who's text would be considered to not be on an opaque
+background. When the flag `disable-prefer-compositing-to-lcd-text` is used, the
+Composited Scrolling Path will be disabled. The scrolling will then fallback on
+the Main Thread Scrolling Path.
+-->
+    <style>
+      #scroll {
+        overflow:scroll;
+        width: 400px;
+        height: 300px;
+        border: 10px solid #ccc;
+        padding: 10px;
+      }
+      body { font-size: 48pt; margin 50px; }
+    </style>
+  </head>
+  <body>
+    <div id="scroll">
+      <p style="height:1000px;width:1000px">
+        " hello"
+        <br>
+        " world"
+      </p>
+    </div>
+  </body>
+</html>
