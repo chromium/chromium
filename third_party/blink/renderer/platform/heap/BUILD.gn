@@ -135,10 +135,8 @@ test("blink_heap_unittests") {
 source_set("blink_heap_unittests_sources") {
   testonly = true
 
-  sources = [ "../testing/run_all_tests.cc" ]
-
-  sources += [
-    "test/allocation_perftest.cc",
+  sources = [
+    "../testing/run_all_tests.cc",
     "test/blink_gc_memory_dump_provider_test.cc",
     "test/concurrent_marking_test.cc",
     "test/heap_compact_test.cc",
@@ -148,7 +146,6 @@ source_set("blink_heap_unittests_sources") {
     "test/incremental_marking_test.cc",
     "test/persistent_test.cc",
     "test/weakness_marking_test.cc",
-    "test/write_barrier_perftest.cc",
   ]
 
   if (enable_blink_heap_young_generation) {
@@ -173,9 +170,51 @@ source_set("blink_heap_unittests_sources") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
+}
+
+test("blink_heap_perftests") {
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
+  deps = [ ":blink_heap_perftests_sources" ]
+
+  if (is_android) {
+    deps += [
+      "//base:base_java",
+      "//content/shell/android:content_shell_assets",
+      "//net/android:net_java",
+      "//ui/android:ui_full_java",
+    ]
+  }
 
   if (is_fuchsia) {
-    # Needed for ../testing/run_all_tests.cc.
-    deps += [ "//skia:test_fonts" ]
+    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
+    # permissions.
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
   }
+}
+
+source_set("blink_heap_perftests_sources") {
+  testonly = true
+
+  sources = [
+    "../testing/blink_perf_test_suite.cc",
+    "../testing/blink_perf_test_suite.h",
+    "../testing/run_all_perf_tests.cc",
+    "test/allocation_perftest.cc",
+    "test/write_barrier_perftest.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer/platform/wtf:wtf_config",
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//testing/perf",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
 }
