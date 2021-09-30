@@ -7846,7 +7846,7 @@
                         "delta": "0.01"
                     },
                     "enable_features": [
-                        "NonUniformityValidation"
+                        "UMANonUniformityLogNormal"
                     ]
                 }
             ]

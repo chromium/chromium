@@ -231,11 +231,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>sweilun@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    This is logged with a value of random value drawn from an artificial log
-    normal distribution in every log and used for data validation. The mean and
-    standard deviation parameters of the log normal distribution are controlled
-    by artificial A/B experiments so that we can assess the accuracy and power
-    of data from field trials.
+    This is logged with a random value drawn from an artificial log normal
+    distribution in every ongoing metrics logs (not logs about the previous
+    session) and used for data validation. The mean and standard deviation
+    parameters of the log normal distribution are controlled by artificial A/B
+    experiments so that we can assess the accuracy and power of data from field
+    trials.
   </summary>
 </histogram>
 

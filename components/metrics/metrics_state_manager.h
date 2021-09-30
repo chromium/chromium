@@ -50,10 +50,9 @@ enum class EntropyProviderType {
 };
 
 // Used to assess the reliability of field trial data by sending artificial
-// non-uniform data. This feature's parameter controls the mu value of a log
-// normal distribution.
+// non-uniform data drawn from a log normal distribution.
 const base::Feature kNonUniformityValidationFeature{
-    "NonUniformityValidation", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UMANonUniformityLogNormal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Responsible for managing MetricsService state prefs, specifically the UMA
 // client id and low entropy source. Code outside the metrics directory should

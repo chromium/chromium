@@ -121,7 +121,7 @@ std::lognormal_distribution<double> GetLogNormalDist() {
 // Used to draw a data point from a log normal distribution.
 struct LogNormalMetricState {
   LogNormalMetricState()
-      : dist(GetLogNormalDist()), gen(std::mt19937(std::random_device()())) {}
+      : dist(GetLogNormalDist()), gen(std::mt19937(base::RandUint64())) {}
 
   // Records the artificial non-uniformity histogram for data validation.
   void LogArtificialNonUniformity() {
