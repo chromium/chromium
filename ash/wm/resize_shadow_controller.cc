@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -169,12 +171,14 @@ void ResizeShadowController::UpdateShadowVisibility(aura::Window* window,
 
 bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
-  // Hide the shadow if it's a maximized/fullscreen/minimized window.
+  // Hide the shadow if it's a maximized/fullscreen/minimized window or the
+  // overview mode is active.
   ui::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
   return show_state != ui::SHOW_STATE_FULLSCREEN &&
          show_state != ui::SHOW_STATE_MAXIMIZED &&
-         show_state != ui::SHOW_STATE_MINIMIZED;
+         show_state != ui::SHOW_STATE_MINIMIZED &&
+         !Shell::Get()->overview_controller()->InOverviewSession();
 }
 
 }  // namespace ash

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -109,10 +110,13 @@ class ResizeShadowAndCursorTest : public AshTestBase {
       ASSERT_TRUE(window_->layer());
       EXPECT_EQ(window_->layer()->parent(), shadow_layer->parent());
       const auto& layers = shadow_layer->parent()->children();
-      // Make sure the shadow layer is stacked directly beneath the window
-      // layer.
-      EXPECT_EQ(*(std::find(layers.begin(), layers.end(), shadow_layer) + 1),
-                window_->layer());
+      // We don't care about the layer order if it's invisible.
+      if (visible) {
+        // Make sure the shadow layer is stacked directly beneath the window
+        // layer.
+        EXPECT_EQ(*(std::find(layers.begin(), layers.end(), shadow_layer) + 1),
+                  window_->layer());
+      }
     }
   }
 
@@ -501,6 +505,32 @@ TEST_F(ResizeShadowAndCursorTest, WindowStateChange) {
   window_state->Minimize();
   VerifyResizeShadow(false);
   window_state->Unminimize();
+  VerifyResizeShadow(true);
+}
+
+// Tests that shadow gets hidden and restored according to the oveview mode
+// state.
+TEST_F(ResizeShadowAndCursorTest, OverviewModeChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+
+  // Requests ShowShadow() before entering overview.
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  window()->Show();
+  VerifyResizeShadow(true);
+  EnterOverview();
+  VerifyResizeShadow(false);
+  ExitOverview();
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+
+  // Requests ShowShadow() after entering overview.
+  EnterOverview();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(false);
+  ExitOverview();
   VerifyResizeShadow(true);
 }
 
