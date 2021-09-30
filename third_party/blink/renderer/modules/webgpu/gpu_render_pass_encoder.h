@@ -76,6 +76,13 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   }
   void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
                       const V8GPUIndexFormat& format,
+                      uint64_t offset) {
+    GetProcs().renderPassEncoderSetIndexBuffer(GetHandle(), buffer->GetHandle(),
+                                               AsDawnEnum(format), offset,
+                                               WGPU_WHOLE_SIZE);
+  }
+  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
+                      const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
     GetProcs().renderPassEncoderSetIndexBuffer(
@@ -83,8 +90,14 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   }
   void setVertexBuffer(uint32_t slot,
                        const DawnObject<WGPUBuffer>* buffer,
-                       const uint64_t offset,
-                       const uint64_t size) {
+                       uint64_t offset) {
+    GetProcs().renderPassEncoderSetVertexBuffer(
+        GetHandle(), slot, buffer->GetHandle(), offset, WGPU_WHOLE_SIZE);
+  }
+  void setVertexBuffer(uint32_t slot,
+                       const DawnObject<WGPUBuffer>* buffer,
+                       uint64_t offset,
+                       uint64_t size) {
     GetProcs().renderPassEncoderSetVertexBuffer(
         GetHandle(), slot, buffer->GetHandle(), offset, size);
   }

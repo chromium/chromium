@@ -12,12 +12,12 @@
     void setIndexBuffer(GPUBuffer buffer,
                         GPUIndexFormat format,
                         optional GPUSize64 offset = 0,
-                        optional GPUSize64 size = 0);
+                        optional GPUSize64 size);
 
     void setVertexBuffer(GPUIndex32 slot,
                          GPUBuffer buffer,
                          optional GPUSize64 offset = 0,
-                         optional GPUSize64 size = 0);
+                         optional GPUSize64 size);
 
     void draw(GPUSize32 vertexCount,
               optional GPUSize32 instanceCount = 1,
