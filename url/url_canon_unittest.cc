@@ -2375,6 +2375,11 @@ TEST(URLCanonTest, ResolveRelativeURL) {
       // is not file.
     {"http://host/a", true, false, "/c:\\foo", true, true, true, "http://host/c:/foo"},
     {"http://host/a", true, false, "//c:\\foo", true, true, true, "http://c/foo"},
+      // Cross-platform relative file: resolution behavior.
+    {"file://host/a", true, true, "/", true, true, true, "file://host/"},
+    {"file://host/a", true, true, "//", true, true, true, "file:///"},
+    {"file://host/a", true, true, "/b", true, true, true, "file://host/b"},
+    {"file://host/a", true, true, "//b", true, true, true, "file://b/"},
       // Ensure that ports aren't allowed for hosts relative to a file url.
       // Although the result string shows a host:port portion, the call to
       // resolve the relative URL returns false, indicating parse failure,
