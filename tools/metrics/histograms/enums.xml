@@ -59908,6 +59908,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="same-site violation"/>
 </enum>
 
+<enum name="NetworkServiceCorsPreflightMethodAllowed">
+  <int value="0" label="Both Disallowed"/>
+  <int value="1" label="Only normalized_method allowed"/>
+  <int value="2" label="Only method allowed"/>
+  <int value="3" label="Both Allowed"/>
+</enum>
+
 <enum name="NetworkServiceError">
   <int value="0" label="NONE"/>
   <int value="1" label="AAA_FAILED"/>

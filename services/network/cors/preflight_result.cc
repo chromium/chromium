@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -140,8 +141,29 @@ absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
   // case-sensitive way, that means access control header should provide an
   // upper case method list.
   const std::string normalized_method = base::ToUpperASCII(method);
-  if (methods_.find(normalized_method) != methods_.end() ||
-      IsCorsSafelistedMethod(normalized_method)) {
+  const bool normalized_method_allowed =
+      methods_.find(normalized_method) != methods_.end() ||
+      IsCorsSafelistedMethod(normalized_method);
+  const bool method_allowed =
+      methods_.find(method) != methods_.end() || IsCorsSafelistedMethod(method);
+
+  // This should be consistent with `NetworkServiceCorsPreflightMethodAllowed`
+  // in `tools/metrics/histograms/enums.xml`.
+  enum CorsPreflightMethodAllowed {
+    kBothDisallowed = 0,
+    kNormalizedMethodAllowed = 1,
+    kMethodAllowed = 2,
+    kBothAllowed = 3,
+    kMaxValue = kBothAllowed
+  };
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "NetworkService.CorsPreflightMethodAllowed",
+      normalized_method_allowed
+          ? (method_allowed ? kBothAllowed : kNormalizedMethodAllowed)
+          : (method_allowed ? kMethodAllowed : kBothDisallowed));
+
+  if (normalized_method_allowed) {
     return absl::nullopt;
   }
 
