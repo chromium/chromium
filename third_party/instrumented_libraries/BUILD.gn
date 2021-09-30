@@ -6,11 +6,6 @@ import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
 
-declare_args() {
-  # The platform on which the instrumented libraries are being built.
-  instrumented_libraries_platform = "xenial"
-}
-
 group("deps") {
   if (use_locally_built_instrumented_libraries) {
     deps = [ ":locally_built" ]
@@ -77,22 +72,6 @@ if (prebuilt_instrumented_libraries_available) {
 }
 
 if (use_locally_built_instrumented_libraries) {
-  assert(instrumented_libraries_platform == "trusty" ||
-             instrumented_libraries_platform == "xenial",
-         "Currently, the only supported platforms are Trusty and Xenial.")
-
-  if (instrumented_libraries_platform == "trusty") {
-    libgcrypt_package_ = "libgcrypt11"
-    librtmp_package_ = "librtmp0"
-    libgnutls_package_ = "libgnutls26"
-    libudev_package_ = "udev"
-  } else {
-    libgcrypt_package_ = "libgcrypt20"
-    librtmp_package_ = "librtmp1"
-    libgnutls_package_ = "libgnutls30"
-    libudev_package_ = "libudev1"
-  }
-
   group("locally_built") {
     visibility = [ ":deps" ]
     deps = [
@@ -117,6 +96,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libexpat1",
       ":libffi6",
       ":libfontconfig1",
+      ":libgcrypt20",
       ":libgdk-pixbuf2.0-0",
       ":libglib2.0-0",
       ":libgnome-keyring0",
@@ -133,9 +113,11 @@ if (use_locally_built_instrumented_libraries) {
       ":libpci3",
       ":libpcre3",
       ":libpixman-1-0",
+      ":librtmp1",
       ":libsasl2-2",
       ":libsecret",
       ":libtasn1-6",
+      ":libudev1",
       ":libunity9",
       ":libva1",
       ":libwayland-client0",
@@ -159,17 +141,14 @@ if (use_locally_built_instrumented_libraries) {
       ":pango1.0",
       ":pulseaudio",
       ":zlib1g",
-      ":" + libgcrypt_package_,
-      ":" + librtmp_package_,
-      ":" + libudev_package_,
     ]
     if (is_msan) {
       deps += [
         ":libcgmanager0",
         ":libcups2",
+        ":libgnutls30",
         ":libnih-dbus1",
         ":libnih1",
-        ":" + libgnutls_package_,
       ]
     }
     if (!is_tsan) {
@@ -384,11 +363,8 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-qt3",
       "--with-systemdsystemunitdir=/lib/systemd/system",
     ]
-    patches =
-        [ "patches/libavahi-client3.${instrumented_libraries_platform}.diff" ]
-    if (instrumented_libraries_platform != "trusty") {
-      pre_build = "scripts/pre-build/autogen.sh"
-    }
+    patches = [ "patches/libavahi-client3.diff" ]
+    pre_build = "scripts/pre-build/autogen.sh"
   }
 
   instrumented_library("libcairo2") {
@@ -398,9 +374,7 @@ if (use_locally_built_instrumented_libraries) {
     ]
 
     # Required due to aclocal version mismatch.
-    if (instrumented_libraries_platform != "trusty") {
-      pre_build = "scripts/pre-build/autoreconf.sh"
-    }
+    pre_build = "scripts/pre-build/autoreconf.sh"
   }
 
   instrumented_library("libcap2") {
@@ -411,7 +385,7 @@ if (use_locally_built_instrumented_libraries) {
   instrumented_library("libcgmanager0") {
     extra_configure_flags = [ "--disable-static" ]
 
-    # Required on Trusty due to autoconf version mismatch.
+    # Required due to autoconf version mismatch.
     pre_build = "scripts/pre-build/autoreconf.sh"
   }
 
@@ -452,13 +426,9 @@ if (use_locally_built_instrumented_libraries) {
 
   instrumented_library("libcurl3-gnutls") {
     build_method = "custom_libcurl"
-    if (instrumented_libraries_platform == "trusty") {
-      # This patch is in upstream Xenial and later.
-      patches = [ "patches/libcurl3-gnutls.trusty.diff" ]
-    } else {
-      # Don't generate zsh completions.
-      patches = [ "patches/libcurl3-gnutls.xenial.diff" ]
-    }
+
+    # Don't generate zsh completions.
+    patches = [ "patches/libcurl3-gnutls.diff" ]
   }
 
   instrumented_library("libdbus-1-3") {
@@ -538,13 +508,9 @@ if (use_locally_built_instrumented_libraries) {
       # From debian/rules.
       "--with-add-fonts=/usr/X11R6/lib/X11/fonts,/usr/local/share/fonts",
     ]
-    if (instrumented_libraries_platform == "trusty") {
-      # This patch is in upstream Xenial and later.
-      patches = [ "patches/libfontconfig.trusty.diff" ]
-    }
   }
 
-  target("instrumented_library", libgcrypt_package_) {
+  instrumented_library("libgcrypt20") {
     package_ldflags = [ "-Wl,-z,muldefs" ]
     extra_configure_flags = [
       # From debian/rules.
@@ -580,12 +546,11 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-gtk-doc-html",
       "--disable-gtk-doc-pdf",
       "--disable-static",
-    ]
-    if (instrumented_libraries_platform == "xenial") {
+
       # --with-pcre=system (the default) fails because the system-supplied
       # PCRE does not support Unicode properties or UTF-8.
-      extra_configure_flags += [ "--with-pcre=internal" ]
-    }
+      "--with-pcre=internal",
+    ]
     asan_blacklist = "blacklists/asan/libglib2.0-0.txt"
     msan_blacklist = "blacklists/msan/libglib2.0-0.txt"
     pre_build = "scripts/pre-build/autogen.sh"
@@ -602,7 +567,7 @@ if (use_locally_built_instrumented_libraries) {
     package_ldflags = [ "-Wl,--as-needed" ]
   }
 
-  target("instrumented_library", libgnutls_package_) {
+  instrumented_library("libgnutls30") {
     extra_configure_flags = [
       # from debian/rules.
       "--enable-ld-version-script",
@@ -615,22 +580,18 @@ if (use_locally_built_instrumented_libraries) {
     if (is_msan) {
       # MSAN is not compatible with instructions such as CPUID.
       # https://github.com/google/oss-fuzz/issues/578
-      extra_configure_flags += [
-        "--disable-hardware-acceleration",
-      ]
+      extra_configure_flags += [ "--disable-hardware-acceleration" ]
     }
-    if (instrumented_libraries_platform == "xenial") {
-      patches = [
-        # Make sure to use the memset/memcmp provided by MSAN, not the
-        # gnutls-provided ones.
-        "patches/libgnutls30.1.diff",
+    patches = [
+      # Make sure to use the memset/memcmp provided by MSAN, not the
+      # gnutls-provided ones.
+      "patches/libgnutls30.1.diff",
 
-        # Work around several usages of uninitialized memory.  The allocated
-        # memory is contained within libgnutls, so will not affect Chromium test
-        # coverage.
-        "patches/libgnutls30.2.diff",
-      ]
-    }
+      # Work around several usages of uninitialized memory.  The allocated
+      # memory is contained within libgnutls, so will not affect Chromium test
+      # coverage.
+      "patches/libgnutls30.2.diff",
+    ]
   }
 
   instrumented_library("libgpg-error0") {
@@ -651,7 +612,7 @@ if (use_locally_built_instrumented_libraries) {
     patches = [
       # MSAN does not support GL, so it must be disabled in GTK.
       # https://www.chromium.org/developers/testing/memorysanitizer#TOC-Disable-OpenGL
-      "patches/libgtk-3-0.diff"
+      "patches/libgtk-3-0.diff",
     ]
   }
 
@@ -721,11 +682,9 @@ if (use_locally_built_instrumented_libraries) {
       "--with-odbc=unixodbc",
     ]
 
-    # Xenial added a custom patch that adds @VERSION_OPTION@, which must
+    # Debian adds a custom patch that adds @VERSION_OPTION@, which must
     # be substituted before building.
-    if (instrumented_libraries_platform == "xenial") {
-      pre_build = "scripts/pre-build/dh_autoreconf.sh"
-    }
+    pre_build = "scripts/pre-build/dh_autoreconf.sh"
   }
 
   instrumented_library("libnih1") {
@@ -758,24 +717,8 @@ if (use_locally_built_instrumented_libraries) {
   instrumented_library("libp11-kit0") {
     extra_configure_flags = [ "--disable-static" ]
 
-    # Required on Trusty due to autoconf version mismatch.
+    # Required due to autoconf version mismatch.
     pre_build = "scripts/pre-build/autoreconf.sh"
-
-    # libp11-kit has an atfork handler, reinitiailize_after_fork(), which causes
-    # deadlocks when used in combination with msan. msan's __fork_interceptor()
-    # will acquire msan locks prior to the fork. reinitialize_after_fork() will
-    # attempt to allocate memory, triggering __malloc_interceptor() which then
-    # blocks forever on msan's locks.
-    #
-    # This patch merges libp11-kit's rev
-    # 16e25b2890927108ec15297aabb1d86a49792741.
-    # which updated the atfork handler to be async-signal-safe.
-    # https://bugs.freedesktop.org/show_bug.cgi?id=84567
-    #
-    # The patch is already present in Xenial.
-    if (instrumented_libraries_platform == "trusty") {
-      patches = [ "patches/libp11-kit0.diff" ]
-    }
   }
 
   instrumented_library("libpci3") {
@@ -803,23 +746,23 @@ if (use_locally_built_instrumented_libraries) {
       # Avoid a clang issue. http://crbug.com/449183
       "--disable-mmx",
     ]
-    patches = [ "patches/libpixman-1-0.diff" ]
-    if (instrumented_libraries_platform == "xenial") {
+    patches = [
+      "patches/libpixman-1-0.1.diff",
+
       # Fix an incompatibility when building with clang.
-      patches += [ "patches/libpixman-1-0.xenial.diff" ]
-    }
+      "patches/libpixman-1-0.2.diff",
+    ]
   }
 
   instrumented_library("libpng12-0") {
     extra_configure_flags = [ "--disable-static" ]
   }
 
-  target("instrumented_library", librtmp_package_) {
+  instrumented_library("librtmp1") {
     build_method = "debian"
-    if (instrumented_libraries_platform == "xenial") {
-      # Ensure we build with clang.
-      patches = [ "patches/librtmp1.diff" ]
-    }
+
+    # Ensure we build with clang.
+    patches = [ "patches/librtmp1.diff" ]
   }
 
   instrumented_library("libsasl2-2") {
@@ -863,13 +806,6 @@ if (use_locally_built_instrumented_libraries) {
 
   instrumented_library("libva1") {
     extra_configure_flags = [ "--disable-static" ]
-
-    # Backport a use-after-free fix:
-    # http://cgit.freedesktop.org/libva/diff/va/va.c?h=staging&id=d4988142a3f2256e38c5c5cdcdfc1b4f5f3c1ea9
-    # The patch is in upstream Xenial.
-    if (instrumented_libraries_platform == "trusty") {
-      patches = [ "patches/libva1.diff" ]
-    }
     pre_build = "scripts/pre-build/libva1.sh"
   }
 
@@ -881,12 +817,7 @@ if (use_locally_built_instrumented_libraries) {
 
     # Do not use the just-built wayland_scanner because it is not runnable due
     # to uninstrumented dependencies.
-    if (instrumented_libraries_platform == "trusty") {
-      extra_configure_flags += [ "--disable-scanner" ]
-    } else {
-      # The --disable-scanner flag is removed in Xenial.
-      extra_configure_flags += [ "--with-host-scanner" ]
-    }
+    extra_configure_flags += [ "--with-host-scanner" ]
   }
 
   instrumented_library("libx11-6") {
@@ -895,11 +826,6 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-static",
     ]
     msan_blacklist = "blacklists/msan/libx11-6.txt"
-
-    # Required on Trusty due to autoconf version mismatch.
-    if (instrumented_libraries_platform == "trusty") {
-      pre_build = "scripts/pre-build/autoreconf.sh"
-    }
   }
 
   instrumented_library("libxau6") {
@@ -1016,28 +942,16 @@ if (use_locally_built_instrumented_libraries) {
       # Disable some ARM-related code that fails compilation. No idea why
       # this even impacts x86-64 builds.
       "--disable-neon-opt",
-    ]
-    if (instrumented_libraries_platform == "xenial") {
+
       # There's a build failure caused (I think) by a missing include, so skip
       # building the offending file to avoid maintaining a patch.
-      extra_configure_flags += [ "--disable-android-hal" ]
-    }
+      "--disable-android-hal",
+    ]
     pre_build = "scripts/pre-build/pulseaudio.sh"
   }
 
-  target("instrumented_library", libudev_package_) {
-    if (instrumented_libraries_platform == "trusty") {
-      extra_configure_flags = [
-        "--disable-static",
-
-        # Without this flag there's a linking step that doesn't honor LDFLAGS
-        # and fails.
-        # TODO(eugenis): find a better fix.
-        "--disable-gudev",
-      ]
-    } else {
-      build_method = "debian"
-    }
+  instrumented_library("libudev1") {
+    build_method = "debian"
     pre_build = "scripts/pre-build/udev.sh"
   }
 

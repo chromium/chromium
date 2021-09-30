@@ -5,7 +5,7 @@
 
 # This script does some preparations before build of instrumented udev.
 
-# Required on Trusty due to autoconf version mismatch.
+# Required due to autoconf version mismatch.
 autoreconf --force
 
 # Do not warn about undefined sanitizer symbols in object files.

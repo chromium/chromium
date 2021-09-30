@@ -5,8 +5,7 @@
 
 # Sometimes there isn't a pre-generated configure script, and we must first run
 # autogen.sh to generate it. Even if there is one, sometimes we need to
-# re-generate it (in particular, the autoconf version on Trusty is newer than
-# what is expected by pre-generated configure scripts in some packages).
+# re-generate it.
 
 # Unfortunately, we can't run autogen.sh unconditionally whenever it's present,
 # as that sometimes breaks build. Which is why we have this file.

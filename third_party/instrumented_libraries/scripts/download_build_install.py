@@ -406,9 +406,9 @@ class Libpci3Builder(InstrumentedPackageBuilder):
         'SBINDIR=/usr/bin',
         'IDSDIR=/usr/share/misc',
         'SHARED=yes',
-        # pciutils-3.2.1 (Trusty) fails to build due to unresolved libkmod
-        # symbols. The binary package has no dependencies on libkmod, so it
-        # looks like it was actually built without libkmod support.
+        # pciutils fails to build due to unresolved libkmod symbols. The binary
+        # package has no dependencies on libkmod, so it looks like it was
+        # actually built without libkmod support.
        'LIBKMOD=no',
     ]
     self.make(make_args)
