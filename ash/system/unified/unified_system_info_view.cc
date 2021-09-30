@@ -92,7 +92,9 @@ class DateView : public views::Button, public ClockObserver {
 
 DateView::DateView(UnifiedSystemTrayController* controller)
     : Button(base::BindRepeating(
-          &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
+          features::IsCalendarViewEnabled()
+              ? &UnifiedSystemTrayController::ShowCalendarView
+              : &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
           base::Unretained(controller))) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   label_ = AddChildView(std::make_unique<views::Label>());
