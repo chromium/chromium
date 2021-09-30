@@ -658,9 +658,12 @@ void CalendarView::OnEvent(ui::Event* event) {
       return;
     }
     case ui::VKEY_LEFT:
-    case ui::VKEY_RIGHT:
-      focus_manager->AdvanceFocus(/*reverse=*/key_code == ui::VKEY_LEFT);
+    case ui::VKEY_RIGHT: {
+      bool is_reverse = base::i18n::IsRTL() ? key_code == ui::VKEY_RIGHT
+                                            : key_code == ui::VKEY_LEFT;
+      focus_manager->AdvanceFocus(/*reverse=*/is_reverse);
       return;
+    }
     default:
       NOTREACHED();
   }
