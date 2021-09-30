@@ -560,6 +560,16 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   return kSeparationSpaceBetweenSections;
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  // Hide the status header if the currentStatusMessage is nil.
+  if ([self.tableViewModel sectionIdentifierForSection:section] ==
+          kEntriesStatusSectionIdentifier &&
+      [self.currentStatusMessage length] == 0)
+    return 0;
+  return UITableViewAutomaticDimension;
+}
+
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ(tableView, self.tableView);
@@ -794,68 +804,36 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       newStatusMessage == self.currentStatusMessage)
     return;
 
-  // Get the previous status item and its information, if any.
-  NSArray* previousStatusItems = [self.tableViewModel
-      itemsInSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-  DCHECK([previousStatusItems count] <= 1);
-  TableViewItem* previousStatusItem = nil;
-  NSIndexPath* previousStatusItemIndexPath = nil;
-  if ([previousStatusItems count]) {
-    previousStatusItem = [previousStatusItems lastObject];
-    previousStatusItemIndexPath = [self.tableViewModel
-        indexPathForItemType:previousStatusItem.type
-           sectionIdentifier:kEntriesStatusSectionIdentifier];
+  self.currentStatusMessage = newStatusMessage;
+
+  TableViewHeaderFooterItem* item = nil;
+  if (messageWillContainLink) {
+    TableViewLinkHeaderFooterItem* header =
+        [[TableViewLinkHeaderFooterItem alloc]
+            initWithType:ItemTypeEntriesStatusWithLink];
+    header.text = newStatusMessage;
+    header.urls = std::vector<GURL>{GURL(kHistoryMyActivityURL)};
+    item = header;
+  } else {
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:ItemTypeEntriesStatus];
+    header.text = newStatusMessage;
+    item = header;
   }
 
   // Block to hold any tableView and model updates that will be performed.
-  void (^tableUpdates)(void) = nil;
-
-  // If no new status message remove the previous status item if it exists.
-  if (newStatusMessage == nil) {
-    if (previousStatusItem) {
-      tableUpdates = ^{
-        [self.tableViewModel
-                   removeItemWithType:previousStatusItem.type
-            fromSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-        [self.tableView
-            deleteRowsAtIndexPaths:@[ previousStatusItemIndexPath ]
+  // Change the header then reload the section to have it taken into
+  // account.
+  void (^tableUpdates)(void) = ^{
+    [self.tableViewModel setHeader:item
+          forSectionWithIdentifier:kEntriesStatusSectionIdentifier];
+    NSInteger sectionIndex = [self.tableViewModel
+        sectionForSectionIdentifier:kEntriesStatusSectionIdentifier];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                   withRowAnimation:UITableViewRowAnimationAutomatic];
-      };
-    }
-  } else {
-    // Since there's a new status message, create the new status item.
-    TableViewHeaderFooterItem* item = nil;
-    if (messageWillContainLink) {
-      TableViewLinkHeaderFooterItem* header =
-          [[TableViewLinkHeaderFooterItem alloc]
-              initWithType:ItemTypeEntriesStatusWithLink];
-      header.text = newStatusMessage;
-      header.urls = std::vector<GURL>{GURL(kHistoryMyActivityURL)};
-      item = header;
-    } else {
-      TableViewTextHeaderFooterItem* header =
-          [[TableViewTextHeaderFooterItem alloc]
-              initWithType:ItemTypeEntriesStatus];
-      header.text = newStatusMessage;
-      item = header;
-    }
-    // Change the header then reload the section to have it taken into
-    // account.
-    tableUpdates = ^{
-      NSInteger sectionIndex = [self.tableViewModel
-          sectionForSectionIdentifier:kEntriesStatusSectionIdentifier];
-      [self.tableViewModel setHeader:item
-            forSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-      [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-    };
-  }
-
-  // If there's any tableUpdates, run them.
-  if (tableUpdates) {
-    [self.tableView performBatchUpdates:tableUpdates completion:nil];
-  }
-  self.currentStatusMessage = newStatusMessage;
+  };
+  [self.tableView performBatchUpdates:tableUpdates completion:nil];
 }
 
 // Deletes all items in the tableView which indexes are included in indexArray,
