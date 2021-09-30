@@ -230,7 +230,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
-<translation id="3230318355092723906">Lorsque la synchronisation est désactivée, vos favoris, votre historique, vos mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
+<translation id="3230318355092723906">Lorsque la synchronisation est désactivée, vous pouvez toujours voir vos favoris, votre historique, vos mots de passe et autres paramètres sur cet appareil, mais les modifications ne sont pas synchronisées avec votre compte.</translation>
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
