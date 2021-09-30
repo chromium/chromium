@@ -54,7 +54,6 @@ preprocess_if_expr("preprocess_src") {
     "cr_splitter/cr_splitter.js",
     "find_shortcut_behavior.js",
     "mouse_hoverable_mixin.js",
-    "policy/cr_policy_pref_mixin.js",
   ]
 }
 

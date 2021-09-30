@@ -12,23 +12,24 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
+import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 // </if>
 
-import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_mixin.js';
+import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsBooleanControlMixinInterface}
- */
+export interface SettingsToggleButtonElement {
+  $: {
+    control: CrToggleElement,
+  }
+}
+
 const SettingsToggleButtonElementBase =
     SettingsBooleanControlMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsToggleButtonElement extends
     SettingsToggleButtonElementBase {
   static get is() {
@@ -65,9 +66,7 @@ export class SettingsToggleButtonElement extends
       },
       // </if>
 
-      subLabelIcon: {
-        type: String,
-      },
+      subLabelIcon: String,
     };
   }
 
@@ -77,33 +76,35 @@ export class SettingsToggleButtonElement extends
     ];
   }
 
+  ariaLabel: string;
+  elideLabel: boolean;
+  learnMoreUrl: string;
 
-  /** @override */
+  // <if expr="chromeos">
+  subLabelWithLink: string;
+  // </if>
+
+  subLabelIcon: string;
+
   ready() {
     super.ready();
 
     this.addEventListener('click', this.onHostTap_);
   }
 
-  /**
-   * @param {string} eventName
-   * @private
-   */
-  fire_(eventName) {
+  private fire_(eventName: string) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true}));
   }
 
-  /** @override */
   focus() {
     this.$.control.focus();
   }
 
   /**
    * Removes the aria-label attribute if it's added by $i18n{...}.
-   * @private
    */
-  onAriaLabelSet_() {
+  private onAriaLabelSet_() {
     if (this.hasAttribute('aria-label')) {
       const ariaLabel = this.ariaLabel;
       this.removeAttribute('aria-label');
@@ -111,26 +112,19 @@ export class SettingsToggleButtonElement extends
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getAriaLabel_() {
+  private getAriaLabel_(): string {
     return this.label || this.ariaLabel;
   }
 
-  /** @private */
-  onDisableOrPrefChange_() {
+  private onDisableOrPrefChange_() {
     this.toggleAttribute('effectively-disabled_', this.controlDisabled());
   }
 
   /**
    * Handles non cr-toggle button clicks (cr-toggle handles its own click events
    * which don't bubble).
-   * @param {!Event} e
-   * @private
    */
-  onHostTap_(e) {
+  private onHostTap_(e: Event) {
     e.stopPropagation();
     if (this.controlDisabled()) {
       return;
@@ -141,11 +135,7 @@ export class SettingsToggleButtonElement extends
     this.fire_('change');
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onLearnMoreClick_(e) {
+  private onLearnMoreClick_(e: CustomEvent<boolean>) {
     e.stopPropagation();
     this.fire_('learn-more-clicked');
   }
@@ -153,21 +143,15 @@ export class SettingsToggleButtonElement extends
   // <if expr="chromeos">
   /**
    * Set up the contents of sub label with link.
-   * @param {string} contents
-   * @private
    */
-  getSubLabelWithLinkContent_(contents) {
+  private getSubLabelWithLinkContent_(contents: string) {
     return sanitizeInnerHtml(
         contents,
         {attrs: ['id', 'aria-hidden', 'aria-labelledby', 'tabindex']});
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onSubLabelTextWithLinkClick_(e) {
-    if (e.target.tagName === 'A') {
+  private onSubLabelTextWithLinkClick_(e: Event) {
+    if ((e.target as HTMLElement).tagName === 'A') {
       this.fire_('sub-label-link-clicked');
       e.preventDefault();
       e.stopPropagation();
@@ -175,11 +159,7 @@ export class SettingsToggleButtonElement extends
   }
   // </if>
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onChange_(e) {
+  private onChange_(e: CustomEvent<boolean>) {
     this.checked = e.detail;
     this.notifyChangedByUserInteraction();
   }

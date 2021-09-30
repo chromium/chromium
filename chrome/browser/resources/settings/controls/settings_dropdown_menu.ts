@@ -16,41 +16,37 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
+import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
+import {PrefControlMixin} from './pref_control_mixin.js';
 
 /**
  * The |name| is shown in the gui.  The |value| us use to set or compare with
  * the preference value.
- * @typedef {{
- *   name: string,
- *   value: (number|string)
- * }}
  */
-let DropdownMenuOption;
+type DropdownMenuOption = {
+  name: string,
+  value: number|string,
+};
 
-/**
- * @typedef {!Array<!DropdownMenuOption>}
- */
-export let DropdownMenuOptionList;
+export type DropdownMenuOptionList = Array<DropdownMenuOption>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefControlMixinInterface}
- * @implements {CrPolicyPrefMixinInterface}
- */
+export interface SettingsDropdownMenuElement {
+  $: {
+    dropdownMenu: HTMLSelectElement,
+  }
+}
+
 const SettingsDropdownMenuElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement));
 
-/** @polymer */
-class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
+export class SettingsDropdownMenuElement extends
+    SettingsDropdownMenuElementBase {
   static get is() {
     return 'settings-dropdown-menu';
   }
@@ -63,7 +59,6 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
     return {
       /**
        * List of options for the drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       menuOptions: Array,
 
@@ -85,7 +80,6 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
 
       /**
        * The value of the "custom" item.
-       * @private
        */
       notFoundValue_: {
         type: String,
@@ -104,16 +98,20 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
     ];
   }
 
-  /** @override */
+  menuOptions: DropdownMenuOptionList;
+  disabled: boolean;
+  prefKey: string|null;
+  private notFoundValue_: string;
+  label: string;
+
   focus() {
     this.$.dropdownMenu.focus();
   }
 
   /**
    * Pass the selection change to the pref value.
-   * @private
    */
-  onChange_() {
+  private onChange_() {
     const selected = this.$.dropdownMenu.value;
 
     if (selected === this.notFoundValue_) {
@@ -124,7 +122,7 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
       assert(this.pref);
       this.set(`pref.value.${this.prefKey}`, selected);
     } else {
-      const prefValue = stringToPrefValue(selected, assert(this.pref));
+      const prefValue = stringToPrefValue(selected, assert(this.pref!));
       if (prefValue !== undefined) {
         this.set('pref.value', prefValue);
       }
@@ -138,9 +136,8 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
 
   /**
    * Updates the selected item when the pref or menuOptions change.
-   * @private
    */
-  updateSelected_() {
+  private updateSelected_() {
     if (this.menuOptions === undefined || this.pref === undefined ||
         this.prefKey === undefined) {
       return;
@@ -165,25 +162,19 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
 
   /**
    * Gets the current value of the preference as a string.
-   * @return {string}
-   * @private
    */
-  prefStringValue_() {
+  private prefStringValue_(): string {
     if (this.prefKey) {
       // Dictionary pref, values are always strings.
-      return this.pref.value[this.prefKey];
+      return this.pref!.value[this.prefKey];
     } else {
-      return prefToString(assert(this.pref));
+      return prefToString(assert(this.pref!));
     }
   }
 
-  /**
-   * @param {?DropdownMenuOptionList} menuOptions
-   * @param {string} prefValue
-   * @return {boolean}
-   * @private
-   */
-  showNotFoundValue_(menuOptions, prefValue) {
+  private showNotFoundValue_(
+      menuOptions: DropdownMenuOptionList|null|undefined,
+      prefValue: string): boolean {
     if (menuOptions === undefined || prefValue === undefined) {
       return false;
     }
@@ -199,11 +190,7 @@ class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
     return !option;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldDisableMenu_() {
+  private shouldDisableMenu_(): boolean {
     return this.disabled || this.isPrefEnforced() ||
         this.menuOptions === undefined || this.menuOptions.length === 0;
   }

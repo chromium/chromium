@@ -21,7 +21,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsCheckboxElement} from '../controls/settings_checkbox_ts.js';
+import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 
@@ -150,9 +150,7 @@ class SettingsImportDataDialogElement extends
   }
 
   private onActionButtonTap_() {
-    const checkboxes =
-        this.shadowRoot!.querySelectorAll<SettingsCheckboxElement>(
-            'settings-checkbox');
+    const checkboxes = this.shadowRoot!.querySelectorAll('settings-checkbox');
     if (this.isImportFromFileSelected_()) {
       this.browserProxy_.importFromBookmarksFile();
     } else {

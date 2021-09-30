@@ -22,15 +22,9 @@ import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
 import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefControlMixinInterface}
- */
 const SettingsRadioGroupElementBase = PrefControlMixin(PolymerElement);
 
-/** @polymer */
-class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
+export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   static get is() {
     return 'settings-radio-group';
   }
@@ -68,22 +62,24 @@ class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     ];
   }
 
-  /** @override */
+  groupAriaLabel: string;
+  noSetPref: boolean;
+  selected: string;
+  selectableElements: string;
+
   ready() {
     super.ready();
 
     this.setAttribute('role', 'none');
   }
 
-  /** @override */
   focus() {
-    this.shadowRoot.querySelector('cr-radio-group').focus();
+    this.shadowRoot!.querySelector('cr-radio-group')!.focus();
   }
 
   /** Reset the selected value to match the current pref value. */
   resetToPrefValue() {
-    const pref = /** @type {!chrome.settingsPrivate.PrefObject} */ (this.pref);
-    this.selected = prefToString(pref);
+    this.selected = prefToString(this.pref!);
   }
 
   /** Update the pref to the current selected value. */
@@ -94,9 +90,8 @@ class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     this.set('pref.value', stringToPrefValue(this.selected, this.pref));
   }
 
-  /** @private */
-  onSelectedChanged_() {
-    this.selected = this.shadowRoot.querySelector('cr-radio-group').selected;
+  private onSelectedChanged_() {
+    this.selected = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
     if (!this.noSetPref) {
       this.sendPrefChange();
     }

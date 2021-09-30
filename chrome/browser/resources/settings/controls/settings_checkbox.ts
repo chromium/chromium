@@ -10,18 +10,20 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBooleanControlMixin, SettingsBooleanControlMixinInterface} from './settings_boolean_control_mixin.js';
+import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsBooleanControlMixinInterface}
- */
+export interface SettingsCheckboxElement {
+  $: {
+    checkbox: CrCheckboxElement,
+    subLabel: HTMLElement,
+  };
+}
+
 const SettingsCheckboxElementBase = SettingsBooleanControlMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   static get is() {
     return 'settings-checkbox';
@@ -51,38 +53,32 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     ];
   }
 
-  /** @private */
-  onSubLabelChanged_() {
+  private onSubLabelChanged_() {
     this.$.checkbox.ariaDescription = this.$.subLabel.textContent;
   }
 
   /**
    * Don't let clicks on a link inside the secondary label reach the checkbox.
-   * @private
    */
-  onSubLabelHtmlChanged_() {
-    const links = this.root.querySelectorAll('.secondary.label a');
+  private onSubLabelHtmlChanged_() {
+    const links = this.shadowRoot!.querySelectorAll('.secondary.label a');
     links.forEach((link) => {
-      link.addEventListener('click', this.stopPropagation);
+      link.addEventListener('click', this.stopPropagation_.bind(this));
     });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  stopPropagation(event) {
+  private stopPropagation_(event: Event) {
     event.stopPropagation();
   }
 
-  /**
-   * @param {string} subLabel
-   * @param {string} subLabelHtml
-   * @return {boolean} Whether there is a subLabel
-   * @private
-   */
-  hasSubLabel_(subLabel, subLabelHtml) {
+  private hasSubLabel_(subLabel: string, subLabelHtml: string): boolean {
     return !!subLabel || !!subLabelHtml;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-checkbox': SettingsCheckboxElement;
   }
 }
 

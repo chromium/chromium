@@ -7,7 +7,7 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import '../settings_shared_css.js';
 
-import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
+import {CrRadioButtonBehavior} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -15,16 +15,12 @@ import {prefToString} from '../prefs/pref_util.js';
 
 import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrRadioButtonBehaviorInterface}
- * @implements {PrefControlMixinInterface}
- */
 const ControlledRadioButtonElementBase =
-    mixinBehaviors([CrRadioButtonBehavior], PrefControlMixin(PolymerElement));
+    mixinBehaviors([CrRadioButtonBehavior], PrefControlMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & CrRadioButtonBehavior & PrefControlMixinInterface
+    };
 
-/** @polymer */
 class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {
   static get is() {
     return 'controlled-radio-button';
@@ -40,25 +36,16 @@ class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {
     ];
   }
 
-  /** @private */
-  updateDisabled_() {
+  private updateDisabled_() {
     this.disabled =
-        this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+        this.pref!.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showIndicator_() {
-    return this.disabled && this.name === prefToString(assert(this.pref));
+  private showIndicator_(): boolean {
+    return this.disabled && this.name === prefToString(assert(this.pref!));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onIndicatorTap_(e) {
+  private onIndicatorTap_(e: Event) {
     // Disallow <controlled-radio-button on-click="..."> when disabled.
     e.preventDefault();
     e.stopPropagation();

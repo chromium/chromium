@@ -29,9 +29,9 @@ import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
-import {SettingsCheckboxElement} from '../controls/settings_checkbox_ts.js';
+import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu_ts.js';
+import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
@@ -425,8 +425,7 @@ class SettingsClearBrowsingDataDialogElement extends
    * @return A list of selected data types.
    */
   private getSelectedDataTypes_(tab: HTMLElement): Array<string> {
-    const checkboxes =
-        tab.querySelectorAll<SettingsCheckboxElement>('settings-checkbox');
+    const checkboxes = tab.querySelectorAll('settings-checkbox');
     const dataTypes: Array<string> = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {

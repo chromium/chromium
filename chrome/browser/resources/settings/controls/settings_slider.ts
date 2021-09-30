@@ -11,21 +11,22 @@
 import '../settings_vars_css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '//resources/cr_elements/policy/cr_policy_pref_mixin.js';
+import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrPolicyPrefMixinInterface}
- */
+import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
+
+interface SettingsSliderElement {
+  $: {
+    slider: CrSliderElement,
+  }
+}
+
 const SettingsSliderElementBase = CrPolicyPrefMixin(PolymerElement);
 
-/** @polymer */
 class SettingsSliderElement extends SettingsSliderElementBase {
   static get is() {
     return 'settings-slider';
@@ -37,12 +38,10 @@ class SettingsSliderElement extends SettingsSliderElementBase {
 
   static get properties() {
     return {
-      /** @type {!chrome.settingsPrivate.PrefObject} */
       pref: Object,
 
       /**
        * Values corresponding to each tick.
-       * @type {!Array<SliderTick>|!Array<number>}
        */
       ticks: {
         type: Array,
@@ -73,7 +72,6 @@ class SettingsSliderElement extends SettingsSliderElementBase {
 
       showMarkers: Boolean,
 
-      /** @private */
       disableSlider_: {
         computed: 'computeDisableSlider_(pref.*, disabled, ticks.*)',
         type: Boolean,
@@ -95,41 +93,43 @@ class SettingsSliderElement extends SettingsSliderElementBase {
     ];
   }
 
-  /** @override */
+  pref: chrome.settingsPrivate.PrefObject;
+  ticks: Array<SliderTick>|Array<number>;
+  scale: number;
+  min: number;
+  max: number;
+  labelAria: string;
+  labelMin: string;
+  labelMax: string;
+  disabled: boolean;
+  showMarkers: boolean;
+  private disableSlider_: boolean;
+  updateValueInstantly: boolean;
+  private loaded_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
 
     this.loaded_ = true;
   }
 
-  /** @override */
   focus() {
     this.$.slider.focus();
   }
 
-  /**
-   * @param {number|SliderTick} tick
-   * @return {number|undefined}
-   */
-  getTickValue_(tick) {
+  private getTickValue_(tick: number|SliderTick): number {
     return typeof tick === 'object' ? tick.value : tick;
   }
 
-  /**
-   * @param {number} index
-   * @return {number|undefined}
-   * @private
-   */
-  getTickValueAtIndex_(index) {
+  private getTickValueAtIndex_(index: number): number {
     return this.getTickValue_(this.ticks[index]);
   }
 
   /**
    * Sets the |pref.value| property to the value corresponding to the knob
    * position after a user action.
-   * @private
    */
-  onSliderChanged_() {
+  private onSliderChanged_() {
     if (!this.loaded_) {
       return;
     }
@@ -150,8 +150,7 @@ class SettingsSliderElement extends SettingsSliderElementBase {
     this.set('pref.value', newValue);
   }
 
-  /** @private */
-  computeDisableSlider_() {
+  private computeDisableSlider_() {
     return this.disabled || this.isPrefEnforced();
   }
 
@@ -159,9 +158,8 @@ class SettingsSliderElement extends SettingsSliderElementBase {
    * Updates the knob position when |pref.value| changes. If the knob is still
    * being dragged, this instead forces |pref.value| back to the current
    * position.
-   * @private
    */
-  valueChanged_() {
+  private valueChanged_() {
     if (this.pref === undefined || !this.loaded_ || this.$.slider.dragging ||
         this.$.slider.updatingFromKey) {
       return;
@@ -174,7 +172,7 @@ class SettingsSliderElement extends SettingsSliderElementBase {
       return;
     }
 
-    const prefValue = /** @type {number} */ (this.pref.value);
+    const prefValue = this.pref.value;
 
     // The preference and slider values are continuous when |ticks| is empty.
     if (numTicks === 0) {
@@ -191,7 +189,10 @@ class SettingsSliderElement extends SettingsSliderElementBase {
     // Convert from the public |value| to the slider index (where the knob
     // should be positioned on the slider).
     const index =
-        this.ticks.map(tick => Math.abs(this.getTickValue_(tick) - prefValue))
+        this.ticks
+            .map(
+                (tick: number|SliderTick) =>
+                    Math.abs(this.getTickValue_(tick) - prefValue))
             .reduce(
                 (acc, diff, index) => diff < acc.diff ? {index, diff} : acc,
                 {index: -1, diff: Number.MAX_VALUE})
@@ -206,11 +207,7 @@ class SettingsSliderElement extends SettingsSliderElementBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getRoleDescription_() {
+  private getRoleDescription_(): string {
     return loadTimeData.getStringF(
         'settingsSliderRoleDescription', this.labelMin, this.labelMax);
   }

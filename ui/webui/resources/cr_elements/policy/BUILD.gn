@@ -43,7 +43,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_indicator.m",
     ":cr_policy_indicator_behavior.m",
     ":cr_policy_pref_indicator.m",
-    ":cr_policy_pref_mixin",
     ":cr_tooltip_icon.m",
   ]
 }
@@ -61,10 +60,6 @@ js_library("cr_policy_indicator_behavior.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.m.js" ]
   deps = [ "//ui/webui/resources/js:assert.m" ]
   extra_deps = [ ":modulize" ]
-}
-
-js_library("cr_policy_pref_mixin") {
-  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("cr_policy_pref_indicator.m") {
@@ -117,8 +112,5 @@ polymer_modulizer("cr_tooltip_icon") {
 }
 
 js_modulizer("modulize") {
-  input_files = [
-    "cr_policy_indicator_behavior.js",
-    "cr_policy_pref_mixin.js",
-  ]
+  input_files = [ "cr_policy_indicator_behavior.js" ]
 }

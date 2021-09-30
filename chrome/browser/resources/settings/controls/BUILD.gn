@@ -10,39 +10,9 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":controlled_button",
-    ":controlled_radio_button",
     ":extension_controlled_indicator",
     ":password_prompt_dialog",
-    ":pref_control_mixin",
-    ":settings_boolean_control_mixin",
-    ":settings_checkbox",
-    ":settings_dropdown_menu",
-    ":settings_radio_group",
-    ":settings_slider",
-    ":settings_textarea",
-    ":settings_toggle_button",
   ]
-}
-
-js_library("controlled_button") {
-  deps = [
-    ":pref_control_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_mixin",
-  ]
-}
-
-js_library("controlled_radio_button") {
-  deps = [
-    ":pref_control_mixin",
-    "../prefs:pref_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("extension_controlled_indicator") {
@@ -65,84 +35,17 @@ js_library("password_prompt_dialog") {
                  [ "$externs_path/quick_unlock_private.js" ]
 }
 
-js_library("pref_control_mixin") {
-  deps = [ "../prefs:prefs_types" ]
-}
-
-js_library("settings_boolean_control_mixin") {
-  deps = [
-    ":pref_control_mixin",
-    "../prefs:prefs_types",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_mixin",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("settings_checkbox") {
-  deps = [
-    ":settings_boolean_control_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("settings_dropdown_menu") {
-  deps = [
-    ":pref_control_mixin",
-    "../prefs:pref_util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_mixin",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("settings_radio_group") {
-  deps = [
-    ":pref_control_mixin",
-    "../prefs:pref_util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("settings_slider") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_mixin",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("settings_textarea") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("settings_toggle_button") {
-  deps = [
-    ":settings_boolean_control_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
-    "controlled_button.js",
-    "controlled_radio_button.js",
+    "controlled_button.ts",
+    "controlled_radio_button.ts",
     "extension_controlled_indicator.js",
     "password_prompt_dialog.js",
-    "settings_checkbox.js",
-    "settings_dropdown_menu.js",
-    "settings_radio_group.js",
-    "settings_slider.js",
-    "settings_textarea.js",
-    "settings_toggle_button.js",
+    "settings_checkbox.ts",
+    "settings_dropdown_menu.ts",
+    "settings_radio_group.ts",
+    "settings_slider.ts",
+    "settings_textarea.ts",
+    "settings_toggle_button.ts",
   ]
 }

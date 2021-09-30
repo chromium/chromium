@@ -7,17 +7,13 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 
-import {CrPolicyPrefMixin} from '//resources/cr_elements/policy/cr_policy_pref_mixin.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
 const ControlledButtonElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement));
 
@@ -47,10 +43,8 @@ class ControlledButtonElement extends ControlledButtonElementBase {
         reflectToAttribute: true,
       },
 
-      /** @private */
       actionClass_: {type: String, value: ''},
 
-      /** @private */
       enforced_: {
         type: Boolean,
         computed: 'isPrefEnforced(pref.*)',
@@ -59,7 +53,12 @@ class ControlledButtonElement extends ControlledButtonElementBase {
     };
   }
 
-  /** @override */
+  endJustified: boolean;
+  label: string;
+  disabled: boolean;
+  private actionClass_: string;
+  private enforced_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -70,26 +69,16 @@ class ControlledButtonElement extends ControlledButtonElementBase {
 
   /** Focus on the inner cr-button. */
   focus() {
-    this.shadowRoot.querySelector('cr-button').focus();
+    this.shadowRoot!.querySelector('cr-button')!.focus();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onIndicatorClick_(e) {
+  private onIndicatorClick_(e: Event) {
     // Disallow <controlled-button on-click="..."> when controlled.
     e.preventDefault();
     e.stopPropagation();
   }
 
-  /**
-   * @param {!boolean} enforced
-   * @param {!boolean} disabled
-   * @return {boolean} True if the button should be enabled.
-   * @private
-   */
-  buttonEnabled_(enforced, disabled) {
+  private buttonEnabled_(enforced: boolean, disabled: boolean): boolean {
     return !enforced && !disabled;
   }
 }

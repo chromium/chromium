@@ -12,7 +12,12 @@ import '//resources/cr_elements/cr_input/cr_input_style_css.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+interface SettingsTextareaElement {
+  $: {
+    input: HTMLTextAreaElement,
+  };
+}
+
 class SettingsTextareaElement extends PolymerElement {
   static get is() {
     return 'settings-textarea';
@@ -71,31 +76,33 @@ class SettingsTextareaElement extends PolymerElement {
     };
   }
 
+  autofocus: boolean;
+  disabled: boolean;
+  rows: number;
+  label: string;
+  value: string;
+
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
    * This function helps propagate it to host since change events don't
    * propagate across Shadow DOM boundary by default.
-   * @param {!Event} e
-   * @private
    */
-  onInputChange_(e) {
+  private onInputChange_(e: Event) {
     this.dispatchEvent(new CustomEvent(
         'change', {bubbles: true, composed: true, detail: {sourceEvent: e}}));
   }
 
-  /**@private */
-  onInputFocusChange_() {
+  private onInputFocusChange_() {
     // focused_ is used instead of :focus-within, so focus on elements within
     // the suffix slot does not trigger a change in input styles.
-    if (this.shadowRoot.activeElement === this.$.input) {
+    if (this.shadowRoot!.activeElement === this.$.input) {
       this.setAttribute('focused_', '');
     } else {
       this.removeAttribute('focused_');
     }
   }
 
-  /**@private */
-  onDisabledChanged_() {
+  private onDisabledChanged_() {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
   }
 }
