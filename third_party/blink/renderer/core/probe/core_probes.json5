@@ -37,6 +37,12 @@
         "DidCreateAnimation",
       ]
     },
+    InspectorApplicationCacheAgent: {
+      probes: [
+        "NetworkStateChanged",
+        "UpdateApplicationCacheStatus",
+      ]
+    },
     InspectorAuditsAgent: {
       probes: [
         "InspectorIssueAdded"

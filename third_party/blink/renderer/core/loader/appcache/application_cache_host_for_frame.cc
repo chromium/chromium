@@ -89,6 +89,7 @@ bool ApplicationCacheHostForFrame::SwapCache() {
   if (!success)
     return false;
   backend_host_->GetStatus(&status_);
+  probe::UpdateApplicationCacheStatus(document_loader_->GetFrame());
   return true;
 }
 
@@ -298,6 +299,7 @@ void ApplicationCacheHostForFrame::NotifyApplicationCache(
     int error_status,
     const String& error_message) {
   if (id != mojom::AppCacheEventID::APPCACHE_PROGRESS_EVENT) {
+    probe::UpdateApplicationCacheStatus(document_loader_->GetFrame());
   }
 
   if (defers_events_) {
