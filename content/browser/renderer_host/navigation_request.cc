@@ -5394,8 +5394,6 @@ void NavigationRequest::DidCommitNavigation(
   previous_main_frame_url_ = previous_main_frame_url;
   navigation_type_ = navigation_type;
 
-  // It should be kept in sync with the check in
-  // RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation.
   if (DidEncounterError()) {
     EnterChildTraceEvent("DidCommitNavigation: error page", this);
     SetState(DID_COMMIT_ERROR_PAGE);
@@ -6849,7 +6847,7 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   // from this rule so that we don't leave an error page in the back/forward
   // list if a cross-origin iframe happens to successfully re-naivgate a frame
   // that had previously failed.
-  if (!frame_tree_node_->current_frame_host()->IsErrorDocument() &&
+  if (!frame_tree_node_->current_frame_host()->is_error_page() &&
       common_params_->initiator_origin &&
       !common_params_->initiator_origin->IsSameOriginWith(
           frame_tree_node_->current_origin())) {

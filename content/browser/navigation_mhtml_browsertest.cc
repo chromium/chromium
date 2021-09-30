@@ -571,15 +571,15 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CSPEmbeddedEnforcement) {
   RenderFrameHostImpl* rfh_3 = main_document->child_at(0)->current_frame_host();
 
   // Same-origin without Allow-CSP-From:* => response allowed.
-  EXPECT_FALSE(rfh_1->IsErrorDocument());
+  EXPECT_FALSE(rfh_1->is_error_page());
 
   // Cross-origin without Allow-CSP-From:* => response blocked;
   // TODO(https://crbug.com/1112965) Add support for CSPEE in MHTML documents.
   // An error page should be displayed here.
-  EXPECT_FALSE(rfh_2->IsErrorDocument());
+  EXPECT_FALSE(rfh_2->is_error_page());
 
   // Cross-origin with Allow-CSP-From:* => response allowed.
-  EXPECT_FALSE(rfh_3->IsErrorDocument());
+  EXPECT_FALSE(rfh_3->is_error_page());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   // Check that the RenderFrameHost, NavigationRequest and NavigationEntry all
   // agree that the document is not an error page.
   RenderFrameHostImpl* main_document = main_frame_host();
-  EXPECT_FALSE(main_document->IsErrorDocument());
+  EXPECT_FALSE(main_document->is_error_page());
   EXPECT_FALSE(params_capturer.is_error_page());
   EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 }

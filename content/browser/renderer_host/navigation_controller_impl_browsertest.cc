@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(current_rfh->IsErrorDocument());
+  EXPECT_FALSE(current_rfh->is_error_page());
 
   // The original request URL for loadDataWithBaseURL navigations will be the
   // URL used for commit (the data URL/header).
@@ -994,7 +994,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(contents()->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
 }
 
 // ContentBrowserClient that blocks normal commits to any URL in
@@ -1060,7 +1060,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(contents()->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
 
   {
     // Make a same-document navigation via history.pushState.
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(contents()->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
 
   {
     // Make a same-document navigation via fragment navigation.
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(contents()->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
 
   SetBrowserClientForTesting(old_client);
 }
@@ -1318,7 +1318,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // Verify that the page is classified as an error page.
     EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
-    EXPECT_TRUE(contents()->GetMainFrame()->IsErrorDocument());
+    EXPECT_TRUE(contents()->GetMainFrame()->is_error_page());
 
     EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
     EXPECT_EQ(history_url, entry->GetVirtualURL());
