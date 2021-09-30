@@ -175,7 +175,7 @@ bool AreDirectoriesModified(Snapshot& snapshot_before,
               std::cbegin(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
               std::cend(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
               [&directory](const std::string& allow_listed_directory) {
-                return allow_listed_directory.find(directory) == 0;
+                return directory.find(allow_listed_directory) == 0;
               })) {
         continue;
       }
