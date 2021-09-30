@@ -79,6 +79,7 @@
 #include "third_party/blink/public/web/web_view_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1958,8 +1959,10 @@ void TestRunnerBindings::CopyImageThen(int x,
                                         &sequence_number_after);
   }
 
+  mojo_base::BigBuffer png_data;
+  remote_clipboard->ReadPng(ui::ClipboardBuffer::kCopyPaste, &png_data);
   SkBitmap bitmap;
-  remote_clipboard->ReadImage(ui::ClipboardBuffer::kCopyPaste, &bitmap);
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
